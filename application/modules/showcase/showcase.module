@@ -1,0 +1,86 @@
+<?php
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_help()
+ *
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function showcase_help($path, $arg) {
+	switch ($path) {
+		case "admin/help#showcase":
+			return '<p>'.  t("Showcase module") .'</p>';
+			break;
+	}
+}
+
+/**
+ * Implements hook_block_info()
+ *
+ * Provides information about available blocks.
+ *
+ * @return array
+ */
+function showcase_block_info() {
+	$blocks['showcase'] = array( // The unique name of the block.
+    'info' => t('Swissmon showcase'), // The name that will appear in the block list.
+    'cache' => DRUPAL_CACHE_PER_ROLE, // Default
+	);
+	return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ *
+ * Callback for to displaying a block.
+ *
+ * @param  $delta which block to display. see showcase_block_info()
+ * @return String
+ */
+function showcase_block_view($delta = '') {
+	$item = array('data' => l("Link to showcase page", 'showcase'));
+	$block['content'] = theme('showcase_item', array('item' => $item));
+	return $block;
+}
+
+/**
+ * Implements hook_theme()
+ *
+ * publishes our template
+ * @return an array with theme template information
+ */
+function showcase_theme() {
+	return array(
+    'showcase_item' => array(
+      'template' => 'showcase_item',
+      'variables' => array('item' => NULL)
+	)
+	);
+}
+
+
+/**
+ * Implements hook_menu()
+ *
+ * This makes it possible to visit the link drupal/?q=showcase.
+ * It is also possible to create an URL like drupal/?q=showcase/42. This would show probably the element with the ID 42.
+ *
+ * @return array
+ */
+function showcase_menu() {
+	$items['showcase'] = array(
+    'title' => 'Showcase Url',
+    'description' => 'Test module for demonstration.',
+    'page callback' => 'showcase_page',
+    'access arguments' => array('access showcase'),
+    'type' => MENU_SUGGESTED_ITEM,
+	'file' => 'showcase.pages.inc',
+	);
+	return $items;
+}
+?>
