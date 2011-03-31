@@ -9,8 +9,8 @@ function inventory_page($inventory_id) {
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-ui-1.8.6.custom.min.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
 	
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext-3.3.1/adapter/jquery/ext-jquery-adapter-debug.js');
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext-3.3.1/ext-all-debug.js');
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext/ext-jquery-adapter-debug.js');
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext/ext-base-debug.js');
 	
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/JSON.js');
 		
@@ -19,21 +19,10 @@ function inventory_page($inventory_id) {
 	
 	$tmp = drupal_add_js($data = 'initInventory()', $type = 'inline');
 
-	error_log($tmp);
-
   	$output = '<div id="inventories"></div>';
-
-/*
-	<script type="text/javascript">
-
-		initInventory();
-
-	</script>';
-	*/
 	
   	return $output;
-	
-	
+
 	/*
 	error_log("start zend");
 
