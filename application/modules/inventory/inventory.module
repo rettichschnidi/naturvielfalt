@@ -27,7 +27,10 @@ function inventory_theme() {
 	return array(
     	'inventory_overview' => array(
  			'template' => 'inventory_overview',
-    	  	'variables' => array('items' => array('id' => NULL, 'name' => NULL))
+    	  	'variables' => array(
+    	  		'items' => array(), // items for building the table
+				'introduction' => '' // introduction text
+	)
 	),
 	 	'inventory_item' => array(
       		'template' => 'inventory_item',
@@ -42,22 +45,30 @@ function inventory_theme() {
  * @return array
  */
 function inventory_menu() {
+	$items['inventory/new'] = array(
+    'title' => 'New inventory',
+    'description' => 'Create a new inventory',
+    'page callback' => 'inventory_new',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'inventory.new.inc',
+	);
 	$items['inventory/%'] = array(
     'title' => 'Inventory Url',
     'description' => 'Swissmon Inventory',
     'page callback' => 'inventory_page',
 	'page arguments' => array(1),
-    'access arguments' => array('access inventory'),
-    'type' => MENU_SUGGESTED_ITEM,
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
 	'file' => 'inventory.pages.inc',
 	);
 	$items['inventory'] = array(
     'title' => 'Inventory overview',
     'description' => 'Shows an overview of all inventories',
-    'page callback' => 'inventory_page',
-    'access arguments' => array('access inventory'),
+    'page callback' => 'inventory_overview',
+    'access arguments' => array('access content'),
     'type' => MENU_NORMAL_ITEM,
-	'file' => 'inventory.page.inc',
+	'file' => 'inventory.overview.inc',
 	);
 	return $items;
 }
