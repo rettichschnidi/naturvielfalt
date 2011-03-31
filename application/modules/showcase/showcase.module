@@ -57,8 +57,12 @@ function showcase_block_view($delta = '') {
 function showcase_theme() {
 	return array(
     'showcase_item' => array(
-      'template' => 'showcase_item',
-      'variables' => array('item' => NULL)
+ 		'template' => 'showcase_item',
+      	'variables' => array('item' => NULL)
+	),
+	'showcase_page' => array (
+		'template' => 'showcase_page',
+		'variables' => array('text' => NULL)
 	)
 	);
 }
@@ -67,16 +71,24 @@ function showcase_theme() {
 /**
  * Implements hook_menu()
  *
- * This makes it possible to visit the link drupal/?q=showcase.
- * It is also possible to create an URL like drupal/?q=showcase/42. This would show probably the element with the ID 42.
+ * This makes it possible to visit the link drupal/showcase.
+ * It is also possible to create an URL like drupal/showcase/42. This would show probably the element with the ID 42.
  *
  * @return array
  */
 function showcase_menu() {
 	$items['showcase'] = array(
-    'title' => 'Showcase Url',
+    'title' => 'Showcase',
     'description' => 'Test module for demonstration.',
     'page callback' => 'showcase_page',
+    'access arguments' => array('access showcase'),
+    'type' => MENU_SUGGESTED_ITEM,
+	'file' => 'showcase.pages.inc',
+	);
+	$items['showcase/notemplate'] = array(
+    'title' => 'No template',
+    'description' => 'Shows a page with no template engine.',
+    'page callback' => 'showcase_page_no_template',
     'access arguments' => array('access showcase'),
     'type' => MENU_SUGGESTED_ITEM,
 	'file' => 'showcase.pages.inc',
