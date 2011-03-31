@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configdata>
+	<nav>
+		<home>
+			<label>Home</label>
+			<uri>/</uri>
+			<pages>
+				<inventory>
+					<label>Inventar</label>
+					<controller>inventory</controller>
+					<action>index</action>
+					<pages>
+						<create>
+							<label>Create</label>
+							<controller>area-create</controller>
+							<action>index</action>
+							<pages>
+								<update>
+									<label>Update</label>
+									<controller>area</controller>
+									<action>update</action>
+								</update>
+							</pages>
+						</create>
+					</pages>
+				</inventory>
+			</pages>
+		</home>
+	</nav>
+</configdata>
+	<!--<configdata>-->
+	<!--	<nav>-->
+	<!--		<home>-->
+	<!--			<label>Home</label>-->
+	<!--			<uri>/</uri>-->
+	<!--			<pages>-->
+	<!--				<area>-->
+	<!--					<label>Area</label>-->
+	<!--					<uri>area</uri>-->
+	<!--					<pages>-->
+	<!--						<create>-->
+	<!--							<label>Create</label>-->
+	<!--							<uri>/area/create</uri>-->
+	<!--						</create>-->
+	<!--					</pages>-->
+	<!--				</area>-->
+	<!--				<inventory>-->
+	<!--					<label>Inventory</label>-->
+	<!--					<uri>inventory</uri>-->
+	<!--					<pages>-->
+	<!--						<create>-->
+	<!--							<label>Create</label>-->
+	<!--							<uri>/inventory/create</uri>-->
+	<!--						</create>-->
+	<!--					</pages>-->
+	<!--				</inventory>-->
+	<!--			</pages>-->
+	<!--		</home>-->
+	<!--	</nav>-->
+	<!--</configdata>-->

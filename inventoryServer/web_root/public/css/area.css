@@ -1,0 +1,38 @@
+
+#map_canvas {
+  width: 800px;
+  height: 600px;
+}
+
+#map {
+  position:relative;
+
+}
+
+#continue {
+  position: absolute;
+  top: 650px;
+}
+
+#map_canvas, #area_create_form{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#area_create_form{
+  display: none;
+  width: 800px;
+  height: 650px;
+  background-color: rgba(255,255,255,0.8);
+}
+
+#habitat-element {
+    display: table;
+}
+
+.ui-menu-item-label {
+    float: left;
+    width: 45px;
+}
+

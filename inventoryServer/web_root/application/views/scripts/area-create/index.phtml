@@ -1,0 +1,22 @@
+
+<!-- application/views/scripts/area-create/index.phtml -->
+  <h2>Gebiet eintragen</h2>
+  <div style='position:relative';>
+     <dt id="map_search-label"><label for="map_search"></label></dt>
+     <dd id="map_search-element">
+        <input type="text" id= "map_search" name="map_search" value="" />
+        <button id="map_search_button">Los</button>
+     </dd>
+
+     <div id='map'>
+        <div id="map_canvas">  </div>
+        <button id="continue">Weiter...</button> 
+     </div>
+     <div id='area_create_form'><?php echo $this->form ?>
+         Speichern und
+        <button id="save_new_area">Neues Gebiet erstellen</button>
+        <button id="save_to_inventory">Inventar erfassen</button>
+     </div>
+  </div>
+
+   
