@@ -1,0 +1,4 @@
+name = Inventory
+description = Tierli und so
+package = Swissmon
+core = 7.x
