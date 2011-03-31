@@ -1,0 +1,64 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_help()
+ *
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function inventory_help($path, $arg) {
+	switch ($path) {
+		case "admin/help#inventory":
+			return '<p>'.  t("Inventory module") .'</p>';
+			break;
+	}
+}
+
+/**
+ * Implements hook_theme()
+ *
+ * @return an array with theme template information
+ */
+function inventory_theme() {
+	return array(
+    	'inventory_overview' => array(
+ 			'template' => 'inventory_overview',
+    	  	'variables' => array('items' => array('id' => NULL, 'name' => NULL))
+	),
+	 	'inventory_item' => array(
+      		'template' => 'inventory_item',
+      		'variables' => array('item' => NULL)
+	)
+	);
+}
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function inventory_menu() {
+	$items['inventory/%'] = array(
+    'title' => 'Inventory Url',
+    'description' => 'Swissmon Inventory',
+    'page callback' => 'inventory_page',
+	'page arguments' => array(1),
+    'access arguments' => array('access inventory'),
+    'type' => MENU_SUGGESTED_ITEM,
+	'file' => 'inventory.pages.inc',
+	);
+	$items['inventory'] = array(
+    'title' => 'Inventory overview',
+    'description' => 'Shows an overview of all inventories',
+    'page callback' => 'inventory_page',
+    'access arguments' => array('access inventory'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'inventory.page.inc',
+	);
+	return $items;
+}
+?>
