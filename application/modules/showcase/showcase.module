@@ -44,7 +44,7 @@ function showcase_block_info() {
  */
 function showcase_block_view($delta = '') {
 	$item = array('data' => l("Link to showcase page", 'showcase'));
-	$block['content'] = theme('showcase_item', array('item' => $item));
+	$block['content'] = theme('showcase_block', array('item' => $item));
 	return $block;
 }
 
@@ -56,8 +56,8 @@ function showcase_block_view($delta = '') {
  */
 function showcase_theme() {
 	return array(
-    'showcase_item' => array(
- 		'template' => 'showcase_item',
+    'showcase_block' => array(
+ 		'template' => 'showcase_block',
       	'variables' => array('item' => NULL)
 	),
 	'showcase_page' => array (
@@ -78,17 +78,9 @@ function showcase_theme() {
  */
 function showcase_menu() {
 	$items['showcase'] = array(
-    'title' => 'Showcase',
-    'description' => 'Test module for demonstration.',
-    'page callback' => 'showcase_page',
-    'access arguments' => array('access showcase'),
-    'type' => MENU_SUGGESTED_ITEM,
-	'file' => 'showcase.pages.inc',
-	);
-	$items['showcase/notemplate'] = array(
     'title' => 'No template',
-    'description' => 'Shows a page with no template engine.',
-    'page callback' => 'showcase_page_no_template',
+    'description' => 'Shows a page with our own template showcase_page.tpl.php.',
+    'page callback' => 'showcase_page',
     'access arguments' => array('access showcase'),
     'type' => MENU_SUGGESTED_ITEM,
 	'file' => 'showcase.pages.inc',

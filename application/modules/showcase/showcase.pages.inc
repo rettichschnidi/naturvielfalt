@@ -3,11 +3,6 @@
  * Menu callback. This will be called if someone visits drupal/showcase.
  */
 function showcase_page() {
-	drupal_set_title(t('Swissmon showcase test page'));
-	return "";
-}
-
-function showcase_page_no_template() {
 	drupal_set_title(t('Swissmon showcase'));
 
 	$render_array['page_example_arguments'] = array(
