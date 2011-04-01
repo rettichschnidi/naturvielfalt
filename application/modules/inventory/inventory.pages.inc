@@ -1,10 +1,8 @@
 <?php
 /**
- * Menu callback. This will be called if someone visits drupal/q=swissmon.
+ * Menu callback. This will be called if someone visits for example drupal/inventory/3.
  */
-function inventory_form($inventory_id) {
-	drupal_set_title(t('Arteninventar für Inventar '.$inventory_id));
-
+function inventory_form() {
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-1.4.2.min.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-ui-1.8.6.custom.min.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
@@ -18,14 +16,7 @@ function inventory_form($inventory_id) {
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
 
 	// inventories ajax form
-	$form['inventories']['#markup'] = '<div id="inventories"></div>';
-
-	$form['start inventory'] = array(
-		'#type' => 'submit',
-		'#value' => t('start inventory'), 
-		'#attributes' => array('onclick' => 'initInventory();'),
-		'#executes_submit_callback' => FALSE
-	);
+	$form['inventories']['#markup'] = '<div id="inventories"></div><input onclick="initInventory();" type="button" id="edit-start-inventory" name="button" value="start inventory">';
 
 	$options = array();
 
@@ -66,7 +57,8 @@ function inventory_form($inventory_id) {
 	 */
 }
 
-function inventory_show() {
+function inventory_show($inventory_id) {
+	drupal_set_title(t('Arteninventar für Inventar '.$inventory_id));
 	return drupal_get_form('inventory_form');
 }
 
