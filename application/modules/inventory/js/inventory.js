@@ -25,6 +25,13 @@ function initInventory() {
 				exInvs = json;
 			});
 	
+	/*
+	$.getJSON("http://localhost:10088/swissmon_development_postgres/TestClient/InventoryData",
+			function(json) {
+				exInvs = json;
+			});
+			*/
+	
 	$("#Inventory").prepend(inventories);
 
 	// $('#inventory_types').val(10);
