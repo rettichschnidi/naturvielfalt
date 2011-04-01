@@ -17,10 +17,18 @@ function inventory_form($inventory_id) {
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
 
-	$tmp = drupal_add_js($data = 'initInventory()', $type = 'inline');
+	// inventories ajax form
+	$form['inventories']['#markup'] = '<div id="inventories"></div>';
+
+	$form['start inventory'] = array(
+		'#type' => 'submit',
+		'#value' => t('start inventory'), 
+		'#attributes' => array('onclick' => 'initInventory();'),
+		'#executes_submit_callback' => FALSE
+	);
 
 	$options = array();
-	 
+
 	$result = db_query("SELECT it.id, it.name
 		FROM inventory_type it
 		ORDER BY it.id desc;");
@@ -59,7 +67,7 @@ function inventory_form($inventory_id) {
 }
 
 function inventory_show() {
-  return drupal_get_form('inventory_form');
+	return drupal_get_form('inventory_form');
 }
 
 function save_inventory($form_id, $form) {

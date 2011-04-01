@@ -31,10 +31,6 @@ function inventory_theme() {
     	  		'items' => array(), // items for building the table
 				'introduction' => '' // introduction text
 	)
-	),
-	 	'inventory_item' => array(
-      		'template' => 'inventory_item',
-      		'variables' => array('item' => NULL)
 	)
 	);
 }

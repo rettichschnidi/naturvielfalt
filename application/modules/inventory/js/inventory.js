@@ -18,15 +18,15 @@ function initInventory() {
 	var inventories = $('<div id="inventories">');
 	
 	// TODO
-	var exInvs = [];
+	var exInvs = {"2":{"invDesc":{"name":"Amphibien","id":"10","cols":{"1":{"name":"Funddatum","id":"16","format":"date"},"2":{"name":"Anzahl","id":"29","format":"int"},"3":{"name":"Status","id":"33","format":"dropdown","dropdown_values":[{"id":"35","value":"Eier"},{"id":"36","value":"Larven"},{"id":"37","value":"Jungtiere"},{"id":"38","value":"Adulte"}]},"4":{"name":"Verhalten","id":"34","format":"dropdown","dropdown_values":[{"id":"39","value":"Wandernde Tiere"},{"id":"40","value":"Balzende Tiere oder Paarung"},{"id":"41","value":"Eiablage"},{"id":"42","value":"H\u00e4utung (Haut)"},{"id":"43","value":"\u00dcberwinterung"},{"id":"44","value":"Ausgesetzt"},{"id":"45","value":"Sonstiges"}]}}},"1":{"orgId":"20805","label":"Grasfrosch [Rana temporaria]","col_16":"09.03.2011","col_29":"4","col_33":"36","col_34":"42"},"3":{"orgId":"20803","label":"Kleiner Wasserfrosch [Rana lessonae]","col_16":"17.03.2011","col_29":"5","col_33":"38","col_34":"42"},"4":{"orgId":"20801","label":"Teichfrosch [Rana esculenta]","col_16":"15.03.2011","col_29":"6","col_33":"37","col_34":"41"}}};
 	
-	$.getJSON("http://localhost:10088/swissmon_development_postgres/TestClient/InventoryData",
-			function(json) {
-				exInvs = json;
-			});
+//	$.getJSON("http://localhost/swissmon/inventoryServer/TestClient/InventoryData",
+//			function(json) {
+//				exInvs = json;
+//			});
 	
 	/*
-	$.getJSON("http://localhost:10088/swissmon_development_postgres/TestClient/InventoryData",
+	$.getJSON("http://localhost/swissmon/inventoryServer/TestClient/InventoryData",
 			function(json) {
 				exInvs = json;
 			});
@@ -72,7 +72,7 @@ function initInventory() {
 function onAddInventory() {
 	//TODO
 	/*
-	$.getJSON("http://localhost:10088/swissmon_development_postgres/web_root/public/inventory/new-inventory?inv_id=2",
+	$.getJSON("http://localhost/swissmon/inventoryServer/web_root/public/inventory/new-inventory?inv_id=2",
 			function(json) {
 				tbody = addInventory(json);
 				addRow(tbody, json["cols"]);
@@ -85,7 +85,7 @@ function onAddInventory() {
 				addRow(tbody, json["cols"]);
 			});
 			*/
-			$.getJSON("http://localhost:10088/swissmon_development_postgres/web_root/public/inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
+			$.getJSON("http://localhost/swissmon/inventoryServer/web_root/public/inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
 					function(json) {
 						tbody = addInventory(json);
 						addRow(tbody, json["cols"]);
