@@ -50,7 +50,7 @@ function initInventory() {
 	rowTrackingEnabled = true;
 }
 
-// Called when the button 'Inventar hinzufügen' is clicked.
+// Called when the button 'Inventar hinzufï¿½gen' is clicked.
 // Gets the attributes of the inventory and passes them to addInventory()
 function onAddInventory() {
 	$.getJSON("inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
@@ -233,7 +233,7 @@ function saveRows() {
 			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
 		}
 	}
-	$.post("inventory/save-ajax", saveArray, function(ids) {
+	$.post("save-ajax", saveArray, function(ids) {
 		$.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
@@ -321,7 +321,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 						cacheLength : 0,
 						source : function(request, response) {
 							$.ajax( {
-								url : 'inventory/get-organisms',
+								url : 'get-organisms',
 								dataType : "json",
 								data : {
 									inv_id : this.element.parent().parent()

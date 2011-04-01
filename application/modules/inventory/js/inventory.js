@@ -8,6 +8,8 @@ var saveTimeout = 0;
 var newRowId = 0;
 var invNum = 0;
 
+var INVENTORY_SERVER_PATH = '../../inventoryServer/web_root/public/';
+
 
 /*
 Inventory initialisiern. Die bereits bestehenden Inventories werden hier aus der JSON Variable exInvs geladen.
@@ -85,7 +87,7 @@ function onAddInventory() {
 				addRow(tbody, json["cols"]);
 			});
 			*/
-			$.getJSON("http://localhost/swissmon/inventoryServer/web_root/public/inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
+			$.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
 					function(json) {
 						tbody = addInventory(json);
 						addRow(tbody, json["cols"]);
@@ -161,12 +163,12 @@ function activateRow(row, tbody, cols) {
 	// Add remove icon
 	$("<td>")
 			.append(
-					"<img src='./images/can_delete.png' onclick='javascript:deleteRow($(this));' class='a'>")
+					"<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow($(this));' class='a'>")
 			.appendTo(row);
 	// Add insert icon
 	$("<td>")
 		.append(
-			"<img src='./images/insert.png' onclick='javascript:insert($(this));' class='a'>")
+			"<img src='../modules/inventory/images/insert.png' onclick='javascript:insert($(this));' class='a'>")
 		.appendTo(row);
 }
 
@@ -319,7 +321,7 @@ function saveRows() {
 			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
 		}
 	}
-	$.post("inventory/save-ajax", saveArray, function(ids) {
+	$.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(ids) {
 		$.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
@@ -408,7 +410,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 						cacheLength : 0,
 						source : function(request, response) {
 							$.ajax( {
-								url : 'inventory/get-organisms',
+								url : INVENTORY_SERVER_PATH + 'inventory/get-organisms',
 								dataType : "json",
 								data : {
 									inv_id : this.element.parent().parent()

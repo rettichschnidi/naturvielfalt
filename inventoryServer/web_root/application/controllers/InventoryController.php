@@ -71,11 +71,6 @@ class InventoryController extends Zend_Controller_Action {
 			}
 			$this->view->inventorys = Zend_Json::encode($invArr);
 		}
-		//TODO Area or head inventory does not exist: Throw error
-		else
-		{
-
-		}
 
 		$form->startForm();
 		$this->view->form = $form;
@@ -90,15 +85,6 @@ class InventoryController extends Zend_Controller_Action {
 		if($request->isPost()){
 			$return = array();
 			$data = $request->getPost();
-
-			$headInventory = new Application_Model_HeadInventory();
-			$headInventory->find($data["headInventoryId"]);
-
-			// TODO: Head inventory not found, throw error
-			if($data["headInventoryId"] != $headInventory->getId())
-			{
-				throw new Exception("Head Inventory not found!");
-			}
 
 			// Remove row to delete
 			if(isset($data["deleteRows"]))
@@ -130,7 +116,6 @@ class InventoryController extends Zend_Controller_Action {
 					// New inventory
 					if(substr($invIdKey, 0, 8) == "inv_new_")
 					{
-						$inventory->setHeadInventory($headInventory);
 						$inventoryType = $inventoryType->find($invIdValue['invTypeId']);
 						$inventory->setInventoryType($inventoryType);
 						$inventory->save();
