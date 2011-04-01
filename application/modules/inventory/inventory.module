@@ -56,7 +56,7 @@ function inventory_menu() {
 	$items['inventory/%'] = array(
     'title' => 'Inventory Url',
     'description' => 'Swissmon Inventory',
-    'page callback' => 'inventory_page',
+    'page callback' => 'inventory_show',
 	'page arguments' => array(1),
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -70,6 +70,7 @@ function inventory_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.overview.inc',
 	);
-	return $items;
+  
+  	return $items;
 }
 ?>

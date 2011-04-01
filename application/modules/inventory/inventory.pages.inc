@@ -2,7 +2,7 @@
 /**
  * Menu callback. This will be called if someone visits drupal/q=swissmon.
  */
-function inventory_page($inventory_id) {
+function inventory_form($inventory_id) {
 	drupal_set_title(t('Arteninventar für Inventar '.$inventory_id));
 
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-1.4.2.min.js');
@@ -18,10 +18,6 @@ function inventory_page($inventory_id) {
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
 
 	$tmp = drupal_add_js($data = 'initInventory()', $type = 'inline');
-
-	$output = '<div id="inventories"></div>';
-
-	//return $output;
 
 	$options = array();
 	 
@@ -42,10 +38,12 @@ function inventory_page($inventory_id) {
 	$form['add_inventory'] = array(
     '#type' => 'submit',
     '#value' => t('Artgruppe hinzufuegen'),
+	'#submit'=>array('add_inventory'),
 	);
 	$form['save_inventory'] = array(
     '#type' => 'submit',
     '#value' => t('speichern'),
+	'#submit'=>array('save_inventory'),
 	);
 
 	return $form;
@@ -60,12 +58,16 @@ function inventory_page($inventory_id) {
 	 */
 }
 
-function inventory_add_inventory($form_id, $form) {
-  drupal_set_message(t('inventory add'));
+function inventory_show() {
+  return drupal_get_form('inventory_form');
 }
 
-function inventory_save_inventory($form_id, $form) {
-  drupal_set_message(t('inventory save'));
+function save_inventory($form_id, $form) {
+	error_log("save inventoory");
+}
+
+function add_inventory($form, &$form_state) {
+	error_log("submit with page");
 }
 
 ?>
