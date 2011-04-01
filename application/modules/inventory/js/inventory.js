@@ -87,7 +87,7 @@ function onAddInventory() {
 				addRow(tbody, json["cols"]);
 			});
 			*/
-			$.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
+			$.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + $('#edit-inventory-types').val(),
 					function(json) {
 						tbody = addInventory(json);
 						addRow(tbody, json["cols"]);

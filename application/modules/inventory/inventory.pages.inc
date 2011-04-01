@@ -28,22 +28,29 @@ function inventory_form() {
 		$options[$record->id] = $record->name;
 	}
 
-	$form['inventory_types']['name'] = array(
+	$form['inventory_types'] = array(
     '#type' => 'select',
     '#title' => t('Inventargruppe'),
     '#default_value' => variable_get('name', 259200),
     '#options' => $options,
 	);
-	$form['add_inventory'] = array(
+	/*
+	$form['add_inventory_'] = array(
     '#type' => 'submit',
     '#value' => t('Artgruppe hinzufuegen'),
-	'#submit'=>array('add_inventory'),
+	'#attributes' => array('onclick' => 'onAddInventory();'),
 	);
-	$form['save_inventory'] = array(
-    '#type' => 'submit',
-    '#value' => t('speichern'),
-	'#submit'=>array('save_inventory'),
+	
+	$form['print'] = array(
+		'#type' => 'submit',
+		'#value' => t('Print'), 
+		'#access' => user_access('print code'),
+		'#attributes' => array('onclick' =>'onAddInventory'),           
+		'#executes_submit_callback' => FALSE,    
 	);
+	*/
+	
+	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
 
 	return $form;
 
@@ -60,14 +67,6 @@ function inventory_form() {
 function inventory_show($inventory_id) {
 	drupal_set_title(t('Arteninventar für Inventar '.$inventory_id));
 	return drupal_get_form('inventory_form');
-}
-
-function save_inventory($form_id, $form) {
-	error_log("save inventoory");
-}
-
-function add_inventory($form, &$form_state) {
-	error_log("submit with page");
 }
 
 ?>
