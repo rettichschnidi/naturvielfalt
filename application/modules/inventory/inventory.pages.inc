@@ -14,6 +14,8 @@ function inventory_form() {
 
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
+	
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
 	// inventories ajax form
 	$form['inventories']['#markup'] = '<div id="inventories"></div>';
@@ -34,6 +36,8 @@ function inventory_form() {
     '#default_value' => variable_get('name', 259200),
     '#options' => $options,
 	);
+	
+	//$form['ladida']['#markup'] = '<body onload="initInventory();">';
 	
 	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
 

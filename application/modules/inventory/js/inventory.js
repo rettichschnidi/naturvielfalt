@@ -100,6 +100,15 @@ function activateRow(row, tbody, cols) {
 		// Activate custom attributes
 		if (i > 0) {
 			// Copy dates from last row
+			/*
+			if (cols[i] == null && cols[i]["format"] == "date") {
+				$(this).children().attr(
+						"value",
+						row.prev().find('td:eq(' + i + ')').children()
+								.attr("value"));
+				rowChanged(row);
+			}	
+			*/
 			$(this).children().attr("disabled", false);
 		} else
 		// Deactivate the 'nature' field
