@@ -3,7 +3,6 @@
  * Menu callback. This will be called if someone visits for example drupal/inventory/3.
  */
 function inventory_form() {
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-1.4.2.min.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-ui-1.8.6.custom.min.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
 
@@ -37,8 +36,6 @@ function inventory_form() {
     '#options' => $options,
 	);
 	
-	//$form['ladida']['#markup'] = '<body onload="initInventory();">';
-	
 	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
 
 	return $form;
@@ -48,7 +45,7 @@ function inventory_show($inventory_id) {
 	drupal_set_title(t('Arteninventar für Inventar ' . $inventory_id));
 	$json = getInitialInventoryJSON($inventory_id);
 	drupal_add_js('var exInvs = ' . $json, 'inline');
-	drupal_add_js('window.onload = function() {initInventory();};', 'inline');
+	drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
 	return drupal_get_form('inventory_form');
 }
 
