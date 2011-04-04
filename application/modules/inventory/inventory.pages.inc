@@ -16,7 +16,7 @@ function inventory_form() {
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
 
 	// inventories ajax form
-	$form['inventories']['#markup'] = '<div id="inventories"></div><input onclick="initInventory();" type="button" id="edit-start-inventory" name="button" value="start inventory">';
+	$form['inventories']['#markup'] = '<div id="inventories"></div>';
 
 	$options = array();
 
@@ -34,39 +34,90 @@ function inventory_form() {
     '#default_value' => variable_get('name', 259200),
     '#options' => $options,
 	);
-	/*
-	$form['add_inventory_'] = array(
-    '#type' => 'submit',
-    '#value' => t('Artgruppe hinzufuegen'),
-	'#attributes' => array('onclick' => 'onAddInventory();'),
-	);
-	
-	$form['print'] = array(
-		'#type' => 'submit',
-		'#value' => t('Print'), 
-		'#access' => user_access('print code'),
-		'#attributes' => array('onclick' =>'onAddInventory'),           
-		'#executes_submit_callback' => FALSE,    
-	);
-	*/
 	
 	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
 
 	return $form;
-
-	/*
-	 error_log("start zend");
-
-	 set_include_path('.' . PATH_SEPARATOR . '/library' . PATH_SEPARATOR . get_include_path());
-
-	 require_once 'library/Zend/Loader/Autoloader.php';
-	 $loader = Zend_Loader_Autoloader::getInstance();
-	 */
 }
 
 function inventory_show($inventory_id) {
-	drupal_set_title(t('Arteninventar für Inventar '.$inventory_id));
+	drupal_set_title(t('Arteninventar für Inventar ' . $inventory_id));
+	$json = getInitialInventoryJSON($inventory_id);
+	drupal_add_js('var exInvs = ' . $json, 'inline');
+	drupal_add_js('window.onload = function() {initInventory();};', 'inline');
 	return drupal_get_form('inventory_form');
 }
 
+function getInitialInventoryJSON($inventory_id) {
+	$invArr = array();
+	$invArr[$inventory_id] = array();
+
+	// Get the inventory column description
+	$invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
+
+	// Get inventory entries
+	$inventoryEntries = db_query('SELECT e.id, e.organism_id, fo.name_de
+		FROM inventory_entry e
+		LEFT JOIN fauna_organism fo ON e.organism_id = fo.id
+		WHERE e.inventory_id = :id;', array(':id' => $inventory_id));
+	foreach($inventoryEntries as $inventoryEntry) {
+		$inventoryEntryId = $inventoryEntry->id;
+		$invArr[$inventory_id][$inventoryEntryId] = array();
+		$invArr[$inventory_id][$inventoryEntryId]["orgId"] = $inventoryEntry->organism_id;
+		$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->name_de;
+
+		// Get inventory columns
+		$entries = db_query('SELECT * FROM inventory_type_attribute_inventory_entry WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
+		foreach ($entries as $entry) {
+			// Dropdown
+			$colVal = "";
+			if($entry->inventory_type_attribute_dropdown_value_id > 0) {
+				$colVal = $entry->inventory_type_attribute_dropdown_value_id;
+			} else {
+				$colVal = $entry->value;
+			}
+			$invArr[$inventory_id][$inventoryEntryId]["col_".$entry->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
+		}
+	}
+
+	$result = drupal_json_encode($invArr);
+	return $result;
+}
+
+function getInventoryColumnDescription($inventoryId){
+	$invJson = array();
+
+	$resInventory = db_query_range("SELECT t.name, i.inventory_type_id FROM inventory i LEFT JOIN inventory_type t ON i.inventory_type_id = t.id WHERE i.id = :id", 0, 1, array(':id' => $inventoryId));
+	foreach ($resInventory as $inventory) {
+		$typeId = $inventory->inventory_type_id;
+		$invJson["name"] = $inventory->name;
+		$invJson["id"] = $inventory->inventory_type_id;
+	}
+
+	$resAttributes = db_query('SELECT a.id, a.name, f.format
+		FROM inventory_type_attribute a 
+		LEFT JOIN attribute_format f ON a.attribute_format_id = f.id 
+		WHERE inventory_type_id = :typeId', array(':typeId' => $typeId));
+
+	$i = 0;
+	foreach ($resAttributes as $attribute) {
+		$i++;
+		$invJson["cols"][$i] = array(
+			"name" => $attribute->name,
+			"id" => $attribute->id,
+			"format" => $attribute->format,
+		);
+
+		// If it is a dropdown list
+		if($attribute->format == "dropdown") {
+			$invJson["cols"][$i]["dropdown_values"] = array();
+			$dropdownValues = db_query('SELECT * FROM inventory_type_attribute_dropdown_value WHERE inventory_type_attribute_id = :id', array(':id' => $attribute->id));
+			foreach($dropdownValues as $dropdownValue) {
+				array_push($invJson["cols"][$i]["dropdown_values"], array("id" =>$dropdownValue->id, "value" => $dropdownValue->value));
+			}
+		}
+
+	}
+	return $invJson;
+}
 ?>

@@ -10,42 +10,16 @@ var invNum = 0;
 
 var INVENTORY_SERVER_PATH = '../../inventoryServer/web_root/public/';
 
-
 /*
-Inventory initialisiern. Die bereits bestehenden Inventories werden hier aus der JSON Variable exInvs geladen.
-
-*/
+ * Inventory initialisiern. Die bereits bestehenden Inventories werden hier aus
+ * der JSON Variable exInvs geladen.
+ * 
+ */
 function initInventory() {
 
 	var inventories = $('<div id="inventories">');
-	
-	// TODO
-	var exInvs = {"2":{"invDesc":{"name":"Amphibien","id":"10","cols":{"1":{"name":"Funddatum","id":"16","format":"date"},"2":{"name":"Anzahl","id":"29","format":"int"},"3":{"name":"Status","id":"33","format":"dropdown","dropdown_values":[{"id":"35","value":"Eier"},{"id":"36","value":"Larven"},{"id":"37","value":"Jungtiere"},{"id":"38","value":"Adulte"}]},"4":{"name":"Verhalten","id":"34","format":"dropdown","dropdown_values":[{"id":"39","value":"Wandernde Tiere"},{"id":"40","value":"Balzende Tiere oder Paarung"},{"id":"41","value":"Eiablage"},{"id":"42","value":"H\u00e4utung (Haut)"},{"id":"43","value":"\u00dcberwinterung"},{"id":"44","value":"Ausgesetzt"},{"id":"45","value":"Sonstiges"}]}}},"1":{"orgId":"20805","label":"Grasfrosch [Rana temporaria]","col_16":"09.03.2011","col_29":"4","col_33":"36","col_34":"42"},"3":{"orgId":"20803","label":"Kleiner Wasserfrosch [Rana lessonae]","col_16":"17.03.2011","col_29":"5","col_33":"38","col_34":"42"},"4":{"orgId":"20801","label":"Teichfrosch [Rana esculenta]","col_16":"15.03.2011","col_29":"6","col_33":"37","col_34":"41"}}};
-	
-//	$.getJSON("http://localhost/swissmon/inventoryServer/TestClient/InventoryData",
-//			function(json) {
-//				exInvs = json;
-//			});
-	
-	/*
-	$.getJSON("http://localhost/swissmon/inventoryServer/TestClient/InventoryData",
-			function(json) {
-				exInvs = json;
-			});
-			*/
-	
+
 	$("#Inventory").prepend(inventories);
-
-	// $('#inventory_types').val(10);
-	// addInventory();
-
-	$('#add_inventory').click(function() {
-		onAddInventory();
-	});
-
-	$('#save_inventory').click(function() {
-		saveRows();
-	});
 
 	// Disable autosave
 	rowTrackingEnabled = false;
@@ -72,37 +46,21 @@ function initInventory() {
 // Called when the button 'Inventar hinzufügen' is clicked.
 // Gets the attributes of the inventory and passes them to addInventory()
 function onAddInventory() {
-	//TODO
-	/*
-	$.getJSON("http://localhost/swissmon/inventoryServer/web_root/public/inventory/new-inventory?inv_id=2",
-			function(json) {
-				tbody = addInventory(json);
-				addRow(tbody, json["cols"]);
-			});
-	
-
-	$.getJSON("inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
-			function(json) {
-				tbody = addInventory(json);
-				addRow(tbody, json["cols"]);
-			});
-			*/
-			$.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + $('#edit-inventory-types').val(),
-					function(json) {
-						tbody = addInventory(json);
-						addRow(tbody, json["cols"]);
-					});
+	$.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + $('#edit-inventory-types').val(), function(json) {
+		tbody = addInventory(json);
+		addRow(tbody, json["cols"]);
+	});
 }
 
 // Adds a new inventory to the page.
-// Params: 	- json with the inventory specifications (attributes) 
-//			- The inventory id (null when new inventory)
+// Params: - json with the inventory specifications (attributes)
+// - The inventory id (null when new inventory)
 function addInventory(json, id) {
 	var inventories = $('#inventories');
 	id = (id == null ? "inv_new_" + (invNum++) : id);
-	
+
 	$('<b>').text(json["name"]).appendTo(inventories);
-	
+
 	var table = $("<table cellspacing=0 cellpadding=0 class='invTable'>");
 	var invDef = $("<input type='hidden' name='invId' value='" + id + "'>");
 	var invTypeDef = $("<input type='hidden' name='invTypeId' value='"
@@ -125,40 +83,31 @@ function addInventory(json, id) {
 	table.append(tbody);
 	inventories.append(table);
 	inventories.append('<br>');
-	
+
 	console.debug(tbody);
-	
+
 	return tbody;
 }
 
-
-// Activate a row. This means disable the 'Art' input field and enable the other fields.
-// Params:	The jQuery row object
-//			The tbody of the inventory
-//			The columns (attributes) of the inventory (JSON)
+// Activate a row. This means disable the 'Art' input field and enable the other
+// fields.
+// Params: The jQuery row object
+// The tbody of the inventory
+// The columns (attributes) of the inventory (JSON)
 function activateRow(row, tbody, cols) {
 	var i = 0;
 	row.find('td').each(function() {
 		// Activate custom attributes
-			if (i > 0) {
-				// Copy dates from last row
-				/*
-				if (cols[i] == null && cols[i]["format"] == "date") {
-					$(this).children().attr(
-							"value",
-							row.prev().find('td:eq(' + i + ')').children()
-									.attr("value"));
-					rowChanged(row);
-				}	
-				*/
-				$(this).children().attr("disabled", false);
-			} else
-			// Deactivate the 'nature' field
-			{
-				$(this).children().attr("readonly", true);
-			}
-			i++;
-		});
+		if (i > 0) {
+			// Copy dates from last row
+			$(this).children().attr("disabled", false);
+		} else
+		// Deactivate the 'nature' field
+		{
+			$(this).children().attr("readonly", true);
+		}
+		i++;
+	});
 
 	// Add remove icon
 	$("<td>")
@@ -167,21 +116,20 @@ function activateRow(row, tbody, cols) {
 			.appendTo(row);
 	// Add insert icon
 	$("<td>")
-		.append(
-			"<img src='../modules/inventory/images/insert.png' onclick='javascript:insert($(this));' class='a'>")
-		.appendTo(row);
+			.append(
+					"<img src='../modules/inventory/images/insert.png' onclick='javascript:insert($(this));' class='a'>")
+			.appendTo(row);
 }
 
-
 // Delete a row
-// Params:	The jQuery row object
+// Params: The jQuery row object
 function deleteRow(img) {
 	var row = img.parent().parent();
 	// Row must also be deleted in database
 	if (rowTrackingEnabled) {
 		rowId = row.find("input[name='rowId']").attr("value").substr(0, 8);
 		if (rowId != "row_new_") {
-			changedRows.push( {
+			changedRows.push({
 				"action" : "delete",
 				"rowId" : rowId
 			});
@@ -195,56 +143,23 @@ function deleteRow(img) {
 	}
 }
 
-//Inserts a new row below the old one
-//Params:	The jQuery row object
+// Inserts a new row below the old one
+// Params: The jQuery row object
 function insert(img) {
-	
-	//var trow = $("<tr>");
-	
-	var inventories = $('<div id="inventories">');
-	inv = exInvs["38"];
-	tbody = addInventory(inv["invDesc"], inv);
-	cols =  inv["invDesc"]["cols"];
-	
-	//activateRow(trow, tbody, cols);
-	addRow(tbody, cols);
-	
-	// new invenories
-	/*
-	var inventories = $('<div id="inventories">');
-	inv = exInvs["38"];
-	tbody = addInventory(inv["invDesc"], inv);
-	cols =  inv["invDesc"]["cols"];
-	
-	addRow(tbody, cols);
-	
-	// save changed rows
-	rowChanged($(this).parent().parent());
-	*/
-	
-	/*
-	var row = img.parent().parent();
-	// Row must also be deleted in database
-	if (rowTrackingEnabled) {
-		rowId = row.find("input[name='rowId']").attr("value").substr(0, 8);
-		if (rowId != "row_new_") {
-			changedRows.push( {
-				"action" : "delete",
-				"rowId" : rowId
-			});
-		}
-	}
-	row.remove();
 
-	if (!saveTimerRunning) {
-		saveTimerRunning = true;
-		setTimeout("saveRows()", saveTimeout);
-	}
-	*/
+	// var trow = $("<tr>");
+
+	var inventories = $('<div id="inventories">');
+	inv = exInvs["38"];
+	tbody = addInventory(inv["invDesc"], inv);
+	cols = inv["invDesc"]["cols"];
+
+	// activateRow(trow, tbody, cols);
+	addRow(tbody, cols);
 }
 
-// Add a row, which should be saved at the next save 
-// Params:	The jQuery row object
+// Add a row, which should be saved at the next save
+// Params: The jQuery row object
 function rowChanged(row) {
 	if (!rowTrackingEnabled)
 		return;
@@ -261,7 +176,7 @@ function rowChanged(row) {
 	}
 
 	if (newRow) {
-		changedRows.push( {
+		changedRows.push({
 			"action" : "save",
 			"row" : row
 		});
@@ -304,15 +219,16 @@ function saveRows() {
 
 			row
 					.find("td")
-					.each(function() {
-						cell = $(this).children();
-						// Jump over non-input cells
-							if (cell.attr("name") == null
-									|| cell.attr("name").substr(0, 4) != "col_")
-								return true;
-							saveArray["addRows"][invId][rowId][cell
-									.attr("name")] = cell.attr("value");
-						});
+					.each(
+							function() {
+								cell = $(this).children();
+								// Jump over non-input cells
+								if (cell.attr("name") == null
+										|| cell.attr("name").substr(0, 4) != "col_")
+									return true;
+								saveArray["addRows"][invId][rowId][cell
+										.attr("name")] = cell.attr("value");
+							});
 
 			newColCnt++;
 		} else if (rowsToSave[key]["action"] == "delete") {
@@ -321,7 +237,8 @@ function saveRows() {
 			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
 		}
 	}
-	$.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(ids) {
+	$.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(
+			ids) {
 		$.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
@@ -333,16 +250,16 @@ function saveRows() {
 					.attr("value", value);
 		});
 	}, "json");
-	
-	//TODO: overwrite exInvs with the actual inventorys
-	//var exInvs = $this->inventorys;
+
+	// TODO: overwrite exInvs with the actual inventorys
+	// var exInvs = $this->inventorys;
 }
 
 // Add a new row to an inventory
-//Params:	The jQuery tbody of the inventory
-//			The inventory attribute columns
-//			The row id (mysql id of inventoryentry) (on a new row: null)
-//			The values of the cells (if it is no a new row) otherwise null
+// Params: The jQuery tbody of the inventory
+// The inventory attribute columns
+// The row id (mysql id of inventoryentry) (on a new row: null)
+// The values of the cells (if it is no a new row) otherwise null
 function addRow(tbody, cols, rowId, cellValues) {
 
 	var trow = $("<tr>");
@@ -367,7 +284,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 
 		switch (value["format"]) {
 		case "date":
-			input = input.datepicker( {
+			input = input.datepicker({
 				dateFormat : 'dd.mm.yy'
 			});
 			input = input.width(80);
@@ -409,8 +326,9 @@ function addRow(tbody, cols, rowId, cellValues) {
 						matchSubset : false,
 						cacheLength : 0,
 						source : function(request, response) {
-							$.ajax( {
-								url : INVENTORY_SERVER_PATH + 'inventory/get-organisms',
+							$.ajax({
+								url : INVENTORY_SERVER_PATH
+										+ 'inventory/get-organisms',
 								dataType : "json",
 								data : {
 									inv_id : this.element.parent().parent()
@@ -444,52 +362,48 @@ function addRow(tbody, cols, rowId, cellValues) {
 															/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
 															'\\$1') + "')")
 									.size() == 0) {
-								// $(this).attr('value', '');
-								// $(this).parent().next().val('');
-							} else {
-								// activateRow(trow, tbody, cols);
-								// addRow(tbody, cols);
 							}
 						}
 					})
-			.live('keydown', function(e) {
-				var keyCode = e.keyCode || e.which;
-				// if TAB or RETURN is pressed and the text in the
-					// textbox does not match a suggestion, set the value of
-					// the textbox to the text of the first suggestion
-					if ((keyCode == 9 || keyCode == 13)) {
-						if ($(
-								".ui-menu-item-label:textEquals('"
-										+ $(this)
-												.val()
-												.replace(
-														/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
-														'\\$1') + "')").size() == 0) {
-							// $(this).attr('value', '');
-							// $(this).parent().next().val('');
+			.live(
+					'keydown',
+					function(e) {
+						var keyCode = e.keyCode || e.which;
+						// if TAB or RETURN is pressed and the text in the
+						// textbox does not match a suggestion, set the value of
+						// the textbox to the text of the first suggestion
+						if ((keyCode == 9 || keyCode == 13)) {
+							if ($(
+									".ui-menu-item-label:textEquals('"
+											+ $(this)
+													.val()
+													.replace(
+															/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
+															'\\$1') + "')")
+									.size() == 0) {
 
-						} else {
-							// Magic
-							var item = $(this).data('autocomplete').selectedItem;
-							activateRow(trow, tbody, cols);
-							addRow(tbody, cols);
-							$(this).focus();
+							} else {
+								// Magic
+								var item = $(this).data('autocomplete').selectedItem;
+								activateRow(trow, tbody, cols);
+								addRow(tbody, cols);
+								$(this).focus();
+							}
+
 						}
-
-					}
-				}).focus(function() {
+					}).focus(function() {
 				$(this).autocomplete("search");
 			}).data("autocomplete")._renderItem = function(ul, item) {
 
 		var term = this.term.replace(/[aou]/, function(m) {
 			// to find with term 'wasser' -> 'wasser' and 'gewasesser'
-				var hash = {
-					'a' : '(Ã¤|a)',
-					'o' : '(Ã¶|o)',
-					'u' : '(Ã¤|u)'
-				};
-				return hash[m];
-			})
+			var hash = {
+				'a' : '(Ã¤|a)',
+				'o' : '(Ã¶|o)',
+				'u' : '(Ã¤|u)'
+			};
+			return hash[m];
+		})
 
 		// highlighting of matches
 		var label = item.name_de.replace(new RegExp(term, 'ig'),

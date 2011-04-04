@@ -53,7 +53,7 @@ function initInventory() {
 // Called when the button 'Inventar hinzuf�gen' is clicked.
 // Gets the attributes of the inventory and passes them to addInventory()
 function onAddInventory() {
-	$.getJSON("inventory/new-inventory?inv_id=" + $('#inventory_types').val(),
+	$.getJSON("new-inventory?inv_id=" + $('#inventory_types').val(),
 			function(json) {
 				tbody = addInventory(json);
 				addRow(tbody, json["cols"]);
