@@ -17,18 +17,18 @@ var INVENTORY_SERVER_PATH = '../../inventoryServer/web_root/public/';
  */
 function initInventory() {
 
-	var inventories = $('<div id="inventories">');
+	var inventories = jQuery('<div id="inventories">');
 
-	$("#Inventory").prepend(inventories);
+	jQuery("#Inventory").prepend(inventories);
 
 	// Disable autosave
 	rowTrackingEnabled = false;
 
 	// Go through each existing inventory
-	$.each(exInvs, function(invId, inv) {
+	jQuery.each(exInvs, function(invId, inv) {
 		invTbody = addInventory(inv["invDesc"], invId);
 		// Go through each inventory entry
-		$.each(inv, function(entryId, entry) {
+		jQuery.each(inv, function(entryId, entry) {
 			if (entryId == "invDesc")
 				return;
 			// Add the row
@@ -46,7 +46,7 @@ function initInventory() {
 // Called when the button 'Inventar hinzufügen' is clicked.
 // Gets the attributes of the inventory and passes them to addInventory()
 function onAddInventory() {
-	$.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + $('#edit-inventory-types').val(), function(json) {
+	jQuery.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + jQuery('#edit-inventory-types').val(), function(json) {
 		tbody = addInventory(json);
 		addRow(tbody, json["cols"]);
 	});
@@ -56,22 +56,22 @@ function onAddInventory() {
 // Params: - json with the inventory specifications (attributes)
 // - The inventory id (null when new inventory)
 function addInventory(json, id) {
-	var inventories = $('#inventories');
+	var inventories = jQuery('#inventories');
 	id = (id == null ? "inv_new_" + (invNum++) : id);
 
-	$('<b>').text(json["name"]).appendTo(inventories);
+	jQuery('<b>').text(json["name"]).appendTo(inventories);
 
-	var table = $("<table cellspacing=0 cellpadding=0 class='invTable'>");
-	var invDef = $("<input type='hidden' name='invId' value='" + id + "'>");
-	var invTypeDef = $("<input type='hidden' name='invTypeId' value='"
+	var table = jQuery("<table cellspacing=0 cellpadding=0 class='invTable'>");
+	var invDef = jQuery("<input type='hidden' name='invId' value='" + id + "'>");
+	var invTypeDef = jQuery("<input type='hidden' name='invTypeId' value='"
 			+ json["id"] + "'>");
 
-	var thead = $("<thead>");
-	var trow = $("<tr>");
-	$("<td>").text("Art").appendTo(trow);
+	var thead = jQuery("<thead>");
+	var trow = jQuery("<tr>");
+	jQuery("<td>").text("Art").appendTo(trow);
 
-	$.each(json["cols"], function(key, value) {
-		$("<td>").text(value["name"]).appendTo(trow);
+	jQuery.each(json["cols"], function(key, value) {
+		jQuery("<td>").text(value["name"]).appendTo(trow);
 	});
 	trow.appendTo(thead);
 
@@ -79,7 +79,7 @@ function addInventory(json, id) {
 	table.append(invTypeDef);
 	table.append(thead);
 
-	var tbody = $("<tbody>");
+	var tbody = jQuery("<tbody>");
 	table.append(tbody);
 	inventories.append(table);
 	inventories.append('<br>');
@@ -109,24 +109,24 @@ function activateRow(row, tbody, cols) {
 				rowChanged(row);
 			}	
 			*/
-			$(this).children().attr("disabled", false);
+			jQuery(this).children().attr("disabled", false);
 		} else
 		// Deactivate the 'nature' field
 		{
-			$(this).children().attr("readonly", true);
+			jQuery(this).children().attr("readonly", true);
 		}
 		i++;
 	});
 
 	// Add remove icon
-	$("<td>")
+	jQuery("<td>")
 			.append(
-					"<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow($(this));' class='a'>")
+					"<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
 			.appendTo(row);
 	// Add insert icon
-	$("<td>")
+	jQuery("<td>")
 			.append(
-					"<img src='../modules/inventory/images/insert.png' onclick='javascript:insert($(this));' class='a'>")
+					"<img src='../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
 			.appendTo(row);
 }
 
@@ -158,7 +158,7 @@ function insert(img) {
 
 	// var trow = $("<tr>");
 
-	var inventories = $('<div id="inventories">');
+	var inventories = jQuery('<div id="inventories">');
 	inv = exInvs["38"];
 	tbody = addInventory(inv["invDesc"], inv);
 	cols = inv["invDesc"]["cols"];
@@ -206,7 +206,7 @@ function saveRows() {
 	var saveArray = {};
 	var newColCnt = 0;
 
-	saveArray["headInventoryId"] = $("#head_inventory_id").attr("value");
+	saveArray["headInventoryId"] = jQuery("#head_inventory_id").attr("value");
 	for (key in rowsToSave) {
 		if (rowsToSave[key]["action"] == "save") {
 			row = rowsToSave[key]["row"];
@@ -230,7 +230,7 @@ function saveRows() {
 					.find("td")
 					.each(
 							function() {
-								cell = $(this).children();
+								cell = jQuery(this).children();
 								// Jump over non-input cells
 								if (cell.attr("name") == null
 										|| cell.attr("name").substr(0, 4) != "col_")
@@ -246,16 +246,16 @@ function saveRows() {
 			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
 		}
 	}
-	$.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(
+	jQuery.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(
 			ids) {
-		$.each(ids, function(key, value) {
+		jQuery.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
 				name = "rowId";
 			else if (key.substr(0, 8) == "inv_new_")
 				name = "invId";
 
-			$("input[type=hidden][name='" + name + "'][value='" + key + "']")
+			jQuery("input[type=hidden][name='" + name + "'][value='" + key + "']")
 					.attr("value", value);
 		});
 	}, "json");
@@ -271,25 +271,25 @@ function saveRows() {
 // The values of the cells (if it is no a new row) otherwise null
 function addRow(tbody, cols, rowId, cellValues) {
 
-	var trow = $("<tr>");
-	organismField = $("<input>").attr("type", "text");
-	organismIdField = $("<input>").attr("type", "hidden").attr("name", "orgId");
+	var trow = jQuery("<tr>");
+	organismField = jQuery("<input>").attr("type", "text");
+	organismIdField = jQuery("<input>").attr("type", "hidden").attr("name", "orgId");
 	if (cellValues != null)
 		organismIdField = organismIdField.attr("value", cellValues["orgId"])
 
 	rowId = (rowId == null ? "row_new_" + (newRowId++) : rowId);
-	var invDef = $("<input type='hidden' name='rowId' value='" + rowId + "'>");
+	var invDef = jQuery("<input type='hidden' name='rowId' value='" + rowId + "'>");
 
 	organismField = organismField.width(300);
 	if (cellValues != null)
 		organismField = organismField.attr("value", cellValues["label"]);
 
-	$("<td>").append(organismField).appendTo(trow);
+	jQuery("<td>").append(organismField).appendTo(trow);
 	trow.append(organismIdField);
 	trow.append(invDef);
 
-	$.each(cols, function(key, value) {
-		var input = $("<input>").attr("type", "text");
+	jQuery.each(cols, function(key, value) {
+		var input = jQuery("<input>").attr("type", "text");
 
 		switch (value["format"]) {
 		case "date":
@@ -303,10 +303,10 @@ function addRow(tbody, cols, rowId, cellValues) {
 			input = input.width(70);
 			break;
 		case "dropdown":
-			input = $('<select>').width(180);
-			input = input.append($('<option>').attr("value", "0").text(""));
-			$.each(value["dropdown_values"], function(key, value) {
-				input = input.append($('<option>').attr("value", value["id"])
+			input = jQuery('<select>').width(180);
+			input = input.append(jQuery('<option>').attr("value", "0").text(""));
+			jQuery.each(value["dropdown_values"], function(key, value) {
+				input = input.append(jQuery('<option>').attr("value", value["id"])
 						.text(value["value"]));
 			});
 			break;
@@ -314,13 +314,13 @@ function addRow(tbody, cols, rowId, cellValues) {
 			break;
 		}
 
-		$("<td>").append(input).appendTo(trow);
+		jQuery("<td>").append(input).appendTo(trow);
 		input.attr("name", "col_" + value['id']).attr("disabled", true);
 		if (cellValues != null)
 			input.attr("value", cellValues["col_" + value['id']]);
 
 		input.change(function() {
-			rowChanged($(this).parent().parent());
+			rowChanged(jQuery(this).parent().parent());
 		});
 	});
 	// TODO: Thats exactly where the magic happens
@@ -335,7 +335,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 						matchSubset : false,
 						cacheLength : 0,
 						source : function(request, response) {
-							$.ajax({
+							jQuery.ajax({
 								url : INVENTORY_SERVER_PATH
 										+ 'inventory/get-organisms',
 								dataType : "json",
@@ -350,12 +350,12 @@ function addRow(tbody, cols, rowId, cellValues) {
 							});
 						},
 						focus : function(event, ui) {
-							$(this).val(ui.item.label);
+							jQuery(this).val(ui.item.label);
 							return false;
 						},
 						select : function(event, ui) {
-							$(this).val(ui.item.label);
-							$(this).parent().next().val(ui.item.id);
+							jQuery(this).val(ui.item.label);
+							jQuery(this).parent().next().val(ui.item.id);
 							activateRow(trow, tbody, cols);
 							addRow(tbody, cols);
 							return false;
@@ -363,9 +363,9 @@ function addRow(tbody, cols, rowId, cellValues) {
 						change : function(event, ui) {
 							// if the value of the textbox does not match a
 							// suggestion, clear its value
-							if ($(
+							if (jQuery(
 									".ui-menu-item-label:textEquals('"
-											+ $(this)
+											+ jQuery(this)
 													.val()
 													.replace(
 															/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
@@ -382,9 +382,9 @@ function addRow(tbody, cols, rowId, cellValues) {
 						// textbox does not match a suggestion, set the value of
 						// the textbox to the text of the first suggestion
 						if ((keyCode == 9 || keyCode == 13)) {
-							if ($(
+							if (jQuery(
 									".ui-menu-item-label:textEquals('"
-											+ $(this)
+											+ jQuery(this)
 													.val()
 													.replace(
 															/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
@@ -393,15 +393,15 @@ function addRow(tbody, cols, rowId, cellValues) {
 
 							} else {
 								// Magic
-								var item = $(this).data('autocomplete').selectedItem;
+								var item = jQuery(this).data('autocomplete').selectedItem;
 								activateRow(trow, tbody, cols);
 								addRow(tbody, cols);
-								$(this).focus();
+								jQuery(this).focus();
 							}
 
 						}
 					}).focus(function() {
-				$(this).autocomplete("search");
+				jQuery(this).autocomplete("search");
 			}).data("autocomplete")._renderItem = function(ul, item) {
 
 		var term = this.term.replace(/[aou]/, function(m) {
@@ -442,7 +442,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 					+ "</span>";
 		}
 
-		return $("<li></li>").data("item.autocomplete", item).append(
+		return jQuery("<li></li>").data("item.autocomplete", item).append(
 				"<a><div class='ui-menu-item-label'>" + label + "</div>"
 						+ old_label + "<div class='ui-menu-item-name'>" + name
 						+ "</div></a>").appendTo(ul);

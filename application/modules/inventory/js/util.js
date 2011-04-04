@@ -14,7 +14,7 @@ util.geocode = function(input_id, search_button_id, map) {
     var geocoder = new google.maps.Geocoder();
     console.info('geocode init'+' #'+search_button_id);
 
-    $('#'+input_id).geo_autocomplete({
+    jQuery('#'+input_id).geo_autocomplete({
         geocoder_region: 'Schweiz',
         geocoder_types:  'natural_feature,street_address,route,intersection,locality,political,sublocality,neighborhood,country',
         maptype: 'roadmap',
@@ -26,9 +26,9 @@ util.geocode = function(input_id, search_button_id, map) {
     });
 
     //TODO funktion auch ausführen, wenn die enter taste betätigt wurde...
-    $('#'+search_button_id).click( function() {
+    jQuery('#'+search_button_id).click( function() {
         console.info('geocode');
-        var term = $('#'+input_id).val().trim();
+        var term = jQuery('#'+input_id).val().trim();
         if(term.length > 3) {
             var geo_opts = {
                 address: term,
@@ -53,8 +53,8 @@ util.geocode = function(input_id, search_button_id, map) {
     });
 };
 
-$.expr[':'].textEquals = function(a, i, m) {
-    return $(a).text().match("^" + m[3] + "$");
+jQuery.expr[':'].textEquals = function(a, i, m) {
+    return jQuery(a).text().match("^" + m[3] + "$");
 }
 
 // Create an entry for every console function that is used.
