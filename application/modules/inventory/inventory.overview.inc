@@ -3,18 +3,20 @@ function inventory_overview() {
 	drupal_set_title(t('Inventory overview'));
 
 	$tableVariables['header'][] = t('Area');
-	$tableVariables['header'][] = t('Inventory');
-	$result = db_query("SELECT a.field_name, i.id AS iid
-		FROM inventory i
-		LEFT JOIN head_inventory hi ON i.head_inventory_id = hi.id 
+	$tableVariables['header'][] = t('InventoryGroup');
+	
+	$result = db_query("SELECT a.field_name, hi.id, hi.name
+		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
-		ORDER BY i.id desc;");
+		ORDER BY hi.id desc;");
+	
 	foreach ($result as $record) {
-		$iid = $record->iid;
+		$inventoryGroupId = $record->id;
 		$field_name = $record->field_name;
+		$name = $record->name;
 		$row = array();
 		$row[] = $field_name;
-		$row[] = l(t('open'), 'inventory/' . $iid);
+		$row[] = l(t($name." (".$inventoryGroupId.")"), 'inventory/' . $inventoryGroupId);
 		$rows[] = $row;
 	}
 	$tableVariables['rows'] = $rows;

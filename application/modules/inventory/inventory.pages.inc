@@ -13,7 +13,7 @@ function inventory_form() {
 
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
-	
+
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
 	// inventories ajax form
@@ -35,53 +35,64 @@ function inventory_form() {
     '#default_value' => variable_get('name', 259200),
     '#options' => $options,
 	);
-	
+
 	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
 
 	return $form;
 }
 
-function inventory_show($inventory_id) {
-	drupal_set_title(t('Arteninventar für Inventar ' . $inventory_id));
-	$json = getInitialInventoryJSON($inventory_id);
+function inventory_show($head_inventory_id) {
+	drupal_set_title(t('Inventory: '.$head_inventory_id));
+	$json = getInitialInventoryJSON($head_inventory_id);
+
 	drupal_add_js('var exInvs = ' . $json, 'inline');
 	drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
 	return drupal_get_form('inventory_form');
 }
 
-function getInitialInventoryJSON($inventory_id) {
+function getInitialInventoryJSON($head_inventory_id) {
+
 	$invArr = array();
-	$invArr[$inventory_id] = array();
 
-	// Get the inventory column description
-	$invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
+	$inventories = db_query('SELECT id
+							FROM inventory 
+							WHERE head_inventory_id = :id;', array(':id' => $head_inventory_id));
+	foreach($inventories as $inventory) {
 
-	// Get inventory entries
-	$inventoryEntries = db_query('SELECT e.id, e.organism_id, fo.name_de
+		$inventory_id = $inventory->id;
+		$invArr[$inventory_id] = array();
+
+		// Get the inventory column description
+		$invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
+
+		// Get inventory entries
+		$inventoryEntries = db_query('SELECT e.id, e.organism_id, fo.name_de
 		FROM inventory_entry e
 		LEFT JOIN fauna_organism fo ON e.organism_id = fo.id
 		WHERE e.inventory_id = :id;', array(':id' => $inventory_id));
-	foreach($inventoryEntries as $inventoryEntry) {
-		$inventoryEntryId = $inventoryEntry->id;
-		$invArr[$inventory_id][$inventoryEntryId] = array();
-		$invArr[$inventory_id][$inventoryEntryId]["orgId"] = $inventoryEntry->organism_id;
-		$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->name_de;
+		foreach($inventoryEntries as $inventoryEntry) {
+			$inventoryEntryId = $inventoryEntry->id;
+			$invArr[$inventory_id][$inventoryEntryId] = array();
+			$invArr[$inventory_id][$inventoryEntryId]["orgId"] = $inventoryEntry->organism_id;
+			$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->name_de;
 
-		// Get inventory columns
-		$entries = db_query('SELECT * FROM inventory_type_attribute_inventory_entry WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
-		foreach ($entries as $entry) {
-			// Dropdown
-			$colVal = "";
-			if($entry->inventory_type_attribute_dropdown_value_id > 0) {
-				$colVal = $entry->inventory_type_attribute_dropdown_value_id;
-			} else {
-				$colVal = $entry->value;
+			// Get inventory columns
+			$entries = db_query('SELECT * FROM inventory_type_attribute_inventory_entry WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
+			foreach ($entries as $entry) {
+				// Dropdown
+				$colVal = "";
+				if($entry->inventory_type_attribute_dropdown_value_id > 0) {
+					$colVal = $entry->inventory_type_attribute_dropdown_value_id;
+				} else {
+					$colVal = $entry->value;
+				}
+				$invArr[$inventory_id][$inventoryEntryId]["col_".$entry->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
 			}
-			$invArr[$inventory_id][$inventoryEntryId]["col_".$entry->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
 		}
 	}
 
 	$result = drupal_json_encode($invArr);
+
 	return $result;
 }
 
