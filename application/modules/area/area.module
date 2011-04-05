@@ -44,4 +44,18 @@ function area_menu() {
   
   	return $items;
 }
+
+/**
+ * Implements hook_theme()
+ *
+ * @return an array with theme template information
+ */
+function area_theme() {
+	return array(
+    	'area.overview' => array(
+ 			'template' => 'area.overview',
+    	  	'variables' => array()
+	)
+	);
+}
 ?>
