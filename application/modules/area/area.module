@@ -1,0 +1,47 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_help()
+ *
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function area_help($path, $arg) {
+	switch ($path) {
+		case "admin/help#area":
+			return '<p>'.  t("Area module") .'</p>';
+			break;
+	}
+}
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function area_menu() {
+	$items['area'] = array(
+    'title' => 'Area overview',
+    'description' => 'Find areas',
+    'page callback' => 'show_area_overview',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'area.overview.inc',
+	);
+	$items['area/%'] = array(
+    'title' => 'Area',
+    'description' => 'View area',
+    'page callback' => 'show_area',
+	'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+	'file' => 'area.inc',
+	);
+  
+  	return $items;
+}
+?>
