@@ -1,7 +1,9 @@
 <?php
+require_once 'DrupalSession.php';
+
 class InventoryController extends Zend_Controller_Action {
 
-	public function indexAction(){	
+	public function indexAction(){
 		$view = $this->view;
 		$view->headScript()->appendFile($this->view->baseUrl() . '/js/inventory.js');
 		$view->headScript()->appendFile($this->view->baseUrl() . '/js/lib/jquery/jquery-1.4.2.min.js');
@@ -33,7 +35,7 @@ class InventoryController extends Zend_Controller_Action {
 				{
 				}
 			}
-			
+
 			$this->view->area = $area;
 			$form->setArea($area);
 			$form->setHeadInventory($headInventory);
@@ -75,9 +77,15 @@ class InventoryController extends Zend_Controller_Action {
 
 	}
 	public function saveAjaxAction(){
+		// check if user has permission to access content
+		$ds = new DrupalSession();
+		if (!$ds->hasPermission('node', 'access content')){
+			throw new Exception('You are not allowed to perform this action!');
+		}
+		
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender(true);
-		
+
 		$request = $this->getRequest();
 
 		if($request->isPost()){
@@ -106,7 +114,7 @@ class InventoryController extends Zend_Controller_Action {
 
 			// Save the changed rows
 			if(isset($data["addRows"]))
-			{				
+			{
 				foreach($data["addRows"] as $invIdKey => $invIdValue)
 				{
 					$inventory = new Application_Model_Inventory();
@@ -116,7 +124,7 @@ class InventoryController extends Zend_Controller_Action {
 					{
 						$inventoryType = $inventoryType->find($invIdValue['invTypeId']);
 						$inventory->setInventoryType($inventoryType);
-						
+
 						$headInventory = new Application_Model_HeadInventory();
 						$headInventory->setId($data["headInventoryId"]);
 						$inventory->setHeadInventory($headInventory);
@@ -264,7 +272,7 @@ class InventoryController extends Zend_Controller_Action {
 			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (\"Gattung\" ILIKE '".$termBSpace."%' AND \"Art\" ILIKE '".$termASpace."%'))");
 		}
 
-		
+
 		$results = $org->getMapper()->getDbTable()->getAdapter()->query($select);
 		$rows = $results->fetchAll();
 		print $this->organismToJson($rows, $fauna);
