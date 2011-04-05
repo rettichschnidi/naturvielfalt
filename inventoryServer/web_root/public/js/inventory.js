@@ -233,7 +233,7 @@ function saveRows() {
 			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
 		}
 	}
-	$.post("save-ajax", saveArray, function(ids) {
+	$.post("inventory/save-ajax", saveArray, function(ids) {
 		$.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
@@ -321,7 +321,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 						cacheLength : 0,
 						source : function(request, response) {
 							$.ajax( {
-								url : 'get-organisms',
+								url : 'inventory/get-organisms',
 								dataType : "json",
 								data : {
 									inv_id : this.element.parent().parent()
