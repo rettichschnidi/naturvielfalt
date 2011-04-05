@@ -19,7 +19,7 @@ jQuery.widget( "ui.geo_autocomplete", {
 		
 		// _renderItem is used to prevent the widget framework from escaping the HTML required to show the static map thumbnail
 		this.element.data('autocomplete')._renderItem = function(_ul, _item) {
-			return $('<li></li>').data('item.autocomplete', _item).append(this.options.getItemHTML(_item)).appendTo(_ul);
+			return jQuery('<li></li>').data('item.autocomplete', _item).append(this.options.getItemHTML(_item)).appendTo(_ul);
 		};
 	},
 	

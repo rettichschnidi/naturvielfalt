@@ -38,16 +38,16 @@
 	 * Purpose:  Store the settings for each dataTables instance
 	 * Scope:    jQuery.fn
 	 */
-	$.fn.dataTableSettings = [];
-	var _aoSettings = $.fn.dataTableSettings; /* Short reference for fast internal lookup */
+	jQuery.fn.dataTableSettings = [];
+	var _aoSettings = jQuery.fn.dataTableSettings; /* Short reference for fast internal lookup */
 	
 	/*
 	 * Variable: dataTableExt
 	 * Purpose:  Container for customisable parts of DataTables
 	 * Scope:    jQuery.fn
 	 */
-	$.fn.dataTableExt = {};
-	var _oExt = $.fn.dataTableExt;
+	jQuery.fn.dataTableExt = {};
+	var _oExt = jQuery.fn.dataTableExt;
 	
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -842,7 +842,7 @@
 	 * Returns:  -
 	 * Inputs:   object:oInit - initalisation options for the table
 	 */
-	$.fn.dataTable = function( oInit )
+	jQuery.fn.dataTable = function( oInit )
 	{
 		/*
 		 * Function: classSettings
@@ -1275,7 +1275,7 @@
 			 * Scope:    jQuery.dataTable.classSettings
 			 */
 			this.fnServerData = function ( url, data, callback ) {
-				$.ajax( {
+				jQuery.ajax( {
 					"url": url,
 					"data": data,
 					"success": callback,
@@ -1624,7 +1624,7 @@
 			var oData = oSettings.aoData.splice( iAODataIndex, 1 );
 			
 			/* Remove the target row from the search array */
-			var iDisplayIndex = $.inArray( iAODataIndex, oSettings.aiDisplay );
+			var iDisplayIndex = jQuery.inArray( iAODataIndex, oSettings.aiDisplay );
 			oSettings.asDataSearch.splice( iDisplayIndex, 1 );
 			
 			/* Delete from the display arrays */
@@ -1700,7 +1700,7 @@
 			
 			/* If the nTr isn't on the page at the moment - then we don't insert at the moment */
 			var nTrs = $('tr', oSettings.nTBody);
-			if ( $.inArray(nTr, nTrs) != -1 )
+			if ( jQuery.inArray(nTr, nTrs) != -1 )
 			{
 				$(nNewRow).insertAfter(nTr);
 			}
@@ -1915,7 +1915,7 @@
 			/* Modify the search index for this row (strictly this is likely not needed, since fnReDraw
 			 * will rebuild the search array - however, the redraw might be disabled by the user)
 			 */
-			var iDisplayIndex = $.inArray( iRow, oSettings.aiDisplay );
+			var iDisplayIndex = jQuery.inArray( iRow, oSettings.aiDisplay );
 			oSettings.asDataSearch[iDisplayIndex] = _fnBuildSearchRow( oSettings, 
 				oSettings.aoData[iRow]._aData );
 			
@@ -2554,17 +2554,17 @@
 			
 			/* Check that the class assignment is correct for sorting */
 			if ( !oCol.bSortable ||
-					 ($.inArray('asc', oCol.asSorting) == -1 && $.inArray('desc', oCol.asSorting) == -1) )
+					 (jQuery.inArray('asc', oCol.asSorting) == -1 && jQuery.inArray('desc', oCol.asSorting) == -1) )
 			{
 				oCol.sSortingClass = oSettings.oClasses.sSortableNone;
 				oCol.sSortingClassJUI = "";
 			}
-			else if ( $.inArray('asc', oCol.asSorting) != -1 && $.inArray('desc', oCol.asSorting) == -1 )
+			else if ( jQuery.inArray('asc', oCol.asSorting) != -1 && jQuery.inArray('desc', oCol.asSorting) == -1 )
 			{
 				oCol.sSortingClass = oSettings.oClasses.sSortableAsc;
 				oCol.sSortingClassJUI = oSettings.oClasses.sSortJUIAscAllowed;
 			}
-			else if ( $.inArray('asc', oCol.asSorting) == -1 && $.inArray('desc', oCol.asSorting) != -1 )
+			else if ( jQuery.inArray('asc', oCol.asSorting) == -1 && jQuery.inArray('desc', oCol.asSorting) != -1 )
 			{
 				oCol.sSortingClass = oSettings.oClasses.sSortableDesc;
 				oCol.sSortingClassJUI = oSettings.oClasses.sSortJUIDescAllowed;
@@ -2642,7 +2642,7 @@
 				{
 					aData[i] += "";
 				}
-				aData[i] = $.trim(aData[i]);
+				aData[i] = jQuery.trim(aData[i]);
 				
 				/* Add user defined class */
 				if ( oSettings.aoColumns[i].sClass !== null )
@@ -2727,7 +2727,7 @@
 						{
 							if ( nTds[j].nodeName.toUpperCase() == "TD" )
 							{
-								aLocalData[jInner] = $.trim(nTds[j].innerHTML);
+								aLocalData[jInner] = jQuery.trim(nTds[j].innerHTML);
 								jInner++;
 							}
 						}
@@ -3791,7 +3791,7 @@
 				/* I know this is rubbish - but IE7 will make the width of the table when 100% include
 				 * the scrollbar - which is shouldn't. This needs feature detection in future - to do
 				 */
-				if ( $.browser.msie && $.browser.version <= 7 )
+				if ( jQuery.browser.msie && jQuery.browser.version <= 7 )
 				{
 					o.nTable.style.width = _fnStringToCss( $(o.nTable).outerWidth()-o.oScroll.iBarWidth );
 				}
@@ -3918,7 +3918,7 @@
 				 * the scrollbar height from the visible display, rather than adding it on. We need to
 				 * set the height in order to sort this. Don't want to do it in any other browsers.
 				 */
-				if ( $.browser.msie && $.browser.version <= 7 )
+				if ( jQuery.browser.msie && jQuery.browser.version <= 7 )
 				{
 					nScrollBody.style.height = _fnStringToCss( o.nTable.offsetHeight+o.oScroll.iBarWidth );
 				}
@@ -4684,7 +4684,7 @@
 							for ( j=0, jLen=(nTds.length/iColumns) ; j<jLen ; j++ )
 							{
 								nTds[(iColumns*j)+i].className = 
-									$.trim( nTds[(iColumns*j)+i].className.replace( sClass+"1", "" ) );
+									jQuery.trim( nTds[(iColumns*j)+i].className.replace( sClass+"1", "" ) );
 							}
 						}
 						else if ( nTds[i].className.indexOf(sClass+"2") != -1 )
@@ -4692,7 +4692,7 @@
 							for ( j=0, jLen=(nTds.length/iColumns) ; j<jLen ; j++ )
 							{
 								nTds[(iColumns*j)+i].className = 
-									$.trim( nTds[(iColumns*j)+i].className.replace( sClass+"2", "" ) );
+									jQuery.trim( nTds[(iColumns*j)+i].className.replace( sClass+"2", "" ) );
 							}
 						}
 						else if ( nTds[i].className.indexOf(sClass+"3") != -1 )
@@ -4700,7 +4700,7 @@
 							for ( j=0, jLen=(nTds.length/iColumns) ; j<jLen ; j++ )
 							{
 								nTds[(iColumns*j)+i].className = 
-									$.trim( nTds[(iColumns*j)+i].className.replace( " "+sClass+"3", "" ) );
+									jQuery.trim( nTds[(iColumns*j)+i].className.replace( " "+sClass+"3", "" ) );
 							}
 						}
 					}
@@ -5931,8 +5931,8 @@
 				 */
 				try
 				{
-					oData = (typeof $.parseJSON == 'function') ? 
-						$.parseJSON( sData.replace(/'/g, '"') ) : eval( '('+sData+')' );
+					oData = (typeof jQuery.parseJSON == 'function') ? 
+						jQuery.parseJSON( sData.replace(/'/g, '"') ) : eval( '('+sData+')' );
 				}
 				catch( e )
 				{
@@ -5951,7 +5951,7 @@
 				}
 				
 				/* Store the saved state so it might be accessed at any time (particualrly a plug-in */
-				oSettings.oLoadedState = $.extend( true, {}, oData );
+				oSettings.oLoadedState = jQuery.extend( true, {}, oData );
 				
 				/* Restore key features */
 				oSettings._iDisplayStart = oData.iStart;
@@ -6027,8 +6027,8 @@
 			
 			if ( fnCallback !== null )
 			{
-				oData = (typeof $.parseJSON == 'function') ? 
-					$.parseJSON( sValue ) : eval( '('+sValue+')' );
+				oData = (typeof jQuery.parseJSON == 'function') ? 
+					jQuery.parseJSON( sValue ) : eval( '('+sValue+')' );
 				sFullCookie = fnCallback( sNameFile, oData, date.toGMTString(),
 					aParts.join('/')+"/" );
 			}
@@ -6593,7 +6593,7 @@
 					{
 						/* Get the language definitions from a file */
 						oSettings.oLanguage.sUrl = oInit.oLanguage.sUrl;
-						$.getJSON( oSettings.oLanguage.sUrl, null, function( json ) { 
+						jQuery.getJSON( oSettings.oLanguage.sUrl, null, function( json ) { 
 							_fnLanguageProcess( oSettings, json, true ); } );
 						bInitHandedOff = true;
 					}
@@ -6706,7 +6706,7 @@
 				{
 					/* Each column def can target multiple columns, as it is an array */
 					var aTargets = oInit.aoColumnDefs[i].aTargets;
-					if ( !$.isArray( aTargets ) )
+					if ( !jQuery.isArray( aTargets ) )
 					{
 						_fnLog( oSettings, 1, 'aTargets must be an array of targets, not a '+(typeof aTargets) );
 					}
