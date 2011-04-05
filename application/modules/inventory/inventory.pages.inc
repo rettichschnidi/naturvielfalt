@@ -44,12 +44,26 @@ function inventory_form() {
 }
 
 function inventory_show($head_inventory_id) {
-	drupal_set_title(t('Inventory: '.$head_inventory_id));
+	drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
 	$json = getInitialInventoryJSON($head_inventory_id);
 
 	drupal_add_js('var exInvs = ' . $json, 'inline');
 	drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
 	return drupal_get_form('inventory_form');
+}
+
+function getInventoryTitle($head_inventory_id) {
+	$inventory_title = t("no name");
+	
+	$inventories = db_query('	SELECT name 
+								FROM head_inventory
+								WHERE id = :id;', array(':id' => $head_inventory_id));
+	foreach($inventories as $inventory) {
+		if(!is_null($inventory->name))
+			$inventory_title =  $inventory->name;
+	}
+	
+	return $inventory_title;
 }
 
 function getInitialInventoryJSON($head_inventory_id) {

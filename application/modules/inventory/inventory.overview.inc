@@ -13,7 +13,9 @@ function inventory_overview() {
 	foreach ($result as $record) {
 		$inventoryGroupId = $record->id;
 		$field_name = $record->field_name;
-		$name = $record->name;
+		if(!is_null($record->name))
+			$name = $record->name;
+		else $name = t("no name");
 		$row = array();
 		$row[] = $field_name;
 		$row[] = l(t($name." (".$inventoryGroupId.")"), 'inventory/' . $inventoryGroupId);
