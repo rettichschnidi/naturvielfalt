@@ -1,7 +1,7 @@
 <?php
 class InventoryController extends Zend_Controller_Action {
 
-	public function indexAction(){
+	public function indexAction(){	
 		$view = $this->view;
 		$view->headScript()->appendFile($this->view->baseUrl() . '/js/inventory.js');
 		$view->headScript()->appendFile($this->view->baseUrl() . '/js/lib/jquery/jquery-1.4.2.min.js');
@@ -18,7 +18,6 @@ class InventoryController extends Zend_Controller_Action {
 
 		if($areaId == $area->getId())
 		{
-
 			$headInventoryId = $request->getParam('head_inventory_id');
 			$headInventory = new Application_Model_HeadInventory();
 			if(!isset($headInventoryId))
@@ -34,8 +33,7 @@ class InventoryController extends Zend_Controller_Action {
 				{
 				}
 			}
-
-
+			
 			$this->view->area = $area;
 			$form->setArea($area);
 			$form->setHeadInventory($headInventory);
@@ -79,7 +77,7 @@ class InventoryController extends Zend_Controller_Action {
 	public function saveAjaxAction(){
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender(true);
-
+		
 		$request = $this->getRequest();
 
 		if($request->isPost()){
@@ -108,7 +106,7 @@ class InventoryController extends Zend_Controller_Action {
 
 			// Save the changed rows
 			if(isset($data["addRows"]))
-			{
+			{				
 				foreach($data["addRows"] as $invIdKey => $invIdValue)
 				{
 					$inventory = new Application_Model_Inventory();
@@ -118,6 +116,10 @@ class InventoryController extends Zend_Controller_Action {
 					{
 						$inventoryType = $inventoryType->find($invIdValue['invTypeId']);
 						$inventory->setInventoryType($inventoryType);
+						
+						$headInventory = new Application_Model_HeadInventory();
+						$headInventory->setId($data["headInventoryId"]);
+						$inventory->setHeadInventory($headInventory);
 						$inventory->save();
 						$return[$invIdKey] = $inventory->getId();
 					}

@@ -72,7 +72,7 @@ class Application_Model_Inventory extends MainModel
 
 	public function setInventoryEntrys($InventoryEntrys)
 	{
-		$this->setOneToMany($InventoryEntrys, Application_Model_InventoryEntry);
+		$this->setOneToMany($InventoryEntrys, new Application_Model_InventoryEntry());
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Application_Model_Inventory extends MainModel
 
 	public function getInventoryType()
 	{
-		$rowset = $this->getRowsAsModel($this->getCurrentRow()->findDependentRowset('Application_Model_DbTable_InventoryType'), new Application_Model_InventoryType);
+		$rowset = $this->getRowsAsModel($this->getCurrentRow()->findDependentRowset('Application_Model_DbTable_InventoryType'), new Application_Model_InventoryType());
 		return $rowset[0];
 	}
 
@@ -95,7 +95,7 @@ class Application_Model_Inventory extends MainModel
 
 	public function setInventoryType($InventoryType)
 	{
-		$this->setManyToOne($InventoryType, Application_Model_InventoryType);
+		$this->setManyToOne($InventoryType, new Application_Model_InventoryType());
 	}
 	
 	/**
@@ -105,7 +105,7 @@ class Application_Model_Inventory extends MainModel
 
 	public function getHeadInventory()
 	{
-		$rowset = $this->getRowsAsModel($this->getCurrentRow()->findDependentRowset('Application_Model_DbTable_HeadInventory'), Application_Model_HeadInventory);
+		$rowset = $this->getRowsAsModel($this->getCurrentRow()->findDependentRowset('Application_Model_DbTable_HeadInventory'), new Application_Model_HeadInventory());
 		return $rowset[0];
 	}
 
@@ -118,7 +118,7 @@ class Application_Model_Inventory extends MainModel
 
 	public function setHeadInventory($HeadInventory)
 	{
-		$this->setManyToOne($HeadInventory, Application_Model_HeadInventory);
+		$this->setManyToOne($HeadInventory, new Application_Model_HeadInventory());
 	}
 
 
