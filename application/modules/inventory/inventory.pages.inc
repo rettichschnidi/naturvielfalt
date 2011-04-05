@@ -18,6 +18,8 @@ function inventory_form() {
 
 	// inventories ajax form
 	$form['inventories']['#markup'] = '<div id="inventories"></div>';
+		 
+	$form['head_inventory_id'] = array('#type' => 'hidden', '#value' => arg(1));
 
 	$options = array();
 
@@ -90,7 +92,7 @@ function getInitialInventoryJSON($head_inventory_id) {
 			}
 		}
 	}
-
+	
 	$result = drupal_json_encode($invArr);
 
 	return $result;
