@@ -30,6 +30,7 @@ class AreaSelectController extends Zend_Controller_Action {
   public function getAreaAction(){
    
     $request = $this->getRequest();
+    $where = '';
     
     if($request->isXmlHttpRequest() and $request->isPost()){
       //echo '<pre>'.print_r($areas_array,true).'</pre>';
@@ -84,10 +85,12 @@ class AreaSelectController extends Zend_Controller_Action {
       for ( $i=0 ; $i<count($aColumns) ; $i++ ){
         if ( $request->getParam('bSearchable_'.$i) == "true" && $request->getParam('sSearch_'.$i) != '' )
         {
+        	/*
           if ( $sWhere != "" )
           {
             $where .= " AND ";
           }
+          */
           $iColumnIndex = array_search( $aNames[$i], $aColumns );
           $where .= $aColumns[$iColumnIndex]." LIKE '%".$request->getParam('sSearch_'.$i)."%' ";
         }
@@ -107,7 +110,7 @@ class AreaSelectController extends Zend_Controller_Action {
         'sEcho' => $request->getParam('sEcho'),
         'iTotalRecords' => $area_mapper->getDbTable()->countAllRows(),
         'iTotalDisplayRecords' => $area_mapper->getDbTable()->countByQuery($where),
-        'debug' => "sWhere: ".$sWhere." iColumnIndex: ".$iColumnIndex,
+        //'debug' => "sWhere: ".$sWhere." iColumnIndex: ".$iColumnIndex,
         'areas' => $areas_array,
       );
       $this->_helper->json($display);

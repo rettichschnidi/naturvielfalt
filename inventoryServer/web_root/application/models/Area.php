@@ -145,7 +145,7 @@ class Application_Model_Area extends MainModel
 	public function getHabitats()
 	{
 		return $this->getRowsAsModel($this->getMapper()->find($this->getId(), $this)->findManyToManyRowset("Application_Model_DbTable_Habitat",
-                "Application_Model_DbTable_AreaHabitat", "Application_Model_DbTable_Area"), Application_Model_Habitat);
+                "Application_Model_DbTable_AreaHabitat", "Application_Model_DbTable_Area"), new Application_Model_Habitat());
 	}
 
 	/**
@@ -169,7 +169,7 @@ class Application_Model_Area extends MainModel
 	public function getAreaPoints()
 	{
 		return $this->getRowsAsModel($this->getCurrentRow()->findDependentRowset('Application_Model_DbTable_AreaPoint'),
-		Application_Model_AreaPoint);
+		new Application_Model_AreaPoint());
 	}
 
 	/**
