@@ -356,7 +356,6 @@ function addRow(tbody, cols, rowId, cellValues) {
 				change : function(event, ui) {
 					// if the value of the textbox does not match a
 					// suggestion, clear its value
-					this.element.removeClass("notfound");
 					if (jQuery(
 							".ui-menu-item-label:textEquals('"
 									+ jQuery(this).val().replace(/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g, '\\$1') + "')").size() == 0) {
@@ -386,6 +385,11 @@ function addRow(tbody, cols, rowId, cellValues) {
 				}
 			}).focus(function() {
 		// jQuery(this).autocomplete("search");
+	}).keyup(function(){
+		//monitor field and remove class 'notfound' if its length is less than 2
+		if(this.value.length<2){
+			jQuery(this).removeClass("notfound");
+		}
 	}).data("autocomplete")._renderItem = function(ul, item) {
 		
 		var term = this.term.replace(/[aou]/, function(m) {
