@@ -3,6 +3,7 @@
  * Menu callback. This will be called if someone visits for example drupal/inventory/3.
  */
 function inventory_form() {
+	
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-ui-1.8.6.custom.min.js');
 	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
 
@@ -44,12 +45,34 @@ function inventory_form() {
 }
 
 function inventory_show($head_inventory_id) {
-	drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
-	$json = getInitialInventoryJSON($head_inventory_id);
 
-	drupal_add_js('var exInvs = ' . $json, 'inline');
-	drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
-	return drupal_get_form('inventory_form');
+	if(inventory_permission($head_inventory_id)==true)
+	{
+
+		drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
+		$json = getInitialInventoryJSON($head_inventory_id);
+
+		drupal_add_js('var exInvs = ' . $json, 'inline');
+		drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
+		return drupal_get_form('inventory_form');
+	}
+	else drupal_set_title(t("no permission"));
+}
+
+function inventory_permission($head_inventory_id)
+{
+	$result = db_query("	SELECT * FROM head_inventory hi 
+								WHERE ((hi.shared='t') OR  (hi.owner_id=1))
+								AND hi.id = :id"
+								, array(':id' => $head_inventory_id)
+	);
+	
+	/*
+ 	if (db_num_rows($result) == 0) {
+    	return false;
+  	}
+  	*/
+  	return true;
 }
 
 function getInventoryTitle($head_inventory_id) {

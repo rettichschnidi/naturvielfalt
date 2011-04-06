@@ -7,10 +7,15 @@ function inventory_overview() {
 	$tableVariables['header'][] = t('Owner');
 	$tableVariables['header'][] = t('Shared');
 	
-	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner, hi.shared
+	global $user;
+	
+	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner_id, hi.shared
 		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
-		ORDER BY hi.id desc;");
+		WHERE (hi.shared='t') OR  (hi.owner_id=:id)
+		ORDER BY hi.id desc;",
+		array(':id' => $user->uid)
+	);
 	
 	foreach ($result as $record) {
 		$inventoryGroupId = $record->id;
@@ -18,7 +23,7 @@ function inventory_overview() {
 		if(!is_null($record->name))
 			$name = $record->name;
 		else $name = t("no name");
-		$user=user_load($record->owner);
+		$user=user_load($record->owner_id);
 		$owner=$user->name;
 		if($shared = $record->shared == TRUE)
 			$shared = t("Yes");
