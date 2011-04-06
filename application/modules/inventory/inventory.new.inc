@@ -9,9 +9,9 @@ function inventory_new_form() {
   		'#required' => TRUE,
 	);
 
-	$form['is_public'] = array(
+	$form['share'] = array(
   		'#type' => 'checkbox', 
-  		'#title' => t('make public'),
+  		'#title' => t('share'),
 	);
 
 	$form['submit'] = array(
@@ -31,14 +31,17 @@ function inventory_new($area_id) {
 }
 
 function inventory_save($form, &$form_state){
-	error_log("inventory_save");
-
 	$name = $form_state['values']['name'];
+	$shared = $form_state['values']['share'];
 	$area_id = arg(2);
+	global $user;
+	$owner = $user->uid;
 	 
 	 $nid = db_insert('head_inventory')->fields(array(
     	'area_id' => $area_id,
     	'name' => $name,
+	 	'shared' => $shared,
+	 	'owner' => $owner,
   	))
   ->execute();
   

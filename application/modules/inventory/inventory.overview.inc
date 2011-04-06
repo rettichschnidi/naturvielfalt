@@ -3,9 +3,11 @@ function inventory_overview() {
 	drupal_set_title(t('Inventory overview'));
 
 	$tableVariables['header'][] = t('Area');
-	$tableVariables['header'][] = t('InventoryGroup');
+	$tableVariables['header'][] = t('Inventory');
+	$tableVariables['header'][] = t('Owner');
+	$tableVariables['header'][] = t('Shared');
 	
-	$result = db_query("SELECT a.field_name, hi.id, hi.name
+	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner, hi.shared
 		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
 		ORDER BY hi.id desc;");
@@ -16,9 +18,16 @@ function inventory_overview() {
 		if(!is_null($record->name))
 			$name = $record->name;
 		else $name = t("no name");
+		$user=user_load($record->owner);
+		$owner=$user->name;
+		if($shared = $record->shared == TRUE)
+			$shared = t("Yes");
+		else $shared = t("No");
 		$row = array();
 		$row[] = $field_name;
 		$row[] = l(t($name." (".$inventoryGroupId.")"), 'inventory/' . $inventoryGroupId);
+		$row[] = $owner;
+		$row[] = $shared;
 		$rows[] = $row;
 	}
 	$tableVariables['rows'] = $rows;
