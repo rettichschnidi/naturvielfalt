@@ -23,8 +23,7 @@ function inventory_new_form() {
 	return $form;
 }
 
-function inventory_new($area_id) {
-	error_log("new in".$area_id);	
+function inventory_new($area_id) {	
 	drupal_set_title(t('New Inventory for '. get_are_name(arg(2))." (".$area_id.")"));
 
 	return drupal_get_form('inventory_new_form');
@@ -41,7 +40,7 @@ function inventory_save($form, &$form_state){
     	'area_id' => $area_id,
     	'name' => $name,
 	 	'shared' => $shared,
-	 	'owner' => $owner,
+	 	'owner_id' => $owner,
   	))
   ->execute();
   
