@@ -30,7 +30,7 @@ function AreaSelect() {
 
         jQuery('#create-inventory').click(function(){
             if(me.selected_area != null){
-               window.location.href = 'inventory?area_id='+me.selected_area;
+               window.location.href = 'inventory/new/'+me.selected_area;
             } else {
                 //TODO: Change!
                 alert('Bitte wählen Sie ein Gebiet aus.');
@@ -46,18 +46,20 @@ function AreaSelect() {
                 }
             });
             jQuery(event.target.parentNode).addClass('row_selected');
-            me.mapOverlays.overlays[event.target.parentNode.getAttribute('overlay_id')].setStyle('selected');
-            me.selected_area = event.target.parentNode.getAttribute('overlay_id');
-            me.map.panTo(me.mapOverlays.overlays[event.target.parentNode.getAttribute('overlay_id')].getCenter());
+            var overlayId = event.target.parentNode.getAttribute('overlay_id');
+            me.mapOverlays.overlays[overlayId].setStyle('selected');
+            me.selected_area = overlayId;
+            me.map.panTo(me.mapOverlays.overlays[overlayId].getCenter());
         });
         // hover row in table
         jQuery('tbody > tr').live('mouseover mouseout', function(event) {
+        	var parent = event.target.parentNode;
             if(event.type == 'mouseover') {
-                jQuery(event.target.parentNode).addClass( 'row_highlighted' );
-                me.mapOverlays.overlays[event.target.parentNode.getAttribute('overlay_id')].setStyle('highlighted');
+                jQuery(parent).addClass( 'row_highlighted' );
+                me.mapOverlays.overlays[parent.getAttribute('overlay_id')].setStyle('highlighted');
             } else {
-                jQuery(event.target.parentNode).removeClass('row_highlighted');
-                me.mapOverlays.overlays[event.target.parentNode.getAttribute('overlay_id')].setStyle('highlighted-disable');
+                jQuery(parent).removeClass('row_highlighted');
+                me.mapOverlays.overlays[parent.getAttribute('overlay_id')].setStyle('highlighted-disable');
             }
 
         });
@@ -83,7 +85,6 @@ function AreaSelect() {
                     "data": aoData,
                     "success": function (json) {
                         var aaData = [];
-                        console.info(json);
                         var areas = json.areas;
                         me.mapOverlays.clear();
                         
@@ -202,15 +203,11 @@ AreaSelect.prototype.getAreas = function(){
   var me = this;
   
   jQuery.post('area-select/get-area', function(data){
-    console.info(data);
     for(var i in data){
       if(data[i].type == 'polygon'){
         new Polygon(me.map, data[i]);
       } else if (data[i].type == 'marker'){
-        console.info('Marker: blabla');
         new Marker(me.map, data[i]);
-      } else{
-        console.error('Type of overlay is undefined!');
       }
       
     }

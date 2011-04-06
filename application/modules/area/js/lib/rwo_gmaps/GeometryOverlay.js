@@ -21,7 +21,6 @@ GeometryOverlay.prototype.initGO = function(map, opt_opts){
 	this.gOverlay = null; //contains the google maps overlay object
 	this.attr = null; //contains all the attributes for a area like name, Kat. Nr., habitat and more...
 	//this.tmpPolyLine.setOptions({strokeColor: "FFFFFF"});
-	console.info(map.toString() +"/"+this.map.toString());
 };
 
 GeometryOverlay.prototype.getOverlay = function(){

@@ -30,21 +30,21 @@ var overlayStyle = {
     },
     'marker' : {
         flat:           false,
-        icon:           new google.maps.MarkerImage('images/map_controls/marker.png'),
+        icon:           new google.maps.MarkerImage('modules/area/images/map_controls/marker.png'),
         raiseOnTrag:    false,
         //shadow:         '',
     },
 
     'marker-selected': {
         flat:           false,
-        icon:           new google.maps.MarkerImage('images/map_controls/marker_blue.png'),
+        icon:           new google.maps.MarkerImage('modules/area/images/map_controls/marker_blue.png'),
         raiseOnTrag:    false,
         //shadow:         '',
     },
     
     'marker-highlighted': {
         flat:           false,
-        icon:           new google.maps.MarkerImage('images/map_controls/marker_green.png'),
+        icon:           new google.maps.MarkerImage('modules/area/images/map_controls/marker_green.png'),
         raiseOnTrag:    false,
         //shadow:         '',
     }
