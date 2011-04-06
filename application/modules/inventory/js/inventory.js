@@ -197,7 +197,7 @@ function saveRows() {
 	var saveArray = {};
 	var newColCnt = 0;
 
-	saveArray["headInventoryId"] = jQuery("#head_inventory_id").attr("value");
+	saveArray["headInventoryId"] = jQuery('input[name="head_inventory_id"]').attr("value");
 	for (key in rowsToSave) {
 		if (rowsToSave[key]["action"] == "save") {
 			row = rowsToSave[key]["row"];
