@@ -271,4 +271,16 @@ input[disabled=""]{
   margin: -1px;
 }
 
+.searching {
+	background-image:url('../images/searching.gif');
+	background-repeat:no-repeat;
+	background-position:right;
+}
+
+.notfound {
+	background-image:url('../images/notfound.gif');
+	background-repeat:no-repeat;
+	background-position:right;	
+}
+
 /* end message infos */
