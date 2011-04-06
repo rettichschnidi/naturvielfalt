@@ -63,8 +63,7 @@ function addInventory(json, id) {
 
 	var table = jQuery("<table cellspacing=0 cellpadding=0 class='invTable'>");
 	var invDef = jQuery("<input type='hidden' name='invId' value='" + id + "'>");
-	var invTypeDef = jQuery("<input type='hidden' name='invTypeId' value='"
-			+ json["id"] + "'>");
+	var invTypeDef = jQuery("<input type='hidden' name='invTypeId' value='" + json["id"] + "'>");
 
 	var thead = jQuery("<thead>");
 	var trow = jQuery("<tr>");
@@ -101,14 +100,10 @@ function activateRow(row, tbody, cols) {
 		if (i > 0) {
 			// Copy dates from last row
 			/*
-			if (cols[i] == null && cols[i]["format"] == "date") {
-				$(this).children().attr(
-						"value",
-						row.prev().find('td:eq(' + i + ')').children()
-								.attr("value"));
-				rowChanged(row);
-			}	
-			*/
+			 * if (cols[i] == null && cols[i]["format"] == "date") {
+			 * $(this).children().attr( "value", row.prev().find('td:eq(' + i +
+			 * ')').children() .attr("value")); rowChanged(row); }
+			 */
 			jQuery(this).children().attr("disabled", false);
 		} else
 		// Deactivate the 'nature' field
@@ -119,14 +114,10 @@ function activateRow(row, tbody, cols) {
 	});
 
 	// Add remove icon
-	jQuery("<td>")
-			.append(
-					"<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
+	jQuery("<td>").append("<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
 			.appendTo(row);
 	// Add insert icon
-	jQuery("<td>")
-			.append(
-					"<img src='../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
+	jQuery("<td>").append("<img src='../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
 			.appendTo(row);
 }
 
@@ -206,7 +197,7 @@ function saveRows() {
 	var saveArray = {};
 	var newColCnt = 0;
 
-	saveArray["headInventoryId"] = jQuery('input[name="head_inventory_id"]').attr("value");
+	saveArray["headInventoryId"] = jQuery("#head_inventory_id").attr("value");
 	for (key in rowsToSave) {
 		if (rowsToSave[key]["action"] == "save") {
 			row = rowsToSave[key]["row"];
@@ -214,30 +205,22 @@ function saveRows() {
 				saveArray["addRows"] = {};
 
 			var rowId = row.find("input[name='rowId']").attr("value");
-			var invId = row.parent().parent().find("input[name='invId']").attr(
-					"value");
+			var invId = row.parent().parent().find("input[name='invId']").attr("value");
 
 			if (saveArray["addRows"][invId] == undefined)
 				saveArray["addRows"][invId] = {};
-			saveArray["addRows"][invId]['invTypeId'] = row.parent().parent()
-					.find("input[name='invTypeId']").attr("value");
+			saveArray["addRows"][invId]['invTypeId'] = row.parent().parent().find("input[name='invTypeId']").attr("value");
 
 			saveArray["addRows"][invId][rowId] = {};
-			saveArray["addRows"][invId][rowId]['orgId'] = row.find(
-					"input[name='orgId']").attr("value");
+			saveArray["addRows"][invId][rowId]['orgId'] = row.find("input[name='orgId']").attr("value");
 
-			row
-					.find("td")
-					.each(
-							function() {
-								cell = jQuery(this).children();
-								// Jump over non-input cells
-								if (cell.attr("name") == null
-										|| cell.attr("name").substr(0, 4) != "col_")
-									return true;
-								saveArray["addRows"][invId][rowId][cell
-										.attr("name")] = cell.attr("value");
-							});
+			row.find("td").each(function() {
+				cell = jQuery(this).children();
+				// Jump over non-input cells
+				if (cell.attr("name") == null || cell.attr("name").substr(0, 4) != "col_")
+					return true;
+				saveArray["addRows"][invId][rowId][cell.attr("name")] = cell.attr("value");
+			});
 
 			newColCnt++;
 		} else if (rowsToSave[key]["action"] == "delete") {
@@ -246,9 +229,8 @@ function saveRows() {
 			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
 		}
 	}
-	
-	jQuery.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(
-			ids) {
+
+	jQuery.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(ids) {
 		jQuery.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
@@ -256,8 +238,7 @@ function saveRows() {
 			else if (key.substr(0, 8) == "inv_new_")
 				name = "invId";
 
-			jQuery("input[type=hidden][name='" + name + "'][value='" + key + "']")
-					.attr("value", value);
+			jQuery("input[type=hidden][name='" + name + "'][value='" + key + "']").attr("value", value);
 		});
 	}, "json");
 
@@ -307,8 +288,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 			input = jQuery('<select>').width(180);
 			input = input.append(jQuery('<option>').attr("value", "0").text(""));
 			jQuery.each(value["dropdown_values"], function(key, value) {
-				input = input.append(jQuery('<option>').attr("value", value["id"])
-						.text(value["value"]));
+				input = input.append(jQuery('<option>').attr("value", value["id"]).text(value["value"]));
 			});
 			break;
 		default:
@@ -327,84 +307,87 @@ function addRow(tbody, cols, rowId, cellValues) {
 	// TODO: Thats exactly where the magic happens
 	trow.appendTo(tbody);
 
-	organismField
-			.autocomplete(
+	organismField.autocomplete(
 
-					{
-						minLength : 2,
-						noCache : true,
-						matchSubset : false,
-						cacheLength : 0,
-						source : function(request, response) {
-							jQuery.ajax({
-								url : INVENTORY_SERVER_PATH
-										+ 'inventory/get-organisms',
-								dataType : "json",
-								data : {
-									inv_id : this.element.parent().parent()
-											.parent().parent().find(
-													'input[name|=invTypeId]')
-											.val(),
-									term : this.element.val()
-								},
-								success : response
-							});
+			{
+				minLength : 2,
+				noCache : true,
+				matchSubset : false,
+				cacheLength : 0,
+				source : function(request, response) {
+					this.element.removeClass("notfound");
+					this.element.addClass("searching");
+					actualElement = this.element;
+					jQuery.ajax({
+						url : INVENTORY_SERVER_PATH + 'inventory/get-organisms',
+						dataType : "json",
+						data : {
+							inv_id : this.element.parent().parent().parent().parent().find('input[name|=invTypeId]').val(),
+							term : this.element.val()
 						},
-						focus : function(event, ui) {
-							jQuery(this).val(ui.item.label);
-							return false;
-						},
-						select : function(event, ui) {
-							jQuery(this).val(ui.item.label);
-							jQuery(this).parent().next().val(ui.item.id);
-							activateRow(trow, tbody, cols);
-							addRow(tbody, cols);
-							return false;
-						},
-						change : function(event, ui) {
-							// if the value of the textbox does not match a
-							// suggestion, clear its value
-							if (jQuery(
-									".ui-menu-item-label:textEquals('"
-											+ jQuery(this)
-													.val()
-													.replace(
-															/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
-															'\\$1') + "')")
-									.size() == 0) {
-							}
-						}
-					})
-			.live(
-					'keydown',
-					function(e) {
-						var keyCode = e.keyCode || e.which;
-						// if TAB or RETURN is pressed and the text in the
-						// textbox does not match a suggestion, set the value of
-						// the textbox to the text of the first suggestion
-						if ((keyCode == 9 || keyCode == 13)) {
-							if (jQuery(
-									".ui-menu-item-label:textEquals('"
-											+ jQuery(this)
-													.val()
-													.replace(
-															/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g,
-															'\\$1') + "')")
-									.size() == 0) {
-
+						// success : response,
+						success : function(data){
+							if(data.length==0){
+								actualElement.removeClass("searching");
+								actualElement.addClass("notfound");
 							} else {
-								// Magic
-								var item = jQuery(this).data('autocomplete').selectedItem;
-								activateRow(trow, tbody, cols);
-								addRow(tbody, cols);
-								jQuery(this).focus();
+								// Remove search symbol
+								actualElement.removeClass("searching");
+								response(data);
 							}
+							},
+						
+					});
+				},
+				focus : function(event, ui) {
+					jQuery(this).val(ui.item.label);
+					return false;
+				},
+				select : function(event, ui) {
+					// remove class notfound, necessary because a user can search for something that matches, 
+					// then enter more characters until it doesn't match anymore and then select something from the list
+					jQuery(this).removeClass("notfound");
+					jQuery(this).val(ui.item.label);
+					jQuery(this).parent().next().val(ui.item.id);
+					activateRow(trow, tbody, cols);
+					addRow(tbody, cols);
+					return false;
+				},
+				change : function(event, ui) {
+					// if the value of the textbox does not match a
+					// suggestion, clear its value
+					this.element.removeClass("notfound");
+					if (jQuery(
+							".ui-menu-item-label:textEquals('"
+									+ jQuery(this).val().replace(/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g, '\\$1') + "')").size() == 0) {
+					}
+				}
+			}).live(
+			'keydown',
+			function(e) {
+				var keyCode = e.keyCode || e.which;
+				// if TAB or RETURN is pressed and the text in the
+				// textbox does not match a suggestion, set the value of
+				// the textbox to the text of the first suggestion
+				if ((keyCode == 9 || keyCode == 13)){
+					if (jQuery(
+							".ui-menu-item-label:textEquals('"
+									+ jQuery(this).val().replace(/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g, '\\$1') + "')").size() == 0) {
 
-						}
-					}).focus(function() {
-				jQuery(this).autocomplete("search");
-			}).data("autocomplete")._renderItem = function(ul, item) {
+					} else {
+						// Magic
+						var item = jQuery(this).data('autocomplete').selectedItem;
+						
+						activateRow(trow, tbody, cols);
+						addRow(tbody, cols);
+						jQuery(this).focus();
+					}
 
+				}
+			}).focus(function() {
+		// jQuery(this).autocomplete("search");
+	}).data("autocomplete")._renderItem = function(ul, item) {
+		
 		var term = this.term.replace(/[aou]/, function(m) {
 			// to find with term 'wasser' -> 'wasser' and 'gewasesser'
 			var hash = {
@@ -416,36 +399,24 @@ function addRow(tbody, cols, rowId, cellValues) {
 		})
 
 		// highlighting of matches
-		var label = item.name_de.replace(new RegExp(term, 'ig'),
-				"<span class='ui-term-match'>$&</span>");
+		var label = item.name_de.replace(new RegExp(term, 'ig'), "<span class='ui-term-match'>$&</span>");
 
 		var buffer = this.term.split(" ");
-		label += " ["
-				+ item.genus.replace(new RegExp(buffer[0], 'ig'),
-						"<span class='ui-term-match'>$&</span>");
-		label += " "
-				+ item.species.replace(new RegExp(buffer[1], 'ig'),
-						"<span class='ui-term-match'>$&</span>") + "]";
+		label += " [" + item.genus.replace(new RegExp(buffer[0], 'ig'), "<span class='ui-term-match'>$&</span>");
+		label += " " + item.species.replace(new RegExp(buffer[1], 'ig'), "<span class='ui-term-match'>$&</span>") + "]";
 
 		// If there is a old name (synonym)
 		var old_label = "";
 		if (item.old_name_de != undefined) {
-			old_label = item.old_name_de.replace(new RegExp(term, 'ig'),
-					"<span class='ui-term-match'>$&</span>");
+			old_label = item.old_name_de.replace(new RegExp(term, 'ig'), "<span class='ui-term-match'>$&</span>");
 
-			old_label += " ["
-					+ item.old_genus.replace(new RegExp(buffer[0], 'ig'),
-							"<span class='ui-term-match'>$&</span>");
-			old_label += " "
-					+ item.old_species.replace(new RegExp(buffer[1], 'ig'),
-							"<span class='ui-term-match'>$&</span>") + "]";
-			old_label = "<span>&nbsp;&nbsp;&nbsp;&nbsp; Synonym: " + old_label
-					+ "</span>";
+			old_label += " [" + item.old_genus.replace(new RegExp(buffer[0], 'ig'), "<span class='ui-term-match'>$&</span>");
+			old_label += " " + item.old_species.replace(new RegExp(buffer[1], 'ig'), "<span class='ui-term-match'>$&</span>") + "]";
+			old_label = "<span>&nbsp;&nbsp;&nbsp;&nbsp; Synonym: " + old_label + "</span>";
 		}
 
 		return jQuery("<li></li>").data("item.autocomplete", item).append(
-				"<a><div class='ui-menu-item-label'>" + label + "</div>"
-						+ old_label + "<div class='ui-menu-item-name'>" + name
+				"<a><div class='ui-menu-item-label'>" + label + "</div>" + old_label + "<div class='ui-menu-item-name'>" + name
 						+ "</div></a>").appendTo(ul);
 	};
 	return trow;
