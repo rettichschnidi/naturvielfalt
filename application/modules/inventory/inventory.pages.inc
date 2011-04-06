@@ -56,7 +56,16 @@ function inventory_show($head_inventory_id) {
 		drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
 		return drupal_get_form('inventory_form');
 	}
-	else drupal_set_title(t("no permission"));
+	else 
+	{
+		drupal_set_title(t("not found or no permission"));
+		
+		$form['error'] = array(
+		'#type' => 'item',
+		'#title' => t('not found or no permission'),
+    	);
+		return $form;
+	}
 }
 
 function inventory_permission($head_inventory_id)
@@ -67,11 +76,9 @@ function inventory_permission($head_inventory_id)
 								, array(':id' => $head_inventory_id)
 	);
 	
-	/*
- 	if (db_num_rows($result) == 0) {
+ 	if ($result->rowCount()==0) {
     	return false;
   	}
-  	*/
   	return true;
 }
 
