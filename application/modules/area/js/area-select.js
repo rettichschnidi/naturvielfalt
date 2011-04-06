@@ -89,7 +89,7 @@ function AreaSelect() {
                         
                         for(var i in areas) {
                             aaData.push([
-                              '<img src="images/details_open.png"></img>',
+                              '<img src="modules/area/images/details_open.png"></img>',
                               areas[i]['field_name'], 
                               areas[i]['locality'],
                               areas[i]['township'],
@@ -146,11 +146,11 @@ function AreaSelect() {
             var nTr = this.parentNode.parentNode;
             if ( this.src.match('details_close') ) {
                 /* This row is already open - close it */
-                this.src = "images/details_open.png";
+                this.src = "modules/area/images/details_open.png";
                 me.area_table.fnClose( nTr );
             } else {
                 /* Open this row */
-                this.src = "images/details_close.png";
+                this.src = "modules/area/images/details_close.png";
                 me.area_table.fnOpen( nTr, me.formatDetails(nTr), 'details' );
             }
         } );
