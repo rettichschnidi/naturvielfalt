@@ -77,14 +77,52 @@ function showcase_theme() {
  * @return array
  */
 function showcase_menu() {
+	$items['showcase/autocomplete'] = array(
+	'title' => 'showcase autocomplete',
+    'page callback' => 'showcase_autocomplete',   
+    'access arguments' => array('access content'),
+	'type' => MENU_CALLBACK,
+	);
+	$items['showcase/form'] = array(
+	'title' => t('My form'),
+    'page callback' => 'showcase_form',
+    'access arguments' => array('access content'),
+    'description' => t('My form'),
+    'type' => MENU_CALLBACK,
+	);
 	$items['showcase'] = array(
     'title' => 'No template',
     'description' => 'Shows a page with our own template showcase_page.tpl.php.',
     'page callback' => 'showcase_page',
     'access arguments' => array('access showcase'),
-    'type' => MENU_SUGGESTED_ITEM,
+    'type' => MENU_CALLBACK,
 	'file' => 'showcase.pages.inc',
 	);
 	return $items;
+}
+
+function showcase_form(){
+	return drupal_get_form('showcase_my_form');
+}
+
+// This function is called the "form builder". It builds the form.
+// Notice, it takes one argument, the $form_state
+function showcase_my_form($form_state) {
+	// This is the first form element. It's a textfield with a label, "Name"
+	$form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+	'#autocomplete_path' => 'showcase/autocomplete',
+	);
+	return $form;
+}
+
+function showcase_autocomplete($string = ''){
+	$items = array();
+	$fieldNames = db_query("SELECT field_name, locality FROM area WHERE field_name LIKE :field", array(':field' => $string . '%'));
+	foreach ($fieldNames as $fieldName) {
+		$items[$fieldName->field_name] = check_plain($fieldName->locality);
+	}
+	drupal_json_output($items);
 }
 ?>
