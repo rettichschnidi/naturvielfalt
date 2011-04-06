@@ -189,7 +189,6 @@ $databases = array (
       'host' => 'localhost',
       'port' => '',
       'driver' => 'pgsql',
-      'prefix' => 'drupal_',
     ),
   ),
 );
@@ -224,7 +223,7 @@ $update_free_access = FALSE;
  *   $drupal_hash_salt = file_get_contents('/home/example/salt.txt');
  *
  */
-$drupal_hash_salt = 'uZtOX8JculKMtB1aOg_1UdzkhAGhzabpOR0wBsE9SDI';
+$drupal_hash_salt = 'BJQI7jbCDSXHZpRGnL-H4bXjrshZV5z1STz1VdyboDA';
 
 /**
  * Base URL (optional).
@@ -458,4 +457,3 @@ ini_set('session.cookie_lifetime', 2000000);
  * Remove the leading hash signs to disable.
  */
 # $conf['allow_authorize_operations'] = FALSE;
-?>

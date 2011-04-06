@@ -157,7 +157,7 @@ class Application_Model_Area extends MainModel
 
 	public function setHabitats($Habitats)
 	{
-		$this->setManyToMany($Habitats, Application_Model_AreaHabitat, Application_Model_Habitat);
+		$this->setManyToMany($Habitats, new Application_Model_AreaHabitat(), new Application_Model_Habitat());
 	}
 
 
@@ -181,7 +181,7 @@ class Application_Model_Area extends MainModel
 
 	public function setAreaPoints($AreaPoints)
 	{
-		$this->setOneToMany($AreaPoints, Application_Model_AreaPoint);
+		$this->setOneToMany($AreaPoints, new Application_Model_AreaPoint());
 	}
 
 

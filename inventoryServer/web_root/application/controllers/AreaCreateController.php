@@ -43,11 +43,13 @@ class AreaCreateController extends Zend_Controller_Action {
             $type_mapper = new Application_Model_AreaTypeMapper();
             $habitat_mapper = new Application_Model_HabitatMapper();
             $habitats = array();
+            /*
             foreach ($data['habitats'] as $habitat_id) {
                 $model = new Application_Model_Habitat();
                 $habitat_mapper->find($habitat_id, $model);
                 $habitats[] = $model;
             }
+            */
             //$this->_helper->json($data);
             $area = new Application_Model_Area();
             $area->setFieldName($data['field_name']);

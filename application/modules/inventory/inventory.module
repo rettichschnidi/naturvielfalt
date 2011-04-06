@@ -41,10 +41,11 @@ function inventory_theme() {
  * @return array
  */
 function inventory_menu() {
-	$items['inventory/new'] = array(
+	$items['inventory/new/%'] = array(
     'title' => 'New inventory',
     'description' => 'Create a new inventory',
     'page callback' => 'inventory_new',
+    'page arguments' => array(1),
     'access arguments' => array('access content'),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.new.inc',
