@@ -78,10 +78,12 @@ class InventoryController extends Zend_Controller_Action {
 	}
 	public function saveAjaxAction(){
 		// check if user has permission to access content
+		/*
 		$ds = new DrupalSession();
 		if (!$ds->hasPermission('node', 'access content')){
 			throw new Exception('You are not allowed to perform this action!');
 		}
+		*/
 		
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender(true);

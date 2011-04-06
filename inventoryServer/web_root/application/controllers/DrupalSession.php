@@ -18,7 +18,7 @@ class DrupalSession {
 				// found the session id
 				// get the drupal session record
 				$con = $this->getConnection();
-				$result = pg_query_params($con, 'SELECT * FROM drupal_sessions WHERE sid = $1', array($value));
+				$result = pg_query_params($con, 'SELECT * FROM sessions WHERE sid = $1', array($value));
 				$row = pg_fetch_assoc($result, 0);
 				$this->_userId = $row['uid'];
 				pg_close($con);
@@ -54,8 +54,8 @@ class DrupalSession {
 		}
 		$con = $this->getConnection();
 		$result = pg_query_params($con, 'SELECT count(*) AS count FROM drupal_users u
-			LEFT JOIN drupal_users_roles r ON u.uid = r.uid
-			LEFT JOIN drupal_role_permission p ON r.rid = p.rid
+			LEFT JOIN users_roles r ON u.uid = r.uid
+			LEFT JOIN role_permission p ON r.rid = p.rid
 			WHERE u.uid = $1 AND p.module = $2 AND p.permission = $3', array($this->_userId, $module, $permission));
 		$row = pg_fetch_assoc($result, 0);
 		pg_close($con);
