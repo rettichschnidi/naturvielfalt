@@ -315,6 +315,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 				matchSubset : false,
 				cacheLength : 0,
 				source : function(request, response) {
+					//new search, so we change the indicator to searching
 					this.element.removeClass("notfound");
 					this.element.addClass("searching");
 					actualElement = this.element;
@@ -328,8 +329,11 @@ function addRow(tbody, cols, rowId, cellValues) {
 						// success : response,
 						success : function(data){
 							if(data.length==0){
+								//change visual indicator to notfound and hide menu again
 								actualElement.removeClass("searching");
 								actualElement.addClass("notfound");
+								jQuery('.ui-widget-content').css("display","none");
+								
 							} else {
 								// Remove search symbol
 								actualElement.removeClass("searching");
@@ -344,9 +348,6 @@ function addRow(tbody, cols, rowId, cellValues) {
 					return false;
 				},
 				select : function(event, ui) {
-					// remove class notfound, necessary because a user can search for something that matches, 
-					// then enter more characters until it doesn't match anymore and then select something from the list
-					jQuery(this).removeClass("notfound");
 					jQuery(this).val(ui.item.label);
 					jQuery(this).parent().next().val(ui.item.id);
 					activateRow(trow, tbody, cols);
