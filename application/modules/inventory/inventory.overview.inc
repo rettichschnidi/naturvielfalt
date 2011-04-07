@@ -23,8 +23,7 @@ function inventory_overview() {
 		if(!is_null($record->name))
 			$name = $record->name;
 		else $name = t("no name");
-		$user=user_load($record->owner_id);
-		$owner=$user->name;
+		$owner=user_load($record->owner_id)->name;
 		if($shared = $record->shared == TRUE)
 			$shared = t("Yes");
 		else $shared = t("No");
