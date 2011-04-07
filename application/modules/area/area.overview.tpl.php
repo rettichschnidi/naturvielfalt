@@ -15,23 +15,19 @@
 <script	type="text/javascript" src="modules/area/js/area-select.js"></script>
 
 <div id="content">
-	<h2>Gebiet auswählen</h2>
+<h1><?php echo t('Search by Google Maps:'); ?></h1>
+	<div id="map_search-element">
+		<input type="text" id="map_search" name="map_search" value="" />
+		<button id="map_search_button"><?php echo t('Search map'); ?></button>
+		<button id="create-inventoryByMaps"><?php echo t('create inventory'); ?></button>
+	</div>
+	<div id="map">
+		<div id="map_canvas" style="height: 100%"></div>
+	</div>
+	<h1><?php echo t('Search by field name:'); ?></h1>
+	<button id="create-inventoryByFieldName"><?php echo t('create inventory'); ?></button>
 	<div>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="area_table">
 		</table>
-	</div>
-	<br/>
-	<div>
-		<dd id="map_search-element">
-			<input type="text" id="map_search" name="map_search" value="" />
-			<button id="map_search_button">Los</button>
-		</dd>
-	</div>
-	<div id="map" style="height: 500px">
-		<div id="map_canvas" style="height: 100%"></div>
-	</div>
-	<div>
-		<button id="new-area">Neues Gebiet</button>
-		<button id="create-inventory">Inventar erstellen</button>
 	</div>
 </div>

@@ -25,7 +25,7 @@ function area_help($path, $arg) {
  */
 function area_menu() {
 	$items['area'] = array(
-    'title' => 'Area overview',
+    'title' => 'Search area',
     'description' => 'Find areas',
     'page callback' => 'show_area_overview',
     'access arguments' => array('access content'),

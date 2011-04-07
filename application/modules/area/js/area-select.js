@@ -24,18 +24,16 @@ function AreaSelect() {
 
         util.geocode('map_search', 'map_search_button', me.map);
         
-        jQuery('#new-area').click(function(){
-            window.location.href = 'area-create';
-        });
-
-        jQuery('#create-inventory').click(function(){
+        var createInventoryFunction = function(){
             if(me.selected_area != null){
-               window.location.href = 'inventory/new/'+me.selected_area;
-            } else {
-                //TODO: Change!
-                alert('Bitte wählen Sie ein Gebiet aus.');
-            }
-        });
+                window.location.href = 'inventory/new/'+me.selected_area;
+             } else {
+                 //TODO: Change!
+                 alert('Bitte wählen Sie ein Gebiet aus.');
+             }
+         }
+        jQuery('#create-inventoryByMaps').click(createInventoryFunction);
+        jQuery('#create-inventoryByFieldName').click(createInventoryFunction);
 
         // select row in table
         jQuery("#area_table tbody").live('click', function(event) {
