@@ -162,12 +162,12 @@ table.display td.center {
  */
 
 .sorting_asc {
-	background: url('../images/sort_asc.png') no-repeat center right;
+	background: url('../../../misc/arrow-asc.png') no-repeat center right;
 	background-color: rgba(0, 0, 0, 0.51);
 }
 
 .sorting_desc {
-	background: url('../images/sort_desc.png') no-repeat center right;
+	background: url('../../../misc/arrow-desc.png') no-repeat center right;
 	background-color: rgba(0, 0, 0, 0.51);
 }
 
