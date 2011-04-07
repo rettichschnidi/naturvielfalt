@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project name="full build for openqlarm.org" default="build"
+	basedir=".">
+
+	<property name="src" value="../" />
+	<property name="build" value="fullBuildOpenQlarm" />
+	<property name="buildApplication" value="${build}/application" />
+	<property name="buildInventoryServer" value="${build}/inventoryServer" />
+
+	<!-- Clean the target directory -->
+	<target name="init">
+		<delete dir="${build}" />
+		<mkdir dir="${buildApplication}" />
+		<mkdir dir="${buildInventoryServer}" />
+	</target>
+
+	<!-- Copy all files into the build directory -->
+	<target name="build" depends="init">
+		<!-- Get username and password of database -->
+		<input message="Please enter the user name of the postgreSQL database:"
+			addproperty="username" />
+		<input message="And the password:" addproperty="password" />
+
+		<!-- Copy files -->
+		<copy todir="${buildApplication}">
+			<fileset dir="${src}/application">
+				<exclude name="**/.svn" />
+				<exclude name="**/.project" />
+			</fileset>
+		</copy>
+		<copy todir="${buildInventoryServer}">
+			<fileset dir="${src}/inventoryServer">
+				<exclude name="**/.svn" />
+				<exclude name="**/.project" />
+			</fileset>
+		</copy>
+
+		<!-- Modify configurations and .htaccess -->
+		<echo
+			message="modify ${buildInventoryServer}/web_root/application/configs/application.ini..." />
+		<replace
+			file="${buildInventoryServer}/web_root/application/configs/application.ini"
+			token='resources.db.params.username = "postgres"' value='resources.db.params.username = "${username}"'
+			summary="yes" />
+		<replace
+			file="${buildInventoryServer}/web_root/application/configs/application.ini"
+			token='resources.db.params.password = "postgres"' value='resources.db.params.password = "${password}"'
+			summary="yes" />
+
+		<echo message="modify ${buildApplication}/sites/default/settings.php..." />
+		<replace file="${buildApplication}/sites/default/settings.php"
+			token="'username' => 'postgres'," value="'username' => '${username}',"
+			summary="yes" />
+		<replace file="${buildApplication}/sites/default/settings.php"
+			token="'password' => 'postgres'," value="'password' => '${password}',"
+			summary="yes" />
+
+		<echo message="modify ${buildApplication}.htaccess..." />
+		<replace file="${buildApplication}/.htaccess" token="# RewriteBase #"
+			value="RewriteBase /drupal/application" summary="yes" />
+
+		<echo message="modify ${buildInventoryServer}/web_root/.htaccess" />
+		<replace file="${buildInventoryServer}/web_root/.htaccess"
+			token="# RewriteBase #"
+			value="RewriteBase /drupal/inventoryServer/web_root" summary="yes" />
+
+		<echo message="modify ${buildInventoryServer}/web_root/public/.htaccess" />
+		<replace file="${buildInventoryServer}/web_root/public/.htaccess"
+			token="# RewriteBase #"
+			value="RewriteBase /drupal/inventoryServer/web_root/public" summary="yes" />
+	</target>
+</project>
