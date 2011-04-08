@@ -1,5 +1,5 @@
 RewriteEngine on
-# RewriteBase # --> do not delete! placeholder for ant build script!
+# RewriteBase # --> do not delete!
 RewriteRule !\.(js|ico|gif|jpg|png|css|kml|template)$ index.php
 
 # compress text, html, javascript, css, xml:

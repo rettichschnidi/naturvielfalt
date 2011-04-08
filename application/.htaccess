@@ -64,7 +64,7 @@ DirectoryIndex index.php index.html index.htm
 # Various rewrite rules.
 <IfModule mod_rewrite.c>
   RewriteEngine on
-  # RewriteBase # --> do not delete! placeholder for ant build script!
+  # RewriteBase # --> do not delete!
 
   # Block access to "hidden" directories whose names begin with a period. This
   # includes directories used by version control systems such as Subversion or
