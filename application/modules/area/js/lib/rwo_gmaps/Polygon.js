@@ -107,13 +107,13 @@ Polygon.prototype.createControlMarker = function(latLng) {
 	var me = this;
 	
 	var imageNormal = new google.maps.MarkerImage(
-		"js/lib/rwo_gmaps/images/square.png",
+		"modules/area/js/lib/rwo_gmaps/images/square.png",
 		new google.maps.Size(11, 11),
 		new google.maps.Point(0, 0),
 		new google.maps.Point(6, 6)
 	);
 	var imageHover = new google.maps.MarkerImage(
-		"js/lib/rwo_gmaps/images/square_over.png",
+		"modules/area/js/lib/rwo_gmaps/images/square_over.png",
 		new google.maps.Size(11, 11),
 		new google.maps.Point(0, 0),
 		new google.maps.Point(6, 6)
@@ -192,13 +192,13 @@ Polygon.prototype.createVMarker = function(latLng) {
 	var me = this;
 	var prevpoint = me.markers[me.markers.length-2].getPosition();
 	var imageNormal = new google.maps.MarkerImage(
-		"js/lib/rwo_gmaps/images/square_transparent.png",
+		"modules/area/js/lib/rwo_gmaps/images/square_transparent.png",
 		new google.maps.Size(11, 11),
 		new google.maps.Point(0, 0),
 		new google.maps.Point(6, 6)
 	);
 	var imageHover = new google.maps.MarkerImage(
-		"js/lib/rwo_gmaps/images/square_transparent_over.png",
+		"modules/area/js/lib/rwo_gmaps/images/square_transparent_over.png",
 		new google.maps.Size(11, 11),
 		new google.maps.Point(0, 0),
 		new google.maps.Point(6, 6)

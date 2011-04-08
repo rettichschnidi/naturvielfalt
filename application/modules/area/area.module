@@ -32,6 +32,14 @@ function area_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'area.overview.inc',
 	);
+	$items['area_new'] = array(
+    'title' => 'New area',
+    'description' => 'Create an area',
+    'page callback' => 'show_area_new',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'area.new.inc',
+	);
 	$items['area/%'] = array(
     'title' => 'Area',
     'description' => 'View area',
@@ -55,6 +63,10 @@ function area_theme() {
     	'area.overview' => array(
  			'template' => 'area.overview',
     	  	'variables' => array()
+	),
+		'area.new' => array(
+			'template' => 'area.new',
+			'variables' => array()
 	)
 	);
 }
