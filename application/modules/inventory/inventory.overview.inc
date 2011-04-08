@@ -40,7 +40,6 @@ function inventory_overview() {
 	$render_array['inventories'] = array(
     '#theme' => 'inventory_overview', 
    	'#items' => $tableVariables,
-	'#introduction' => t('Create a !inventoryLink or open an existing one:', array('!inventoryLink' => $link)),
 	);
 	return $render_array;
 }

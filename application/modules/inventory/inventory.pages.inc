@@ -21,7 +21,7 @@ function inventory_form() {
 	$form['inventories']['#markup'] = '<div id="inventories"></div>';
 		 
 	$form['head_inventory_id'] = array('#type' => 'hidden', '#value' => arg(1));
-
+	
 	$options = array();
 
 	$result = db_query("SELECT it.id, it.name
@@ -33,14 +33,21 @@ function inventory_form() {
 	}
 
 	$form['inventory_types'] = array(
-    '#type' => 'select',
-    '#title' => t('Inventargruppe'),
-    '#default_value' => variable_get('name', 259200),
-    '#options' => $options,
+    	'#type' => 'select',
+    	'#title' => t('Inventargruppe'),
+    	'#default_value' => variable_get('name', 259200),
+    	'#options' => $options,
 	);
 
 	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
 
+   $form['edit'] = array(
+   		'#type' => 'submit',
+   		'#value' => t('edit'),
+   		'#weight' => 15,
+   		'#submit' => array('inventory_edit'),
+   );
+	
 	return $form;
 }
 
@@ -48,7 +55,6 @@ function inventory_show($head_inventory_id) {
 
 	if(inventory_permission($head_inventory_id)==true)
 	{
-
 		drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
 		$json = getInitialInventoryJSON($head_inventory_id);
 
@@ -94,6 +100,11 @@ function getInventoryTitle($head_inventory_id) {
 	}
 	
 	return $inventory_title;
+}
+
+function inventory_edit($form, &$form_state){
+	$head_inventory_id = arg(1);
+	return $form_state['redirect'] = 'inventory/edit/'.$head_inventory_id;
 }
 
 function getInitialInventoryJSON($head_inventory_id) {

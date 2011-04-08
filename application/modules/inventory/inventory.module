@@ -50,6 +50,15 @@ function inventory_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.new.inc',
 	);
+	$items['inventory/edit/%'] = array(
+    'title' => 'Edit inventory',
+    'description' => 'Edit inventory',
+    'page callback' => 'inventory_edit',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'inventory.new.inc',
+	);
 	$items['inventory/%'] = array(
     'title' => 'Inventory Url',
     'description' => 'Swissmon Inventory',
