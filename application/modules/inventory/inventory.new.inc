@@ -1,24 +1,24 @@
 <?php
 function inventory_new_form() {
-	
+
 	$inventory_text = "";
 	$description_text = "";
 	$shared_value = true;
-	
+
 	// determine if page is in edit mode
 	if(arg(1) == 'edit') {
 		$edit_mode = true;
-		
-		$inventories = db_query('	SELECT name,shared,description,owner_id 
+
+		$inventories = db_query('	SELECT name,shared,description,owner_id
 									FROM head_inventory
 									WHERE id = :id;', array(':id' => arg(2)));
 
-		foreach($inventories as $inventory) {			
+		foreach($inventories as $inventory) {
 			global $user;
 			if($inventory->owner_id != $user->uid) return null;
 			$inventory_text = $inventory->name;
 			$description_text = $inventory->description;
-			$shared_value = $inventory->shared;		
+			$shared_value = $inventory->shared;
 		}
 	}
 	else {
@@ -41,18 +41,58 @@ function inventory_new_form() {
   		'#title' => t('share'),
 		'#default_value' => $shared_value, 
 	);
-	
-	if($edit_mode && 1==2)
+
+	if($edit_mode)
 	{
 		$form['upload'] = array(
 			'#type' => 'file', 
 			'#title' => t('Attach a file'), 
 			'#size' => 48,
 		);
+
+		$form['upload_submit'] = array(
+			'#type' => 'submit', 
+			'#value' => t("upload"),
+			'#submit' => array('file_upload'),
+		);
+
+		$tableVariables['header'][] = t('Filename');
+		$tableVariables['header'][] = t('Filetype');
+		$tableVariables['header'][] = t('Upload Date');
+
+		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp
+						FROM head_inventory_file_managed hifm, file_managed fm
+						WHERE fm.fid = hifm.file_id
+						AND hifm.head_inventory_id = :id;', array(':id' => arg(2))
+		);
+
+		if(!empty($result))
+		{
+			foreach ($result as $record) {
+				$filename = $record->filename;
+				$filemime = $record->filemime;
+				$timestamp = date('d.m.Y',$record->timestamp);
+				$row = array();
+				$row[] = $filename;
+				$row[] = $filemime;
+				$row[] = $timestamp;
+				$rows[] = $row;
+			}
+
+			if(isset($rows))
+			{
+				$tableVariables['rows'] = $rows;
+				$form['files'] = array(
+    				'#theme' => 'inventory_overview', 
+   					'#items' => $tableVariables,
+				);
+			}
+
+		}
 	}
 
 	$form['description'] = array(
-			//'#type' => 'text_format', //->change to this for richtext editor
+	//'#type' => 'text_format', //->change to this for richtext editor
     		'#type' => 'textarea',
     		'#title' => t('Description'),
     		'#default_value' => $description_text,
@@ -62,7 +102,7 @@ function inventory_new_form() {
 	),
       	'#settings' => array(
         	'#text_processing' => '0',
-		),
+	),
 	);
 
 	if($edit_mode) {
@@ -96,49 +136,21 @@ function inventory_edit($head_inventory_id) {
 }
 
 function inventory_update($form, &$form_state){
-	
+
 	$name = $form_state['values']['name'];
 	$shared = $form_state['values']['share'];
 	$description = $form_state['values']['description'];
 	$inventory_id = arg(2);
-	
+
 	db_update('head_inventory')
-			->condition('id', $inventory_id)
-			->fields(array(
+	->condition('id', $inventory_id)
+	->fields(array(
 				'name' => $name,
 				'shared' => $shared,
 				'description' => $description
-			))
-			->execute();
-	
-	// File upload
-	if(1==2)
-	{
-		$validators = array(
-			//'file_validate_extensions' => array('doc txt pdf'),
-			//'file_validate_size' => array(1000000, 0),
-		);
-	
-		$destination = 'public://swissmon/inventory/'.$nid;
-	
-		file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
-	
-		$file = file_save_upload('upload', $validators, $destination);
-		if ($file) {
-			$form_state['values']['upload'] = $file;
-			error_log($file->fid);
-	
-			db_update('head_inventory')
-			->condition('id', $nid)
-			->fields(array('file_id' => $file->fid))
-			->execute();
-		}
-		else
-		{
-			//form_set_error("nothing saved");
-		}
-	}
-	
+	))
+	->execute();
+
 	return $form_state['redirect'] = 'inventory/'.$inventory_id;
 }
 
@@ -161,6 +173,45 @@ function inventory_save($form, &$form_state){
 	->execute();
 
 	return $form_state['redirect'] = 'inventory/'.$nid;
+}
+
+function file_upload($form, &$form_state){
+
+	$head_inventory_id = arg(2);
+
+	// File upload
+	$validators = array(
+	//'file_validate_extensions' => array('doc txt pdf'),
+	//'file_validate_size' => array(1000000, 0),
+	);
+
+	$destination = 'public://swissmon/inventory/'.$head_inventory_id;
+
+	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
+
+	$file = file_save_upload('upload', $validators, $destination);
+	if ($file) {
+		$form_state['values']['upload'] = $file;
+
+		$nid = db_insert('head_inventory_file_managed')->fields(array(
+					'head_inventory_id' => $head_inventory_id,
+					'file_id' => $file->fid
+		))
+		->execute();
+			
+		/*
+			db_update('head_inventory_file_managed')
+			->condition('head_inventory_id', $head_inventory_id)
+			->fields(array('file_id' => $file->fid))
+			->execute();
+			*/
+	}
+	else
+	{
+		//form_set_error("nothing saved");
+	}
+
+	return $form_state['redirect'] = 'inventory/edit/'.$head_inventory_id;
 }
 
 function get_are_name($_area_id){
