@@ -29,7 +29,6 @@ function inventory_new_form() {
 	$form['name'] = array(
   		'#type' => 'textfield', 
   		'#title' => t('Name'), 
-  		'#default_value' => '', 
   		'#size' => 100, 
   		'#maxlength' => 128, 
   		'#required' => TRUE,
@@ -60,7 +59,7 @@ function inventory_new_form() {
 		$tableVariables['header'][] = t('Filetype');
 		$tableVariables['header'][] = t('Upload Date');
 
-		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp
+		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid
 						FROM head_inventory_file_managed hifm, file_managed fm
 						WHERE fm.fid = hifm.file_id
 						AND hifm.head_inventory_id = :id;', array(':id' => arg(2))
@@ -69,7 +68,7 @@ function inventory_new_form() {
 		if(!empty($result))
 		{
 			foreach ($result as $record) {
-				$filename = $record->filename;
+				$filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.arg(2).'/'.$record->filename);
 				$filemime = $record->filemime;
 				$timestamp = date('d.m.Y',$record->timestamp);
 				$row = array();
@@ -150,6 +149,8 @@ function inventory_update($form, &$form_state){
 				'description' => $description
 	))
 	->execute();
+	
+	 drupal_set_message(t('Inventory data updated'));
 
 	return $form_state['redirect'] = 'inventory/'.$inventory_id;
 }
@@ -171,6 +172,8 @@ function inventory_save($form, &$form_state){
 	'description' => $description,
 	))
 	->execute();
+	
+	drupal_set_message(t('new inventory created'));
 
 	return $form_state['redirect'] = 'inventory/'.$nid;
 }
@@ -181,10 +184,10 @@ function file_upload($form, &$form_state){
 
 	// File upload
 	$validators = array(
-	//'file_validate_extensions' => array('doc txt pdf'),
-	//'file_validate_size' => array(1000000, 0),
+		'file_validate_extensions' => array('doc txt pdf docx'),
+		'file_validate_size' => array(1000000, 0),
 	);
-
+	
 	$destination = 'public://swissmon/inventory/'.$head_inventory_id;
 
 	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
@@ -198,19 +201,12 @@ function file_upload($form, &$form_state){
 					'file_id' => $file->fid
 		))
 		->execute();
-			
-		/*
-			db_update('head_inventory_file_managed')
-			->condition('head_inventory_id', $head_inventory_id)
-			->fields(array('file_id' => $file->fid))
-			->execute();
-			*/
+		drupal_set_message(t('File Saved'));
 	}
-	else
-	{
-		//form_set_error("nothing saved");
+	else {
+		drupal_set_message(t('no file saved'), 'error');	
 	}
-
+	
 	return $form_state['redirect'] = 'inventory/edit/'.$head_inventory_id;
 }
 
