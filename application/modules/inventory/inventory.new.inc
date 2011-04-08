@@ -91,8 +91,8 @@ function inventory_new_form() {
 	}
 
 	$form['description'] = array(
-	//'#type' => 'text_format', //->change to this for richtext editor
-    		'#type' => 'textarea',
+			'#type' => 'text_format', //->change to this for richtext editor
+    		//'#type' => 'textarea',
     		'#title' => t('Description'),
     		'#default_value' => $description_text,
     		'#format' => filter_default_format(),
@@ -140,13 +140,13 @@ function inventory_update($form, &$form_state){
 	$shared = $form_state['values']['share'];
 	$description = $form_state['values']['description'];
 	$inventory_id = arg(2);
-
+		
 	db_update('head_inventory')
 	->condition('id', $inventory_id)
 	->fields(array(
 				'name' => $name,
 				'shared' => $shared,
-				'description' => $description
+				'description' => $description['value']
 	))
 	->execute();
 	
@@ -169,7 +169,7 @@ function inventory_save($form, &$form_state){
 	'name' => $name,
 	'shared' => $shared,
 	'owner_id' => $owner,
-	'description' => $description,
+	'description' => $description['value']
 	))
 	->execute();
 	
