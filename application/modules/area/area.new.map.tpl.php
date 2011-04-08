@@ -1,5 +1,4 @@
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=ABQIAAAABuqUv_uyCZ4WzUTgK5G-thR8vyPbVAPvWWUSjekUdI5ADbIJJRSNaY0WIlEy744RJmMGHB5KrWGGKw&sensor=false"></script>
-<!-- script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/v3_epoly_sphericalArea.js"></script -->
 <script type="text/javascript" src="../inventoryServer/web_root/public/css/overlay-style.js"></script>
 <script type="text/javascript" src="../inventoryServer/web_root/public/js/lib/jquery/jquery-ui-1.8.6.custom.min.js"></script>
 <script type="text/javascript" src="../inventoryServer/web_root/public/js/lib/jquery/jquery.dataTables.js"></script>
@@ -17,6 +16,7 @@
 <script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/MarkerControl.js"></script>
 <script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/Polygon.js"></script>
 <script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/PolygonControl.js"></script>
+<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/v3_epoly_sphericalArea.js"></script>
 <script type="text/javascript" src="modules/area/js/area.js"></script>
 
 <dt id="map_search-label">
@@ -32,4 +32,15 @@
 <div id="map">
 	<div id="map_canvas" style="height: 100%"></div>
 	<button id="continue">Weiter...</button>
+</div>
+
+<div style="display: none">
+	<form id="Area" enctype="application/x-www-form-urlencoded" method="post" action="<?php drupal_get_path('module', 'area_new_prop')?>">
+		<input type="text" name="locality" id="locality" value="" /> 
+		<input type="text" name="zip" id="zip" value="" />
+		<input type="text" name="township" id="township" value="" />
+		<input type="text" name="canton" id="canton" value="" />
+		<input type="text" name="altitude" id="altitude" value="" />
+		<textarea name="comment" id="comment" cols="60" rows="10"></textarea>
+	</form>
 </div>
