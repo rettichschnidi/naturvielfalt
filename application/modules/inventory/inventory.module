@@ -4,21 +4,6 @@
  *********************************/
 
 /**
- * Implements hook_help()
- *
- * @param $path
- * @param $arg
- * @return string
- */
-function inventory_help($path, $arg) {
-	switch ($path) {
-		case "admin/help#inventory":
-			return '<p>'.  t("Inventory module") .'</p>';
-			break;
-	}
-}
-
-/**
  * Implements hook_theme()
  *
  * @return an array with theme template information
