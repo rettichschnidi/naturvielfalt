@@ -2,10 +2,10 @@
 function inventory_overview() {
 	drupal_set_title(t('Inventarübersicht'));
 
-	$tableVariables['header'][] = t('Fläche');
-	$tableVariables['header'][] = t('Inventar');
-	$tableVariables['header'][] = t('Besitzer');
-	$tableVariables['header'][] = t('Öffentlich');
+	$tableHeader[] = t('Fläche');
+	$tableHeader[] = t('Inventar');
+	$tableHeader[] = t('Besitzer');
+	$tableHeader[] = t('Öffentlich');
 	
 	global $user;
 	
@@ -29,17 +29,16 @@ function inventory_overview() {
 		else $shared = t("Nein");
 		$row = array();
 		$row[] = $field_name;
-		$row[] = l(t($name." (".$inventoryGroupId.")"), 'inventory/' . $inventoryGroupId);
+		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/' . $inventoryGroupId);
 		$row[] = $owner;
 		$row[] = $shared;
 		$rows[] = $row;
 	}
-	$tableVariables['rows'] = $rows;
-	$link = l(t('new inventory'), 'inventory/new');
 
 	$render_array['inventories'] = array(
-    '#theme' => 'inventory_overview', 
-   	'#items' => $tableVariables,
+    '#theme' => 'table', 
+   	'#header' => $tableHeader,
+	'#rows' => $rows,
 	);
 	return $render_array;
 }

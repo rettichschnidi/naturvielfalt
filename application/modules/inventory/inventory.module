@@ -4,23 +4,6 @@
  *********************************/
 
 /**
- * Implements hook_theme()
- *
- * @return an array with theme template information
- */
-function inventory_theme() {
-	return array(
-    	'inventory_overview' => array(
- 			'template' => 'inventory_overview',
-    	  	'variables' => array(
-    	  		'items' => array(), // items for building the table
-				'introduction' => '' // introduction text
-	)
-	)
-	);
-}
-
-/**
  * Implements hook_menu()
  *
  * @return array
