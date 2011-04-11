@@ -39,4 +39,8 @@ function inventory_uninstall() {
   //drupal_uninstall_schema('inventory');
 }
 
+function inventory_update() {
+	error_log("inventory update");
+}
+
 ?>

@@ -16,7 +16,8 @@ function inventory_new_form() {
 		foreach($inventories as $inventory) {
 			global $user;
 			if($inventory->owner_id != $user->uid) {
-				drupal_set_message(t('No Permission'), 'error');
+				drupal_set_title(t('Access denied'));
+				drupal_set_message(t('Access denied'), 'error');
 				return null;
 			}
 			$inventory_text = $inventory->name;
