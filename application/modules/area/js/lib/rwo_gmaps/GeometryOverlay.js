@@ -127,7 +127,7 @@ GeometryOverlay.prototype.getAddress = function(func) {
 
                 }*/
                 var address = {};
-                $.each(results, function(index, result) {
+                jQuery.each(results, function(index, result) {
                     if(result.types == 'postal_code') {
                         var length = result.address_components.length;
                         address.zip = result.address_components[0].long_name;
