@@ -15,7 +15,10 @@ function inventory_new_form() {
 
 		foreach($inventories as $inventory) {
 			global $user;
-			if($inventory->owner_id != $user->uid) return null;
+			if($inventory->owner_id != $user->uid) {
+				drupal_set_message(t('No Permission'), 'error');
+				return null;
+			}
 			$inventory_text = $inventory->name;
 			$description_text = $inventory->description;
 			$shared_value = $inventory->shared;
@@ -194,6 +197,10 @@ function file_upload($form, &$form_state){
 
 	$file = file_save_upload('upload', $validators, $destination);
 	if ($file) {
+		
+		$file->status |= FILE_STATUS_PERMANENT;
+		$file = file_save($file);
+		
 		$form_state['values']['upload'] = $file;
 
 		$nid = db_insert('head_inventory_file_managed')->fields(array(

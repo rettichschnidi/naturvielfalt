@@ -1,6 +1,42 @@
 <?php
 /**
  * @file
- * Install, update and uninstall functions for showcase module.
+ * Install, update and uninstall functions for inventory module.
  */
 
+function inventory_schema() {
+  $schema['head_inventory_file_managed'] = array(
+	'description' => t('Relation between head inventory and file managed'),
+    'fields' => array(
+      'head_inventory_id' => array(
+        'description' => t('Relation to table head_inventory'),
+        'type' => 'int4',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'file_id' => array(
+        'description' => t('Relation to table file_managed'),
+        'type' => 'int4',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+       'description' => array(
+        'description' => t('A description for the uploaded file'),
+        'type' => 'varchar(50)',
+        'not null' => FALSE),
+        ),
+  );
+  return $schema;
+}
+
+function inventory_install() {
+  // Create my tables.
+  error_log("install scheme");
+  drupal_install_schema('inventory');
+}
+
+function inventory_uninstall() {
+  // Drop my tables.
+  error_log("uninstall scheme");
+  //drupal_uninstall_schema('inventory');
+}
+
+?>

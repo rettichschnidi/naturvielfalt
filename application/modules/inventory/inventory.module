@@ -46,7 +46,7 @@ function inventory_menu() {
     'description' => 'Create a new inventory',
     'page callback' => 'inventory_new',
     'page arguments' => array(1),
-    'access arguments' => array('access content'),
+    'access arguments' => array('access inventories'),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.new.inc',
 	);
@@ -55,7 +55,7 @@ function inventory_menu() {
     'description' => 'Edit inventory',
     'page callback' => 'inventory_edit',
     'page arguments' => array(1),
-    'access arguments' => array('access content'),
+    'access arguments' => array('access inventories'),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.new.inc',
 	);
@@ -64,7 +64,7 @@ function inventory_menu() {
     'description' => 'Swissmon Inventory',
     'page callback' => 'inventory_show',
 	'page arguments' => array(1),
-    'access arguments' => array('access content'),
+    'access arguments' => array('access inventories'),
     'type' => MENU_CALLBACK,
 	'file' => 'inventory.pages.inc',
 	);
@@ -72,11 +72,23 @@ function inventory_menu() {
     'title' => 'Inventory overview',
     'description' => 'Shows an overview of all inventories',
     'page callback' => 'inventory_overview',
-    'access arguments' => array('access content'),
+    'access arguments' => array('access inventories'),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.overview.inc',
 	);
   
   	return $items;
 }
+
+function inventory_permission() {
+  return array(
+    'access inventories' =>  array(
+      'title' => t('can view inventories'),
+    ),
+    'create inventories' =>  array(
+      'title' => t('can create inventories'),
+    ),
+  );
+}
+
 ?>

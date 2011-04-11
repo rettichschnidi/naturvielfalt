@@ -2,3 +2,5 @@ name = Inventory
 description = Manage inventories
 package = Swissmon
 core = 7.x
+
+dependencies[] = wysiwyg

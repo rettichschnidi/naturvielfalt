@@ -53,7 +53,7 @@ function inventory_form() {
 
 function inventory_show($head_inventory_id) {
 
-	if(inventory_permission($head_inventory_id)==true)
+	if(inventory_permission_2($head_inventory_id)==true)
 	{
 		drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
 		$json = getInitialInventoryJSON($head_inventory_id);
@@ -74,7 +74,7 @@ function inventory_show($head_inventory_id) {
 	}
 }
 
-function inventory_permission($head_inventory_id)
+function inventory_permission_2($head_inventory_id)
 {
 	$result = db_query("	SELECT * FROM head_inventory hi 
 								WHERE ((hi.shared='t') OR  (hi.owner_id=1))
