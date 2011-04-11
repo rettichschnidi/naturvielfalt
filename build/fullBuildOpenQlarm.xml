@@ -64,9 +64,9 @@
 			value='resources.db.params.password = "${DBPassword}"' summary="yes" />
 
 		<echo message="modify ${buildApplication}/sites/default/settings.php..." />
-		<replace file="${buildApplication}/sites/default/settings.php" token="'username' => 'postgres'," value="'username' => '${username}',"
+		<replace file="${buildApplication}/sites/default/settings.php" token="'username' => 'postgres'," value="'username' => '${DBUsername}',"
 			summary="yes" />
-		<replace file="${buildApplication}/sites/default/settings.php" token="'password' => 'postgres'," value="'password' => '${password}',"
+		<replace file="${buildApplication}/sites/default/settings.php" token="'password' => 'postgres'," value="'password' => '${DBPassword}',"
 			summary="yes" />
 
 		<echo message="modify ${buildApplication}.htaccess..." />
