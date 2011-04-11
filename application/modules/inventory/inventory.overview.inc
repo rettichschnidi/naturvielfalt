@@ -1,11 +1,11 @@
 <?php
 function inventory_overview() {
-	drupal_set_title(t('Inventory overview'));
+	drupal_set_title(t('Inventarübersicht'));
 
-	$tableVariables['header'][] = t('Area');
-	$tableVariables['header'][] = t('Inventory');
-	$tableVariables['header'][] = t('Owner');
-	$tableVariables['header'][] = t('Shared');
+	$tableVariables['header'][] = t('Fläche');
+	$tableVariables['header'][] = t('Inventar');
+	$tableVariables['header'][] = t('Besitzer');
+	$tableVariables['header'][] = t('Öffentlich');
 	
 	global $user;
 	
@@ -25,8 +25,8 @@ function inventory_overview() {
 		else $name = t("no name");
 		$owner=user_load($record->owner_id)->name;
 		if($shared = $record->shared == TRUE)
-			$shared = t("Yes");
-		else $shared = t("No");
+			$shared = t("Ja");
+		else $shared = t("Nein");
 		$row = array();
 		$row[] = $field_name;
 		$row[] = l(t($name." (".$inventoryGroupId.")"), 'inventory/' . $inventoryGroupId);

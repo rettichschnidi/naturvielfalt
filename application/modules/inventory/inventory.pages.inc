@@ -39,11 +39,11 @@ function inventory_form() {
     	'#options' => $options,
 	);
 
-	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="add inventory">';
+	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
 
    $form['edit'] = array(
    		'#type' => 'submit',
-   		'#value' => t('edit'),
+   		'#value' => t('bearbeiten'),
    		'#weight' => 15,
    		'#submit' => array('inventory_edit'),
    );
@@ -51,9 +51,12 @@ function inventory_form() {
 	return $form;
 }
 
+/**
+ * Shows the inventories
+ */
 function inventory_show($head_inventory_id) {
 
-	if(inventory_permission_2($head_inventory_id)==true)
+	if(inventory_permission_check($head_inventory_id)==true)
 	{
 		drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
 		$json = getInitialInventoryJSON($head_inventory_id);
@@ -63,23 +66,24 @@ function inventory_show($head_inventory_id) {
 		return drupal_get_form('inventory_form');
 	}
 	else 
-	{
-		drupal_set_title(t("not found or no permission"));
+	{		
+		drupal_set_title(t("Inventar nicht vorhanden"));
+		drupal_set_message("Inventar nicht vorhanden", 'error');
 		
 		$form['error'] = array(
 		'#type' => 'item',
-		'#title' => t('not found or no permission'),
+		'#title' => t('Inventar wurde nicht gefunden. Bitte stellen sie sicher, dass das Inventar existiert und sie &uuml;ber die n&ouml;tigen Berechtigungen verf&uuml;gen.'),
     	);
 		return $form;
 	}
 }
 
-function inventory_permission_2($head_inventory_id)
+function inventory_permission_check($head_inventory_id)
 {
 	$result = db_query("	SELECT * FROM head_inventory hi 
 								WHERE ((hi.shared='t') OR  (hi.owner_id=1))
 								AND hi.id = :id"
-								, array(':id' => $head_inventory_id)
+								, array(':id' => arg(1))
 	);
 	
  	if ($result->rowCount()==0) {
@@ -89,7 +93,7 @@ function inventory_permission_2($head_inventory_id)
 }
 
 function getInventoryTitle($head_inventory_id) {
-	$inventory_title = t("no name");
+	$inventory_title = t("-");
 	
 	$inventories = db_query('	SELECT name 
 								FROM head_inventory

@@ -42,8 +42,8 @@ function inventory_theme() {
  */
 function inventory_menu() {
 	$items['inventory/new/%'] = array(
-    'title' => 'New inventory',
-    'description' => 'Create a new inventory',
+    'title' => 'Inventar erstellen',
+    'description' => 'Inventar erstellen',
     'page callback' => 'inventory_new',
     'page arguments' => array(1),
     'access arguments' => array('access inventories'),
@@ -51,8 +51,8 @@ function inventory_menu() {
 	'file' => 'inventory.new.inc',
 	);
 	$items['inventory/edit/%'] = array(
-    'title' => 'Edit inventory',
-    'description' => 'Edit inventory',
+    'title' => 'Inventar bearbeiten',
+    'description' => 'Inventar bearbeiten',
     'page callback' => 'inventory_edit',
     'page arguments' => array(1),
     'access arguments' => array('access inventories'),
@@ -60,8 +60,8 @@ function inventory_menu() {
 	'file' => 'inventory.new.inc',
 	);
 	$items['inventory/%'] = array(
-    'title' => 'Inventory Url',
-    'description' => 'Swissmon Inventory',
+    'title' => 'Inventar Url',
+    'description' => 'Swissmon Inventar',
     'page callback' => 'inventory_show',
 	'page arguments' => array(1),
     'access arguments' => array('access inventories'),
@@ -69,8 +69,8 @@ function inventory_menu() {
 	'file' => 'inventory.pages.inc',
 	);
 	$items['inventory'] = array(
-    'title' => 'Inventory overview',
-    'description' => 'Shows an overview of all inventories',
+    'title' => 'Inventare',
+    'description' => 'Zeigt alle Inventare',
     'page callback' => 'inventory_overview',
     'access arguments' => array('access inventories'),
     'type' => MENU_NORMAL_ITEM,

@@ -16,9 +16,13 @@ function inventory_new_form() {
 		foreach($inventories as $inventory) {
 			global $user;
 			if($inventory->owner_id != $user->uid) {
-				drupal_set_title(t('Access denied'));
-				drupal_set_message(t('Access denied'), 'error');
-				return null;
+				drupal_set_title(t('Zugriff verweigert'));
+				drupal_set_message(t('Zugriff verweigert'), 'error');
+				$form['error'] = array(
+				'#type' => 'item',
+				'#title' => t('Die Daten d&uuml;rfen nur vom Ersteller des Invnetars betrachtet und ge&auml;ndert werden.'),
+    			);
+		return $form;
 			}
 			$inventory_text = $inventory->name;
 			$description_text = $inventory->description;
@@ -41,7 +45,7 @@ function inventory_new_form() {
 
 	$form['share'] = array(
   		'#type' => 'checkbox', 
-  		'#title' => t('share'),
+  		'#title' => t('&ouml;ffentlich'),
 		'#default_value' => $shared_value, 
 	);
 
@@ -49,21 +53,22 @@ function inventory_new_form() {
 	{
 		$form['upload'] = array(
 			'#type' => 'file', 
-			'#title' => t('Attach a file'), 
+			'#title' => t('Datei uploaden'), 
 			'#size' => 48,
 		);
 
 		$form['upload_submit'] = array(
 			'#type' => 'submit', 
-			'#value' => t("upload"),
+			'#value' => t("Upload"),
 			'#submit' => array('file_upload'),
 		);
 
-		$tableVariables['header'][] = t('Filename');
-		$tableVariables['header'][] = t('Filetype');
-		$tableVariables['header'][] = t('Upload Date');
+		$tableVariables['header'][] = t('Dateiname');
+		$tableVariables['header'][] = t('Typ');
+		$tableVariables['header'][] = t('Grösse');
+		$tableVariables['header'][] = t('Datum');
 
-		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid
+		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid, fm.filesize
 						FROM head_inventory_file_managed hifm, file_managed fm
 						WHERE fm.fid = hifm.file_id
 						AND hifm.head_inventory_id = :id;', array(':id' => arg(2))
@@ -74,10 +79,12 @@ function inventory_new_form() {
 			foreach ($result as $record) {
 				$filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.arg(2).'/'.$record->filename);
 				$filemime = $record->filemime;
+				$filesize = $record->filesize;
 				$timestamp = date('d.m.Y',$record->timestamp);
 				$row = array();
 				$row[] = $filename;
 				$row[] = $filemime;
+				$row[] = $filesize;
 				$row[] = $timestamp;
 				$rows[] = $row;
 			}
@@ -97,7 +104,7 @@ function inventory_new_form() {
 	$form['description'] = array(
 			'#type' => 'text_format', //->change to this for richtext editor
     		//'#type' => 'textarea',
-    		'#title' => t('Description'),
+    		'#title' => t('Beschreibung'),
     		'#default_value' => $description_text,
     		'#format' => filter_default_format(),
 	      	'#widget' => array(
@@ -111,14 +118,14 @@ function inventory_new_form() {
 	if($edit_mode) {
 		$form['update'] = array(
 			'#type' => 'submit', 
-			'#value' => t("save"),
+			'#value' => t("Speichern"),
 			'#submit' => array('inventory_update'),
 		);
 	}
 	else {
 		$form['save'] = array(
 			'#type' => 'submit', 
-			'#value' => t("new inventory"),
+			'#value' => t("Neues Inventar anlegen"),
 			'#submit' => array('inventory_save'),
 		);
 	}
@@ -127,13 +134,13 @@ function inventory_new_form() {
 }
 
 function inventory_new($area_id) {
-	drupal_set_title(t('New Inventory for '. get_are_name(arg(2))." (".arg(2).")"));
+	drupal_set_title(t('Neues Inventar f&uml;r: '. get_are_name(arg(2))." (".arg(2).")"));
 
 	return drupal_get_form('inventory_new_form');
 }
 
 function inventory_edit($head_inventory_id) {
-	drupal_set_title(t('Edit Inventory'));
+	drupal_set_title(t('Inventar bearbeiten'));
 
 	return drupal_get_form('inventory_new_form');
 }
@@ -154,7 +161,7 @@ function inventory_update($form, &$form_state){
 	))
 	->execute();
 	
-	 drupal_set_message(t('Inventory data updated'));
+	 drupal_set_message(t('Inventar aktualisiert'));
 
 	return $form_state['redirect'] = 'inventory/'.$inventory_id;
 }
@@ -177,7 +184,7 @@ function inventory_save($form, &$form_state){
 	))
 	->execute();
 	
-	drupal_set_message(t('new inventory created'));
+	drupal_set_message(t('Neues Inventar erstellt'));
 
 	return $form_state['redirect'] = 'inventory/'.$nid;
 }
@@ -209,10 +216,10 @@ function file_upload($form, &$form_state){
 					'file_id' => $file->fid
 		))
 		->execute();
-		drupal_set_message(t('File Saved'));
+		drupal_set_message(t('Datei gespeichert'));
 	}
 	else {
-		drupal_set_message(t('no file saved'), 'error');	
+		drupal_set_message(t('Datei nicht gespeichert!'), 'error');	
 	}
 	
 	return $form_state['redirect'] = 'inventory/edit/'.$head_inventory_id;
@@ -220,7 +227,7 @@ function file_upload($form, &$form_state){
 
 function get_are_name($_area_id){
 
-	$area_name = t("no name");
+	$area_name = t("-");
 
 	$areas = db_query('	SELECT field_name
 						FROM area

@@ -26,21 +26,4 @@ function inventory_schema() {
   );
   return $schema;
 }
-
-function inventory_install() {
-  // Create my tables.
-  error_log("install scheme");
-  drupal_install_schema('inventory');
-}
-
-function inventory_uninstall() {
-  // Drop my tables.
-  error_log("uninstall scheme");
-  //drupal_uninstall_schema('inventory');
-}
-
-function inventory_update() {
-	error_log("inventory update");
-}
-
 ?>
