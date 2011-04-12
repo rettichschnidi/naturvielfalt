@@ -1,4 +1,8 @@
 <?php
+
+define('AREA_ACCESS', 'area access');
+define('AREA_CREATE', 'area create');
+
 /**********************************
  *  Hook implementations
  *********************************/
@@ -27,24 +31,29 @@ function area_menu() {
 	$items['area'] = array(
     'title' => 'Search area',
     'description' => 'Find areas',
-    'page callback' => 'show_area_overview',
-    'access arguments' => array('access content'),
-    'type' => MENU_NORMAL_ITEM,
-	'file' => 'area.overview.inc',
+    'page callback' => 'show_area_search',
+    'access arguments' => array(AREA_ACCESS),
+	'file' => 'area.search.inc',
 	);
-	$items['area_new_map'] = array(
+	$items['area/search'] = array(
+    'title' => 'Search',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+	);
+	$items['area/new_map'] = array(
     'title' => 'New area',
     'description' => 'Create an area',
     'page callback' => 'show_area_new_map',
-    'access arguments' => array('access content'),
-    'type' => MENU_NORMAL_ITEM,
+	'access arguments' => array(AREA_CREATE),
+    'type' => MENU_LOCAL_TASK,
+	'weight' => 5,
 	'file' => 'area.new.map.inc',
 	);
-	$items['area_new_prop'] = array(
+	$items['area/new_prop'] = array(
 	'title' => 'New area',
 	'description' => 'Create an area',
 	'page callback' => 'show_area_new_prop',
-	'access arguments' => array('access content'),
+	'access arguments' => array(AREA_CREATE),
 	'type' => MENU_CALLBACK,
 	'file' => 'area.new.prop.inc',
 	);
@@ -53,12 +62,12 @@ function area_menu() {
     'description' => 'View area',
     'page callback' => 'show_area',
 	'page arguments' => array(1),
-    'access arguments' => array('access content'),
+    'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
 	'file' => 'area.inc',
 	);
-  
-  	return $items;
+
+	return $items;
 }
 
 /**
@@ -68,8 +77,8 @@ function area_menu() {
  */
 function area_theme() {
 	return array(
-    	'area.overview' => array(
- 			'template' => 'area.overview',
+    	'area.search' => array(
+ 			'template' => 'area.search',
     	  	'variables' => array()
 	),
 		'area.new.map' => array(
@@ -77,5 +86,16 @@ function area_theme() {
 			'variables' => array()
 	)
 	);
+}
+
+function area_permission() {
+  return array(
+    AREA_ACCESS =>  array(
+      'title' => t('can view areas'),
+    ),
+    AREA_CREATE =>  array(
+      'title' => t('can create areas'),
+    ),
+  );
 }
 ?>

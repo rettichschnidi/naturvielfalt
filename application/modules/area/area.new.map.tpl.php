@@ -1,19 +1,31 @@
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=ABQIAAAABuqUv_uyCZ4WzUTgK5G-thR8vyPbVAPvWWUSjekUdI5ADbIJJRSNaY0WIlEy744RJmMGHB5KrWGGKw&sensor=false"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/v3_epoly_sphericalArea.js"></script>
-<script type="text/javascript" src="../inventoryServer/web_root/public/css/overlay-style.js"></script>
-<script type="text/javascript" src="../inventoryServer/web_root/public/js/lib/jquery/jquery-ui-1.8.6.custom.min.js"></script>
-<script type="text/javascript" src="modules/inventory/js/lib/jquery/ui.geo_autocomplete.js"></script>
-<script type="text/javascript" src="modules/inventory/js/util.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/Config.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/MapCache.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/MapAjaxProxy.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/GeometryOverlayControl.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/GeometryOverlay.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/PolygonControl.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/Polygon.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/MarkerControl.js"></script>
-<script type="text/javascript" src="modules/area/js/lib/rwo_gmaps/Marker.js"></script>
-<script type="text/javascript" src="modules/area/js/area.js"></script>
+<?php
+// include JavaScripts
+$areaJsPath = base_path() . drupal_get_path('module', 'area') . '/js/';
+$inventoryJsPath = base_path() . drupal_get_path('module', 'inventory') . '/js/';
+$inventoryServerPublicPath = base_path() . '../inventoryServer/web_root/public/';
+
+$jsLibs = array(
+	'http://maps.google.com/maps/api/js?key=ABQIAAAABuqUv_uyCZ4WzUTgK5G-thR8vyPbVAPvWWUSjekUdI5ADbIJJRSNaY0WIlEy744RJmMGHB5KrWGGKw&sensor=false',
+	$areaJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js',
+	$inventoryServerPublicPath . 'css/overlay-style.js',
+	$inventoryServerPublicPath . 'js/lib/jquery/jquery-ui-1.8.6.custom.min.js',
+	$inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js',
+	$inventoryJsPath . 'util.js',
+	$areaJsPath . 'lib/rwo_gmaps/Config.js',
+	$areaJsPath . 'lib/rwo_gmaps/MapCache.js',
+	$areaJsPath . 'lib/rwo_gmaps/MapAjaxProxy.js',
+	$areaJsPath . 'lib/rwo_gmaps/GeometryOverlayControl.js',
+	$areaJsPath . 'lib/rwo_gmaps/GeometryOverlay.js',
+	$areaJsPath . 'lib/rwo_gmaps/PolygonControl.js',
+	$areaJsPath . 'lib/rwo_gmaps/Polygon.js',
+	$areaJsPath . 'lib/rwo_gmaps/MarkerControl.js',
+	$areaJsPath . 'lib/rwo_gmaps/Marker.js',
+	$areaJsPath . 'area.js',
+);
+foreach ($jsLibs as $jsLib) {
+	echo "<script type=\"text/javascript\" src=\"" . $jsLib . "\"></script>\n";
+}
+ ?>
 
 <dt id="map_search-label">
 	<label for="map_search"></label>
@@ -31,7 +43,7 @@
 </div>
 
 <div style="display: none">
-	<form id="Area" enctype="application/x-www-form-urlencoded" method="post" action="area_new_prop">
+	<form id="Area" enctype="application/x-www-form-urlencoded" method="post" action="new_prop">
 		<input type="hidden" name="locality" id="locality" value="" /> 
 		<input type="hidden" name="zip" id="zip" value="" />
 		<input type="hidden" name="township" id="township" value="" />
