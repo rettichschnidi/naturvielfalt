@@ -63,10 +63,10 @@ function inventory_new_form() {
 			'#submit' => array('file_upload'),
 		);
 
-		$tableVariables['header'][] = t('Dateiname');
-		$tableVariables['header'][] = t('Typ');
-		$tableVariables['header'][] = t('Grösse');
-		$tableVariables['header'][] = t('Datum');
+		$tableHeader[] = t('Dateiname');
+		$tableHeader[] = t('Typ');
+		$tableHeader[] = t('Grösse');
+		$tableHeader[] = t('Datum');
 
 		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid, fm.filesize
 						FROM head_inventory_file_managed hifm, file_managed fm
@@ -90,14 +90,13 @@ function inventory_new_form() {
 			}
 
 			if(isset($rows))
-			{
-				$tableVariables['rows'] = $rows;
-				$form['files'] = array(
-    				'#theme' => 'inventory_overview', 
-   					'#items' => $tableVariables,
+			{				
+				$form['file_overview'] = array(
+    			'#theme' => 'table', 
+   				'#header' => $tableHeader,
+				'#rows' => $rows,
 				);
 			}
-
 		}
 	}
 
