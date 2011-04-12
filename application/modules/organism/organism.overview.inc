@@ -3,7 +3,7 @@
  * Menu callback. This will be called if someone visits drupal/showcase.
  */
 function organism_overview() {
-	drupal_set_title(t('Organismen Übersicht'));
+	drupal_set_title(t('Organismen - Übersicht nach Kategorien'));
 
 	
 	$header = array(t('Organismengruppe'),t('id'));
