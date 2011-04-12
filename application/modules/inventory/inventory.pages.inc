@@ -80,7 +80,6 @@ function inventory_form() {
 				$area = $record->field_name;
 				$name = $record->name;
 				$owner=user_load($record->owner_id)->name;
-				//$owner = 'hallo';
 				if($shared = $record->shared == TRUE)
 					$shared = t("Ja");
 				else $shared = t("Nein");
@@ -106,7 +105,6 @@ function inventory_form() {
 	$form['inventory_set']['edit'] = array(
    		'#type' => 'submit',
    		'#value' => t('Bearbeiten'),
-   		//'#weight' => 15,
    		'#submit' => array('inventory_edit'),
    );
 	
@@ -135,7 +133,6 @@ function inventory_form() {
 			foreach ($result as $record) {
 				$description = $record->description;
 				$filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.arg(1).'/'.$record->filename);
-				//$filemime = $record->filemime;
 				$filemime = '<img class="file-icon" alt="" title="' . $record->filemime . '" src="../modules/inventory/images/' . inventory_icon_map($record->filemime) . '.png" />';
 				$filesize = ($record->filesize / 1000)." KB";
 				$timestamp = date('d.m.Y',$record->timestamp);
@@ -177,16 +174,6 @@ function inventory_form() {
 			'#value' => t("Upload"),
 			'#submit' => array('file_upload'),
 		);
-		
-		/*
-		$form['image_example_image_fid'] = array(
-  			'#title' => t('Image'),
-  			'#type' => 'managed_file',
-  			'#description' => t('The uploaded image will be displayed on this page using the image style choosen below.'),
-  			'#default_value' => variable_get('image_example_image_fid', ''),
-  			'#upload_location' => 'public://image_example_images/',
-		);
-		*/
 	
 	return $form;
 }
@@ -213,7 +200,7 @@ function inventory_show($head_inventory_id) {
 		
 		$form['error'] = array(
 		'#type' => 'item',
-		'#title' => t('Inventar wurde nicht gefunden. Bitte stellen sie sicher, dass das Inventar existiert und sie &uuml;ber die n&ouml;tigen Berechtigungen verf&uuml;gen.'),
+		'#title' => t('Inventar wurde nicht gefunden. Bitte stellen sie sicher, dass das Inventar existiert und sie über die nötigen Berechtigungen verfügen.'),
     	);
 		return $form;
 	}
@@ -221,10 +208,12 @@ function inventory_show($head_inventory_id) {
 
 function inventory_permission_check($head_inventory_id)
 {
+	global $user;
+	
 	$result = db_query("	SELECT * FROM head_inventory hi 
-								WHERE ((hi.shared='t') OR  (hi.owner_id=1))
+								WHERE ((hi.shared='t') OR (hi.owner_id= :owner_id))
 								AND hi.id = :id"
-								, array(':id' => arg(1))
+								, array(':id' => arg(1), ':owner_id' => $user->uid)
 	);
 	
  	if ($result->rowCount()==0) {
