@@ -87,11 +87,13 @@
 		<!-- Copy files to server -->
 		<echo message="This will copy the build to the openqlarm server. Please be patient and wait until the task has finished." />
 		<input message="Please enter username for accessing openqlarm.org:" addproperty="ServerUser" />
+		<echo message="Upload ${buildApplication}"/>
 		<exec executable="scp">
 			<arg value="-r" />
 			<arg value="${buildApplication}" />
 			<arg value="${ServerUser}@openqlarm.org:/srv/www/htdocs/drupal" />
 		</exec>
+		<echo message="Upload ${buildInventoryServer}"/>
 		<exec executable="scp">
 			<arg value="-r" />
 			<arg value="${buildInventoryServer}" />
