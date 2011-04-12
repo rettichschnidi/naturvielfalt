@@ -23,7 +23,6 @@ function initInventory() {
 
 	// Disable autosave
 	rowTrackingEnabled = false;
-
 	// Go through each existing inventory
 	jQuery.each(exInvs, function(invId, inv) {
 		invTbody = addInventory(inv["invDesc"], invId);
@@ -68,7 +67,7 @@ function addInventory(json, id) {
 	var thead = jQuery("<thead>");
 	var trow = jQuery("<tr>");
 	jQuery("<td>").text("Art").appendTo(trow);
-
+	
 	jQuery.each(json["cols"], function(key, value) {
 		jQuery("<td>").text(value["name"]).appendTo(trow);
 	});
@@ -77,13 +76,11 @@ function addInventory(json, id) {
 	table.append(invDef);
 	table.append(invTypeDef);
 	table.append(thead);
-
+	
 	var tbody = jQuery("<tbody>");
 	table.append(tbody);
 	inventories.append(table);
 	inventories.append('<br>');
-
-	console.debug(tbody);
 
 	return tbody;
 }
@@ -252,7 +249,6 @@ function saveRows() {
 // The row id (mysql id of inventoryentry) (on a new row: null)
 // The values of the cells (if it is no a new row) otherwise null
 function addRow(tbody, cols, rowId, cellValues) {
-
 	var trow = jQuery("<tr>");
 	organismField = jQuery("<input>").attr("type", "text");
 	organismIdField = jQuery("<input>").attr("type", "hidden").attr("name", "orgId");
