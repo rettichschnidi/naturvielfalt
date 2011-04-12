@@ -252,8 +252,9 @@ class InventoryController extends Zend_Controller_Action {
 		$fauna = ($invId == 16 ? false : true);
 
 		$termBSpace = substr($term, 0, strpos($term, " "));
-		if($termBSpace == "")
-		$termBSpace = "99999999999";
+		if($termBSpace == "") {
+			$termBSpace = "99999999999";	
+		}
 		$termASpace = substr($term, strpos($term, " ") +1);
 
 		$org = new Application_Model_InventoryType();
@@ -263,13 +264,11 @@ class InventoryController extends Zend_Controller_Action {
                     'o.id = t.organism_id', array("ref_organism_id" => "organism_id", "o_id" => "id"));
 
 		// TODO: Fauna und Flora sollen in der Vorschlagsliste gleichzeitig angezeigt werden können.
-		if($fauna)
-		{
+		// TODO: rewrite, use prepared statements
+		if($fauna) {
 			$select->join(array('f' => 'fauna_organism'), "f.id = o.organism_id AND o.organism_type = 1")
 			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (f.genus ILIKE '".$termBSpace."%' AND f.species ILIKE '".$termASpace."%'))");
-		}
-		else
-		{
+		} else {
 			$select->join(array('f' => 'flora_organism'), "f.id = o.organism_id AND o.organism_type = 2")
 			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (\"Gattung\" ILIKE '".$termBSpace."%' AND \"Art\" ILIKE '".$termASpace."%'))");
 		}
