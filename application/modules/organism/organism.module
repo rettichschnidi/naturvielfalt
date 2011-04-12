@@ -1,0 +1,76 @@
+<?php
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+
+
+
+/**
+ * Implements hook_theme()
+ *
+ * publishes our template
+ * @return an array with theme template information
+ */
+function organism_theme() {
+	return array(
+    'showcase_block' => array(
+ 		'template' => 'organism_page',
+      	'variables' => array('item' => NULL)
+	)
+	);
+}
+
+
+/**
+ * Implements hook_menu()
+ *
+ * This makes it possible to visit the link drupal/organism.
+ * It is also possible to create an URL like drupal/organism/42. This would show probably the element with the ID 42.
+ *
+ * @return array
+ */
+function organism_menu() {
+	
+	$items['organism'] = array(
+	'title' => t('Organism'),
+    'page callback' => 'organism_overview',
+    'access arguments' => array('access content'),
+    'description' => t('Shows organisms from DB'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'organism.overview.inc',
+	);
+	/*$items['organism'] = array(
+    'title' => 'Organism',
+    'description' => 'Shows a page with our own template organism_page.tpl.php.',
+    'page callback' => 'organism_page',
+    'access arguments' => array('access organism'),
+    'type' => MENU_NORMAL_ITEM,
+	//'file' => 'organism.pages.inc',
+	);*/
+
+	$items['organism/%'] = array(
+    'title' => 'Area',
+    'description' => 'Show organism',
+    'page callback' => 'organism_show',
+	'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+	'file' => 'organism.show.inc',
+	);
+	
+	$items['organism/type/%'] = array(
+    'title' => 'Area',
+    'description' => 'Show organism',
+    'page callback' => 'organism_showtype',
+	'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+	'file' => 'organism.showtype.inc',
+	);
+	
+	return $items;
+}
+
+?>
