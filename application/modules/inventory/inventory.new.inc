@@ -130,7 +130,7 @@ function inventory_new_form() {
 			'#submit' => array('inventory_save'),
 		);
 	}
-
+	
 	return $form;
 }
 
