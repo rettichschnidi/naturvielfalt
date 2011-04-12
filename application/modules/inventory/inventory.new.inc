@@ -48,7 +48,8 @@ function inventory_new_form() {
   		'#title' => t('&ouml;ffentlich'),
 		'#default_value' => $shared_value, 
 	);
-
+	
+	/*
 	if($edit_mode)
 	{
 		$form['upload'] = array(
@@ -99,6 +100,7 @@ function inventory_new_form() {
 			}
 		}
 	}
+	*/
 
 	$form['description'] = array(
 			'#type' => 'text_format', //->change to this for richtext editor
@@ -188,6 +190,7 @@ function inventory_save($form, &$form_state){
 	return $form_state['redirect'] = 'inventory/'.$nid;
 }
 
+/*
 function file_upload($form, &$form_state){
 
 	$head_inventory_id = arg(2);
@@ -223,6 +226,7 @@ function file_upload($form, &$form_state){
 	
 	return $form_state['redirect'] = 'inventory/edit/'.$head_inventory_id;
 }
+*/
 
 function get_are_name($_area_id){
 

@@ -17,10 +17,19 @@ function inventory_form() {
 
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
+	
+	$form['inventory'] = array(
+  		'#type' => 'fieldset', 
+  		'#title' => t('Inventar'), 
+  		'#weight' => 3, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => FALSE,
+	);
+	
 	// inventories ajax form
-	$form['inventories']['#markup'] = '<div id="inventories"></div>';
+	$form['inventory']['inventories']['#markup'] = '<div id="inventories"></div>';
 		 
-	$form['head_inventory_id'] = array('#type' => 'hidden', '#value' => arg(1));
+	$form['inventory']['head_inventory_id'] = array('#type' => 'hidden', '#value' => arg(1));
 	
 	$options = array();
 
@@ -32,21 +41,151 @@ function inventory_form() {
 		$options[$record->id] = $record->name;
 	}
 
-	$form['inventory_types'] = array(
+	$form['inventory']['inventory_types'] = array(
     	'#type' => 'select',
     	'#title' => t('Inventargruppe'),
     	'#default_value' => variable_get('name', 259200),
     	'#options' => $options,
 	);
 
-	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
+	$form['inventory']['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
+   
+	
+   	$form['inventory_set'] = array(
+  		'#type' => 'fieldset', 
+  		'#title' => t('Details zum Inventar'), 
+  		'#weight' => 4, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => TRUE,
+	);
+	
+		$tableHeaderInventory[] = t('Id');
+		$tableHeaderInventory[] = t('Name');
+		$tableHeaderInventory[] = t('Gebiet');
+		$tableHeaderInventory[] = t('Öffentlich');
+		$tableHeaderInventory[] = t('Besitzer');
 
-   $form['edit'] = array(
+		$result = db_query('SELECT hi.id, hi.area_id, a.field_name, hi.name, hi.shared, hi.owner_id 
+							FROM head_inventory hi, area a
+							WHERE a.id = hi.area_id
+							AND hi.id = :id;', array(':id' => arg(1))
+		);
+		
+		global $user;
+
+		if(!empty($result))
+		{
+			foreach ($result as $record) {
+				$id = $record->id;
+				$area = $record->field_name;
+				$name = $record->name;
+				$owner=user_load($record->owner_id)->name;
+				//$owner = 'hallo';
+				if($shared = $record->shared == TRUE)
+					$shared = t("Ja");
+				else $shared = t("Nein");
+				$rowInventory = array();
+				$rowInventory[] = $id;
+				$rowInventory[] = $name;
+				$rowInventory[] = $area;
+				$rowInventory[] = $shared;
+				$rowInventory[] = $owner;
+				$rowsInventory[] = $rowInventory;
+			}
+
+			if(isset($rowsInventory))
+			{				
+				$form['inventory_set']['overview'] = array(
+    			'#theme' => 'table', 
+   				'#header' => $tableHeaderInventory,
+				'#rows' => $rowsInventory,
+				);
+			}
+		}
+	
+	$form['inventory_set']['edit'] = array(
    		'#type' => 'submit',
-   		'#value' => t('bearbeiten'),
-   		'#weight' => 15,
+   		'#value' => t('Bearbeiten'),
+   		//'#weight' => 15,
    		'#submit' => array('inventory_edit'),
    );
+	
+	$form['fileset'] = array(
+  		'#type' => 'fieldset', 
+  		'#title' => t('Dateien'), 
+  		'#weight' => 5, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => TRUE,
+	);
+	
+		$tableHeader[] = t('Beschreibung');
+		$tableHeader[] = t('Dateiname');
+		$tableHeader[] = t('Typ');
+		$tableHeader[] = t('Grösse');
+		$tableHeader[] = t('Datum');
+
+		$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid, fm.filesize, hifm.description
+						FROM head_inventory_file_managed hifm, file_managed fm
+						WHERE fm.fid = hifm.file_id
+						AND hifm.head_inventory_id = :id;', array(':id' => arg(1))
+		);
+
+		if(!empty($result))
+		{
+			foreach ($result as $record) {
+				$description = $record->description;
+				$filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.arg(1).'/'.$record->filename);
+				$filemime = $record->filemime;
+				$filesize = $record->filesize;
+				$timestamp = date('d.m.Y',$record->timestamp);
+				$row = array();
+				$row[] = $description;
+				$row[] = $filename;
+				$row[] = $filemime;
+				$row[] = $filesize;
+				$row[] = $timestamp;
+				$rows[] = $row;
+			}
+
+			if(isset($rows))
+			{				
+				$form['fileset']['file_overview'] = array(
+    			'#theme' => 'table', 
+   				'#header' => $tableHeader,
+				'#rows' => $rows,
+				);
+			}
+		}
+		
+		$form['fileset']['upload'] = array(
+			'#type' => 'file', 
+			'#title' => t('Datei uploaden'), 
+			'#size' => 48,
+		);
+		
+		$form['fileset']['file_description'] = array(
+  			'#type' => 'textfield', 
+  			'#title' => t('Beschreibung der Datei'), 
+  			'#size' => 100, 
+  			'#maxlength' => 128, 
+  			'#required' => FALSE,
+		);
+
+		$form['fileset']['upload_submit'] = array(
+			'#type' => 'submit', 
+			'#value' => t("Upload"),
+			'#submit' => array('file_upload'),
+		);
+		
+		/*
+		$form['image_example_image_fid'] = array(
+  			'#title' => t('Image'),
+  			'#type' => 'managed_file',
+  			'#description' => t('The uploaded image will be displayed on this page using the image style choosen below.'),
+  			'#default_value' => variable_get('image_example_image_fid', ''),
+  			'#upload_location' => 'public://image_example_images/',
+		);
+		*/
 	
 	return $form;
 }
@@ -59,6 +198,7 @@ function inventory_show($head_inventory_id) {
 	if(inventory_permission_check($head_inventory_id)==true)
 	{
 		drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
+		
 		$json = getInitialInventoryJSON($head_inventory_id);
 
 		drupal_add_js('var exInvs = ' . $json, 'inline');
@@ -193,4 +333,42 @@ function getInventoryColumnDescription($inventoryId){
 	}
 	return $invJson;
 }
+
+function file_upload($form, &$form_state){
+
+	$head_inventory_id = arg(1);
+
+	// File upload
+	$validators = array(
+		'file_validate_extensions' => array('doc txt pdf docx'),
+		'file_validate_size' => array(1000000, 0),
+	);
+	
+	$destination = 'public://swissmon/inventory/'.$head_inventory_id;
+
+	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
+
+	$file = file_save_upload('upload', $validators, $destination);
+	if ($file) {
+		
+		$file->status |= FILE_STATUS_PERMANENT;
+		$file = file_save($file);
+		
+		$form_state['values']['upload'] = $file;
+
+		$nid = db_insert('head_inventory_file_managed')->fields(array(
+					'head_inventory_id' => $head_inventory_id,
+					'file_id' => $file->fid,
+					'description' => $form_state['values']['file_description']
+		))
+		->execute();
+		drupal_set_message(t('Datei gespeichert'));
+	}
+	else {
+		drupal_set_message(t('Datei nicht gespeichert!'), 'error');	
+	}
+	
+	return $form_state['redirect'] = 'inventory/'.$head_inventory_id;
+}
+
 ?>
