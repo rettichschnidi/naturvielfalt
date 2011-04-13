@@ -84,13 +84,15 @@ function areaPropertyForm($form_state) {
 	);
 	$form['submit'] = array(
   	'#type' => 'submit',
-  	'#value' => t('Save'),
+  	'#value' => t('Create area'),
+	'#submit' => array('areaPropertyForm_save'),
 	);
+	
 	return $form;
 }
 
-function areaPropertyForm_submit($form, $form_state) {
-	$tx = db_transaction();
+function areaPropertyForm_save($form, &$form_state) {
+	//$tx = db_transaction();
 
 	// get values from form
 	$field_name = $form['field_name']['#value'];
@@ -146,7 +148,11 @@ function areaPropertyForm_submit($form, $form_state) {
 		$i++;
 	}
 
-	drupal_set_message(t('Area @field_name has been saved', array('@field_name' => $field_name)));
+	// send a message	
+	drupal_set_message(t('Area @field_name has been saved. Continue with creating a new inventory.', array('@field_name' => $field_name)));
+	
+	// redirect to create a new inventory
+	$form_state['redirect'] = 'inventory/new/' . $aid;
 }
 
 function getValueFromPost($variableName) {
