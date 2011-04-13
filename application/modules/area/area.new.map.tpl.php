@@ -39,7 +39,6 @@ foreach ($jsLibs as $jsLib) {
 
 <div id="map">
 	<div id="map_canvas" style="height: 100%"></div>
-	<button id="continue" class="form-submit"><?php echo t('Continue...'); ?></button>
 </div>
 
 <div style="display: none">
