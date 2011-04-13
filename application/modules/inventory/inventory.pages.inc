@@ -257,7 +257,7 @@ function getInitialInventoryJSON($head_inventory_id) {
 		$invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
 
 		// Get inventory entries
-		$inventoryEntries = db_query('SELECT e.id, e.organism_id, fo.name_de
+		$inventoryEntries = db_query('SELECT e.id, e.organism_id, fo.name_de, fo.genus, fo.species
 		FROM inventory_entry e
 		LEFT JOIN fauna_organism fo ON e.organism_id = fo.id
 		WHERE e.inventory_id = :id;', array(':id' => $inventory_id));
@@ -265,7 +265,7 @@ function getInitialInventoryJSON($head_inventory_id) {
 			$inventoryEntryId = $inventoryEntry->id;
 			$invArr[$inventory_id][$inventoryEntryId] = array();
 			$invArr[$inventory_id][$inventoryEntryId]["orgId"] = $inventoryEntry->organism_id;
-			$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->name_de;
+			$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->name_de." [".$inventoryEntry->genus." ".$inventoryEntry->species."]";
 
 			// Get inventory columns
 			$entries = db_query('SELECT * FROM inventory_type_attribute_inventory_entry WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
