@@ -187,7 +187,7 @@ function inventory_show($head_inventory_id) {
 
 	if(inventory_permission_check($head_inventory_id)==true)
 	{
-		drupal_set_title(t(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")"));
+		drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
 		
 		$json = getInitialInventoryJSON($head_inventory_id);
 
