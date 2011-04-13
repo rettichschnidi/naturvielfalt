@@ -29,14 +29,14 @@ function area_help($path, $arg) {
  */
 function area_menu() {
 	$items['area'] = array(
-    'title' => 'Search area',
-    'description' => 'Find areas',
+    'title' => 'Area',
+    'description' => 'Area',
     'page callback' => 'show_area_search',
     'access arguments' => array(AREA_ACCESS),
 	'file' => 'area.search.inc',
 	);
 	$items['area/search'] = array(
-    'title' => 'Search',
+    'title' => 'Search existing area',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
 	);
@@ -79,6 +79,14 @@ function area_theme() {
 	return array(
     	'area.search' => array(
  			'template' => 'area.search',
+    	  	'variables' => array()
+	),
+    	'area.search.byMaps' => array(
+ 			'template' => 'area.search.byMaps',
+    	  	'variables' => array()
+	),
+    	'area.search.byField' => array(
+ 			'template' => 'area.search.byField',
     	  	'variables' => array()
 	),
 		'area.new.map' => array(
