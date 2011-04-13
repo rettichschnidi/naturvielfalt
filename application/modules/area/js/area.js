@@ -43,6 +43,7 @@ function Area() {
 					jQuery('#township').val(address.township);
 					jQuery('#locality').val(address.locality);
 					jQuery('#zip').val(address.zip);
+					jQuery('#country').val(address.country);
 					gotAddress = true;
 					if (gotAltitude) {
 						jQuery('#Area').submit();

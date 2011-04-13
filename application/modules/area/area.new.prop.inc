@@ -8,6 +8,7 @@ function areaPropertyForm($form_state) {
 	// get address information from post request
 	$locality = getValueFromPost('locality');
 	$canton = getValueFromPost('canton');
+	$country = getValueFromPost('country');
 	$township = getValueFromPost('township');
 	$zip = getValueFromPost('zip');
 	$altitude = getValueFromPost('altitude');
@@ -56,6 +57,7 @@ function areaPropertyForm($form_state) {
 	$form['country'] = array(
 	'#type' => 'textfield',
 	'#title' => t('Country'),
+	'#value' => $country,
 	);
 	$form['comment'] = array(
     '#type' => 'textarea',

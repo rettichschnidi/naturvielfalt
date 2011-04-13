@@ -47,6 +47,7 @@ foreach ($jsLibs as $jsLib) {
 		<input type="hidden" name="zip" id="zip" value="" />
 		<input type="hidden" name="township" id="township" value="" />
 		<input type="hidden" name="canton" id="canton" value="" />
+		<input type="hidden" name="country" id="country" value="" />
 		<input type="hidden" name="altitude" id="altitude" value="" />
 		<input type="hidden" name="surface_area" id="surface_area" value="" />
 		<input type="hidden" name="latitude" id="latitude" value="" />
