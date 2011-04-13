@@ -237,7 +237,20 @@ function saveRows() {
 
 			jQuery("input[type=hidden][name='" + name + "'][value='" + key + "']").attr("value", value);
 		});
+		
+		jQuery('#last_saved').removeClass("messages error");
+		
+		var now = new Date();
+		var displayTime = now.getHours()+':'+now.getMinutes();
+		var displayDate = (now.getDate()) + '.' + (now.getMonth()+1) + '.' + now.getFullYear();
+		jQuery('#last_saved').text('Zuletzt gespeichert am ' + displayDate + ' um ' + displayTime);
+		
 	}, "json");
+	
+	jQuery('#last_saved').ajaxError(function() {
+		jQuery(this).addClass("messages error");
+		jQuery(this).text( "Fehler beim speichern!" );
+	});
 
 	// TODO: overwrite exInvs with the actual inventorys
 	// var exInvs = $this->inventorys;

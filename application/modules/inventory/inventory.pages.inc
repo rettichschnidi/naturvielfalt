@@ -31,8 +31,11 @@ function inventory_form() {
 		 
 	$form['inventory']['head_inventory_id'] = array('#type' => 'hidden', '#value' => arg(1));
 	
+	$form['inventory']['last_saved']['#markup'] = '<div id="last_saved"><br/></div>';
+	$form['inventory']['error_save']['#markup'] = '<div id="error_save"><br/></div>';
+	
 	$options = array();
-
+	
 	$result = db_query("SELECT it.id, it.name
 		FROM inventory_type it
 		ORDER BY it.id desc;");
@@ -49,7 +52,6 @@ function inventory_form() {
 	);
 
 	$form['inventory']['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
-   
 	
    	$form['inventory_set'] = array(
   		'#type' => 'fieldset', 
