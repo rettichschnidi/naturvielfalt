@@ -4,17 +4,20 @@ function show_area_new_map() {
 	drupal_set_title(t('Create a new area'));
 
 	// add some text
-	$output['info'] = array(
+	$output['fieldSet'] = array(
+		'#type' => 'fieldset',
+	);
+	$output['fieldSet']['info'] = array(
 		'#markup' => t('Please create a new area by clicking on the map bellow. Then continue by pressing the following button: '),
 	);
 	
 	// add button continue
-	$output['continue'] = array(
+	$output['fieldSet']['continue'] = array(
 		'#type' => 'button',
 		'#value' => t('continue'),
 		'#id' => 'continue',
 	);
-	
+
 	// call our own theme for displaying the map
 	$output['map'] = array(
 		'#theme' => 'area.new.map',
