@@ -79,7 +79,7 @@ class InventoryController extends Zend_Controller_Action {
 	public function saveAjaxAction(){
 		// check if user has permission to access content
 		$ds = new DrupalSession();
-		if (!$ds->hasPermission('node', 'access content')){
+		if (!$ds->hasPermission('inventory', 'access inventories')){
 			throw new Exception('You are not allowed to perform this action!');
 		}
 		
@@ -195,7 +195,7 @@ class InventoryController extends Zend_Controller_Action {
 	public function newInventoryAction(){
 		
 		$ds = new DrupalSession();
-		if (!$ds->hasPermission('node', 'access content')){
+		if (!$ds->hasPermission('inventory', 'access inventories')){
 			throw new Exception('You are not allowed to perform this action!');
 		}
 		
@@ -247,7 +247,7 @@ class InventoryController extends Zend_Controller_Action {
 
 	public function getOrganismsAction(){
 		$ds = new DrupalSession();
-		if (!$ds->hasPermission('node', 'access content')){
+		if (!$ds->hasPermission('inventory', 'access inventories')){
 			throw new Exception('You are not allowed to perform this action!');
 		}
 		
@@ -290,7 +290,7 @@ class InventoryController extends Zend_Controller_Action {
 
 	private function organismToJson($organisms, $fauna){
 		$ds = new DrupalSession();
-		if (!$ds->hasPermission('node', 'access content')){
+		if (!$ds->hasPermission('inventory', 'access inventories')){
 			throw new Exception('You are not allowed to perform this action!');
 		}
 		
