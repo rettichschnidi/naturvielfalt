@@ -259,16 +259,28 @@ function getInitialInventoryJSON($head_inventory_id) {
 		$invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
 
 		// Get inventory entries
-		$inventoryEntries = db_query('SELECT e.id, e.organism_id, fo.name_de, fo.genus, fo.species
-		FROM inventory_entry e
-		LEFT JOIN fauna_organism fo ON e.organism_id = fo.id
-		WHERE e.inventory_id = :id;', array(':id' => $inventory_id));
+		// ugly hack to use Uppercase columnnames
+		$inventoryEntries = db_query('
+		SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
+			FROM inventory_entry e
+			LEFT JOIN organism o on e.organism_id = o.id
+			LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+			LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+		WHERE e.inventory_id = :id;',array(':id' => $inventory_id));
+		
 		foreach($inventoryEntries as $inventoryEntry) {
 			$inventoryEntryId = $inventoryEntry->id;
 			$invArr[$inventory_id][$inventoryEntryId] = array();
 			$invArr[$inventory_id][$inventoryEntryId]["orgId"] = $inventoryEntry->organism_id;
-			$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->name_de." [".$inventoryEntry->genus." ".$inventoryEntry->species."]";
 
+			if($inventoryEntry->organism_type==1){
+				// organism_type 1 is Fauna
+				$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->faunanamede." [".$inventoryEntry->genus." ".$inventoryEntry->species."]";
+			} else {
+				// organism_type 2 is Flora
+				$invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->floranamede." [".$inventoryEntry->floragattung." ".$inventoryEntry->floraart."]";
+			}
+			
 			// Get inventory columns
 			$entries = db_query('SELECT * FROM inventory_type_attribute_inventory_entry WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
 			foreach ($entries as $entry) {
