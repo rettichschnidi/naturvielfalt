@@ -35,7 +35,10 @@ function initInventory() {
 			// And activate it
 			activateRow(row, invTbody, inv["invDesc"]["cols"]);
 		});
-		addRow(invTbody, inv["invDesc"]["cols"]);
+		if(exInvs["editMode"])
+		{
+			addRow(invTbody, inv["invDesc"]["cols"]);
+		}
 	});
 
 	// Enable autosave
@@ -101,7 +104,15 @@ function activateRow(row, tbody, cols) {
 			 * $(this).children().attr( "value", row.prev().find('td:eq(' + i +
 			 * ')').children() .attr("value")); rowChanged(row); }
 			 */
-			jQuery(this).children().attr("disabled", false);
+			
+			if(exInvs["editMode"])
+			{
+				jQuery(this).children().attr("disabled", false);
+			}
+			else
+			{
+				jQuery(this).children().attr("readonly", true);	
+			}
 		} else
 		// Deactivate the 'nature' field
 		{
@@ -110,12 +121,15 @@ function activateRow(row, tbody, cols) {
 		i++;
 	});
 
-	// Add remove icon
-	jQuery("<td>").append("<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
-			.appendTo(row);
-	// Add insert icon
-	jQuery("<td>").append("<img src='../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
-			.appendTo(row);
+	if(exInvs["editMode"])
+	{
+		// Add remove icon
+		jQuery("<td>").append("<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
+				.appendTo(row);
+		// Add insert icon
+		jQuery("<td>").append("<img src='../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
+				.appendTo(row);
+	}
 }
 
 // Delete a row
