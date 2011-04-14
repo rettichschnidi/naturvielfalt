@@ -244,10 +244,11 @@ function saveRows() {
 		var displayTime = now.getHours()+':'+now.getMinutes();
 		var displayDate = (now.getDate()) + '.' + (now.getMonth()+1) + '.' + now.getFullYear();
 		jQuery('#last_saved').text('Zuletzt gespeichert am ' + displayDate + ' um ' + displayTime);
-		
+		jQuery('#last_saved').addClass('messages status');		
 	}, "json");
 	
 	jQuery('#last_saved').ajaxError(function() {
+		jQuery('#last_saved').removeClass('messages status');
 		jQuery(this).addClass("messages error");
 		jQuery(this).text( "Fehler beim speichern!" );
 	});
