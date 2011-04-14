@@ -33,6 +33,7 @@ function inventory_form() {
 	$form['inventory']['inventories']['#markup'] = '<div id="inventories"></div>';
 		
 	$form['inventory']['head_inventory_id'] = array('#type' => 'hidden', '#value' => arg(1));
+	$form['inventory']['editMode'] = array('#type' => 'hidden', '#value' => $edit_mode);
 
 	if($edit_mode)
 	{
@@ -254,8 +255,6 @@ function inventory_edit($form, &$form_state){
 }
 
 function getInitialInventory($head_inventory_id) {	
-	$edit_mode = inventory_userHasPermission($head_inventory_id);
-	
 	$invArr = array();
 
 	$inventories = db_query('SELECT id
@@ -306,8 +305,6 @@ function getInitialInventory($head_inventory_id) {
 			}
 		}
 	}
-	
-	$invArr['editMode'] = $edit_mode;
 
 	return $invArr;
 }

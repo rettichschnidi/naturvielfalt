@@ -35,7 +35,7 @@ function initInventory() {
 			// And activate it
 			activateRow(row, invTbody, inv["invDesc"]["cols"]);
 		});
-		if(exInvs["editMode"])
+		if(jQuery("input[name=editMode]").attr("value")=='1')
 		{
 			addRow(invTbody, inv["invDesc"]["cols"]);
 		}
@@ -105,7 +105,7 @@ function activateRow(row, tbody, cols) {
 			 * ')').children() .attr("value")); rowChanged(row); }
 			 */
 			
-			if(exInvs["editMode"])
+			if(jQuery("input[name=editMode]").attr("value")=='1')
 			{
 				jQuery(this).children().attr("disabled", false);
 			}
@@ -121,7 +121,7 @@ function activateRow(row, tbody, cols) {
 		i++;
 	});
 
-	if(exInvs["editMode"])
+	if(jQuery("input[name=editMode]").attr("value")=='1')
 	{
 		// Add remove icon
 		jQuery("<td>").append("<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
