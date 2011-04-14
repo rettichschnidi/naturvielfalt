@@ -276,10 +276,12 @@ class InventoryController extends Zend_Controller_Action {
 		// TODO: rewrite, use prepared statements
 		if($fauna) {
 			$select->join(array('f' => 'fauna_organism'), "f.id = o.organism_id AND o.organism_type = 1")
-			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (f.genus ILIKE '".$termBSpace."%' AND f.species ILIKE '".$termASpace."%'))");
+//			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (f.genus ILIKE '".$termBSpace."%' AND f.species ILIKE '".$termASpace."%'))");
+			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (f.genus ILIKE '%".$term."%') OR (f.species ILIKE '%".$term."%') OR (f.genus ILIKE '".$termBSpace."%' AND f.species ILIKE '".$termASpace."%'))");
 		} else {
 			$select->join(array('f' => 'flora_organism'), "f.id = o.organism_id AND o.organism_type = 2")
-			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (\"Gattung\" ILIKE '".$termBSpace."%' AND \"Art\" ILIKE '".$termASpace."%'))");
+//			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (\"Gattung\" ILIKE '".$termBSpace."%' AND \"Art\" ILIKE '".$termASpace."%'))");
+			->where("t.inventory_type_id = '".$invId."' AND (f.name_de ILIKE '%".$term."%' OR (\"Gattung\" ILIKE '%".$term."%') OR (\"Art\" ILIKE '%".$term."%') OR (\"Gattung\" ILIKE '".$termBSpace."%' AND \"Art\" ILIKE '".$termASpace."%'))");
 		}
 
 
