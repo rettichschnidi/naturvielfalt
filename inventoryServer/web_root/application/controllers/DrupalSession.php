@@ -62,6 +62,19 @@ class DrupalSession {
 		return $row['count'] > 0;		
 	}
 	
+	public function canEditInventory($head_inventory_id)
+	{
+		$con = $this->getConnection();
+		$result = pg_query_params($con, 'SELECT count(*)
+											FROM head_inventory
+											WHERE id = $1
+											AND owner_id = $2', array($head_inventory_id,$this->_userId));
+		
+		$row = pg_fetch_assoc($result, 0);
+		pg_close($con);
+		return $row['count'] > 0;
+	}
+	
 	private function getConnection() {
 		include('../../../application/sites/default/settings.php');
 		

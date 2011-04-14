@@ -91,6 +91,11 @@ class InventoryController extends Zend_Controller_Action {
 		if($request->isPost()){
 			$return = array();
 			$data = $request->getPost();
+			
+			if(!$ds->canEditInventory($data['headInventoryId']))
+			{
+				throw new Exception('Only the owner can edit inventories');
+			}
 
 			// Remove row to delete
 			if(isset($data["deleteRows"]))
