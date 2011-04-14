@@ -63,7 +63,15 @@ class DrupalSession {
 	}
 	
 	private function getConnection() {
-		return pg_connect('host=localhost dbname=swissmon user=postgres password=postgres');
+		include('../../../application/sites/default/settings.php');
+		
+		$database = $databases['default']['default'];
+		$host = $database['host'];
+		$dbname = $database['database'];
+		$user = $database['username'];
+		$password = $database['password'];
+		
+		return pg_connect('host='.$host.' dbname='.$dbname.' user='.$user.' password='.$password);
 	}
 }
 ?>
