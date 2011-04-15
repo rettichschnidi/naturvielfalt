@@ -57,6 +57,13 @@ function area_menu() {
 	'type' => MENU_CALLBACK,
 	'file' => 'area.new.prop.inc',
 	);
+	 $items['area/habitat_autocomplete'] = array(
+	'title' => 'Habitat autocomplete',
+    'page callback' => 'habitat_autocomplete',
+	'access arguments' => array(AREA_CREATE),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.new.prop.inc',
+	);
 	$items['area/%'] = array(
     'title' => 'Area',
     'description' => 'View area',
@@ -97,13 +104,13 @@ function area_theme() {
 }
 
 function area_permission() {
-  return array(
-    AREA_ACCESS =>  array(
+	return array(
+	AREA_ACCESS =>  array(
       'title' => t('can view areas'),
-    ),
-    AREA_CREATE =>  array(
+	),
+	AREA_CREATE =>  array(
       'title' => t('can create areas'),
-    ),
-  );
+	),
+	);
 }
 ?>

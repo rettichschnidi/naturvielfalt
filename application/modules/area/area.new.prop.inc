@@ -1,10 +1,11 @@
 <?php
 function show_area_new_prop() {
 	drupal_set_title(t('Create a new area'));
+	drupal_add_js('modules/area/js/habitats.js');
 	return drupal_get_form('areaPropertyForm');
 }
 
-function areaPropertyForm($form_state) {
+function areaPropertyForm($form, &$form_state) {
 	// get address information from post request
 	$locality = getValueFromPost('locality');
 	$canton = getValueFromPost('canton');
@@ -19,10 +20,17 @@ function areaPropertyForm($form_state) {
 	$area_coords = getValueFromPost('area_coords');
 	$area_type = getValueFromPost('area_type');
 
+
 	$form['field_name'] = array(
   	'#type' => 'textfield',
   	'#title' => t('Field name'),
 	'#required' => true,
+	);
+	$form['habitatText'] = array(
+	'#title' => 'Habitats',
+	'#type' => 'textfield',   
+    '#autocomplete_path' => 'area/habitat_autocomplete',
+	'#suffix' => '<div id="habitatSelected"><table></table></div>',
 	);
 	$form['locality'] = array(
 	'#type' => 'textfield',
@@ -87,12 +95,28 @@ function areaPropertyForm($form_state) {
   	'#value' => t('Create area'),
 	'#submit' => array('areaPropertyForm_save'),
 	);
-	
+
 	return $form;
 }
 
+function habitat_autocomplete($string) {
+	if (preg_match('/^[0-9]/', $string) > 0) {
+		$habitats = db_query('SELECT id, name_de, label FROM {habitat} WHERE label LIKE :s ORDER BY label', array (':s' => $string . '%'));
+	} else {
+		$habitats = db_query('SELECT id, name_de, label FROM {habitat} WHERE name_de ILIKE :s ORDER BY label', array (':s' => $string . '%'));
+	}
+
+	$items = array();
+	foreach ($habitats as $habitat) {
+		$value = $habitat->label . ': ' . $habitat->name_de;
+		$key = $habitat->id . '|' . $habitat->label . '|' . $habitat->name_de;
+		$items[$key] = check_plain($value);
+	}
+	return drupal_json_output($items);
+}
+
 function areaPropertyForm_save($form, &$form_state) {
-	//$tx = db_transaction();
+	$tx = db_transaction();
 
 	// get values from form
 	$field_name = $form['field_name']['#value'];
@@ -148,9 +172,20 @@ function areaPropertyForm_save($form, &$form_state) {
 		$i++;
 	}
 
-	// send a message	
+	// insert habitats
+	if (array_key_exists('habitat', $form_state['input'])) {
+		foreach (array_values($form_state['input']['habitat']) as $habitat) {
+			db_insert('area_habitat')->fields(array(
+				'area_id' => $aid,
+				'habitat_id' => $habitat,
+			))
+			->execute();
+		}
+	}
+
+	// send a message
 	drupal_set_message(t('Area @field_name has been saved. Continue with creating a new inventory.', array('@field_name' => $field_name)));
-	
+
 	// redirect to create a new inventory
 	$form_state['redirect'] = 'inventory/new/' . $aid;
 }
