@@ -53,13 +53,16 @@ class DrupalSession {
 			return false;
 		}
 		$con = $this->getConnection();
-		$result = pg_query_params($con, 'SELECT count(*) AS count FROM drupal_users u
-			LEFT JOIN users_roles r ON u.uid = r.uid
-			LEFT JOIN role_permission p ON r.rid = p.rid
-			WHERE u.uid = $1 AND p.module = $2 AND p.permission = $3', array($this->_userId, $module, $permission));
+		// Role 1 is "anonymous" and role 2 is "authenticated". They are not represented in the database
+		// but must be considered in the query.
+		$result = pg_query_params($con, 'SELECT count(*) AS count FROM role_permission p
+			LEFT JOIN users_roles r ON r.rid = p.rid
+			LEFT JOIN users u ON u.uid = r.uid
+			WHERE p.module = $2 AND p.permission = $3
+			AND (u.uid = $1 OR p.rid = 1 OR p.rid = 2)', array($this->_userId, $module, $permission));
 		$row = pg_fetch_assoc($result, 0);
 		pg_close($con);
-		return $row['count'] > 0;		
+		return $row['count'] > 0;
 	}
 	
 	public function canEditInventory($head_inventory_id)
