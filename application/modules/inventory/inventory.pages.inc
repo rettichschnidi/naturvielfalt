@@ -394,8 +394,6 @@ function inventory_userHasPermission($head_inventory_id)
 {
 	global $user;
 
-	error_log($head_inventory_id);
-
 	$result = db_query('	SELECT owner_id
 							FROM head_inventory
 							WHERE id = :id;', array(':id' => $head_inventory_id));

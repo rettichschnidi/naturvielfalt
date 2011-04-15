@@ -16,7 +16,7 @@ var INVENTORY_SERVER_PATH = '../../inventoryServer/web_root/public/';
  * 
  */
 function initInventory() {
-
+	
 	var inventories = jQuery('<div id="inventories">');
 
 	jQuery("#Inventory").prepend(inventories);
@@ -58,6 +58,7 @@ function onAddInventory() {
 // Params: - json with the inventory specifications (attributes)
 // - The inventory id (null when new inventory)
 function addInventory(json, id) {
+	
 	var inventories = jQuery('#inventories');
 	id = (id == null ? "inv_new_" + (invNum++) : id);
 
@@ -157,16 +158,7 @@ function deleteRow(img) {
 // Inserts a new row below the old one
 // Params: The jQuery row object
 function insert(img) {
-
-	// var trow = $("<tr>");
-
-	var inventories = jQuery('<div id="inventories">');
-	inv = exInvs["38"];
-	tbody = addInventory(inv["invDesc"], inv);
-	cols = inv["invDesc"]["cols"];
-
-	// activateRow(trow, tbody, cols);
-	addRow(tbody, cols);
+	// TO IMPLEMENT
 }
 
 // Add a row, which should be saved at the next save
