@@ -113,6 +113,9 @@ Drupal.jsAC.prototype.onkeyup = function (input, e) {
  */
 Drupal.jsAC.prototype.select = function (node) {
   this.input.value = $(node).data('autocompleteValue');
+  // !! INSERTED BY SWISSMON PROJECT!!
+  $(this.input).trigger('autocomplete_select', [node]);
+  // !! INSERTED BY SWISSMON PROJECT!!
 };
 
 /**
@@ -166,7 +169,9 @@ Drupal.jsAC.prototype.unhighlight = function (node) {
 Drupal.jsAC.prototype.hidePopup = function (keycode) {
   // Select item if the right key or mousebutton was pressed.
   if (this.selected && ((keycode && keycode != 46 && keycode != 8 && keycode != 27) || !keycode)) {
-    this.input.value = $(this.selected).data('autocompleteValue');
+	// !! INSERTED BY SWISSMON PROJECT!!
+    this.select(this.selected);
+    // !! INSERTED BY SWISSMON PROJECT!!
   }
   // Hide popup.
   var popup = this.popup;
