@@ -1,0 +1,32 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function sgroup_menu() {
+	$items['sgroup'] = array(
+    'title' => 'Groups',
+    'description' => 'Shows ones groups',
+    'page callback' => 'sgroup_overview',
+    'access arguments' => array('access sgroup'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'sgroup.overview.inc',
+	);
+  
+  	return $items;
+}
+
+function sgroup_permission() {
+  return array(
+    'access sgroup' =>  array(
+      'title' => t('can view, create and manage swissmon groups'),
+    ),
+  );
+}
+
+?>
