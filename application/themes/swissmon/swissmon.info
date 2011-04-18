@@ -1,0 +1,8 @@
+name = Swissmon
+description = A template precisely for project Swissmon
+package = Core
+version = VERSION
+core = 7.x
+stylesheets[all][] = style.css
+stylesheets[print][] = print.css
+settings[swissmon_width] = fluid
