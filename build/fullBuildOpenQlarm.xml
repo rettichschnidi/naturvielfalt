@@ -45,6 +45,7 @@
 		<!-- Copy files -->
 		<copy todir="${buildApplication}">
 			<fileset dir="${src}/application">
+				<exclude name="**/files/**" />
 				<exclude name="**/.svn" />
 				<exclude name="**/.project" />
 			</fileset>
