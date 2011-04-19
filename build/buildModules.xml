@@ -19,6 +19,7 @@
 				<include name="area/**"/>
 				<include name="inventory/**"/>
 				<include name="organism/**"/>
+				<include name="sgroup/**"/>
 				<exclude name="**/.svn" />
 			</fileset>
 		</copy>
