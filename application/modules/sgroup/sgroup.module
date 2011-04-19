@@ -17,7 +17,20 @@ function sgroup_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'sgroup.overview.inc',
 	);
-  
+  	$items['sgroup/show'] = array(
+    'title' => 'Show groups',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+	);
+	$items['sgroup/new'] = array(
+    'title' => 'Create a new group',
+    'description' => 'Create a new group',
+    'page callback' => 'sgroup_new',
+	'access arguments' => array('access sgroup'),
+    'type' => MENU_LOCAL_TASK,
+	'weight' => 5,
+	'file' => 'sgroup.new.inc',
+	);
   	return $items;
 }
 

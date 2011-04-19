@@ -1,8 +1,17 @@
 <?php
 function sgroup_overview() {
+	$output['introduction'] = array(
+		'#markup' => t('Groups are designed to share inventories with other users. You can !link
+		and invite others to join you. Currently you are member of following groups:', array('!link' => l('create your own group', 'sgroup/new'))),
+	);
+	$output['groupTable'] = _sgroup_create_group_table();
+	return $output;
+}
+
+function _sgroup_create_group_table() {
 	global $user;
 
-	// create table
+	// create table header
 	$tableHeader[] = t('group name');
 	$tableHeader[] = t('my status');
 	$tableHeader[] = t('actions');
@@ -19,17 +28,18 @@ function sgroup_overview() {
 			$row[] = t('Administrator');
 			$row[] = l('Edit', 'sgroup/' . $group->sgid . '/edit');
 		} else {
+			// this is a normal member
 			$row[] = t('Member');
 			$row[] = '';
 		}
 		$rows[] = $row;
 	}
 
-	$render_array['mySGroups'] = array(
+	$table = array(
     '#theme' => 'table', 
    	'#header' => $tableHeader,
 	'#rows' => $rows,
 	);
-	return $render_array;
+	return $table;
 }
 ?>

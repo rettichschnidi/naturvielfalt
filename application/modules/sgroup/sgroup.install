@@ -7,10 +7,10 @@ function sgroup_schema() {
     'description' => 'Holds swissmon groups.',
     'fields' => array(
       'sgid' => array(
-        'type' => 'int',
+        'type' => 'serial',
+		'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => 0,
         'description' => 'primary key for swissmon groups',
 	),
       'sgroup_name' => array(
@@ -69,5 +69,14 @@ function sgroup_schema() {
     'primary key' => array('sgid', 'uid'),
 	);
 	return $schema;
+}
+
+/**
+ * Implements hook_uninstall();
+ * 
+ * This drops all tables defined in sgroup_schema().
+ */
+function sgroup_uninstall() {
+	drupal_uninstall_schema('sgroup');
 }
 ?>
