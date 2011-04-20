@@ -9,20 +9,20 @@
  * @return array
  */
 function sgroup_menu() {
-	$items['sgroup'] = array(
+	$items['user/%user/sgroup'] = array(
     'title' => 'Groups',
     'description' => 'Shows ones groups',
     'page callback' => 'sgroup_overview',
     'access arguments' => array('access sgroup'),
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_LOCAL_TASK,
 	'file' => 'sgroup.overview.inc',
 	);
-	$items['sgroup/show'] = array(
+	$items['user/%user/sgroup/show'] = array(
     'title' => 'Show groups',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
 	);
-	$items['sgroup/new'] = array(
+	$items['user/%user/sgroup/new'] = array(
     'title' => 'Create a new group',
     'description' => 'Create a new group',
     'page callback' => 'sgroup_new',
@@ -31,13 +31,13 @@ function sgroup_menu() {
 	'weight' => 5,
 	'file' => 'sgroup.new.inc',
 	);
-	$items['sgroup/%/edit'] = array(
+	$items['user/%user/sgroup/%/edit'] = array(
     'title' => 'Edit group',
     'description' => 'Edit group',
     'page callback' => 'sgroup_edit',
-    'page arguments' => array(1),
+    'page arguments' => array(3),
 	'access callback' => 'sgroup_edit_access',
-    'access arguments' => array(1),
+    'access arguments' => array(3),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'sgroup.edit.inc',
 	);

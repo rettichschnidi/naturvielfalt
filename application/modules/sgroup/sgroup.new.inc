@@ -63,6 +63,6 @@ function sgroup_new_save($form, &$form_state) {
 		drupal_set_message(t('Group @name could not be saved. (@exception)', array('@name' => $name, '@exception' => $e->message)), 'error');
 	}
 	
-	return $form_state['redirect'] = 'sgroup';
+	return $form_state['redirect'] = 'user/' . $user->uid . '/sgroup';
 }
 ?>

@@ -99,7 +99,8 @@ function sgroup_edit_form_submit($form, &$form_state) {
 		drupal_set_message(t('Group @sgroup_name could not be updated. (@exception)', array('@sgroup_name' => $sgroup_name, '@exception' => $e->message)), 'error');
 	}
 
-	return $form_state['redirect'] = 'sgroup';
+	global $user;
+	return $form_state['redirect'] = 'user/' . $user->uid . '/sgroup';
 }
 
 /**
