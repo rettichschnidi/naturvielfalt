@@ -13,8 +13,8 @@ function _sgroup_create_group_table() {
 
 	// create table header
 	$tableHeader[] = t('group name');
-	$tableHeader[] = t('my status');
-	$tableHeader[] = t('actions');
+	$tableHeader[] = t('my role');
+	$tableHeader[] = t('Operations');
 
 	// get all groups ordered by status and name
 	$groups = db_query('SELECT g.sgid, sgroup_name, admin
@@ -22,6 +22,7 @@ function _sgroup_create_group_table() {
 		WHERE gu.uid = :uid', array(':uid' => $user->uid));
 
 	foreach ($groups as $group) {
+		$row = array();
 		$row[] = $group->sgroup_name;
 		if ($group->admin == 1) {
 			// this is an administrator of that group

@@ -5,7 +5,7 @@
  */
 function sgroup_new() {
 	$output['introduction'] = array(
-		'#markup' => t('Create a new group.'),
+		'#markup' => t('Please enter a name for your new group and click on "Create group".'),
 	);
 	$output['form'] = drupal_get_form('sgroup_new_form');
 

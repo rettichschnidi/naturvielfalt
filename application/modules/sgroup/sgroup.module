@@ -17,7 +17,7 @@ function sgroup_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'sgroup.overview.inc',
 	);
-  	$items['sgroup/show'] = array(
+	$items['sgroup/show'] = array(
     'title' => 'Show groups',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
@@ -31,15 +31,35 @@ function sgroup_menu() {
 	'weight' => 5,
 	'file' => 'sgroup.new.inc',
 	);
-  	return $items;
+	$items['sgroup/%/edit'] = array(
+    'title' => 'Edit group',
+    'description' => 'Edit group',
+    'page callback' => 'sgroup_edit',
+    'page arguments' => array(1),
+	'access callback' => 'sgroup_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'sgroup.edit.inc',
+	);
+	return $items;
 }
 
 function sgroup_permission() {
-  return array(
+	return array(
     'access sgroup' =>  array(
       'title' => t('can view, create and manage swissmon groups'),
-    ),
-  );
+	),
+	);
+}
+
+function sgroup_edit_access($sgroupId) {
+	$access = user_access('access sgroup');
+	// check if this user is administrator of the group
+	global $user;
+	$adminRecords = db_query('SELECT admin FROM sgroup_users WHERE sgid=:sgid AND uid=:uid', array(':sgid' => $sgroupId, ':uid' => $user->uid));
+	$admin = $adminRecords->fetch();
+	$access = $access && $admin->admin == 1;
+	return $access;
 }
 
 ?>
