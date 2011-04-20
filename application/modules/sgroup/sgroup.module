@@ -41,6 +41,15 @@ function sgroup_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'sgroup.edit.inc',
 	);
+	$items['sgroup/delete_member/%/%'] = array(
+	'title' => 'JSON request to delete a member from a group',
+	'page callback' => 'sgroup_delete_member',
+	'page arguments' => array(2, 3),
+	'access callback' => 'sgroup_edit_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'file' => 'sgroup.edit.inc',
+	);
 	return $items;
 }
 

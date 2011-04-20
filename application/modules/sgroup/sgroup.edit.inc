@@ -1,5 +1,9 @@
 <?php
 function sgroup_edit($sgid) {
+	// add javaScript
+	drupal_add_js(drupal_get_path('module', 'sgroup') . '/sgroup.edit.js');
+	drupal_add_css(drupal_get_path('module', 'sgroup') . '/sgroup.edit.css');
+
 	// load record
 	$sgroups = db_query('SELECT sgid, sgroup_name FROM sgroup WHERE sgid = :sgid', array(':sgid' => $sgid));
 	$sgroup = $sgroups->fetch();
@@ -7,6 +11,7 @@ function sgroup_edit($sgid) {
 	// show edit form
 	$output['groupform'] = drupal_get_form('sgroup_edit_form', $sgroup);
 
+	// show members
 	$output['fieldset'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Members:'),
@@ -23,18 +28,20 @@ function _sgroup_get_member_table($sgroup) {
 		WHERE sgu.sgid = :sgid', array(':sgid' => $sgroup->sgid));
 	foreach ($users as $user) {
 		$row = array();
-		$row[] = $user->name;
-		$row[] = $user->admin == 1 ? t('Administrator') : t('Member');
+		$row[] = array('data' => $user->name);
+		$row[] = array('data' => $user->admin == 1 ? t('Administrator') : t('Member'));
+		$row[] = array('data' => '<div id="' . $sgroup->sgid . '/' . $user->uid . '"></div>', 'class' => 'delete');
 		$rows[] = $row;
 	}
 	$header[] = t('User');
 	$header[] = t('Role');
-	
+	$header[] = t('Actions');
+
 	// compose table
 	$output['#theme'] = 'table';
 	$output['#header'] = $header;
 	$output['#rows'] = $rows;
-	
+
 	return $output;
 }
 
@@ -52,11 +59,11 @@ function sgroup_edit_form($form, &$form_state, $sgroup) {
 		'#type' => 'submit',
 		'#value' => t("Save group"),
 	);
-	
+
 	// Saveing something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
 	$form_state['storage']['sgid'] = $sgroup->sgid;
-	
+
 	return $form;
 }
 
@@ -78,7 +85,7 @@ function sgroup_edit_form_submit($form, &$form_state) {
 			'sgroup_name' => $sgroup_name,
 		))->condition('sgid', $sgid, '=')
 		->execute();
-		
+
 		// check success
 		if ($affectedRows == 1) {
 			// show success message
@@ -122,7 +129,7 @@ function sgroup_add_member_form($form, &$form_state, $sgroup) {
 function sgroup_add_member_form_submit($form, &$form_state) {
 	// try to find the user
 	$username = $form_state['input']['user'];
-	$admin = $form_state['input']['isAdmin'];
+	$admin = $form_state['input']['isAdmin'] == 1 ? 1 : 0;
 	$sgid = $form_state['values']['sgid'];
 	$users = db_query('SELECT uid FROM {users} WHERE name = :username', array(':username' => $username));
 	$user = $users->fetch();
@@ -146,5 +153,20 @@ function sgroup_add_member_form_submit($form, &$form_state) {
 	} else {
 		drupal_set_message(t('User does not exist.'), 'warning');
 	}
+}
+
+// ajax request to delete a member from a group.
+// security is done by drupal (hook_menu, access callback)
+function sgroup_delete_member($sgid, $uid) {
+	$result = 'fail';
+	global $user;
+	if ($user->uid != $uid) {
+		db_delete('sgroup_users')
+		->condition('sgid', $sgid)
+		->condition('uid', $uid)
+		->execute();
+		$result = 'success';
+	}
+	return drupal_json_output($result);
 }
 ?>
