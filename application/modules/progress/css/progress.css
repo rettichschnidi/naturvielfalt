@@ -1,0 +1,32 @@
+.progress_block {
+	border:1px solid;
+	border-color:black;
+	overflow:auto;
+}
+
+.progress_elem_cont {
+	width:25%;
+	float:left;	
+}
+
+.progress_elem {
+	border:1px solid;
+	padding:3px;
+	margin:1px;
+}
+
+.progress_elem.done {
+	border-color:black;
+}
+
+.progress_elem.active {
+	background-color:#F8FFF0;
+	border-color:#BBEE77;
+	color:#0C7A00;
+}
+
+.progress_elem.pending {
+	background-color:#FBFAF7;
+	border-color:#767676;;
+	color:#767676;
+}
