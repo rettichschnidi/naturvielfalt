@@ -139,6 +139,8 @@ function areaPropertyForm_save($form, &$form_state) {
 	$areaTypeRow = $result->fetchAssoc();
 	$areaTypeId = $areaTypeRow['id'];
 
+	global $user;
+	
 	// insert area
 	$aid = db_insert('area')->fields(array(
     	'field_name' => $field_name,
@@ -153,6 +155,9 @@ function areaPropertyForm_save($form, &$form_state) {
 		'township' => $township,
 		'centroid_lat' => $latitude,
 		'centroid_lng' => $longitude,
+		'owner_id' => $user->uid,
+		'create_time' => 'now()',
+		'modify_time' => 'now()',
 	))
 	->execute();
 
