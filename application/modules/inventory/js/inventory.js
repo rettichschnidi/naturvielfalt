@@ -8,7 +8,7 @@ var saveTimeout = 0;
 var newRowId = 0;
 var invNum = 0;
 
-var INVENTORY_SERVER_PATH = '../../inventoryServer/web_root/public/';
+var INVENTORY_SERVER_PATH;
 
 /*
  * Inventory initialisiern. Die bereits bestehenden Inventories werden hier aus
@@ -17,6 +17,7 @@ var INVENTORY_SERVER_PATH = '../../inventoryServer/web_root/public/';
  */
 function initInventory() {
 	
+	INVENTORY_SERVER_PATH = Drupal.settings.basePath + '../inventoryServer/web_root/public/';
 	var inventories = jQuery('<div id="inventories">');
 
 	jQuery("#Inventory").prepend(inventories);
@@ -125,10 +126,10 @@ function activateRow(row, tbody, cols) {
 	if(jQuery("input[name=editMode]").attr("value")=='1')
 	{
 		// Add remove icon
-		jQuery("<td>").append("<img src='../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
+		jQuery("<td>").append("<img src='../../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
 				.appendTo(row);
 		// Add insert icon
-		jQuery("<td>").append("<img src='../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
+		jQuery("<td>").append("<img src='../../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
 				.appendTo(row);
 	}
 }

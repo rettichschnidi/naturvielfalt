@@ -2,18 +2,18 @@
 function inventory_overview() {
 	drupal_set_title(t('Inventarübersicht'));
 
-	$tableHeader[] = t('Fläche');
-	$tableHeader[] = t('Inventar');
-	$tableHeader[] = t('Besitzer');
-	$tableHeader[] = t('Öffentlich');
+	$tableHeader[] = t('Inventory');
+	$tableHeader[] = t('Area');
+	$tableHeader[] = t('Owner');
+	$tableHeader[] = t('Public');
 	
 	global $user;
 	
 	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner_id, hi.shared
 		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
-		WHERE (hi.shared='t') OR  (hi.owner_id=:id)
-		ORDER BY hi.id desc;",
+		WHERE (hi.shared='t') OR (hi.owner_id=:id)
+		ORDER BY hi.name, a.field_name asc;",
 		array(':id' => $user->uid)
 	);
 	
@@ -28,8 +28,8 @@ function inventory_overview() {
 			$shared = t("Ja");
 		else $shared = t("Nein");
 		$row = array();
-		$row[] = $field_name;
 		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/' . $inventoryGroupId);
+		$row[] = $field_name;
 		$row[] = $owner;
 		$row[] = $shared;
 		$rows[] = $row;

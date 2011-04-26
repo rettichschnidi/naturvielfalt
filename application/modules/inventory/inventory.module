@@ -9,23 +9,27 @@
  * @return array
  */
 function inventory_menu() {
-	$items['inventory/new/%'] = array(
-    'title' => 'Inventar erstellen',
-    'description' => 'Inventar erstellen',
+	$items['inventory'] = array(
+    'title' => 'Modify Inventory',
+    'description' => 'Show all inventories to modify',
+    'page callback' => 'inventory_modify',
+    'access arguments' => array('access inventories'),
+	'file' => 'inventory.modify.inc',
+	);
+	$items['inventory/edit'] = array(
+    'title' => 'Modify Inventory',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0,
+	);
+	$items['inventory/new'] = array(
+    'title' => 'Create Inventory',
+    'description' => 'Create a new inventory',
     'page callback' => 'inventory_new',
     'page arguments' => array(1),
     'access arguments' => array('access inventories'),
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_LOCAL_TASK,
 	'file' => 'inventory.new.inc',
-	);
-	$items['inventory/edit/%'] = array(
-    'title' => 'Inventar bearbeiten',
-    'description' => 'Inventar bearbeiten',
-    'page callback' => 'inventory_edit',
-    'page arguments' => array(1),
-    'access arguments' => array('access inventories'),
-    'type' => MENU_NORMAL_ITEM,
-	'file' => 'inventory.new.inc',
+	'weight' => 5,
 	);
 	$items['inventory/%'] = array(
     'title' => 'Inventar Url',
@@ -36,13 +40,14 @@ function inventory_menu() {
     'type' => MENU_CALLBACK,
 	'file' => 'inventory.pages.inc',
 	);
-	$items['inventory'] = array(
-    'title' => 'Inventare',
-    'description' => 'Zeigt alle Inventare',
-    'page callback' => 'inventory_overview',
+	$items['inventory/%/edit'] = array(
+    'title' => 'Modify Inventory',
+    'description' => 'Modify an existing inventory',
+    'page callback' => 'inventory_edit',
+    'page arguments' => array(1),
     'access arguments' => array('access inventories'),
     'type' => MENU_NORMAL_ITEM,
-	'file' => 'inventory.overview.inc',
+	'file' => 'inventory.edit.inc',
 	);
 	$items['inventory/organism_autocomplete'] = array(
     'title' => 'Organism Autocomplete',
