@@ -21,6 +21,15 @@ function inventory_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0,
 	);
+	$items['inventory/%/edit'] = array(
+    'title' => 'Modify Inventory',
+    'description' => 'Modify an existing inventory',
+    'page callback' => 'inventory_edit',
+    'page arguments' => array(1),
+    'access arguments' => array('access inventories'),
+    'type' => MENU_NORMAL_ITEM,
+	'file' => 'inventory.edit.inc',
+	);
 	$items['inventory/new'] = array(
     'title' => 'Create Inventory',
     'description' => 'Create a new inventory',
@@ -30,24 +39,6 @@ function inventory_menu() {
     'type' => MENU_LOCAL_TASK,
 	'file' => 'inventory.new.inc',
 	'weight' => 5,
-	);
-	$items['inventory/%'] = array(
-    'title' => 'Inventar Url',
-    'description' => 'Swissmon Inventar',
-    'page callback' => 'inventory_show',
-	'page arguments' => array(1),
-    'access arguments' => array('access inventories'),
-    'type' => MENU_CALLBACK,
-	'file' => 'inventory.pages.inc',
-	);
-	$items['inventory/%/edit'] = array(
-    'title' => 'Modify Inventory',
-    'description' => 'Modify an existing inventory',
-    'page callback' => 'inventory_edit',
-    'page arguments' => array(1),
-    'access arguments' => array('access inventories'),
-    'type' => MENU_NORMAL_ITEM,
-	'file' => 'inventory.edit.inc',
 	);
 	$items['inventory/organism_autocomplete'] = array(
     'title' => 'Organism Autocomplete',
