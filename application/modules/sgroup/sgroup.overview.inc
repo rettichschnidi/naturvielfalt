@@ -27,7 +27,7 @@ function _sgroup_create_group_table() {
 		if ($group->admin == 1) {
 			// this is an administrator of that group
 			$row[] = t('Administrator');
-			$row[] = l('Edit', 'user/' . $user->uid . '/sgroup/' . $group->sgid . '/edit');
+			$row[] = l(t('Edit'), 'user/' . $user->uid . '/sgroup/' . $group->sgid . '/edit');
 		} else {
 			// this is a normal member
 			$row[] = t('Member');
