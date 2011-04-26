@@ -1,14 +1,14 @@
 <?php
 function inventory_organism_autocomplete() {
+	$invId = $_REQUEST['inv_id'];
+	$term = $_REQUEST['term'];
+	
 	$termBSpace = substr($term, 0, strpos($term, " "));
 	if($termBSpace == "") {
 		$termBSpace = "99999999999";	
 	}
 	
 	$termASpace = substr($term, strpos($term, " ") +1);
-	
-	$invId = $_REQUEST['inv_id'];
-	$term = $_REQUEST['term'];
 	
 	$fauna = ($invId == 16 ? false : true);
 	
