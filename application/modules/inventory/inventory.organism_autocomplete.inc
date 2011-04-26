@@ -1,11 +1,14 @@
 <?php
-function inventory_organism_autocomplete($invId,$term) {
+function inventory_organism_autocomplete() {
 	$termBSpace = substr($term, 0, strpos($term, " "));
 	if($termBSpace == "") {
 		$termBSpace = "99999999999";	
 	}
 	
 	$termASpace = substr($term, strpos($term, " ") +1);
+	
+	$invId = $_REQUEST['inv_id'];
+	$term = $_REQUEST['term'];
 	
 	$fauna = ($invId == 16 ? false : true);
 	
@@ -50,31 +53,49 @@ function inventory_organism_autocomplete($invId,$term) {
 			)
 		);
 	}
-      
-		
-	$items = array();
+	
 	foreach ($result as $record){
+		if(!$fauna){
+			// if it is not the official name it is an alias
+			// this will let the user search for aliases but saves only the 'parent', the
+			// one where the official_flora_organism_id matches the organism_id
+			while ($record->ref_organism_id != $record->official_flora_orfganism_id){
+				$official_organismn = db_query(
+					'SELECT "flora_organism".* FROM "flora_organism" WHERE "flora_organism"."id" = :official_flora_org_id'
+					,array(":official_flora_org_id" => $record->official_flora_orfganism_id)
+				)->fetch();
+				
+				$org = db_query(
+					'SELECT "organism".* FROM "organism" WHERE (organism_type = 2 AND organism_id = :official_org_id)'
+					,array(":official_org_id" => $official_organismn->id)
+				)->fetch();
+
+				$organismus['old_name_de'] = ($record->name_de == null ? "" : $record->name_de);
+				$organismus['old_genus'] = $record->gattung;
+				$organismus['old_species'] = $record->art;
+				
+				$record->official_flora_orfganism_id = $official_organismn->official_flora_orfganism_id;
+				$record->ref_organism_id = $official_organismn->id;
+				$record->name_de = $official_organismn->name_de;
+				$record->art = $official_organismn->art;
+				$record->gattung = $official_organismn->gattung;
+				$record->o_id = $org->id;
+			}
+		}
+
 		$organismus['id']		=	$record->o_id;
-		$organismus['genus']	=	($fauna ? $record->genus : $record->Gattung);
+		$organismus['genus']	=	($fauna ? $record->genus : $record->gattung);
 		$organismus['genus']	=	($organismus['genus'] == null ? "" : $organismus['genus']);
-		$organismus['species'] 	=	($fauna ? $record->species : $record->Art);
+		$organismus['species'] 	=	($fauna ? $record->species : $record->art);
 		$organismus['species']	=	($organismus['species'] == null ? "" : $organismus['species']);
 		$organismus['label']	=	$record->name_de." [".$organismus['genus']." ".$organismus['species']."]";
 		$organismus['name_de']	=	($record->name_de == null ? "" : $record->name_de);
 		$organismus['position']	=	1000;
 		
-		$organismsus_json[] = $organismus;
+		$organismus_json[] = $organismus;
 	}
 
-	echo drupal_json_encode($organismsus_json);
-	// [{"id":20806,"genus":"Trachemys","species":"scripta","label":"Rotwangen-Schmuckschildkr\u00f6te [Trachemys scripta]","name_de":"Rotwangen-Schmuckschildkr\u00f6te","position":1000}]
+	drupal_json_output($organismus_json);
 
-
-	$render_array['organisms'] = array(
-    '#theme' => 'table', 
-	'#header' => $header,
-    '#rows' => $rows, 
-	);
-	return $render_array; 
 }
 ?>

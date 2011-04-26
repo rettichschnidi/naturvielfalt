@@ -44,11 +44,10 @@ function inventory_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.overview.inc',
 	);
-	$items['inventory/organism_autocomplete/%/%'] = array(
+	$items['inventory/organism_autocomplete'] = array(
     'title' => 'Organism Autocomplete',
     'description' => 'JSON Organism Autocomplete',
     'page callback' => 'inventory_organism_autocomplete',
-	'page arguments' => array(2,3),
     'access arguments' => array('access inventories'),
     'type' => MENU_CALLBACK,
 	'file' => 'inventory.organism_autocomplete.inc',

@@ -336,7 +336,7 @@ function addRow(tbody, cols, rowId, cellValues) {
 					this.element.addClass("searching");
 					actualElement = this.element;
 					jQuery.ajax({
-						url : INVENTORY_SERVER_PATH + 'inventory/get-organisms',
+						url : Drupal.settings.basePath + 'inventory/organism_autocomplete',
 						dataType : "json",
 						data : {
 							inv_id : this.element.parent().parent().parent().parent().find('input[name|=invTypeId]').val(),
