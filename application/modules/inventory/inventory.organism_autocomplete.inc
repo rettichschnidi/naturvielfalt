@@ -12,6 +12,8 @@ function inventory_organism_autocomplete() {
 	
 	$fauna = ($invId == 16 ? false : true);
 	
+	$organismus_json = array();
+	
 	if($fauna) {
 		$result = db_query(
 		 	'SELECT "t".*, "o"."organism_id" AS "ref_organism_id", "o"."id" AS "o_id", "f".* FROM "inventory_type_organism" AS "t"
