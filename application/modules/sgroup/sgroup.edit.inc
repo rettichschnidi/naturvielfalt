@@ -108,13 +108,13 @@ function sgroup_edit_form_submit($form, &$form_state) {
  */
 function sgroup_add_member_form($form, &$form_state, $sgroup) {
 	$form['user'] = array(
-		'#title' => 'Add user',
+		'#title' => t('Add user'),
 		'#type' => 'textfield',   
     	'#autocomplete_path' => 'user/autocomplete',
 	);
 	$form['isAdmin'] = array(
 		'#type' => 'checkbox',
-		'#title' => 'with administrator rights',
+		'#title' => t('with administrator rights'),
 	);
 	$form['sgid'] = array(
 		'#type' => 'hidden',
@@ -122,7 +122,7 @@ function sgroup_add_member_form($form, &$form_state, $sgroup) {
 	);
 	$form['submit'] = array(
 		'#type' => 'submit',
-		'#value' => 'Add user',
+		'#value' => t('Add user'),
 	);
 	return $form;
 }
