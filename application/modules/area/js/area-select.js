@@ -31,6 +31,22 @@ function AreaSelect() {
                  alert('Bitte wählen Sie ein Gebiet aus.');
              }
          });
+        
+        // create info window (bubble) for area information
+        me.areaInfo = new InfoBubble({
+            map: me.map,
+            shadowStyle: 1,
+            padding: 8,
+            borderRadius: 8,
+            arrowSize: 40,
+            borderWidth: 1,
+            borderColor: '#2c2c2c',
+            disableAutoPan: true,
+            arrowPosition: 20,
+            arrowStyle: 2
+          });
+        me.areaInfo.addTab('Details', '');
+        me.areaInfo.addTab('Inventories', '');
 
         // select row in table
         jQuery("#area_table tbody").live('click', function(event) {
@@ -182,6 +198,38 @@ AreaSelect.prototype.addOverlayListener = function(overlay) {
                 overlays[id].setStyle('selected-disable');
             }
         }
+        
+        // update and show area info
+        jQuery.getJSON(Drupal.settings.basePath + 'area/json/' + info.id,
+        	function (data, textStatus, jqXHR) {
+        		var details = '<div>';
+        		details += '<strong>' + data.field_name + '</strong>';
+        		details += '<div>' + data.locality + '</br>';
+        		details += data.zip + ' ' + data.township + '</br>';
+        		details += data.altitude + '</br>';
+        		details += data.surface_area + '</br>';
+        		details += '</div>';
+        		details += '<div>' + data.comment + '</div>';
+        		me.areaInfo.updateTab(0, 'Details', details);
+        		inventories = '';
+        		for (var i = 0, len = data.inventories.invs.length; i < len; ++i) {
+        			inventory = data.inventories.invs[i];
+        			inventories += '<div><a href="inventory/' + inventory.id  + '"><strong>' + inventory.name + ':</strong></a></div><div>';
+        			for (var ie = 0, ieLen = inventory.types.length; ie < ieLen; ++ie) {
+        				type = data.inventories.invs[i].types[ie];
+        				inventories += type.name + ' (' + type.count + ' x)';
+        				if (ieLen > ie + 1) {
+        					inventories += ', ';
+        				}
+        			}
+        			inventories += '</div>';
+        		}
+        		me.areaInfo.updateTab(1, data.inventories.title, inventories);
+                me.areaInfo.open(me.map);
+        }
+        );
+        me.areaInfo.close();
+        me.areaInfo.setPosition(overlays[info.id].getCenter());
 
         jQuery('tr[overlay_id="'+info.id+'"]').addClass('row_selected');
         overlays[info.id].setStyle('selected');
@@ -190,26 +238,6 @@ AreaSelect.prototype.addOverlayListener = function(overlay) {
     });
 };
 
-/**
- * Gets Areas from server and creates overlay in map
- * NOT USED ANYMORE!
- */
-AreaSelect.prototype.getAreas = function(){
-  var me = this;
-  
-  jQuery.post('area-select/get-area', function(data){
-    for(var i in data){
-      if(data[i].type == 'polygon'){
-        new Polygon(me.map, data[i]);
-      } else if (data[i].type == 'marker'){
-        new Marker(me.map, data[i]);
-      }
-      
-    }
-  }
-  , 'json');
-  
-};
 
 /**
 * Get the rows which are currently selected

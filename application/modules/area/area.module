@@ -57,12 +57,19 @@ function area_menu() {
 	'type' => MENU_CALLBACK,
 	'file' => 'area.new.prop.inc',
 	);
-	 $items['area/habitat_autocomplete'] = array(
+	$items['area/habitat_autocomplete'] = array(
 	'title' => 'Habitat autocomplete',
     'page callback' => 'habitat_autocomplete',
 	'access arguments' => array(AREA_CREATE),
 	'type' => MENU_CALLBACK,
 	'file' => 'area.new.prop.inc',
+	);
+	$items['area/json'] = array(
+	'title' => 'area information in json format',
+    'page callback' => 'area_json',
+	'access arguments' => array(AREA_ACCESS),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.search.inc',
 	);
 	$items['area/%'] = array(
     'title' => 'Area',
