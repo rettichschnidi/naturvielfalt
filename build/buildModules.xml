@@ -20,6 +20,7 @@
 				<include name="inventory/**"/>
 				<include name="organism/**"/>
 				<include name="sgroup/**"/>
+				<include name="progress/**"/>
 				<exclude name="**/.svn" />
 			</fileset>
 		</copy>
