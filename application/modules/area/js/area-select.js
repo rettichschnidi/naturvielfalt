@@ -238,26 +238,6 @@ AreaSelect.prototype.addOverlayListener = function(overlay) {
     });
 };
 
-
-/**
-* Get the rows which are currently selected
-*/
-AreaSelect.prototype.getSelected = function( oTableLocal )
-{
-  var aReturn = new Array();
-  var aTrs = oTableLocal.fnGetNodes();
-  
-  for ( var i=0 ; i<aTrs.length ; i++ )
-  {
-    if ( jQuery(aTrs[i]).hasClass('row_selected') )
-    {
-      aReturn.push( aTrs[i] );
-    }
-  }
-  return aReturn;
-};
-
-
 AreaSelect.prototype.formatDetails = function ( nTr ){
   var me = this;
   
