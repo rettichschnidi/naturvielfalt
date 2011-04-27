@@ -3,10 +3,9 @@
  * Menu callback. This will be called if someone visits drupal/showcase.
  */
 function organism_overview() {
-	drupal_set_title(t('Organismen - Übersicht nach Kategorien'));
+	drupal_set_title(t('Organisms - Grouped by categories'));
 
-	
-	$header = array(t('Organismengruppe'),t('id'));
+	$header = array(t('Organism groups'),t('id'));
 	
 	$result = db_query("SELECT name, id FROM {inventory_type} order by name asc");
 	

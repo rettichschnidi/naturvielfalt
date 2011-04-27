@@ -8,7 +8,7 @@ function organism_showtype($typeId) {
 
 	
 	if( $typeId <> 16){
-		$header = array(t('Genus'),t('Spezies'),t('Name'),t('id'));	
+		$header = array(t('Genus'),t('Species'),t('Name'),t('id'));	
 	} else {
 		$header = array(t('Name'),t('id'));
 	}
