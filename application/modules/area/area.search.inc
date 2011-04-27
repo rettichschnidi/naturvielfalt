@@ -7,6 +7,7 @@ function show_area_search() {
 	$output['areaSearch'] = array(
 		'#theme' => 'area.search',
 	);
+	$output['LastUsed'] = drupal_get_form('lastUsed');
 	$output['FieldName'] = drupal_get_form('fieldNameForm');
 	$output['googleMaps'] = drupal_get_form('googleMapsForm');
 
@@ -79,5 +80,58 @@ function area_json($areaId) {
 	$invName = t('Inventories (!count)', array('!count' => $countInventories));
 	$output['inventories']['title'] = $invName;
 	return drupal_json_output($output);
+}
+
+function lastUsed() {
+	global $user;
+	
+	$head_inventories= db_query(
+		"SELECT * FROM area 
+		WHERE owner_id = :owner_id
+		ORDER BY modify_time DESC
+		LIMIT 5",
+		array(':owner_id'=>$user->uid)
+	);
+
+	foreach ($head_inventories as $record) {			
+			$row = array();
+			$row[] = $record->id;
+			$row[] = $record->field_name;
+			$row[] = $record->zip;
+			$row[] = $record->locality;
+			$row[] = $record->canton;
+			$row[] = $record->create_time;
+			$row[] = $record->modify_time;
+			$rows[] = $row;
+	}
+
+	$header = array(t('id'),t('field_name'),t('zip'),t('locality'),t('canton'),t('create_time'),t('modify_time'),);
+
+	/*
+	$form['FieldName'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Search by field name:'), 
+  		'#weight' => 5, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => TRUE,
+	);
+	*/
+	
+	if ($rows){
+		$form['aaaa'] = array (
+			'#markup'=> t('Als letztes verwendete Gebiete')
+		);
+		$form['organisms'] = array(
+		    '#theme' => 'table', 
+			'#header' => $header,
+		    '#rows' => $rows,
+		);
+	} else {
+		$form['aaaa'] = array (
+			'#markup'=> t('Sie haben noch kein Gebiet verwendet')
+		);
+	}
+
+	return $form;
 }
 ?>
