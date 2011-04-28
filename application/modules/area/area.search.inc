@@ -82,6 +82,29 @@ function area_json($areaId) {
 	return drupal_json_output($output);
 }
 
+function area_autocomplete($string) {
+
+	$areas = db_query('
+		SELECT id, field_name, zip, locality FROM area
+		WHERE field_name ILIKE :term
+			OR zip ILIKE :term
+			OR locality ILIKE :term
+		ORDER BY field_name
+	', array(":term" => "%".$string."%")
+	);
+
+	$items = array();
+	foreach ($areas as $record){
+		$item['field_name'] = $record->field_name;
+		$item['id'] = $record->id;
+		$item['locality'] = $record->locality;
+		$item['zip'] = $record->zip;
+		$items[]= $item;
+	}
+
+	return drupal_json_output($items);
+}
+
 function lastUsed() {
 	global $user;
 	
@@ -106,16 +129,13 @@ function lastUsed() {
 	}
 
 	$header = array(t('id'),t('field_name'),t('zip'),t('locality'),t('canton'),t('create_time'),t('modify_time'),);
-
-	/*
-	$form['FieldName'] = array(
-		'#type' => 'fieldset',
-  		'#title' => t('Search by field name:'), 
-  		'#weight' => 5, 
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => TRUE,
+	
+	$form['AreaText'] = array(
+	'#title' => 'Areas',
+	'#type' => 'textfield',   
+    '#autocomplete_path' => 'area/area_autocomplete',
+	'#suffix' => '<div id="habitatSelected"><table></table></div>',
 	);
-	*/
 	
 	if ($rows){
 		$form['aaaa'] = array (
