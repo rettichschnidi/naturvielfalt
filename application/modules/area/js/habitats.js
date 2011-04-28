@@ -31,7 +31,7 @@ function habitatAutocompleteSelect(event) {
 
 // This will be called if a user clicks on the remove icon
 function removeHabitat(image) {
-	var row = jQuery(image.parentElement.parentElement);
+	var row = jQuery(image).parent().parent();
 	var id = row.find('input').attr('value');
 	var pos = jQuery.inArray(id, habitantIds);
 	habitantIds.splice(pos, 1);
