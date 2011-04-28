@@ -23,7 +23,7 @@ function areaPropertyForm($form, &$form_state) {
 
 	$form['field_name'] = array(
   	'#type' => 'textfield',
-  	'#title' => t('Field name'),
+  	'#title' => t('Area name'),
 	'#required' => true,
 	);
 	$form['habitatText'] = array(

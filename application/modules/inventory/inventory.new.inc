@@ -36,7 +36,7 @@ function inventory_new_form() {
 	// creating forms
 	$form['name'] = array(
   		'#type' => 'textfield', 
-  		'#title' => t('Name'), 
+  		'#title' => t('Inventarname'), 
   		'#size' => 100, 
   		'#maxlength' => 128, 
   		'#required' => TRUE,
