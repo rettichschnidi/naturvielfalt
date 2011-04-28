@@ -12,7 +12,7 @@
  * 	$progressElement = array(t('Inventory'), t('Area'), t('Element'), t('Completion')); // List of elements
  *	$render_array['test'] = array(
  *	'#theme' => 'progress_done',
- *	'#title' => $progressElement,
+ *	'#elements' => $progressElement,
  *	'#active' => 'Inventory', 		// Indicate active Element
  *	);
  *----------------------------------
@@ -23,7 +23,7 @@ function progress_theme() {
 	return array(
     	'progress_done' => array(
  			'template' => 'progress_done',
-    		'variables' => array('title' => NULL, 'actif' => NULL)
+    		'variables' => array('elements' => NULL, 'active' => NULL)
 		)
 	);
 }
