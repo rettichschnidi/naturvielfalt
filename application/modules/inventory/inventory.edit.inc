@@ -33,7 +33,7 @@ function inventory_edit($head_inventory_id) {
 	//------------------
 	$render_array['elements'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Elements'), 
+  		'#title' => t('Organisms'), 
   		'#weight' => 6, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,
@@ -243,6 +243,24 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	global $user;
 	
 	$result = db_query(
+		'SELECT shared FROM head_inventory hi
+		WHERE hi.id = :id;', array('id' => $head_inventory_id)
+	);
+	
+	if(!empty($result)) {
+		foreach ($result as $record) {
+			$shared = $record->shared;
+			$form['share'] = array (
+		  		'#type' => 'checkbox', 
+		  		'#title' => t('Allow read access to all users'),
+				'#value' => $shared,
+				'#checked' => $shared,
+				'#name' => 'share',
+			);
+		}
+	}
+	
+	$result = db_query(
 		'SELECT sg.sgid, sg.sgroup_name, read, write 
   		FROM sgroup sg
 		LEFT JOIN sgroup_users sgu ON sgu.sgid = sg.sgid
@@ -320,16 +338,16 @@ function inventory_update_basics($form, &$form_state) {
 
 	$head_inventory_id = $form_state['storage']['hi_id'];
 	$name = $form_state['input']['name'];
-	$shared = $form_state['input']['share'];
 	$description = $form_state['input']['description'];
 
 	$affectedRows = db_update('head_inventory')
 	->condition('id', $head_inventory_id)
-	->fields(array(
+	->fields(
+		array(
 				'name' => $name,
-				'shared' => $shared,
 				'description' => $description['value']
-	))
+		)
+	)
 	->execute();
 	
 	// check success
@@ -397,7 +415,9 @@ function inventory_update_file($form, &$form_state){
 function inventory_update_rights($form, &$form_state) {
 	
 	$head_inventory_id = $form_state['storage']['hi_id'];
-	
+	$shared = '0';
+	if(isset($form_state['input']['share'])) $shared = '1';
+	$check = false;
 	for($i=0; $i<$form_state['storage']['sg_cnt']; $i++) {
 		$sgid = $form_state['storage']['sg_id'.$i];
 		$read = '0';
@@ -416,6 +436,7 @@ function inventory_update_rights($form, &$form_state) {
 				)
 			)
 			->execute();
+			$check = true;
 		}
 		else {
 			// entry already in db
@@ -428,8 +449,29 @@ function inventory_update_rights($form, &$form_state) {
 			)
 			->condition(db_and()->condition('sgid', $sgid, '=')->condition('hiid', $head_inventory_id, '='))
 			->execute();
+			
+			if($affectedRows == 1) $check = true;
+			else $check = false;
 		}
 
+	}
+	
+	$affectedRows = db_update('head_inventory')
+	->condition('id', $head_inventory_id)
+	->fields(
+		array('shared' => $shared)
+	)
+	->execute();
+	
+	if($affectedRows == 1) $check = true;
+	else $check = false;
+	
+	// check success
+	if ($check) {
+		// show success message
+		drupal_set_message(t('Inventory permissions were successfully updated'));
+	} else {
+		drupal_set_message(t('Inventory permissions could not be updated!'), 'error');
 	}
 	
 	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';

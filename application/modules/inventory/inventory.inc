@@ -37,12 +37,6 @@ function inventory_edit_basics($form, &$form_state, $head_inventory_id, $new) {
 		'#value' => $name,
 	);
 
-	$form['share'] = array (
-  		'#type' => 'checkbox', 
-  		'#title' => t('Public'),
-		'#value' => $shared, 
-	);
-
 	$form['description'] = array (
 		'#type' => 'text_format',
     	'#title' => t('Description'),

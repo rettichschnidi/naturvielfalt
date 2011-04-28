@@ -81,13 +81,16 @@ function inventory_edit_access($inventoryId) {
 	// check if this user has write access to the inventory
 	global $user;
 	$adminRecords = db_query('
-		SELECT write FROM sgroups_inventory sgi
-		LEFT JOIN sgroup_users sgu ON sgu.sgid = sgi.sgid
-		WHERE sgi.hiid = :hiid AND sgu.uid = :uid
-		ORDER BY write DESC LIMIT 1;', array(':hiid' => $inventoryId, ':uid' => $user->uid)
+		SELECT id FROM head_inventory hi
+		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.write = 1)
+		OR (hi.owner_id = :uid AND hi.id = :hiid)
+		ORDER BY write DESC LIMIT 1',
+		array(':hiid' => $inventoryId, ':uid' => $user->uid)
 	);
 	$write = $adminRecords->fetch();
-	$access = $access && $write->write == 1;
+	$access = $access && $write->id == $inventoryId;
 	return $access;
 }
 
@@ -102,11 +105,13 @@ function inventory_access($inventoryId) {
 	// check if this user has write access to the inventory or the inventory is public
 	global $user;
 	$adminRecords = db_query('
-		SELECT read, shared FROM sgroups_inventory sgi
-		LEFT JOIN sgroup_users sgu ON sgu.sgid = sgi.sgid
-		LEFT JOIN head_inventory hi ON sgi.hiid = hi.id
-		WHERE sgi.hiid = :hiid AND sgu.uid = :uid
-		ORDER BY read, shared DESC LIMIT 1;', array(':hiid' => $inventoryId, ':uid' => $user->uid)
+		SELECT id FROM head_inventory hi
+		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.read = 1)
+		OR (hi.owner_id = :uid AND hi.id = :hiid)
+		OR (hi.shared = true AND hi.id = :hiid)
+		ORDER BY write DESC LIMIT 1;', array(':hiid' => $inventoryId, ':uid' => $user->uid)
 	);
 	$read = $adminRecords->fetch();
 	$access = $access && (($read->read == 1) || ($read->shared == true));
