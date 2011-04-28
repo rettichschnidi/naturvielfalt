@@ -23,8 +23,8 @@ function inventory_modify() {
 			$name = $record->name;
 		else $name = t("no name");
 		if($shared = $record->shared == TRUE)
-			$shared = t("Ja");
-		else $shared = t("Nein");
+			$shared = t("Yes");
+		else $shared = t("No");
 		$row = array();
 		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId."/edit");
 		$row[] = $field_name;
@@ -73,7 +73,8 @@ function inventory_modify() {
 		LEFT JOIN sgroup sg ON sg.sgid = sgu.sgid
 		LEFT JOIN sgroup_users sguMine ON sg.sgid = sguMine.sgid
 		LEFT JOIN area a ON hi.area_id = a.id
-		WHERE (sguMine.uid = :id) AND (u.uid != :id)
+		LEFT Join sgroups_inventory sgi ON sgi.hiid = hi.id
+		WHERE (sguMine.uid = :id) AND (u.uid != :id) AND (write = '1')
 		ORDER BY hi.name, hi.id, sg.sgroup_name;",
 		array(':id' => $user->uid)
 	);
@@ -88,8 +89,8 @@ function inventory_modify() {
 			else $name = t("no name");
 			$owner=$record->u_name;
 			if($shared = $record->shared == TRUE)
-				$shared = t("Ja");
-			else $shared = t("Nein");
+				$shared = t("Yes");
+			else $shared = t("No");
 			$sgroups = $record->sgroup_name;
 			$row = array(
 				'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId.'/edit'),
@@ -109,7 +110,7 @@ function inventory_modify() {
 	
 	$render_array['inventories_share'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Group Inventories'), 
+  		'#title' => t('Group Inventories with Write Access'), 
   		'#weight' => 4, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,

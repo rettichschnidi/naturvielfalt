@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MENU_NORMAL_ITEM. This will be called if someone visits for example drupal/inventory/3/edit.
  * @param $head_inventory_id
@@ -8,11 +9,32 @@
 function inventory_edit($head_inventory_id) {
 	
 	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
-
-	$render_array['inventory'] = array(
+	
+	//------------------
+	$render_array['basics'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Inventory'), 
-  		'#weight' => 3, 
+  		'#title' => t('Basics'), 
+  		'#weight' => 2, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => TRUE,
+		'#attached' => array (
+	        'js' => array (
+	          'misc/form.js',
+	          'misc/collapse.js',
+        	),
+        ),
+        '#attributes' => array(
+        	'class' => array('collapsible', 'collapsed'),
+        ),
+	);
+	
+	$render_array['basics']['edit'] = drupal_get_form('inventory_edit_basics', $head_inventory_id, false);
+
+	//------------------
+	$render_array['elements'] = array(
+  		'#type' => 'fieldset', 
+  		'#title' => t('Elements'), 
+  		'#weight' => 6, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,
 		'#attached' => array (
@@ -26,12 +48,13 @@ function inventory_edit($head_inventory_id) {
         ),
 	);
 	
-	$render_array['inventory']['edit'] = drupal_get_form('inventory_edit_elemnts', $head_inventory_id);
-
-	$render_array['inventory_set'] = array(
+	$render_array['elements']['edit'] = drupal_get_form('inventory_edit_elemnts', $head_inventory_id);
+	
+	//------------------
+	$render_array['rights'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Details zum Inventar'), 
-  		'#weight' => 4, 
+  		'#title' => t('Rights'), 
+  		'#weight' => 8, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => TRUE,
 		'#attached' => array (
@@ -45,12 +68,13 @@ function inventory_edit($head_inventory_id) {
         ),
 	);
 	
-	$render_array['inventory_set']['edit'] = drupal_get_form('inventory_edit_basics', $head_inventory_id);
+	$render_array['rights']['edit'] = drupal_get_form('inventory_edit_rights', $head_inventory_id);
 
-	$render_array['fileset'] = array(
+	//------------------
+	$render_array['file'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Dateien'), 
-  		'#weight' => 5, 
+  		'#title' => t('Files'), 
+  		'#weight' => 10, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => TRUE,
 		'#attached' => array (
@@ -64,26 +88,9 @@ function inventory_edit($head_inventory_id) {
         ),
 	);
 
-	$render_array['fileset']['upload'] = drupal_get_form('fileset_upload', $head_inventory_id);
+	$render_array['file']['upload'] = drupal_get_form('inventory_edit_files', $head_inventory_id);
 	
 	return $render_array;
-}
-
-/**
- * @return name of actual inventory to be modified
- */
-function getInventoryTitle($head_inventory_id) {
-	$inventory_title = t("-");
-
-	$inventories = db_query('	SELECT name
-								FROM head_inventory
-								WHERE id = :id;', array(':id' => $head_inventory_id));
-	foreach($inventories as $inventory) {
-		if(!is_null($inventory->name))
-		$inventory_title =  $inventory->name;
-	}
-
-	return $inventory_title;
 }
 
 /**
@@ -111,10 +118,10 @@ function inventory_edit_elemnts($form, &$form_state, $head_inventory_id) {
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
 	// inventories ajax form
-	$form['inventory']['inventories']['#markup'] = '<div id="inventories"></div>';
+	$form['inventories']['#markup'] = '<div id="inventories"></div>';
 		
-	$form['inventory']['head_inventory_id'] = array('#type' => 'hidden', '#value' => $head_inventory_id);
-	$form['inventory']['editMode'] = array('#type' => 'hidden', '#value' => $edit_mode);
+	$form['head_inventory_id'] = array('#type' => 'hidden', '#value' => $head_inventory_id);
+	$form['editMode'] = array('#type' => 'hidden', '#value' => $edit_mode);
 
 	$options = array();
 
@@ -128,89 +135,31 @@ function inventory_edit_elemnts($form, &$form_state, $head_inventory_id) {
 		$options[$record->id] = $record->name;
 	}
 
-	$form['inventory']['inventory_types'] = array(
+	$form['inventory_types'] = array(
     	'#type' => 'select',
     	'#title' => t('Inventory Group'),
     	'#default_value' => variable_get('name', 259200),
     	'#options' => $options,
 	);
 	
-	$form['inventory']['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
+	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
 
-	$form['inventory']['last_saved']['#markup'] = '<div id="last_saved"><br/></div>';
-	$form['inventory']['error_save']['#markup'] = '<div id="error_save"><br/></div>';
+	$form['last_saved']['#markup'] = '<div id="last_saved"><br/></div>';
+	$form['error_save']['#markup'] = '<div id="error_save"><br/></div>';
 	
-	return $form;
-}
-
-/**
- * @return form to edit basic attributes of inventory
- */
-function inventory_edit_basics($form, &$form_state, $head_inventory_id) {
-	
-	$result = db_query('SELECT hi.name, hi.shared, hi.description
-							FROM head_inventory hi, area a
-							WHERE a.id = hi.area_id
-							AND hi.id = :id;', array(':id' => $head_inventory_id)
-	);
-
-	if(!empty($result))
-	{
-		foreach ($result as $record) {
-			$name = $record->name;
-			$shared = $record->shared;
-			$description = $record->description;
-		}
-	}
-
-	// creating forms
-	$form['name'] = array (
-  		'#type' => 'textfield', 
-  		'#title' => t('Name'), 
-  		'#size' => 100, 
-  		'#maxlength' => 128, 
-  		'#required' => TRUE,
-		'#value' => $name,
-	);
-
-	$form['share'] = array (
-  		'#type' => 'checkbox', 
-  		'#title' => t('Public'),
-		'#value' => $shared, 
-	);
-
-	$form['description'] = array (
-		'#type' => 'text_format',
-    	'#title' => t('Description'),
-    	'#value' => $description,
-    	'#format' => filter_default_format(),
-	    '#widget' => array ( '#type' => 'text_textarea', ),
-      	'#settings' => array ( '#text_processing' => '0', ),
-	);
-
-	$form['update'] = array(
-		'#type' => 'submit', 
-		'#value' => t('Save'),
-		'#submit' => array('inventory_update'),
-	);
-	
-	// Saveing something to the form_state makes it accessible in the submit function.
-	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-	$form_state['storage']['hi_id'] = $head_inventory_id;
-
 	return $form;
 }
 
 /**
  * @return form to upload files
  */
-function fileset_upload($form, &$form_state, $head_inventory_id) {
+function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 	
-	$tableHeader[] = t('Beschreibung');
-	$tableHeader[] = t('Dateiname');
+	$tableHeader[] = t('Description');
+	$tableHeader[] = t('Filename');
 	$tableHeader[] = t('Typ');
-	$tableHeader[] = t('Grösse');
-	$tableHeader[] = t('Datum');
+	$tableHeader[] = t('Size');
+	$tableHeader[] = t('Date');
 
 	$result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid, fm.filesize, hifm.description
 						FROM head_inventory_file_managed hifm, file_managed fm
@@ -223,7 +172,7 @@ function fileset_upload($form, &$form_state, $head_inventory_id) {
 		foreach ($result as $record) {
 			$description = $record->description;
 			$filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.$head_inventory_id.'/'.$record->filename);
-			$filemime = '<img class="file-icon" alt="" title="' . $record->filemime . '" src="../../modules/inventory/images/' . inventory_icon_map($record->filemime) . '.png" />';
+			$filemime = '<img class="file-icon" alt="" title="' . $record->filemime . '" src="../../modules/inventory/images/' . getInventoryIconMap($record->filemime) . '.png" />';
 			$filesize = ($record->filesize / 1000)." KB";
 			$timestamp = date('d.m.Y',$record->timestamp);
 			$row = array();
@@ -237,7 +186,7 @@ function fileset_upload($form, &$form_state, $head_inventory_id) {
 
 		if(isset($rows))
 		{
-			$form['fileset']['file_overview'] = array(
+			$form['file_overview'] = array(
     			'#theme' => 'table', 
    				'#header' => $tableHeader,
 				'#rows' => $rows,
@@ -245,13 +194,13 @@ function fileset_upload($form, &$form_state, $head_inventory_id) {
 		}
 	}
 
-	$form['fileset']['upload'] = array(
+	$form['upload'] = array(
 			'#type' => 'file', 
 			'#title' => t('Datei uploaden'), 
 			'#size' => 48,
 	);
 
-	$form['fileset']['file_description'] = array(
+	$form['file_description'] = array(
   			'#type' => 'textfield', 
   			'#title' => t('Beschreibung der Datei'), 
   			'#size' => 100, 
@@ -259,10 +208,10 @@ function fileset_upload($form, &$form_state, $head_inventory_id) {
   			'#required' => FALSE,
 	);
 
-	$form['fileset']['upload_submit'] = array(
+	$form['upload_submit'] = array(
 			'#type' => 'submit', 
 			'#value' => t("Upload"),
-			'#submit' => array('file_upload'),
+			'#submit' => array('inventory_update_file'),
 	);
 	
 	// Saveing something to the form_state makes it accessible in the submit function.
@@ -272,8 +221,197 @@ function fileset_upload($form, &$form_state, $head_inventory_id) {
 	return $form;
 }
 
-function getInitialInventoryJSON($head_inventory_id) {
-	return drupal_json_encode(getInitialInventory($head_inventory_id));
+/**
+ * @return form to edit inventory rights
+ */
+function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
+	
+	$tableHeader[] = t('Group');
+	$tableHeader[] = t('Write Access');
+	$tableHeader[] = t('Read Access');
+	
+	global $user;
+	
+	$result = db_query(
+		'SELECT sg.sgid, sg.sgroup_name, read, write 
+  		FROM sgroup sg
+		LEFT JOIN sgroup_users sgu ON sgu.sgid = sg.sgid
+		LEFT JOIN users u ON sgu.uid = u.uid
+		LEFT JOIN sgroups_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid
+		LEFT JOIN head_inventory hi ON sgi.hiid = hi.id
+		WHERE u.uid = :uid', array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
+	);
+	$i = 0;
+	if(!empty($result)) {
+		foreach ($result as $record) {
+			// Saveing something to the form_state makes it accessible in the submit function.
+			// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
+			$form_state['storage']['sg_id'.$i] = $record->sgid;
+			
+			$name = $record->sgroup_name;
+			$read = false;
+			$write = false;
+			$form_state['storage']['set_db'.$i] = false;
+			if($record->read == '1') $read = true;
+			elseif ($record->read == '0') $read = false;
+			else $form_state['storage']['set_db'.$i] = true;	// no db entry yet -> set in submit fct
+			if($record->write == '1') $write = true;
+			$form['read'.$i] = array(
+				'#type' => 'checkbox',
+				'#value' => $read,
+				'#checked' => $read,
+				'#name' => 'read'.$i,
+			);
+			$form['write'.$i] = array(
+				'#type' => 'checkbox',
+				'#value' => $write,
+				'#checked' => $write,
+				'#name' => 'write'.$i,
+			);
+			$row = array();
+			$row[] = $name;
+			$row[] = array('data' => drupal_render($form['write'.$i]));
+			$row[] = array('data' => drupal_render($form['read'.$i]));
+			$rows[] = $row;
+			$i++;
+		}
+
+		if(isset($rows)) {
+			$form['right_overview'] = array(
+    			'#theme' => 'table', 
+   				'#header' => $tableHeader,
+				'#rows' => $rows,
+			);
+			
+			$form['upload_submit'] = array(
+				'#type' => 'submit', 
+				'#value' => t("Save"),
+				'#submit' => array('inventory_update_rights'),
+			);
+		}
+	}
+	
+	// Saveing something to the form_state makes it accessible in the submit function.
+	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
+	$form_state['storage']['hi_id'] = $head_inventory_id;
+	$form_state['storage']['sg_cnt'] = $i;
+	
+	return $form;
+}
+
+/**
+ * 
+ * Update Basic information of Inventory. Corresponding form in inventory.inc
+ * @param array $form
+ * @param array $form_state
+ * @return Form with modified entries
+ */
+function inventory_update_basics($form, &$form_state) {
+
+	$head_inventory_id = $form_state['storage']['hi_id'];
+	$name = $form_state['input']['name'];
+	$shared = $form_state['input']['share'];
+	$description = $form_state['input']['description'];
+
+	$affectedRows = db_update('head_inventory')
+	->condition('id', $head_inventory_id)
+	->fields(array(
+				'name' => $name,
+				'shared' => $shared,
+				'description' => $description['value']
+	))
+	->execute();
+	
+	// check success
+	if ($affectedRows == 1) {
+		// show success message
+		drupal_set_message(t('Inventory @name was successfully updated', array('@name'=> $name)));
+	} else {
+		drupal_set_message(t('Inventory could not be updated!'), 'error');
+	}
+
+	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
+}
+
+function inventory_update_file($form, &$form_state){
+
+	$head_inventory_id = $form_state['storage']['hi_id'];
+
+	// File upload
+	$validators = array(
+		'file_validate_extensions' => array('doc txt pdf docx'),
+		'file_validate_size' => array(1000000, 0),
+	);
+
+	$destination = 'public://swissmon/inventory/'.$head_inventory_id;
+
+	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
+
+	$file = file_save_upload('upload', $validators, $destination);
+	if ($file) {
+
+		$file->status |= FILE_STATUS_PERMANENT;
+		$file = file_save($file);
+
+		$form_state['values']['upload'] = $file;
+
+		$nid = db_insert('head_inventory_file_managed')->fields(array(
+					'head_inventory_id' => $head_inventory_id,
+					'file_id' => $file->fid,
+					'description' => $form_state['values']['file_description']
+		))
+		->execute();
+		drupal_set_message(t('File saved'));
+	}
+	else {
+		drupal_set_message(t('File could not be saved!'), 'error');
+	}
+
+	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
+}
+
+/**
+ * @return form to edit inventory rights
+ */
+function inventory_update_rights($form, &$form_state) {
+	
+	$head_inventory_id = $form_state['storage']['hi_id'];
+	
+	for($i=0; $i<$form_state['storage']['sg_cnt']; $i++) {
+		$sgid = $form_state['storage']['sg_id'.$i];
+		$read = '0';
+		$write = '0';
+		if(isset($form_state['input']['read'.$i]) && $form_state['input']['read'.$i]) $read = '1';
+		if(isset($form_state['input']['write'.$i]) && $form_state['input']['write'.$i]) $write = '1';
+		if($write == '1') $read = '1'; // write access implies also read access
+		if($form_state['storage']['set_db'.$i]) {
+			// entry missing in db
+			$nid = db_insert('sgroups_inventory')->fields (
+				array (
+					'sgid' => $sgid,
+					'hiid' => $head_inventory_id,
+					'read' => $read,
+					'write' => $write,
+				)
+			)
+			->execute();
+		}
+		else {
+			// entry already in db
+			$affectedRows = db_update('sgroups_inventory')
+			->fields (
+				array (
+					'read' => $read,
+					'write' => $write,
+				)
+			)
+			->condition(db_and()->condition('sgid', $sgid, '=')->condition('hiid', $head_inventory_id, '='))
+			->execute();
+		}
+
+	}
+	
+	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
 }
 
 function getInitialInventory($head_inventory_id) {	
@@ -331,6 +469,10 @@ function getInitialInventory($head_inventory_id) {
 	return $invArr;
 }
 
+function getInitialInventoryJSON($head_inventory_id) {
+	return drupal_json_encode(getInitialInventory($head_inventory_id));
+}
+
 function getInventoryColumnDescription($inventoryId){
 	$invJson = array();
 
@@ -368,71 +510,7 @@ function getInventoryColumnDescription($inventoryId){
 	return $invJson;
 }
 
-function inventory_update($form, &$form_state) {
-
-	$head_inventory_id = $form_state['storage']['hi_id'];
-	$name = $form_state['input']['name'];
-	$shared = $form_state['input']['share'];
-	$description = $form_state['input']['description'];
-
-	$affectedRows = db_update('head_inventory')
-	->condition('id', $head_inventory_id)
-	->fields(array(
-				'name' => $name,
-				'shared' => $shared,
-				'description' => $description['value']
-	))
-	->execute();
-	
-	// check success
-	if ($affectedRows == 1) {
-		// show success message
-		drupal_set_message(t('Inventory @name was successfully updated', array('@name'=> $name)));
-	} else {
-		drupal_set_message(t('Inventory could not be updated!'), 'error');
-	}
-
-	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
-}
-
-function file_upload($form, &$form_state){
-
-	$head_inventory_id = $form_state['storage']['hi_id'];
-
-	// File upload
-	$validators = array(
-		'file_validate_extensions' => array('doc txt pdf docx'),
-		'file_validate_size' => array(1000000, 0),
-	);
-
-	$destination = 'public://swissmon/inventory/'.$head_inventory_id;
-
-	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
-
-	$file = file_save_upload('upload', $validators, $destination);
-	if ($file) {
-
-		$file->status |= FILE_STATUS_PERMANENT;
-		$file = file_save($file);
-
-		$form_state['values']['upload'] = $file;
-
-		$nid = db_insert('head_inventory_file_managed')->fields(array(
-					'head_inventory_id' => $head_inventory_id,
-					'file_id' => $file->fid,
-					'description' => $form_state['values']['file_description']
-		))
-		->execute();
-		drupal_set_message(t('File saved'));
-	}
-	else {
-		drupal_set_message(t('File could not be saved!'), 'error');
-	}
-
-	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
-}
-
-function inventory_icon_map($filemime) {
+function getInventoryIconMap($filemime) {
 
 	switch ($filemime) {
 		// Word document types.
@@ -552,6 +630,23 @@ function inventory_icon_map($filemime) {
 		default:
 			return $return;
 	}
+}
+
+/**
+ * @return name of actual inventory to be modified
+ */
+function getInventoryTitle($head_inventory_id) {
+	$inventory_title = t("-");
+
+	$inventories = db_query('	SELECT name
+								FROM head_inventory
+								WHERE id = :id;', array(':id' => $head_inventory_id));
+	foreach($inventories as $inventory) {
+		if(!is_null($inventory->name))
+		$inventory_title =  $inventory->name;
+	}
+
+	return $inventory_title;
 }
 
 ?>
