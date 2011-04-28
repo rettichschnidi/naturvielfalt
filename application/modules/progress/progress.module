@@ -1,8 +1,5 @@
 <?php
 
-define('AREA_ACCESS', 'area access');
-define('AREA_CREATE', 'area create');
-
 /**********************************
  *  Hook implementations
  *********************************/
