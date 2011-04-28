@@ -64,6 +64,13 @@ function area_menu() {
 	'type' => MENU_CALLBACK,
 	'file' => 'area.new.prop.inc',
 	);
+	$items['area/area_autocomplete'] = array(
+	'title' => 'Area autocomplete',
+    'page callback' => 'area_autocomplete',
+	'access arguments' => array(AREA_CREATE),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.search.inc',
+	);
 	$items['area/json'] = array(
 	'title' => 'area information in json format',
     'page callback' => 'area_json',
