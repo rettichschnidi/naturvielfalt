@@ -102,7 +102,13 @@ function inventory_edit_elements($form, &$form_state, $head_inventory_id) {
 	$json = getInitialInventoryJSON($head_inventory_id);
 
 	drupal_add_js('var exInvs = ' . $json, 'inline');
-	drupal_add_js('jQuery(document).ready(function(){initInventory();});', 'inline');
+	drupal_add_js('jQuery(document).ready(
+	function(){
+		initInventory();
+		jQuery("#edit-inventory-types").change(
+			function(){onAddInventory();}
+		);
+	});', 'inline');
 	
 	$edit_mode = true;
 	
@@ -125,26 +131,24 @@ function inventory_edit_elements($form, &$form_state, $head_inventory_id) {
 	$form['head_inventory_id'] = array('#type' => 'hidden', '#value' => $head_inventory_id);
 	$form['editMode'] = array('#type' => 'hidden', '#value' => $edit_mode);
 
-	$options = array();
-
 	$result = db_query("
 		SELECT it.id, it.name
 		FROM inventory_type it
 		ORDER BY it.id desc;"
 	);
 
+	$options = array('0' => t('- Please choose -'));
 	foreach ($result as $record) {
 		$options[$record->id] = $record->name;
 	}
 
 	$form['inventory_types'] = array(
     	'#type' => 'select',
-    	'#title' => t('Inventory Group'),
-    	'#default_value' => variable_get('name', 259200),
+    	'#title' => t('New inventory group:'),
     	'#options' => $options,
 	);
 	
-	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div><input onclick="onAddInventory();" type="button" id="add-inventory" name="button" value="Inventargruppe hinzufügen">';
+	$form['add_inventory']['#markup'] = '<div id="add_inventory"></div>';
 
 	$form['last_saved']['#markup'] = '<div id="last_saved"><br/></div>';
 	$form['error_save']['#markup'] = '<div id="error_save"><br/></div>';

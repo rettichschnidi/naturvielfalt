@@ -52,6 +52,7 @@ function onAddInventory() {
 	jQuery.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + jQuery('#edit-inventory-types').val(), function(json) {
 		tbody = addInventory(json);
 		addRow(tbody, json["cols"]);
+		jQuery("#edit-inventory-types option[value='0']").attr('selected',true);
 	});
 }
 
