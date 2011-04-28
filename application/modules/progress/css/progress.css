@@ -21,6 +21,7 @@
 
 .progress_elem.active {
 	background-color:#2e99c2;
+	font-weight: bold;
 }
 
 .progress_elem.pending {
