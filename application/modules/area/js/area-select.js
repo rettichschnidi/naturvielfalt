@@ -47,6 +47,7 @@ function AreaSelect() {
           });
         me.areaInfo.addTab('Details', '');
         me.areaInfo.addTab('Inventories', '');
+        me.areaInfo.addTab('Habitats', '');
 
         // select row in table
         jQuery("#area_table tbody").live('click', function(event) {
@@ -200,41 +201,49 @@ AreaSelect.prototype.addOverlayListener = function(overlay) {
         }
         
         // update and show area info
-        jQuery.getJSON(Drupal.settings.basePath + 'area/json/' + info.id,
-        	function (data, textStatus, jqXHR) {
-        		var details = '<div>';
-        		details += '<strong>' + data.field_name + '</strong>';
-        		details += '<div>' + data.locality + '</br>';
-        		details += data.zip + ' ' + data.township + '</br>';
-        		details += data.altitude + '</br>';
-        		details += data.surface_area + '</br>';
-        		details += '</div>';
-        		details += '<div>' + data.comment + '</div>';
-        		me.areaInfo.updateTab(0, 'Details', details);
-        		inventories = '';
-        		for (var i = 0, len = data.inventories.invs.length; i < len; ++i) {
-        			inventory = data.inventories.invs[i];
-        			inventories += '<div><a href="inventory/' + inventory.id  + '"><strong>' + inventory.name + ':</strong></a></div><div>';
-        			for (var ie = 0, ieLen = inventory.types.length; ie < ieLen; ++ie) {
-        				type = data.inventories.invs[i].types[ie];
-        				inventories += type.name + ' (' + type.count + ' x)';
-        				if (ieLen > ie + 1) {
-        					inventories += ', ';
-        				}
-        			}
-        			inventories += '</div>';
-        		}
-        		me.areaInfo.updateTab(1, data.inventories.title, inventories);
-                me.areaInfo.open(me.map);
-        }
-        );
-        me.areaInfo.close();
-        me.areaInfo.setPosition(overlays[info.id].getCenter());
+		jQuery.getJSON(Drupal.settings.basePath + 'area/json/' + info.id, function(data, textStatus, jqXHR) {
+			// area details
+			var details = '<div>';
+			details += '<strong>' + data.field_name + '</strong>';
+			details += '<div>' + data.locality + '<br>';
+			details += data.zip + ' ' + data.township + '<br>';
+			details += data.altitude + '<br>';
+			details += data.surface_area + '<br>';
+			details += '</div>';
+			details += '<div>' + data.comment + '</div>';
+			me.areaInfo.updateTab(0, 'Details', details);
 
-        jQuery('tr[overlay_id="'+info.id+'"]').addClass('row_selected');
-        overlays[info.id].setStyle('selected');
-        me.selected_area = info.id;
-        me.map.panTo(overlays[info.id].getCenter());
+			// inventories
+			inventories = '';
+			for ( var i = 0, len = data.inventories.invs.length; i < len; ++i) {
+				inventory = data.inventories.invs[i];
+				inventories += '<div><a href="inventory/' + inventory.id + '"><strong>' + inventory.name + ':</strong></a></div><div>';
+				for ( var ie = 0, ieLen = inventory.types.length; ie < ieLen; ++ie) {
+					type = data.inventories.invs[i].types[ie];
+					inventories += type.name + ' (' + type.count + ' x)';
+					if (ieLen > ie + 1) {
+						inventories += ', ';
+					}
+				}
+				inventories += '</div>';
+			}
+			me.areaInfo.updateTab(1, data.inventories.title, inventories);
+
+			// habitats
+			habitats = '<div>';
+			if (data.habitats.habs) {
+				for ( var i = 0, len = data.habitats.habs.length; i < len; ++i) {
+					habitats += data.habitats.habs[i] + '<br/>';
+				}
+			}
+			habitats += '</div>';
+			me.areaInfo.updateTab(2, data.habitats.title, habitats);
+
+			// and finally show the fancy popup bubble:
+			me.areaInfo.open(me.map);
+		});
+		me.areaInfo.close();
+		me.areaInfo.setPosition(overlays[info.id].getCenter());
     });
 };
 

@@ -85,6 +85,16 @@ function area_json($areaId) {
 	}
 	$invName = t('Inventories (!count)', array('!count' => $countInventories));
 	$output['inventories']['title'] = $invName;
+
+	// information about habitats
+	$output['habitats']['title'] = t('Habitats');
+	$habitats = db_query('SELECT name_de, label FROM area_habitat ah
+		LEFT JOIN habitat h ON ah.habitat_id = h.id
+		WHERE ah.area_id = :areaId', array(':areaId' => $areaId));
+	foreach ($habitats as $habitat) {
+		$output['habitats']['habs'][] = $habitat->name_de;
+	}
+
 	return drupal_json_output($output);
 }
 
@@ -111,36 +121,36 @@ function area_autocomplete($string) {
 
 function lastUsed() {
 	global $user;
-	
+
 	$head_inventories= db_query(
 		"SELECT * FROM area 
 		WHERE owner_id = :owner_id
 		ORDER BY modify_time DESC
 		LIMIT 5",
-		array(':owner_id'=>$user->uid)
+	array(':owner_id'=>$user->uid)
 	);
 
-	foreach ($head_inventories as $record) {			
-			$row = array();
-			$row[] = $record->id;
-			$row[] = $record->field_name;
-			$row[] = $record->zip;
-			$row[] = $record->locality;
-			$row[] = $record->canton;
-			$row[] = $record->create_time;
-			$row[] = $record->modify_time;
-			$rows[] = $row;
+	foreach ($head_inventories as $record) {
+		$row = array();
+		$row[] = $record->id;
+		$row[] = $record->field_name;
+		$row[] = $record->zip;
+		$row[] = $record->locality;
+		$row[] = $record->canton;
+		$row[] = $record->create_time;
+		$row[] = $record->modify_time;
+		$rows[] = $row;
 	}
 
 	$header = array(t('id'),t('field_name'),t('zip'),t('locality'),t('canton'),t('create_time'),t('modify_time'),);
-	
+
 	$form['AreaText'] = array(
 	'#title' => t('Search through existing areas'),
 	'#type' => 'textfield',   
     '#autocomplete_path' => 'area/area_autocomplete',
 	'#suffix' => '<div id="habitatSelected"><table></table></div>',
 	);
-	
+
 	if ($rows){
 		$form['aaaa'] = array (
 			'#markup'=> t('Als letztes verwendete Gebiete')
