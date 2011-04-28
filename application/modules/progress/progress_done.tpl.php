@@ -17,7 +17,8 @@ for ($i=0; $i<count($elements); $i++) {
 	else if (($i > $cnt) && ($cnt >= 0))
 		$class = 'pending';
 ?>
-	<div class='progress_elem_cont'><div class='progress_elem <?php print $class; ?>'><?php print ($i+1).". ".$elements[$i]; ?></div></div>
+	<div class='progress_elem_cont' style='width:<?php echo floor(100/count($elements));?>%'>
+	<div class='progress_elem <?php print $class; ?>'><?php print ($i+1).". ".$elements[$i]; ?></div></div>
 <?php
 }
 ?>
