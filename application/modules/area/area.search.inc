@@ -4,6 +4,12 @@ function show_area_search() {
 	drupal_set_title(t('Areas'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 
+	$output['test'] = array(
+ 	'#theme' => 'progress_done',
+ 	'#elements' =>array(t('Select or create an area'), t('Create Inventory'), t('Completion')), // List of elements
+ 	'#active' => 'Select or create an area', 		// Indicate active Element
+ 	);
+	
 	$output['areaSearch'] = array(
 		'#theme' => 'area.search',
 	);
@@ -94,12 +100,10 @@ function area_autocomplete($string) {
 	);
 
 	$items = array();
-	foreach ($areas as $record){
-		$item['field_name'] = $record->field_name;
-		$item['id'] = $record->id;
-		$item['locality'] = $record->locality;
-		$item['zip'] = $record->zip;
-		$items[]= $item;
+	foreach ($areas as $record){		
+		$value = $record->field_name.", ".$record->zip." ".$record->locality;
+		$key = $record->id;
+		$items[$key]=$value; 
 	}
 
 	return drupal_json_output($items);
@@ -131,7 +135,7 @@ function lastUsed() {
 	$header = array(t('id'),t('field_name'),t('zip'),t('locality'),t('canton'),t('create_time'),t('modify_time'),);
 	
 	$form['AreaText'] = array(
-	'#title' => 'Areas',
+	'#title' => t('Search through existing areas'),
 	'#type' => 'textfield',   
     '#autocomplete_path' => 'area/area_autocomplete',
 	'#suffix' => '<div id="habitatSelected"><table></table></div>',
