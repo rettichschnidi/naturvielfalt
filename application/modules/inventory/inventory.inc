@@ -1,6 +1,12 @@
 <?php
 /**
- * @return form to edit basic attributes of inventory
+ * form to edit basic attributes of inventory
+ *
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $head_inventory_id
+ * @param unknown_type $new
+ * @return array to render
  */
 function inventory_edit_basics($form, &$form_state, $head_inventory_id, $new) {
 	

@@ -55,6 +55,10 @@ function inventory_menu() {
   	return $items;
 }
 
+/**
+ * Default permission function
+ * 
+ */
 function inventory_permission() {
   return array(
     'access inventories' =>  array(
@@ -66,6 +70,12 @@ function inventory_permission() {
   );
 }
 
+/**
+ * Check write acces to inventory
+ * 
+ * @param unknown_type $inventoryId
+ * @return true if access ok, false if not
+ */
 function inventory_edit_access($inventoryId) {
 	$access = user_access('access inventories');
 	// check if this user has write access to the inventory
@@ -81,7 +91,12 @@ function inventory_edit_access($inventoryId) {
 	return $access;
 }
 
-// will be used to check read access in browse-modus
+/**
+ * Check read acces to inventory
+ * 
+ * @param unknown_type $inventoryId
+ * @return true if access ok, false if not
+ */
 function inventory_access($inventoryId) {
 	$access = user_access('access inventories');
 	// check if this user has write access to the inventory or the inventory is public

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Generate list with all editable inventories
+ * 
+ * @return array to render
+ */
 function inventory_modify() {
 	drupal_set_title(t('Modify Inventory'));
 

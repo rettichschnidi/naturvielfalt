@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MENU_NORMAL_ITEM. This will be called if someone visits for example drupal/inventory/3/edit.
+ * This will be called if someone visits for example drupal/inventory/3/edit (MENU_NORMAL_ITEM)
  * @param $head_inventory_id
  * 	The id of inventory to be modified
  * @return all inventory forms to modify the inventory
@@ -48,12 +48,12 @@ function inventory_edit($head_inventory_id) {
         ),
 	);
 	
-	$render_array['elements']['edit'] = drupal_get_form('inventory_edit_elemnts', $head_inventory_id);
+	$render_array['elements']['edit'] = drupal_get_form('inventory_edit_elements', $head_inventory_id);
 	
 	//------------------
 	$render_array['rights'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Rights'), 
+  		'#title' => t('Permissions'), 
   		'#weight' => 8, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => TRUE,
@@ -94,9 +94,11 @@ function inventory_edit($head_inventory_id) {
 }
 
 /**
- * @return form of invenory elements
+ * Form to edit inventory entries
+ * 
+ * @return form of inventory elements
  */
-function inventory_edit_elemnts($form, &$form_state, $head_inventory_id) {
+function inventory_edit_elements($form, &$form_state, $head_inventory_id) {
 	$json = getInitialInventoryJSON($head_inventory_id);
 
 	drupal_add_js('var exInvs = ' . $json, 'inline');
@@ -151,6 +153,8 @@ function inventory_edit_elemnts($form, &$form_state, $head_inventory_id) {
 }
 
 /**
+ * Form to upload and comment new files
+ * 
  * @return form to upload files
  */
 function inventory_edit_files($form, &$form_state, $head_inventory_id) {
@@ -222,6 +226,8 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 }
 
 /**
+ * Form to edit inventory permissions
+ * 
  * @return form to edit inventory rights
  */
 function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
@@ -300,11 +306,11 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 }
 
 /**
- * 
  * Update Basic information of Inventory. Corresponding form in inventory.inc
+ * 
  * @param array $form
  * @param array $form_state
- * @return Form with modified entries
+ * @return Instruction to redirect on initial page
  */
 function inventory_update_basics($form, &$form_state) {
 
@@ -333,6 +339,13 @@ function inventory_update_basics($form, &$form_state) {
 	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
 }
 
+/**
+ * Submit function to upload files
+ * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @return Instruction to redirect on initial page
+ */
 function inventory_update_file($form, &$form_state){
 
 	$head_inventory_id = $form_state['storage']['hi_id'];
@@ -371,7 +384,11 @@ function inventory_update_file($form, &$form_state){
 }
 
 /**
- * @return form to edit inventory rights
+ * Submit function to modify inventory permissions
+ * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @return Instruction to redirect on initial page
  */
 function inventory_update_rights($form, &$form_state) {
 	
@@ -414,6 +431,11 @@ function inventory_update_rights($form, &$form_state) {
 	return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
 }
 
+/**
+ * ...
+ * Enter description here ...
+ * @param unknown_type $head_inventory_id
+ */
 function getInitialInventory($head_inventory_id) {	
 	$invArr = array();
 
@@ -469,10 +491,20 @@ function getInitialInventory($head_inventory_id) {
 	return $invArr;
 }
 
+/**
+ * ...
+ * Enter description here ...
+ * @param unknown_type $head_inventory_id
+ */
 function getInitialInventoryJSON($head_inventory_id) {
 	return drupal_json_encode(getInitialInventory($head_inventory_id));
 }
 
+/**
+ * ...
+ * Enter description here ...
+ * @param unknown_type $inventoryId
+ */
 function getInventoryColumnDescription($inventoryId){
 	$invJson = array();
 
@@ -510,6 +542,11 @@ function getInventoryColumnDescription($inventoryId){
 	return $invJson;
 }
 
+/**
+ * ...
+ * Enter description here ...
+ * @param unknown_type $filemime
+ */
 function getInventoryIconMap($filemime) {
 
 	switch ($filemime) {
@@ -633,6 +670,9 @@ function getInventoryIconMap($filemime) {
 }
 
 /**
+ * ...
+ * Enter description here ...
+ * @param unknown_type $head_inventory_id
  * @return name of actual inventory to be modified
  */
 function getInventoryTitle($head_inventory_id) {
