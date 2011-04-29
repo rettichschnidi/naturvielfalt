@@ -235,7 +235,7 @@ function saveRows() {
 		}
 	}
 
-	jQuery.post(INVENTORY_SERVER_PATH + "inventory/save-ajax", saveArray, function(ids) {
+	jQuery.post(Drupal.settings.basePath + "inventory/" + saveArray["headInventoryId"] + "/entries_ajax", saveArray, function(ids) {
 		jQuery.each(ids, function(key, value) {
 			var name = "";
 			if (key.substr(0, 8) == "row_new_")
@@ -258,7 +258,7 @@ function saveRows() {
 	jQuery('#last_saved').ajaxError(function() {
 		jQuery('#last_saved').removeClass('messages status');
 		jQuery(this).addClass("messages error");
-		jQuery(this).text( "Fehler beim speichern!" );
+		jQuery(this).text( "Fehler beim speichern" );
 	});
 
 	// TODO: overwrite exInvs with the actual inventorys

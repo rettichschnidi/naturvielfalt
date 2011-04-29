@@ -51,6 +51,15 @@ function inventory_menu() {
     'type' => MENU_CALLBACK,
 	'file' => 'inventory.organism_autocomplete.inc',
 	);
+	$items['inventory/%/entries_ajax'] = array(
+    'title' => 'Entries Ajax Request',
+    'description' => 'JSON Entries Ajax Request',
+    'page callback' => 'inventory_entries_ajax',
+	'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+	'file' => 'inventory.entries.ajax.inc',
+	);
   
   	return $items;
 }

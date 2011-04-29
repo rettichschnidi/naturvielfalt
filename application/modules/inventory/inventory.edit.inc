@@ -310,13 +310,13 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
    				'#header' => $tableHeader,
 				'#rows' => $rows,
 			);
-			
-			$form['upload_submit'] = array(
-				'#type' => 'submit', 
-				'#value' => t("Save"),
-				'#submit' => array('inventory_update_rights'),
-			);
 		}
+		
+		$form['upload_submit'] = array(
+			'#type' => 'submit', 
+			'#value' => t("Save"),
+			'#submit' => array('inventory_update_rights'),
+		);
 	}
 	
 	// Saveing something to the form_state makes it accessible in the submit function.
