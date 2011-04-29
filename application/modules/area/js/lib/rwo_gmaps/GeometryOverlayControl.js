@@ -159,13 +159,6 @@ GeometryOverlayControl.prototype.addLatLngEvent = function(){
 GeometryOverlayControl.prototype.enableEditing = function(isEnabled){
 	this.editing = isEnabled;
 };
-/**
- * @param {Object} overlay
- */
-GeometryOverlayControl.prototype.deleteOverlay = function(overlay){
-	overlay.setMap(null);
-	// Delete overlay from server
-};
 
 GeometryOverlayControl.prototype.save = function(overlay){
 	this.mapCache.save(overlay);
