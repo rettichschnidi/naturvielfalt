@@ -7,7 +7,7 @@ jQuery(document).ready(function() {
 
 // This gets called if a user clicks on the delete button
 function deleteMember(event) {
-	var row = jQuery(this.parentElement.parentElement);
+	var row = jQuery(this).parent().parent();
 	var id = jQuery(this).attr('id');
 	var url = Drupal.settings.basePath + "sgroup/delete_member/" + id;
 	jQuery.getJSON(url, function(data) {
