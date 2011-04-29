@@ -65,6 +65,7 @@ function AreaSelect() {
 		// handle map highlighting
 		areaselect.mapOverlays.overlays[overlayId].setStyle('selected');
 		areaselect.map.panTo(areaselect.mapOverlays.overlays[overlayId].getCenter());
+		areaselect.showAreaInfoBubble(overlay);
 		// remember selected area
 		areaselect.selected_area = overlayId;
 	}
@@ -221,7 +222,6 @@ function AreaSelect() {
 	    //select
 	    google.maps.event.addListener(overlay.gOverlay, 'click', function(event) {
 	    	me.selectArea(overlay.id);
-	    	me.showAreaInfoBubble(overlay);
 	    });
 	};
 	
