@@ -3,6 +3,7 @@ function show_area_search() {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_set_title(t('Areas'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
+	drupal_add_js('modules/area/js/autocomplete-select.js');
 
 	$output['test'] = array(
  	'#theme' => 'progress_done',
@@ -17,6 +18,14 @@ function show_area_search() {
 	$output['FieldName'] = drupal_get_form('fieldNameForm');
 	$output['googleMaps'] = drupal_get_form('googleMapsForm');
 
+	$output['aaa']= array(
+ 	'#markup' => "<a href='#' onclick=\"
+ 		jumpto(79);
+ 	
+            \">jumpto</a>
+            ",
+ 	);
+	
 	return $output;
 }
 
@@ -101,7 +110,7 @@ function area_json($areaId) {
 function area_autocomplete($string) {
 
 	$areas = db_query('
-		SELECT id, field_name, zip, locality FROM area
+		SELECT id, field_name, zip, locality, create_time, modify_time FROM area
 		WHERE field_name ILIKE :term
 			OR zip ILIKE :term
 			OR locality ILIKE :term
@@ -111,7 +120,7 @@ function area_autocomplete($string) {
 
 	$items = array();
 	foreach ($areas as $record){		
-		$value = $record->field_name.", ".$record->zip." ".$record->locality;
+		$value = $record->field_name.", ".$record->zip." ".$record->locality."<br>Erstellt am ".$record->create_time;
 		$key = $record->id;
 		$items[$key]=$value; 
 	}
