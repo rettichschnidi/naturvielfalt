@@ -3,7 +3,8 @@ function show_area_search() {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_set_title(t('Areas'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
-	drupal_add_js('modules/area/js/autocomplete-select.js');
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 
 	$output['test'] = array(
  	'#theme' => 'progress_done',
@@ -17,14 +18,7 @@ function show_area_search() {
 	$output['LastUsed'] = drupal_get_form('lastUsed');
 	$output['FieldName'] = drupal_get_form('fieldNameForm');
 	$output['googleMaps'] = drupal_get_form('googleMapsForm');
-
-	$output['aaa']= array(
- 	'#markup' => "<a href='#' onclick=\"
- 		jumpto(79);
- 	
-            \">jumpto</a>
-            ",
- 	);
+	$output['areaNew'] = drupal_get_form('areaNewForm');	
 	
 	return $output;
 }
@@ -36,8 +30,9 @@ function googleMapsForm() {
   		'#weight' => 3, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,
-		'searchByMaps' => array('#theme' => 'area.search.byMaps'),
+		'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
 	);
+	
 	return $form;
 }
 
@@ -52,6 +47,81 @@ function fieldNameForm() {
 
 	$form['FieldName']['searchByField'] = array(
 		'search' => array('#theme' => 'area.search.byField'),
+	);
+
+	return $form;
+}
+
+function areaNewForm($form, &$form_state) {
+	$form['AreaNewForm'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Enter area properties:'), 
+  		'#weight' => 5, 
+  		'#collapsible' => FALSE, 
+  		'#collapsed' => FALSE,
+		'#class' => 'hidden',
+	);
+	$form['AreaNewForm']['field_name'] = array(
+  	'#type' => 'textfield',
+  	'#title' => t('Area name'),
+	'#required' => true,
+	);
+	$form['AreaNewForm']['habitatText'] = array(
+	'#title' => 'Habitats',
+	'#type' => 'textfield',   
+    '#autocomplete_path' => 'area/habitat_autocomplete',
+	'#suffix' => '<div id="habitatSelected"><table></table></div>',
+	);
+	$form['AreaNewForm']['locality'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Locality'),
+	);
+	$form['AreaNewForm']['zip'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Zip'),
+	);
+	$form['AreaNewForm']['township'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Township'),
+	);
+	$form['AreaNewForm']['canton'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Canton'),
+	);
+	$form['AreaNewForm']['altitude'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Altitude'),
+	);
+	$form['AreaNewForm']['surface_area'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Surface area (m2)'),
+	);
+	$form['AreaNewForm']['country'] = array(
+	'#type' => 'textfield',
+	'#title' => t('Country'),
+	);
+	$form['AreaNewForm']['comment'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Description'),
+    '#cols' => 60,
+    '#rows' => 10,
+	);
+	$form['AreaNewForm']['latitude'] = array(
+    '#type' => 'hidden',
+	);
+	$form['AreaNewForm']['longitude'] = array(
+    '#type' => 'hidden',
+	);
+	$form['AreaNewForm']['area_coords'] = array(
+    '#type' => 'hidden',
+	);
+	$form['AreaNewForm']['area_type'] = array(
+    '#type' => 'hidden',
+	);
+	$form['AreaNewForm']['submit'] = array(
+  	'#type' => 'submit',
+  	'#value' => t('Create area'),
+	'#submit' => array('areaPropertyForm_save'),
 	);
 
 	return $form;

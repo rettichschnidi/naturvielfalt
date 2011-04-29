@@ -4,6 +4,17 @@
 	<?php echo t('Search map'); ?>
 	</button>
 </div>
-<div id="map">
+
+<div>
+<div>
+<div style="float: left;"><?php echo t('Choose area:')?></div>
+<div style="float: left;" id="controlAreaChoose" class="selected"></div>
+<div style="float: left;"><?php echo t('Create new area:')?></div>
+<div style="float: left;" id="controlAreaCreate"></div>
+</div>
+
+<div style="clear: both;" id="map">
 	<div id="map_canvas" style="height: 100%"></div>
+</div>
+
 </div>

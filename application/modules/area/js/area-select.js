@@ -309,6 +309,20 @@ function AreaSelect() {
 			alert('Bitte wählen Sie ein Gebiet aus.');
 		}
 	}
+	
+	AreaSelect.prototype.onControlAreaChooseClicked = function(event) {
+		jQuery('#controlAreaChoose').addClass('selected');
+		jQuery('#controlAreaCreate').removeClass('selected');
+		areaselect.overlayControl.stopDigitizing();
+		jQuery('#edit-areanewform--2').addClass('hidden');
+	}
+
+	AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
+		jQuery('#controlAreaChoose').removeClass('selected');
+		jQuery('#controlAreaCreate').addClass('selected');
+		jQuery('#edit-areanewform--2').removeClass('hidden');
+		areaselect.overlayControl.startDigitizing();
+	}
 
 	//////////////////////// Class initialisation //////////////////////
 	
@@ -319,12 +333,15 @@ function AreaSelect() {
 	me.selected_area = null; // index of currently selected area
 	me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
 	me.area_table = this.createDataTable(me.mapOverlays); // the table containing areas
+	me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
 
 	// register events
 	jQuery('#create-inventory').click(this.onCreateInventoryClicked);
 	jQuery("#area_table tbody").live('click', this.onTableRowClicked);
 	jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
     jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
+    jQuery('#controlAreaChoose').click(this.onControlAreaChooseClicked);
+    jQuery('#controlAreaCreate').click(this.onControlAreaCreateClicked);
 };
 
 var areaselect = null;
