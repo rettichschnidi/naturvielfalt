@@ -12,7 +12,6 @@ var util = {};
 util.geocode = function(input_id, search_button_id, map) {
     var me = this;
     var geocoder = new google.maps.Geocoder();
-    console.info('geocode init'+' #'+search_button_id);
 
     jQuery('#'+input_id).geo_autocomplete({
         geocoder_region: 'Schweiz',
