@@ -61,7 +61,7 @@ function AreaSelect() {
 				areaselect.mapOverlays.overlays[this.nTr.getAttribute('overlay_id')].setStyle('selected-disable');
 			}
 		});
-		jQuery(event.target.parentNode).addClass('row_selected');
+		jQuery('#area_table tbody tr[overlay_id="' + overlayId + '"]').addClass('row_selected');
 		// handle map highlighting
 		areaselect.mapOverlays.overlays[overlayId].setStyle('selected');
 		areaselect.map.panTo(areaselect.mapOverlays.overlays[overlayId].getCenter());
