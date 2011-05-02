@@ -8,8 +8,8 @@ function show_area_search() {
 
 	$output['test'] = array(
  	'#theme' => 'progress_done',
- 	'#elements' =>array(t('Select or create an area'), t('Create Inventory'), t('Completion')), // List of elements
- 	'#active' => 'Select or create an area', 		// Indicate active Element
+ 	'#elements' =>array(t('Select or create a new area'), t('Create Inventory'), t('Completion')), // List of elements
+ 	'#active' => 'Select or create a new area', 		// Indicate active Element
  	);
 	
 	$output['areaSearch'] = array(
