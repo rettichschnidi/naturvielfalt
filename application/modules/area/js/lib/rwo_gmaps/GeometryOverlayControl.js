@@ -118,9 +118,13 @@ GeometryOverlayControl.prototype.startDigitizing = function(){
 };
 
 GeometryOverlayControl.prototype.stopDigitizing = function(){
-	google.maps.event.removeListener(this.eventListeners.addLatLng);
+	if(this.eventListeners.addLatLng){
+			google.maps.event.removeListener(this.eventListeners.addLatLng);
+	}
 	this.eventListeners.addLatLng = null;
-	this.overlay.stopEditing();
+	if(this.overlay){
+		this.overlay.stopEditing();
+	}
 	this.stopFunc();
 	//this.overlay = null;
 };
