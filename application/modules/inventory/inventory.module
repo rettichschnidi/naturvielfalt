@@ -12,15 +12,19 @@ module_load_include('inc', 'inventory');
  */
 function inventory_menu() {
 	$items['inventory'] = array(
-    'title' => 'Modify Inventory',
-    'description' => 'Show all inventories to modify',
-    'page callback' => 'inventory_modify',
+    'title' => 'Show Inventory',
+    'description' => 'Show all inventories',
+    'page callback' => 'inventory_list',
     'access arguments' => array('access inventories'),
-	'file' => 'inventory.edit.list.inc',
+	'file' => 'inventory.list.inc',
 	);
 	$items['inventory/edit'] = array(
     'title' => 'Modify Inventory',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
+	'description' => 'Show all inventories to modify',
+	'page callback' => 'inventory_modify',
+	'access arguments' => array('access inventories'),
+	'file' => 'inventory.edit.list.inc',
+    'type' => MENU_LOCAL_TASK,
     'weight' => 0,
 	);
 	$items['inventory/%/edit'] = array(
