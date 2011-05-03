@@ -10,7 +10,7 @@ $class = 'done';
 
 // plot of elements
 for ($i=0; $i<count($elements); $i++) {
-	if($elements[$i] == $active)
+	if($i+1 == $active)
 		$cnt = $i;
 	if ($i == $cnt)
 		$class = 'active';

@@ -13,7 +13,7 @@
  *	$render_array['test'] = array(
  *	'#theme' => 'progress_done',
  *	'#elements' => $progressElement,
- *	'#active' => 'Inventory', 		// Indicate active Element
+ *	'#active' => 1, 		// Indicate active Element
  *	);
  *----------------------------------
  *
