@@ -8,6 +8,8 @@
  */
 function inventory_edit($head_inventory_id) {
 	
+	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/sgroup.js');
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css');
 	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
 	
 	//------------------
@@ -236,11 +238,15 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
  */
 function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	
-	$tableHeader[] = t('Group');
+	//drupal_add_js('modules/inventory/js/sgroup.js');
+	
+	$tableHeader[] = t('Groups I am Member of');
 	$tableHeader[] = t('Write Access');
 	$tableHeader[] = t('Read Access');
 	
 	global $user;
+	
+	// Shared flag
 	
 	$result = db_query(
 		'SELECT shared FROM head_inventory hi
@@ -260,69 +266,124 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 		}
 	}
 	
-	$result = db_query(
-		'SELECT sg.sgid, sg.sgroup_name, read, write 
-  		FROM sgroup sg
+	// Groups active user is member of
+	$result = db_query('
+		SELECT * FROM sgroup sg
+		LEFT JOIN sgroups_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid 
 		LEFT JOIN sgroup_users sgu ON sgu.sgid = sg.sgid
-		LEFT JOIN users u ON sgu.uid = u.uid
-		LEFT JOIN sgroups_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid
-		LEFT JOIN head_inventory hi ON sgi.hiid = hi.id
-		WHERE u.uid = :uid', array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
+		WHERE sgu.uid = :uid',
+		array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
 	);
-	$i = 0;
+	$cnt = 0;
 	if(!empty($result)) {
 		foreach ($result as $record) {
 			// Saveing something to the form_state makes it accessible in the submit function.
 			// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-			$form_state['storage']['sg_id'.$i] = $record->sgid;
+			$form_state['storage']['sg_id'.$cnt] = $record->sgid;
 			
 			$name = $record->sgroup_name;
 			$read = false;
 			$write = false;
-			$form_state['storage']['set_db'.$i] = false;
+			$form_state['storage']['set_db'.$cnt] = false;
 			if($record->read == '1') $read = true;
 			elseif ($record->read == '0') $read = false;
-			else $form_state['storage']['set_db'.$i] = true;	// no db entry yet -> set in submit fct
+			else $form_state['storage']['set_db'.$cnt] = true;	// no db entry yet -> set in submit fct
 			if($record->write == '1') $write = true;
-			$form['read'.$i] = array(
+			$form['read'.$cnt] = array(
 				'#type' => 'checkbox',
 				'#value' => $read,
 				'#checked' => $read,
-				'#name' => 'read'.$i,
+				'#name' => 'read'.$cnt,
 			);
-			$form['write'.$i] = array(
+			$form['write'.$cnt] = array(
 				'#type' => 'checkbox',
 				'#value' => $write,
 				'#checked' => $write,
-				'#name' => 'write'.$i,
+				'#name' => 'write'.$cnt,
 			);
 			$row = array();
 			$row[] = $name;
-			$row[] = array('data' => drupal_render($form['write'.$i]));
-			$row[] = array('data' => drupal_render($form['read'.$i]));
+			$row[] = array('data' => drupal_render($form['write'.$cnt]));
+			$row[] = array('data' => drupal_render($form['read'.$cnt]));
 			$rows[] = $row;
-			$i++;
+			$cnt++;
 		}
 
 		if(isset($rows)) {
-			$form['right_overview'] = array(
+			$form['right_overview_my'] = array(
     			'#theme' => 'table', 
    				'#header' => $tableHeader,
 				'#rows' => $rows,
 			);
 		}
-		
-		$form['upload_submit'] = array(
-			'#type' => 'submit', 
-			'#value' => t("Save"),
-			'#submit' => array('inventory_update_rights'),
-		);
 	}
+	
+	// Additional groups, active user is no member of but wants to allow group-members to access inventory 
+	$tableHeader = NULL;
+	$tableHeader[] = t('Other Groups');
+	$tableHeader[] = t('Read Access');
+	$tableHeader[] = t('Remove');
+	$rows = array();
+	
+	$result = db_query('
+		SELECT * FROM sgroups_inventory sgi
+		LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
+		WHERE sgi.hiid = :hiid
+		AND sg.sgid NOT IN (SELECT sguEx.sgid FROM sgroup_users sguEx WHERE sguEx.uid = :uid);',
+		array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
+	);
+	if(!empty($result)) {
+		foreach ($result as $record) {
+			// Saveing something to the form_state makes it accessible in the submit function.
+			// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
+			$form_state['storage']['sg_id'.$cnt] = $record->sgid;
+			
+			$name = $record->sgroup_name;
+			$read = false;
+			$write = false;
+			$form_state['storage']['set_db'.$cnt] = false;
+			if($record->read == '1') $read = true;
+			elseif ($record->read == '0') $read = false;
+			$form['read'.$cnt] = array(
+				'#type' => 'checkbox',
+				'#value' => $read,
+				'#checked' => $read,
+				'#name' => 'read'.$cnt,
+			);
+			$row = array();
+			$row[] = $name;
+			$row[] = array('data' => drupal_render($form['read'.$cnt]));
+			$row[] = array('data' => '<div id="'.$head_inventory_id.'/'.$form_state['storage']['sg_id'.$cnt].'"></div>', 'class' => 'delete');
+			$rows[] = $row;
+			$cnt++;
+		}
+
+		if(isset($rows)) {
+			$form['right_overview_other'] = array(
+    			'#theme' => 'table', 
+   				'#header' => $tableHeader,
+				'#rows' => $rows,
+				'#attributes' => array('id' => 'right_overview_other'),
+			);
+		}
+	}
+	
+	$form['sgrouptext'] = array(
+		'#title' => t('Search through existing Groups'),
+		'#type' => 'textfield',
+		'#autocomplete_path' => 'inventory/'.$head_inventory_id.'/sgroup_autocomplete',
+	);
+	
+	$form['upload_submit'] = array(
+		'#type' => 'submit', 
+		'#value' => t("Save"),
+		'#submit' => array('inventory_update_rights'),
+	);
 	
 	// Saveing something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
 	$form_state['storage']['hi_id'] = $head_inventory_id;
-	$form_state['storage']['sg_cnt'] = $i;
+	$form_state['storage']['sg_cnt'] = $cnt;
 	
 	return $form;
 }
@@ -418,6 +479,8 @@ function inventory_update_rights($form, &$form_state) {
 	$shared = '0';
 	if(isset($form_state['input']['share'])) $shared = '1';
 	$check = false;
+	
+	// update own group permissions
 	for($i=0; $i<$form_state['storage']['sg_cnt']; $i++) {
 		$sgid = $form_state['storage']['sg_id'.$i];
 		$read = '0';
@@ -455,7 +518,25 @@ function inventory_update_rights($form, &$form_state) {
 		}
 
 	}
+
+	// insert foreign group permissions
+	if(isset($form_state['input']['sgroup_id'])) {
+		$sgid = $form_state['input']['sgroup_id'];
+		$read = '0';
+		if(isset($form_state['input']['read_new']) && $form_state['input']['read_new']) $read = '1';
+		$nid = db_insert('sgroups_inventory')->fields (
+			array (
+				'sgid' => $sgid,
+				'hiid' => $head_inventory_id,
+				'read' => $read,
+				'write' => '0',
+			)
+		)
+		->execute();
+		$check = true;
+	}
 	
+	// update shared flag
 	$affectedRows = db_update('head_inventory')
 	->condition('id', $head_inventory_id)
 	->fields(

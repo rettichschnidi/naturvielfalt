@@ -49,7 +49,7 @@ function inventory_menu() {
     'page callback' => 'inventory_organism_autocomplete',
     'access arguments' => array('access inventories'),
     'type' => MENU_CALLBACK,
-	'file' => 'inventory.organism_autocomplete.inc',
+	'file' => 'inventory.ajax.inc',
 	);
 	$items['inventory/%/entries_ajax'] = array(
     'title' => 'Entries Ajax Request',
@@ -58,7 +58,24 @@ function inventory_menu() {
 	'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-	'file' => 'inventory.entries.ajax.inc',
+	'file' => 'inventory.ajax.inc',
+	);
+	$items['inventory/%/sgroup_autocomplete'] = array(
+	'title' => 'sgroup autocomplete',
+    'page callback' => 'inventory_sgroup_autocomplete',
+	'access callback' => 'inventory_edit_access',
+	'access arguments' => array(1),
+	'type' => MENU_CALLBACK,
+	'file' => 'inventory.ajax.inc',
+	);
+	$items['inventory/%/delete_sgroup/%'] = array(
+	'title' => 'JSON request to delete a group from permission list',
+	'page callback' => 'inventory_delete_sgroup',
+	'page arguments' => array(1, 3),
+	'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.ajax.inc',
 	);
   
   	return $items;

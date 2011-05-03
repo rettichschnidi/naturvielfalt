@@ -7,6 +7,7 @@
 function inventory_modify() {
 	drupal_set_title(t('Modify Inventory'));
 
+	// Own Inventories
 	$tableHeader[] = t('Inventory');
 	$tableHeader[] = t('Area');
 	$tableHeader[] = t('Public');
@@ -60,6 +61,8 @@ function inventory_modify() {
 		'#rows' => $rows,
 	);
 	
+	// Inventories with write Access for Groups
+	
 	$result = array();
 	$record = array();
 	$row = array();
@@ -71,15 +74,14 @@ function inventory_modify() {
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Public');
-	
-	$result = db_query("SELECT hi.name hi_name, hi.id, hi.shared, a.field_name, u.name u_name, sg.sgroup_name
-		FROM head_inventory hi LEFT JOIN users u ON hi.owner_id = u.uid
-		LEFT JOIN sgroup_users sgu ON u.uid = sgu.uid
-		LEFT JOIN sgroup sg ON sg.sgid = sgu.sgid
-		LEFT JOIN sgroup_users sguMine ON sg.sgid = sguMine.sgid
+
+	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared FROM head_inventory hi
+		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+		LEFT JOIN users u ON hi.owner_id = u.uid
+		LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
 		LEFT JOIN area a ON hi.area_id = a.id
-		LEFT Join sgroups_inventory sgi ON sgi.hiid = hi.id
-		WHERE (sguMine.uid = :id) AND (u.uid != :id) AND (write = '1')
+		WHERE (u.uid != :id AND sgu.uid = :id AND sgi.write = 1)
 		ORDER BY hi.name, hi.id, sg.sgroup_name;",
 		array(':id' => $user->uid)
 	);
@@ -115,7 +117,7 @@ function inventory_modify() {
 	
 	$render_array['inventories_share'] = array(
   		'#type' => 'fieldset', 
-  		'#title' => t('Group Inventories with Write Access'), 
+  		'#title' => t('Inventories with Write Access for Groups'), 
   		'#weight' => 4, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,
@@ -135,6 +137,7 @@ function inventory_modify() {
 	   	'#header' => $tableHeader,
 		'#rows' => $rows,
 	);
+	
 	return $render_array;
 }
 ?>
