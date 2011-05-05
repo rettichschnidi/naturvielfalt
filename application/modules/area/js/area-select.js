@@ -80,7 +80,8 @@ function AreaSelect() {
 		var mapsOptions = {
 				zoom : 15,
 				center : bruggCenter,
-				mapTypeId : google.maps.MapTypeId.ROADMAP
+				mapTypeId : google.maps.MapTypeId.ROADMAP,
+				scrollwheel: false
 			};
 		var map = new google.maps.Map(document.getElementById('map_canvas'), mapsOptions);
 		util.geocode('map_search', 'map_search_button', map);
