@@ -37,6 +37,15 @@ function inventory_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.edit.inc',
 	);
+	$items['inventory/%'] = array(
+    'title' => 'Show Inventory',
+    'description' => 'View an existing inventory',
+    'page callback' => 'inventory_show',
+	'access arguments' => array('access content'),
+    'page arguments' => array(1),
+    'type' => MENU_CALLBACK,
+	'file' => 'inventory.show.inc',
+	);
 	$items['inventory/new'] = array(
     'title' => 'Create Inventory',
     'description' => 'Create a new inventory',
