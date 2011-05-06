@@ -27,13 +27,9 @@ function area_new() {
 		'#theme' => 'area.new',
 	);
 
-	$output['SearchArea']= drupal_get_form('area_search');
 	$output['LastUsed'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Last Used Areas:'),
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => FALSE,
-	
+		'#title' => t('Last Used Areas'),
 	);
 	$output['LastUsed']['table'] = area_last_used_table();
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
@@ -65,10 +61,9 @@ function area_back_button() {
 function area_google_maps_form() {
 	$form['GoogleMaps'] = array(
 		'#type' => 'fieldset', 
-  		'#title' => t('Search by Google Maps:'), 
+  		'#title' => t('Map'),
   		'#weight' => 3, 
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => FALSE,
+  		'#collapsible' => FALSE, 
 		'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
 	);
 	

@@ -573,7 +573,3 @@ div.box {
 	border: 1px solid #8080FF;
 	background-color: #E5E5FF;
 }
-
-#map_search-element input, #area_table_filter input {
-	width: 68%;
-}
