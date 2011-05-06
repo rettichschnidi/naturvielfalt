@@ -174,7 +174,7 @@ function area_choose_form($form, &$form_state) {
  * @param *array $form_state
  */
 function area_choose_form_validate($form, &$form_state) {
-	if($form_state['values']['id'] == '') {
+	if($form_state['values']['id-area'] == '') {
 		form_set_error('id', t('You must select an area to continue.'));
 	}
 }
