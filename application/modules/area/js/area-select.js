@@ -70,7 +70,7 @@ function AreaSelect() {
 		// remember selected area
 		areaselect.selected_area = overlayId;
 		// set area id, used when we just assign an area to a already existing inventory
-		jQuery('#edit-area-id').val(overlayId);
+		jQuery('#edit-id-area').val(overlayId);
 	}
 
 	/**
