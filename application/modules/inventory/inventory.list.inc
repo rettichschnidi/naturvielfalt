@@ -75,7 +75,7 @@ function inventory_list() {
 	$tableHeader[] = t('Edit');
 
 	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write FROM head_inventory hi
-		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		LEFT JOIN users u ON hi.owner_id = u.uid
 		LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
@@ -157,7 +157,7 @@ function inventory_list() {
 		LEFT JOIN users u ON hi.owner_id = u.uid
 		LEFT JOIN area a ON hi.area_id = a.id
 		WHERE shared = true AND hi.id NOT IN (
-			SELECT sgiEx.hiid FROM sgroups_inventory sgiEx
+			SELECT sgiEx.hiid FROM sgroup_inventory sgiEx
 			LEFT JOIN sgroup_users sguEx ON sgiEx.sgid = sguEx.sgid
 			WHERE sguEx.uid = :id
 		)

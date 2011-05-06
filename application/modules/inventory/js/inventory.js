@@ -129,9 +129,6 @@ function activateRow(row, tbody, cols) {
 		// Add remove icon
 		jQuery("<td>").append("<img src='../../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
 				.appendTo(row);
-		// Add insert icon
-		jQuery("<td>").append("<img src='../../modules/inventory/images/insert.png' onclick='javascript:insert(jQuery(this));' class='a'>")
-				.appendTo(row);
 	}
 }
 
@@ -155,12 +152,6 @@ function deleteRow(img) {
 		saveTimerRunning = true;
 		setTimeout("saveRows()", saveTimeout);
 	}
-}
-
-// Inserts a new row below the old one
-// Params: The jQuery row object
-function insert(img) {
-	// TO IMPLEMENT
 }
 
 // Add a row, which should be saved at the next save

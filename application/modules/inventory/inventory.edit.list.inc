@@ -76,7 +76,7 @@ function inventory_modify() {
 	$tableHeader[] = t('Public');
 
 	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared FROM head_inventory hi
-		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		LEFT JOIN users u ON hi.owner_id = u.uid
 		LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
@@ -106,13 +106,13 @@ function inventory_modify() {
 				'Groups' => $sgroups,
 				'Public' => $shared,
 			);
-			$rows[] = $row;
 		}
 		else {
 			// inventory id same as the last one => modify group field of last element in list 
 			$sgroups = $record->sgroup_name;
 			$rows[count($rows)-1]['Groups'] = $rows[count($rows)-1]['Groups'].', '.$sgroups;
 		}
+		$rows[] = $row;
 	}
 	
 	$render_array['inventories_share'] = array(

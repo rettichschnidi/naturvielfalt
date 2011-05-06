@@ -7,10 +7,18 @@
  * @return all inventory forms to modify the inventory
  */
 function inventory_edit($head_inventory_id) {
-	
+	//$_SESSION['workflow'] = true; // help to debug
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/sgroup.js');
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css');
 	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+	if(isset($_SESSION['workflow']) && $_SESSION['workflow']) {
+		$progressElement = array(t('Inventory'), t('Area'), t('Element')); // List of elements
+		$render_array['progress'] = array(
+			'#theme' => 'progress_done',
+			'#elements' => $progressElement,
+			'#active' => 3, 		// Indicate active Element
+		);
+	}
 	
 	//------------------
 	$render_array['basics'] = array(
@@ -91,8 +99,28 @@ function inventory_edit($head_inventory_id) {
 	);
 
 	$render_array['file']['upload'] = drupal_get_form('inventory_edit_files', $head_inventory_id);
-	
+
+	if(isset($_SESSION['workflow']) && $_SESSION['workflow']) {
+		$render_array['end'] = array(
+	  		'#type' => 'fieldset',
+			'#weight' => 20,
+		);
+		$render_array['end']['form'] = drupal_get_form('stop_workflow');
+	}
 	return $render_array;
+}
+
+function stop_workflow($form, &$form_state) {
+	$form['end'] = array(
+		'#type' => 'submit',
+	  	'#value' => t('Complete'),
+	);
+	return $form;
+}
+
+function stop_workflow_submit($form, &$form_state) {
+	unset($_SESSION['workflow']);
+	$form_state['redirect'] = 'inventory/edit';
 }
 
 /**
@@ -241,7 +269,8 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	//drupal_add_js('modules/inventory/js/sgroup.js');
 	
 	$tableHeader[] = t('Groups I am Member of');
-	$tableHeader[] = t('Write Access');
+	$tableHeader[] = t('Full Access');
+	$tableHeader[] = t('Show Protected Organisms');
 	$tableHeader[] = t('Read Access');
 	
 	global $user;
@@ -269,7 +298,7 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	// Groups active user is member of
 	$result = db_query('
 		SELECT * FROM sgroup sg
-		LEFT JOIN sgroups_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid 
+		LEFT JOIN sgroup_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid 
 		LEFT JOIN sgroup_users sgu ON sgu.sgid = sg.sgid
 		WHERE sgu.uid = :uid',
 		array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
@@ -284,11 +313,13 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 			$name = $record->sgroup_name;
 			$read = false;
 			$write = false;
+			$show_red = false;
 			$form_state['storage']['set_db'.$cnt] = false;
 			if($record->read == '1') $read = true;
 			elseif ($record->read == '0') $read = false;
 			else $form_state['storage']['set_db'.$cnt] = true;	// no db entry yet -> set in submit fct
 			if($record->write == '1') $write = true;
+			if($record->show_red == '1') $show_red = true;
 			$form['read'.$cnt] = array(
 				'#type' => 'checkbox',
 				'#value' => $read,
@@ -301,9 +332,16 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 				'#checked' => $write,
 				'#name' => 'write'.$cnt,
 			);
+			$form['show_red'.$cnt] = array(
+				'#type' => 'checkbox',
+				'#value' => $show_red,
+				'#checked' => $show_red,
+				'#name' => 'show_red'.$cnt,
+			);
 			$row = array();
 			$row[] = $name;
 			$row[] = array('data' => drupal_render($form['write'.$cnt]));
+			$row[] = array('data' => drupal_render($form['show_red'.$cnt]));
 			$row[] = array('data' => drupal_render($form['read'.$cnt]));
 			$rows[] = $row;
 			$cnt++;
@@ -319,14 +357,17 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	}
 	
 	// Additional groups, active user is no member of but wants to allow group-members to access inventory 
+	
+	// if you change anything in this table dont forger to change it also in invenrory/js/sgroups.js -> sgroupAutocompleteSelect()
 	$tableHeader = NULL;
 	$tableHeader[] = t('Other Groups');
+	$tableHeader[] = t('Show Protected Organisms');
 	$tableHeader[] = t('Read Access');
 	$tableHeader[] = t('Remove');
 	$rows = array();
 	
 	$result = db_query('
-		SELECT * FROM sgroups_inventory sgi
+		SELECT * FROM sgroup_inventory sgi
 		LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
 		WHERE sgi.hiid = :hiid
 		AND sg.sgid NOT IN (SELECT sguEx.sgid FROM sgroup_users sguEx WHERE sguEx.uid = :uid);',
@@ -340,18 +381,26 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 			
 			$name = $record->sgroup_name;
 			$read = false;
-			$write = false;
+			$show_red = false;
 			$form_state['storage']['set_db'.$cnt] = false;
 			if($record->read == '1') $read = true;
 			elseif ($record->read == '0') $read = false;
+			if($record->show_red == '1') $show_red = true;
 			$form['read'.$cnt] = array(
 				'#type' => 'checkbox',
 				'#value' => $read,
 				'#checked' => $read,
 				'#name' => 'read'.$cnt,
 			);
+			$form['show_red'.$cnt] = array(
+				'#type' => 'checkbox',
+				'#value' => $show_red,
+				'#checked' => $show_red,
+				'#name' => 'show_red'.$cnt,
+			);
 			$row = array();
 			$row[] = $name;
+			$row[] = array('data' => drupal_render($form['show_red'.$cnt]));
 			$row[] = array('data' => drupal_render($form['read'.$cnt]));
 			$row[] = array('data' => '<div id="'.$head_inventory_id.'/'.$form_state['storage']['sg_id'.$cnt].'"></div>', 'class' => 'delete');
 			$rows[] = $row;
@@ -485,17 +534,27 @@ function inventory_update_rights($form, &$form_state) {
 		$sgid = $form_state['storage']['sg_id'.$i];
 		$read = '0';
 		$write = '0';
+		$show_red = '0';
 		if(isset($form_state['input']['read'.$i]) && $form_state['input']['read'.$i]) $read = '1';
-		if(isset($form_state['input']['write'.$i]) && $form_state['input']['write'.$i]) $write = '1';
+		if(isset($form_state['input']['show_red'.$i]) && $form_state['input']['show_red'.$i]) {
+			$show_red = '1';
+			$read = '1';
+		}
+		if(isset($form_state['input']['write'.$i]) && $form_state['input']['write'.$i]) {
+			$write = '1';
+			$show_red = '1';
+			$read = '1';
+		}
 		if($write == '1') $read = '1'; // write access implies also read access
 		if($form_state['storage']['set_db'.$i]) {
 			// entry missing in db
-			$nid = db_insert('sgroups_inventory')->fields (
+			$nid = db_insert('sgroup_inventory')->fields (
 				array (
 					'sgid' => $sgid,
 					'hiid' => $head_inventory_id,
 					'read' => $read,
 					'write' => $write,
+					'show_red' => $show_red,
 				)
 			)
 			->execute();
@@ -503,11 +562,12 @@ function inventory_update_rights($form, &$form_state) {
 		}
 		else {
 			// entry already in db
-			$affectedRows = db_update('sgroups_inventory')
+			$affectedRows = db_update('sgroup_inventory')
 			->fields (
 				array (
 					'read' => $read,
 					'write' => $write,
+					'show_red' => $show_red,
 				)
 			)
 			->condition(db_and()->condition('sgid', $sgid, '=')->condition('hiid', $head_inventory_id, '='))
@@ -520,20 +580,28 @@ function inventory_update_rights($form, &$form_state) {
 	}
 
 	// insert foreign group permissions
-	if(isset($form_state['input']['sgroup_id'])) {
-		$sgid = $form_state['input']['sgroup_id'];
+	$i = 0;
+	while(isset($form_state['input']['sgroup_id_'.$i])) {
+		$sgid = $form_state['input']['sgroup_id_'.$i];
 		$read = '0';
-		if(isset($form_state['input']['read_new']) && $form_state['input']['read_new']) $read = '1';
-		$nid = db_insert('sgroups_inventory')->fields (
+		$show_red = '0';
+		if(isset($form_state['input']['read_new_'.$i]) && $form_state['input']['read_new_'.$i]) $read = '1';
+		if(isset($form_state['input']['show_red_new_'.$i]) && $form_state['input']['show_red_new_'.$i]) {
+			$show_red = '1';
+			$read = '1';
+		}
+		$nid = db_insert('sgroup_inventory')->fields (
 			array (
 				'sgid' => $sgid,
 				'hiid' => $head_inventory_id,
 				'read' => $read,
 				'write' => '0',
+				'show_red' => $show_red,
 			)
 		)
 		->execute();
 		$check = true;
+		$i++;
 	}
 	
 	// update shared flag
@@ -566,6 +634,8 @@ function inventory_update_rights($form, &$form_state) {
 function getInitialInventory($head_inventory_id) {	
 	$invArr = array();
 
+	global $user;
+	
 	$inventories = db_query('SELECT id
 							FROM inventory 
 							WHERE head_inventory_id = :id;', array(':id' => $head_inventory_id));
@@ -574,18 +644,54 @@ function getInitialInventory($head_inventory_id) {
 		$inventory_id = $inventory->id;
 		$invArr[$inventory_id] = array();
 
+		$result = db_query('
+			SELECT hi.id FROM head_inventory hi
+			LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
+			LEFT JOIN sgroup_users sgu ON sgu.sgid = sgi.sgid
+			WHERE hi.id = :hiid AND ((sgu.uid = :uid AND sgi.show_red = 1) OR hi.owner_id = :uid)
+			ORDER BY hi.id LIMIT 1;' ,
+			array(':hiid' => $head_inventory_id, ':uid' => $user->uid)
+		);
+		
+		$show_red = false;
+		foreach($result as $record) {
+			if($record->id == $head_inventory_id)
+				$show_red = true;
+		}
+		
 		// Get the inventory column description
 		$invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
 
 		// Get inventory entries
 		// ugly hack to use Uppercase columnnames
-		$inventoryEntries = db_query('
-		SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
-			FROM inventory_entry e
-			LEFT JOIN organism o on e.organism_id = o.id
-			LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
-			LEFT JOIN flora_organism flora ON o.organism_id = flora.id
-		WHERE e.inventory_id = :id;',array(':id' => $inventory_id));
+		if($show_red) {
+			// Show everything
+			$sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
+				FROM inventory_entry e
+				LEFT JOIN organism o on e.organism_id = o.id
+				LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+				LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+				WHERE e.inventory_id = :id;';
+		}
+		else {
+			// Show no red list organism
+			$sql = '
+				SELECT flora_rl.red_list_ch, fauna.protection_ch, e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
+				FROM inventory_entry e
+				LEFT JOIN organism o on e.organism_id = o.id
+				LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+				LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+				LEFT JOIN flora_red_list flora_rl ON flora_rl.flora_organism_id = flora.id AND o.organism_type = 2
+				WHERE e.inventory_id = :id
+				AND (
+					(fauna.protection_ch != 1 AND o.organism_type = 1)
+					OR (
+						(flora_rl.red_list_ch != 1 OR flora_rl.red_list_ch IS NULL)
+						AND o.organism_type = 2
+					)
+				);';
+		}
+		$inventoryEntries = db_query($sql ,array(':id' => $inventory_id));
 
 		foreach($inventoryEntries as $inventoryEntry) {
 			$inventoryEntryId = $inventoryEntry->id;

@@ -17,14 +17,16 @@ function sgroupAutocompleteSelect(event) {
 	if (jQuery.inArray(newSgroupArray[0], sgroupIds) < 0) {
 		sgroupIds.push(newSgroupArray[0]);
 		// append it to the table
+		var cnt = sgroupIds.length-1;
 		var name = "<td>" + newSgroupArray[1] + "</td>";
-		var checkbox = "<td>" +
-							"<input type='checkbox' class='form-checkbox' name='read_new' value='1'/>" +
-							"<input type='hidden' name='sgroup_id' value='" + newSgroupArray[0] + "'/>" +
+		var read = "<td>" +
+							"<input type='checkbox' class='form-checkbox' name='read_new_" + cnt + "' value='1'/>" +
+							"<input type='hidden' name='sgroup_id_" + cnt + "' value='" + newSgroupArray[0] + "'/>" +
 						"</td>";
+		var show_red = "<td><input type='checkbox' class='form-checkbox' name='show_red_new_" + cnt + "' value='1'/></td>";
 		var removeImg = Drupal.settings.basePath + "/modules/inventory/images/can_delete.png";
 		var remove = "<td><img src='" + removeImg + "' onClick='removeSgroup(this);' style='cursor:pointer'/></td>";
-		jQuery("#right_overview_other").append("<tr>" + name + checkbox + remove + "</tr>");
+		jQuery("#right_overview_other").append("<tr>" + name + show_red + read + remove + "</tr>");
 	}
 
 	// reset the autocompletion textfield

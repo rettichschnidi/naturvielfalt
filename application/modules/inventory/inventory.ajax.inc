@@ -142,7 +142,7 @@ function inventory_sgroup_autocomplete($string) {
  */
 function inventory_delete_sgroup($headInventoryId, $sgid) {
 	
-	db_delete('sgroups_inventory')
+	db_delete('sgroup_inventory')
 	->condition('sgid', $sgid)
 	->condition('hiid', $headInventoryId)
 	->execute();

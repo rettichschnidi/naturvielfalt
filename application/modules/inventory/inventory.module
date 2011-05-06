@@ -18,6 +18,15 @@ function inventory_menu() {
     'access arguments' => array('access inventories'),
 	'file' => 'inventory.list.inc',
 	);
+	$items['inventory/%'] = array(
+    'title' => 'Show Inventory',
+    'description' => 'View an existing inventory',
+    'page callback' => 'inventory_show',
+	'access arguments' => array('access content'),
+    'page arguments' => array(1),
+    'type' => MENU_CALLBACK,
+	'file' => 'inventory.show.inc',
+	);
 	$items['inventory/edit'] = array(
     'title' => 'Modify Inventory',
 	'description' => 'Show all inventories to modify',
@@ -25,7 +34,25 @@ function inventory_menu() {
 	'access arguments' => array('access inventories'),
 	'file' => 'inventory.edit.list.inc',
     'type' => MENU_LOCAL_TASK,
-    'weight' => 0,
+    'weight' => 5,
+	);
+	$items['inventory/new'] = array(
+    'title' => 'Create Inventory',
+    'description' => 'Create a new inventory',
+    'page callback' => 'inventory_new',
+    'page arguments' => array(1),
+    'access arguments' => array('access inventories'),
+    'type' => MENU_LOCAL_TASK,
+	'file' => 'inventory.new.inc',
+	'weight' => 0,
+	);
+	$items['inventory/organism_autocomplete'] = array(
+    'title' => 'Organism Autocomplete',
+    'description' => 'JSON Organism Autocomplete',
+    'page callback' => 'inventory_organism_autocomplete',
+    'access arguments' => array('access inventories'),
+    'type' => MENU_CALLBACK,
+	'file' => 'inventory.ajax.inc',
 	);
 	$items['inventory/%/edit'] = array(
     'title' => 'Modify Inventory',
@@ -36,33 +63,6 @@ function inventory_menu() {
     'access arguments' => array(1),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'inventory.edit.inc',
-	);
-	$items['inventory/%'] = array(
-    'title' => 'Show Inventory',
-    'description' => 'View an existing inventory',
-    'page callback' => 'inventory_show',
-	'access arguments' => array('access content'),
-    'page arguments' => array(1),
-    'type' => MENU_CALLBACK,
-	'file' => 'inventory.show.inc',
-	);
-	$items['inventory/new'] = array(
-    'title' => 'Create Inventory',
-    'description' => 'Create a new inventory',
-    'page callback' => 'inventory_new',
-    'page arguments' => array(1),
-    'access arguments' => array('access inventories'),
-    'type' => MENU_LOCAL_TASK,
-	'file' => 'inventory.new.inc',
-	'weight' => 5,
-	);
-	$items['inventory/organism_autocomplete'] = array(
-    'title' => 'Organism Autocomplete',
-    'description' => 'JSON Organism Autocomplete',
-    'page callback' => 'inventory_organism_autocomplete',
-    'access arguments' => array('access inventories'),
-    'type' => MENU_CALLBACK,
-	'file' => 'inventory.ajax.inc',
 	);
 	$items['inventory/%/entries_ajax'] = array(
     'title' => 'Entries Ajax Request',
@@ -121,7 +121,7 @@ function inventory_edit_access($inventoryId) {
 	global $user;
 	$adminRecords = db_query('
 		SELECT id FROM head_inventory hi
-		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.write = 1)
 		OR (hi.owner_id = :uid AND hi.id = :hiid)
@@ -145,7 +145,7 @@ function inventory_access($inventoryId) {
 	global $user;
 	$adminRecords = db_query('
 		SELECT id FROM head_inventory hi
-		LEFT JOIN sgroups_inventory sgi ON sgi.hiid = hi.id
+		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.read = 1)
 		OR (hi.owner_id = :uid AND hi.id = :hiid)
