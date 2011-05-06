@@ -16,7 +16,7 @@ function area_new() {
 	}
 	
 	// Display Progress Bar
-	$progressElement = array(t('Inventory'), t('Area'), t('Element')); // List of elements
+	$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
 	$output['progress'] = array(
 		'#theme' => 'progress_done',
 		'#elements' => $progressElement,
@@ -39,6 +39,7 @@ function area_new() {
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
 	$output['FieldName'] = drupal_get_form('area_field_name_form');
   	$output['areaNew'] = drupal_get_form('area_new_form');
+  	$output['areaNew']['#attributes']['class']='hidden';
 	$output['areaChose'] = drupal_get_form('area_choose_form');
 	
 	return $output;
