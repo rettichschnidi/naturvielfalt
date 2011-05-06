@@ -302,17 +302,6 @@ function AreaSelect() {
 	  return sHabitats;
 	};
 	
-	/**
-	 * This is called if the user clicks on the button "create inventory".
-	 */
-	/*AreaSelect.prototype.onCreateInventoryClicked = function() {
-		if (areaselect.selected_area != null) {
-			window.location.href = 'inventory/new/' + areaselect.selected_area;
-		} else {
-			alert('Bitte wählen Sie ein Gebiet aus.');
-		}
-	}*/
-	
 	AreaSelect.prototype.onControlAreaChooseClicked = function(event) {
 		jQuery('#controlAreaChoose').addClass('selected');
 		jQuery('#controlAreaCreate').removeClass('selected');
@@ -341,7 +330,6 @@ function AreaSelect() {
 	me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
 
 	// register events
-	//jQuery('#create-inventory').click(this.onCreateInventoryClicked);
 	jQuery("#area_table tbody").live('click', this.onTableRowClicked);
 	jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
     jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
