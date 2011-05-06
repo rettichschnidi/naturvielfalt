@@ -96,6 +96,10 @@ function area_theme() {
  			'template' => 'area.search.byMaps',
     	  	'variables' => array()
 		),
+		'area.search.byMaps.show' => array(
+ 			'template' => 'area.search.byMaps.show',
+    	  	'variables' => array()
+		),
     	'area.search.byField' => array(
  			'template' => 'area.search.byField',
     	  	'variables' => array()

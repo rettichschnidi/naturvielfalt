@@ -28,10 +28,5 @@ foreach ($jsLibs as $jsLib) {
 }
 ?>
 <p>
-<?php echo t('Please search an area either by Google Maps or by it\'s field name. If you selected your area, choose your further action:');?>
-</p>
-<p>
-	<button id="create-inventory">
-	<?php echo t('create inventory'); ?>
-	</button>
+<?php echo t('Please search an area either by Google Maps or by it\'s field name.');?>
 </p>

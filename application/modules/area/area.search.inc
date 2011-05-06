@@ -1,46 +1,67 @@
 <?php
+/**
+ * Chose or create new area
+ * @return render array
+ */
 function show_area_search() {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
-	drupal_set_title(t('Areas'));
+	drupal_set_title(t('Show Areas'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
-
-	$output['test'] = array(
- 	'#theme' => 'progress_done',
- 	'#elements' =>array(t('Select or create a new area'), t('Create Inventory'), t('Completion')), // List of elements
- 	'#active' => 'Select or create a new area', 		// Indicate active Element
- 	);
 	
-	$output['areaSearch'] = array(
+	$output['search'] = array(
 		'#theme' => 'area.search',
 	);
-	$output['LastUsed'] = drupal_get_form('lastUsed');
-	$output['FieldName'] = drupal_get_form('fieldNameForm');
-	$output['googleMaps'] = drupal_get_form('googleMapsForm');
-	$output['areaNew'] = drupal_get_form('areaNewForm');	
 
+	$output['LastUsed'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Last Used Areas'),
+	);
+	$output['LastUsed']['table'] = area_last_used_table();
+	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
+	$output['FieldName'] = drupal_get_form('area_field_name_form');
 	return $output;
 }
 
-function googleMapsForm() {
+/**
+ * Button with js linker
+ * @return a button linking to step 1 of workflow
+ */
+function area_back_button() {
+	$button = array(
+		'#type' => 'button',
+		'#attributes' => array('onClick' => 'location.replace("../inventory/new"); return false;'),
+		'#value' => t('Back'),
+  	);
+  	return $button;
+}
+
+/**
+ * Search by Google Maps (City, Street, etc.)
+ * @return Google Maps input search field
+ */
+function area_google_maps_form() {
 	$form['GoogleMaps'] = array(
 		'#type' => 'fieldset', 
-  		'#title' => t('Search by Google Maps:'), 
+  		'#title' => t('Map'),
   		'#weight' => 3, 
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => FALSE,
-		'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
+  		'#collapsible' => FALSE, 
+		'searchByMaps' => array('#theme' => 'area.search.byMaps.show'), // map
 	);
 	
 	return $form;
 }
 
-function fieldNameForm() {
+/**
+ * Search by already saved areas
+ * @return input search field for saved areas
+ */
+function area_field_name_form() {
 	$form['FieldName'] = array(
 		'#type' => 'fieldset',
-  		'#title' => t('Search by field name:'), 
-  		'#weight' => 5, 
+  		'#title' => t('Search by field name:'),
+  		'#weight' => 5,
   		'#collapsible' => TRUE, 
   		'#collapsed' => TRUE,
 	);
@@ -52,153 +73,20 @@ function fieldNameForm() {
 	return $form;
 }
 
-function areaNewForm($form, &$form_state) {
-	$form['AreaNewForm'] = array(
-		'#type' => 'fieldset',
-  		'#title' => t('Enter area properties:'), 
-  		'#weight' => 5, 
-  		'#collapsible' => FALSE, 
-  		'#collapsed' => FALSE,
-		'#class' => 'hidden',
+function area_search($form, &$form_state) {
+	$form['AreaText'] = array(
+		'#title' => t('Search through existing areas'),
+		'#type' => 'textfield',   
+		'#autocomplete_path' => 'area/area_saved_autocomplete',
 	);
-	$form['AreaNewForm']['field_name'] = array(
-  	'#type' => 'textfield',
-  	'#title' => t('Area name'),
-	'#required' => true,
-	);
-	$form['AreaNewForm']['habitatText'] = array(
-	'#title' => 'Habitats',
-	'#type' => 'textfield',   
-    '#autocomplete_path' => 'area/habitat_autocomplete',
-	'#suffix' => '<div id="habitatSelected"><table></table></div>',
-	);
-	$form['AreaNewForm']['locality'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Locality'),
-	);
-	$form['AreaNewForm']['zip'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Zip'),
-	);
-	$form['AreaNewForm']['township'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Township'),
-	);
-	$form['AreaNewForm']['canton'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Canton'),
-	);
-	$form['AreaNewForm']['altitude'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Altitude'),
-	);
-	$form['AreaNewForm']['surface_area'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Surface area (m2)'),
-	);
-	$form['AreaNewForm']['country'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Country'),
-	);
-	$form['AreaNewForm']['comment'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Description'),
-    '#cols' => 60,
-    '#rows' => 10,
-	);
-	$form['AreaNewForm']['latitude'] = array(
-    '#type' => 'textfield',
-	);
-	$form['AreaNewForm']['longitude'] = array(
-    '#type' => 'textfield',
-	);
-	$form['AreaNewForm']['area_coords'] = array(
-    '#type' => 'textfield',
-	);
-	$form['AreaNewForm']['area_type'] = array(
-    '#type' => 'textfield',
-	);
-	$form['AreaNewForm']['submit'] = array(
-  	'#type' => 'submit',
-  	'#value' => t('Create area'),
-	'#submit' => array('areaPropertyForm_save'),
-	);
-
 	return $form;
 }
 
 /**
- * Returns a json string which describes the area
- * @param String $area
+ * Table with the 5 last used areas
+ * @return table element to render
  */
-function area_json($areaId) {
-	// information about area
-	$area = db_query('SELECT * FROM {area} WHERE id = :id', array(':id' => $areaId))->fetch();
-	$output['field_name'] = $area->field_name;
-	$output['locality'] = $area->locality;
-	$output['zip'] = $area->zip;
-	$output['township'] = $area->township;
-	$output['comment'] = $area->comment;
-	$output['altitude'] = t('Altitude: !alt m', array('!alt' => $area->altitude));
-	$output['surface_area'] = t('Surface area: !surface m<sup>2</sup>', array('!surface' => $area->surface_area));
-
-	// information about containing inventories
-	$records = db_query('SELECT hi.id AS hiid, hi.name AS hiname, i.id AS iid, it.name AS itname, count(ie.id) AS count FROM {head_inventory} hi
-		LEFT JOIN area a ON hi.area_id = a.id
-		LEFT JOIN inventory i ON i.head_inventory_id = hi.id
-		LEFT JOIN inventory_type it ON i.inventory_type_id = it.id
-		LEFT JOIN inventory_entry ie ON ie.inventory_id = i.id
-		WHERE a.id = :id
-		GROUP BY hi.id, hi.name, i.id, it.name
-		ORDER BY hi.id', array(':id' => $areaId));
-	$countInventories = 0;
-	$output['inventories']['invs'] = array();
-	foreach ($records as $record) {
-		if ($record->hiid != $hiid) {
-			$hiid = $record->hiid;
-			$countInventories++;
-			$output['inventories']['invs'][] = array('name' => $record->hiname, 'id' => $record->hiid);
-		}
-		$type = array('name' => $record->itname, 'count' => $record->count);
-		$output['inventories']['invs'][$countInventories-1][types][] = $type;
-	}
-	$invName = t('Inventories (!count)', array('!count' => $countInventories));
-	$output['inventories']['title'] = $invName;
-
-	// information about habitats
-	$output['habitats']['title'] = t('Habitats');
-	$habitats = db_query('SELECT name_de, label FROM area_habitat ah
-		LEFT JOIN habitat h ON ah.habitat_id = h.id
-		WHERE ah.area_id = :areaId', array(':areaId' => $areaId));
-	foreach ($habitats as $habitat) {
-		$output['habitats']['habs'][] = $habitat->name_de;
-	}
-
-	return drupal_json_output($output);
-}
-
-function area_autocomplete($string) {
-
-	$areas = db_query('
-		SELECT id, field_name, zip, locality, create_time, modify_time FROM area
-		WHERE field_name ILIKE :term
-			OR zip ILIKE :term
-			OR locality ILIKE :term
-		ORDER BY field_name
-	', array(":term" => "%".$string."%")
-	);
-
-	$items = array();
-	foreach ($areas as $record){		
-		$value = $record->field_name.", ".$record->zip." ".$record->locality."<br>Erstellt am ".$record->create_time;
-		$key = $record->id;
-		$items[$key]=$value; 
-	}
-
-	return drupal_json_output($items);
-}
-
-function lastUsed() {
+function area_last_used_table() {
 	global $user;
 
 	$head_inventories= db_query(
@@ -211,40 +99,26 @@ function lastUsed() {
 
 	foreach ($head_inventories as $record) {
 		$row = array();
-		$row[] = $record->id;
-		$row[] = $record->field_name;
+		$row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea('.$record->id.')">'.$record->field_name.'</a>';
 		$row[] = $record->zip;
 		$row[] = $record->locality;
 		$row[] = $record->canton;
-		$row[] = $record->create_time;
-		$row[] = $record->modify_time;
 		$rows[] = $row;
 	}
 
-	$header = array(t('id'),t('field_name'),t('zip'),t('locality'),t('canton'),t('create_time'),t('modify_time'),);
-
-	$form['AreaText'] = array(
-	'#title' => t('Search through existing areas'),
-	'#type' => 'textfield',   
-    '#autocomplete_path' => 'area/area_autocomplete',
-	'#suffix' => '<div id="habitatSelected"><table></table></div>',
-	);
+	$header = array(t('Area Name'),t('Zip Code'),t('Locality'),t('Canton'),);
 
 	if ($rows){
-		$form['aaaa'] = array (
-			'#markup'=> t('Als letztes verwendete Gebiete')
-		);
-		$form['organisms'] = array(
+		$table['organisms'] = array(
 		    '#theme' => 'table', 
 			'#header' => $header,
 		    '#rows' => $rows,
 		);
 	} else {
-		$form['aaaa'] = array (
-			'#markup'=> t('Sie haben noch kein Gebiet verwendet')
+		$table['noArea'] = array (
+			'#markup'=> t('You haven\'t used an area yet')
 		);
 	}
-
-	return $form;
+	return $table;
 }
 ?>
