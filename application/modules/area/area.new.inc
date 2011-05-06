@@ -190,7 +190,7 @@ function area_choose_form_validate($form, &$form_state) {
  */
 function area_choose_form_submit($form, &$form_state, $area_id) {
 	// Execute this after completion of next step
-	$area_id = $form_state['values']['id'];
+	$area_id = $form_state['values']['id-area'];
 	$name = $_SESSION['inventory']['name'];
 	$shared = $_SESSION['inventory']['shared'];
 	$description = $_SESSION['inventory']['description'];
