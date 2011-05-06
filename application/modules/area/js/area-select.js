@@ -2,7 +2,7 @@
  * @author Roger Wolfer, Roman Schaller
  */
  
-var INVENTORY_SERVER_PATH = '../inventoryServer/web_root/public/';
+var INVENTORY_SERVER_PATH = Drupal.settings.basePath + '../inventoryServer/web_root/public/';
 
 function AreaSelect() {
 	
@@ -127,7 +127,7 @@ function AreaSelect() {
 	AreaSelect.prototype.createDataTable = function(mapOverlays) {
 		return jQuery('#area_table').dataTable( {
 	        "oLanguage" : {
-	            "sUrl" : "modules/area/languages/de_DE/DataTables.txt"
+	            "sUrl" : Drupal.settings.basePath + "modules/area/languages/de_DE/DataTables.txt"
 	        },
 	        "bScrollInfinite": true,
 	        "bScrollCollapse": true,
@@ -303,25 +303,27 @@ function AreaSelect() {
 	/**
 	 * This is called if the user clicks on the button "create inventory".
 	 */
-	AreaSelect.prototype.onCreateInventoryClicked = function() {
+	/*AreaSelect.prototype.onCreateInventoryClicked = function() {
 		if (areaselect.selected_area != null) {
 			window.location.href = 'inventory/new/' + areaselect.selected_area;
 		} else {
 			alert('Bitte wählen Sie ein Gebiet aus.');
 		}
-	}
+	}*/
 	
 	AreaSelect.prototype.onControlAreaChooseClicked = function(event) {
 		jQuery('#controlAreaChoose').addClass('selected');
 		jQuery('#controlAreaCreate').removeClass('selected');
 		areaselect.overlayControl.stopDigitizing();
-		jQuery('#edit-areanewform--2').addClass('hidden');
+		jQuery('#area-new-form').addClass('hidden');
+		jQuery('#area-choose-form').removeClass('hidden');
 	}
 
 	AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
 		jQuery('#controlAreaChoose').removeClass('selected');
 		jQuery('#controlAreaCreate').addClass('selected');
-		jQuery('#edit-areanewform--2').removeClass('hidden');
+		jQuery('#area-new-form').removeClass('hidden');
+		jQuery('#area-choose-form').addClass('hidden');
 		areaselect.overlayControl.startDigitizing();
 	}
 
@@ -337,7 +339,7 @@ function AreaSelect() {
 	me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
 
 	// register events
-	jQuery('#create-inventory').click(this.onCreateInventoryClicked);
+	//jQuery('#create-inventory').click(this.onCreateInventoryClicked);
 	jQuery("#area_table tbody").live('click', this.onTableRowClicked);
 	jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
     jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);

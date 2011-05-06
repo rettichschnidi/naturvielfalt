@@ -35,49 +35,6 @@ function area_menu() {
     'access arguments' => array(AREA_ACCESS),
 	'file' => 'area.search.inc',
 	);
-	$items['area/search'] = array(
-    'title' => 'Search existing area',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -10,
-	);
-	$items['area/new_map'] = array(
-    'title' => 'Create new area',
-    'description' => 'Create an area',
-    'page callback' => 'show_area_new_map',
-	'access arguments' => array(AREA_CREATE),
-    'type' => MENU_LOCAL_TASK,
-	'weight' => 5,
-	'file' => 'area.new.map.inc',
-	);
-	$items['area/new_prop'] = array(
-	'title' => 'New area',
-	'description' => 'Create an area',
-	'page callback' => 'show_area_new_prop',
-	'access arguments' => array(AREA_CREATE),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.new.prop.inc',
-	);
-	$items['area/habitat_autocomplete'] = array(
-	'title' => 'Habitat autocomplete',
-    'page callback' => 'habitat_autocomplete',
-	'access arguments' => array(AREA_CREATE),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.new.prop.inc',
-	);
-	$items['area/area_autocomplete'] = array(
-	'title' => 'Area autocomplete',
-    'page callback' => 'area_autocomplete',
-	'access arguments' => array(AREA_CREATE),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.search.inc',
-	);
-	$items['area/json'] = array(
-	'title' => 'area information in json format',
-    'page callback' => 'area_json',
-	'access arguments' => array(AREA_ACCESS),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.search.inc',
-	);
 	$items['area/%'] = array(
     'title' => 'Area',
     'description' => 'View area',
@@ -86,6 +43,35 @@ function area_menu() {
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
 	'file' => 'area.inc',
+	);
+	$items['area/new'] = array(
+    'title' => 'Create new area',
+    'description' => 'Create an area',
+    'page callback' => 'area_new',
+	'access arguments' => array(AREA_CREATE),
+    'type' => MENU_CALLBACK,
+	'file' => 'area.new.inc',
+	);
+	$items['area/habitat_autocomplete'] = array(
+	'title' => 'Habitat autocomplete',
+    'page callback' => 'area_habitat_autocomplete',
+	'access arguments' => array(AREA_CREATE),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.ajax.inc',
+	);
+	$items['area/area_saved_autocomplete'] = array(
+	'title' => 'Area autocomplete',
+    'page callback' => 'area_saved_autocomplete',
+	'access arguments' => array(AREA_CREATE),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.ajax.inc',
+	);
+	$items['area/json'] = array(
+	'title' => 'area information in json format',
+    'page callback' => 'area_json',
+	'access arguments' => array(AREA_ACCESS),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.ajax.inc',
 	);
 
 	return $items;
@@ -98,22 +84,26 @@ function area_menu() {
  */
 function area_theme() {
 	return array(
+		'area.new' => array(
+			'template' => 'area.new',
+			'variables' => array()
+		),
     	'area.search' => array(
  			'template' => 'area.search',
     	  	'variables' => array()
-	),
+		),
     	'area.search.byMaps' => array(
  			'template' => 'area.search.byMaps',
     	  	'variables' => array()
-	),
+		),
     	'area.search.byField' => array(
  			'template' => 'area.search.byField',
     	  	'variables' => array()
-	),
+		),
 		'area.new.map' => array(
 			'template' => 'area.new.map',
 			'variables' => array()
-	)
+		)
 	);
 }
 
