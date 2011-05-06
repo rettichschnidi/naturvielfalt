@@ -22,7 +22,7 @@ function inventory_new_form($form, &$form_state) {
 	if(isset($_SESSION['inventory']['description']))
 		$description = $_SESSION['inventory']['description']['value'];
 		
-	$progressElement = array(t('Inventory'), t('Area'), t('Element')); // List of elements
+	$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
 	$form['progress'] = array(
 		'#theme' => 'progress_done',
 		'#elements' => $progressElement,

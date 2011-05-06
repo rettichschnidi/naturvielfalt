@@ -12,7 +12,7 @@ function inventory_edit($head_inventory_id) {
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css');
 	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
 	if(isset($_SESSION['workflow']) && $_SESSION['workflow']) {
-		$progressElement = array(t('Inventory'), t('Area'), t('Element')); // List of elements
+		$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
 		$render_array['progress'] = array(
 			'#theme' => 'progress_done',
 			'#elements' => $progressElement,
