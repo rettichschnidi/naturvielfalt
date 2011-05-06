@@ -19,7 +19,7 @@ function show_area_search() {
 	$output['FieldName'] = drupal_get_form('fieldNameForm');
 	$output['googleMaps'] = drupal_get_form('googleMapsForm');
 	$output['areaNew'] = drupal_get_form('areaNewForm');	
-	
+
 	return $output;
 }
 
@@ -107,16 +107,16 @@ function areaNewForm($form, &$form_state) {
     '#rows' => 10,
 	);
 	$form['AreaNewForm']['latitude'] = array(
-    '#type' => 'hidden',
+    '#type' => 'textfield',
 	);
 	$form['AreaNewForm']['longitude'] = array(
-    '#type' => 'hidden',
+    '#type' => 'textfield',
 	);
 	$form['AreaNewForm']['area_coords'] = array(
-    '#type' => 'hidden',
+    '#type' => 'textfield',
 	);
 	$form['AreaNewForm']['area_type'] = array(
-    '#type' => 'hidden',
+    '#type' => 'textfield',
 	);
 	$form['AreaNewForm']['submit'] = array(
   	'#type' => 'submit',

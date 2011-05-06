@@ -345,6 +345,64 @@ function AreaSelect() {
     jQuery('#controlAreaCreate').click(this.onControlAreaCreateClicked);
 };
 
+var lastQuery = null;
+function refresh_map_info(){
+    if(areaselect.overlayControl.overlay != null) {
+    	var area_coords_new = new Array();
+		var markers_new = areaselect.overlayControl.overlay.markers;
+		for (var i in markers_new) {
+			area_coords_new.push(new Array(markers_new[i].position.lat(), markers_new[i].position.lng()));
+		}
+		area_coords_new = JSON.stringify(area_coords_new);
+		var centGLatLng1 = areaselect.overlayControl.overlay.getCenter();
+		area_coords_new = area_coords_new + centGLatLng1.lat() + centGLatLng1.lng()
+
+    	if (lastQuery!=area_coords_new){
+			jQuery('#edit-surface-area').val(areaselect.overlayControl.overlay.getArea());
+			areaselect.overlayControl.overlay.getAltitude(function(altitude) {
+				jQuery('#edit-altitude').val(altitude);
+			});
+			
+			areaselect.overlayControl.overlay.getAddress(function(address) {
+				jQuery('#edit-canton').val(address.canton);
+				jQuery('#edit-township').val(address.township);
+				jQuery('#edit-locality').val(address.locality);
+				jQuery('#edit-zip').val(address.zip);
+				jQuery('#edit-country').val(address.country);
+			});
+	
+			var centGLatLng = areaselect.overlayControl.overlay.getCenter();
+			jQuery('#edit-latitude').val(centGLatLng.lat());
+			jQuery('#edit-longitude').val(centGLatLng.lng());
+			var area_coords = new Array();
+			var markers = areaselect.overlayControl.overlay.markers;
+			for (var i in markers) {
+				area_coords.push(new Array(markers[i].position.lat(), markers[i].position.lng()));
+			}
+			area_coords = JSON.stringify(area_coords);
+			
+			jQuery('#edit-area-coords').val(area_coords);
+			jQuery('#edit-area-type').val(areaselect.overlayControl.overlay.type);
+			lastQuery = area_coords + centGLatLng.lat() + centGLatLng.lng()
+    	} else {
+    		console.info("identical query");
+    	}
+    } else {
+    	console.info("overlay is null, cleaning up stuff");
+    	jQuery('#edit-surface-area').val('');
+		jQuery('#edit-altitude').val('');
+		jQuery('#edit-canton').val('');
+		jQuery('#edit-township').val('');
+		jQuery('#edit-locality').val('');
+		jQuery('#edit-zip').val('');
+		jQuery('#edit-country').val('');		
+		jQuery('#edit-latitude').val('');
+		jQuery('#edit-longitude').val('');
+		jQuery('#edit-area-coords').val('');
+		jQuery('#edit-area-type').val('');
+    };
+};
+
 var areaselect = null;
 jQuery(document).ready(function() {
 	areaselect = new AreaSelect();

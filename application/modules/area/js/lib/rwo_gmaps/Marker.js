@@ -25,6 +25,7 @@ Marker.prototype.initM = function(map, opts){
 Marker.prototype.createMarker = function(markerOpts){
     var me = this;
     var marker = new google.maps.Marker();
+    var hasmoved = false;
     if(markerOpts && markerOpts.area_points){
         marker.setPosition(new google.maps.LatLng(markerOpts.area_points[0].lat, markerOpts.area_points[0].lng));
         marker.setDraggable(false);
@@ -33,7 +34,21 @@ Marker.prototype.createMarker = function(markerOpts){
         google.maps.event.addListener(marker, 'click', function() {
             me.marker.setMap(null);
             me.removeListener();
+            console.info("planning to query due to last marker removed");
+            refresh_map_info();
         });
+
+    	google.maps.event.addListener(marker, "drag", function() {
+    		hasmoved = true;
+    	});
+
+    	google.maps.event.addListener(marker, "mouseup", function() {
+    		if(hasmoved){
+				console.info("planning to query due to last marker moved");
+				refresh_map_info();
+				hasmoved = false;	
+    		}
+    	});
     }
     marker.setMap(me.map);
 

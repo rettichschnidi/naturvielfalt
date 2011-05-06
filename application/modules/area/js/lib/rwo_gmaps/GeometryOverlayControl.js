@@ -157,6 +157,8 @@ GeometryOverlayControl.prototype.addLatLngEvent = function(){
       me.overlay.addLatLng(latLng);
     }
     me.overlay.addLatLng(event.latLng);
+    console.info("query due to addlateve");
+    refresh_map_info();
   };
 };
 
@@ -167,5 +169,3 @@ GeometryOverlayControl.prototype.enableEditing = function(isEnabled){
 GeometryOverlayControl.prototype.save = function(overlay){
 	this.mapCache.save(overlay);
 };
-
-

@@ -105,6 +105,7 @@ Polygon.prototype.createControlMarkers = function(latLngs){
  */
 Polygon.prototype.createControlMarker = function(latLng) {
 	var me = this;
+	var hasmoved = false;
 	
 	var imageNormal = new google.maps.MarkerImage(
 		Drupal.settings.basePath + "modules/area/js/lib/rwo_gmaps/images/square.png",
@@ -139,6 +140,14 @@ Polygon.prototype.createControlMarker = function(latLng) {
 			}
 		}
 		m = null;
+		hasmoved = true;
+	});
+	google.maps.event.addListener(marker, "mouseup", function() {
+		if (hasmoved){
+			console.info("planning to query due to mouseup");
+			refresh_map_info();
+			hasmoved = false;
+		}
 	});
 	google.maps.event.addListener(marker, "click", function() {
      for (var m = 0; m < me.markers.length; m++) {
@@ -152,6 +161,10 @@ Polygon.prototype.createControlMarker = function(latLng) {
     }
     m = null;
     me.removeListener();
+    
+    console.info("planning to query due to click");
+	refresh_map_info();
+	
 	});
 	me.markers.push(marker);
 	return marker;
@@ -273,6 +286,8 @@ Polygon.prototype.createVMarker = function(latLng) {
 				break;
 			}
 		}
+		console.info("planning to query due to dragend of vmarker");
+		refresh_map_info();
 	});
 	me.vmarkers.push(marker);
 	return marker;
@@ -448,12 +463,9 @@ Polygon.prototype.calcArea = function(){
 
 /**
  * Returns the surface area of a polygon in square meters.
- * Doesn't not automatically recalculate area, if polygon has changed!
  */
 Polygon.prototype.getArea = function() {
-  if(this._area == null){
     this.calcArea();
-  }
   return this._area;
 };
 
@@ -466,8 +478,6 @@ Polygon.prototype.calcCenter = function(){
 };
 
 Polygon.prototype.getCenter = function() {
-    if(this._center == null){
     this.calcCenter();
-  }
   return this._center;
 };
