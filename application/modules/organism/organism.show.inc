@@ -19,7 +19,7 @@ function organism_show($organismId) {
 		$row[] = $record->fauna_namede;
 		$row[] = $record->id;
 
-		$header = array(t('Genus'),t('Species'),t('Name'),t('id'));
+		$header = array(t('Genus'),t('Species'),t('Name'),t('Id'));
 		drupal_set_title( $record->fauna_genus." ".$record->fauna_species);
 	} else {
 		$row[] = $record->flora_name;
