@@ -116,7 +116,7 @@ function area_last_used_table() {
 
 	foreach ($head_inventories as $record) {
 		$row = array();
-		$row[] = $record->field_name;
+		$row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea('.$record->id.')">'.$record->field_name.'</a>';
 		$row[] = $record->zip;
 		$row[] = $record->locality;
 		$row[] = $record->canton;
