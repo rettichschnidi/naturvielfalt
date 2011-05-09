@@ -18,7 +18,7 @@ function inventory_show ($head_inventory_id) {
 		$rows[] = $row;
 	}
 
-	$header = array('Inventarname','Beschreibung','Public');
+	$header = array(t('Inventory name'),t('Description'),t('Public'));
 	
 	$render_array['schtunk'] = array(
     '#theme' => 'table',
@@ -44,7 +44,7 @@ function inventory_show ($head_inventory_id) {
 			$rows[] = $row;
 		}
 		
-	$header = array('Gebiet','Ortschaft','PLZ');
+	$header = array(t('Area'),t('City'),t('ZIP'));
 	
 	$render_array['schtunk2'] = array(
     '#theme' => 'table',
@@ -118,11 +118,11 @@ $row = '';
 					}
 					$row = array(
 					'Art' => $strName." [".$strLat."]",
-					'Artmächtigkeit' => $strPopulation,
-					'Flächengrösse' => $strAsize,
-					'Herkunft der Population' => $strOrigin,
-					'Phänologische Phasen' => $strPhase,
-					'Vitalität' => $strVitality,
+					'Population' => $strPopulation,
+					'Area size' => $strAsize,
+					'Origin' => $strOrigin,
+					'Phenological Phase' => $strPhase,
+					'Vitality' => $strVitality,
 					'Funddatum' => $strDate,
 					);
 					$rows2[] = $row;
@@ -131,24 +131,24 @@ $row = '';
 					// inventory id same as the last one => modify count field of last element in list 
 					if($inventoryEntry->value_name=='Artmächtigkeit') {
 						$strPopulation = $inventoryEntry->dvalue;
-						$rows2[count($rows2)-1]['Artmächtigkeit'] = $rows2[count($rows2)-1]['Artmächtigkeit'].$strPopulation;
+						$rows2[count($rows2)-1]['Population'] = $rows2[count($rows2)-1]['Population'].$strPopulation;
 					}
 					if($inventoryEntry->value_name=='Phänologische Phasen') {
 						$strPhase = $inventoryEntry->dvalue;
-						$rows2[count($rows2)-1]['Phänologische Phasen'] = $rows2[count($rows2)-1]['Phänologische Phasen'].$strPhase;
+						$rows2[count($rows2)-1]['Phenological Phase'] = $rows2[count($rows2)-1]['Phenological Phase'].$strPhase;
 					}
 					if($inventoryEntry->value_name=='Vitalität') {
 						$strVitality = $inventoryEntry->dvalue;
-						$rows2[count($rows2)-1]['Vitalität'] = $rows2[count($rows2)-1]['Vitalität'].$strVitality;
+						$rows2[count($rows2)-1]['Vitality'] = $rows2[count($rows2)-1]['Vitality'].$strVitality;
 					}					
 				}
 					if($inventoryEntry->value_name=='Flächengrösse') {
 						$strAsize = $inventoryEntry->dvalue;
-						$rows2[count($rows2)-1]['Flächengrösse'] = $rows2[count($rows2)-1]['Flächengrösse'].$strAsize;
+						$rows2[count($rows2)-1]['Area size'] = $rows2[count($rows2)-1]['Area size'].$strAsize;
 					}	
 					if($inventoryEntry->value_name=='Herkunft der Population') {
 						$strOrigin = $inventoryEntry->dvalue;
-						$rows2[count($rows2)-1]['Herkunft der Population'] = $rows2[count($rows2)-1]['Herkunft der Population'].$strOrigin;
+						$rows2[count($rows2)-1]['Origin'] = $rows2[count($rows2)-1]['Origin'].$strOrigin;
 					}
 			}			
 		}
@@ -156,7 +156,7 @@ $row = '';
 		
 		//Define tables only if not empty
 		if($rows!='') {
-			$header = array('Flora','Anzahl','Status','Funddatum');
+			$header = array(t('Flora'),t('Amount'),t('State'),t('Date'));
 			$render_array['Flora'] = array(
     			'#theme' => 'table',
 				'#header' => $header,
@@ -164,7 +164,7 @@ $row = '';
 			);		
 		}
 		if($rows2!='') {
-			$header = array('Fauna','Artmächtigkeit','Flächengrösse','Herkunft der Population','Phänologische Phasen','Vitalität','Funddatum');
+			$header = array(t('Fauna'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
 			$render_array['Fauna'] = array(
     			'#theme' => 'table',
 				'#header' => $header,
