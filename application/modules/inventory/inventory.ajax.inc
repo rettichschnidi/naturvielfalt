@@ -111,6 +111,59 @@ function inventory_entries_ajax() {
  * 
  * Enter description here ...
  */
+function inventory_add_inventory($inventory_id) {
+	$result = db_query ('
+		SELECT id, name FROM inventory_type it
+		WHERE it.id = :iid;',
+		array(':iid' => $inventory_id)
+	);
+	
+	if(!empty($result)) {
+		foreach ($result as $record) {
+			$return['name'] = $record->name;
+			$return['id'] = $record->id;
+		}
+	}
+	
+	$result = db_query ('
+		SELECT ita.id, ita.name, af.format, itadv.id dd_id, itadv.value FROM inventory_type_attribute ita
+		LEFT JOIN attribute_format af ON af.id = ita.attribute_format_id
+		LEFT JOIN inventory_type_attribute_dropdown_value itadv ON itadv.inventory_type_attribute_id = ita.id
+		WHERE ita.inventory_type_id = :iid;',
+		array(':iid' => $inventory_id)
+	);
+	if(!empty($result)) {
+		$col_cnt = 0;
+		$dd_cnt = 0;
+		$id = 0;
+		foreach ($result as $record) {
+			if($id != $record->id) {
+				$return['cols'][$col_cnt]['name'] = $record->name;
+				$id = $return['cols'][$col_cnt]['id'] = $record->id;
+				$return['cols'][$col_cnt]['format'] = $record->format;
+				if($record->format == 'dropdown') {
+					$dd_cnt=0;
+					$act_col = $col_cnt;
+					$return['cols'][$col_cnt]['dropdown_values'][$dd_cnt]['id'] = $record->dd_id;
+					$return['cols'][$col_cnt]['dropdown_values'][$dd_cnt]['value'] = $record->value;
+					$dd_cnt++;
+				}
+				$col_cnt++;
+			}
+			else {
+				$return['cols'][$col_cnt-1]['dropdown_values'][$dd_cnt]['id'] = $record->dd_id;
+				$return['cols'][$col_cnt-1]['dropdown_values'][$dd_cnt]['value'] = $record->value;
+				$dd_cnt++;
+			}
+		}
+	}
+	drupal_json_output($return);
+}
+
+/**
+ * 
+ * Enter description here ...
+ */
 function inventory_sgroup_autocomplete($string) {
 	global $user;
 	

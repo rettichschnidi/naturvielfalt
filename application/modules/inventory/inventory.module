@@ -54,6 +54,15 @@ function inventory_menu() {
     'type' => MENU_CALLBACK,
 	'file' => 'inventory.ajax.inc',
 	);
+	$items['inventory/add_inventory/%'] = array(
+    'title' => 'Add Inventory Cathegory',
+    'description' => 'JSON Inventory Cathegory Adder',
+    'page callback' => 'inventory_add_inventory',
+	'page arguments' => array(2),
+    'access arguments' => array('access inventories'),
+    'type' => MENU_CALLBACK,
+	'file' => 'inventory.ajax.inc',
+	);
 	$items['inventory/%/edit'] = array(
     'title' => 'Modify Inventory',
     'description' => 'Modify an existing inventory',

@@ -49,7 +49,7 @@ function initInventory() {
 // Called when the button 'Inventar hinzufügen' is clicked.
 // Gets the attributes of the inventory and passes them to addInventory()
 function onAddInventory() {
-	jQuery.getJSON(INVENTORY_SERVER_PATH + "inventory/new-inventory?inv_id=" + jQuery('#edit-inventory-types').val(), function(json) {
+	jQuery.getJSON(Drupal.settings.basePath + "inventory/add_inventory/" + jQuery('#edit-inventory-types').val(), function(json) {
 		tbody = addInventory(json);
 		addRow(tbody, json["cols"]);
 		jQuery("#edit-inventory-types option[value='0']").attr('selected',true);
