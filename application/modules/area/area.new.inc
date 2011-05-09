@@ -316,11 +316,11 @@ function area_new_form_submit($form, &$form_state) {
 	$areaType = $form_state['values']['area_type'];
 	$comment = $form_state['values']['comment'];
 	$altitude = $form_state['values']['altitude'];
-	$surface_area = $form_state['values']['surface_area'];
+	$surface_area = $form_state['values']['surface-area'];
 	$township = $form_state['values']['township'];
 	$latitude = $form_state['values']['latitude'];
 	$longitude = $form_state['values']['longitude'];
-	$jsonCoords = $form_state['values']['area_coords'];
+	$jsonCoords = $form_state['values']['area-coords'];
 
 
 	// get area type id from table area_type
