@@ -84,7 +84,7 @@ $row = '';
 						$strDate = $inventoryEntry->value; 
 					}
 					$row = array(
-					'Art' => $strName." [".$strLat."]",
+					'Art' => l($strName." [".$strLat."]", "organism/".$inventoryEntry->organism_id),
 					'Anzahl' => $strCount,
 					'Status' => $strStatus,
 					'Funddatum' => $strDate,
@@ -117,7 +117,7 @@ $row = '';
 						$strDate = $inventoryEntry->value; 
 					}
 					$row = array(
-					'Art' => $strName." [".$strLat."]",
+					'Art' => l($strName." [".$strLat."]", "organism/".$inventoryEntry->organism_id),
 					'Population' => $strPopulation,
 					'Area size' => $strAsize,
 					'Origin' => $strOrigin,
