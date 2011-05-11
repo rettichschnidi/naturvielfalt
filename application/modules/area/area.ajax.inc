@@ -95,4 +95,82 @@ function area_saved_autocomplete($string) {
 
 	return drupal_json_output($items);
 }
+
+/**
+ * Autocomplete field for search by already saved areas
+ * 
+ * @return a json string with all areas
+ */
+function get_areas() {
+	$areas = db_query('
+		SELECT area.id area_id, at.desc at_desc, field_name, altitude, surface_area,locality, township, canton,
+			centroid_lat, centroid_lng, comment, lat, lng, seq, habitat_id, label, name_de, ah.id ah_id, ah.habitat_id ah_habitat_id
+		FROM area
+			LEFT JOIN area_point ap ON ap.area_id = area.id
+			LEFT JOIN area_habitat ah ON ah.area_id = area.id
+			LEFT JOIN habitat h ON h.id = ah.habitat_id
+			LEFT JOIN area_type at ON at.id = area.type_id
+		ORDER BY field_name, seq, ah_id asc
+	');
+
+	$items = array();
+	
+	$last_area_id = 0;
+	foreach ($areas as $entry){
+		if ($last_area_id!=$entry->area_id){
+			// we have to reorder the habitats of the last area to make sure the first key of the array starts with 0
+			// otherwise json_encode() will treat the array as an object
+			if ($items[$last_area_id]['habitats']){
+				$items[$last_area_id]['habitats'] = array_values($items[$last_area_id]['habitats']);
+			}
+		}
+			$key = $entry->area_id;
+			settype( $key, "integer" );
+
+			$items[$key]['id'] = $key;
+			$items[$key]['field_name'] = $entry->field_name;
+			$items[$key]['parcel_nr'] = NULL;
+			$items[$key]['type'] = $entry->at_desc;
+			$items[$key]['altitude'] = $entry->altitude;
+			settype($items[$key]['altitude'] ,"integer");
+			$items[$key]['surface_area']= $entry->surface_area;
+			settype($items[$key]['surface_area'] ,"integer");
+			$items[$key]['locality'] = $entry->locality;
+			$items[$key]['township'] = $entry->township;
+			$items[$key]['canton'] = $entry->canton;
+			$items[$key]['centroid']['lat'] = $entry->centroid_lat;
+			$items[$key]['centroid']['lng'] = $entry->centroid_lng;
+			$items[$key]['comment'] = $entry->comment;
+			
+			if ($entry->ah_id!=''){
+				$ah_id = $entry->ah_id;
+				settype($ah_id,"integer");
+				
+				$items[$key]['habitats'][$ah_id]['id'] = $entry->ah_habitat_id;
+				settype($items[$key]['habitats'][$ah_id]['id'],"integer");
+				
+				$items[$key]['habitats'][$ah_id]['label'] = $entry->label;
+				$items[$key]['habitats'][$ah_id]['name_de'] = $entry->name_de;
+			} else {
+				$items[$key]['habitats'] = array();
+			}
+
+			if($entry->seq!=''){
+				// if area is of type marker, it has no points --> we have to check for that
+				$seq = $entry->seq;
+				settype($seq,"integer");
+				$items[$key]['area_points'][$seq]['lat'] = $entry->lat;
+				$items[$key]['area_points'][$seq]['lng'] = $entry->lng;
+			} else {
+				$items[$key]['area_points'] = array();
+			}
+			$last_area_id= $entry->area_id;
+	}
+
+	// json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and
+	// not as an array. However, we used area_id as $key, so we have to index them numerically
+	$items = array_values($items);
+
+	return drupal_json_output($items);
+}
 ?>

@@ -33,7 +33,7 @@ function area_new() {
 	);
 	$output['LastUsed']['table'] = area_last_used_table();
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
-	$output['FieldName'] = drupal_get_form('area_field_name_form');
+	//$output['FieldName'] = drupal_get_form('area_field_name_form');
   	$output['areaNew'] = drupal_get_form('area_new_form');
   	$output['areaNew']['#attributes']['class']='hidden';
 	$output['areaChose'] = drupal_get_form('area_choose_form');

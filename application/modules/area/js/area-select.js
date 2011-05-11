@@ -55,13 +55,20 @@ function AreaSelect() {
 	 */
 	AreaSelect.prototype.selectArea = function(overlayId) {
 		// handle table highlighting
-		jQuery(areaselect.area_table.fnSettings().aoData).each(function() {
+	/*	jQuery(areaselect.area_table.fnSettings().aoData).each(function() {
 			jQuery(this.nTr).removeClass('row_selected');
 			if (this.nTr.getAttribute('overlay_id')) {
 				areaselect.mapOverlays.overlays[this.nTr.getAttribute('overlay_id')].setStyle('selected-disable');
 			}
 		});
 		jQuery('#area_table tbody tr[overlay_id="' + overlayId + '"]').addClass('row_selected');
+		*/
+		
+		// deselect area if it was previously selected
+		if(areaselect.selected_area){
+			areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
+		}
+
 		// handle map highlighting
 		overlay = areaselect.mapOverlays.overlays[overlayId];
 		overlay.setStyle('selected');
@@ -173,7 +180,7 @@ function AreaSelect() {
                 var aaData = [];
                 var areas = json.areas;
                 me.mapOverlays.clear();
-                
+
                 for(var i in areas) {
                     aaData.push([
                       '<img src="modules/area/images/details_open.png"></img>',
@@ -209,6 +216,30 @@ function AreaSelect() {
         } );
     }
 	
+	/**
+	 * new getarea function which fetches all area data with a json request
+	 */
+	function getareasJSON() {
+		var aoData;
+        jQuery.ajax( {
+            "dataType": 'json',
+            "type": "GET",
+            "url": Drupal.settings.basePath + "area/getareas",
+            
+            "success": function (json) {
+                var aaData = [];
+                var areas = json;
+                me.mapOverlays.clear();
+                me.mapOverlays.addOverlaysJson(areas);
+
+                for(var i in me.mapOverlays.overlays) {
+                    var overlay = me.mapOverlays.overlays[i];
+                    me.addOverlayListener(overlay);
+                }
+            }
+        } );
+    }
+
 	/**
 	 * adds a listener for selecting and hover to geometry overlays
 	 */
@@ -328,6 +359,7 @@ function AreaSelect() {
 	me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
 	me.area_table = this.createDataTable(me.mapOverlays); // the table containing areas
 	me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
+	getareasJSON();
 
 	// register events
 	jQuery("#area_table tbody").live('click', this.onTableRowClicked);
