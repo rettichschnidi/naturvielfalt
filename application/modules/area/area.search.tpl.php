@@ -1,13 +1,14 @@
 <?php
 // include JavaScripts
 $areaJsPath = base_path() . drupal_get_path('module', 'area') . '/js/';
+$areaCSSPath = base_path() . drupal_get_path('module', 'area') . '/css/';
 $inventoryJsPath = base_path() . drupal_get_path('module', 'inventory') . '/js/';
 $inventoryServerPublicPath = base_path() . '../inventoryServer/web_root/public/';
 
 $jsLibs = array(
 	'http://maps.google.com/maps/api/js?key=ABQIAAAABuqUv_uyCZ4WzUTgK5G-thR8vyPbVAPvWWUSjekUdI5ADbIJJRSNaY0WIlEy744RJmMGHB5KrWGGKw&sensor=false',
 $areaJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js',
-$inventoryServerPublicPath . 'css/overlay-style.js',
+$areaCSSPath . 'overlay-style.js',
 $inventoryServerPublicPath . 'js/lib/jquery/jquery-ui-1.8.6.custom.min.js',
 $inventoryServerPublicPath . 'js/lib/jquery/jquery.dataTables.js',
 $inventoryServerPublicPath . 'js/lib/jquery/jquery.dataTables.pluginAPI.js',
