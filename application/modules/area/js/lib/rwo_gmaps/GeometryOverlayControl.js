@@ -114,6 +114,19 @@ GeometryOverlayControl.prototype.startDigitizing = function(){
 	var me = this;
 	var eventListener = google.maps.event.addListener(me.map, "click", me.addLatLngEvent(), true);
 	this.eventListeners.addLatLng = eventListener;
+	
+	//remove all overlay listeners, to not make them clickable anymore
+    for(var i in areaselect.mapOverlays.overlays) {
+        var overlay = areaselect.mapOverlays.overlays[i];        
+        google.maps.event.clearListeners(overlay.gOverlay);
+    }
+    
+	//deselect area if one was previously selected
+	if(areaselect.selected_area){
+		areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
+	}
+
+	areaselect.areaInfo.close();
 };
 
 GeometryOverlayControl.prototype.stopDigitizing = function(){
@@ -125,6 +138,12 @@ GeometryOverlayControl.prototype.stopDigitizing = function(){
 		this.overlay.stopEditing();
 	}
 	this.stopFunc();
+	
+	//after editing stops we have to re-add our fancy listeners,
+	for(var i in areaselect.mapOverlays.overlays) {
+        var overlay = areaselect.mapOverlays.overlays[i];
+        areaselect.addOverlayListener(overlay);
+	}
 	//this.overlay = null;
 };
 
