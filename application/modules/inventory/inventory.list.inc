@@ -54,9 +54,10 @@ function inventory_list() {
 	);
 	
 	$render_array['inventories_own']['inventories'] = array(
-	    '#theme' => 'table', 
+	    '#theme' => 'datatable', 
 	   	'#header' => $tableHeader,
 		'#rows' => $rows,
+		'#id_table' => 'inventories_own',
 	);
 	
 	// Group Inventories
@@ -135,9 +136,10 @@ function inventory_list() {
 	);
 	
 	$render_array['inventories_group']['inventories'] = array(
-	    '#theme' => 'table', 
+	    '#theme' => 'datatable', 
 	   	'#header' => $tableHeader,
 		'#rows' => $rows,
+		'#id_table' => 'inventories_group',
 	);
 	
 	// Public Inventories
@@ -198,9 +200,10 @@ function inventory_list() {
 	);
 	
 	$render_array['inventories_share']['inventories'] = array(
-	    '#theme' => 'table', 
+	    '#theme' => 'datatable', 
 	   	'#header' => $tableHeader,
 		'#rows' => $rows,
+		'#id_table' => 'inventories_share',
 	);
 	
 	return $render_array;
