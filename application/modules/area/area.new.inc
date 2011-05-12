@@ -5,7 +5,7 @@
  */
 function area_new() {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
-	drupal_set_title(t('Choose or Create New Area for Inventory @name', array('@name' => $_SESSION['inventory']['name'])));
+	drupal_set_title(t('Choose or Create New Area for Inventory \'@name\'', array('@name' => $_SESSION['inventory']['name'])));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');

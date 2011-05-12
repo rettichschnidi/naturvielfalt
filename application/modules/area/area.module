@@ -111,10 +111,6 @@ function area_theme() {
  			'template' => 'area.search.byField',
     	  	'variables' => array()
 		),
-		'area.new.map' => array(
-			'template' => 'area.new.map',
-			'variables' => array()
-		)
 	);
 }
 
