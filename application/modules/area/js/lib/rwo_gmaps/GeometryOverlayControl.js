@@ -115,7 +115,7 @@ GeometryOverlayControl.prototype.startDigitizing = function(){
 	var eventListener = google.maps.event.addListener(me.map, "click", me.addLatLngEvent(), true);
 	this.eventListeners.addLatLng = eventListener;
 	
-	//remove all overlay listeners, to not make them clickable anymore
+	//remove all overlay listeners
     for(var i in areaselect.mapOverlays.overlays) {
         var overlay = areaselect.mapOverlays.overlays[i];        
         google.maps.event.clearListeners(overlay.gOverlay);
@@ -139,7 +139,7 @@ GeometryOverlayControl.prototype.stopDigitizing = function(){
 	}
 	this.stopFunc();
 	
-	//after editing stops we have to re-add our fancy listeners,
+	//after editing stops we have to re-add our fancy listeners
 	for(var i in areaselect.mapOverlays.overlays) {
         var overlay = areaselect.mapOverlays.overlays[i];
         areaselect.addOverlayListener(overlay);
