@@ -3951,7 +3951,10 @@
 			/* Finally set the width's of the header and footer tables */
 			var iOuterWidth = $(o.nTable).outerWidth();
 			nScrollHeadTable.style.width = _fnStringToCss( iOuterWidth );
-			nScrollHeadInner.style.width = _fnStringToCss( iOuterWidth+o.oScroll.iBarWidth );
+			// TODO: possible bug-fix: if scrollbar is enabled, table width grows with every click on th
+			//       or by writing text in the search field. Commenting the line below fixes this bug
+			//       but i have no idea of the impact on other features by doing this!
+			//nScrollHeadInner.style.width = _fnStringToCss( iOuterWidth+o.oScroll.iBarWidth );
 			
 			if ( o.nTFoot !== null )
 			{

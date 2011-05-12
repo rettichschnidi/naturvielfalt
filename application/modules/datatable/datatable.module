@@ -18,7 +18,6 @@ function datatable_theme() {
     			'header' => NULL,		// header of table similar to table theme 
     			'rows' => NULL,			// content of table similar to table theme
     			'len' => NULL,			// height of displayed datatable in pixel
-    			'nbElements' => NULL,	// number of loaded Elements
 			),
 		),
 	);
