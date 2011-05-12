@@ -1,0 +1,38 @@
+.dataTables_wrapper table {
+	margin:0em;
+}
+
+.dataTables_wrapper td {
+	padding:0em;
+	padding-left:0.5em;	
+}
+
+.dataTables_wrapper th {
+	padding:0em;
+	padding-left:0.5em;	
+}
+
+.dataTables_wrapper .ui-toolbar {
+	padding: 2px;
+}
+
+
+div.dataTables_wrapper .ui-widget-header {
+	font-weight: normal;
+}
+
+.css_right {
+    float: right;
+}
+
+.dataTables_info {
+	padding-top: 3px;
+	padding-left: 5px;
+	float: left;
+}
+
+.dataTables_filter {
+	width: 50%;
+	float: right;
+	text-align: right;
+}

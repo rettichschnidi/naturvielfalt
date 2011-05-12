@@ -1,0 +1,26 @@
+<?php
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_theme()
+ * 
+ * @return an array with theme template information
+ */
+function datatable_theme() {
+	return array(
+    	'datatable' => array(
+ 			'template' => 'datatable',
+    		'variables' => array(
+    			'id_table' => NULL,		// id of html table element
+    			'header' => NULL,		// header of table similar to table theme 
+    			'rows' => NULL,			// content of table similar to table theme
+    			'len' => NULL,			// height of displayed datatable in pixel
+    			'nbElements' => NULL,	// number of loaded Elements
+			),
+		),
+	);
+}
+?>
