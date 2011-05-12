@@ -4,12 +4,43 @@ function inventory_list() {
 	drupal_set_title(t('Show Inventory'));
 
 	// Own Inventories
+	$tableHeader[] = t('Action');
 	$tableHeader[] = t('Inventory');
 	$tableHeader[] = t('Area');
 	$tableHeader[] = t('Public');
-	$tableHeader[] = t('Edit');
 	
 	global $user;
+	
+	
+	//Edit Image
+	$variables_edit= array(
+		'path' => 'misc/fatcow_icons/16x16/application_edit.png',
+		'alt' => t('Edit'),
+		'title' => t('Edit'),
+		'width' => '14px',
+		'height' => '14px',
+      );
+	$img_edit = theme('image', $variables_edit);
+	
+	//Localize Image
+	$variables_localize= array(
+		'path' => 'misc/fatcow_icons/16x16/world.png',
+		'alt' => t('Edit'),
+		'title' => t('Edit'),
+		'width' => '14px',
+		'height' => '14px',
+      );
+	$img_localize = theme('image', $variables_localize);
+	
+	//Remove Image
+	$variables_remove= array(
+		'path' => 'modules/inventory/images/can_delete.png',
+		'alt' => t('Edit'),
+		'title' => t('Edit'),
+		'width' => '14px',
+		'height' => '14px',
+      );
+	$img_remove = theme('image', $variables_remove);
 	
 	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner_id, hi.shared
 		FROM head_inventory hi 
@@ -29,10 +60,10 @@ function inventory_list() {
 			$shared = t("Yes");
 		else $shared = t("No");
 		$row = array();
+		$row[] = l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_localize.' '.$img_remove;
 		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId);
 		$row[] = $field_name;
 		$row[] = $shared;
-		$row[] = l("Yes", 'inventory/'.$inventoryGroupId.'/edit');
 		$rows[] = $row;
 	}
 	
@@ -73,7 +104,7 @@ function inventory_list() {
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Public');
-	$tableHeader[] = t('Edit');
+	$tableHeader[] = t('Action');
 
 	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
