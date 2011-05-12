@@ -54,16 +54,6 @@ function AreaSelect() {
 	 * This is called if an area is selected from any source (table, dropdown, map)
 	 */
 	AreaSelect.prototype.selectArea = function(overlayId) {
-		// handle table highlighting
-	/*	jQuery(areaselect.area_table.fnSettings().aoData).each(function() {
-			jQuery(this.nTr).removeClass('row_selected');
-			if (this.nTr.getAttribute('overlay_id')) {
-				areaselect.mapOverlays.overlays[this.nTr.getAttribute('overlay_id')].setStyle('selected-disable');
-			}
-		});
-		jQuery('#area_table tbody tr[overlay_id="' + overlayId + '"]').addClass('row_selected');
-		*/
-		
 		// deselect area if it was previously selected
 		if(areaselect.selected_area){
 			areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
