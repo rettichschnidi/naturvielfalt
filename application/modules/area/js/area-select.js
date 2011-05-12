@@ -27,9 +27,17 @@ function AreaSelect() {
 	/**
 	 * This function is called when the user clicks on a row
 	 */
-	AreaSelect.prototype.onTableRowClicked = function(event) {
-		var overlayId = event.target.parentNode.getAttribute('overlay_id');
-		me.selectArea(overlayId);
+	AreaSelect.prototype.onTableRowClicked = function(e) {
+		if (!e) var e = window.event;
+		if (e.target) targ = e.target;
+		else if (e.srcElement) targ = e.srcElement;
+		if (targ.nodeType == 3) // defeat Safari bug
+			targ = targ.parentNode;
+		var overlayId = targ.parentNode.id.split('_');
+		me.selectArea(overlayId[1]);
+		
+		jQuery("td.selected_row", oTable.fnGetNodes()).removeClass('selected_row');
+		jQuery(targ).parent().find("td").addClass('selected_row');
 	}
 	
 	/**
@@ -352,7 +360,7 @@ function AreaSelect() {
 	getareasJSON();
 
 	// register events
-	jQuery("#area_table tbody").live('click', this.onTableRowClicked);
+	jQuery("#show_areas").live('click', this.onTableRowClicked);
 	jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
     jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
     jQuery('#controlAreaChoose').click(this.onControlAreaChooseClicked);
