@@ -52,3 +52,7 @@ div.dataTables_wrapper .ui-widget-header {
 	float: right;
 	text-align: right;
 }
+
+.DataTables_sort_wrapper {
+	cursor:default;	
+}
