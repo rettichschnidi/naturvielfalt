@@ -10,22 +10,23 @@
 }
 
 .progress_elem {
-	border:0px solid;
-	padding:3px;
+	border:1px solid;
+	padding:3px 7px;
 	margin:1px;
 }
 
 .progress_elem.done {
-	background-color:#58c3ec;
+	background-color:#E9F4D7;
+	border-color:#AFC19E;
 }
 
 .progress_elem.active {
-	background-color:#2e99c2;
+	background-color:#AFC19E;
 	font-weight: bold;
 }
 
 .progress_elem.pending {
-	background-color:#f0f0ef;
-	border-color:#767676;;
+	background-color:#F0F0EF;
+	border-color:#767676;
 	color:#767676;
 }
