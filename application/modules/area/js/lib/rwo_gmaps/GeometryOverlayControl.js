@@ -15,7 +15,6 @@ GeometryOverlayControl.prototype.initGOC = function(map, opts){
 	var me = this;
 	me.name = "GeometryOverlayControl";
 	me.map = map;
-	me.mapCache = new MapCache();
 	me.overlay = null;		//Overlay that is currently drawn or edited
 	me.controls = {};		 //contains all controls added to the map.
 	me.buttons = {};
@@ -164,8 +163,4 @@ GeometryOverlayControl.prototype.addLatLngEvent = function(){
 
 GeometryOverlayControl.prototype.enableEditing = function(isEnabled){
 	this.editing = isEnabled;
-};
-
-GeometryOverlayControl.prototype.save = function(overlay){
-	this.mapCache.save(overlay);
 };
