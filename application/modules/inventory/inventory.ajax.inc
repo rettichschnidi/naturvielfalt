@@ -88,15 +88,34 @@ function inventory_entries_ajax() {
 							->execute();
 						}
 						else {
-							// modify existing attribute entry
-							$affectedRows = db_update('inventory_type_attribute_inventory_entry')
-							->condition(
-								db_and()
-								->condition('inventory_entry_id', $inventoryEntryId, '=')
-								->condition('inventory_type_attribute_id', $attrId, '=')
-							)
-							->fields(array( $dbCol => $attrIdValue ))
-							->execute();
+							// modify existing attribute entry, if value not yet existing insert is used instead of update	
+							$result_temp = db_query ('
+							SELECT inventory_type_attribute_id FROM inventory_type_attribute_inventory_entry itaie
+							LEFT JOIN inventory_entry ie ON itaie.inventory_entry_id = ie.id
+							WHERE ie.id = :ieid AND inventory_type_attribute_id = :iaid',
+							array(':ieid' => $inventoryEntryId, ':iaid' => $attrId)
+							);	
+							if(isset($result_temp->inventory_type_attribute_id)) {
+								$affectedRows = db_update('inventory_type_attribute_inventory_entry') 
+								->condition(
+									db_and()
+									->condition('inventory_entry_id', $inventoryEntryId, '=')
+									->condition('inventory_type_attribute_id', $attrId, '=')
+								)
+								->fields(array( $dbCol => $attrIdValue ))
+								->execute();
+							}
+							else {
+								$inventoryAttributEntryId = db_insert('inventory_type_attribute_inventory_entry')
+								->fields (
+									array (
+										'inventory_entry_id' => $inventoryEntryId,
+										$dbCol => $attrIdValue,
+										'inventory_type_attribute_id' => $attrId,
+									)
+								)
+								->execute();
+							}
 						}
 					}
 				}
