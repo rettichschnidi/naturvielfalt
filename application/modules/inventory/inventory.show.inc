@@ -153,22 +153,56 @@ $row = '';
 			}			
 		}
 		
-		
 		//Define tables only if not empty
 		if($rows!='') {
-			$header = array(t('Flora'),t('Amount'),t('State'),t('Date'));
 			$render_array['Flora'] = array(
-    			'#theme' => 'table',
+		  		'#type' => 'fieldset', 
+		  		'#title' => t('Flora'), 
+		  		'#weight' => 3, 
+		  		'#collapsible' => TRUE,
+				'#collapsed' => FALSE,
+				'#attached' => array (
+			        'js' => array (
+			          'misc/form.js',
+			          'misc/collapse.js',
+		        	),
+		        ),
+		        '#attributes' => array(
+		        	'class' => array('collapsible'),
+		        ),
+				);
+			
+			$header = array(t('Art'),t('Amount'),t('State'),t('Date'));
+			$render_array['Flora']['Art'] = array(
+    			'#theme' => 'datatable',
 				'#header' => $header,
     			'#rows' => $rows,
+				'#id_table' => 'flora',
 			);		
 		}
 		if($rows2!='') {
-			$header = array(t('Fauna'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
 			$render_array['Fauna'] = array(
-    			'#theme' => 'table',
+		  		'#type' => 'fieldset', 
+		  		'#title' => t('Fauna'), 
+		  		'#weight' => 3, 
+		  		'#collapsible' => TRUE,
+				'#collapsed' => FALSE,
+				'#attached' => array (
+			        'js' => array (
+			          'misc/form.js',
+			          'misc/collapse.js',
+		        	),
+		        ),
+		        '#attributes' => array(
+		        	'class' => array('collapsible'),
+		        ),
+				);
+			$header = array(t('Art'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
+			$render_array['Fauna']['Art'] = array(
+    			'#theme' => 'datatable',
 				'#header' => $header,
     			'#rows' => $rows2,
+				'#id_table' => 'fauna',
 			);		
 		}
 	
