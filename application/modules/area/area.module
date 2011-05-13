@@ -80,6 +80,13 @@ function area_menu() {
 	'type' => MENU_CALLBACK,
 	'file' => 'area.ajax.inc',
 	);
+	$items['area/datatable'] = array(
+	'title' => 'area information in json format for datatable',
+    'page callback' => 'area_datatable',
+	'access arguments' => array(AREA_ACCESS),
+	'type' => MENU_CALLBACK,
+	'file' => 'area.ajax.inc',
+	);
 
 	return $items;
 }
