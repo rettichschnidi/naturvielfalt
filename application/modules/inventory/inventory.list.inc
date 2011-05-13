@@ -25,8 +25,8 @@ function inventory_list() {
 	//Localize Image
 	$variables_localize= array(
 		'path' => 'misc/fatcow_icons/16x16/world.png',
-		'alt' => t('Edit'),
-		'title' => t('Edit'),
+		'alt' => t('Localize'),
+		'title' => t('Localize'),
 		'width' => '14px',
 		'height' => '14px',
       );
@@ -35,8 +35,8 @@ function inventory_list() {
 	//Remove Image
 	$variables_remove= array(
 		'path' => 'modules/inventory/images/can_delete.png',
-		'alt' => t('Edit'),
-		'title' => t('Edit'),
+		'alt' => t('Delete'),
+		'title' => t('Delete'),
 		'width' => '14px',
 		'height' => '14px',
       );
