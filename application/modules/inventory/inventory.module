@@ -28,6 +28,7 @@ function inventory_menu() {
 	'file' => 'inventory.show.inc',
 	);
 	$items['inventory/edit'] = array(
+	'title' => 'Modify Inventory',
 	'description' => 'Show all inventories to modify',
 	'page callback' => 'inventory_modify',
 	'access arguments' => array('access inventories'),
@@ -35,6 +36,7 @@ function inventory_menu() {
     'weight' => 5,
 	);
 	$items['inventory/new'] = array(
+	'title' => 'Create Inventory',
     'description' => 'Create a new inventory',
     'page callback' => 'inventory_new',
     'page arguments' => array(1),
