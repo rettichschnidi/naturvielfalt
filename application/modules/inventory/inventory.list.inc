@@ -104,7 +104,7 @@ function inventory_list() {
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Public');
-	$tableHeader[] = t('Action');
+	$tableHeader[] = t('Writable');
 
 	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
