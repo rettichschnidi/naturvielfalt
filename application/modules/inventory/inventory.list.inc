@@ -4,10 +4,10 @@ function inventory_list() {
 	drupal_set_title(t('Show Inventory'));
 
 	// Own Inventories
-	$tableHeader[] = t('Action');
 	$tableHeader[] = t('Inventory');
 	$tableHeader[] = t('Area');
 	$tableHeader[] = t('Public');
+	$tableHeader[] = t('Action');
 	
 	global $user;
 	
@@ -60,10 +60,10 @@ function inventory_list() {
 			$shared = t("Yes");
 		else $shared = t("No");
 		$row = array();
-		$row[] = l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_localize.' '.$img_remove;
 		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId);
 		$row[] = $field_name;
 		$row[] = $shared;
+		$row[] = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
 		$rows[] = $row;
 	}
 	
@@ -104,7 +104,7 @@ function inventory_list() {
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Public');
-	$tableHeader[] = t('Writable');
+	$tableHeader[] = t('Action');
 
 	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
@@ -130,8 +130,8 @@ function inventory_list() {
 				$shared = t("Yes");
 			else $shared = t("No");
 			$sgroups = $record->sgroup_name;
-			$write = "No";
-			if($record->write == true) $write = l("Yes", 'inventory/'.$inventoryGroupId.'/edit');
+			$write = $img_localize;
+			if($record->write == true) $write = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));
 			$row = array(
 				'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId),
 				'Area' => $field_name,
@@ -184,6 +184,7 @@ function inventory_list() {
 	$tableHeader[] = t('Inventory');
 	$tableHeader[] = t('Area');
 	$tableHeader[] = t('Owner');
+	$tableHeader[] = t('Action');
 
 	$result = db_query("
 		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name FROM head_inventory hi
@@ -208,7 +209,8 @@ function inventory_list() {
 		$row = array(
 			'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId),
 			'Area' => $field_name,
-			'Owner' => $owner
+			'Owner' => $owner,
+			'Action' => $img_localize
 		);
 		$rows[] = $row;
 	}
