@@ -16,12 +16,12 @@
 }
 
 .progress_elem.done {
-	background-color:#E9F4D7;
-	border-color:#AFC19E;
+	background-color:#F5FFEF;
+	border-color:#AAD0A6;
 }
 
 .progress_elem.active {
-	background-color:#AFC19E;
+	background-color:#AAD0A6;
 	font-weight: bold;
 }
 
