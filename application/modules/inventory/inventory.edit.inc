@@ -7,9 +7,22 @@
  * @return all inventory forms to modify the inventory
  */
 function inventory_edit($head_inventory_id) {
-	//$_SESSION['workflow'] = true; // help to debug
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/sgroup.js');
-	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css');
+	
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext/ext-base-debug.js');
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext/ext-jquery-adapter-debug.js');
+	
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-ui-1.8.6.custom.min.js');
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
+
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/JSON.js');
+
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
+	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
+
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	
 	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
 	if(isset($_SESSION['workflow']) && $_SESSION['workflow']) {
 		$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
@@ -141,19 +154,6 @@ function inventory_edit_elements($form, &$form_state, $head_inventory_id) {
 	});', 'inline');
 	
 	$edit_mode = true;
-	
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-ui-1.8.6.custom.min.js');
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
-
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext/ext-jquery-adapter-debug.js');
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/ext/ext-base-debug.js');
-
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/JSON.js');
-
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
-	drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
-
-	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
 	// inventories ajax form
 	$form['inventories']['#markup'] = '<div id="inventories"></div>';
@@ -265,9 +265,6 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
  * @return form to edit inventory rights
  */
 function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
-	
-	//drupal_add_js('modules/inventory/js/sgroup.js');
-	
 	$tableHeader[] = t('Groups I am Member of');
 	$tableHeader[] = t('Full Access');
 	$tableHeader[] = t('Show Protected Organisms');
