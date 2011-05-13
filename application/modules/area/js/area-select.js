@@ -34,10 +34,7 @@ function AreaSelect() {
 		if (targ.nodeType == 3) // defeat Safari bug
 			targ = targ.parentNode;
 		var overlayId = targ.parentNode.id.split('_');
-		me.selectArea(overlayId[1]);
-		
-		jQuery("td.selected_row", oTable.fnGetNodes()).removeClass('selected_row');
-		jQuery(targ).parent().find("td").addClass('selected_row');
+		me.selectArea(overlayId[1], targ);
 	}
 	
 	/**
@@ -61,7 +58,7 @@ function AreaSelect() {
 	/**
 	 * This is called if an area is selected from any source (table, dropdown, map)
 	 */
-	AreaSelect.prototype.selectArea = function(overlayId) {
+	AreaSelect.prototype.selectArea = function(overlayId, targ) {
 		// deselect area if it was previously selected
 		if(areaselect.selected_area){
 			areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
@@ -76,6 +73,13 @@ function AreaSelect() {
 		areaselect.selected_area = overlayId;
 		// set area id, used when we just assign an area to a already existing inventory
 		jQuery('#edit-id-area').val(overlayId);
+		
+		if(jQuery('#show_areas')) {
+			if(targ == null) targ = jQuery('#area_'+overlayId+' td');
+			jQuery("td.selected_row", oTable.fnGetNodes()).removeClass('selected_row');
+			jQuery(targ).parent().find("td").addClass('selected_row');
+			jQuery('#show_areas').parent().scrollTo(jQuery('#area_'+overlayId));
+		}
 	}
 
 	/**

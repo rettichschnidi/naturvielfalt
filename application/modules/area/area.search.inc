@@ -4,8 +4,8 @@
  * @return render array
  */
 function show_area_search() {
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_set_title(t('Show Areas'));
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
@@ -58,16 +58,42 @@ function area_google_maps_form() {
  * @return input search field for saved areas
  */
 function area_field_name_form() {
+	$area = db_query(
+		"SELECT area.id a_id, field_name, zip, locality, canton, u.name u_name, art.desc art_dest FROM area
+		LEFT JOIN users u ON u.uid = owner_id
+		LEFT JOIN area_type art ON art.id = type_id
+		ORDER BY field_name;"
+	);
+	
+	foreach ($area as $record) {
+		$row = array();
+		$row[] = $record->field_name;
+		$row[] = $record->zip;
+		$row[] = $record->locality;
+		$row[] = $record->canton;
+		$row[] = $record->u_name;
+		$row[] = $record->art_dest;
+		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
+	}
+	
+	$tableHeader[] = t('Area Name');
+	$tableHeader[] = t('Zip');
+	$tableHeader[] = t('Locality');
+	$tableHeader[] = t('Canton');
+	$tableHeader[] = t('Area Creator');
+	$tableHeader[] = t('Area Type');
 	$form['FieldName'] = array(
 		'#type' => 'fieldset',
   		'#title' => t('Search by field name:'),
   		'#weight' => 5,
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => TRUE,
 	);
 
-	$form['FieldName']['searchByField'] = array(
-		'search' => array('#theme' => 'area.search.byField'),
+	$form['FieldName']['show_areas'] = array(
+		'#theme' => 'datatable',
+		'#header' => $tableHeader,
+		'#rows' => $rows,
+		'#id_table' => 'show_areas',
+		'#len' => 220,
 	);
 
 	return $form;

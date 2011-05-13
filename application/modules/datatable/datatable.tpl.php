@@ -7,6 +7,7 @@
 drupal_add_css(drupal_get_path('module', 'datatable') . '/css/datatable.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 drupal_add_css(drupal_get_path('module', 'datatable') . '/css/jquery-ui-1.8.4.custom.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.dataTables.js');
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.scrollTo-min.js');
 
 $table[$id_table] = array(
     '#theme' => 'table', 
