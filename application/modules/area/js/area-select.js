@@ -130,43 +130,6 @@ function AreaSelect() {
 		var overlays = new MapGeometryOverlays(map);
 		return overlays;
 	}
-
-	/**
-	 * Creates the table showing areas
-	 * Returns jQuery datatable
-	 */
-	AreaSelect.prototype.createDataTable = function(mapOverlays) {
-		return jQuery('#area_table').dataTable( {
-	        "oLanguage" : {
-	            "sUrl" : Drupal.settings.basePath + "modules/area/languages/de_DE/DataTables.txt"
-	        },
-	        "bScrollInfinite": true,
-	        "bScrollCollapse": true,
-	        "sScrollY": "400px",
-	        "bProcessing": true,
-	        "bServerSide": true,
-	        "sAjaxSource": INVENTORY_SERVER_PATH + "area-select/get-area",
-	        "fnServerData": this.onRequestServerData,
-	        "aoColumns": [
-	        {"sClass": "center", "bSortable": false,  "bSearchable" : false},
-	        {"sTitle": "Flurname"},
-	        {"sTitle": "Ortschaft"},
-	        {"sTitle": "Gemeinde"},
-	        {"sTitle": "Kanton"},
-	        {"sTitle": "Fläche (m&#178;)"},
-	        {"sTitle": "M.ü.M"},
-	        {"sTitle": "Typ", "bSearchable" : false, "bSortable": false},
-	        {"sTitle": "ParzellenNr.", "bSearchable" : false, "bVisible": false},
-	        {"sTitle": "Lebensräume", "bSearchable" : false, "bVisible": false},
-	        {"sTitle": "Beschreibung", "bSearchable" : false, "bVisible": false},
-	        {"sTitle": "area_id", "bSearchable" : false, "bVisible": false}
-	        ],
-	        "aaSorting": [[1, 'asc']],
-	        'fnInitComplete': function (){
-	          this.fnSetFilteringDelay(250);
-	        }
-	    } );
-	}
 	
 	/**
 	 * Is called if new area data is needed. This makes a call to the server by ajax.
@@ -359,7 +322,6 @@ function AreaSelect() {
 	me.mapOverlays = this.createOverlays(me.map); // Overlays representing areas
 	me.selected_area = null; // index of currently selected area
 	me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
-	me.area_table = this.createDataTable(me.mapOverlays); // the table containing areas
 	me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
 	getareasJSON();
 
