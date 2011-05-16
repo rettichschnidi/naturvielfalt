@@ -91,12 +91,19 @@ function inventory_list() {
         ),
 	);
 	
-	$render_array['inventories_own']['inventories'] = array(
-	    '#theme' => 'datatable', 
-	   	'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#id_table' => 'inventories_own',
-	);
+	//render only if there are any records returned
+	if($rows){
+		$render_array['inventories_own']['inventories'] = array(
+		    '#theme' => 'datatable', 
+		   	'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#id_table' => 'inventories_own',
+		);
+	}else{
+		$render_array['inventories_own']['inventories'] = array(
+	 	 	'#markup' => t("You haven't created any inventories so far"),
+		);
+	}
 	
 	// Group Inventories
 	
@@ -181,12 +188,19 @@ function inventory_list() {
         ),
 	);
 	
-	$render_array['inventories_group']['inventories'] = array(
-	    '#theme' => 'datatable', 
-	   	'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#id_table' => 'inventories_group',
-	);
+	//render only if there are any records returned
+	if($rows){
+		$render_array['inventories_group']['inventories'] = array(
+		    '#theme' => 'datatable',
+		   	'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#id_table' => 'inventories_group',
+		);
+	}else{
+		$render_array['inventories_group']['inventories'] = array(
+	  		'#markup' => t("No shared inventories"),
+		);
+	}
 	
 	// Public Inventories
 	
@@ -252,13 +266,20 @@ function inventory_list() {
         ),
 	);
 	
-	$render_array['inventories_share']['inventories'] = array(
-	    '#theme' => 'datatable', 
-	   	'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#id_table' => 'inventories_share',
-	);
-	
+	//render only if there are any records returned
+	if($rows){
+		$render_array['inventories_share']['inventories'] = array(
+		    '#theme' => 'datatable',
+		   	'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#id_table' => 'inventories_share',
+		);
+	}else{
+		$render_array['inventories_shared']['inventories'] = array(
+	  		'#markup' => t("No public inventories have been created so far"),
+		);
+	}
+
 	return $render_array;
 }
 ?>
