@@ -225,6 +225,8 @@ function area_choose_form_submit($form, &$form_state, $area_id) {
 		'shared' => $shared,
 		'owner_id' => $owner,
 		'description' => $description['value'],
+		'create_time' => 'now()',
+		'modify_time' => 'now()',
 	))
 	->execute();
 	
@@ -418,6 +420,8 @@ function area_new_form_submit($form, &$form_state) {
 		'shared' => $shared,
 		'owner_id' => $owner,
 		'description' => $description['value'],
+		'create_time' => 'now()',
+		'modify_time' => 'now()',
 	))
 	->execute();
 	
