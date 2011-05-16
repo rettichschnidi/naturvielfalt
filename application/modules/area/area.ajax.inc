@@ -88,7 +88,7 @@ function area_saved_autocomplete($string) {
 
 	$items = array();
 	foreach ($areas as $record){		
-		$value = $record->field_name.", ".$record->zip." ".$record->locality."<br>Erstellt am ".$record->create_time;
+		$value = $record->field_name.", ".$record->zip." ".$record->locality."<br>".t("Created on ").date("j.m.Y H:i P", strtotime($record->create_time));
 		$key = $record->id;
 		$items[$key]=$value; 
 	}

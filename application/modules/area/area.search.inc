@@ -59,7 +59,7 @@ function area_google_maps_form() {
  */
 function area_field_name_form() {
 	$area = db_query(
-		"SELECT area.id a_id, field_name, zip, locality, canton, u.name u_name, art.desc art_dest FROM area
+		"SELECT area.id a_id, field_name, zip, locality, canton, create_time, u.name u_name, art.desc art_dest FROM area
 		LEFT JOIN users u ON u.uid = owner_id
 		LEFT JOIN area_type art ON art.id = type_id
 		ORDER BY field_name;"
@@ -71,6 +71,11 @@ function area_field_name_form() {
 		$row[] = $record->zip;
 		$row[] = $record->locality;
 		$row[] = $record->canton;
+		if($record->create_time){
+			$row[] = date("j.m.Y H:i P", strtotime($record->create_time));
+		} else {
+			$row[] = '';
+		}
 		$row[] = $record->u_name;
 		$row[] = $record->art_dest;
 		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
@@ -80,6 +85,7 @@ function area_field_name_form() {
 	$tableHeader[] = t('Zip');
 	$tableHeader[] = t('Locality');
 	$tableHeader[] = t('Canton');
+	$tableHeader[] = t('Created on');
 	$tableHeader[] = t('Area Creator');
 	$tableHeader[] = t('Area Type');
 	$form['FieldName'] = array(
