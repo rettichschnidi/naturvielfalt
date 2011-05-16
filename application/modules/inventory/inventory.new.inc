@@ -38,7 +38,7 @@ function inventory_new_form($form, &$form_state) {
 	
 	$form['new']['name'] = array(
   		'#type' => 'textfield', 
-  		'#title' => t('Inventarname'), 
+  		'#title' => t('Inventory Name'), 
   		'#size' => 100, 
   		'#maxlength' => 128, 
   		'#required' => TRUE,
@@ -47,7 +47,7 @@ function inventory_new_form($form, &$form_state) {
 
 	$form['new']['description'] = array(
 			'#type' => 'text_format',
-    		'#title' => t('Beschreibung'),
+    		'#title' => t('Description of Inventory'),
     		'#default_value' => $description,
     		'#format' => filter_default_format(),
 	      	'#widget' => array (

@@ -234,13 +234,13 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 
 	$form['upload'] = array(
 			'#type' => 'file', 
-			'#title' => t('Datei uploaden'), 
+			'#title' => t('Upload File'), 
 			'#size' => 48,
 	);
 
 	$form['file_description'] = array(
   			'#type' => 'textfield', 
-  			'#title' => t('Beschreibung der Datei'), 
+  			'#title' => t('Description of File'), 
   			'#size' => 100, 
   			'#maxlength' => 128, 
   			'#required' => FALSE,
@@ -906,7 +906,7 @@ function getInventoryIconMap($filemime) {
  * @return name of actual inventory to be modified
  */
 function getInventoryTitle($head_inventory_id) {
-	$inventory_title = t("-");
+	$inventory_title = '-';
 
 	$inventories = db_query('	SELECT name
 								FROM head_inventory

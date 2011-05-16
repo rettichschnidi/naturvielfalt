@@ -10,17 +10,17 @@ function inventory_show ($head_inventory_id) {
 		$row[] = $inventory->name;
 		$row[] = $inventory->description;
 		If($inventory->shared == "t") {
-			$row[] = t('Ja');
+			$row[] = t('Yes');
 		}
 		else {
-			$row[] = t('Nein');
+			$row[] = t('No');
 		}
 		$rows[] = $row;
 	}
 
 	$header = array(t('Inventory name'),t('Description'),t('Public'));
 	
-	$render_array['schtunk'] = array(
+	$render_array['inventories'] = array(
     '#theme' => 'table',
 	'#header' => $header,
     '#rows' => $rows,
@@ -46,7 +46,7 @@ function inventory_show ($head_inventory_id) {
 		
 	$header = array(t('Area'),t('City'),t('ZIP'));
 	
-	$render_array['schtunk2'] = array(
+	$render_array['areas'] = array(
     '#theme' => 'table',
 	'#header' => $header,
     '#rows' => $rows,
