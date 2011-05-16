@@ -51,9 +51,10 @@ foreach ($result as $record) {
 	}
 	
 	$render_array['organisms'] = array(
-    '#theme' => 'table', 
+    '#theme' => 'datatable', 
 	'#header' => $header,
     '#rows' => $rows,
+	'#id_table' => 'organisms',
 	);
 	return $render_array;
 }
