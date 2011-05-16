@@ -6,6 +6,13 @@
  */
 function inventory_entries_ajax() {
 	$data = $_POST;
+	
+	//we refresh modify_time of head_inventory to now()
+	db_update('head_inventory')
+	->fields(array('modify_time'=>'now()'))
+	->condition('id',$data["headInventoryId"])
+	->execute();
+	
 	$return = array();
 	if(isset($data["deleteRows"]))
 	{
