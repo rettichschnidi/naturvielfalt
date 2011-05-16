@@ -5,23 +5,29 @@
 function organism_overview() {
 	drupal_set_title(t('Organisms - Grouped by Categories'));
 
-	$header = array(t('Organism Groups'),t('id'));
+	$header = array(t('Organism Groups'),t('Organism count'));
 	
 	$result = db_query("SELECT name, id FROM {inventory_type} order by name asc");
 	
 foreach ($result as $record) {
-		$row = array();
-		$row[] = l($record->name,"organism/type/".$record->id);
-		$row[] = $record->id;
-		//$link = l(t('new inventory'), 'inventory/new');
-		
-		$rows[] = $row;
+		$counts = db_query('SELECT COUNT (inventory_type_id) 
+			from organism 
+			WHERE inventory_type_id = :id', 
+			array(':id' => $record->id)
+		);
+		foreach($counts as $count) {
+			$row = array();
+			$row[] = l($record->name,"organism/type/".$record->id);
+			$row[] = $count->count;
+			$rows[] = $row;			
+		}	
 	}
 	
 	$render_array['organisms'] = array(
-    '#theme' => 'table', 
+    '#theme' => 'datatable', 
 	'#header' => $header,
     '#rows' => $rows,
+	'#id_table' => 'organisms',
 	);
 	return $render_array;
 }
