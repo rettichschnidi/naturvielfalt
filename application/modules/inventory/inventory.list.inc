@@ -4,8 +4,8 @@ function inventory_list() {
 	drupal_set_title(t('Show Inventory'));
 
 	// Own Inventories
-	$tableHeader[] = t('Inventory');
-	$tableHeader[] = t('Area');
+	$tableHeader[] = t('Inventory name');
+	$tableHeader[] = t('Area name');
 	$tableHeader[] = t('Public');
 	$tableHeader[] = t('Action');
 	
@@ -99,8 +99,8 @@ function inventory_list() {
 	$rows = array();
 	$tableHeader = array();
 	
-	$tableHeader[] = t('Inventory');
-	$tableHeader[] = t('Area');
+	$tableHeader[] = t('Inventory name');
+	$tableHeader[] = t('Area name');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Public');
@@ -181,8 +181,8 @@ function inventory_list() {
 	$rows = array();
 	$tableHeader = array();
 	
-	$tableHeader[] = t('Inventory');
-	$tableHeader[] = t('Area');
+	$tableHeader[] = t('Inventory name');
+	$tableHeader[] = t('Area name');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Action');
 
