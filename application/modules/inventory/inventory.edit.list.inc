@@ -8,8 +8,8 @@ function inventory_modify() {
 	drupal_set_title(t('Modify Inventory'));
 
 	// Own Inventories
-	$tableHeader[] = t('Inventory');
-	$tableHeader[] = t('Area');
+	$tableHeader[] = t('Inventory Name');
+	$tableHeader[] = t('Area name');
 	$tableHeader[] = t('Public');
 	
 	global $user;
@@ -56,9 +56,10 @@ function inventory_modify() {
 	);
 	
 	$render_array['inventories_own']['inventories'] = array(
-	    '#theme' => 'table', 
+	    '#theme' => 'datatable', 
 	   	'#header' => $tableHeader,
 		'#rows' => $rows,
+		'#id_table' => 'inventories_own',
 	);
 	
 	// Inventories with write Access for Groups
@@ -69,8 +70,8 @@ function inventory_modify() {
 	$rows = array();
 	$tableHeader = array();
 	
-	$tableHeader[] = t('Inventory');
-	$tableHeader[] = t('Area');
+	$tableHeader[] = t('Inventory Name');
+	$tableHeader[] = t('Area name');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Public');
@@ -133,9 +134,10 @@ function inventory_modify() {
 	);
 	
 	$render_array['inventories_share']['inventories'] = array(
-	    '#theme' => 'table', 
+	    '#theme' => 'datatable', 
 	   	'#header' => $tableHeader,
 		'#rows' => $rows,
+		'#id_table' => 'inventories_share',
 	);
 	
 	return $render_array;
