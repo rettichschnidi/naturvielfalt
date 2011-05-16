@@ -6,11 +6,12 @@ function inventory_list() {
 	// Own Inventories
 	$tableHeader[] = t('Inventory name');
 	$tableHeader[] = t('Area name');
+	$tableHeader[] = t('Created on');
+	$tableHeader[] = t('Modified on');
 	$tableHeader[] = t('Public');
 	$tableHeader[] = t('Action');
 	
 	global $user;
-	
 	
 	//Edit Image
 	$variables_edit= array(
@@ -42,7 +43,7 @@ function inventory_list() {
       );
 	$img_remove = theme('image', $variables_remove);
 	
-	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner_id, hi.shared
+	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time
 		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
 		WHERE (hi.owner_id=:id)
@@ -53,15 +54,21 @@ function inventory_list() {
 	foreach ($result as $record) {
 		$inventoryGroupId = $record->id;
 		$field_name = $record->field_name;
-		if(!is_null($record->name))
+		if(!is_null($record->name)){
 			$name = $record->name;
-		else $name = t("no name");
-		if($shared = $record->shared == TRUE)
+		} else {
+			$name = t("no name");
+		}
+		if($shared = $record->shared == TRUE){
 			$shared = t("Yes");
-		else $shared = t("No");
+		} else {
+			$shared = t("No");
+		}
 		$row = array();
 		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId);
 		$row[] = $field_name;
+		$row[] = date("j.m.Y H:i P", strtotime($record->create_time));
+		$row[] = date("j.m.Y H:i P", strtotime($record->modify_time));
 		$row[] = $shared;
 		$row[] = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
 		$rows[] = $row;
@@ -103,10 +110,12 @@ function inventory_list() {
 	$tableHeader[] = t('Area name');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
+	$tableHeader[] = t('Created on');
+	$tableHeader[] = t('Modified on');
 	$tableHeader[] = t('Public');
 	$tableHeader[] = t('Action');
 
-	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write FROM head_inventory hi
+	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		LEFT JOIN users u ON hi.owner_id = u.uid
@@ -122,13 +131,17 @@ function inventory_list() {
 			// new inventory id => add element to the list
 			$inventoryGroupId = $record->id;
 			$field_name = $record->field_name;
-			if(!is_null($record->hi_name))
+			if(!is_null($record->hi_name)){
 				$name = $record->hi_name;
-			else $name = t("no name");
+			} else {
+				$name = t("no name");
+			}
 			$owner=$record->u_name;
-			if($shared = $record->shared == TRUE)
+			if($shared = $record->shared == TRUE) {
 				$shared = t("Yes");
-			else $shared = t("No");
+			} else {
+				$shared = t("No");
+			}
 			$sgroups = $record->sgroup_name;
 			$write = $img_localize;
 			if($record->write == true) $write = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));
@@ -137,6 +150,8 @@ function inventory_list() {
 				'Area' => $field_name,
 				'Owner' => $owner,
 				'Groups' => $sgroups,
+				'CreatedOn' => date("j.m.Y H:i P", strtotime($record->create_time)),
+				'ModifiedOn' => date("j.m.Y H:i P", strtotime($record->modify_time)),
 				'Public' => $shared,
 				'Edit' => $write,
 			);
@@ -183,13 +198,16 @@ function inventory_list() {
 	
 	$tableHeader[] = t('Inventory name');
 	$tableHeader[] = t('Area name');
+	$tableHeader[] = t('Created on');
+	$tableHeader[] = t('Modified on');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Action');
 
 	$result = db_query("
-		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name FROM head_inventory hi
-		LEFT JOIN users u ON hi.owner_id = u.uid
-		LEFT JOIN area a ON hi.area_id = a.id
+		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name, hi.create_time, hi.modify_time
+		FROM head_inventory hi
+			LEFT JOIN users u ON hi.owner_id = u.uid
+			LEFT JOIN area a ON hi.area_id = a.id
 		WHERE shared = true AND hi.id NOT IN (
 			SELECT sgiEx.hiid FROM sgroup_inventory sgiEx
 			LEFT JOIN sgroup_users sguEx ON sgiEx.sgid = sguEx.sgid
@@ -209,6 +227,8 @@ function inventory_list() {
 		$row = array(
 			'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId),
 			'Area' => $field_name,
+			'CreatedOn' => date("j.m.Y H:i P", strtotime($record->create_time)),
+			'ModifiedOn' => date("j.m.Y H:i P", strtotime($record->modify_time)),
 			'Owner' => $owner,
 			'Action' => $img_localize
 		);
