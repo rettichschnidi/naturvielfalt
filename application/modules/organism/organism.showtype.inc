@@ -10,7 +10,7 @@ function organism_showtype($typeId) {
 	if( $typeId <> 16){
 		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('id'));	
 	} else {
-		$header = array(t('Family'),t('Name'),t('id'));
+		$header = array(t('Family'),t('Name'),t('Latin'),t('Author'),t('id'));
 	}
 	
 	if($typeId <> 16){
@@ -24,7 +24,7 @@ function organism_showtype($typeId) {
 		);
 	} else {
 		$result = db_query(
-			'select organism.id, organism.organism_type, flora_organism.name, flora_organism."Familie"
+			'select organism.id, organism.organism_type, flora_organism.name, flora_organism."Familie", flora_organism."Gattung", flora_organism."Art", flora_organism."Autor", flora_organism.name_de
 				from organism
 				left join flora_organism ON organism.organism_id = flora_organism.id
 				left join inventory_type ON organism.inventory_type_id = inventory_type.id
@@ -36,17 +36,19 @@ function organism_showtype($typeId) {
 foreach ($result as $record) {
 		if ($typeId <> 16){			
 			$row = array();
-			$row[] = $record->family;
+			$row[] = l($record->family,"organism/".$record->id);
 			$row[] = l($record->genus,"organism/".$record->id);
-			$row[] = $record->species;
-			$row[] = $record->name_de;
+			$row[] = l($record->species,"organism/".$record->id);
+			$row[] = l($record->name_de,"organism/".$record->id);
 			$row[] = $record->id;
 			
 			$rows[] = $row;
 		} else {
 			$row = array();
-			$row[] = $record->familie;
-			$row[] = l($record->name,"organism/".$record->id);
+			$row[] = l($record->familie,"organism/".$record->id);
+			$row[] = l($record->name_de,"organism/".$record->id);
+			$row[] = l($record->gattung." ".$record->art,"organism/".$record->id);
+			$row[] = $record->autor;
 			$row[] = $record->id;
 			$rows[] = $row;
 		}
