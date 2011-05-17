@@ -1,5 +1,8 @@
 <?php 
 function inventory_show ($head_inventory_id) {
+	
+	drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+	
 	//Display Inventory Basics
 	$inventories = db_query('	SELECT name,description,shared,create_time,modify_time
 									FROM head_inventory
@@ -212,4 +215,21 @@ $row = '';
 	
 	return $render_array;
 }
+
+
+function getInventoryTitle($head_inventory_id) {
+	$inventory_title = '-';
+
+	$inventories = db_query('	SELECT name
+								FROM head_inventory
+								WHERE id = :id;', array(':id' => $head_inventory_id));
+	foreach($inventories as $inventory) {
+		if(!is_null($inventory->name))
+		$inventory_title =  $inventory->name;
+	}
+
+	return $inventory_title;
+}
+
+
 ?>
