@@ -264,13 +264,13 @@ function AreaSelect() {
 			me.areaInfo.updateTab(1, data.inventories.title, inventories);
 
 			// habitats
-			habitats = '<div>';
+			habitats = '<div><ul>';
 			if (data.habitats.habs) {
 				for ( var i = 0, len = data.habitats.habs.length; i < len; ++i) {
-					habitats += data.habitats.habs[i] + '<br/>';
+					habitats += '<li>' +data.habitats.habs[i] + '</li>';
 				}
 			}
-			habitats += '</div>';
+			habitats += '</ul></div>';
 			me.areaInfo.updateTab(2, data.habitats.title, habitats);
 
 			// and finally show the fancy popup bubble:
