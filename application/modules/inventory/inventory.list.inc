@@ -64,11 +64,12 @@ function inventory_list() {
 		} else {
 			$shared = t("No");
 		}
+		// ("j.m.Y H:i P", strtotime($record->create_time));
 		$row = array();
 		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId);
 		$row[] = $field_name;
-		$row[] = date("j.m.Y H:i P", strtotime($record->create_time));
-		$row[] = date("j.m.Y H:i P", strtotime($record->modify_time));
+		$row[] = date("j.m.Y", strtotime($record->create_time));
+		$row[] = date("j.m.Y", strtotime($record->modify_time));
 		$row[] = $shared;
 		$row[] = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
 		$rows[] = $row;
@@ -157,8 +158,8 @@ function inventory_list() {
 				'Area' => $field_name,
 				'Owner' => $owner,
 				'Groups' => $sgroups,
-				'CreatedOn' => date("j.m.Y H:i P", strtotime($record->create_time)),
-				'ModifiedOn' => date("j.m.Y H:i P", strtotime($record->modify_time)),
+				'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
+				'ModifiedOn' => date("j.m.Y", strtotime($record->modify_time)),
 				'Public' => $shared,
 				'Edit' => $write,
 			);
@@ -241,8 +242,8 @@ function inventory_list() {
 		$row = array(
 			'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId),
 			'Area' => $field_name,
-			'CreatedOn' => date("j.m.Y H:i P", strtotime($record->create_time)),
-			'ModifiedOn' => date("j.m.Y H:i P", strtotime($record->modify_time)),
+			'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
+			'ModifiedOn' => date("j.m.Y", strtotime($record->modify_time)),
 			'Owner' => $owner,
 			'Action' => $img_localize
 		);
