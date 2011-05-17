@@ -36,6 +36,23 @@ function inventory_new_form($form, &$form_state) {
 		'#weight' => 5,
 	);
 	
+	$question_mark= theme('image', 
+		array(
+			'path' => 'misc/question_mark_small.png',
+			'alt' => t('Questionmark'),
+			'attributes'=>array('align'=>'left'),
+		)
+	);
+	
+	/*$form['new']['suggestion']['picture'] = array(
+		'#markup'=> $question_mark,
+	);*/
+	$form['new']['suggestion']['help'] = array(
+		'#prefix' => '<h3>',
+		'#markup' => t('On this site you may create a new inventory. Please specify a name and optionally a description.'),
+		'#suffix' => '</h3><br clear="ALL">'
+	);
+	
 	$form['new']['name'] = array(
   		'#type' => 'textfield', 
   		'#title' => t('Inventory Name'), 
