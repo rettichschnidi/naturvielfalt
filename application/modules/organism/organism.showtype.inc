@@ -10,7 +10,7 @@ function organism_showtype($typeId) {
 	if( $typeId <> 16){
 		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('id'));	
 	} else {
-		$header = array(t('Family'),t('Name'),t('Latin'),t('Author'),t('id'));
+		$header = array(t('Family'),t('Name'),t('Latin name'),t('Author'),t('id'));
 	}
 	
 	if($typeId <> 16){
