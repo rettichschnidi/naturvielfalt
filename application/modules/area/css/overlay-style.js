@@ -7,26 +7,26 @@
 var overlayStyle = {
     'polygon' : {
         strokeColor:    "#000000",
-        strokeWeight:   2,
+        strokeWeight:   1,
         strokeOpacity:  0.25,
-        fillColor:      "#FF0000",
+        fillColor:      "#AA0000",
         fillOpacity:    0.25
     },
 
     'polygon-selected': {
         strokeColor:    "#000000",
-        strokeWeight:   2,
+        strokeWeight:   1,
         strokeOpacity:  0.25,
         fillColor:      "#0000FF",
-        fillOpacity:    0.75
+        fillOpacity:    0.4
     },
     
     'polygon-highlighted': {
         strokeColor:    "#000000",
-        strokeWeight:   2,
+        strokeWeight:   1,
         strokeOpacity:  0.25,
-        fillColor:      "00FF00",
-        fillOpacity:    0.6
+        fillColor:      "#AA0000",
+        fillOpacity:    0.4
     },
     'marker' : {
         flat:           false,
