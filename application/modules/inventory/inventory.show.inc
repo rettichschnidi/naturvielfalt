@@ -1,7 +1,7 @@
 <?php 
 function inventory_show ($head_inventory_id) {
 	//Display Inventory Basics
-	$inventories = db_query('	SELECT name,description,shared
+	$inventories = db_query('	SELECT name,description,shared,create_time,modify_time
 									FROM head_inventory
 									WHERE id = :id;', array(':id' => $head_inventory_id));
 
@@ -9,6 +9,8 @@ function inventory_show ($head_inventory_id) {
 		$row = array();
 		$row[] = $inventory->name;
 		$row[] = $inventory->description;
+		$row[] = date("j.m.Y", strtotime($inventory->modify_time));
+		$row[] = date("j.m.Y", strtotime($inventory->create_time));
 		If($inventory->shared == "t") {
 			$row[] = t('Yes');
 		}
@@ -18,7 +20,7 @@ function inventory_show ($head_inventory_id) {
 		$rows[] = $row;
 	}
 
-	$header = array(t('Inventory name'),t('Description'),t('Public'));
+	$header = array(t('Inventory name'),t('Description'),t('Modify time'),t('Create time'),t('Public'));
 	
 	$render_array['inventories'] = array(
     '#theme' => 'table',
@@ -84,7 +86,8 @@ $row = '';
 						$strDate = $inventoryEntry->value; 
 					}
 					$row = array(
-					'Art' => l($strName." [".$strLat."]", "organism/".$inventoryEntry->organism_id),
+					'Art' => l($strName, "organism/".$inventoryEntry->organism_id),
+					'Lateinisch' => $strLat,
 					'Anzahl' => $strCount,
 					'Status' => $strStatus,
 					'Funddatum' => $strDate,
@@ -117,7 +120,8 @@ $row = '';
 						$strDate = $inventoryEntry->value; 
 					}
 					$row = array(
-					'Art' => l($strName." [".$strLat."]", "organism/".$inventoryEntry->organism_id),
+					'Art' => l($strName, "organism/".$inventoryEntry->organism_id),
+					'Lateinisch' => $strLat,
 					'Population' => $strPopulation,
 					'Area size' => $strAsize,
 					'Origin' => $strOrigin,
@@ -172,7 +176,7 @@ $row = '';
 		        ),
 				);
 			
-			$header = array(t('Art'),t('Amount'),t('State'),t('Date'));
+			$header = array(t('Name'),t('Lateinisch'),t('Amount'),t('State'),t('Date'));
 			$render_array['Flora']['Art'] = array(
     			'#theme' => 'datatable',
 				'#header' => $header,
@@ -197,7 +201,7 @@ $row = '';
 		        	'class' => array('collapsible'),
 		        ),
 				);
-			$header = array(t('Art'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
+			$header = array(t('Name'),t('Lateinisch'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
 			$render_array['Fauna']['Art'] = array(
     			'#theme' => 'datatable',
 				'#header' => $header,
