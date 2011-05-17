@@ -1,6 +1,10 @@
 <div> <?php 
-	$output['SearchArea']= drupal_get_form('area_search');
-	print drupal_render($output['SearchArea']);?>
+	/* Laut Albert nicht mehr benoetigt
+	 * 
+	 *$output['SearchArea']= drupal_get_form('area_search');
+	print drupal_render($output['SearchArea']);
+	*/
+	?>
 </div>
 <div id="map_search-element">
 	<div><?php echo t('Search with Google Maps')?></div>

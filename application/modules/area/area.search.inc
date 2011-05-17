@@ -14,11 +14,15 @@ function show_area_search() {
 		'#theme' => 'area.search',
 	);
 
+	/*
+	 * Last Used areas ist laut Albert nicht mehr erforderlich
 	$output['LastUsed'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Last Used Areas'),
 	);
 	$output['LastUsed']['table'] = area_last_used_table();
+	*/
+	
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
 	$output['FieldName'] = drupal_get_form('area_field_name_form');
 	return $output;
@@ -72,7 +76,7 @@ function area_field_name_form() {
 		$row[] = $record->locality;
 		$row[] = $record->canton;
 		if($record->create_time){
-			$row[] = date("j.m.Y H:i P", strtotime($record->create_time));
+			$row[] = date("j.m.Y", strtotime($record->create_time));
 		} else {
 			$row[] = '';
 		}
@@ -105,7 +109,7 @@ function area_field_name_form() {
 	return $form;
 }
 
-function area_search($form, &$form_state) {
+ function area_search($form, &$form_state) {
 	$form['AreaText'] = array(
 		'#title' => t('Search through existing areas'),
 		'#type' => 'textfield',   

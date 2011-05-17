@@ -27,11 +27,14 @@ function area_new() {
 		'#theme' => 'area.new',
 	);
 
+	/* Laut Albert nicht mehr benoetigt
 	$output['LastUsed'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Last Used Areas'),
 	);
 	$output['LastUsed']['table'] = area_last_used_table();
+	*/
+	
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
 	$output['FieldName'] = drupal_get_form('area_field_name_form');
   	$output['areaNew'] = drupal_get_form('area_new_form');
