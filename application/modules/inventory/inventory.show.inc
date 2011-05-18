@@ -4,9 +4,11 @@ function inventory_show ($head_inventory_id) {
 	drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
 	
 	//Display Inventory Basics
-	$inventories = db_query('	SELECT name,description,shared,create_time,modify_time
-									FROM head_inventory
-									WHERE id = :id;', array(':id' => $head_inventory_id));
+	$inventories = db_query('
+		SELECT name,description,shared,create_time,modify_time
+		FROM head_inventory
+		WHERE id = :id;', array(':id' => $head_inventory_id)
+	);
 
 	foreach($inventories as $inventory) {
 		$row = array();
@@ -24,39 +26,39 @@ function inventory_show ($head_inventory_id) {
 	}
 
 	$header = array(t('Inventory name'),t('Description'),t('Modified on'),t('Created on'),t('Public'));
-	
+
 	$render_array['inventories'] = array(
-    '#theme' => 'table',
-	'#header' => $header,
-    '#rows' => $rows,
+	    '#theme' => 'table',
+		'#header' => $header,
+	    '#rows' => $rows,
 	);
 	
 	$rows = '';	
 	
 	//Display Area Details	
-	$areas = db_query('SELECT field_name,locality,zip, area.id
-							FROM area
-							LEFT JOIN head_inventory h on area.id = h.area_id
-							WHERE h.id = :id;', array('id' => $head_inventory_id)
-					  		);	
+	$areas = db_query('
+		SELECT field_name,locality,zip, area.id
+		FROM area
+		LEFT JOIN head_inventory h on area.id = h.area_id
+		WHERE h.id = :id;', array('id' => $head_inventory_id)
+	);	
 	
-		foreach($areas as $area) {
-			$row = array();
-			$row[] = $area->field_name;
-			$row[] = $area->locality;
-			$row[] = $area->zip;
-	
-			$rows[] = $row;
-		}
+	foreach($areas as $area) {
+		$row = array();
+		$row[] = $area->field_name;
+		$row[] = $area->locality;
+		$row[] = $area->zip;
+
+		$rows[] = $row;
+	}
 		
 	$header = array(t('Area'),t('City'),t('ZIP'));
 	
 	$render_array['areas'] = array(
-    '#theme' => 'table',
-	'#header' => $header,
-    '#rows' => $rows,
+	    '#theme' => 'table',
+		'#header' => $header,
+	    '#rows' => $rows,
 	);
-	
 	
 	$rows = '';
 	$row = '';	
