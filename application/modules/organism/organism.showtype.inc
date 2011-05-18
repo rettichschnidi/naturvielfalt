@@ -4,7 +4,7 @@ function organism_showtype($typeId) {
 		"SELECT name FROM inventory_type WHERE id=:id",
 		array(':id'=> $typeId)
 	);
-	drupal_set_title(t( $inventory_type->fetch()->name ));
+	drupal_set_title( $inventory_type->fetch()->name );
 
 	
 	if( $typeId <> 16){
