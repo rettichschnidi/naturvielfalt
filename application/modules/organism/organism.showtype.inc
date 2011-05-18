@@ -6,7 +6,7 @@ function organism_showtype($typeId) {
 	);
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.show.css');
 	drupal_set_title( $inventory_type->fetch()->name );
-	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism-select.js');
+	drupal_add_js(drupal_get_path('module', 'organism') . '/js/selectTableRow.js');
 	
 	if( $typeId <> 16){
 		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('id'));	
