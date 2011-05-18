@@ -38,13 +38,15 @@ function area_json($areaId) {
 	$output['inventories']['title'] = $invName;
 
 	// information about habitats
-	$output['habitats']['title'] = t('Habitats');
+	$countHabitats = 0;
 	$habitats = db_query('SELECT name_de, label FROM area_habitat ah
 		LEFT JOIN habitat h ON ah.habitat_id = h.id
 		WHERE ah.area_id = :areaId', array(':areaId' => $areaId));
 	foreach ($habitats as $habitat) {
 		$output['habitats']['habs'][] = $habitat->name_de;
+		$countHabitats++;
 	}
+	$output['habitats']['title'] = t('Habitats (!count)', array('!count'=>$countHabitats));
 
 	return drupal_json_output($output);
 }
