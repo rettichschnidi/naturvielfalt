@@ -2,6 +2,8 @@
 function inventory_show ($head_inventory_id) {
 	
 	drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/inventory.show.css');
+	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.organism.select.js');
 	
 	//Display Inventory Basics
 	$inventories = db_query('
@@ -92,13 +94,13 @@ function inventory_show ($head_inventory_id) {
 					$strDate = $inventoryEntry->value; 
 				}
 				$row = array(
-				'Art' => l($strName, "organism/".$inventoryEntry->organism_id),
+				'Art' => $strName,
 				'Lateinisch' => $strLat,
 				'Anzahl' => $strCount,
 				'Status' => $strStatus,
 				'Funddatum' => $strDate,
 				);
-				$rows[] = $row;	
+				$rows[] = array('data' => $row, 'id' => 'organism_'. $inventoryEntry->organism_id);	
 			} else {
 				if($inventoryEntry->value_name=='Anzahl') {
 					// inventory id same as the last one => modify count field of last element in list 
@@ -126,7 +128,7 @@ function inventory_show ($head_inventory_id) {
 					$strDate = $inventoryEntry->value; 
 				}
 				$row = array(
-				'Art' => l($strName, "organism/".$inventoryEntry->organism_id),
+				'Art' => $strName,
 				'Lateinisch' => $strLat,
 				'Population' => $strPopulation,
 				'Area size' => $strAsize,
@@ -135,7 +137,7 @@ function inventory_show ($head_inventory_id) {
 				'Vitality' => $strVitality,
 				'Funddatum' => $strDate,
 				);
-				$rows2[] = $row;
+				$rows2[] = array('data' => $row, 'id' => 'organism_'. $inventoryEntry->organism_id);
 			} else {
 				// inventory id same as the last one => modify count field of last element in list 
 				if($inventoryEntry->value_name=='Artmächtigkeit') {
