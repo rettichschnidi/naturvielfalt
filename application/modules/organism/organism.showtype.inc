@@ -4,8 +4,9 @@ function organism_showtype($typeId) {
 		"SELECT name FROM inventory_type WHERE id=:id",
 		array(':id'=> $typeId)
 	);
+	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.show.css');
 	drupal_set_title( $inventory_type->fetch()->name );
-
+	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism-select.js');
 	
 	if( $typeId <> 16){
 		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('id'));	
@@ -36,21 +37,20 @@ function organism_showtype($typeId) {
 foreach ($result as $record) {
 		if ($typeId <> 16){			
 			$row = array();
-			$row[] = l($record->family,"organism/".$record->id);
-			$row[] = l($record->genus,"organism/".$record->id);
-			$row[] = l($record->species,"organism/".$record->id);
-			$row[] = l($record->name_de,"organism/".$record->id);
+			$row[] = $record->family;
+			$row[] = $record->genus;
+			$row[] = $record->species;
+			$row[] = $record->name_de;
 			$row[] = $record->id;
-			
-			$rows[] = $row;
+			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
 		} else {
 			$row = array();
-			$row[] = l($record->familie,"organism/".$record->id);
-			$row[] = l($record->name_de,"organism/".$record->id);
-			$row[] = l($record->gattung." ".$record->art,"organism/".$record->id);
+			$row[] = $record->familie;
+			$row[] = $record->name_de;
+			$row[] = $record->gattung;
 			$row[] = $record->autor;
 			$row[] = $record->id;
-			$rows[] = $row;
+			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
 		}
 	}
 	
