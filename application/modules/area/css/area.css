@@ -14,3 +14,7 @@ div.box {
 #map_search-element input, #area_table_filter input {
 	width: 68%;
 }
+
+tr.even, tr.odd {
+	cursor: pointer;
+}
