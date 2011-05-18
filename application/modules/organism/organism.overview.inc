@@ -4,6 +4,8 @@
  */
 function organism_overview() {
 	drupal_set_title(t('Organisms - Grouped by Categories'));
+	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.show.css');
+	drupal_add_js(drupal_get_path('module', 'organism') . '/js/selectTableRow.js');
 
 	$header = array(t('Organism Groups'),t('Organism count'));
 	
@@ -16,9 +18,9 @@ function organism_overview() {
 	
 	foreach($result as $record){
 		$row = array();
-		$row[] = l($record->name,"organism/type/".$record->inventory_type_id);
+		$row[] = $record->name;
 		$row[] = $record->count;		
-		$rows[] = $row;
+		$rows[] = array('data' => $row, 'id' => 'organismtype_'. $record->inventory_type_id);
 	}
 	
 	$render_array['organisms'] = array(
