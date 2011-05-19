@@ -1,13 +1,12 @@
 
 // @author Damian Conrad
 
-function selectTableRow() {
+function organismRowSelect() {
 	/**
 	 * This function is called when the user clicks on a row
 	 */
 	
-	selectTableRow.prototype.onTableRowClicked = function(e) {
-		//console.info("hallo schnuzz");
+	organismRowSelect.prototype.onTableRowClicked = function(e) {
 		if (!e) var e = window.event;
 		if (e.target) targ = e.target;
 		else if (e.srcElement) targ = e.srcElement;
@@ -24,6 +23,4 @@ function selectTableRow() {
 	jQuery("#organisms").live('click', this.onTableRowClicked);
 }
 
-
-
-new selectTableRow();
+new organismRowSelect();

@@ -1,13 +1,12 @@
 
 // @author Damian Conrad
 
-function inventoryOrganismSelect() {
+function inventoryRowSelect() {
 	/**
 	 * This function is called when the user clicks on a row
 	 */
 	
-	inventoryOrganismSelect.prototype.onTableRowClicked = function(e) {
-		//console.info("hallo schnuzz");
+	inventoryRowSelect.prototype.onTableRowClicked = function(e) {
 		if (!e) var e = window.event;
 		if (e.target) targ = e.target;
 		else if (e.srcElement) targ = e.srcElement;
@@ -27,6 +26,4 @@ function inventoryOrganismSelect() {
 	jQuery("#inventories_own").live('click', this.onTableRowClicked);	
 }
 
-
-
-new inventoryOrganismSelect();
+new inventoryRowSelect();
