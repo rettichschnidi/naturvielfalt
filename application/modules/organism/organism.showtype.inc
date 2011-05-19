@@ -47,7 +47,7 @@ foreach ($result as $record) {
 			$row = array();
 			$row[] = $record->familie;
 			$row[] = $record->name_de;
-			$row[] = $record->gattung;
+			$row[] = $record->gattung.' '.$record->art;
 			$row[] = $record->autor;
 			$row[] = $record->id;
 			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
