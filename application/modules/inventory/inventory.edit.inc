@@ -24,8 +24,10 @@ function inventory_edit($head_inventory_id) {
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	
 	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
-	if(isset($_SESSION['workflow']) && $_SESSION['workflow']) {
-		$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
+	
+	if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
+		//we'll only display the progressbar if we are part of a workflow
+		$progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
 		$render_array['progress'] = array(
 			'#theme' => 'progress_done',
 			'#elements' => $progressElement,
@@ -113,27 +115,12 @@ function inventory_edit($head_inventory_id) {
 
 	$render_array['file']['upload'] = drupal_get_form('inventory_edit_files', $head_inventory_id);
 
-	if(isset($_SESSION['workflow']) && $_SESSION['workflow']) {
-		$render_array['end'] = array(
-	  		'#type' => 'fieldset',
-			'#weight' => 20,
-		);
-		$render_array['end']['form'] = drupal_get_form('stop_workflow');
+	if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
+		//workflow has been completed, so we unset it
+		//next time we come here with NO workflow, the progressbar will not get displayed again
+		unset($_SESSION['inventory']['workflow']);
 	}
 	return $render_array;
-}
-
-function stop_workflow($form, &$form_state) {
-	$form['end'] = array(
-		'#type' => 'submit',
-	  	'#value' => t('Complete'),
-	);
-	return $form;
-}
-
-function stop_workflow_submit($form, &$form_state) {
-	unset($_SESSION['workflow']);
-	$form_state['redirect'] = 'inventory/edit';
 }
 
 /**
@@ -252,7 +239,7 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 			'#submit' => array('inventory_update_file'),
 	);
 	
-	// Saveing something to the form_state makes it accessible in the submit function.
+	// Saving something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
 	$form_state['storage']['hi_id'] = $head_inventory_id;
 	
@@ -273,7 +260,6 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	global $user;
 	
 	// Shared flag
-	
 	$result = db_query(
 		'SELECT shared FROM head_inventory hi
 		WHERE hi.id = :id;', array('id' => $head_inventory_id)
@@ -426,7 +412,7 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 		'#submit' => array('inventory_update_rights'),
 	);
 	
-	// Saveing something to the form_state makes it accessible in the submit function.
+	// Saving something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
 	$form_state['storage']['hi_id'] = $head_inventory_id;
 	$form_state['storage']['sg_cnt'] = $cnt;

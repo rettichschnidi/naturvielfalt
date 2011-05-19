@@ -304,6 +304,7 @@ function AreaSelect() {
 		areaselect.overlayControl.stopDigitizing();
 		jQuery('#area-new-form').addClass('hidden');
 		jQuery('#area-choose-form').removeClass('hidden');
+		jQuery('#area-field-name-form').removeClass('hidden');
 	}
 
 	AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
@@ -311,6 +312,7 @@ function AreaSelect() {
 		jQuery('#controlAreaCreate').addClass('selected');
 		jQuery('#area-new-form').removeClass('hidden');
 		jQuery('#area-choose-form').addClass('hidden');
+		jQuery('#area-field-name-form').addClass('hidden');
 		areaselect.overlayControl.startDigitizing();
 	}
 
@@ -394,4 +396,7 @@ function refresh_map_info(){
 var areaselect = null;
 jQuery(document).ready(function() {
 	areaselect = new AreaSelect();
+	/* clear edit-id-area field. Solves the problem that if a user navigates back problem that
+	 * he can continue to new inv without actually having selected an area */
+	jQuery('#edit-id-area').val('');
 });

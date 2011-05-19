@@ -35,11 +35,11 @@ function inventory_menu() {
 	'file' => 'inventory.edit.list.inc',
     'weight' => 5,
 	);
-	$items['inventory/new'] = array(
+	$items['inventory/new/area/%'] = array(
 	'title' => 'Create Inventory',
     'description' => 'Create a new inventory',
     'page callback' => 'inventory_new',
-    'page arguments' => array(1),
+    'page arguments' => array(3),
     'access arguments' => array('access inventories'),
 	'file' => 'inventory.new.inc',
 	'weight' => 0,

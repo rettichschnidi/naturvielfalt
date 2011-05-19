@@ -5,22 +5,17 @@
  */
 function area_new() {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
-	drupal_set_title(t('Choose or Create New Area for Inventory \'@name\'', array('@name' => $_SESSION['inventory']['name'])));
+	drupal_set_title(t('Choose or Create New Area'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	
-	if(!isset($_SESSION['inventory'])) {
-		// Step 1 of workflow has not been completed 
-		drupal_set_message(t('No inventory data cached! Please go back to inventory creation.'),'error');
-	}
-	
 	// Display Progress Bar
-	$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
+	$progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
 	$output['progress'] = array(
 		'#theme' => 'progress_done',
 		'#elements' => $progressElement,
-		'#active' => 2, 		// Indicate active Element
+		'#active' => 1, 		// Indicate active Element
 	);
 	
 	$output['new'] = array(
@@ -46,7 +41,7 @@ function area_new() {
 
 /**
  * Button with js linker
- * @return a button linking to step 1 of workflow
+ * @return a button linking to inventory/new
  */
 function area_back_button() {
 	$button = array(
@@ -74,8 +69,8 @@ function area_google_maps_form() {
 }
 
 /**
- * Search by already saved areas
- * @return input search field for saved areas
+ * Table with all existing areas and search function
+ * @return datatable with all existing areas
  */
 function area_field_name_form() {
 	$area = db_query(
@@ -120,6 +115,10 @@ function area_field_name_form() {
 	return $form;
 }
 
+/**
+ * Textfield autocompleter
+ * @return textfield element with autocompleter to search through old areas
+ */
 function area_search($form, &$form_state) {
 	$form['AreaText'] = array(
 		'#title' => t('Search through existing areas'),
@@ -171,6 +170,8 @@ function area_last_used_table() {
 
 /**
  * Form is visible only if an area was selected and none created
+ * Form gets hidden again if onControlAreaCreateClicked() in JS is called
+ * 
  * @param array $form
  * @param *array $form_state
  * @return hidden form to submit area_id to next step
@@ -184,13 +185,11 @@ function area_choose_form($form, &$form_state) {
 		'#type' => 'fieldset',
 		'#weight' => 10,
 	);
-	$form['save_choose']['back'] = area_back_button();
-  	if(isset($_SESSION['inventory'])) {
-		$form['save_choose']['AreaChoseForm_submit'] = array(
-	  		'#type' => 'submit',
-	  		'#value' => t('Continue'),
-		);
-  	}
+
+	$form['save_choose']['AreaChoseForm_submit'] = array(
+  		'#type' => 'submit',
+  		'#value' => t('Continue'),
+	);
   	return $form;
 }
 
@@ -207,42 +206,20 @@ function area_choose_form_validate($form, &$form_state) {
 
 /**
  * Submit function for Area Choose Form
- * Redirect to step 3 of workflow
+ * Redirect to step 2 of workflow
  * 
  * @param array $form
  * @param *array $form_state
  * @param string $area_id
  */
 function area_choose_form_submit($form, &$form_state, $area_id) {
-	// Execute this after completion of next step
-	$area_id = $form_state['values']['id-area'];
-	$name = $_SESSION['inventory']['name'];
-	$shared = $_SESSION['inventory']['shared'];
-	$description = $_SESSION['inventory']['description'];
-	global $user;
-	$owner = $user->uid;
-
-	$hiid = db_insert('head_inventory')->fields(array(
-		'area_id' => $area_id,
-		'name' => $name,
-		'shared' => $shared,
-		'owner_id' => $owner,
-		'description' => $description['value'],
-		'create_time' => 'now()',
-		'modify_time' => 'now()',
-	))
-	->execute();
-	
-	// delete session variable after completion
-	unset($_SESSION['inventory']);
-	$_SESSION['workflow'] = true;
-	
 	// redirect to create a new inventory
-	$form_state['redirect'] = 'inventory/'.$hiid.'/edit';
+	$form_state['redirect'] = 'inventory/new/area/'.$form_state['values']['id-area'];
 }
 
 /**
- * Form is visible only if an was created
+ * Form is visible only if onControlAreaCreateClicked() in JS was called, happens when user starts editing on the map
+ * Form gets hidden again if onControlAreaChooseClicked() in JS is called
  * 
  * @param array $form
  * @param *array $form_state
@@ -321,20 +298,21 @@ function area_new_form($form, &$form_state) {
 		'#type' => 'fieldset',
 		'#weight' => 8,
 	);
-	$form['save_new']['back'] = area_back_button();
-  	if(isset($_SESSION['inventory'])) {
-		$form['save_new']['AreaNewForm_submit'] = array(
+
+	$form['save_new']['AreaNewForm_submit'] = array(
 	  	'#type' => 'submit',
 	  	'#value' => t('Continue'),
-		);
-  	}
+	);
 
 	return $form;
 }
 
 /**
+ * Saves the new area after user created markers or polys and clicks on the submit button
  * 
- * Enter description here ...
+ * Creates a new entry in the DB with the area that was just created and redirects to inventory/new to create
+ * new inventory assigned to the area that was just created
+ * 
  * @param array $form
  * @param *array $form_state
  */
@@ -353,7 +331,6 @@ function area_new_form_submit($form, &$form_state) {
 	$latitude = $form_state['values']['latitude'];
 	$longitude = $form_state['values']['longitude'];
 	$jsonCoords = $form_state['values']['area-coords'];
-
 
 	// get area type id from table area_type
 	$result = db_query('SELECT id FROM area_type at WHERE at.desc like :desc', array(':desc' => $areaType));
@@ -408,31 +385,8 @@ function area_new_form_submit($form, &$form_state) {
 			->execute();
 		}
 	}
-	
 
-	// insert new inventory
-	$name = $_SESSION['inventory']['name'];
-	$shared = $_SESSION['inventory']['shared'];
-	$description = $_SESSION['inventory']['description'];
-	global $user;
-	$owner = $user->uid;
-
-	$hiid = db_insert('head_inventory')->fields(array(
-		'area_id' => $area_id,
-		'name' => $name,
-		'shared' => $shared,
-		'owner_id' => $owner,
-		'description' => $description['value'],
-		'create_time' => 'now()',
-		'modify_time' => 'now()',
-	))
-	->execute();
-	
-	// delete session variable after completion
-	unset($_SESSION['inventory']);
-	$_SESSION['workflow'] = true;
-	
-	// redirect to create a new inventory
-	$form_state['redirect'] = 'inventory/'.$hiid.'/edit';
+	// redirect to create a new inventory assigned to the area just created
+	$form_state['redirect'] = 'inventory/new/area/'.$area_id;
 }
 ?>

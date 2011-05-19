@@ -3,10 +3,35 @@
 /**
  * Set Title and invoke drupal form
  */
-function inventory_new() {
-	drupal_set_title(t('Create New Inventory'));
+function inventory_new($area_id) {
+	if($area_id){
+		$area = db_query('SELECT * FROM {area} WHERE id = :id', array(':id' => $area_id))->fetch();
+		
+		if($area->field_name){
+			//area_id exists
+			drupal_set_title(t('Create New Inventory for Area "!areaname"',array('!areaname'=>$area->field_name)));
+			$_SESSION['inventory']['area_id'] = $area_id;
+			return drupal_get_form('inventory_new_form');
+		}else{
+			//non existing area_id
+			drupal_set_title(t('not existing area ID specified'));
+			return drupal_get_form('inventory_invalid_id');
+		}
+	}else{
+		//we need an area ID to assign the new inventory to
+		drupal_set_title(t('no area ID specified'));
+		return drupal_get_form('inventory_invalid_id');
+	}
+}
 
-	return drupal_get_form('inventory_new_form');
+/**
+ * Form which gets displayed if invalid area_id was specified
+ * 
+ * @return form of error page
+ */
+function inventory_invalid_id() {
+	//@TODO
+	//error handling
 }
 
 /**
@@ -17,20 +42,14 @@ function inventory_new() {
  * @return form of new inventory
  */
 function inventory_new_form($form, &$form_state) {
-	if(isset($_SESSION['inventory']['name']))
-		$name = $_SESSION['inventory']['name'];
-	if(isset($_SESSION['inventory']['description']))
-		$description = $_SESSION['inventory']['description']['value'];
-		
-	$progressElement = array(t('Create New Inventory'), t('Choose or Create New Area'), t('Edit Inventory')); // List of elements
+	$progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
 	$form['progress'] = array(
 		'#theme' => 'progress_done',
 		'#elements' => $progressElement,
-		'#active' => 1, 		// Indicate active Element
+		'#active' => 2, 		// Indicate active Element
 	);
 	
 	// creating forms
-	
 	$form['new'] = array (
 		'#type' => 'fieldset', 
 		'#weight' => 5,
@@ -93,13 +112,24 @@ function inventory_new_form($form, &$form_state) {
  * 
  * @param unknown_type $form
  * @param unknown_type $form_state
- * @return redirect-string to area
+ * @return redirect-string to inventory/edit
  */
 function inventory_new_form_submit($form, &$form_state){
-	$_SESSION['inventory']['name'] = $form_state['values']['name'];
-	$_SESSION['inventory']['shared'] = true;
-	$_SESSION['inventory']['description'] = $form_state['values']['description'];
+	global $user;
+	$owner = $user->uid;
 
-	return $form_state['redirect'] = 'area/new';
+	$hiid = db_insert('head_inventory')->fields(array(
+		'area_id' => $_SESSION['inventory']['area_id'],
+		'name' => $form_state['values']['name'],
+		'shared' => 'true',
+		'owner_id' => $owner,
+		'description' => $form_state['values']['description']['value'],
+		'create_time' => 'now()',
+		'modify_time' => 'now()',
+	))
+	->execute();
+	
+	$_SESSION['inventory']['workflow'] = true;
+	return $form_state['redirect'] = 'inventory/'.$hiid.'/edit';
 }
 ?>
