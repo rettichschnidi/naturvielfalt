@@ -13,13 +13,18 @@ function inventoryOrganismSelect() {
 		else if (e.srcElement) targ = e.srcElement;
 		if (targ.nodeType == 3) // defeat Safari bug
 			targ = targ.parentNode;
-		var organismId = targ.parentNode.id.split('_');
-		//me.selectOrganism(organismId[1], targ);
-		window.location.href = '../organism/'+organismId[1];
+		var idType = targ.parentNode.id.split('_');
+		if (idType[0] == 'organism')
+			window.location.href = '../organism/'+idType[1];
+		if (idType[0] == 'inventory')
+			window.location.href = 'inventory/'+idType[1];
 	}	
 	// register events
 	jQuery("#flora").live('click', this.onTableRowClicked);
 	jQuery("#fauna").live('click', this.onTableRowClicked);
+	jQuery("#inventories_share").live('click', this.onTableRowClicked);
+	jQuery("#inventories_group").live('click', this.onTableRowClicked);
+	jQuery("#inventories_own").live('click', this.onTableRowClicked);	
 }
 
 

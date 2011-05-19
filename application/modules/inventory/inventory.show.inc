@@ -2,8 +2,8 @@
 function inventory_show ($head_inventory_id) {
 	
 	drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
-	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/inventory.show.css');
-	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.organism.select.js');
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/inventory.datatable.css');
+	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	
 	//Display Inventory Basics
 	$inventories = db_query('

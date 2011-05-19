@@ -1,7 +1,10 @@
 <?php
 
+
 function inventory_list() {
 	drupal_set_title(t('Show Inventory'));
+	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/inventory.datatable.css');
+	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 
 	// Own Inventories
 	$tableHeader[] = t('Inventory name');
@@ -66,13 +69,13 @@ function inventory_list() {
 		}
 		// ("j.m.Y H:i P", strtotime($record->create_time));
 		$row = array();
-		$row[] = l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId);
+		$row[] = $name;
 		$row[] = $field_name;
 		$row[] = date("j.m.Y", strtotime($record->create_time));
 		$row[] = date("j.m.Y", strtotime($record->modify_time));
 		$row[] = $shared;
 		$row[] = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
-		$rows[] = $row;
+		$rows[] = array('data' => $row, 'id' => 'inventory_'. $inventoryGroupId);
 	}
 	
 	$render_array['inventories_own'] = array(
@@ -154,7 +157,7 @@ function inventory_list() {
 			$write = $img_localize;
 			if($record->write == true) $write = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));
 			$row = array(
-				'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId),
+				'Inventory' => $name,
 				'Area' => $field_name,
 				'Owner' => $owner,
 				'Groups' => $sgroups,
@@ -163,7 +166,7 @@ function inventory_list() {
 				'Public' => $shared,
 				'Edit' => $write,
 			);
-			$rows[] = $row;
+			$rows[] = array('data' => $row, 'id' => 'inventory_'. $inventoryGroupId);
 		}
 		else {
 			// inventory id same as the last one => modify group field of last element in list 
@@ -240,14 +243,14 @@ function inventory_list() {
 		else $name = t("no name");
 		$owner=$record->u_name;
 		$row = array(
-			'Inventory' => l($name." (".$inventoryGroupId.")", 'inventory/'.$inventoryGroupId),
+			'Inventory' => $name,
 			'Area' => $field_name,
 			'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
 			'ModifiedOn' => date("j.m.Y", strtotime($record->modify_time)),
 			'Owner' => $owner,
 			'Action' => $img_localize
 		);
-		$rows[] = $row;
+		$rows[] = array('data' => $row, 'id' => 'inventory_'. $inventoryGroupId);
 	}
 	
 	$render_array['inventories_share'] = array(
@@ -276,7 +279,7 @@ function inventory_list() {
 			'#id_table' => 'inventories_share',
 		);
 	}else{
-		$render_array['inventories_shared']['inventories'] = array(
+		$render_array['inventories_share']['inventories'] = array(
 	  		'#markup' => t("No public inventories have been created so far"),
 		);
 	}
