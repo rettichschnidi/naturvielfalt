@@ -239,7 +239,8 @@ function AreaSelect() {
 			// area details
 			var details = '<div>';
 			details += '<strong>' + data.field_name + '</strong>';
-			details += '<div>' + data.locality + '<br>';
+			details += '<div>' + data.creator + '<br>';
+			details += data.locality + '<br>';
 			details += data.zip + ' ' + data.township + '<br>';
 			details += data.altitude + '<br>';
 			details += data.surface_area + '<br>';

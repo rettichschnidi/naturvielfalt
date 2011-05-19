@@ -5,12 +5,18 @@
  */
 function area_json($areaId) {
 	// information about area
-	$area = db_query('SELECT * FROM {area} WHERE id = :id', array(':id' => $areaId))->fetch();
+	$area = db_query(
+		'SELECT *, u.name u_name FROM {area} 
+			LEFT JOIN users u ON u.uid = owner_id
+			WHERE id = :id', 
+			array(':id' => $areaId))
+		->fetch();
 	$output['field_name'] = $area->field_name;
 	$output['locality'] = $area->locality;
 	$output['zip'] = $area->zip;
 	$output['township'] = $area->township;
 	$output['comment'] = $area->comment;
+	$output['creator'] = t('Creator: !creator', array('!creator' => $area->u_name));
 	$output['altitude'] = t('Altitude: !alt m', array('!alt' => $area->altitude));
 	$output['surface_area'] = t('Surface area: !surface m<sup>2</sup>', array('!surface' => $area->surface_area));
 
