@@ -23,6 +23,9 @@ foreach ($jsLibs as $jsLib) {
 	echo "<script type=\"text/javascript\" src=\"" . $jsLib . "\"></script>\n";
 }
 ?>
-<p>
-<?php echo t('Please search an area either by Google Maps or by it\'s field name. You can also create a new area.');?>
-</p>
+
+<h3 style="margin-top: 10px">
+<?php 
+echo t('You have three choices. You can: <ul><li>select an area by using the <img src="../modules/area/images/map_controls/hand.png"> symbol and clicking on it on the map</li><li>select an area by clicking on it in the table<li>create a new area by using the <img src="../modules/area/images/map_controls/polygon.png"> symbol and drawing on the map</li>');
+?>
+</h3>

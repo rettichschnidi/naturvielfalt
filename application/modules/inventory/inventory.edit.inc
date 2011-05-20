@@ -52,6 +52,14 @@ function inventory_edit($head_inventory_id) {
         	'class' => array('collapsible', 'collapsed'),
         ),
 	);
+
+	if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
+		$render_array['suggestion'] = array(
+			'#prefix' => '<h3 style="margin-top: 10px">',
+			'#markup' => t('You can edit your newly created inventory now. You can:<ul><li id="haha">add organisms by clicking on "New Inventory Group"</li><li>edit the permissions for this inventory</li><li>attach files to this inventory</li>'),
+			'#suffix' => '</h3>'
+		);
+	}
 	
 	$render_array['basics']['edit'] = drupal_get_form('inventory_edit_basics', $head_inventory_id, false);
 
