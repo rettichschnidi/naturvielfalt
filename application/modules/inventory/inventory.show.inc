@@ -7,14 +7,15 @@ function inventory_show ($head_inventory_id) {
 	
 	//Display Inventory Basics
 	$inventories = db_query('
-		SELECT name,description,shared,create_time,modify_time
+		SELECT head_inventory.name,description,shared,create_time,modify_time, u.name "owner"
 		FROM head_inventory
+		LEFT JOIN users u on head_inventory.owner_id = u.uid
 		WHERE id = :id;', array(':id' => $head_inventory_id)
 	);
 
 	foreach($inventories as $inventory) {
 		$row = array();
-		$row[] = $inventory->name;
+		$row[] = $inventory->owner;
 		$row[] = $inventory->description;
 		$row[] = date("j.m.Y", strtotime($inventory->modify_time));
 		$row[] = date("j.m.Y", strtotime($inventory->create_time));
@@ -27,7 +28,7 @@ function inventory_show ($head_inventory_id) {
 		$rows[] = $row;
 	}
 
-	$header = array(t('Inventory name'),t('Description'),t('Modified on'),t('Created on'),t('Public'));
+	$header = array(t('Owner'),t('Description'),t('Modified on'),t('Created on'),t('Public'));
 
 	$render_array['inventories'] = array(
 	    '#theme' => 'table',
