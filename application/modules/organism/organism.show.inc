@@ -1,7 +1,19 @@
 <?php
 function organism_show($organismId) {
+	
+	
+	
+	$forms['Details'] = drupal_get_form('getOrganismDetails', $organismId);
+	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);
+	$forms['Areas'] = drupal_get_form('getOrganismAreas', $organismId);
+	
+	return $forms;
+}
+
+function getOrganismDetails($form, &$form_state, $organismId) {
+// display basic organism details
 	$result = db_query(
-		"select organism.id, organism.organism_type, flora_organism.name flora_name, fauna_organism.genus fauna_genus, fauna_organism.species fauna_species, fauna_organism.name_de fauna_namede
+		"select organism.id, organism.organism_type, flora_organism.name flora_name, flora_organism.name_de, fauna_organism.genus fauna_genus, fauna_organism.species fauna_species, fauna_organism.name_de fauna_namede
 			from organism
 			left join flora_organism ON organism.organism_id = flora_organism.id
 			left join fauna_organism ON organism.organism_id = fauna_organism.id
@@ -20,21 +32,128 @@ function organism_show($organismId) {
 		$row[] = $record->id;
 
 		$header = array(t('Genus'),t('Species'),t('Name'),t('Id'));
-		drupal_set_title( $record->fauna_genus." ".$record->fauna_species);
+		drupal_set_title( $record->fauna_namede." [".$record->fauna_genus." ".$record->fauna_species."]");
 	} else {
 		$row[] = $record->flora_name;
 		$row[] = $record->id;
 
 		$header = array(t('Name'),t('id'));
-		drupal_set_title( $record->flora_name );
+		drupal_set_title($record->name_de." [". $record->flora_name."]");
 	}
 	$rows[] = $row;
 	
-	$render_array['organisms'] = array(
+	$form['organisms'] = array(
     '#theme' => 'table', 
 	'#header' => $header,
     '#rows' => $rows, 
 	); 
-	return $render_array;
+	
+	return $form;
+}
+
+function getOrganismInventories($form, &$form_state, $organismId) {	
+	
+	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
+	
+//display organism in inventories
+	$result = db_query(
+			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, hi.name, hi.id
+			FROM organism o
+			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
+			LEFT JOIN inventory i on ie.inventory_id = i.id
+			LEFT JOIN head_inventory hi on i.head_inventory_id = hi.id
+			WHERE o.id = :id',
+			array(":id" => $organismId)
+	);
+	
+	foreach($result as $record) {
+		//query last/first seen dates for organism
+		$dates = db_query(
+				"SELECT itaie.value
+				FROM organism o
+				LEFT JOIN inventory_entry ie on o.id = ie.organism_id
+				LEFT JOIN inventory i on ie.inventory_id = i.id
+				LEFT JOIN head_inventory hi on i.head_inventory_id = hi.id
+				LEFT JOIN inventory_type_attribute_inventory_entry itaie on ie.id = itaie.inventory_entry_id
+				LEFT JOIN inventory_type_attribute ita on itaie.inventory_type_attribute_id = ita.id
+				WHERE o.id = :id AND ita.name = 'Funddatum' AND i.head_inventory_id = :invid",
+				array(":id" => $organismId, ":invid" => $record->head_inventory_id)
+		);
+		
+		$dateTable = array();
+		foreach($dates as $date) {
+			$dateTable[] = strtotime($date->value);		
+		} 
+		sort($dateTable);
+		
+		
+		
+		$row = array();
+		$row[] = $record->name;
+		$row[] = date('d.m.Y', $dateTable[0]);
+		$row[] = date('d.m.Y', end($dateTable));
+		$organismsInventory[] = array('data' => $row, 'id' => 'inventory_'. $record->head_inventory_id);	
+	}
+	
+	if($record->head_inventory_id!=''){
+		$header = array(t('Inventory'),t('First seen'),t('Last seen'));
+		$form['organism_inventory'] = array(
+			    '#theme' => 'datatable', 
+				'#header' => $header,
+			    '#rows' => $organismsInventory,
+				'#id_table' => 'inventories', 
+				);
+		return $form; 
+	}
+}
+
+function getOrganismAreas($form, &$form_state, $organismId) {
+//display organism areas
+	$result = db_query(
+			'SELECT distinct a.field_name, a.id
+			FROM organism o
+			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
+			LEFT JOIN inventory i on ie.inventory_id = i.id
+			LEFT JOIN head_inventory hi on i.head_inventory_id = hi.id
+			LEFT JOIN area a on hi.area_id = a.id
+			WHERE o.id = :id',
+			array(":id" => $organismId)
+	);
+	foreach($result as $record) {
+		//query last/first seen dates for organism
+		$dates = db_query(
+				"SELECT itaie.value
+				FROM organism o
+				LEFT JOIN inventory_entry ie on o.id = ie.organism_id
+				LEFT JOIN inventory i on ie.inventory_id = i.id
+				LEFT JOIN head_inventory hi on i.head_inventory_id = hi.id
+				LEFT JOIN area a on hi.area_id = a.id
+				LEFT JOIN inventory_type_attribute_inventory_entry itaie on ie.id = itaie.inventory_entry_id
+				LEFT JOIN inventory_type_attribute ita on itaie.inventory_type_attribute_id = ita.id
+				WHERE o.id = :id AND ita.name = 'Funddatum' AND a.id = :aid",
+				array(":id" => $organismId, ":aid" => $record->id)
+		);
+		
+		$dateTable = array();
+		foreach($dates as $date) {
+			$dateTable[] = strtotime($date->value);		
+		} 
+		sort($dateTable);
+		$row = array();
+		$row[] = $record->field_name;
+		$row[] = date('d.m.Y', $dateTable[0]);
+		$row[] = date('d.m.Y', end($dateTable));
+		$organismArea[] = array('data' => $row, 'id' => 'area_'. $record->id);	
+	}
+	if($record->id!=''){
+		$header = array(t('Area'),t('First seen'),t('Last seen'));
+		$form['organism_area'] = array(
+			    '#theme' => 'datatable', 
+				'#header' => $header,
+			    '#rows' => $organismArea, 
+				'#id_table' => 'areas',
+				);
+		return $form; 
+	}		
 }
 ?>

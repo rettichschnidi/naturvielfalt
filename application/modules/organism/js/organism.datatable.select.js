@@ -18,9 +18,13 @@ function organismRowSelect() {
 			window.location.href = '../'+organismId[1];
 		if (organismId[0] == 'organismtype')
 			window.location.href = 'organism/type/'+organismId[1];
+		if (organismId[0] == 'inventory')
+			window.location.href = '../inventory/'+organismId[1];
 	}	
 	// register events
 	jQuery("#organisms").live('click', this.onTableRowClicked);
+	jQuery("#areas").live('click', this.onTableRowClicked);
+	jQuery("#inventories").live('click', this.onTableRowClicked);
 }
 
 new organismRowSelect();
