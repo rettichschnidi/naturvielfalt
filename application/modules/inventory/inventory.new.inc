@@ -81,6 +81,12 @@ function inventory_new_form($form, &$form_state) {
 		'#default_value' => $name,
 	);
 
+	$form['new']['share'] = array (
+  		'#type' => 'checkbox', 
+  		'#title' => t('Allow read access to all users'),
+		'#default_value' => true,
+	);
+	
 	$form['new']['description'] = array(
 			'#type' => 'text_format',
     		'#title' => t('Description of Inventory'),
@@ -118,10 +124,15 @@ function inventory_new_form_submit($form, &$form_state){
 	global $user;
 	$owner = $user->uid;
 
+	$shared = 0;
+	if($form_state['values']['share']==1){ 
+		$shared = '1';
+	}
+	
 	$hiid = db_insert('head_inventory')->fields(array(
 		'area_id' => $_SESSION['inventory']['area_id'],
 		'name' => $form_state['values']['name'],
-		'shared' => 'true',
+		'shared' => $shared,
 		'owner_id' => $owner,
 		'description' => $form_state['values']['description']['value'],
 		'create_time' => 'now()',
