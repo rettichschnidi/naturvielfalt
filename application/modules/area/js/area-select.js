@@ -300,8 +300,8 @@ function AreaSelect() {
 	};
 	
 	AreaSelect.prototype.onControlAreaChooseClicked = function(event) {
-		jQuery('#controlAreaChoose').addClass('selected');
-		jQuery('#controlAreaCreate').removeClass('selected');
+		jQuery('.controlAreaChoose').addClass('selected');
+		jQuery('.controlAreaCreate').removeClass('selected');
 		areaselect.overlayControl.stopDigitizing();
 		jQuery('#area-new-form').addClass('hidden');
 		jQuery('#area-choose-form').removeClass('hidden');
@@ -309,8 +309,8 @@ function AreaSelect() {
 	}
 
 	AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
-		jQuery('#controlAreaChoose').removeClass('selected');
-		jQuery('#controlAreaCreate').addClass('selected');
+		jQuery('.controlAreaChoose').removeClass('selected');
+		jQuery('.controlAreaCreate').addClass('selected');
 		jQuery('#area-new-form').removeClass('hidden');
 		jQuery('#area-choose-form').addClass('hidden');
 		jQuery('#area-field-name-form').addClass('hidden');
@@ -332,8 +332,8 @@ function AreaSelect() {
 	jQuery("#show_areas").live('click', this.onTableRowClicked);
 	jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
     jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
-    jQuery('#controlAreaChoose').click(this.onControlAreaChooseClicked);
-    jQuery('#controlAreaCreate').click(this.onControlAreaCreateClicked);
+    jQuery('.controlAreaChoose').click(this.onControlAreaChooseClicked);
+    jQuery('.controlAreaCreate').click(this.onControlAreaCreateClicked);
 };
 
 var lastQuery = null;

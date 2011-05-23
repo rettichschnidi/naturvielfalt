@@ -16,9 +16,9 @@
 <div>
 <div>
 <div style="float: left;"><?php echo t('Choose area:')?></div>
-<div style="float: left;" id="controlAreaChoose" class="selected"></div>
+<div style="float: left;" class="controlAreaChoose selected"></div>
 <div style="float: left;"><?php echo t('Create new area:')?></div>
-<div style="float: left;" id="controlAreaCreate"></div>
+<div style="float: left;" class="controlAreaCreate"></div>
 </div>
 
 <div style="clear: both;" id="map">

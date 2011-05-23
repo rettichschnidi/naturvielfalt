@@ -25,7 +25,21 @@ foreach ($jsLibs as $jsLib) {
 ?>
 
 <h3 style="margin-top: 10px">
-<?php 
-echo t('You have three choices. You can: <ul><li>select an area by using the <img src="../modules/area/images/map_controls/hand.png"> symbol and clicking on it on the map</li><li>select an area by clicking on it in the table<li>create a new area by using the <img src="../modules/area/images/map_controls/polygon.png"> symbol and drawing on the map</li>');
-?>
+	<?php 
+		echo t('You have two choices. You can:');
+	?>
+	<ul>
+		<li>
+			<div style="float: left; margin: 0px 5px 5px 0px" class="controlAreaChoose selected"></div>
+			<?php 
+				echo t('select an area by clicking on it in the map or in the table');
+			?>
+		</li>
+		<li style="clear:both">
+			<div style="float: left;  margin: 0px 5px 5px 0px" class="controlAreaCreate"></div>
+			<?php
+				echo t('create a new area by using the drawing symbol and drawing on the map');
+			?>
+		</li>
+	</ul>
 </h3>
