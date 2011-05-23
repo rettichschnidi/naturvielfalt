@@ -3,7 +3,6 @@
 
 function inventory_list() {
 	drupal_set_title(t('Show Inventory'));
-	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/inventory.datatable.css');
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 
 	// Own Inventories

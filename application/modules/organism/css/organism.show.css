@@ -1,7 +1,0 @@
-@CHARSET "UTF-8";
-
-
-/* table row */
-tr.even, tr.odd {
-	cursor: pointer;
-}

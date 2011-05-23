@@ -4,7 +4,6 @@
  */
 function organism_overview() {
 	drupal_set_title(t('Organisms - Grouped by Categories'));
-	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.show.css');
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 
 	$header = array(t('Organism Groups'),t('Organism count'));

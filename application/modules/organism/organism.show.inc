@@ -11,7 +11,7 @@ function organism_show($organismId) {
 }
 
 function getOrganismDetails($form, &$form_state, $organismId) {
-// display basic organism details
+// display basic organism details	
 	$result = db_query(
 		"select organism.id, organism.organism_type, flora_organism.name flora_name, flora_organism.name_de, fauna_organism.genus fauna_genus, fauna_organism.species fauna_species, fauna_organism.name_de fauna_namede
 			from organism
@@ -55,15 +55,21 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 	
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	
+	global $user;
+	
 //display organism in inventories
 	$result = db_query(
-			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, hi.name, hi.id
+			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, hi.name, hi.id, u.name author, hi.shared, sgi.read, sgi.write
 			FROM organism o
 			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
 			LEFT JOIN inventory i on ie.inventory_id = i.id
 			LEFT JOIN head_inventory hi on i.head_inventory_id = hi.id
-			WHERE o.id = :id',
-			array(":id" => $organismId)
+			LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
+			LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+			LEFT JOIN users u ON hi.owner_id = u.uid
+			LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
+			WHERE o.id = :id AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
+			array(':id' => $organismId, ':userid' => $user->uid)
 	);
 	
 	foreach($result as $record) {
@@ -92,12 +98,30 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 		$row[] = $record->name;
 		$row[] = date('d.m.Y', $dateTable[0]);
 		$row[] = date('d.m.Y', end($dateTable));
+		$row[] = $record->author;
 		$organismsInventory[] = array('data' => $row, 'id' => 'inventory_'. $record->head_inventory_id);	
 	}
 	
 	if($record->head_inventory_id!=''){
-		$header = array(t('Inventory'),t('First seen'),t('Last seen'));
-		$form['organism_inventory'] = array(
+			$form['linked_inventories'] = array(
+			'#type' => 'fieldset', 
+			'#title' => t('Linked inventories'), 
+			'#weight' => 3, 
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+			'#attached' => array (
+				'js' => array (
+					'misc/form.js',
+					'misc/collapse.js',
+				),
+			),
+			'#attributes' => array(
+				'class' => array('collapsible'),
+	        ),
+		);
+		
+		$header = array(t('Inventory'),t('First seen'),t('Last seen'),t('Author'));
+		$form['linked_inventories']['organism_inventory'] = array(
 			    '#theme' => 'datatable', 
 				'#header' => $header,
 			    '#rows' => $organismsInventory,
@@ -110,13 +134,14 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 function getOrganismAreas($form, &$form_state, $organismId) {
 //display organism areas
 	$result = db_query(
-			'SELECT distinct a.field_name, a.id
+			'SELECT distinct a.field_name, a.id, u.name author
 			FROM organism o
 			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
 			LEFT JOIN inventory i on ie.inventory_id = i.id
 			LEFT JOIN head_inventory hi on i.head_inventory_id = hi.id
 			LEFT JOIN area a on hi.area_id = a.id
-			WHERE o.id = :id',
+			LEFT JOIN users u on hi.owner_id = u.uid
+			WHERE o.id = :id ORDER BY field_name',
 			array(":id" => $organismId)
 	);
 	foreach($result as $record) {
@@ -143,11 +168,30 @@ function getOrganismAreas($form, &$form_state, $organismId) {
 		$row[] = $record->field_name;
 		$row[] = date('d.m.Y', $dateTable[0]);
 		$row[] = date('d.m.Y', end($dateTable));
+		$row[] = $record->author;
 		$organismArea[] = array('data' => $row, 'id' => 'area_'. $record->id);	
 	}
 	if($record->id!=''){
-		$header = array(t('Area'),t('First seen'),t('Last seen'));
-		$form['organism_area'] = array(
+			$form['linked_areas'] = array(
+			'#type' => 'fieldset', 
+			'#title' => t('Linked areas'), 
+			'#weight' => 3, 
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+			'#attached' => array (
+				'js' => array (
+					'misc/form.js',
+					'misc/collapse.js',
+				),
+			),
+			'#attributes' => array(
+				'class' => array('collapsible'),
+	        ),
+		);
+		
+		
+		$header = array(t('Area'),t('First seen'),t('Last seen'), t('Author'));
+		$form['linked_areas']['organism_area'] = array(
 			    '#theme' => 'datatable', 
 				'#header' => $header,
 			    '#rows' => $organismArea, 

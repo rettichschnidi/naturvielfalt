@@ -4,7 +4,6 @@ function organism_showtype($typeId) {
 		"SELECT name FROM inventory_type WHERE id=:id",
 		array(':id'=> $typeId)
 	);
-	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.show.css');
 	drupal_set_title( $inventory_type->fetch()->name );
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	
