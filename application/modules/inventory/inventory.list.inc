@@ -68,7 +68,7 @@ function inventory_list() {
 		}
 		// ("j.m.Y H:i P", strtotime($record->create_time));
 		$row = array();
-		$row[] = $name;
+		$row[] = $name.' ('.$inventoryGroupId.')';
 		$row[] = $field_name;
 		$row[] = date("j.m.Y", strtotime($record->create_time));
 		$row[] = date("j.m.Y", strtotime($record->modify_time));
@@ -156,7 +156,7 @@ function inventory_list() {
 			$write = $img_localize;
 			if($record->write == true) $write = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));
 			$row = array(
-				'Inventory' => $name,
+				'Inventory' => $name.' ('.$inventoryGroupId.')',
 				'Area' => $field_name,
 				'Owner' => $owner,
 				'Groups' => $sgroups,
@@ -242,7 +242,7 @@ function inventory_list() {
 		else $name = t("no name");
 		$owner=$record->u_name;
 		$row = array(
-			'Inventory' => $name,
+			'Inventory' => $name.' ('.$inventoryGroupId.')',
 			'Area' => $field_name,
 			'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
 			'ModifiedOn' => date("j.m.Y", strtotime($record->modify_time)),
