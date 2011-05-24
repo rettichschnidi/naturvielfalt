@@ -1,11 +1,8 @@
 /**
  * @author Roger Wolfer, Roman Schaller
  */
- 
-var INVENTORY_SERVER_PATH = Drupal.settings.basePath + '../inventoryServer/web_root/public/';
 
 function AreaSelect() {
-	
 	//////////////////////// Method declarations ///////////////////////
 	/**
 	 * This function will be called if the user clicks on the plus or minus symbol at the beginning

@@ -8,16 +8,12 @@ var saveTimeout = 0;
 var newRowId = 0;
 var invNum = 0;
 
-var INVENTORY_SERVER_PATH;
-
 /*
  * Inventory initialisiern. Die bereits bestehenden Inventories werden hier aus
  * der JSON Variable exInvs geladen.
  * 
  */
 function initInventory() {
-	
-	INVENTORY_SERVER_PATH = Drupal.settings.basePath + '../inventoryServer/web_root/public/';
 	var inventories = jQuery('<div id="inventories">');
 
 	jQuery("#Inventory").prepend(inventories);
