@@ -264,6 +264,11 @@ function addRow(tbody, cols, rowId, cellValues) {
 	if (cellValues != null)
 		organismIdField = organismIdField.attr("value", cellValues["orgId"])
 
+	isNewRow = false;
+	if(rowId==null){
+		isNewRow = true;
+	}
+
 	rowId = (rowId == null ? "row_new_" + (newRowId++) : rowId);
 	var invDef = jQuery("<input type='hidden' name='rowId' value='" + rowId + "'>");
 
@@ -305,6 +310,10 @@ function addRow(tbody, cols, rowId, cellValues) {
 		if (cellValues != null)
 			input.attr("value", cellValues["col_" + value['id']]);
 
+		if(value['name'] == 'Identifiziert von' && isNewRow){
+			input.attr("value", jQuery('#username').val());
+		}
+		
 		input.change(function() {
 			rowChanged(jQuery(this).parent().parent());
 		});

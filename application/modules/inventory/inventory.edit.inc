@@ -155,6 +155,15 @@ function inventory_edit_elements($form, &$form_state, $head_inventory_id) {
 		
 	$form['head_inventory_id'] = array('#type' => 'hidden', '#value' => $head_inventory_id);
 	$form['editMode'] = array('#type' => 'hidden', '#value' => $edit_mode);
+	
+	global $user;
+	
+	$form['username'] = array(
+		'#type' => 'hidden', 
+		'#value' => $user->name, 
+		'#attributes' => array(
+			'id'=>'username')
+	);
 
 	$result = db_query("
 		SELECT it.id, it.name
@@ -366,7 +375,7 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
 	);
 	if(!empty($result)) {
 		foreach ($result as $record) {
-			// Saveing something to the form_state makes it accessible in the submit function.
+			// Saving something to the form_state makes it accessible in the submit function.
 			// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
 			$form_state['storage']['sg_id'.$cnt] = $record->sgid;
 			
