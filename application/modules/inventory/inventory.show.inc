@@ -166,9 +166,9 @@ function inventory_show ($head_inventory_id) {
 
 	//Define tables only if not empty
 	if($rows!='') {
-		$render_array['Flora'] = array(
+		$render_array['Fauna'] = array(
 	  		'#type' => 'fieldset', 
-	  		'#title' => t('Flora'), 
+	  		'#title' => t('Fauna'), 
 	  		'#weight' => 3, 
 	  		'#collapsible' => TRUE,
 			'#collapsed' => FALSE,
@@ -184,7 +184,7 @@ function inventory_show ($head_inventory_id) {
 		);
 		
 		$header = array(t('Name'),t('Latin name'),t('Amount'),t('State'),t('Date'));
-		$render_array['Flora']['Art'] = array(
+		$render_array['Fauna']['Art'] = array(
    			'#theme' => 'datatable',
 			'#header' => $header,
     		'#rows' => $rows,
@@ -192,9 +192,9 @@ function inventory_show ($head_inventory_id) {
 		);
 	}
 	if($rows2!='') {
-		$render_array['Fauna'] = array(
+		$render_array['Flora'] = array(
 			'#type' => 'fieldset', 
-			'#title' => t('Fauna'), 
+			'#title' => t('Flora'), 
 			'#weight' => 3, 
 			'#collapsible' => TRUE,
 			'#collapsed' => FALSE,
@@ -210,7 +210,7 @@ function inventory_show ($head_inventory_id) {
 		);
 
 		$header = array(t('Name'),t('Latin name'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
-		$render_array['Fauna']['Art'] = array(
+		$render_array['Flora']['Art'] = array(
 			'#theme' => 'datatable',
 			'#header' => $header,
 			'#rows' => $rows2,
