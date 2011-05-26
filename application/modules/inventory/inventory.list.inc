@@ -228,7 +228,7 @@ function inventory_list() {
 		WHERE shared = true AND hi.id NOT IN (
 			SELECT sgiEx.hiid FROM sgroup_inventory sgiEx
 			LEFT JOIN sgroup_users sguEx ON sgiEx.sgid = sguEx.sgid
-			WHERE sguEx.uid = :id
+			WHERE sguEx.uid = :id AND (sgiEx.read != 0 OR sgiEX.write != 0)
 		)
 		ORDER BY hi.name, hi.id;",
 		array(':id' => $user->uid)
