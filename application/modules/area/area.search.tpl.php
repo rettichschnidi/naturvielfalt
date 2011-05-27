@@ -26,3 +26,5 @@ foreach ($jsLibs as $jsLib) {
 <p>
 <?php echo t('Please search an area either by Google Maps or by it\'s field name.');?>
 </p>
+
+<div id='static_image' style="position: absolute; height: 200px; width: 200px; display: none; z-index: 100; border: solid 1px grey; background-color: white"><img src="modules/area/images/ajax-loader.gif"></div>

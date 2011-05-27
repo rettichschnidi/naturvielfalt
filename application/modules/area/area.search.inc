@@ -159,4 +159,67 @@ function area_last_used_table() {
 	}
 	return $table;
 }
+
+/**
+ * Redirects the browser to the Google Maps static image 
+ * @param int $area_id
+ * @return link to Google Maps static image URL with a 302 header
+ */
+function googlemaps_static_redirect($area_id){
+	$path = gmap_static_image_path($area_id, 200, 200, 14);
+	header("Location: ".$path);	
+}
+
+/**
+ * Generate GoogleMap static image path 
+ * @param int $area_id
+ * @param int $width
+ * @param int $height
+ * @param int $zoom
+ * 
+ * @return link to Google Maps static path
+ */
+function gmap_static_image_path($area_id, $width, $height, $zoom){
+	//define default values if none are passed
+	if(!$width){$width = 320;}				// the width of the resulting image
+	if(!$height){$height = 320;}				// the width of the resulting image
+	if(!$zoom){$zoom = 18;}					// zoomlevel of the map
+	
+	//other params
+	$sensor = 'false';			// we don't need no stinkin sensors
+	$fillcolor = '0x0000ff';	// color of the overlay
+	$weight = 0;				// how thick should the outer line be? will get set to 2 if there's just two points, to make line visible
+	
+	//$center and $points get fetched from database entry
+	$areas = db_query('
+		SELECT * FROM area a
+		LEFT JOIN area_point ap ON a.id = ap.area_id
+		WHERE a.id = :id
+		ORDER BY seq ASC',
+	array(":id" => $area_id)
+	);
+	
+	$counter = 0;
+	
+	foreach ($areas as $entry){
+		$points .= '|'.$entry->lat.','.$entry->lng;
+		$center = $entry->centroid_lat.",".$entry->centroid_lng;
+		$counter++;
+	}
+	
+	//it could be a marker, a path or an area
+	if($counter==1){
+		$google_map_link = 'http://maps.google.com/maps/api/staticmap?center='.$center.'&zoom='.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=roadmap&markers=color:blue|'.$center.'&sensor='.$sensor;
+	} else if ($counter == 2){
+		//setting weight to at least 3, otherwise the path will not get drawn (if 0) or be really thin (if 1 or 2)
+		if($weight<3){$weight=3;}
+		$google_map_link = 'http://maps.google.com/maps/api/staticmap?center='.$center.'&zoom='.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+	} else {
+		//tschenereit si link
+		$google_map_link = 'http://maps.google.com/maps/api/staticmap?center='.$center.'&zoom='.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+	}
+	
+	return $google_map_link;
+}
+
 ?>

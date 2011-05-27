@@ -52,6 +52,15 @@ function area_menu() {
     'type' => MENU_CALLBACK,
 	'file' => 'area.new.inc',
 	);
+	$items['area/gmap_image_redirect/%'] = array(
+    'title' => 'Redirect to Google Maps static image URL',
+    'description' => 'Google Maps static image redirect',
+    'page callback' => 'googlemaps_static_redirect',
+	'page arguments' => array(2),
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_CALLBACK,
+	'file' => 'area.search.inc',
+	);
 	$items['area/habitat_autocomplete'] = array(
 	'title' => 'Habitat autocomplete',
     'page callback' => 'area_habitat_autocomplete',
