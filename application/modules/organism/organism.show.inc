@@ -59,7 +59,7 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 	global $user;
 	if($GLOBALS['organismtype']== 1) {
 		$result = db_query(
-			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, u.name author, hi.shared, fo.protection_ch
+			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, u.name author, hi.shared, fo.protection_ch, hi.owner_id as uid
 			FROM organism o
 			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
 			LEFT JOIN inventory i on ie.inventory_id = i.id
