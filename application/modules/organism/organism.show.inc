@@ -1,13 +1,13 @@
 <?php
 function organism_show($organismId) {
-	$forms['Images'] = drupal_get_form('getOrganismImages', $organismId);
 	$forms['Details'] = drupal_get_form('getOrganismDetails', $organismId);
-	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);		
+	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);	
+	$forms['Images'] = drupal_get_form('getOrganismImages', $organismId);	
 	return $forms;
 }
 
-function getOrganismDetails($form, &$form_state, $organismId) {
 // display basic organism details	
+function getOrganismDetails($form, &$form_state, $organismId) {
 	$result = db_query(
 		'SELECT organism.id, organism.organism_type, flo.name flora_name, flo.name_de, fao.genus fauna_genus, fao.species fauna_species, fao.name_de fauna_namede, frl.red_list_ch, fao.protection_ch
 		FROM organism
@@ -15,12 +15,12 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 		LEFT JOIN fauna_organism fao ON organism.organism_id = fao.id
 		LEFT JOIN flora_red_list frl ON flo.id = frl.flora_organism_id
 		WHERE organism.id = :id limit 1',
-			array(":id" => $organismId)
+		array(":id" => $organismId)
 	);
 
 	$row = array();
 	$record = $result->fetch();
-
+	
 	if($record->organism_type==1){
 		// organism is fauna
 		drupal_set_title(CHECK_PLAIN($record->fauna_namede." [".$record->fauna_genus." ".$record->fauna_species."]"));
@@ -32,7 +32,7 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 		}
 	} else {
 		drupal_set_title(CHECK_PLAIN($record->name_de." [". $record->flora_name."]"));
-		if($record->red_list_ch=='0') {
+		if($record->red_list_ch=='0' OR $record->red_list_ch=='') {
 			$redlist = FALSE;
 		}
 		else {
@@ -53,10 +53,10 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 	return $form;
 }
 
+//display organism in inventories
 function getOrganismInventories($form, &$form_state, $organismId) {	
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	global $user;
-	//display organism in inventories
 	if($GLOBALS['organismtype']== 1) {
 		$result = db_query(
 			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, u.name author, hi.shared, fo.protection_ch
@@ -187,6 +187,7 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 
 }
 
+//Should get organism images
 function getOrganismImages($form, &$form_state, $organismId) {
 	//define placeholder
 		$placeholder= array(
