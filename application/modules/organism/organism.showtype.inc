@@ -8,9 +8,9 @@ function organism_showtype($typeId) {
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	
 	if( $typeId <> 16){
-		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('id'));	
+		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('Sightings'));	
 	} else {
-		$header = array(t('Family'),t('Name'),t('Latin name'),t('Author'),t('id'));
+		$header = array(t('Family'),t('Name'),t('Latin name'),t('Author'),t('Sightings'));
 	}
 	
 	if($typeId <> 16){
@@ -33,14 +33,19 @@ function organism_showtype($typeId) {
 		);
 	}
 
-foreach ($result as $record) {
+	foreach ($result as $record) {
+		$count = db_query('
+			SELECT COUNT(DISTINCT inventory_id) FROM inventory_entry
+			WHERE inventory_entry.organism_id = :oid',
+			array(':oid' => $record->id)
+		);
 		if ($typeId <> 16){			
 			$row = array();
 			$row[] = $record->family;
 			$row[] = $record->genus;
 			$row[] = $record->species;
 			$row[] = $record->name_de;
-			$row[] = $record->id;
+			$row[] = $count->fetch()->count;
 			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
 		} else {
 			$row = array();
@@ -48,7 +53,7 @@ foreach ($result as $record) {
 			$row[] = $record->name_de;
 			$row[] = $record->gattung.' '.$record->art;
 			$row[] = $record->autor;
-			$row[] = $record->id;
+			$row[] = $count->fetch()->count;
 			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
 		}
 	}
