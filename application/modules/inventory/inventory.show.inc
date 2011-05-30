@@ -261,10 +261,13 @@ function inventory_show ($head_inventory_id) {
 			'#id_table' => 'flora',
 		);		
 	}
-	if(hasRedListPermission($head_inventory_id) == FALSE) {
+	if($rows2!='' or $rows!='') {
+		if(hasRedListPermission($head_inventory_id) == FALSE) {
 		$render_array['RedList'] = array(
 			'#markup' => t('You do not have permission to display protected organisms from this inventory'));
 	}
+	}
+
 	return $render_array;
 }
 
