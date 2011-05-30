@@ -285,6 +285,7 @@ function getInventoryTitle($head_inventory_id) {
 //check if user is allowed to display red list organisms -> either by owning the inventory or group permissions
 function hasRedListPermission($head_inventory_id) {
 	global $user;
+	//query group membership of user
 	$permissions = db_query(
 		'SELECT sgi.read, sgi.write, sgi.show_red, hi.owner_id
 		FROM sgroup_inventory sgi
@@ -292,13 +293,28 @@ function hasRedListPermission($head_inventory_id) {
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		WHERE sgi.hiid = :invid AND sgu.uid = :userid',
 		array(':invid' => $head_inventory_id, ':userid' => $user->uid)
-		);	
+	);
 	
-	foreach($permissions as $permission) {
-		if($permission->show_red == '1' or $permission->owner_id == $user->uid) {
-			return TRUE;
-		}
+	//query inventory owner
+	$owner = db_query('
+		SELECT owner_id
+		FROM head_inventory
+		WHERE id = :hiid',
+		array(':hiid' => $head_inventory_id)
+	);
+	$owner = $owner->fetch()->owner_id;
+	
+	if($owner == $user->uid) {
+		return TRUE;
 	}
+	else {
+		foreach($permissions as $permission) {
+			if($permission->show_red == '1') {
+				return TRUE;
+			}
+		}	
+	}
+
 	
 }
 
