@@ -170,7 +170,7 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 	);
 	
 	if($record->head_inventory_id!=''){
-		$header = array(t('Inventory'),t('Area'),t('First seen'),t('Last seen'),t('Author'));
+		$header = array(t('Inventory name'),t('Area name'),t('First seen'),t('Last seen'),t('Author'));
 		$form['linked_inventories']['organism_inventory'] = array(
 			    '#theme' => 'datatable', 
 				'#header' => $header,
