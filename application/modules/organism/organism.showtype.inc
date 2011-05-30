@@ -8,14 +8,14 @@ function organism_showtype($typeId) {
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	
 	if( $typeId <> 16){
-		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('Sightings'));	
+		$header = array(t('Family'),t('Genus'),t('Species'),t('Name'),t('Sightings'),t('Red List'));	
 	} else {
-		$header = array(t('Family'),t('Name'),t('Latin name'),t('Author'),t('Sightings'));
+		$header = array(t('Family'),t('Name'),t('Latin name'),t('Author'),t('Sightings'),t('Red List'));
 	}
 	
 	if($typeId <> 16){
 		$result = db_query(
-			"select organism.id, organism.organism_type, fauna_organism.genus, fauna_organism.species, fauna_organism.name_de, fauna_organism.family
+			"select organism.id, organism.organism_type, fauna_organism.genus, fauna_organism.species, fauna_organism.name_de, fauna_organism.family, fauna_organism.protection_ch
 				from organism
 				left join fauna_organism ON organism.organism_id = fauna_organism.id
 				left join inventory_type ON organism.inventory_type_id = inventory_type.id
@@ -24,11 +24,12 @@ function organism_showtype($typeId) {
 		);
 	} else {
 		$result = db_query(
-			'select organism.id, organism.organism_type, flora_organism.name, flora_organism."Familie", flora_organism."Gattung", flora_organism."Art", flora_organism."Autor", flora_organism.name_de
-				from organism
-				left join flora_organism ON organism.organism_id = flora_organism.id
-				left join inventory_type ON organism.inventory_type_id = inventory_type.id
-				where inventory_type.id = :id AND organism.organism_type = 2 order by flora_organism.name',
+			'SELECT organism.id, organism.organism_type, flora_organism.name, flora_organism."Familie", flora_organism."Gattung", flora_organism."Art", flora_organism."Autor", flora_organism.name_de, frl.red_list_ch
+				FROM organism
+				LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
+				LEFT JOIN inventory_type ON organism.inventory_type_id = inventory_type.id
+				LEFT JOIN flora_red_list frl ON flora_organism.id = frl.flora_organism_id
+				WHERE inventory_type.id = :id AND organism.organism_type = 2 order by flora_organism.name',
 				array(':id' => $typeId)
 		);
 	}
@@ -46,6 +47,12 @@ function organism_showtype($typeId) {
 			$row[] = $record->species;
 			$row[] = $record->name_de;
 			$row[] = $count->fetch()->count;
+			if($record->protection_ch == '0' or $record->protection_ch == '') {
+				$row[] = t('No');
+			}
+			else {
+				$row[] = t('Yes');
+			}
 			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
 		} else {
 			$row = array();
@@ -54,6 +61,12 @@ function organism_showtype($typeId) {
 			$row[] = $record->gattung.' '.$record->art;
 			$row[] = $record->autor;
 			$row[] = $count->fetch()->count;
+			if($record->red_list_ch == '0' or $record->red_list_ch == '') {
+				$row[] = t('No');
+			}
+			else {
+				$row[] = t('Yes');
+			}
 			$rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
 		}
 	}
