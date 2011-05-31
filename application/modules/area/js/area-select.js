@@ -50,9 +50,24 @@ function AreaSelect() {
 				overlay.setStyle('highlighted-disable');
 			}
 		}
+	}
+	
+	var lastHoverId = 0;
+	AreaSelect.prototype.showStaticImage = function(event) {
+		var pos = jQuery(event.target).position();
+		console.info(jQuery(event.target));
+	
 		
 		if(event.type == 'mouseover'){
-			show_static_image(event);
+			jQuery('#static_image').css('display','block');
+			jQuery('#static_image').css('left', pos.left+5);
+			jQuery('#static_image').css('top', pos.top+jQuery('#show_areas').find('td').height()+5);
+			
+			if(event.currentTarget.parentNode.id!=lastHoverId){
+				jQuery('#static_image').find('img').attr('src', 'modules/area/images/ajax-loader.gif');
+				jQuery('#static_image').find('img').attr('src', 'area/gmap_image_redirect/'+event.currentTarget.parentNode.id.split('_')[1]);
+			}
+			lastHoverId = event.currentTarget.parentNode.id;
 		} else if (event.type == 'mouseout'){
 			jQuery('#static_image').css('display', 'none');
 		}
@@ -334,6 +349,7 @@ function AreaSelect() {
 	// register events
 	jQuery("#show_areas").live('click', this.onTableRowClicked);
 	jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
+	jQuery('.show_static_image').live('mouseover mouseout', this.showStaticImage);
     jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
     jQuery('.controlAreaChoose').click(this.onControlAreaChooseClicked);
     jQuery('.controlAreaCreate').click(this.onControlAreaCreateClicked);
@@ -396,22 +412,6 @@ function refresh_map_info(){
 		jQuery('#edit-area-type').val('');
     };
 };
-
-var lastHoverId = 0;
-function show_static_image(event){
-	var pos = jQuery(event.target).position();
-	
-	jQuery('#static_image').css('display','block');
-	jQuery('#static_image').css('left', pos.left+5);
-	jQuery('#static_image').css('top', pos.top+jQuery('#show_areas').find('td').height()+5);
-	
-	if(event.currentTarget.id!=lastHoverId){
-		jQuery('#static_image').find('img').attr('src', 'modules/area/images/ajax-loader.gif');
-		jQuery('#static_image').find('img').attr('src', 'area/gmap_image_redirect/'+event.currentTarget.id.split('_')[1]);
-	}
-
-	lastHoverId = event.currentTarget.id;
-}
 
 var areaselect = null;
 jQuery(document).ready(function() {

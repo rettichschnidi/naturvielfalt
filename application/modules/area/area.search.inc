@@ -69,6 +69,16 @@ function area_field_name_form() {
 		ORDER BY field_name;"
 	);
 	
+	//Localize Image
+	$variables_localize= array(
+		'path' => 'misc/fatcow_icons/16x16/world.png',
+		'alt' => t('Localize'),
+		'title' => t('Localize'),
+		'width' => '14px',
+		'height' => '14px',
+      );
+	$img_localize = theme('image', $variables_localize);
+	
 	foreach ($area as $record) {
 		$row = array();
 		$row[] = $record->field_name;
@@ -83,6 +93,7 @@ function area_field_name_form() {
 		}
 		$row[] = $record->u_name;
 		$row[] = $record->art_dest;
+		$row[] = array('data' => l($img_localize, 'area/'.$record->a_id, array('html'=>true)), 'class' => 'show_static_image');
 		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
 	}
 	
@@ -94,6 +105,7 @@ function area_field_name_form() {
 	$tableHeader[] = t('Created on');
 	$tableHeader[] = t('Area Creator');
 	$tableHeader[] = t('Area Type');
+	$tableHeader[] = t('Details');
 	$form['FieldName'] = array(
 		'#type' => 'fieldset',
   		'#title' => t('Search by field name:'),
