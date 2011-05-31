@@ -118,7 +118,7 @@ function get_areas() {
 			LEFT JOIN area_habitat ah ON ah.area_id = area.id
 			LEFT JOIN habitat h ON h.id = ah.habitat_id
 			LEFT JOIN area_type at ON at.id = area.type_id
-		ORDER BY field_name, seq, ah_id asc
+		ORDER BY area_id, seq, ah_id asc
 	');
 
 	$items = array();

@@ -363,18 +363,35 @@ function area_new_form_submit($form, &$form_state) {
 
 	// insert field coordinates
 	$coords = json_decode($jsonCoords, true);
-	$i = 0;
-	foreach ($coords as $coord) {
-		$lat = $coord[0];
-		$lng = $coord[1];
+	
+	if(sizeof($coords)!=0){
+		/*	contains at least two points added by area-select.js
+		 *	we will insert all coordinates as points into the DB  */
+		$i = 0;
+		foreach ($coords as $coord) {
+			$lat = $coord[0];
+			$lng = $coord[1];
+			db_insert('area_point')->fields(array(
+				'area_id' => $area_id,
+				'lat' => $lat,
+				'lng' => $lng,
+				'seq' => $i,
+			))
+			->execute();
+			$i++;
+		}
+	} else {
+		/*	contains NO points in coords because area-select.js doesn't add coordinates 
+		 *	to coords variable if it is only a marker. To save the marker nonetheless we 
+		 *	will	use its centroid lat and lng */
+		$abc= 'aewfwef';
 		db_insert('area_point')->fields(array(
 			'area_id' => $area_id,
-			'lat' => $lat,
-			'lng' => $lng,
-			'seq' => $i,
+			'lat' => $latitude,
+			'lng' => $longitude,
+			'seq' => 0,
 		))
 		->execute();
-		$i++;
 	}
 
 	// insert habitats
