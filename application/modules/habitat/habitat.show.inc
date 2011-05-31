@@ -53,7 +53,7 @@ function habitat_show($habitatGroupId) {
 			'#id_table' => 'areas',
 		);
 	}else{
-		$render_array['linked_area']['area'] = array(
+		$render_array['linked_areas']['areas'] = array(
 	 	 	'#markup' => t("There are no linked areas yet"),
 		);
 	}
