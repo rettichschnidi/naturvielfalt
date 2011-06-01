@@ -22,8 +22,9 @@ function inventory_menu() {
     'title' => 'Show Inventory',
     'description' => 'View an existing inventory',
     'page callback' => 'inventory_show',
-	'access arguments' => array('access content'),
-    'page arguments' => array(1),
+	'page arguments' => array(1),
+	'access callback' => 'inventory_access',
+	'access arguments' => array(1),
     'type' => MENU_CALLBACK,
 	'file' => 'inventory.show.inc',
 	);
@@ -148,10 +149,11 @@ function inventory_edit_access($inventoryId) {
  */
 function inventory_access($inventoryId) {
 	$access = user_access('access inventories');
-	// check if this user has write access to the inventory or the inventory is public
+	// check if this user has read access to the inventory or the inventory is public
 	global $user;
 	$adminRecords = db_query('
-		SELECT id FROM head_inventory hi
+		SELECT sgi.read, hi.shared, id 
+		FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.read = 1)
