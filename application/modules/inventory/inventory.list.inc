@@ -28,6 +28,7 @@ function inventory_list() {
 	//Localize Image
 	$variables_localize= array(
 		'path' => 'misc/fatcow_icons/16x16/world.png',
+		'attributes' => array('class' => 'show_static_image'),
 		'alt' => t('Localize'),
 		'title' => t('Localize'),
 		'width' => '14px',
@@ -45,7 +46,7 @@ function inventory_list() {
       );
 	$img_remove = theme('image', $variables_remove);
 	
-	$result = db_query("SELECT a.field_name, hi.id, hi.name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time
+	$result = db_query("SELECT a.field_name, a.id area_id, hi.id, hi.name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time
 		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
 		WHERE (hi.owner_id=:id)
@@ -73,7 +74,7 @@ function inventory_list() {
 		$row[] = date("j.m.Y", strtotime($record->create_time));
 		$row[] = date("j.m.Y", strtotime($record->modify_time));
 		$row[] = $shared;
-		$row[] = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
+		$row[] = l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id))).' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
 		$rows[] = array('data' => $row, 'id' => 'inventory_'. $inventoryGroupId);
 	}
 	
@@ -125,7 +126,7 @@ function inventory_list() {
 	$tableHeader[] = t('Public');
 	$tableHeader[] = t('Action');
 
-	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name, u.name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time FROM head_inventory hi
+	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name,  a.id area_id, u.name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		LEFT JOIN users u ON hi.owner_id = u.uid
@@ -153,8 +154,11 @@ function inventory_list() {
 				$shared = t("No");
 			}
 			$sgroups = $record->sgroup_name;
-			$write = $img_localize;
-			if($record->write == true) $write = $img_localize.' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));
+			if($record->write == true){
+				$write = l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id))).' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));
+			} else {
+				$write = l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id)));
+			}
 			$row = array(
 				'Inventory' => $name.' ('.$inventoryGroupId.')',
 				'Area' => $field_name,
@@ -221,7 +225,7 @@ function inventory_list() {
 	$tableHeader[] = t('Action');
 
 	$result = db_query("
-		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name, hi.create_time, hi.modify_time
+		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name, a.id area_id, hi.create_time, hi.modify_time
 		FROM head_inventory hi
 			LEFT JOIN users u ON hi.owner_id = u.uid
 			LEFT JOIN area a ON hi.area_id = a.id
@@ -247,7 +251,7 @@ function inventory_list() {
 			'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
 			'ModifiedOn' => date("j.m.Y", strtotime($record->modify_time)),
 			'Owner' => $owner,
-			'Action' => $img_localize
+			'Action' => l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id)))
 		);
 		$rows[] = array('data' => $row, 'id' => 'inventory_'. $inventoryGroupId);
 	}
@@ -282,6 +286,11 @@ function inventory_list() {
 	  		'#markup' => t("No public inventories have been created so far"),
 		);
 	}
+	
+	$render_array['inventories']['static_image'] = array(
+		'#markup' => '<div id="static_image" style="position: absolute; height: 200px; width: 200px;  display: none; z-index: 100; border: solid 1px grey; background-color: white"><img src="modules/area/images/ajax-loader.gif"></div>',
+		'html'=> true,
+	);
 
 	return $render_array;
 }
