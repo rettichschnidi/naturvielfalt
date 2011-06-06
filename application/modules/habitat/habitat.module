@@ -15,7 +15,7 @@ function habitat_menu() {
     'title' => 'List Habitat',
     'description' => 'Show all habitats',
     'page callback' => 'habitat_list',
-    'access arguments' => array('access habitats'),
+    'access arguments' => array('access content'),
 	'file' => 'habitat.list.inc',
 	);
 	$items['habitat/%'] = array(
