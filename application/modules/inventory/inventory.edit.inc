@@ -23,7 +23,7 @@ function inventory_edit($head_inventory_id) {
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	
-	drupal_set_title("Modify ".getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+	drupal_set_title("Modify ".check_plain(getInventoryTitle($head_inventory_id))." (".check_plain($head_inventory_id).")");
 	
 	if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
 		//we'll only display the progressbar if we are part of a workflow
@@ -178,7 +178,7 @@ function inventory_edit_elements($form, &$form_state, $head_inventory_id) {
 
 	$form['inventory_types'] = array(
     	'#type' => 'select',
-    	'#title' => t('New inventory group:'),
+    	'#title' => t('Add New Inventory Group:'),
     	'#options' => $options,
 	);
 	

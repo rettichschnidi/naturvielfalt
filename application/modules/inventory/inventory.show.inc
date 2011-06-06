@@ -1,7 +1,7 @@
 <?php 
 function inventory_show ($head_inventory_id) {
 	
-	drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+	drupal_set_title(check_plain(getInventoryTitle($head_inventory_id))." (".check_plain($head_inventory_id).")");
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	
 	//Display Inventory Basics

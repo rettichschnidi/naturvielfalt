@@ -9,7 +9,7 @@ function inventory_new($area_id) {
 		
 		if($area->field_name){
 			//area_id exists
-			drupal_set_title(t('Create New Inventory for Area "!areaname"',array('!areaname'=>$area->field_name)));
+			drupal_set_title(t('Create New Inventory for Area "!areaname"',array('!areaname'=>check_plain($area->field_name))));
 			$_SESSION['inventory']['area_id'] = $area_id;
 			return drupal_get_form('inventory_new_form');
 		}else{

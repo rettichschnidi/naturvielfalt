@@ -23,7 +23,7 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 	
 	if($record->organism_type==1){
 		// organism is fauna
-		drupal_set_title(CHECK_PLAIN($record->fauna_namede." [".$record->fauna_genus." ".$record->fauna_species."]"));
+		drupal_set_title(check_plain($record->fauna_namede." [".check_plain($record->fauna_genus)." ".check_plain($record->fauna_species)."]"));
 		if($record->protection_ch=='0' OR $record->protection_ch=='') {
 			$redlist = FALSE;
 		}
@@ -31,7 +31,7 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 			$redlist = TRUE;
 		}
 	} else {
-		drupal_set_title(CHECK_PLAIN($record->name_de." [". $record->flora_name."]"));
+		drupal_set_title(check_plain($record->name_de." [". check_plain($record->flora_name)."]"));
 		if($record->red_list_ch=='0' OR $record->red_list_ch=='') {
 			$redlist = FALSE;
 		}

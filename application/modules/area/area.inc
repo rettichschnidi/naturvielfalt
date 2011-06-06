@@ -2,7 +2,7 @@
 function show_area($areaId) {
 	$areaResult = db_query("SELECT * FROM {area} WHERE id = :id", array(':id' => $areaId));
 	$area = $areaResult->fetch();
-	drupal_set_title($area->field_name);
+	drupal_set_title(check_plain($area->field_name));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
 	
 	//include code for gmap_static_image_path
