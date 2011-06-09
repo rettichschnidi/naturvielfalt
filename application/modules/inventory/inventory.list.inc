@@ -74,7 +74,7 @@ function inventory_list() {
 		$row[] = date("j.m.Y", strtotime($record->create_time));
 		$row[] = date("j.m.Y", strtotime($record->modify_time));
 		$row[] = $shared;
-		$row[] = l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id))).' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, )).' '.$img_remove;		
+		$row[] = l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id))).' '.l($img_edit, 'inventory/'.$inventoryGroupId.'/edit',array('html' => TRUE, ));		
 		$rows[] = array('data' => $row, 'id' => 'inventory_'. $inventoryGroupId);
 	}
 	
