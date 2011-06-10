@@ -28,10 +28,8 @@
 		<property name="src" value="../" />
 		<property name="build" value="fullBuildOpenQlarm" />
 		<property name="buildApplication" value="${build}/application${timestamp}" />
-		<property name="buildInventoryServer" value="${build}/inventoryServer${timestamp}" />
 		<delete dir="${build}" />
 		<mkdir dir="${buildApplication}" />
-		<mkdir dir="${buildInventoryServer}" />
 	</target>
 
 
@@ -50,20 +48,8 @@
 				<exclude name="**/.project" />
 			</fileset>
 		</copy>
-		<copy todir="${buildInventoryServer}">
-			<fileset dir="${src}/inventoryServer">
-				<exclude name="**/.svn" />
-				<exclude name="**/.project" />
-			</fileset>
-		</copy>
 
 		<!-- Modify configurations and .htaccess -->
-		<echo message="modify ${buildInventoryServer}/web_root/application/configs/application.ini..." />
-		<replace file="${buildInventoryServer}/web_root/application/configs/application.ini" token='resources.db.params.username = "postgres"'
-			value='resources.db.params.username = "${DBUsername}"' summary="yes" />
-		<replace file="${buildInventoryServer}/web_root/application/configs/application.ini" token='resources.db.params.password = "postgres"'
-			value='resources.db.params.password = "${DBPassword}"' summary="yes" />
-
 		<echo message="modify ${buildApplication}/sites/default/settings.php..." />
 		<replace file="${buildApplication}/sites/default/settings.php" token="'username' => 'postgres'," value="'username' => '${DBUsername}',"
 			summary="yes" />
@@ -73,14 +59,6 @@
 		<echo message="modify ${buildApplication}.htaccess..." />
 		<replace file="${buildApplication}/.htaccess" token="# RewriteBase # --> do not delete!" value="RewriteBase /drupal/application"
 			summary="yes" />
-
-		<echo message="modify ${buildInventoryServer}/web_root/.htaccess" />
-		<replace file="${buildInventoryServer}/web_root/.htaccess" token="# RewriteBase # --> do not delete!"
-			value="RewriteBase /drupal/inventoryServer/web_root" summary="yes" />
-
-		<echo message="modify ${buildInventoryServer}/web_root/public/.htaccess" />
-		<replace file="${buildInventoryServer}/web_root/public/.htaccess" token="# RewriteBase # --> do not delete!"
-			value="RewriteBase /drupal/inventoryServer/web_root/public" summary="yes" />
 	</target>
 
 	<!-- Builds and deploys the application to openqlarm.org -->
@@ -92,12 +70,6 @@
 		<exec executable="scp">
 			<arg value="-r" />
 			<arg value="${buildApplication}" />
-			<arg value="${ServerUser}@openqlarm.org:/srv/www/htdocs/drupal" />
-		</exec>
-		<echo message="Upload ${buildInventoryServer}"/>
-		<exec executable="scp">
-			<arg value="-r" />
-			<arg value="${buildInventoryServer}" />
 			<arg value="${ServerUser}@openqlarm.org:/srv/www/htdocs/drupal" />
 		</exec>
 		<echo
