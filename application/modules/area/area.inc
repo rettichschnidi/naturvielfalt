@@ -8,7 +8,7 @@ function show_area($areaId) {
 	//include code for gmap_static_image_path
 	module_load_include('inc', 'area', 'area.search');
 	
-	$rows = array();
+	//$rows = array();
 	$row[0][] = t('Area Name');
 	$row[0][]= $area->field_name;
 	$row[1][] = t('Altitude');
@@ -31,8 +31,9 @@ function show_area($areaId) {
 	$row[9][] = date("j.m.Y", strtotime($area->create_time));
 	$row[10][] = t('Modify time');
 	$row[10][] = date("j.m.Y", strtotime($area->modify_time));
+
 	
-	$output['Area']['area_map'] = array(
+/*	$output['Area']['area_map'] = array(
 	'#type' => 'fieldset', 
 	'#title' => t('Map'), 
 	'#weight' => 5, 
@@ -48,12 +49,20 @@ function show_area($areaId) {
 		'class' => array('collapsible'),
        ),
 	);
-
+*/
 	$imagepath = gmap_static_image_path($areaId,400, 300, 14);
-	$output['Area']['area_map']['image'] = array(
-		'#markup'=>'<img src="'.$imagepath.'">',
-	);
-
+//	$output['Area']['area_map']['image'] = array(
+//		'#markup'=>'<img src="'.$imagepath.'">',
+//	);
+	$variables_map= array(
+		'path' => $imagepath,
+		'alt' => t('Map'),
+		'title' => t('Map'),
+		'width' => '400px',
+		'height' => '300px',
+      );
+	$img_map = theme('image', $variables_map);
+		
 	$output['Area']['area_details'] = array(
 	'#type' => 'fieldset', 
 	'#title' => t('Area details'), 
@@ -71,11 +80,15 @@ function show_area($areaId) {
        ),
 	);
 	
-	$output['Area']['area_details']['table'] = array(
+	$output['Area']['area_details']['table'][0][] = array(
 		'#theme' => 'table',
 		'#rows' => $row,
 		'#id_table' => 'area_details',
 	);
+	$output['Area']['area_details']['table'][0][] = array(
+		'#markup'=>'<img src="'.$imagepath.'">',
+	);
+	
 	
 	$output['Inventories'] = drupal_get_form('showAreaInventories', $areaId);
 	return $output;

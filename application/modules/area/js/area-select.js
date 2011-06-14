@@ -60,7 +60,7 @@ function AreaSelect() {
 		
 		if(event.type == 'mouseover'){
 			jQuery('#static_image').css('display','block');
-			jQuery('#static_image').css('left', pos.left+5);
+			jQuery('#static_image').css('left', pos.left-150);
 			jQuery('#static_image').css('top', pos.top+jQuery('#show_areas').find('td').height()+5);
 			
 			if(event.currentTarget.parentNode.id!=lastHoverId){
