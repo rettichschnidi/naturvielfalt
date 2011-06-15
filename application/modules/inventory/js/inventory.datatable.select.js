@@ -21,7 +21,7 @@ function inventoryRowSelect() {
 	
 	var lastHoverId = 0;
 	inventoryRowSelect.prototype.showStaticImage = function(event) {
-		var posleft = jQuery(event.target.parentNode).position().left+40;
+		var posleft = jQuery(event.target.parentNode).position().left-175;
 		var hoverId = event.target.parentNode.id.split('_')[1];
 		var postop = jQuery(event.target.parentNode.parentNode).offset().top - jQuery('#header').height() + jQuery('tbody > tr').height()+5;
 
