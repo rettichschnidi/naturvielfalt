@@ -152,7 +152,7 @@ function inventory_access($inventoryId) {
 	// check if this user has read access to the inventory or the inventory is public
 	global $user;
 	$adminRecords = db_query('
-		SELECT sgi.read, hi.shared, id 
+		SELECT sgi.read, hi.shared, id, hi.owner_id 
 		FROM head_inventory hi
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
@@ -162,7 +162,7 @@ function inventory_access($inventoryId) {
 		ORDER BY write DESC LIMIT 1;', array(':hiid' => $inventoryId, ':uid' => $user->uid)
 	);
 	$read = $adminRecords->fetch();
-	$access = $access && (($read->read == 1) || ($read->shared == true));
+	$access = $access && (($read->read == 1) || ($read->shared == true)) || ($read->owner_id == $user->uid);
 	return $access;
 }
 
