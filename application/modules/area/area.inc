@@ -31,9 +31,8 @@ function show_area($areaId) {
 	$row[9][] = date("j.m.Y", strtotime($area->create_time));
 	$row[10][] = t('Modify time');
 	$row[10][] = date("j.m.Y", strtotime($area->modify_time));
-
 	
-/*	$output['Area']['area_map'] = array(
+	$output['Area']['area_map'] = array(
 	'#type' => 'fieldset', 
 	'#title' => t('Map'), 
 	'#weight' => 5, 
@@ -49,11 +48,11 @@ function show_area($areaId) {
 		'class' => array('collapsible'),
        ),
 	);
-*/
+
 	$imagepath = gmap_static_image_path($areaId,400, 300, 14);
-//	$output['Area']['area_map']['image'] = array(
-//		'#markup'=>'<img src="'.$imagepath.'">',
-//	);
+	$output['Area']['area_map']['image'] = array(
+		'#markup'=>'<img src="'.$imagepath.'">',
+	);
 	$variables_map= array(
 		'path' => $imagepath,
 		'alt' => t('Map'),
@@ -85,15 +84,19 @@ function show_area($areaId) {
 		'#rows' => $row,
 		'#id_table' => 'area_details',
 	);
-	$output['Area']['area_details']['table'][0][] = array(
-		'#markup'=>'<img src="'.$imagepath.'">',
-	);
-	
 	
 	$output['Inventories'] = drupal_get_form('showAreaInventories', $areaId);
+	$output['Organisms'] = drupal_get_form('showAreaOrganisms', $areaId);
 	return $output;
+	
 }
 
+/**
+ * Display area linked inventories
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $areaId
+ */
 function showAreaInventories($form, &$form_state, $areaId) {
 	global $user;
 	$result = db_query('
@@ -134,13 +137,249 @@ function showAreaInventories($form, &$form_state, $areaId) {
         ),
 	);
 	
-	$header = array(t('Inventory name'),t('Modify time'),t('Create time'),t('Owner'));
+	if($record->id!=''){
+		$header = array(t('Inventory name'),t('Modify time'),t('Create time'),t('Owner'));
 		$output['linked_inventories']['area_inventory'] = array(
-			    '#theme' => 'datatable', 
-				'#header' => $header,
-			    '#rows' => $rows,
-				'#id_table' => 'inventories', 
-				);
+		    '#theme' => 'datatable', 
+			'#header' => $header,
+		    '#rows' => $rows,
+			'#id_table' => 'inventories', 
+			);
+	}
+	else{
+		$output['linked_organisms']['area_organisms'] = array(
+	  		'#markup' => t("There are no inventories linked to this area"),
+		);			
+	}		
 	return $output;
 }
+
+/**
+ * Display area linked organisms
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $areaId
+ */
+function showAreaOrganisms($form, &$form_state, $areaId) {
+	$organisms = db_query ('
+		SELECT DISTINCT o.id oid, o.organism_type, flo."Gattung" gattung, flo."Art" art, flo."Familie" familie, flo.name_de, fao.order, fao.genus, fao.species, fao.name_de fauna_name, hi.id hid, hi.owner_id, hi.shared
+		FROM AREA
+		LEFT JOIN head_inventory hi ON area.id = hi.area_id
+		LEFT JOIN inventory i ON hi.id = i.head_inventory_id
+		LEFT JOIN inventory_entry ie ON i.id = ie.inventory_id
+		LEFT JOIN organism o ON ie.organism_id = o.id
+		LEFT JOIN flora_organism flo ON o.organism_id = flo.id
+		LEFT JOIN fauna_organism fao ON o.organism_id = fao.id
+		WHERE  area.id = :aid
+		ORDER BY oid ASC',
+		array(':aid' => $areaId)
+	);
+	foreach($organisms as $organism) {
+		$organismDates = getOrganismDates($organism->oid, $areaId);
+		$row = array();
+		$permissions = getOrganismPermission($organism->hid, $organism->owner_id);
+		$redList = isRedList($organism->oid);
+		if ($permissions[1] == TRUE OR $organism->shared == TRUE) {
+			if(($redList == TRUE AND $permissions[0] == TRUE) OR $redList == FALSE) {
+				if($organism->organism_type == '1') {
+					//organism is fauna
+					$row[] = $organism->fauna_name;
+					$row[] = $organism->genus.' '.$organism->species;
+					$row[] = getOrganismCount($organism->oid, $areaId);
+					$row[] = date('d.m.Y', $organismDates[0]);
+					$row[] = date('d.m.Y', end($organismDates));
+					$rows[] = array('data' => $row, 'id' => 'organism_'. $organism->oid);
+				}
+				if($organism->organism_type == '2') {
+					//organism is flora
+					$row[] = $organism->name_de;
+					$row[] = $organism->gattung.' '.$organism->art;
+					$row[] = getOrganismCount($organism->oid, $areaId);
+					$row[] = date('d.m.Y', $organismDates[0]);
+					$row[] = date('d.m.Y', end($organismDates));
+					$rows[] = array('data' => $row, 'id' => 'organism_'. $organism->oid);	
+				}
+			}
+			else {
+				$containsProtected = TRUE;
+			}		
+		}
+	}
+	
+	$output['linked_organisms'] = array(
+		'#type' => 'fieldset', 
+		'#title' => t('Linked organisms'), 
+		'#weight' => 3, 
+		'#collapsible' => TRUE,
+		'#collapsed' => FALSE,
+		'#attached' => array (
+			'js' => array (
+				'misc/form.js',
+				'misc/collapse.js',
+			),
+		),
+		'#attributes' => array(
+			'class' => array('collapsible'),
+        ),
+	);
+	
+	if($containsProtected == TRUE) {
+		$output['linked_organisms']['protected'] = array(
+			    '#markup' => 'Note: Without the necessary permissions, protected organisms are hidden', 
+				);
+	}
+	
+	if($organism->oid!=''){
+		$header = array(t('Name'),t('Latin name'),t('Sightings'),t('First Sighting'),t('Last Sighting'));
+		$output['linked_organisms']['area_organisms'] = array(
+			    '#theme' => 'datatable', 
+				'#header' => $header,
+			    '#rows' => array_unique_multi($rows),
+				'#id_table' => 'organisms', 
+				);
+	}
+	else{
+		$output['linked_organisms']['area_organisms'] = array(
+	  		'#markup' => t("There are no organisms listed in this area"),
+		);			
+	}		
+	return $output;
+}
+
+/**
+ * 
+ * Check if organism is protected/member of a red list
+ * @param unknown_type $organismId
+ */
+function isRedList($organismId) {
+$result = db_query(
+		'SELECT organism.id, organism.organism_type, flo.name flora_name, flo.name_de, fao.genus fauna_genus, fao.species fauna_species, fao.name_de fauna_namede, frl.red_list_ch, fao.protection_ch
+		FROM organism
+		LEFT JOIN flora_organism flo ON organism.organism_id = flo.id
+		LEFT JOIN fauna_organism fao ON organism.organism_id = fao.id
+		LEFT JOIN flora_red_list frl ON flo.id = frl.flora_organism_id
+		WHERE organism.id = :id limit 1',
+		array(":id" => $organismId)
+	);
+
+	$row = array();
+	$record = $result->fetch();
+	if($record->organism_type==1){
+		// organism is fauna
+		if($record->protection_ch=='0' OR $record->protection_ch=='') {
+			$redlist = FALSE;
+		}
+		else {
+			$redlist = TRUE;
+		}
+	} else {
+		if($record->red_list_ch=='0' OR $record->red_list_ch=='') {
+			$redlist = FALSE;
+		}
+		else {
+			$redlist = TRUE;
+		}
+	}
+	return $redlist;
+}
+
+/**
+ * 
+ * Returns count of specific organism in this area
+ * @param unknown_type $organismId
+ * @param unknown_type $areaId
+ */
+function getOrganismCount($organismId, $areaId) {
+	global $user;
+	$count = db_query('
+		SELECT COUNT (ie.organism_id)
+		FROM inventory_entry ie
+		LEFT JOIN inventory i ON ie.inventory_id = i.id
+		LEFT JOIN head_inventory hi ON i.head_inventory_id = hi.id
+		LEFT JOIN area a ON hi.area_id = a.id
+		WHERE ie.organism_id = :oid AND a.id = :aid AND (hi.owner_id = :uid OR hi.shared = TRUE OR hi.id
+			IN(SELECT sgu.uid
+			FROM sgroup_inventory sgi
+			LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+			WHERE sgu.uid = :uid)
+			)',
+		array(':oid' => $organismId, ':aid' => $areaId, ':uid' => $user->uid)
+	);
+	$count = $count->fetch()->count;
+	return $count;
+}
+
+/**
+ * 
+ * Query organism first/last seen dates
+ * @param unknown_type $organismId
+ * @param unknown_type $areaId
+ */
+function getOrganismDates($organismId, $areaId) {
+		$dates = db_query(
+			"SELECT itaie.value
+			FROM organism o
+			LEFT JOIN inventory_entry ie ON o.id = ie.organism_id
+			LEFT JOIN inventory i ON ie.inventory_id = i.id
+			LEFT JOIN head_inventory hi ON i.head_inventory_id = hi.id
+			LEFT JOIN area a ON hi.area_id = a.id
+			LEFT JOIN inventory_type_attribute_inventory_entry itaie ON ie.id = itaie.inventory_entry_id
+			LEFT JOIN inventory_type_attribute ita ON itaie.inventory_type_attribute_id = ita.id
+			WHERE o.id = :oid AND ita.name = 'Funddatum' AND a.id = :aid",
+			array(":oid" => $organismId, ":aid" => $areaId)
+		);
+		$dateTable = array();
+		foreach($dates as $date) {
+			$dateTable[] = strtotime($date->value);		
+		} 
+		sort($dateTable);
+		return $dateTable;
+}
+
+/**
+ * 
+ * Returns if user has necessary inventory permission for organism
+ * @param unknown_type $inventoryId
+ */
+function getOrganismPermission($inventoryId, $ownerId) {
+	global $user;
+	$displayred = FALSE;
+	$access = FALSE;
+	if($ownerId == $user->uid) {
+		$displayred = TRUE;
+		$access = TRUE;
+	}
+	else {
+		$permissions = db_query(
+		'SELECT sgi.sgid, sgi.hiid, sgi.read, sgi.write, sgi.show_red, sgu.uid
+		FROM sgroup_inventory sgi
+		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+		WHERE sgi.hiid = :invid AND sgu.uid = :userid',
+		array(':invid' => $record->head_inventory_id, ':userid' => $user->uid)
+		);
+		foreach($permissions as $permission) {
+			if($permission->show_red == '1') {
+				$displayred = TRUE;	
+			}
+			if($permission->read == '1' or $permission->write == '1') {
+				$access = TRUE;
+			}
+		}				
+	}
+	$permissions = array($displayred, $access);
+	return $permissions;
+}
+
+/**
+ * Removes duplicate entries from a multidimensional array
+ * @param unknown_type $array
+ */
+function array_unique_multi($array){
+	$copy = $array;
+	array_walk($array,create_function('&$v,$k','$v = serialize($v);'));
+	$array = array_unique($array);
+return array_intersect_key($copy,$array);
+}
+
 ?>
