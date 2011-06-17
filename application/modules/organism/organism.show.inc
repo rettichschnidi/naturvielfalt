@@ -147,7 +147,7 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 			$row[] = '';
 			$row[] = '';
 			$row[] = $record->author;
-			$organismsInventory[] = array('data' => $row, 'id' => 'inventory_protected');
+			$organismsInventory[] = array('data' => $row, 'id' => 'inventoryprotected_'.$record->uid);
 		}
 		$displayred = FALSE;			
 	}	

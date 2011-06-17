@@ -19,8 +19,9 @@ function organismRowSelect() {
 		if (organismId[0] == 'organismtype')
 			window.location.href = 'organism/type/'+organismId[1];
 		if (organismId[0] == 'inventory')
-			if (organismId[1] != 'protected')
 			window.location.href = '../inventory/'+organismId[1];
+		if (organismId[0] == 'inventoryprotected')
+			window.location.href = '../user/'+organismId[1]+'/contact';
 	}	
 	// register events
 	jQuery("#organisms").live('click', this.onTableRowClicked);

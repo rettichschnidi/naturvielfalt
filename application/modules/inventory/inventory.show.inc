@@ -6,7 +6,7 @@ function inventory_show ($head_inventory_id) {
 	
 	//Display Inventory Basics
 	$inventories = db_query('
-		SELECT head_inventory.name,description,shared,create_time,modify_time, u.name "owner"
+		SELECT head_inventory.name,description,shared,create_time,modify_time, u.uid, u.name "owner"
 		FROM head_inventory
 		LEFT JOIN users u on head_inventory.owner_id = u.uid
 		WHERE id = :id;', array(':id' => $head_inventory_id)
@@ -25,6 +25,7 @@ function inventory_show ($head_inventory_id) {
 			$row[] = t('No');
 		}
 		$rows[] = $row;
+		$ownerId = $inventory->uid;
 	}
 	$header = array(t('Owner'),t('Description'),t('Modified on'),t('Created on'),t('Public'));
 	$render_array['inventories'] = array(
@@ -121,7 +122,7 @@ function inventory_show ($head_inventory_id) {
 					'Status' => '',
 					'Funddatum' => '',
 					);
-					$rows[] = array('data' => $row, 'id' => 'protected');	
+					$rows[] = array('data' => $row, 'id' => 'protected_'.$ownerId);	
 				}	
 			} else {
 				if($fauna_red_list == FALSE OR $fauna_red_list == TRUE AND hasRedListPermission($head_inventory_id) == TRUE) {
@@ -177,7 +178,7 @@ function inventory_show ($head_inventory_id) {
 					'Vitality' => '',
 					'Funddatum' => '',
 					);
-					$rows2[] = array('data' => $row, 'id' => 'protected');
+					$rows2[] = array('data' => $row, 'id' => 'protected_'.$ownerId);
 				}
 				
 			} else {
@@ -264,7 +265,7 @@ function inventory_show ($head_inventory_id) {
 	if($rows2!='' or $rows!='') {
 		if(hasRedListPermission($head_inventory_id) == FALSE) {
 		$render_array['RedList'] = array(
-			'#markup' => t('You do not have permission to display protected organisms from this inventory'));
+			'#markup' => t('You do not have permission to display protected organisms from this inventory. If you need anymore details please contact the author of the inventory by clicking on the table row'));
 	}
 	}
 

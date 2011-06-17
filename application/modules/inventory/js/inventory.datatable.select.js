@@ -17,6 +17,8 @@ function inventoryRowSelect() {
 			window.location.href = '../organism/'+idType[1];
 		if (idType[0] == 'inventory')
 			window.location.href = 'inventory/'+idType[1];
+		if (idType[0] == 'protected')
+			window.location.href = '../user/'+idType[1]+'/contact';
 	}
 	
 	var lastHoverId = 0;
