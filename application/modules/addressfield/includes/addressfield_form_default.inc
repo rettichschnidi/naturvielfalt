@@ -14,7 +14,7 @@ class AddressFieldForm_default implements AddressFieldForm {
       '#size' => 30,
       '#default_value' => $address['thoroughfare'],
     );
-    $form['premise'] = array(
+/*    $form['premise'] = array(
       '#title' => t('Residence, building, ...'),
       '#type' => 'textfield',
       '#size' => 30,
@@ -32,7 +32,7 @@ class AddressFieldForm_default implements AddressFieldForm {
       '#size' => 30,
       '#default_value' => $address['dependent_locality'],
     );
-    $form['postal_code'] = array(
+*/    $form['postal_code'] = array(
       '#title' => t('Postal Code'),
       '#type' => 'textfield',
       '#size' => 10,
