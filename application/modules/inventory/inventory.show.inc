@@ -5,57 +5,96 @@ function inventory_show ($head_inventory_id) {
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	
 	//Display Inventory Basics
-	$inventories = db_query('
-		SELECT head_inventory.name,description,shared,create_time,modify_time, u.uid, u.name "owner"
-		FROM head_inventory
-		LEFT JOIN users u on head_inventory.owner_id = u.uid
-		WHERE id = :id;', array(':id' => $head_inventory_id)
-	);
+	$query = db_select('head_inventory', 'hi')
+    ->condition('hi.id', $head_inventory_id)
+    ->fields('hi');
+  $query->leftJoin('users', 'u', 'u.uid = hi.owner_id');
+  $query->leftJoin('area', 'a', 'a.id = hi.area_id');
+  $query->addField('u', 'uid');
+  $query->addField('u', 'name', 'owner');
+  $query->addField('a', 'field_name', 'area_name');
+  $query->addField('a', 'locality', 'area_locality');
+  $query->addField('a', 'zip', 'area_zip');
+  $query->addField('a', 'id', 'area_id');
+  $inventory = $query->execute()->fetch();
 
-	foreach($inventories as $inventory) {
-		$row = array();
-		$row[] = $inventory->owner;
-		$row[] = $inventory->description;
-		$row[] = date("j.m.Y", strtotime($inventory->modify_time));
-		$row[] = date("j.m.Y", strtotime($inventory->create_time));
-		If($inventory->shared == "t") {
-			$row[] = t('Yes');
-		}
-		else {
-			$row[] = t('No');
-		}
-		$rows[] = $row;
-		$ownerId = $inventory->uid;
-	}
-	$header = array(t('Owner'),t('Description'),t('Modified on'),t('Created on'),t('Public'));
-	$render_array['inventories'] = array(
-	    '#theme' => 'table',
-		'#header' => $header,
-	    '#rows' => $rows,
+	$rows = array();
+	$rows[] = array(
+    array('data' => t('Owner'), 'header' => true), 
+    $inventory->owner
+  );
+  $rows[] = array(
+    array('data' => t('Description'), 'header' => true), 
+    $inventory->description
+  );
+	$rows[] = array(
+    array('data' => t('Modified on'), 'header' => true), 
+    date("j.m.Y", strtotime($inventory->modify_time))
+  );
+	$rows[] = array(
+    array('data' => t('Created on'), 'header' => true), 
+    date("j.m.Y", strtotime($inventory->create_time))
+  );
+  $rows[] = array(
+    array('data' => t('Public'), 'header' => true), 
+    $inventory->shared == "t" ? t('Yes') : t('No')
+  );
+	$ownerId = $inventory->uid;
+  $render_array['details'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Inventory details'), 
+    '#weight' => 2, 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+	$render_array['details']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
 	);
 	
-	$rows = '';	
-	//Display Area Details	
-	$areas = db_query('
-		SELECT field_name,locality,zip, area.id
-		FROM area
-		LEFT JOIN head_inventory h on area.id = h.area_id
-		WHERE h.id = :id;', array('id' => $head_inventory_id)
-	);	
-	
-	foreach($areas as $area) {
-		$row = array();
-		$row[] = $area->field_name;
-		$row[] = $area->locality;
-		$row[] = $area->zip;
-		$rows[] = $row;
-	}
 	$header = array(t('Area'),t('City'),t('ZIP'));
-	$render_array['areas'] = array(
-	    '#theme' => 'table',
-		'#header' => $header,
-	    '#rows' => $rows,
-	);
+  $rows = array();
+  $rows[] = array(
+    array('data' => t('Area'), 'header' => true), 
+    l($inventory->area_name, 'area/'.$inventory->area_id)
+  );
+  $rows[] = array(
+    array('data' => t('City'), 'header' => true), 
+    $inventory->area_locality
+  );
+  $rows[] = array(
+    array('data' => t('ZIP'), 'header' => true), 
+    $inventory->area_zip
+  );
+  $render_array['areas'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Area details'), 
+    '#weight' => 2, 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+	$render_array['areas']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+  );
 	$rows = '';
 	$row = '';	
 
@@ -76,7 +115,8 @@ function inventory_show ($head_inventory_id) {
 		,array(':id' => $head_inventory_id)
 	);
 	
-
+  $gallery1 = array();
+  $gallery2 = array();
 	foreach($inventoryEntries as $inventoryEntry) {
 		//check organism red list state and set variable
 		if($inventoryEntry->protection_ch == '0' OR $inventoryEntry->protection_ch == '') {
@@ -91,6 +131,9 @@ function inventory_show ($head_inventory_id) {
 		else {
 			$flora_red_list = TRUE;
 		}
+    $gallery = false;
+    if(function_exists('gallery_edit_link'))
+      $gallery = gallery_edit_link('inventory_entry', $inventoryEntry->id);
 		
 		if($inventoryEntry->organism_type==1) {
 			// it's organism type 1, hence fauna
@@ -111,7 +154,10 @@ function inventory_show ($head_inventory_id) {
 					'Anzahl' => $strCount,
 					'Status' => $strStatus,
 					'Funddatum' => $strDate,
+          'Gallery' => $gallery,
 					);
+          if($gallery)
+            array_push($gallery1, $inventoryEntry->id);
 					$rows[] = array('data' => $row, 'id' => 'organism_'. $inventoryEntry->organism_id);	
 				}
 				else {
@@ -121,6 +167,7 @@ function inventory_show ($head_inventory_id) {
 					'Anzahl' => '',
 					'Status' => '',
 					'Funddatum' => '',
+          'Gallery' => '',
 					);
 					$rows[] = array('data' => $row, 'id' => 'protected_'.$ownerId);	
 				}	
@@ -164,12 +211,15 @@ function inventory_show ($head_inventory_id) {
 					'Phenological Phase' => $strPhase,
 					'Vitality' => $strVitality,
 					'Funddatum' => $strDate,
-					);
+          'Gallery' => $gallery,
+          );
+          if($gallery)
+            array_push($gallery2, $inventoryEntry->id);
 					$rows2[] = array('data' => $row, 'id' => 'organism_'. $inventoryEntry->organism_id);
 				}
 				else {
 					$row = array(
-					'Art' => t('Protected Organism'),
+					'Art' => t('Protected organism'),
 					'Lateinisch' => '',
 					'Population' => '',
 					'Area size' => '',
@@ -177,6 +227,7 @@ function inventory_show ($head_inventory_id) {
 					'Phenological Phase' => '',
 					'Vitality' => '',
 					'Funddatum' => '',
+          'Gallery' => '',
 					);
 					$rows2[] = array('data' => $row, 'id' => 'protected_'.$ownerId);
 				}
@@ -229,18 +280,22 @@ function inventory_show ($head_inventory_id) {
 		);
 		
 		$header = array(t('Name'),t('Latin name'),t('Amount'),t('State'),t('Date'));
+    if($gallery1)
+      array_push($header, '&nbsp;');
 		$render_array['Fauna']['Art'] = array(
    			'#theme' => 'datatable',
 			'#header' => $header,
     		'#rows' => $rows,
 			'#id_table' => 'fauna',
 		);
+    if($gallery1)
+      $render_array['FaunaGallery'] = gallery_multiple_list_renderer('inventory_entry', $gallery1, t('Fauna gallery'), 4, true);
 	}
 	if($rows2!='') {
 		$render_array['Flora'] = array(
 			'#type' => 'fieldset', 
 			'#title' => t('Flora'), 
-			'#weight' => 3, 
+			'#weight' => 5, 
 			'#collapsible' => TRUE,
 			'#collapsed' => FALSE,
 			'#attached' => array (
@@ -255,12 +310,16 @@ function inventory_show ($head_inventory_id) {
 		);
 
 		$header = array(t('Name'),t('Latin name'),t('Population'),t('Area size'),t('Origin'),t('Phenological Phase'),t('Vitality'),t('Date'));
+    if($gallery2)
+      array_push($header, '&nbsp;');
 		$render_array['Flora']['Art'] = array(
 			'#theme' => 'datatable',
 			'#header' => $header,
 			'#rows' => $rows2,
 			'#id_table' => 'flora',
-		);		
+		);
+    if($gallery2)
+      $render_array['FloraGallery'] = gallery_multiple_list_renderer('inventory_entry', $gallery2, t('Flora gallery'), 6, true);
 	}
 	if($rows2!='' or $rows!='') {
 		if(hasRedListPermission($head_inventory_id) == FALSE) {
