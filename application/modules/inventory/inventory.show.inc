@@ -20,12 +20,8 @@ function inventory_show ($head_inventory_id) {
 
 	$rows = array();
 	$rows[] = array(
-    array('data' => t('Owner'), 'header' => true), 
+    array('data' => t('Observer'), 'header' => true), 
     $inventory->owner
-  );
-  $rows[] = array(
-    array('data' => t('Description'), 'header' => true), 
-    $inventory->description
   );
 	$rows[] = array(
     array('data' => t('Modified on'), 'header' => true), 
@@ -39,11 +35,15 @@ function inventory_show ($head_inventory_id) {
     array('data' => t('Public'), 'header' => true), 
     $inventory->shared == "t" ? t('Yes') : t('No')
   );
+  $rows[] = array(
+    array('data' => t('Description'), 'header' => true), 
+    $inventory->description
+  );
 	$ownerId = $inventory->uid;
   $render_array['details'] = array(
     '#type' => 'fieldset', 
     '#title' => t('Inventory details'), 
-    '#weight' => 2, 
+    '#weight' => 1, 
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
@@ -59,6 +59,9 @@ function inventory_show ($head_inventory_id) {
 	$render_array['details']['table'] = array(
     '#theme' => 'table',
     '#rows' => $rows,
+	'#attributes' => array(
+      'class' => array('inventory_show'),
+		),
 	);
 	
 	$header = array(t('Area'),t('City'),t('ZIP'));
@@ -94,6 +97,9 @@ function inventory_show ($head_inventory_id) {
 	$render_array['areas']['table'] = array(
     '#theme' => 'table',
     '#rows' => $rows,
+	'#attributes' => array(
+      'class' => array('inventory_show'),
+    ),
   );
 	$rows = '';
 	$row = '';	
@@ -380,5 +386,4 @@ function hasRedListPermission($head_inventory_id) {
 
 	
 }
-
 ?>
