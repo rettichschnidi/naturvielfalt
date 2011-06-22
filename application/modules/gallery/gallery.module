@@ -569,10 +569,11 @@ function gallery_image_save($image) {
     array_push($new_entries, $entry['id']);
   }
   // Delete all remaining category values
-  db_delete('gallery_image_category')
-    ->condition('image_id', $image['id'])
-    ->condition('id', $new_entries, 'NOT IN')
-    ->execute();
+  $query = db_delete('gallery_image_category')
+    ->condition('image_id', $image['id']);
+  if($new_entries)
+    $query->condition('id', $new_entries, 'NOT IN');
+  $query->execute();
   return $image;
 }
 
