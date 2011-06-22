@@ -64,8 +64,8 @@ function AreaSelect() {
 			jQuery('#static_image').css('top', pos.top+jQuery('#show_areas').find('td').height()+5);
 			
 			if(event.currentTarget.parentNode.id!=lastHoverId){
-				jQuery('#static_image').find('img').attr('src', 'modules/area/images/ajax-loader.gif');
-				jQuery('#static_image').find('img').attr('src', 'area/gmap_image_redirect/'+event.currentTarget.parentNode.id.split('_')[1]);
+				jQuery('#static_image').find('img').attr('src', Drupal.settings.basePath+'/modules/area/images/ajax-loader.gif');
+				jQuery('#static_image').find('img').attr('src', Drupal.settings.basePath+'/area/gmap_image_redirect/'+event.currentTarget.parentNode.id.split('_')[1]);
 			}
 			lastHoverId = event.currentTarget.parentNode.id;
 		} else if (event.type == 'mouseout'){

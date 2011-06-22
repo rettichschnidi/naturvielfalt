@@ -15,9 +15,9 @@ function organismRowSelect() {
 		var habitatId = targ.parentNode.id.split('_');
 		//me.selectOrganism(organismId[1], targ);
 		if (habitatId[0] == 'habitat')
-			window.location.href = 'habitat/'+habitatId[1];
+			window.location.href = Drupal.settings.basePath+'habitat/'+habitatId[1];
 		if (habitatId[0] == 'area')
-			window.location.href = '../area/'+habitatId[1];
+			window.location.href = Drupal.settings.basePath+'area/'+habitatId[1];
 	}	
 	// register events
 	jQuery("#habitats").live('click', this.onTableRowClicked);
