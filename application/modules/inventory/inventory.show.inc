@@ -8,6 +8,9 @@ function inventory_show($head_inventory_id) {
 	if(hasRedListPermission($head_inventory_id) == FALSE) {
 		$render_array['Protection'] = drupal_get_form('getRedListCount', $head_inventory_id);
 	}
+  
+  if(function_exists('gallery_list_renderer'))
+    $render_array['Gallery'] = gallery_list_renderer('head_inventory', $head_inventory_id);
 	
 	$render_array['Inventory_Organisms'] = drupal_get_form('getInventories', $head_inventory_id);
 
@@ -329,6 +332,9 @@ function getInventories($form, &$form_state, $head_inventory_id) {
 			}
 		}
 	}
+  
+  if(function_exists('gallery_edit_link'))
+    $gallery_available = true;
 	
 	foreach($invArr as $key => $inventory_group) {
 		$rows = array();
@@ -336,6 +342,7 @@ function getInventories($form, &$form_state, $head_inventory_id) {
 		$colIds = array();
 		$colId = '';
 		$invDetail = '';
+    $has_gallery = false;
 	
 		foreach($inventory_group as $iGKey => $invDetails) {
 			//Define table header
@@ -363,9 +370,16 @@ function getInventories($form, &$form_state, $head_inventory_id) {
 					}
 					$colValueDropdown = NULL; 
 				}
+        if($gallery_available) {
+          $row[] = gallery_edit_link('inventory_entry', $iGKey);
+          if($row[(count($row)-1)])
+            $has_gallery = true;
+        }
 				$rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
 			}
 		}
+    if($has_gallery)
+      $header[] = '&nbsp;';
 		if($rows[0] != '') {
 			$output[$invGroupName] = array(
 				'#type' => 'fieldset', 

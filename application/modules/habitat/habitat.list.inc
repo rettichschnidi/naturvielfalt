@@ -15,6 +15,7 @@ function habitat_list() {
 		FROM habitat'
 	);
 	
+  $has_gallery = false;
 	foreach ($result as $record) {
 		$count = db_query('
 			SELECT count (area_habitat.area_id)
@@ -28,8 +29,16 @@ function habitat_list() {
 		$row[] = $record->name_de;
 		$row[] = $count->fetch()->count;
 		$row[] = $record->id;
+    if(function_exists('gallery_edit_link')) {
+      $row[] = gallery_edit_link('habitat', $record->id);
+      if($row[3])
+        $has_gallery = true;
+    }
 		$rows[] = array('data' => $row, 'id' => 'habitat_'. $record->id);
 	}
+  
+  if($has_gallery)
+    $tableHeader[] = '&nbsp;';
 	
 	$render_array['habitats'] = array(
 	    '#theme' => 'datatable', 

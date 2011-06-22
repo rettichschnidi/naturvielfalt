@@ -30,5 +30,66 @@ function habitat_menu() {
   	return $items;
 }
 
+/**
+ * Implements hook of gallery module to activate the gallery
+ * functionality for habitat
+ * 
+ * @return array
+ */
+function habitat_gallery_types() {
+  return array(
+    'habitat' => array(
+      'edit_gallery' => 'habitat_gallery_access_callback',
+      'image_caption' => 'habitat_gallery_image_caption'
+    )
+  );
+}
+
+/**
+ * Helper function referenced in habitat_gallery_types to define the caption
+ * for images added to intentory entries
+ * 
+ * @return string
+ */
+function habitat_gallery_image_caption($id) {
+  $result = db_select('habitat', 'h')
+    ->condition('id', $id)
+    ->fields('h')
+    ->execute()
+    ->fetch();
+  return $result->name_de.' <small>'.$result->name_lt.'</small>';
+}
+
+/**
+ * Helper function referenced in habitat_gallery_types to define the edit access
+ * for images added to habitats
+ * 
+ * @param string $type
+ *   The type of object to be accessed
+ * @param string $id
+ *   The id of object to be accessed
+ * @param array $image
+ *   The image to be accessed.
+ * @return boolean
+ */
+function habitat_gallery_access_callback($type, $id, $image=false) {
+  return false; // restrict access to users having the 'manage gallery images' permission
+}
+
+/**
+ * Implements hook of gallery module to define the different category
+ * conditions available for habitat types
+ * 
+ * @return array
+ */
+function habitat_gallery_category_conditions() {
+  return array(
+    'habitat' => array(
+      'name' => t('Habitats'),
+      'type' => 'habitat'
+    ),
+  );
+}
+
 
 ?>

@@ -1,8 +1,9 @@
 <?php
 function organism_show($organismId) {
+  if(function_exists('gallery_list_renderer'))
+    $forms['Gallery'] = gallery_list_renderer('organism', $organismId, false, -1);
 	$forms['Details'] = drupal_get_form('getOrganismDetails', $organismId);
-	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);	
-	$forms['Images'] = drupal_get_form('getOrganismImages', $organismId);	
+	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);
 	return $forms;
 }
 
@@ -187,31 +188,4 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 
 }
 
-//Should get organism images
-function getOrganismImages($form, &$form_state, $organismId) {
-	//define placeholder
-		$placeholder= array(
-		'path' => 'misc/placeholder1.jpeg',
-		'alt' => t('Placeholder'),
-		'title' => t('Placeholder'),
-		'width' => '220px',
-		'height' => '140px',
-      );
-	$img_placeholder = theme('image', $placeholder);
-	
-	$row=array();
-	$row[]=$img_placeholder;
-	$row[]=$img_placeholder;
-	$row[]=$img_placeholder;
-	$row[]=$img_placeholder;
-	$rows[]=$row;
-	
-	$form['images'] = array(
-			    '#theme' => 'table',
-			    '#rows' => $rows, 
-				);
-				
-	return $form;
-	
-}
 ?>

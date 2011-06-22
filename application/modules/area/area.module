@@ -136,4 +136,51 @@ function area_permission() {
 	),
 	);
 }
+
+/**
+ * Implements hook of gallery module to activate the gallery
+ * functionality for area
+ * 
+ * @return array
+ */
+function area_gallery_types() {
+  return array(
+    'area' => array(
+      'edit_gallery' => 'gallery_owner_access_callback',
+      'image_caption' => 'area_gallery_image_caption'
+    )
+  );
+}
+
+/**
+ * Helper function referenced in area_gallery_types to define the caption
+ * for images added to intentory entries
+ * 
+ * @param $id
+ * @return string
+ */
+function area_gallery_image_caption($id) {
+  $result = db_select('area', 'a')
+    ->condition('id', $id)
+    ->fields('a')
+    ->execute()
+    ->fetch();
+  return $result->field_name.' <small>'.$result->locality.' '.$result->canton.', '.$result->country.'</small>';
+}
+
+/**
+ * Implements hook of gallery module to define the different category
+ * conditions available for area types
+ * 
+ * @return array
+ */
+function area_gallery_category_conditions() {
+  return array(
+    'area' => array(
+      'name' => t('Areas'),
+      'type' => 'area'
+    ),
+  );
+}
+
 ?>

@@ -70,15 +70,13 @@ function area_field_name_form() {
 	);
 	
 	//Localize Image
-	$variables_localize= array(
-		'path' => 'misc/fatcow_icons/16x16/world.png',
-		'alt' => t('Localize'),
-		'title' => t('Localize'),
-		'width' => '14px',
-		'height' => '14px',
-      );
-	$img_localize = theme('image', $variables_localize);
+	$view_img_localize = theme('image', array(
+    'path' => 'misc/fatcow_icons/16x16/world.png',
+    'alt' => t('Details'),
+    'title' => t('Details'),
+  ));
 	
+  $has_gallery = false;
 	foreach ($area as $record) {
 		$row = array();
 		$row[] = $record->field_name;
@@ -93,7 +91,12 @@ function area_field_name_form() {
 		}
 		$row[] = $record->u_name;
 		$row[] = $record->art_dest;
-		$row[] = array('data' => l($img_localize, 'area/'.$record->a_id, array('html'=>true)), 'class' => 'show_static_image');
+		$row[] = array('data' => l($view_img_localize, 'area/'.$record->a_id, array('html'=>true)), 'class' => 'show_static_image');
+    if(function_exists('gallery_edit_link')) {
+      $row[] = gallery_edit_link('area', $record->a_id);
+      if($row[3])
+        $has_gallery = true;
+    }
 		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
 	}
 	
@@ -105,7 +108,9 @@ function area_field_name_form() {
 	$tableHeader[] = t('Created on');
 	$tableHeader[] = t('Area Creator');
 	$tableHeader[] = t('Area Type');
-	$tableHeader[] = t('Details');
+	$tableHeader[] = '&nbsp;';
+  if($has_gallery)
+    $tableHeader[] = '&nbsp;';
 	$form['FieldName'] = array(
 		'#type' => 'fieldset',
   		'#title' => t('Search by field name:'),

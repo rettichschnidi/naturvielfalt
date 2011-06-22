@@ -1,0 +1,1155 @@
+<?php
+// Load all content functions for Gallery.
+require_once DRUPAL_ROOT . '/modules/gallery/gallery.content.inc';
+
+/**
+* Implements hook_block_info().
+*/
+function gallery_block_info() {
+  $blocks['gallery'] = array(
+    'info' => t('Gallery'),
+  );
+  return $blocks;
+}
+
+/**
+* Implements hook_menu().
+*/
+function gallery_menu() {
+  $items = array();
+  // ADMIN MENU
+  $items['admin/config/media/gallery'] = array(
+    'title' => t('Gallery'),
+    'description' => t('Configuration for Gallery module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_form'),
+    'access arguments' => array('administer rating types'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'gallery.admin.inc',
+  );
+  $items['admin/config/media/gallery/settings'] = array(
+    'title' => t('Global settings'),
+    'description' => t('Global configuration for the Gallery module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_form'),
+    'access arguments' => array('administer rating types'),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'gallery.admin.inc',
+  );
+  
+  // Rating types
+  $items['admin/config/media/gallery/rating-types'] = array(
+    'title' => t('Rating types'),
+    'description' => t('List the current gallery rating types on the site.'),
+    'page callback' => 'gallery_rating_type_list',
+    'access arguments' => array('administer rating types'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'gallery.admin.ratingtypes.inc',
+  );
+  $items['admin/config/media/gallery/rating-types/add'] = array(
+    'title' => t('Add rating type'),
+    'description' => t('Add a new rating type.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_rating_type_add_form'),
+    'access arguments' => array('administer rating types'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'gallery.admin.ratingtypes.inc',
+  );
+  $items['admin/config/media/gallery/rating-types/edit/%gallery_rating_type'] = array(
+    'title' => t('Edit rating type'),
+    'description' => t('Configure a rating type.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_rating_type_form', 6),
+    'access arguments' => array('administer rating types'),
+    'file' => 'gallery.admin.ratingtypes.inc',
+  );
+  $items['admin/config/media/gallery/rating-types/delete/%gallery_rating_type'] = array(
+    'title' => t('Delete rating type'),
+    'description' => t('Delete a rating type.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_rating_type_delete_form', 6),
+    'access arguments' => array('administer rating types'),
+    'file' => 'gallery.admin.ratingtypes.inc',
+  );
+  
+  // Categories
+  $items['admin/config/media/gallery/categories'] = array(
+    'title' => t('Categories'),
+    'description' => t('List the current gallery categories on the site.'),
+    'page callback' => 'gallery_category_list',
+    'access arguments' => array('administer categories'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'gallery.admin.categories.inc',
+  );
+  $items['admin/config/media/gallery/categories/add'] = array(
+    'title' => t('Add category'),
+    'description' => t('Add a new category.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_add_form'),
+    'access arguments' => array('administer categories'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'gallery.admin.categories.inc',
+  );
+  $items['admin/config/media/gallery/categories/edit/%gallery_category'] = array(
+    'title' => t('Edit category'),
+    'description' => t('Configure a category.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_form', 6),
+    'access arguments' => array('administer categories'),
+    'file' => 'gallery.admin.categories.inc',
+  );
+  $items['admin/config/media/gallery/categories/delete/%gallery_category'] = array(
+    'title' => t('Delete category'),
+    'description' => t('Delete a category.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_delete_form', 6),
+    'access arguments' => array('administer categories'),
+    'file' => 'gallery.admin.categories.inc',
+  );
+  // Category options
+  $items['admin/config/media/gallery/categories/%gallery_category/options'] = array(
+    'title' => t('Edit category options'),
+    'description' => t('Configure a category\'s options.'),
+    'page callback' => 'gallery_category_option_list',
+    'page arguments' => array(5),
+    'access arguments' => array('administer categories'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'gallery.admin.categoryoptions.inc',
+  );
+  $items['admin/config/media/gallery/categories/%gallery_category/options/add'] = array(
+    'title' => t('Add category option'),
+    'description' => t('Add a new category option.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_option_add_form', 5),
+    'access arguments' => array('administer categories'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'gallery.admin.categoryoptions.inc',
+  );
+  $items['admin/config/media/gallery/categories/%gallery_category/options/edit/%gallery_category_option'] = array(
+    'title' => t('Edit category option'),
+    'description' => t('Configure a category option.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_option_form', 5, 8),
+    'access arguments' => array('administer categories'),
+    'file' => 'gallery.admin.categoryoptions.inc',
+  );
+  $items['admin/config/media/gallery/categories/%gallery_category/options/delete/%gallery_category_option'] = array(
+    'title' => t('Delete category option'),
+    'description' => t('Delete a category option.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_option_delete_form', 5, 8),
+    'access arguments' => array('administer categories'),
+    'file' => 'gallery.admin.categoryoptions.inc',
+  );
+  
+  // Category conditions
+  $items['admin/config/media/gallery/categories/%gallery_category/conditions'] = array(
+    'title' => t('Edit category conditions'),
+    'description' => t('Configure a category\'s conditions.'),
+    'page callback' => 'gallery_category_condition_list',
+    'page arguments' => array(5),
+    'access arguments' => array('administer categories'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'gallery.admin.categoryconditions.inc',
+  );
+  $items['admin/config/media/gallery/categories/%gallery_category/conditions/add'] = array(
+    'title' => t('Add category condition'),
+    'description' => t('Add a new category condition.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_condition_add_form', 5),
+    'access arguments' => array('administer categories'),
+    'type' => 0,
+    'file' => 'gallery.admin.categoryconditions.inc',
+  );
+  $items['admin/config/media/gallery/categories/%gallery_category/conditions/edit/%gallery_category_condition'] = array(
+    'title' => t('Edit category condition'),
+    'description' => t('Configure a category condition.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_condition_form', 5, 8),
+    'access arguments' => array('administer categories'),
+    'file' => 'gallery.admin.categoryconditions.inc',
+  );
+  $items['admin/config/media/gallery/categories/%gallery_category/conditions/delete/%gallery_category_condition'] = array(
+    'title' => t('Delete category condition'),
+    'description' => t('Delete a category condition.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_category_condition_delete_form', 5, 8),
+    'access arguments' => array('administer categories'),
+    'file' => 'gallery.admin.categoryconditions.inc',
+  );
+  
+  // Generic gallery menu
+  $items['gallery/%/%'] = array(
+    'title' => t('Gallery'),
+    'page callback' => 'gallery_list',
+    'page arguments' => array(1, 2),
+    'type' => MENU_NORMAL_ITEM,
+    'access callback' => 'gallery_access_callback',
+    'access arguments' => array(1),
+    'file' => 'gallery.content.inc',
+  );
+  $items['gallery/%/%/image/%gallery_image'] = array(
+    'page callback' => 'gallery_image',
+    'page arguments' => array(1, 2, 4),
+    'access callback' => 'gallery_access_callback',
+    'access arguments' => array(1),
+    'file' => 'gallery.content.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['gallery/%/%/thumb/%gallery_image/%'] = array(
+    'page callback' => 'gallery_thumb',
+    'page arguments' => array(1, 2, 4, 5),
+    'access callback' => 'gallery_access_callback',
+    'access arguments' => array(1),
+    'file' => 'gallery.content.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['gallery/%/%/edit'] = array(
+    'title' => t('Edit gallery images'),
+    'description' => t('Edit gallery images.'),
+    'page callback' => 'gallery_images_edit',
+    'page arguments' => array(1, 2),
+    'type' => MENU_LOCAL_ACTION,
+    'weight' => 2,
+    'access callback' => 'gallery_edit_access_callback',
+    'access arguments' => array(1, 2),
+    'file' => 'gallery.content.inc',
+  );
+  $items['gallery/%/%/edit/%gallery_image'] = array(
+    'title' => t('Edit a gallery image'),
+    'description' => t('Edit a single gallery image.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_image_form', 1, 2, 4),
+    'access callback' => 'gallery_edit_access_callback',
+    'access arguments' => array(1, 2, 4),
+    'file' => 'gallery.content.inc',
+  );
+  $items['gallery/%/%/rate/%gallery_image'] = array(
+    'title' => t('Rate a gallery image'),
+    'description' => t('Edit a single gallery image.'),
+    'page callback' => 'gallery_image_rate',
+    'page arguments' => array(4),
+    'access callback' => 'gallery_access_callback',
+    'access arguments' => array(1, 'rate gallery images'),
+    'file' => 'gallery.content.inc',
+  );
+  $items['gallery/%/%/hide/%gallery_image'] = array(
+    'title' => t('Hide a gallery image'),
+    'description' => t('Hide a single gallery image.'),
+    'page callback' => 'gallery_image_hide',
+    'page arguments' => array(4),
+    'access callback' => 'gallery_edit_access_callback',
+    'access arguments' => array(1, 2, 4),
+    'file' => 'gallery.content.inc',
+  );
+  $items['gallery/%/%/show/%gallery_image'] = array(
+    'title' => t('Show a gallery image'),
+    'description' => t('Show a single gallery image.'),
+    'page callback' => 'gallery_image_show',
+    'page arguments' => array(4),
+    'access callback' => 'gallery_edit_access_callback',
+    'access arguments' => array(1, 2, 4),
+    'file' => 'gallery.content.inc',
+  );
+  return $items;
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function gallery_theme() {
+  return array(
+    // Theme functions in gallery.content.inc.
+    'gallery_list' => array(
+      'variables' => array('images' => NULL, 'rating_types' => NULL),
+    ),
+    'gallery_image_rating' => array(
+      'variables' => array('image' => NULL, 'rating_types' => NULL),
+    ),
+    // Theme functions in gallery.admin.ratingtypes.inc.
+    'gallery_rating_type_list' => array(
+      'variables' => array('types' => NULL),
+    ),
+    // Theme functions in gallery.admin.categories.inc.
+    'gallery_category_list' => array(
+      'variables' => array('categories' => NULL),
+    ),
+    // Theme functions in gallery.admin.categoryconditions.inc.
+    'gallery_category_condition_list' => array(
+      'variables' => array('conditions' => NULL, 'category' => NULL),
+    ),
+    // Theme functions in gallery.admin.categoryoptions.inc.
+    'gallery_category_option_list' => array(
+      'variables' => array('options' => NULL, 'category' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function gallery_permission() {
+  return array(
+    'administer rating types' => array(
+      'title' => t('Administer rating types'),
+      'description' => t('Create and modify rating types for gallery images.'),
+    ),
+    'administer categories' => array(
+      'title' => t('Administer categories'),
+      'description' => t('Create and modify categories for gallery images.'),
+    ),
+    'add gallery images' => array(
+      'title' => t('Add gallery images'),
+      'description' => t('Create and modify gallery images of objects owned.'),
+    ),
+    'manage gallery images' => array(
+      'title' => t('Manage gallery images'),
+      'description' => t('Create and modify gallery images everywhere.'),
+    ),
+    'rate gallery images' => array(
+      'title' => t('Rate gallery images'),
+      'description' => t('Place ratings for gallery images.')
+    ),
+    'view gallery images' => array(
+      'title' => t('View gallery images'),
+      'description' => t('View gallery images.')
+    ),
+    'view hidden gallery images' => array(
+      'title' => t('View hidden gallery images'),
+      'description' => t('View gallery images with rating lower than the boundry set in the gallery settings.')
+    )
+  );
+}
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function gallery_image_default_styles() {
+  $styles = array();
+
+  $styles['gallery_mini'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 50, 'upscale' => 0),
+        'weight' => 0,
+      ),
+    )
+  );
+
+  $styles['gallery_thumbnail'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 188, 'height' => 150),
+        'weight' => 0,
+      ),
+    )
+  );
+
+  $styles['gallery_large'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 1000, 'height' => 800, 'upscale' => 0),
+        'weight' => 0,
+      ),
+    )
+  );
+  return $styles;
+}
+
+
+/**
+ * Get an array of all gallery images by type and id.
+ *
+ * @param $type
+ *   The type of the object.
+ * @param $id
+ *   The ID (or an array of IDs) of the object.
+ * @param $crosslinked
+ *   Whether to return cross linked images
+ * @param $rating
+ *   Whether to include the ratings of the images
+ * @return
+ *   An array of gallery images
+ */
+function gallery_images($type, $id, $crosslinked=true, $rating=false) {
+  global $user;
+  if (!_gallery_check_type_validity($type))
+    return array();
+  $sql = 'SELECT '.
+          'gi.*, '.
+          'fm.*, ' .
+          'gic.id AS gic_id, '.
+          'gco.id AS gco_id, '.
+          'gco.id AS gco_name, '.
+          'gc.id AS gc_id, '.
+          'gc.name AS gc_name, '.
+          'gc.description AS gc_description, '.
+          'COALESCE(r.overallrating, 0) AS overallrating '.
+          ($rating ? ', (SELECT AVG(gir2.rating) FROM gallery_image_rating AS gir2 WHERE gir2.image_id = gi.id AND gir2.rating_type_id = grt.id GROUP BY gir2.rating_type_id) AS rating, '.
+                       '(SELECT COUNT(gir3.rating) FROM gallery_image_rating AS gir3 WHERE gir3.image_id = gi.id AND gir3.rating_type_id = grt.id GROUP BY gir3.rating_type_id) AS rating_count, '.
+                       'grt.id AS grt_id ' : '').
+          'FROM '.
+            'gallery_image AS gi '.
+          'INNER JOIN file_managed AS fm ON fm.fid = gi.fid '.
+          'LEFT OUTER JOIN gallery_image_category AS gic ON gic.image_id = gi.id '.
+          'LEFT OUTER JOIN gallery_category_option AS gco ON gco.id = gic.option_id '.
+          'LEFT OUTER JOIN gallery_category AS gc ON gc.id = gco.category_id '.
+          'LEFT OUTER JOIN '.
+            '(SELECT SUM(s.rating) AS overallrating, s.image_id FROM '.
+              '(SELECT AVG(gir.rating)*AVG(grt.weight) AS rating, gir.image_id '.
+                'FROM '.
+                  'gallery_image_rating AS gir '.
+                'LEFT JOIN gallery_rating_type AS grt ON (gir.rating_type_id = grt.id) '.
+                'GROUP BY grt.id, gir.image_id'.
+                ') AS s '.
+              'GROUP BY s.image_id '.
+            ') AS r ON r.image_id = gi.id '.
+          ($rating ? 'LEFT OUTER JOIN gallery_rating_type AS grt ON grt.id IS NOT NULL ' : '');
+  $joins = array();
+  $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
+  $conditions = array('(gi.item_type = \''.$type.'\' AND gi.item_id '.$id_condition.')');
+  $where = '';
+  if (!user_access('view hidden gallery images'))
+    $where .= 'AND ((COALESCE(r.overallrating, 0) >= '.variable_get('gallery_boundry', 0).' AND gi.visible = 1) OR gi.owner_id = '.$user->uid.') ';
+  if ($crosslinked) {
+    $conversions = _gallery_type_conversions();
+    $n = 0;
+    foreach($conversions as $conversion) {
+      if($conversion[(count($conversion)-1)]['target'] != $type)
+        continue;
+      $n++;
+      foreach($conversion as $i => $c) {
+        if($i == 0)
+          array_push($joins, 'LEFT OUTER JOIN '.$c['source'].' AS c'.$n.' ON c'.$n.'.id = gi.item_id');
+        array_push($joins, 'LEFT OUTER JOIN '.$c['target'].' AS c'.$n.'_'.$i.' ON c'.$n.'_'.$i.'."'.$c['target_key'].'" = '.($i == 0 ? 'c'.$n : 'c'.$n.'_'.($i-1)).'."'.$c['source_key'].'"');
+        if($i == count($conversion)-1)
+          array_push($conditions, '(gi.item_type = \''.$conversion[0]['source'].'\' AND c'.$n.'_'.$i.'.id '.$id_condition.')');
+      }
+    }
+  }
+  $sql .= implode(' ', $joins);
+  $sql .= ' WHERE ('.implode(' OR ', $conditions).') '.$where;
+  $sql .= ' ORDER BY overallrating DESC';
+  $images = array();
+  $seen = array();
+  $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchAll();
+  foreach($result as $record) {
+    if(array_key_exists($record['id'], $seen))
+      $image = $images[$seen[$record['id']]];
+    else {
+      $image = array('categories' => array());
+      if($rating)
+        $image['ratings'] = array();
+      foreach($record as $key => $value)
+        if(!preg_match('/^gi?co?_/', $key))
+          $image[$key] = $value;
+      $seen[$record['id']] = count($images);
+    }
+    if($record['gc_id'] !== null)
+      array_push($image['categories'], array(
+        'id' => $record['gc_id'],
+        'name' => $record['gc_name'],
+        'description' => $record['gc_description'],
+        'value' => $record['gco_name'],
+        'option_id' => $record['gco_id'],
+        'value_id' => $record['gic_id']
+      ));
+    if($rating && $record['rating'])
+      $image['ratings'][$record['grt_id']] = array(
+        'average' => $record['rating'],
+        'count' => $record['rating_count'],
+        'rating_type' => $record['grt_id']
+      );
+    $images[$seen[$record['id']]] = $image;
+  }
+  return $images;
+}
+
+/**
+ * Load a gallery image by it's ID. May be used as a loader for menu items.
+ *
+ * @param $id
+ *   The ID of the gallery image.
+ * @return
+ *   An image array containing the following keys:
+ *   - "id": The unique gallery image ID.
+ *   - "item_type": The type of object this image belongs to (inventory_entry, area, habitant, organism)
+ *   - "item_id": The id of the object this image belongs to
+ *   - "fid": The {file_managed}.fid being referenced in this field.
+ *   - "alt": Alternative image text, for the image's 'alt' attribute.
+ *   - "title": Image title text, for the image's 'title' attribute.
+ *   - "description": Long description of the image.
+ *   - "author": The author of the image.
+ *   - "location": The location of the image.
+ *   - "visible": Whether the image is publicly visible or not
+ *   - "owner_id": The {users}.uid of this image
+ *   - "created_date": The date this image was created
+ *   - "modified_date": The date this image was last modified
+ *   - "categories": An array of all category values set for the image keyed by category ID
+ *   If the category ID is not valid, an empty array is returned.
+ */
+function gallery_image_load($id) {
+  if (!$id)
+    return array();
+  $query = db_select('gallery_image', 'gi', array('fetch' => PDO::FETCH_ASSOC));
+  $query->join('file_managed', 'fm', 'fm.fid = gi.fid');
+  $query->leftJoin('gallery_image_category', 'gic', 'gic.image_id = gi.id');
+  $query->leftJoin('gallery_category_option', 'gco', 'gco.id = gic.option_id');
+  $query->leftJoin('gallery_category', 'gc', 'gc.id = gco.category_id');
+  $query->condition('gi.id', $id)
+    ->fields('gi')
+    ->fields('fm');
+  $query->addField('gic', 'id', 'gic_id');
+  $query->addField('gco', 'id', 'gco_id');
+  $query->addField('gco', 'name', 'gco_name');
+  $query->addField('gc', 'id', 'gc_id');
+  $query->addField('gc', 'name', 'gc_name');
+  $query->addField('gc', 'description', 'gc_description');
+  $result = $query->execute()->fetchAll();
+  if (!$result)
+    return array();
+  $image = array('categories' => array());
+  foreach($result as $record) {
+    if($record['gc_id'] === null)
+      continue;
+    $image['categories'][$record['gco_id']] = array(
+      'id' => $record['gc_id'],
+      'name' => $record['gc_name'],
+      'description' => $record['gc_description'],
+      'value' => $record['gco_name'],
+      'option_id' => $record['gco_id'],
+      'value_id' => $record['gic_id']
+    );
+  }
+  foreach($record as $key => $value)
+    if(!preg_match('/^gi?co?_/', $key))
+      $image[$key] = $value;
+  return $image;
+}
+
+/**
+ * Save an image.
+ *
+ * @param $image
+ *   An image array.
+ * @return
+ *   An image array. In the case of a new image, 'id' will be populated.
+ */
+function gallery_image_save($image) {
+  global $user;
+  if (!$image['owner_id'])
+    $image['owner_id'] = $user->uid;
+  if (!$image['created_date'])
+    $image['created_date'] = 'now()';
+  $image['modified_date'] = 'now()';
+  if (isset($image['id']) && is_numeric($image['id']))
+    drupal_write_record('gallery_image', $image, 'id');
+  else
+    drupal_write_record('gallery_image', $image);
+  if(!is_array($image['categories']))
+    return $image;
+  $new_entries = array();
+  foreach($image['categories'] as $category) {
+    $entry = array(
+      'image_id' => $image['id'],
+      'option_id' => $category['option_id']
+    );
+    if(isset($category['value_id']) && is_numeric($category['value_id'])) {
+      $entry['id'] = $category['value_id'];
+      drupal_write_record('gallery_image_category', $entry, 'id');
+    } else
+      drupal_write_record('gallery_image_category', $entry);
+    array_push($new_entries, $entry['id']);
+  }
+  // Delete all remaining category values
+  db_delete('gallery_image_category')
+    ->condition('image_id', $image['id'])
+    ->condition('id', $new_entries, 'NOT IN')
+    ->execute();
+  return $image;
+}
+
+/**
+ * Delete an image.
+ *
+ * @param $image
+ *   An image array.
+ * @return
+ *   TRUE on success.
+ */
+function gallery_image_delete($image) {
+  $file = (object) $image;
+  if (!file_delete($file, true))
+    return false;
+  db_delete('gallery_image')->condition('id', $image['id'])->execute();
+  db_delete('gallery_image_category')->condition('image_id', $image['id'])->execute();
+  db_delete('gallery_image_rating')->condition('image_id', $image['id'])->execute();
+  db_delete('file_managed')->condition('fid', $image['fid'])->execute();
+  return true;
+}
+
+/**
+ * Save an image rating
+ *
+ * @param $image_id
+ *   The ID of the image to be rated.
+ * @param $rating_type_id
+ *   The ID of the rating type.
+ * @param $rating
+ *   The rating to be placed.
+ * @return
+ *   TRUE on success.
+ */
+function gallery_image_rating_save($image_id, $rating_type_id, $rating) {
+  global $user;
+  $entry = array(
+    'rating' => $rating,
+    'user_ip' => $user->hostname,
+    'image_id' => $image_id,
+    'rating_type_id' => $rating_type_id,
+  );
+  $query = db_select('gallery_image_rating', 'gir')
+    ->condition('image_id', $image_id)
+    ->condition('rating_type_id', $rating_type_id)
+    ->fields('gir', array('id'));
+  if(!in_array('anonymous', $user->roles)) {
+    $entry['user_id'] = $user->uid;
+    $query->condition('user_id', $user->uid);
+  } else
+    $query->condition('user_ip', $user->hostname);
+  $record = $query
+    ->execute()
+    ->fetchAssoc();
+  if($record) {
+    $entry['id'] = $record['id'];
+    drupal_write_record('gallery_image_rating', $entry, 'id');
+  } else
+    drupal_write_record('gallery_image_rating', $entry);
+  return true;
+}
+
+function gallery_image_visibility_save($image, $visible) {
+  db_update('gallery_image')
+    ->condition('id', $image['id'])
+    ->fields(array('visible' => $visible))
+    ->execute();
+  return true;
+}
+
+/**
+ * Get all categories available for a specific item_type and item_id
+ *
+ * @param $type
+ *   The type of the object.
+ * @param $id
+ *   The ID of the object.
+ * @return
+ *   An array of gallery images
+ */
+function gallery_available_categories($type, $id) {
+  $available = array();
+  $query = db_select('gallery_category', 'gc', array('fetch' => PDO::FETCH_ASSOC));
+  $query->leftJoin('gallery_category_condition', 'gcc', 'gcc.category_id = gc.id');
+  $categories = $query->fields('gc')
+    ->fields('gcc', array('condition', 'columnname', 'value'))
+    ->orderBy('name')
+    ->execute()
+    ->fetchAll();
+  $conditions = _gallery_category_conditions();
+  $conversions = _gallery_type_conversions();
+  $seen = array();
+  foreach($categories as $category) {
+    $avail = false;
+    $query = false;
+    if(in_array($category['id'], $seen))
+      continue;
+    if($category['condition'] === null)
+      $avail = true;
+    else if(!array_key_exists($category['condition'], $conditions))
+      continue;
+    else {
+      $condition = $conditions[$category['condition']];
+      if(!$condition['table']) {
+        if($condition['type'] == $type)
+          $avail = true;
+        else
+          foreach($conversions as $conversion)
+            if($conversion[0]['source'] == $type && $conversion[(count($conversion)-1)]['target'] == $condition['type'])
+              $avail = true;
+      } else {
+        $alias = is_array($condition['table']) ? 'pt' : 't';
+        $query = false;
+        if($condition['type'] == $type)
+          $query = db_select($type, $alias)->condition($alias.'.id', $id);
+        else {
+          foreach($conversions as $conversion) {
+            if($conversion[0]['source'] != $type || $conversion[(count($conversion)-1)]['target'] != $condition['type'])
+              continue;
+            $conversion = array_reverse($conversion);
+            foreach($conversion as $i => $c) {
+              if($i == 0)
+                $query = db_select($c['target'], $alias);
+              $query->join($c['source'], 's'.$i, 's'.$i.'."'.$c['source_key'].'" = '.($i == 0 ? $alias : 's'.($i-1)).'."'.$c['target_key'].'"');
+              if($i == count($conversion)-1)
+                $query->condition('s'.$i.'.id', $id);
+            }
+            break;
+          }
+        }
+        if($query === false)
+          continue;
+        if(is_array($condition['table'])) {
+          $table = $condition['table'][0];
+          $join_on = array();
+          foreach($condition['table'][1] as $type_col => $table_col)
+            array_push($join_on, 'pt."'.$type_col.'" = '.$table_col);
+          $query->join($table, 't', '('.join(' AND ', $join_on).')');
+        }
+        if(is_array($condition['columns']))
+          $query->condition('t."'.$category['columnname'].'"', $category['value']);
+        else if($condition['value'] && $condition['column'])
+          $query->condition('t."'.$condition['column'].'"', $condition['value']);
+        $result = $query->fields('t')->execute();
+        if($result->rowCount())
+          $avail = true;
+      }
+    }
+    if($avail) {
+      array_push($seen, $category['id']);
+      array_push($available, array(
+        'id' => $category['id'],
+        'name' => $category['name'],
+        'description' => $category['description'],
+        'required' => $category['required'],
+        'multiple' => $category['multiple'],
+        'options' => gallery_category_options($category['id'])
+      ));
+    }
+  }
+  return $available;
+}
+
+/**
+ * Get all rating types available for the current user
+ *
+ * @return
+ *   An array of rating types
+ */
+function gallery_available_rating_types() {
+  global $user;
+  $types = gallery_rating_types();
+  $available = array();
+  foreach($types as $type)
+    if(!array_key_exists('role', $type) || !$type['role'] || in_array($type['role'], $user->roles))
+      array_push($available, $type);
+  return $available;
+}
+
+
+/**
+ * Get an array of all categories.
+ *
+ * @return
+ *   An array of categories keyed by the gallery category ID.
+ */
+function gallery_categories() {
+  return db_select('gallery_category', NULL, array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('gallery_category')
+    ->orderBy('name')
+    ->execute()
+    ->fetchAll();
+}
+
+/**
+ * Load a category by it's ID. May be used as a loader for menu items.
+ *
+ * @param $id
+ *   The ID of the category.
+ * @return
+ *   A category array containing the following keys:
+ *   - "gcid": The unique gallery category ID.
+ *   - "name": The name of the category.
+ *   - "description": The description of the category.
+ *   - "required": Whether this category is required or not.
+ *   - "multiple": Whether multiple values may be selected for the category or not.
+ *   If the ID is not valid, an empty array is returned.
+ */
+function gallery_category_load($id) {
+  if (!$id)
+    return array();
+  $result = db_select('gallery_category', NULL, array('fetch' => PDO::FETCH_ASSOC))
+              ->condition('id', $id)
+              ->fields('gallery_category')
+              ->execute()
+              ->fetchAssoc();
+  if (!$result)
+    return array();
+  return $result;
+}
+
+/**
+ * Save a category.
+ *
+ * @param $category
+ *   A category array.
+ * @return
+ *   A category array. In the case of a new category, 'id' will be populated.
+ */
+function gallery_category_save($category) {
+  if (isset($category['id']) && is_numeric($category['id']))
+    drupal_write_record('gallery_category', $category, 'id');
+  else
+    drupal_write_record('gallery_category', $category);
+  return $category;
+}
+
+/**
+ * Delete a category.
+ *
+ * @param $category
+ *   A category array.
+ * @return
+ *   TRUE on success.
+ */
+function gallery_category_delete($category) {
+  db_delete('gallery_category')->condition('id', $category['id'])->execute();
+  db_delete('gallery_category_condition')->condition('category_id', $category['id'])->execute();
+  db_delete('gallery_image_category')->condition('option_id', 
+    db_select('gallery_category_option')
+      ->fields('id')
+      ->condition('category_id', $category['id']), 'IN')->execute();
+  db_delete('gallery_category_option')->condition('category_id', $category['id'])->execute();
+  return TRUE;
+}
+
+/**
+ * Get an array of all options of a category.
+ *
+ * @param $category_id
+ *   The ID of the category.
+ * @return
+ *   An array of options keyed by the gallery category option ID.
+ */
+function gallery_category_options($category_id) {
+  return db_select('gallery_category_option', NULL, array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('gallery_category_option')
+    ->condition('category_id', $category_id)
+    ->orderBy('id')
+    ->execute()
+    ->fetchAll();
+}
+
+/**
+ * Load a category option by it's ID. May be used as a loader for menu items.
+ *
+ * @param $id
+ *   The ID of the category option.
+ * @return
+ *   A category option array containing the following keys:
+ *   - "gcoid": The unique gallery category option ID.
+ *   - "gcid": The gallery category ID this option belongs to.
+ *   - "name": The name of the category option.
+ *   If the ID is not valid, an empty array is returned.
+ */
+function gallery_category_option_load($id) {
+  if (!$id)
+    return array();
+  $result = db_select('gallery_category_option', NULL, array('fetch' => PDO::FETCH_ASSOC))
+              ->condition('id', $id)
+              ->fields('gallery_category_option')
+              ->execute()
+              ->fetchAssoc();
+  if (!$result)
+    return array();
+  return $result;
+}
+
+/**
+ * Save a category option.
+ *
+ * @param $option
+ *   A category option array.
+ * @return
+ *   A category option array. In the case of a new category option, 'id' will be populated.
+ */
+function gallery_category_option_save($option) {
+  if (isset($option['id']) && is_numeric($option['id']))
+    drupal_write_record('gallery_category_option', $option, 'id');
+  else
+    drupal_write_record('gallery_category_option', $option);
+  return $option;
+}
+
+/**
+ * Delete a category option.
+ *
+ * @param $option
+ *   A category option array.
+ * @return
+ *   TRUE on success.
+ */
+function gallery_category_option_delete($option) {
+  db_delete('gallery_category_option')->condition('id', $option['id'])->execute();
+  db_delete('gallery_image_category')->condition('id', $option['id'])->execute();
+  return TRUE;
+}
+
+/**
+ * Get an array of all conditions of a category.
+ *
+ * @param $category_id
+ *   The ID of the category.
+ * @return
+ *   An array of conditions keyed by the gallery category condition ID.
+ */
+function gallery_category_conditions($category_id) {
+  return db_select('gallery_category_condition', NULL, array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('gallery_category_condition')
+    ->condition('category_id', $category_id)
+    ->orderBy('name')
+    ->execute()
+    ->fetchAll();
+}
+
+/**
+ * Load a category condition by it's ID. May be used as a loader for menu items.
+ *
+ * @param $id
+ *   The ID of the category condition.
+ * @return
+ *   A category condition array containing the following keys:
+ *   - "id": The unique gallery category option ID.
+ *   - "category_id": The gallery category ID this option belongs to.
+ *   - "name": The name of the category condition.
+ *   - "condition": The name of the condition.
+ *   - "columnname": The column this condition refers to.
+ *   - "value": The value the refered column has to contain in order this condition yields true.
+ *   If the ID is not valid, an empty array is returned.
+ */
+function gallery_category_condition_load($id) {
+  if (!$id)
+    return array();
+  $result = db_select('gallery_category_condition', NULL, array('fetch' => PDO::FETCH_ASSOC))
+              ->condition('id', $id)
+              ->fields('gallery_category_condition')
+              ->execute()
+              ->fetchAssoc();
+  if (!$result)
+    return array();
+  return $result;
+}
+
+/**
+ * Save a category condition.
+ *
+ * @param $condition
+ *   A category condition array.
+ * @return
+ *   A category condition array. In the case of a new category condition, 'id' will be populated.
+ */
+function gallery_category_condition_save($condition) {
+  if (isset($condition['id']) && is_numeric($condition['id']))
+    drupal_write_record('gallery_category_condition', $condition, 'id');
+  else
+    drupal_write_record('gallery_category_condition', $condition);
+  return $condition;
+}
+
+/**
+ * Delete a category condition.
+ *
+ * @param $condition
+ *   A category condition array.
+ * @return
+ *   TRUE on success.
+ */
+function gallery_category_condition_delete($condition) {
+  db_delete('gallery_category_condition')->condition('id', $condition['id'])->execute();
+  return TRUE;
+}
+
+
+/**
+ * Get an array of all rating types.
+ *
+ * @return
+ *   An array of rating types
+ */
+function gallery_rating_types() {
+  return db_select('gallery_rating_type', NULL, array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('gallery_rating_type')
+    ->orderBy('weight')
+    ->execute()
+    ->fetchAll();
+}
+
+/**
+ * Load a rating type by it's ID. May be used as a loader for menu items.
+ *
+ * @param $id
+ *   The ID of the rating type.
+ * @return
+ *   A rating type array containing the following keys:
+ *   - "grtid": The unique gallery rating type ID.
+ *   - "name": The name of the rating type.
+ *   - "description": The description of the rating type.
+ *   - "weight": The weight of the rating type.
+ *   - "role": The role required for the rating type.
+ *   If the rating type ID is not valid, an empty array is returned.
+ */
+function gallery_rating_type_load($id) {
+  if (!$id)
+    return array();
+  $result = db_select('gallery_rating_type', NULL, array('fetch' => PDO::FETCH_ASSOC))
+              ->condition('id', $id, '=')
+              ->fields('gallery_rating_type')
+              ->execute()
+              ->fetchAssoc();
+  if (!$result)
+    return array();
+  return $result;
+}
+
+/**
+ * Save a rating type.
+ *
+ * @param $type
+ *   A rating type array.
+ * @return
+ *   A rating type array. In the case of a new rating type, 'id' will be populated.
+ */
+function gallery_rating_type_save($type) {
+  if (isset($type['id']) && is_numeric($type['id']))
+    drupal_write_record('gallery_rating_type', $type, 'id');
+  else
+    drupal_write_record('gallery_rating_type', $type);
+  return $type;
+}
+
+/**
+ * Delete a rating type.
+ *
+ * @param $type
+ *   A rating type array.
+ * @return
+ *   TRUE on success.
+ */
+function gallery_rating_type_delete($type) {
+  db_delete('gallery_rating_type')->condition('id', $type['id'])->execute();
+  db_delete('gallery_image_rating')->condition('id', $type['id'])->execute();
+  return TRUE;
+}
+
+/**
+ * Checks access for gallery specific pages
+ * 
+ * @return boolean
+ *   Whether access is granted or not
+ * @param string $type
+ *   The type of object to be accessed
+ */
+function gallery_access_callback($type, $permission='view gallery images') {
+  if (!_gallery_check_type_validity($type))
+    return false;
+  return user_access($permission);
+}
+
+/**
+ * Checks access for gallery specific edit pages
+ * 
+ * @return boolean
+ *   Whether access is granted or not
+ * @param string $type
+ *   The type of object to be accessed
+ * @param string $id
+ *   The id of object to be accessed
+ * @param array $image
+ *   The image to be accessed.
+ */
+function gallery_edit_access_callback($type, $id, $image=false) {
+  if (!_gallery_check_type_validity($type))
+    return false;
+  if(user_access('manage gallery images'))
+    return true;
+  if(!user_access('add gallery images'))
+    return false;
+  $types = module_invoke_all('gallery_types');
+  if($image) // check image ownership
+    $access_method = array_key_exists('edit_image', $types[$type]) ? $types[$type]['edit_image'] : 'gallery_image_owner_access_callback';
+  else
+    $access_method = array_key_exists('edit_gallery', $types[$type]) ? $types[$type]['edit_gallery'] : '';
+  if(!$access_method || !function_exists($access_method))
+    return true;
+  return call_user_func_array($access_method, array($type, $id, $image));
+}
+
+/**
+ * Checks whether the current user is the owner of the image or not
+ * 
+ * @return boolean
+ *   Whether the current user is the owner or not
+ * @param string $type
+ *   The type of object to be accessed
+ * @param string $id
+ *   The id of object to be accessed
+ * @param array $image
+ *   The image to be accessed.
+ */
+function gallery_image_owner_access_callback($type, $id, $image) {
+  global $user;
+  return $user->uid == $image['owner_id'];
+}
+
+/**
+ * Checks whether the current user is the owner of the specified object or not
+ * 
+ * @return boolean
+ *   Whether the current user is the owner or not
+ * @param string $type
+ *   The type of object to be accessed
+ * @param string $id
+ *   The id of object to be accessed
+ * @param array $image
+ *   The image to be accessed.
+ */
+function gallery_owner_access_callback($type, $id, $image=false) {
+  global $user;
+  return db_select($type, 't')
+    ->fields('t')
+    ->condition('t.id', $id)
+    ->condition('t.owner_id', $user->uid)
+    ->execute()->rowCount() > 0;
+}
+
+/**
+ * Checks whether the gallery module is active for the specific type or not
+ * 
+ * @return boolean
+ *   Whether the type is valid or not
+ * @param string $type
+ *   The type of object to be accessed
+ */
+function _gallery_check_type_validity($type) {
+  $types = module_invoke_all('gallery_types');
+  foreach($types as $registered => $access)
+    if ($registered == $type)
+      return true;
+    else if (in_array($type, $types))
+      return true;
+  return false;
+}
+
+function _gallery_type_conversions() {
+  return module_invoke_all('gallery_type_conversions');
+}
+
+function _gallery_category_conditions() {
+  return module_invoke_all('gallery_category_conditions');
+}

@@ -41,7 +41,7 @@ function habitat_show($habitatGroupId) {
 	$render_array['linked_areas'] = array(
   		'#type' => 'fieldset', 
   		'#title' => t('Linked Areas'), 
-  		'#weight' => 3, 
+  		'#weight' => 11, 
   		'#collapsible' => TRUE,
 		'#collapsed' => FALSE,
 		'#attached' => array (
@@ -68,6 +68,8 @@ function habitat_show($habitatGroupId) {
 	 	 	'#markup' => t("There are no linked areas yet"),
 		);
 	}
+  if(function_exists('gallery_list_renderer'))
+    $render_array['Gallery'] = gallery_list_renderer('habitat', $habitatGroupId);
 	return $render_array;	
 }
 

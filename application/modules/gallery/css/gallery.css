@@ -1,0 +1,215 @@
+/* Gallery list */
+
+ul.gallery {
+  width:1000px;
+}
+
+html fieldset ul.gallery {
+  width:988px;
+}
+
+ul.gallery,
+.block ul.gallery,
+ul.gallery li {
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+ul.gallery li {
+  display:block;
+  float:left;
+  position:relative;
+  width:188px;
+  text-align:center;
+  margin:0 15px 15px 0;
+}
+
+ul.gallery li img {
+  display:block;
+}
+
+html fieldset ul.gallery li {
+  margin:0 9px 9px 0;
+}
+
+ul.gallery li.first {
+  clear:both;
+  text-align:left;
+}
+
+ul.gallery li.last {
+  margin-right:0;
+  text-align:right;
+}
+
+fieldset.gallery {
+  position:relative;
+  padding-bottom:0;
+}
+
+fieldset.gallery ul.action-links,
+fieldset.gallery ul.action-links li {
+  margin:0;
+  padding:0;
+  list-style-image:none;
+}
+
+fieldset.gallery ul.action-links,
+fieldset.gallery p.info {
+  float:right;
+}
+
+fieldset.gallery ul.action-links li {
+  display:block;
+  float:left;
+  background-color:#F7F6EF;
+  margin:0 1px 0 0;
+  padding:0.2em 1em;
+}
+
+fieldset.gallery p.info {
+  margin:0;
+  padding:0.2em 1em;
+  color:#999;
+}
+
+/* Gallery form */
+
+#gallery-image-form #edit-actions {
+  clear:both;
+}
+
+#gallery-image-form .categories,
+#gallery-image-form .metadata {
+  float:right;
+  width:45%;
+}
+
+#gallery-image-form fieldset input,
+#gallery-image-form fieldset textarea {
+  width:90%;
+}
+
+#gallery-image-form fieldset .form-textarea-wrapper textarea {
+  width:100%;
+}
+
+#gallery-image-form fieldset input.form-checkbox {
+  width:auto;
+}
+
+#gallery-image-form .categories {
+  clear:both;
+  float:left;
+}
+
+#gallery-image-form .image {
+  position:relative;
+  padding:0 1em;
+  margin-bottom:0.5em;
+  border:1px solid #F7F6EF;
+  overflow:hidden;
+}
+
+#gallery-image-form .image .remove-image {
+  position:absolute;
+  right:1em;
+  top:1em;
+}
+
+/* Rating */
+
+ul.gallery li .caption {
+  text-align:left;
+}
+
+.rating form,
+#center .rating form {
+  margin:0 0 1em 0;
+  overflow:hidden;
+  font-weight:normal;
+}
+
+.rating small {
+  display:block;
+  float:left;
+  height:17px;
+  line-height:17px;
+  white-space:nowrap;
+  padding-left:0.5em;
+}
+
+.rating label small {
+  float:none;
+  height:auto;
+  line-height:1.1em;
+  margin-bottom:0.5em;
+  padding-left:0;
+}
+
+.gallery .show_hide,
+#center .gallery .show_hide {
+  float:none;
+  width:auto;
+  position:absolute;
+  top:0;
+  right:0;
+  padding:0.5em;
+  margin:0;
+}
+
+.rating .stars {
+  float:left;
+  position:relative;
+  height:15px;
+  width:80px;
+  background:url('../images/jquery.ui.stars.gif') transparent repeat-x 0 -80px;
+}
+
+.rating .stars .stars-avg {
+  position:absolute;
+  background:url('../images/jquery.ui.stars.gif') transparent repeat-x 0 -48px;
+  width:0;
+  height:15px;
+}
+
+.rating .stars .ui-stars-star {
+  position:relative;
+  z-index:1;
+}
+
+#jquery-lightbox .rating form {
+  float:left;
+  width:150px;
+  margin-right:0.5em;
+}
+
+#lightbox-image-details-caption p {
+  margin:0;
+}
+
+#lightbox-image-details-caption p .title {
+  display:block;
+  margin:0 0 1em 0;
+  padding:0 0 0.5em 0;
+}
+
+#lightbox-image-details-caption p .title small {
+  display:block;
+}
+
+#lightbox-image-details-caption p em {
+  display:block;
+  text-align:right;
+  border-top:1px solid #eee;
+  border-bottom:1px solid #eee;
+  margin:0 0 1em 0;
+  padding:0.5em 0;
+  font-style:normal;
+}
+
+#lightbox-image-details-caption p em small {
+  font-style:italic;
+  font-size:1em;
+}

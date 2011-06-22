@@ -86,7 +86,9 @@ function show_area($areaId) {
 	);
 	
 	$output['Inventories'] = drupal_get_form('showAreaInventories', $areaId);
-	$output['Organisms'] = drupal_get_form('showAreaOrganisms', $areaId);
+  
+  if(function_exists('gallery_list_renderer'))
+    $output['Gallery'] = gallery_list_renderer('area', $areaId);
 	return $output;
 	
 }
