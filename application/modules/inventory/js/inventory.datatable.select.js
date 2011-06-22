@@ -14,11 +14,11 @@ function inventoryRowSelect() {
 			targ = targ.parentNode;
 		var idType = targ.parentNode.id.split('_');
 		if (idType[0] == 'organism')
-			window.location.href = '../organism/'+idType[1];
+			window.location.href = Drupal.settings.basePath+'organism/'+idType[1];
 		if (idType[0] == 'inventory')
-			window.location.href = 'inventory/'+idType[1];
+			window.location.href = Drupal.settings.basePath+'inventory/'+idType[1];
 		if (idType[0] == 'protected')
-			window.location.href = '../user/'+idType[1]+'/contact';
+			window.location.href = Drupal.settings.basePath+'user/'+idType[1]+'/contact';
 	}
 	
 	var lastHoverId = 0;
