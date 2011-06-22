@@ -1169,6 +1169,14 @@ tr.taxonomy-term-divider-bottom {
 .theme-selector .operations li {
   list-style-image: none;
 }
+table.inventory_show {
+	table-layout: fixed;
+	width: 100%%;	
+}
+table.inventory_show th  {
+	width: 15%;	
+}
+
 
 /**
  * CSS support
