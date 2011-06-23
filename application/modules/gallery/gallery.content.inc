@@ -5,6 +5,7 @@
  * Generic gallery pages.
  */
 
+define('GALLERY_COLUMNS', 5);
 define('GALLERY_IMAGE_COUNT', 15);
 
 /**
@@ -13,21 +14,19 @@ define('GALLERY_IMAGE_COUNT', 15);
 function gallery_list($type, $id, $backlink=true) {
   $page = array();
   $editable = gallery_edit_access_callback($type, $id);
-  $images = gallery_images($type, $id, true, true);
+  $key = md5($type.$id);
+  if(array_key_exists($key, $_GET))
+    $_SESSION[$key] = $_GET[$key] ? true : false;
+  $show_all = $_SESSION[$key];
+  $images = gallery_images($type, $id, true, true, $show_all ? false : GALLERY_IMAGE_COUNT);
   $links = array();
-  $num = count($images);
-  if($num > GALLERY_IMAGE_COUNT) {
+  if($images['count'] > GALLERY_IMAGE_COUNT) {
     $url = drupal_get_destination();
     $url = drupal_parse_url($url['destination']);
     $url = $url['path'];
-    $key = md5($type.$id);
-    if(array_key_exists($key, $_GET))
-      $_SESSION[$key] = $_GET[$key] ? true : false;
-    $show_all = $_SESSION[$key];
     if(!$show_all) {
-      $images = array_slice($images, 0, GALLERY_IMAGE_COUNT);
       $page['gallery_info'] = array(
-        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $num)),
+        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $images['count'])),
         '#weight' => 10
       );
       array_push($links, array(
@@ -42,10 +41,10 @@ function gallery_list($type, $id, $backlink=true) {
         'query' => array($key => '')
       ));
   }
-  if($images)
+  if($images['count'])
     $page['gallery_list'] = array(
       '#theme' => 'gallery_list',
-      '#images' => $images,
+      '#images' => $images['images'],
       '#rating_types' => gallery_available_rating_types()
     );
   else if($editable) {
@@ -107,21 +106,19 @@ function gallery_list_renderer($type, $id, $title=false, $weight=10, $collapsed=
 function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $collapsed=false) {
   if(!gallery_access_callback($type))
     return '';
-  $images = gallery_images($type, $ids, true, true);
+  $key = md5($type.implode('.', $ids));
+  if(array_key_exists($key, $_GET))
+    $_SESSION[$key] = $_GET[$key] ? true : false;
+  $show_all = array_key_exists($key, $_SESSION) ? $_SESSION[$key] : false;
+  $images = gallery_images($type, $ids, true, true, $show_all ? false : GALLERY_IMAGE_COUNT);
   $links = array();
-  $num = count($images);
-  if($num > GALLERY_IMAGE_COUNT) {
+  if($images['count'] > GALLERY_IMAGE_COUNT) {
     $url = drupal_get_destination();
     $url = drupal_parse_url($url['destination']);
     $url = $url['path'];
-    $key = md5($type.implode('.', $ids));
-    if(array_key_exists($key, $_GET))
-      $_SESSION[$key] = $_GET[$key] ? true : false;
-    $show_all = array_key_exists($key, $_SESSION) ? $_SESSION[$key] : false;
     if(!$show_all) {
-      $images = array_slice($images, 0, GALLERY_IMAGE_COUNT);
       $info = array(
-        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $num)),
+        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $images['count'])),
         '#weight' => 10
       );
       array_push($links, array(
@@ -136,10 +133,10 @@ function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $
         'query' => array($key => '')
       ));
   }
-  if($images) {
+  if($images['count']) {
     $page = _gallery_list_fieldset(array(
       '#theme' => 'gallery_list',
-      '#images' => $images,
+      '#images' => $images['images'],
       '#rating_types' => gallery_available_rating_types()
     ), $title, $weight, $collapsed && !array_key_exists($key, $_GET));
     if(isset($info))
@@ -159,7 +156,7 @@ function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $
 function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=false) {
   $output = array(
     '#type' => 'fieldset', 
-    '#title' => $title ? $title : t('Gallery'), 
+    '#title' => $title ? $title : t('Images'), 
     '#weight' => $weight, 
     '#collapsible' => TRUE,
     '#collapsed' => $collapsed,
@@ -177,6 +174,61 @@ function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=fals
   return $output;
 }
 
+function gallery_presentation_renderer($items) {
+  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 100));
+  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js', array('weight' => 110));
+  $page = array();
+  
+  $i = 1;
+  $images = array();
+  foreach($items as $weight => $item) {
+    $image = gallery_images($item['type'], $item['id'], true, false, 1);
+    if($image['images'] && $item['alternatives'])
+      foreach($item['alternatives'] as $alternative) {
+        $image = gallery_images($alternative['type'], $alternative['id'], true, false, 1);
+        if($image['images'])
+          break;
+      }
+    $image = $image['count'] ? $image['images'][0] : false;
+    
+    $images['image'.$i]['start'] = array('#markup' => '<li class="'.join(' ', _gallery_get_class($i-1)).'">');
+    if($image)
+      $images['image'.$i]['image'] = array(
+        '#markup' => 
+          '<a class="image" href="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large').'">'.
+            '<img src="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_presentation').'" alt="'.$image['title'].'" />'.
+          '</a>'
+      );
+    else {
+      $content = t('No image available');
+      if(gallery_edit_access_callback($item['type'], $item['id']))
+        $content = l($content, 'gallery/'.$item['type'].'/'.$item['id'].'/edit');
+      $images['image'.$i]['image'] = array(
+        '#markup' => 
+          '<span class="image">'.
+            $content.
+          '</span>'
+      );
+    }
+    if($item['content']) {
+      $images['image'.$i]['content_start'] = array('#markup' => '<div class="caption">');
+      $images['image'.$i]['content'] = $item['content'];
+      $images['image'.$i]['content_end'] = array('#markup' => '</div>');
+    }
+    $images['image'.$i]['end'] = array('#markup' => '</li>');
+    
+    $i++;
+  }
+  if($images) {
+    $page['start'] = array('#markup' => '<ul class="gallery presentation clearfix">');
+    $page['images'] = $images;
+    $page['end'] = array('#markup' => '</ul>');
+  }
+  return $page;
+}
+
 /**
  * Renders an edit link to manage the images of a given object type and id
  * if the user has edit permissions
@@ -187,7 +239,7 @@ function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=fals
  */
 function gallery_edit_link($type, $id) {
   $gallery_img_localize = theme('image', array(
-    'path' => 'modules/gallery/images/image.png',
+    'path' => drupal_get_path('module', 'gallery').'/images/image.png',
     'alt' => t('Manage images'),
     'title' => t('Manage images'),
   ));
@@ -293,7 +345,7 @@ function gallery_images_form($form, &$form_state, $type, $id) {
   $images = gallery_images($type, $id, false);
   
   $rows = array();
-  foreach ($images as $image) {
+  foreach($images['images'] as $image) {
     $editable = gallery_edit_access_callback($type, $id, $image);
     $row = array();
     $row[] = '<a rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
@@ -587,18 +639,17 @@ function gallery_images_form_delete_submit($form, &$form_state) {
   
   $images = gallery_images($type, $id, false);
   
-  foreach($images as $image) {
+  foreach($images['images'] as $image) {
     if(!$form_state['input']['delete_'.$image['id']])
       continue;
-    $editable = gallery_edit_access_callback($type, $image);
-    if(!$editable) {
+    if(!gallery_edit_access_callback($type, $id, $image)) {
       drupal_set_message(t('You do not have the permission to delete the image %file', array('%file' => $image['filename']), 'error'));
       continue;
     }
     gallery_image_delete($image);
     drupal_set_message(t('File %file deleted', array('%file' => $image['filename'])));
   }
-  $form_state['redirect'] = 'gallery/'.$type.'/'.$id.'/edit';
+  drupal_goto('gallery/'.$type.'/'.$id.'/edit', array('query' => array('saved' => '1')));
 }
 
 function gallery_image_show($image) {
@@ -688,18 +739,8 @@ function theme_gallery_list($variables) {
   $url = drupal_parse_url($url['destination']);
   $url = $url['path'];
   $items = array();
-  $columns = 5;
   $i = 0;
   foreach ($images as $image) {
-    $cls = array();
-    if($i == 0)
-      array_push($cls, 'first');
-    if($i == $columns-1)
-      array_push($cls, 'last');
-    if($i % 2 == 0)
-      array_push($cls, 'odd');
-    if($i % 2 == 1)
-      array_push($cls, 'even');
     $i++;
     $editable = gallery_edit_access_callback($image['item_type'], $image['item_id'], $image);
     $caption = '';
@@ -712,11 +753,11 @@ function theme_gallery_list($variables) {
     if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
       $caption .= ' <em>'.call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id'])).'</em>';
     array_push($items, 
-      '<li class="'.join(' ', $cls).'">'.
+      '<li class="'.join(' ', _gallery_get_class($i-1)).'">'.
         '<a href="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large').'">'.
           '<img src="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_thumbnail').'" alt="'.$image['title'].'" />'.
         '</a>'.
-        ($editable ? 
+        (user_access('manage gallery images') ? 
           '<form class="show_hide" method="post" action="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/'.($image['visible'] ? 'hide' : 'show').'/'.$image['id']).'">'.
             '<input type="hidden" name="camefrom" value="'.$url.'" />'.
             '<input type="submit" name="submit" value="'.($image['visible'] ? t('Hide') : t('Show')).'" />'.
@@ -733,6 +774,20 @@ function theme_gallery_list($variables) {
       '</li>');
   }
   return '<ul class="gallery clearfix">'.join('', $items).'</ul>';
+}
+
+function _gallery_get_class($i) {
+  $cls = array();
+  $i = $i % GALLERY_COLUMNS;
+  if($i == 0)
+    array_push($cls, 'first');
+  if($i == GALLERY_COLUMNS-1)
+    array_push($cls, 'last');
+  if($i % 2 == 0)
+    array_push($cls, 'odd');
+  if($i % 2 == 1)
+    array_push($cls, 'even');
+  return $cls;
 }
 
 function theme_gallery_image_rating($variables) {

@@ -32,7 +32,7 @@ var gallery_rating = {};
   gallery_rating.show_hide = function() {
     $(this).find('input[type="submit"]').click(function(e) {
       e.preventDefault();
-      e.stopImmediatePropagation();
+      e.stopPropagation();
       var form = $(this).parents('form');
       $.post(form.attr('action')+'?ajax=1', $.proxy(function(data) {
         if(!data)

@@ -184,10 +184,10 @@ function theme_gallery_rating_type_list($variables) {
     $rows[] = $row;
   }
   
-  if (empty($rows)) {
+  if(empty($rows)) {
     $rows[] = array(array(
       'colspan' => 5,
-      'data' => t('There are currently no rating types. <a href="!url">Add a new one</a>.', array('!url' => url('admin/config/media/gallery/rating-types/add'))),
+      'data' => t('There are currently no rating types. !add.', array('!add' => l(t('Add a new one'), 'admin/config/media/gallery/rating-types/add'))),
     ));
   }
 

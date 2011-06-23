@@ -118,6 +118,36 @@ fieldset.gallery p.info {
   top:1em;
 }
 
+/* Gallery presentation */
+
+ul.presentation {
+  margin:1em 0 4em 0;
+  border-top:1px solid #F7F6EF;
+}
+
+ul.presentation li,
+html fieldset ul.presentation li {
+  margin-top:1em;
+  margin-bottom:3em;
+}
+
+ul.presentation li .image {
+  display:block;
+  margin-bottom:1em;
+}
+
+ul.presentation li span.image {
+  color:#999;
+  background-color:#FBFAF7;
+  border:1px solid #F7F6EF;
+  padding:50px 0;
+  text-align:center;
+}
+
+ul.presentation li .caption h4 {
+  font-style:italic;
+}
+
 /* Rating */
 
 ul.gallery li .caption {

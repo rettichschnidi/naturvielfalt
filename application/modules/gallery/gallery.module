@@ -229,7 +229,7 @@ function gallery_menu() {
   );
   $items['gallery/%/%/rate/%gallery_image'] = array(
     'title' => t('Rate a gallery image'),
-    'description' => t('Edit a single gallery image.'),
+    'description' => t('Rate a gallery image.'),
     'page callback' => 'gallery_image_rate',
     'page arguments' => array(4),
     'access callback' => 'gallery_access_callback',
@@ -238,20 +238,18 @@ function gallery_menu() {
   );
   $items['gallery/%/%/hide/%gallery_image'] = array(
     'title' => t('Hide a gallery image'),
-    'description' => t('Hide a single gallery image.'),
+    'description' => t('Hide a gallery image.'),
     'page callback' => 'gallery_image_hide',
     'page arguments' => array(4),
-    'access callback' => 'gallery_edit_access_callback',
-    'access arguments' => array(1, 2, 4),
+    'access arguments' => array('manage gallery images'),
     'file' => 'gallery.content.inc',
   );
   $items['gallery/%/%/show/%gallery_image'] = array(
     'title' => t('Show a gallery image'),
-    'description' => t('Show a single gallery image.'),
+    'description' => t('Show a gallery image.'),
     'page callback' => 'gallery_image_show',
     'page arguments' => array(4),
-    'access callback' => 'gallery_edit_access_callback',
-    'access arguments' => array(1, 2, 4),
+    'access arguments' => array('manage gallery images'),
     'file' => 'gallery.content.inc',
   );
   return $items;
@@ -351,6 +349,16 @@ function gallery_image_default_styles() {
     )
   );
 
+  $styles['gallery_presentation'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 188),
+        'weight' => 0,
+      ),
+    )
+  );
+
   $styles['gallery_large'] = array(
     'effects' => array(
       array(
@@ -375,10 +383,14 @@ function gallery_image_default_styles() {
  *   Whether to return cross linked images
  * @param $rating
  *   Whether to include the ratings of the images
+ * @param $limit
+ *   How many images to return
  * @return
- *   An array of gallery images
+ *   An associative array having the following entries:
+ *   - "images": Array of gallery images
+ *   - "count": Number of images found
  */
-function gallery_images($type, $id, $crosslinked=true, $rating=false) {
+function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=false) {
   global $user;
   if (!_gallery_check_type_validity($type))
     return array();
@@ -439,18 +451,24 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false) {
   $sql .= ' ORDER BY overallrating DESC';
   $images = array();
   $seen = array();
+  $count = 0;
   $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchAll();
   foreach($result as $record) {
-    if(array_key_exists($record['id'], $seen))
+    if(array_key_exists($record['id'], $seen)) {
+      if($limit && count($images) == $limit)
+        continue;
       $image = $images[$seen[$record['id']]];
-    else {
+    } else {
+      $count++;
+      $seen[$record['id']] = count($images);
+      if($limit && count($images) == $limit)
+        continue;
       $image = array('categories' => array());
       if($rating)
         $image['ratings'] = array();
       foreach($record as $key => $value)
         if(!preg_match('/^gi?co?_/', $key))
           $image[$key] = $value;
-      $seen[$record['id']] = count($images);
     }
     if($record['gc_id'] !== null)
       array_push($image['categories'], array(
@@ -469,7 +487,7 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false) {
       );
     $images[$seen[$record['id']]] = $image;
   }
-  return $images;
+  return array('images' => $images, 'count' => $count);
 }
 
 /**
