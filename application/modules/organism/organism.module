@@ -34,10 +34,10 @@ function organism_theme() {
 function organism_menu() {
 	
 	$items['organism'] = array(
-	'title' => t('Organism'),
+	'title' => t('Organisms'),
     'page callback' => 'organism_overview',
     'access arguments' => array('access content'),
-    'description' => t('Shows organisms from DB'),
+    'description' => t('List of organisms'),
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'organism.overview.inc',
 	);
