@@ -294,7 +294,7 @@ function gallery_images_form($form, &$form_state, $type, $id) {
   
   $rows = array();
   foreach ($images as $image) {
-    $editable = gallery_edit_access_callback($type, $image);
+    $editable = gallery_edit_access_callback($type, $id, $image);
     $row = array();
     $row[] = '<a rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
     $row[] = $image['filename'];

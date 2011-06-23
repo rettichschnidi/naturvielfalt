@@ -134,7 +134,11 @@ function inventory_gallery_types() {
  * @return boolean
  */
 function inventory_gallery_access_callback($type, $id, $image=false) {
-  return inventory_edit_access($id);
+  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
+  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
+  $query->fields('i', array('head_inventory_id'));
+  $result = $query->execute()->fetch();
+  return inventory_edit_access($result->head_inventory_id);
 }
 
 /**
