@@ -15,11 +15,11 @@ define('AREA_CREATE', 'area create');
  * @return string
  */
 function area_help($path, $arg) {
-	switch ($path) {
-		case "admin/help#area":
-			return '<p>'.  t("Area module") .'</p>';
-			break;
-	}
+  switch ($path) {
+    case "admin/help#area":
+      return '<p>'.  t("Area module") .'</p>';
+      break;
+  }
 }
 
 /**
@@ -28,76 +28,99 @@ function area_help($path, $arg) {
  * @return array
  */
 function area_menu() {
-	$items['area'] = array(
-    'title' => 'Area',
-    'description' => 'Area',
+  $items['area'] = array(
+    'title' => t('Areas'),
+    'description' => t('List of areas'),
     'page callback' => 'show_area_search',
     'access arguments' => array(AREA_ACCESS),
-	'file' => 'area.search.inc',
-	);
-	$items['area/%'] = array(
-    'title' => 'Area',
-    'description' => 'View area',
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'area.search.inc',
+  );
+  $items['area/%'] = array(
+    'title' => t('Area'),
+    'description' => t('View an area'),
     'page callback' => 'show_area',
-	'page arguments' => array(1),
+    'page arguments' => array(1),
     'access arguments' => array(AREA_ACCESS),
-    'type' => MENU_CALLBACK,
-	'file' => 'area.inc',
-	);
-	$items['area/new'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'area.inc',
+  );
+  $items['area/%/normal'] = array(
+    'title' => t('Normal'),
+    'description' => t('Normal view of an area'),
+    'page callback' => 'show_area',
+    'page arguments' => array(1),
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'area.inc',
+    'weight' => 1
+  );
+  $items['area/%/gallery'] = array(
+    'title' => t('Gallery'),
+    'description' => t('View the area as a gallery of organisms'),
+    'page callback' => 'show_area_gallery',
+    'page arguments' => array(1),
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'area.inc',
+    'weight' => 2
+  );
+  $items['area/new'] = array(
     'title' => 'Create new area',
     'description' => 'Create an area',
     'page callback' => 'area_new',
-	'access arguments' => array(AREA_CREATE),
+    'access arguments' => array(AREA_CREATE),
     'type' => MENU_CALLBACK,
-	'file' => 'area.new.inc',
-	);
-	$items['area/gmap_image_redirect/%'] = array(
+    'file' => 'area.new.inc',
+  );
+  $items['area/gmap_image_redirect/%'] = array(
     'title' => 'Redirect to Google Maps static image URL',
     'description' => 'Google Maps static image redirect',
     'page callback' => 'googlemaps_static_redirect',
-	'page arguments' => array(2),
+    'page arguments' => array(2),
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
-	'file' => 'area.search.inc',
-	);
-	$items['area/habitat_autocomplete'] = array(
-	'title' => 'Habitat autocomplete',
+    'file' => 'area.search.inc',
+  );
+  $items['area/habitat_autocomplete'] = array(
+    'title' => 'Habitat autocomplete',
     'page callback' => 'area_habitat_autocomplete',
-	'access arguments' => array(AREA_CREATE),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.ajax.inc',
-	);
-	$items['area/area_saved_autocomplete'] = array(
-	'title' => 'Area autocomplete',
+    'access arguments' => array(AREA_CREATE),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.ajax.inc',
+  );
+  $items['area/area_saved_autocomplete'] = array(
+    'title' => 'Area autocomplete',
     'page callback' => 'area_saved_autocomplete',
-	'access arguments' => array(AREA_CREATE),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.ajax.inc',
-	);
-	$items['area/json'] = array(
-	'title' => 'area information in json format',
+    'access arguments' => array(AREA_CREATE),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.ajax.inc',
+  );
+  $items['area/json'] = array(
+    'title' => 'area information in json format',
     'page callback' => 'area_json',
-	'access arguments' => array(AREA_ACCESS),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.ajax.inc',
-	);
-	$items['area/getareas'] = array(
-	'title' => 'area information in json format',
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.ajax.inc',
+  );
+  $items['area/getareas'] = array(
+    'title' => 'area information in json format',
     'page callback' => 'get_areas',
-	'access arguments' => array(AREA_ACCESS),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.ajax.inc',
-	);
-	$items['area/datatable'] = array(
-	'title' => 'area information in json format for datatable',
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.ajax.inc',
+  );
+  $items['area/datatable'] = array(
+    'title' => 'area information in json format for datatable',
     'page callback' => 'area_datatable',
-	'access arguments' => array(AREA_ACCESS),
-	'type' => MENU_CALLBACK,
-	'file' => 'area.ajax.inc',
-	);
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.ajax.inc',
+  );
 
-	return $items;
+  return $items;
 }
 
 /**
@@ -106,35 +129,35 @@ function area_menu() {
  * @return an array with theme template information
  */
 function area_theme() {
-	return array(
-		'area.new' => array(
-			'template' => 'area.new',
-			'variables' => array()
-		),
-    	'area.search' => array(
- 			'template' => 'area.search',
-    	  	'variables' => array()
-		),
-    	'area.search.byMaps' => array(
- 			'template' => 'area.search.byMaps',
-    	  	'variables' => array()
-		),
-		'area.search.byMaps.show' => array(
- 			'template' => 'area.search.byMaps.show',
-    	  	'variables' => array()
-		),
-	);
+  return array(
+    'area.new' => array(
+      'template' => 'area.new',
+      'variables' => array()
+    ),
+    'area.search' => array(
+      'template' => 'area.search',
+      'variables' => array()
+    ),
+    'area.search.byMaps' => array(
+      'template' => 'area.search.byMaps',
+      'variables' => array()
+    ),
+    'area.search.byMaps.show' => array(
+      'template' => 'area.search.byMaps.show',
+      'variables' => array()
+    ),
+  );
 }
 
 function area_permission() {
-	return array(
-	AREA_ACCESS =>  array(
+  return array(
+    AREA_ACCESS =>  array(
       'title' => t('can view areas'),
-	),
-	AREA_CREATE =>  array(
+    ),
+    AREA_CREATE =>  array(
       'title' => t('can create areas'),
-	),
-	);
+    ),
+  );
 }
 
 /**

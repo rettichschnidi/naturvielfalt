@@ -4,7 +4,6 @@
  * @return render array
  */
 function show_area_search() {
-	drupal_set_title(t('Show Areas'));
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
