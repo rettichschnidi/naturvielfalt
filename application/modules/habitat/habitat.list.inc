@@ -1,7 +1,6 @@
 <?php
 //Display all habitats from database
 function habitat_list() {
-	drupal_set_title(t('Show Habitat'));
 	drupal_add_js(drupal_get_path('module', 'habitat') . '/js/habitat.datatable.select.js');
 
 	// Own Inventories

@@ -12,8 +12,8 @@
  */
 function habitat_menu() {
 	$items['habitat'] = array(
-    'title' => 'List Habitat',
-    'description' => 'Show all habitats',
+    'title' => t('Habitats'),
+    'description' => t('Show all habitats'),
     'page callback' => 'habitat_list',
     'access arguments' => array('access content'),
 	'file' => 'habitat.list.inc',
