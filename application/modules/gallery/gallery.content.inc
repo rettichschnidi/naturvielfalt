@@ -560,7 +560,7 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
     else
       return;
   if(!in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
-    return form_error($element, t('!name requires a file of type jpg, png or gif.', array('!name' => $element['#title'])));
+    return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
 }
 
 /**
@@ -572,7 +572,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
   $orig_image = $form_state['gallery_image'];
   
   $validators = array(
-    'file_validate_extensions' => array('jpg gif png'),
+    'file_validate_extensions' => array('jpg jpeg gif png'),
     'file_validate_size' => array(1000000, 0),
   );
 
