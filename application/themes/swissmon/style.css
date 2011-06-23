@@ -213,6 +213,7 @@ th a:visited {
 td,
 th {
   padding: .3em .5em;
+  vertical-align:top;
 }
 
 tr.even,
