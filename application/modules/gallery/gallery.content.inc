@@ -19,7 +19,7 @@ function gallery_list($type, $id, $backlink=true) {
   $links = _gallery_list_links($params, $images['count']);
   if($images['count']) {
     $page['anchor'] = array(
-      '#markup' => '<a name="'.$params['key'].'" />'
+      '#markup' => '<a name="'.$params['key'].'"></a>'
     );
     $page['gallery_list'] = array(
       '#theme' => 'gallery_list',
@@ -92,7 +92,7 @@ function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $
   if($images['count']) {
     $page = _gallery_list_fieldset(array(
       'anchor' => array(
-        '#markup' => '<a name="'.$params['key'].'" />'
+        '#markup' => '<a name="'.$params['key'].'"></a>'
       ),
       'list' => array(
         '#theme' => 'gallery_list',
