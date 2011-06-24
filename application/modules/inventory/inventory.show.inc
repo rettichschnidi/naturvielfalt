@@ -1,8 +1,8 @@
 <?php 
 function inventory_show($head_inventory_id) {
-  
-  drupal_set_title(check_plain(getInventoryTitle($head_inventory_id))." (".check_plain($head_inventory_id).")");
+  drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
   drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
+  
   $render_array = getInventoryBasics($head_inventory_id);
   
   if(hasRedListPermission($head_inventory_id) == FALSE)
@@ -28,6 +28,58 @@ function getInventoryTitle($head_inventory_id) {
   }
 
   return $inventory_title;
+}
+
+function inventory_gallery($head_inventory_id) {
+  if(!function_exists('gallery_presentation_renderer'))
+    return;
+  drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+  
+  $invArr = getInventoriesData($head_inventory_id);
+  
+  $weight = 1;
+  foreach($invArr as $key => $inventory_group) {
+    $items = array();
+    
+    $invGroupName = $inventory_group['invDesc']['name'];
+    $rows = array();
+    foreach($inventory_group['invDesc']['cols'] as $invDetail)
+      $rows[] = array(array(
+        'data' => $invDetail['name'],
+        'header' => true
+      ));
+    foreach($inventory_group as $iGKey => $invDetails) {
+      if($iGKey == 'invDesc')
+        continue;
+      array_push($items, array(
+        'type' => 'inventory_entry',
+        'id' => $iGKey,
+        'alternative' => array(
+          'type' => 'organism',
+          'id' => $invDetails['orgId']
+        ),
+        'content' => array(
+          'label' => array(
+            '#markup' => '<h3>'.l($invDetails['label'], 'organism/'.$invDetails['orgId']).'</h3>'
+          ),
+          'label_latin' => array(
+            '#markup' => '<h4>'.l($invDetails['label_latin'], 'organism/'.$invDetails['orgId']).'</h4>'
+          )
+        )
+      ));
+    }
+    if($items) {
+      $render_array[$invGroupName] = array();
+      $render_array[$invGroupName]['title'] = array('#markup' => '<h2>'.$invGroupName.'</h2>');
+      $render_array[$invGroupName]['gallery'] = gallery_presentation_renderer($items);
+    }
+  }
+  
+  if(!$render_array)
+    $render_array['empty'] = array(
+      '#markup' => '<p>'.t('There are no organisms available in this inventory.').'</p>'
+    );
+  return $render_array;
 }
 
 /**
@@ -143,7 +195,6 @@ function getInventoryBasics($head_inventory_id) {
       ),
   );
   
-  //$header = array(t('Area'),t('City'),t('ZIP'),t('Area creator'));
   $rows = array();
   $rows[] = array(
     array('data' => t('Area'), 'header' => true), 
@@ -238,16 +289,8 @@ function getInventoryColumnDescription($inventoryId){
   return $invColDesc;
 }
 
-/**
- * 
- * Returns form containing inventory organisms
- * @param unknown_type $head_inventory_id
- */
-function getInventories($head_inventory_id) {  
+function getInventoriesData($head_inventory_id) {
   $invArr = array();
-
-  global $user;
-  
   $inventories = db_query('SELECT id
               FROM inventory 
               WHERE head_inventory_id = :id;', 
@@ -325,6 +368,17 @@ function getInventories($head_inventory_id) {
       }
     }
   }
+  return $invArr;
+}
+
+/**
+ * 
+ * Returns form containing inventory organisms
+ * @param unknown_type $head_inventory_id
+ */
+function getInventories($head_inventory_id) {
+  $output = array();
+  $invArr = getInventoriesData($head_inventory_id);
   
   if(function_exists('gallery_edit_link'))
     $gallery_available = true;
@@ -346,7 +400,7 @@ function getInventories($head_inventory_id) {
         $header[] = t('Latin name');
         foreach($invDetails['cols'] as $invDetail) {
           $header[] = $invDetail['name'];
-          $colIds[] = $invDetail['id'];          
+          $colIds[] = $invDetail['id'];
         }
       }
       //Define table content
@@ -401,7 +455,8 @@ function getInventories($head_inventory_id) {
     }
     
   }
-  krsort($output);
+  if($output)
+    krsort($output);
   return $output;
 }
 
@@ -423,22 +478,22 @@ function getInventoryEntryValue($valueId) {
 
 function getRedListCount($head_inventory_id) {
   $count = db_query('
-  SELECT COUNT (o.organism_id)
-  FROM head_inventory hi
-  LEFT JOIN inventory i ON hi.id = i.head_inventory_id
-  LEFT JOIN inventory_entry e ON i.id = e.inventory_id
-  LEFT JOIN organism o on e.organism_id = o.id
-  LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
-  LEFT JOIN flora_organism flora ON o.organism_id = flora.id
-  LEFT JOIN flora_red_list flora_rl ON flora_rl.flora_organism_id = flora.id AND o.organism_type = 2
-  WHERE hi.id = :hiid
-  AND (
-    ((fauna.protection_ch IS NOT NULL AND fauna.protection_ch != 0) AND o.organism_type = 1)
-  OR (
-    (flora_rl.red_list_ch IS NOT NULL AND flora_rl.red_list_ch != 0)
-    AND o.organism_type = 2
-  ))',
-  array(':hiid' => $head_inventory_id)
+    SELECT COUNT (o.organism_id)
+    FROM head_inventory hi
+    LEFT JOIN inventory i ON hi.id = i.head_inventory_id
+    LEFT JOIN inventory_entry e ON i.id = e.inventory_id
+    LEFT JOIN organism o on e.organism_id = o.id
+    LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+    LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+    LEFT JOIN flora_red_list flora_rl ON flora_rl.flora_organism_id = flora.id AND o.organism_type = 2
+    WHERE hi.id = :hiid
+    AND (
+      ((fauna.protection_ch IS NOT NULL AND fauna.protection_ch != 0) AND o.organism_type = 1)
+    OR (
+      (flora_rl.red_list_ch IS NOT NULL AND flora_rl.red_list_ch != 0)
+      AND o.organism_type = 2
+    ))',
+    array(':hiid' => $head_inventory_id)
   );
   
   $count = $count->fetch()->count;
@@ -477,187 +532,191 @@ function getRedListCount($head_inventory_id) {
     return $render_array;
   }
 }
+
 function getInventoryFiles($head_inventory_id) {
-	$result = db_query('
-	SELECT * FROM head_inventory_file_managed hifm
-	LEFT JOIN file_managed fm ON hifm.file_id = fm.fid
-	WHERE head_inventory_id = :hiid',
-	array(':hiid' => $head_inventory_id)
-	);
-	
-	if(!empty($result)) {
-		$tableHeader[] = t('Description');
-		$tableHeader[] = t('Filename');
-		$tableHeader[] = t('Typ');
-		$tableHeader[] = t('Size');
-		$tableHeader[] = t('Date');
-		foreach($result as $record) {
-			$mimeIconMap = array(
-			'path' => drupal_get_path('module', 'inventory').'/images/' . getInventoryIconMap($record->filemime).'.png',
-			'alt' => $record->filemime,
-			'title' => $record->filemime,
-	      	);
-			$img_mime = theme('image', $mimeIconMap);
-			
-			
-			$description = $record->description;
-			$filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.$head_inventory_id.'/'.$record->filename);
-			$filemime = $img_mime;
-			$filesize = ($record->filesize / 1000)." KB";
-			$timestamp = date('d.m.Y',$record->timestamp);
-			$row = array();
-			$row[] = $description;
-			$row[] = $filename;
-			$row[] = $filemime;
-			$row[] = $filesize;
-			$row[] = $timestamp;
-			$rows[] = $row;
-		}
-		$render_array['files'] = array(
-        '#type' => 'fieldset', 
-        '#title' => t('Files'), 
-        '#weight' => '20', 
-        '#collapsible' => TRUE,
-        '#collapsed' => FALSE,
-        '#attached' => array (
-          'js' => array (
-            'misc/form.js',
-            'misc/collapse.js',
-          ),
-        ),
-        '#attributes' => array(
-          'class' => array('collapsible'),
-        ),
-      );
+  $render_array = array();
+  $result = db_query('
+    SELECT * FROM head_inventory_file_managed hifm
+    LEFT JOIN file_managed fm ON hifm.file_id = fm.fid
+    WHERE head_inventory_id = :hiid',
+    array(':hiid' => $head_inventory_id)
+  );
+  
+  foreach($result as $record) {
+    $mimeIconMap = array(
+      'path' => drupal_get_path('module', 'inventory').'/images/' . getInventoryIconMap($record->filemime).'.png',
+      'alt' => $record->filemime,
+      'title' => $record->filemime,
+    );
+    $img_mime = theme('image', $mimeIconMap);
     
-      $render_array['files']['data'] = array(
-        '#theme' => 'datatable', 
-        '#header' => $tableHeader,
-        '#rows' => $rows,
-        '#id_table' => 'files', 
-      );		
-	}
-	return $render_array;
+    $description = $record->description;
+    $filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.$head_inventory_id.'/'.$record->filename);
+    $filemime = $img_mime;
+    $filesize = ($record->filesize / 1000)." KB";
+    $timestamp = date('d.m.Y',$record->timestamp);
+    $row = array();
+    $row[] = $description;
+    $row[] = $filename;
+    $row[] = $filemime;
+    $row[] = $filesize;
+    $row[] = $timestamp;
+    $rows[] = $row;
+  }
+  
+  if(empty($rows))
+    return $render_array;
+  
+  $tableHeader[] = t('Description');
+  $tableHeader[] = t('Filename');
+  $tableHeader[] = t('Typ');
+  $tableHeader[] = t('Size');
+  $tableHeader[] = t('Date');
+  
+  $render_array['files'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Files'), 
+    '#weight' => '20', 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+  
+  $render_array['files']['data'] = array(
+    '#theme' => 'datatable', 
+    '#header' => $tableHeader,
+    '#rows' => $rows,
+    '#id_table' => 'files', 
+  );
+  return $render_array;
 }
 function getInventoryIconMap($filemime) {
 
-	switch ($filemime) {
-		// Word document types.
-		case 'application/msword':
-		case 'application/vnd.ms-word.document.macroEnabled.12':
-		case 'application/vnd.oasis.opendocument.text':
-		case 'application/vnd.oasis.opendocument.text-template':
-		case 'application/vnd.oasis.opendocument.text-master':
-		case 'application/vnd.oasis.opendocument.text-web':
-		case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-		case 'application/vnd.stardivision.writer':
-		case 'application/vnd.sun.xml.writer':
-		case 'application/vnd.sun.xml.writer.template':
-		case 'application/vnd.sun.xml.writer.global':
-		case 'application/vnd.wordperfect':
-		case 'application/x-abiword':
-		case 'application/x-applix-word':
-		case 'application/x-kword':
-		case 'application/x-kword-crypt':
-			return 'x-office-document';
+  switch ($filemime) {
+    // Word document types.
+    case 'application/msword':
+    case 'application/vnd.ms-word.document.macroEnabled.12':
+    case 'application/vnd.oasis.opendocument.text':
+    case 'application/vnd.oasis.opendocument.text-template':
+    case 'application/vnd.oasis.opendocument.text-master':
+    case 'application/vnd.oasis.opendocument.text-web':
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    case 'application/vnd.stardivision.writer':
+    case 'application/vnd.sun.xml.writer':
+    case 'application/vnd.sun.xml.writer.template':
+    case 'application/vnd.sun.xml.writer.global':
+    case 'application/vnd.wordperfect':
+    case 'application/x-abiword':
+    case 'application/x-applix-word':
+    case 'application/x-kword':
+    case 'application/x-kword-crypt':
+      return 'x-office-document';
 
-			// Spreadsheet document types.
-		case 'application/vnd.ms-excel':
-		case 'application/vnd.ms-excel.sheet.macroEnabled.12':
-		case 'application/vnd.oasis.opendocument.spreadsheet':
-		case 'application/vnd.oasis.opendocument.spreadsheet-template':
-		case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-		case 'application/vnd.stardivision.calc':
-		case 'application/vnd.sun.xml.calc':
-		case 'application/vnd.sun.xml.calc.template':
-		case 'application/vnd.lotus-1-2-3':
-		case 'application/x-applix-spreadsheet':
-		case 'application/x-gnumeric':
-		case 'application/x-kspread':
-		case 'application/x-kspread-crypt':
-			return 'x-office-spreadsheet';
+      // Spreadsheet document types.
+    case 'application/vnd.ms-excel':
+    case 'application/vnd.ms-excel.sheet.macroEnabled.12':
+    case 'application/vnd.oasis.opendocument.spreadsheet':
+    case 'application/vnd.oasis.opendocument.spreadsheet-template':
+    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    case 'application/vnd.stardivision.calc':
+    case 'application/vnd.sun.xml.calc':
+    case 'application/vnd.sun.xml.calc.template':
+    case 'application/vnd.lotus-1-2-3':
+    case 'application/x-applix-spreadsheet':
+    case 'application/x-gnumeric':
+    case 'application/x-kspread':
+    case 'application/x-kspread-crypt':
+      return 'x-office-spreadsheet';
 
-			// Presentation document types.
-		case 'application/vnd.ms-powerpoint':
-		case 'application/vnd.ms-powerpoint.presentation.macroEnabled.12':
-		case 'application/vnd.oasis.opendocument.presentation':
-		case 'application/vnd.oasis.opendocument.presentation-template':
-		case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-		case 'application/vnd.stardivision.impress':
-		case 'application/vnd.sun.xml.impress':
-		case 'application/vnd.sun.xml.impress.template':
-		case 'application/x-kpresenter':
-			return 'x-office-presentation';
+      // Presentation document types.
+    case 'application/vnd.ms-powerpoint':
+    case 'application/vnd.ms-powerpoint.presentation.macroEnabled.12':
+    case 'application/vnd.oasis.opendocument.presentation':
+    case 'application/vnd.oasis.opendocument.presentation-template':
+    case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+    case 'application/vnd.stardivision.impress':
+    case 'application/vnd.sun.xml.impress':
+    case 'application/vnd.sun.xml.impress.template':
+    case 'application/x-kpresenter':
+      return 'x-office-presentation';
 
-			// Compressed archive types.
-		case 'application/zip':
-		case 'application/x-zip':
-		case 'application/stuffit':
-		case 'application/x-stuffit':
-		case 'application/x-7z-compressed':
-		case 'application/x-ace':
-		case 'application/x-arj':
-		case 'application/x-bzip':
-		case 'application/x-bzip-compressed-tar':
-		case 'application/x-compress':
-		case 'application/x-compressed-tar':
-		case 'application/x-cpio-compressed':
-		case 'application/x-deb':
-		case 'application/x-gzip':
-		case 'application/x-java-archive':
-		case 'application/x-lha':
-		case 'application/x-lhz':
-		case 'application/x-lzop':
-		case 'application/x-rar':
-		case 'application/x-rpm':
-		case 'application/x-tzo':
-		case 'application/x-tar':
-		case 'application/x-tarz':
-		case 'application/x-tgz':
-			return 'package-x-generic';
+      // Compressed archive types.
+    case 'application/zip':
+    case 'application/x-zip':
+    case 'application/stuffit':
+    case 'application/x-stuffit':
+    case 'application/x-7z-compressed':
+    case 'application/x-ace':
+    case 'application/x-arj':
+    case 'application/x-bzip':
+    case 'application/x-bzip-compressed-tar':
+    case 'application/x-compress':
+    case 'application/x-compressed-tar':
+    case 'application/x-cpio-compressed':
+    case 'application/x-deb':
+    case 'application/x-gzip':
+    case 'application/x-java-archive':
+    case 'application/x-lha':
+    case 'application/x-lhz':
+    case 'application/x-lzop':
+    case 'application/x-rar':
+    case 'application/x-rpm':
+    case 'application/x-tzo':
+    case 'application/x-tar':
+    case 'application/x-tarz':
+    case 'application/x-tgz':
+      return 'package-x-generic';
 
-			// Script file types.
-		case 'application/ecmascript':
-		case 'application/javascript':
-		case 'application/mathematica':
-		case 'application/vnd.mozilla.xul+xml':
-		case 'application/x-asp':
-		case 'application/x-awk':
-		case 'application/x-cgi':
-		case 'application/x-csh':
-		case 'application/x-m4':
-		case 'application/x-perl':
-		case 'application/x-php':
-		case 'application/x-ruby':
-		case 'application/x-shellscript':
-		case 'text/vnd.wap.wmlscript':
-		case 'text/x-emacs-lisp':
-		case 'text/x-haskell':
-		case 'text/x-literate-haskell':
-		case 'text/x-lua':
-		case 'text/x-makefile':
-		case 'text/x-matlab':
-		case 'text/x-python':
-		case 'text/x-sql':
-		case 'text/x-tcl':
-			return 'text-x-script';
+      // Script file types.
+    case 'application/ecmascript':
+    case 'application/javascript':
+    case 'application/mathematica':
+    case 'application/vnd.mozilla.xul+xml':
+    case 'application/x-asp':
+    case 'application/x-awk':
+    case 'application/x-cgi':
+    case 'application/x-csh':
+    case 'application/x-m4':
+    case 'application/x-perl':
+    case 'application/x-php':
+    case 'application/x-ruby':
+    case 'application/x-shellscript':
+    case 'text/vnd.wap.wmlscript':
+    case 'text/x-emacs-lisp':
+    case 'text/x-haskell':
+    case 'text/x-literate-haskell':
+    case 'text/x-lua':
+    case 'text/x-makefile':
+    case 'text/x-matlab':
+    case 'text/x-python':
+    case 'text/x-sql':
+    case 'text/x-tcl':
+      return 'text-x-script';
 
-			// HTML aliases.
-		case 'application/xhtml+xml':
-			return 'text-html';
+      // HTML aliases.
+    case 'application/xhtml+xml':
+      return 'text-html';
 
-			// Executable types.
-		case 'application/x-macbinary':
-		case 'application/x-ms-dos-executable':
-		case 'application/x-pef-executable':
-			return 'application-x-executable';
+      // Executable types.
+    case 'application/x-macbinary':
+    case 'application/x-ms-dos-executable':
+    case 'application/x-pef-executable':
+      return 'application-x-executable';
 
-			// PDF
-		case 'application/pdf':
-			return 'application-pdf';
+      // PDF
+    case 'application/pdf':
+      return 'application-pdf';
 
-		default:
-			return $return;
-	}
+    default:
+      return $return;
+  }
 }
 ?>

@@ -11,95 +11,122 @@ module_load_include('inc', 'inventory');
  * @return array
  */
 function inventory_menu() {
-	$items['inventory'] = array(
-    'title' => 'Show Inventory',
-    'description' => 'Show all inventories',
+  $items['inventory'] = array(
+    'title' => t('Inventories'),
+    'description' => t('Show all inventories'),
     'page callback' => 'inventory_list',
     'access arguments' => array('access inventories'),
-	'file' => 'inventory.list.inc',
-	);
-	$items['inventory/%'] = array(
-    'title' => 'Show Inventory',
-    'description' => 'View an existing inventory',
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'inventory.list.inc',
+  );
+  $items['inventory/%'] = array(
+    'title' => t('Show Inventory'),
+    'description' => t('View an existing inventory'),
     'page callback' => 'inventory_show',
-	'page arguments' => array(1),
-	'access callback' => 'inventory_access',
-	'access arguments' => array(1),
-    'type' => MENU_CALLBACK,
-	'file' => 'inventory.show.inc',
-	);
-	$items['inventory/edit'] = array(
-	'title' => 'Modify Inventory',
-	'description' => 'Show all inventories to modify',
-	'page callback' => 'inventory_modify',
-	'access arguments' => array('access inventories'),
-	'file' => 'inventory.edit.list.inc',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_access',
+    'access arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'inventory.show.inc',
+  );
+  $items['inventory/%/normal'] = array(
+    'title' => t('Normal'),
+    'description' => t('Normal view of the inventory'),
+    'page callback' => 'inventory_show',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_access',
+    'access arguments' => array(1),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.show.inc',
+    'weight' => 1,
+  );
+  $items['inventory/%/gallery'] = array(
+    'title' => t('Gallery'),
+    'description' => t('View the inventory as gallery of organisms'),
+    'page callback' => 'inventory_gallery',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.show.inc',
+    'weight' => 2,
+  );
+  $items['inventory/edit'] = array(
+    'title' => t('Edit Inventories'),
+    'description' => t('Show all inventories to edit'),
+    'page callback' => 'inventory_modify',
+    'access arguments' => array('access inventories'),
+    'file' => 'inventory.edit.list.inc',
+    'type' => MENU_NORMAL_ITEM,
     'weight' => 5,
-	);
-	$items['inventory/new/area/%'] = array(
-	'title' => 'Create Inventory',
-    'description' => 'Create a new inventory',
+  );
+  $items['inventory/new/area/%'] = array(
+  'title' => t('Create Inventory'),
+    'description' => t('Create a new inventory'),
     'page callback' => 'inventory_new',
     'page arguments' => array(3),
     'access arguments' => array('access inventories'),
-	'file' => 'inventory.new.inc',
-	'weight' => 0,
-	);
-	$items['inventory/organism_autocomplete'] = array(
+    'file' => 'inventory.new.inc',
+    'weight' => 0,
+  );
+  $items['inventory/organism_autocomplete'] = array(
     'title' => 'Organism Autocomplete',
     'description' => 'JSON Organism Autocomplete',
     'page callback' => 'inventory_organism_autocomplete',
     'access arguments' => array('access inventories'),
     'type' => MENU_CALLBACK,
-	'file' => 'inventory.ajax.inc',
-	);
-	$items['inventory/add_inventory/%'] = array(
+    'file' => 'inventory.ajax.inc',
+  );
+  $items['inventory/add_inventory/%'] = array(
     'title' => 'Add Inventory Category',
     'description' => 'JSON Inventory Category Adder',
     'page callback' => 'inventory_add_inventory',
-	'page arguments' => array(2),
+    'page arguments' => array(2),
     'access arguments' => array('access inventories'),
     'type' => MENU_CALLBACK,
-	'file' => 'inventory.ajax.inc',
-	);
-	$items['inventory/%/edit'] = array(
-    'title' => 'Modify Inventory',
-    'description' => 'Modify an existing inventory',
+    'file' => 'inventory.ajax.inc',
+  );
+  $items['inventory/%/edit'] = array(
+    'title' => t('Edit'),
+    'description' => t('Edit an existing inventory'),
     'page callback' => 'inventory_edit',
     'page arguments' => array(1),
-	'access callback' => 'inventory_edit_access',
+    'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
-    'type' => MENU_NORMAL_ITEM,
-	'file' => 'inventory.edit.inc',
-	);
-	$items['inventory/%/entries_ajax'] = array(
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.edit.inc',
+    'weight' => 10,
+  );
+  $items['inventory/%/entries_ajax'] = array(
     'title' => 'Entries Ajax Request',
     'description' => 'JSON Entries Ajax Request',
     'page callback' => 'inventory_entries_ajax',
-	'access callback' => 'inventory_edit_access',
-    'access arguments' => array(1),
-    'type' => MENU_CALLBACK,
-	'file' => 'inventory.ajax.inc',
-	);
-	$items['inventory/%/sgroup_autocomplete'] = array(
-	'title' => 'sgroup autocomplete',
-    'page callback' => 'inventory_sgroup_autocomplete',
-	'access callback' => 'inventory_edit_access',
-	'access arguments' => array(1),
-	'type' => MENU_CALLBACK,
-	'file' => 'inventory.ajax.inc',
-	);
-	$items['inventory/%/delete_sgroup/%'] = array(
-	'title' => 'JSON request to delete a group from permission list',
-	'page callback' => 'inventory_delete_sgroup',
-	'page arguments' => array(1, 3),
-	'access callback' => 'inventory_edit_access',
+    'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
     'file' => 'inventory.ajax.inc',
-	);
-  
-  	return $items;
+  );
+  $items['inventory/%/sgroup_autocomplete'] = array(
+    'title' => 'sgroup autocomplete',
+    'page callback' => 'inventory_sgroup_autocomplete',
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.ajax.inc',
+  );
+  $items['inventory/%/delete_sgroup/%'] = array(
+    'title' => 'JSON request to delete a group from permission list',
+    'page callback' => 'inventory_delete_sgroup',
+    'page arguments' => array(1, 3),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.ajax.inc',
+  );
+  return $items;
 }
 
 /**
@@ -249,21 +276,21 @@ function inventory_permission() {
  * @return true if access ok, false if not
  */
 function inventory_edit_access($inventoryId) {
-	$access = user_access('access inventories');
-	// check if this user has write access to the inventory
-	global $user;
-	$adminRecords = db_query('
-		SELECT id FROM head_inventory hi
-		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
-		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
-		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.write = 1)
-		OR (hi.owner_id = :uid AND hi.id = :hiid)
-		ORDER BY write DESC LIMIT 1',
-		array(':hiid' => $inventoryId, ':uid' => $user->uid)
-	);
-	$write = $adminRecords->fetch();
-	$access = $access && $write && $write->id == $inventoryId;
-	return $access;
+  $access = user_access('access inventories');
+  // check if this user has write access to the inventory
+  global $user;
+  $adminRecords = db_query('
+    SELECT id FROM head_inventory hi
+    LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
+    LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+    WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.write = 1)
+    OR (hi.owner_id = :uid AND hi.id = :hiid)
+    ORDER BY write DESC LIMIT 1',
+    array(':hiid' => $inventoryId, ':uid' => $user->uid)
+  );
+  $write = $adminRecords->fetch();
+  $access = $access && $write && $write->id == $inventoryId;
+  return $access;
 }
 
 /**
@@ -273,22 +300,22 @@ function inventory_edit_access($inventoryId) {
  * @return true if access ok, false if not
  */
 function inventory_access($inventoryId) {
-	$access = user_access('access inventories');
-	// check if this user has read access to the inventory or the inventory is public
-	global $user;
-	$adminRecords = db_query('
-		SELECT sgi.read, hi.shared, id, hi.owner_id 
-		FROM head_inventory hi
-		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
-		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
-		WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.read = 1)
-		OR (hi.owner_id = :uid AND hi.id = :hiid)
-		OR (hi.shared = true AND hi.id = :hiid)
-		ORDER BY write DESC LIMIT 1;', array(':hiid' => $inventoryId, ':uid' => $user->uid)
-	);
-	$read = $adminRecords->fetch();
-	$access = $access && (($read->read == 1) || ($read->shared == true)) || ($read->owner_id == $user->uid);
-	return $access;
+  $access = user_access('access inventories');
+  // check if this user has read access to the inventory or the inventory is public
+  global $user;
+  $adminRecords = db_query('
+    SELECT sgi.read, hi.shared, id, hi.owner_id 
+    FROM head_inventory hi
+    LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
+    LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
+    WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.read = 1)
+    OR (hi.owner_id = :uid AND hi.id = :hiid)
+    OR (hi.shared = true AND hi.id = :hiid)
+    ORDER BY write DESC LIMIT 1;', array(':hiid' => $inventoryId, ':uid' => $user->uid)
+  );
+  $read = $adminRecords->fetch();
+  $access = $access && (($read->read == 1) || ($read->shared == true)) || ($read->owner_id == $user->uid);
+  return $access;
 }
 
 ?>
