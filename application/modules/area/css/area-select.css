@@ -1,27 +1,27 @@
 .controlAreaChoose {
-	height: 31px;
-	width: 31px;
-	background-image: url('../images/map_controls/hand.png');
-	background-repeat: no-repeat;
+  height: 31px;
+  width: 31px;
+  background-image: url('../images/map_controls/hand.png');
+  background-repeat: no-repeat;
 }
 
 .controlAreaChoose.selected {
-	background-image: url('../images/map_controls/hand-selected.png');
+  background-image: url('../images/map_controls/hand-selected.png');
 }
 
 .controlAreaCreate {
-	height: 31px;
-	width: 31px;
-	background-image: url('../images/map_controls/polygon.png');
-	background-repeat: no-repeat;
+  height: 31px;
+  width: 31px;
+  background-image: url('../images/map_controls/polygon.png');
+  background-repeat: no-repeat;
 }
 
 .controlAreaCreate.selected {
-	background-image: url('../images/map_controls/polygon-selected.png');
+  background-image: url('../images/map_controls/polygon-selected.png');
 }
 
 .hidden {
-	display: none;	
+  display: none;  
 }
 
 #map {
@@ -30,5 +30,5 @@
 }
 
 tr.even, tr.odd {
-	cursor: pointer;
+  cursor: pointer;
 }

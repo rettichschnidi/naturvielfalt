@@ -46,8 +46,8 @@ function area_menu() {
     'file' => 'area.inc',
   );
   $items['area/%/normal'] = array(
-    'title' => t('Normal'),
-    'description' => t('Normal view of an area'),
+    'title' => t('View'),
+    'description' => t('View of an area'),
     'page callback' => 'show_area',
     'page arguments' => array(1),
     'access arguments' => array(AREA_ACCESS),
@@ -169,15 +169,18 @@ function area_permission() {
 function area_gallery_types() {
   return array(
     'area' => array(
-      'edit_gallery' => 'gallery_owner_access_callback',
       'image_caption' => 'area_gallery_image_caption'
+    ),
+    'area_habitat' => array(
+      'image_caption' => 'area_habitat_gallery_image_caption',
+      'crosslinked' => false
     )
   );
 }
 
 /**
  * Helper function referenced in area_gallery_types to define the caption
- * for images added to intentory entries
+ * for images added to areas
  * 
  * @param $id
  * @return string
@@ -188,7 +191,50 @@ function area_gallery_image_caption($id) {
     ->fields('a')
     ->execute()
     ->fetch();
-  return $result->field_name.' <small>'.$result->locality.' '.$result->canton.', '.$result->country.'</small>';
+  return l($result->field_name.' <small>'.$result->locality.' '.$result->canton.', '.$result->country.'</small>', 'area/'.$id, array('html' => true));
+}
+
+/**
+ * Helper function referenced in area_gallery_types to define the caption
+ * for images added to area habitats
+ * 
+ * @param $id
+ * @return string
+ */
+function area_habitat_gallery_image_caption($id) {
+  $result = db_select('area_habitat', 'ah')
+    ->condition('id', $id)
+    ->fields('ah')
+    ->execute()
+    ->fetch();
+  return habitat_gallery_image_caption($result->habitat_id);
+}
+
+/**
+ * Implements hook of gallery module to define the conversion of a area habitat
+ * to the related habitat
+ * 
+ * @return array
+ */
+function area_gallery_type_conversions() {
+  return array(
+    array(
+      array(
+        'source' => 'area_habitat',
+        'source_key' => 'habitat_id',
+        'target' => 'habitat',
+        'target_key' => 'id',
+      )
+    ),
+    array(
+      array(
+        'source' => 'habitat',
+        'source_key' => 'id',
+        'target' => 'area_habitat',
+        'target_key' => 'habitat_id',
+      )
+    )
+  );
 }
 
 /**

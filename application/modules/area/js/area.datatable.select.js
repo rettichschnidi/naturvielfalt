@@ -17,11 +17,14 @@ function inventoryRowSelect() {
 			window.location.href = Drupal.settings.basePath+'inventory/'+idType[1];
 		if (idType[0] == 'organism')
 			window.location.href = Drupal.settings.basePath+'organism/'+idType[1];
+    if (idType[0] == 'habitat')
+      window.location.href = Drupal.settings.basePath+'habitat/'+idType[1];
 		
 	}	
 	// register events
 	jQuery("#inventories").live('click', this.onTableRowClicked);
 	jQuery("#organisms").live('click', this.onTableRowClicked);
+  jQuery("#habitats").live('click', this.onTableRowClicked);
 }
 
 new inventoryRowSelect();

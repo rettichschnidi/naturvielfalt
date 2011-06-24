@@ -54,6 +54,7 @@ function inventory_gallery($head_inventory_id) {
       array_push($items, array(
         'type' => 'inventory_entry',
         'id' => $iGKey,
+        'subtype' => 'default',
         'alternative' => array(
           'type' => 'organism',
           'id' => $invDetails['orgId']

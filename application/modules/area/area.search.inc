@@ -182,8 +182,8 @@ function area_last_used_table() {
  * @return link to Google Maps static image URL with a 302 header
  */
 function googlemaps_static_redirect($area_id){
-	$path = gmap_static_image_path($area_id, 200, 200, 14);
-	header("Location: ".$path);	
+	$path = gmap_static_image_path($area_id, 200, 200);
+	header("Location: ".$path);
 }
 
 /**
@@ -195,11 +195,10 @@ function googlemaps_static_redirect($area_id){
  * 
  * @return link to Google Maps static path
  */
-function gmap_static_image_path($area_id, $width, $height, $zoom){
+function gmap_static_image_path($area_id, $width, $height, $zoom=false){
 	//define default values if none are passed
 	if(!$width){$width = 320;}				// the width of the resulting image
 	if(!$height){$height = 320;}				// the width of the resulting image
-	if(!$zoom){$zoom = 18;}					// zoomlevel of the map
 	
 	//other params
 	$sensor = 'false';			// we don't need no stinkin sensors
@@ -216,26 +215,28 @@ function gmap_static_image_path($area_id, $width, $height, $zoom){
 	);
 	
 	$counter = 0;
-	
+	$center = false;
 	foreach ($areas as $entry){
 		$points .= '|'.$entry->lat.','.$entry->lng;
-		$center = $entry->centroid_lat.",".$entry->centroid_lng;
+    if($entry->centroid_lat || $entry->centroid_lng)
+		  $center = $entry->centroid_lat.",".$entry->centroid_lng;
 		$counter++;
 	}
 	
+  if($counter<=1 && !$zoom)
+    $zoom = 18;
+  $zoom = $zoom?'&zoom='.$zoom:'';
+  $center = $center?'center='.$center:'';
 	//it could be a marker, a path or an area
 	if($counter==1){
-		$google_map_link = 'http://maps.google.com/maps/api/staticmap?center='.$center.'&zoom='.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=roadmap&markers=color:blue|'.$center.'&sensor='.$sensor;
+		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=roadmap&markers=color:blue|'.$center.'&sensor='.$sensor;
 	} else if ($counter == 2){
 		//setting weight to at least 3, otherwise the path will not get drawn (if 0) or be really thin (if 1 or 2)
 		if($weight<3){$weight=3;}
-		$google_map_link = 'http://maps.google.com/maps/api/staticmap?center='.$center.'&zoom='.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
-	} else {
-		//tschenereit si link
-		$google_map_link = 'http://maps.google.com/maps/api/staticmap?center='.$center.'&zoom='.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
 	}
-	
-	return $google_map_link;
+	//tschenereit si link
+	return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
 }
 
 ?>

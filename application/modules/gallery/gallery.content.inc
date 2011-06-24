@@ -14,39 +14,19 @@ define('GALLERY_IMAGE_COUNT', 15);
 function gallery_list($type, $id, $backlink=true) {
   $page = array();
   $editable = gallery_edit_access_callback($type, $id);
-  $key = md5($type.$id);
-  if(array_key_exists($key, $_GET))
-    $_SESSION[$key] = $_GET[$key] ? true : false;
-  $show_all = $_SESSION[$key];
-  $images = gallery_images($type, $id, true, true, $show_all ? false : GALLERY_IMAGE_COUNT);
-  $links = array();
-  if($images['count'] > GALLERY_IMAGE_COUNT) {
-    $url = drupal_get_destination();
-    $url = drupal_parse_url($url['destination']);
-    $url = $url['path'];
-    if(!$show_all) {
-      $page['gallery_info'] = array(
-        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $images['count'])),
-        '#weight' => 10
-      );
-      array_push($links, array(
-        'title' => t('Show all images'),
-        'href' => $url,
-        'query' => array($key => '1')
-      ));
-    } else
-      array_push($links, array(
-        'title' => t('Show top !number', array('!number' => GALLERY_IMAGE_COUNT)),
-        'href' => $url,
-        'query' => array($key => '')
-      ));
-  }
-  if($images['count'])
+  $params = _gallery_list_parameters($type, $id);
+  $images = gallery_images($type, $id, $params['crosslinked'], true, $params['show_all'] ? false : GALLERY_IMAGE_COUNT, $params['subtype']);
+  $links = _gallery_list_links($params, $images['count']);
+  if($images['count']) {
+    $page['anchor'] = array(
+      '#markup' => '<a name="'.$params['key'].'" />'
+    );
     $page['gallery_list'] = array(
       '#theme' => 'gallery_list',
       '#images' => $images['images'],
       '#rating_types' => gallery_available_rating_types()
     );
+  }
   else if($editable) {
     drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
     $page['gallery_list'] = array(
@@ -90,7 +70,7 @@ function gallery_list_renderer($type, $id, $title=false, $weight=10, $collapsed=
   $gallery = gallery_list($type, $id, false);
   if(!$gallery['gallery_list'])
     return '';
-  return _gallery_list_fieldset($gallery, $title, $weight, $collapsed && !array_key_exists(md5($type.$id), $_GET));
+  return _gallery_list_fieldset($gallery, $title, $weight, $collapsed && !array_key_exists(md5($type.$id).'_show_all', $_GET) && !array_key_exists(md5($type.$id).'_crosslinked', $_GET));
 }
 
 /**
@@ -106,39 +86,22 @@ function gallery_list_renderer($type, $id, $title=false, $weight=10, $collapsed=
 function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $collapsed=false) {
   if(!gallery_access_callback($type))
     return '';
-  $key = md5($type.implode('.', $ids));
-  if(array_key_exists($key, $_GET))
-    $_SESSION[$key] = $_GET[$key] ? true : false;
-  $show_all = array_key_exists($key, $_SESSION) ? $_SESSION[$key] : false;
-  $images = gallery_images($type, $ids, true, true, $show_all ? false : GALLERY_IMAGE_COUNT);
-  $links = array();
-  if($images['count'] > GALLERY_IMAGE_COUNT) {
-    $url = drupal_get_destination();
-    $url = drupal_parse_url($url['destination']);
-    $url = $url['path'];
-    if(!$show_all) {
-      $info = array(
-        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $images['count'])),
-        '#weight' => 10
-      );
-      array_push($links, array(
-        'title' => t('Show all images'),
-        'href' => $url,
-        'query' => array($key => '1')
-      ));
-    } else
-      array_push($links, array(
-        'title' => t('Show top !number', array('!number' => GALLERY_IMAGE_COUNT)),
-        'href' => $url,
-        'query' => array($key => '')
-      ));
-  }
+  $params = _gallery_list_parameters($type, $id);
+  $images = gallery_images($type, $ids, $params['crosslinked'], true, $params['show_all'] ? false : GALLERY_IMAGE_COUNT, $params['subtype']);
+  $links = _gallery_list_links($params, $images['count']);
   if($images['count']) {
     $page = _gallery_list_fieldset(array(
-      '#theme' => 'gallery_list',
-      '#images' => $images['images'],
-      '#rating_types' => gallery_available_rating_types()
-    ), $title, $weight, $collapsed && !array_key_exists($key, $_GET));
+      'anchor' => array(
+        '#markup' => '<a name="'.$params['key'].'" />'
+      ),
+      'list' => array(
+        '#theme' => 'gallery_list',
+        '#images' => $images['images'],
+        '#rating_types' => gallery_available_rating_types()
+      )
+    ), $title, $weight, $collapsed && !array_key_exists($params['key'].'_show_all', $_GET) && 
+                                      !array_key_exists($params['key'].'_crosslinked', $_GET) && 
+                                      !array_key_exists($params['key'].'_subtype', $_GET));
     if(isset($info))
       $page['gallery_info'] = $info;
     if($links)
@@ -151,6 +114,84 @@ function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $
     return $page;
   }
   return '';
+}
+
+function _gallery_list_parameters($type, $id) {
+  $params = array();
+  $types = _gallery_types();
+  $key = md5($type.(is_array($id) ? implode('.', $id) : $id));
+  if(array_key_exists($key.'_show_all', $_GET))
+    $_SESSION[$key.'_show_all'] = $_GET[$key.'_show_all'] ? true : false;
+  $params['show_all'] = array_key_exists($key.'_show_all', $_SESSION) ? $_SESSION[$key.'_show_all'] : false;
+  $params['crosslinking'] = array_key_exists('crosslinked', $types[$type]);
+  if($params['crosslinking'] && array_key_exists($key.'_crosslinked', $_GET))
+    $_SESSION[$key.'_crosslinked'] = $_GET[$key.'_crosslinked'] ? true : false;
+  $params['crosslinked'] = array_key_exists($key.'_crosslinked', $_SESSION) ? $_SESSION[$key.'_crosslinked'] : null;
+  $params['subtypes'] = _gallery_get_subtypes($type, $crosslinked);
+  if($params['subtypes'] && array_key_exists($key.'_subtype', $_GET))
+    $_SESSION[$key.'_subtype'] = $_GET[$key.'_subtype'];
+  $params['subtype'] = array_key_exists($key.'_subtype', $_SESSION) ? $_SESSION[$key.'_subtype'] : '';
+  $params['key'] = $key;
+  return $params;
+}
+
+function _gallery_list_links($params, $count) {
+  $url = drupal_get_destination();
+  $url = drupal_parse_url($url['destination']);
+  $url = $url['path'];
+  $links = array();
+  if($count > GALLERY_IMAGE_COUNT) {
+    if(!$params['show_all']) {
+      $info = array(
+        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $count)),
+        '#weight' => 10
+      );
+      array_push($links, array(
+        'title' => t('Show all images'),
+        'href' => $url,
+        'query' => array($params['key'] => '1'),
+        'fragment' => $params['key']
+      ));
+    } else
+      array_push($links, array(
+        'title' => t('Show top !number', array('!number' => GALLERY_IMAGE_COUNT)),
+        'href' => $url,
+        'query' => array($params['key'] => ''),
+        'fragment' => $params['key']
+      ));
+  }
+  if($params['crosslinking']) {
+    if($params['crosslinked'])
+      array_push($links, array(
+        'title' => t('Hide linked images'),
+        'href' => $url,
+        'query' => array($params['key'].'_crosslinked' => ''),
+        'fragment' => $params['key']
+      ));
+    else
+      array_push($links, array(
+        'title' => t('Show linked images'),
+        'href' => $url,
+        'query' => array($params['key'].'_crosslinked' => '1'),
+        'fragment' => $params['key']
+      ));
+  }
+  if($params['subtypes']) {
+    $links[(!$params['subtype'] ? 'selected' : count($links))] = array(
+      'title' => t('Show all image types'),
+      'href' => $url,
+      'query' => array($params['key'].'_subtype' => ''),
+        'fragment' => $params['key']
+    );
+    foreach($params['subtypes'] as $value => $label)
+      $links[($value == $params['subtype'] ? 'selected' : count($links))] = array(
+        'title' => $label,
+        'href' => $url,
+        'query' => array($params['key'].'_subtype' => $value),
+        'fragment' => $params['key']
+      );
+  }
+  return $links;
 }
 
 function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=false) {
@@ -174,6 +215,20 @@ function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=fals
   return $output;
 }
 
+/**
+ * Renders the highest rated image of the given items 
+ * 
+ * @return 
+ * @param array $items
+ *   Array of arrays having the following keys:
+ *   - "type": The type of object to display
+ *   - "id": The id of the object to display
+ *   - "subtype": [Optional] The subtype of the image to display
+ *   - "content": [Optional] drupal render array of the content to be displayed for the given item
+ *   - "alternative": [Optional] Array with the following keys defining an alternative way of getting the image
+ *     - "type": The type of object to display
+ *     - "id": The id of the object to display
+ */
 function gallery_presentation_renderer($items) {
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
@@ -184,7 +239,7 @@ function gallery_presentation_renderer($items) {
   $i = 1;
   $images = array();
   foreach($items as $weight => $item) {
-    $image = gallery_images($item['type'], $item['id'], true, false, 1);
+    $image = gallery_images($item['type'], $item['id'], true, false, 1, $item['subtype']);
     if($image['images'] && $item['alternatives'])
       foreach($item['alternatives'] as $alternative) {
         $image = gallery_images($alternative['type'], $alternative['id'], true, false, 1);
@@ -203,8 +258,15 @@ function gallery_presentation_renderer($items) {
       );
     else {
       $content = t('No image available');
-      if(gallery_edit_access_callback($item['type'], $item['id']))
-        $content = l($content, 'gallery/'.$item['type'].'/'.$item['id'].'/edit');
+      $ids = $item['id'];
+      if(!is_array($ids))
+        $ids = array($ids);
+      foreach($ids as $id) {
+        if(gallery_edit_access_callback($item['type'], $id)) {
+          $content .= '<br>'.l(t('Add one'), 'gallery/'.$item['type'].'/'.$id.'/edit');
+          break;
+        }
+      }
       $images['image'.$i]['image'] = array(
         '#markup' => 
           '<span class="image">'.
@@ -247,7 +309,6 @@ function gallery_edit_link($type, $id) {
     return l($gallery_img_localize, 'gallery/'.$type.'/'.$id.'/edit', array('html'=>true));
   return false;
 }
-
 
 /**
  * Menu callback; Serving a gallery image
@@ -339,8 +400,15 @@ function gallery_images_form($form, &$form_state, $type, $id) {
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
+  $subtypes = _gallery_get_subtypes($type, false);
   
-  $header = array('', t('Filename'), t('Title'), t('Author'), t('Location'), t('Operations'), t('Delete'));
+  $header = array('', t('Filename'), t('Title'));
+  if($subtypes)
+    $header[] = t('Type');
+  $header[] = t('Author');
+  $header[] = t('Location');
+  $header[] = t('Operations');
+  $header[] = t('Delete');
 
   $images = gallery_images($type, $id, false);
   
@@ -351,6 +419,8 @@ function gallery_images_form($form, &$form_state, $type, $id) {
     $row[] = '<a rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
     $row[] = $image['filename'];
     $row[] = $image['title'];
+    if($subtypes)
+      $row[] = $subtypes[$image['subtype']];
     $row[] = $image['author'];
     $row[] = $image['location'];
     $row[] = $editable ? l(t('edit'), 'gallery/'.$type.'/'.$id.'/edit/'.$image['id']) : '&nbsp;';
@@ -410,7 +480,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
   } else
     $title = t('Add new image');
   drupal_set_title($title, PASS_THROUGH);
-
+  
+  $subtypes = _gallery_get_subtypes($type, false);
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
   $form_state['gallery_image'] = $image;
@@ -465,6 +536,15 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#file_required' => !$image['id'],
     );
     
+    if($subtypes)
+      $form[$prefix.'_subtype'] = array(
+        '#type' => 'select',
+        '#title' => t('Type'),
+        '#options' => $subtypes,
+        '#default_value' => $image['subtype'],
+        '#required' => true,
+      );
+    
     $form[$prefix] = array();
     if($categories) {
       $form[$prefix]['categories'] = array(
@@ -472,7 +552,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
         '#title' => t('Categories'),
         '#weight' => 1,
         '#collapsible' => true,
-        '#collapsed' => true,
+        '#collapsed' => $image['id'] ? false : true,
         '#attached' => array (
           'js' => array (
             'misc/form.js',
@@ -492,7 +572,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#title' => t('Metadata'),
       '#weight' => 2,
       '#collapsible' => true,
-      '#collapsed' => true,
+      '#collapsed' => $image['id'] ? false : true,
       '#attached' => array (
         'js' => array (
           'misc/form.js',
@@ -552,6 +632,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
   return $form;
 }
 
+/**
+ * Validator for gallery image files
+ */
 function _gallery_images_form_upload_validate($element, &$form_state, $form) {
   $name = substr($element['#name'], 6, strlen($element['#name'])-7);
   if(!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
@@ -588,6 +671,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
     $image = array(
       'item_type' => $type,
       'item_id' => $id,
+      'subtype' => $form_state['values'][$prefix.'_subtype'],
       'title' => $values['metadata']['title'],
       'description' => $values['metadata']['description'],
       'author' => $values['metadata']['author'],
@@ -652,6 +736,9 @@ function gallery_images_form_delete_submit($form, &$form_state) {
   drupal_goto('gallery/'.$type.'/'.$id.'/edit', array('query' => array('saved' => '1')));
 }
 
+/**
+ * Menu callback; Show a gallery image
+ */
 function gallery_image_show($image) {
   gallery_image_visibility_save($image, '1');
   if($_REQUEST['ajax'])
@@ -663,6 +750,9 @@ function gallery_image_show($image) {
   return drupal_goto($camefrom);
 }
 
+/**
+ * Menu callback; Hide a gallery image
+ */
 function gallery_image_hide($image) {
   gallery_image_visibility_save($image, '0');
   if($_REQUEST['ajax'])
@@ -674,6 +764,9 @@ function gallery_image_hide($image) {
   return drupal_goto($camefrom);
 }
 
+/**
+ * Menu callback; Rate a gallery image
+ */
 function gallery_image_rate($image) {
   $type_id = $_POST['type'];
   $types = gallery_available_rating_types();
@@ -730,7 +823,7 @@ function theme_gallery_list($variables) {
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js', array('weight' => 110));
   $images = $variables['images'];
   $rating_types = $variables['rating_types'];
-  $types = module_invoke_all('gallery_types');
+  $types = _gallery_types();
   
   if(!$images)
     return;
@@ -750,6 +843,8 @@ function theme_gallery_list($variables) {
       $caption .= ' <small>'.$image['description'].'</small>';
     if($caption)
       $caption = '<span class="title">'.$caption.'</span>';
+    if($image['location'] || $image['author'])
+      $caption .= '<span class="author">&copy; '.$image['author'].($image['location'] ? ', '.$image['location'] : '').'</span>';
     if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
       $caption .= ' <em>'.call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id'])).'</em>';
     array_push($items, 
@@ -790,6 +885,16 @@ function _gallery_get_class($i) {
   return $cls;
 }
 
+/**
+ * Returns HTML for an images rating types
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - image: A gallery image array
+ *   - rating_types: An array of rating types
+ *
+ * @ingroup themeable
+ */
 function theme_gallery_image_rating($variables) {
   global $base_url;
   drupal_add_css($base_url . '/misc/ui/jquery.ui.core.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));

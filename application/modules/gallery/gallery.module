@@ -385,15 +385,23 @@ function gallery_image_default_styles() {
  *   Whether to include the ratings of the images
  * @param $limit
  *   How many images to return
+ * @param $subtype
+ *   Images of which subtype to return
  * @return
  *   An associative array having the following entries:
  *   - "images": Array of gallery images
  *   - "count": Number of images found
  */
-function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=false) {
+function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=false, $subtype=false) {
   global $user;
   if (!_gallery_check_type_validity($type))
     return array();
+  if($crosslinked === null) {
+    $types = _gallery_types();
+    $crosslinked = true;
+    if(array_key_exists($type, $types) && array_key_exists('crosslinked', $types[$type]))
+      $crosslinked = $types[$type]['crosslinked'];
+  }
   $sql = 'SELECT '.
           'gi.*, '.
           'fm.*, ' .
@@ -442,10 +450,15 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
           array_push($joins, 'LEFT OUTER JOIN '.$c['source'].' AS c'.$n.' ON c'.$n.'.id = gi.item_id');
         array_push($joins, 'LEFT OUTER JOIN '.$c['target'].' AS c'.$n.'_'.$i.' ON c'.$n.'_'.$i.'."'.$c['target_key'].'" = '.($i == 0 ? 'c'.$n : 'c'.$n.'_'.($i-1)).'."'.$c['source_key'].'"');
         if($i == count($conversion)-1)
-          array_push($conditions, '(gi.item_type = \''.$conversion[0]['source'].'\' AND c'.$n.'_'.$i.'.id '.$id_condition.')');
+          array_push($conditions, '(gi.item_type = \''.$conversion[0]['source'].'\' AND '.
+                                    'c'.$n.'_'.$i.'.id '.$id_condition.
+                                    (array_key_exists('subtype', $conversion[0]) ? ' AND '.
+                                    'gi.subtype = \''.$conversion[0]['subtype'].'\'' : '').')');
       }
     }
   }
+  if($subtype)
+    $where .= ' AND (gi.subtype = \''.$subtype.'\')';
   $sql .= implode(' ', $joins);
   $sql .= ' WHERE ('.implode(' OR ', $conditions).') '.$where;
   $sql .= ' ORDER BY overallrating DESC';
@@ -500,6 +513,7 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
  *   - "id": The unique gallery image ID.
  *   - "item_type": The type of object this image belongs to (inventory_entry, area, habitant, organism)
  *   - "item_id": The id of the object this image belongs to
+ *   - "subtype": The subtype of the image
  *   - "fid": The {file_managed}.fid being referenced in this field.
  *   - "alt": Alternative image text, for the image's 'alt' attribute.
  *   - "title": Image title text, for the image's 'title' attribute.
@@ -1099,7 +1113,7 @@ function gallery_edit_access_callback($type, $id, $image=false) {
     return true;
   if(!user_access('add gallery images'))
     return false;
-  $types = module_invoke_all('gallery_types');
+  $types = _gallery_types();
   if($image) // check image ownership
     $access_method = array_key_exists('edit_image', $types[$type]) ? $types[$type]['edit_image'] : 'gallery_image_owner_access_callback';
   else
@@ -1156,7 +1170,7 @@ function gallery_owner_access_callback($type, $id, $image=false) {
  *   The type of object to be accessed
  */
 function _gallery_check_type_validity($type) {
-  $types = module_invoke_all('gallery_types');
+  $types = _gallery_types();
   foreach($types as $registered => $access)
     if ($registered == $type)
       return true;
@@ -1171,4 +1185,30 @@ function _gallery_type_conversions() {
 
 function _gallery_category_conditions() {
   return module_invoke_all('gallery_category_conditions');
+}
+
+function _gallery_types() {
+  return module_invoke_all('gallery_types');
+}
+
+function _gallery_get_subtypes($type, $crosslinked=true) {
+  $types = _gallery_types();
+  if($crosslinked === null) {
+    $crosslinked = true;
+    if(array_key_exists($type, $types) && array_key_exists('crosslinked', $types[$type]))
+      $crosslinked = $types[$type]['crosslinked'];
+  }
+  $subtypes = array();
+  if(array_key_exists($type, $types) && array_key_exists('subtypes', $types[$type]))
+    $subtypes = array_merge($subtypes, $types[$type]['subtypes']);
+  if(!$crosslinked)
+    return $subtypes;
+  $conversions = _gallery_type_conversions();
+  foreach($conversions as $conversion) {
+    if($conversion[(count($conversion)-1)]['target'] != $type || array_key_exists('subtype', $conversion[0]))
+      continue;
+    if(array_key_exists($conversion[0]['source'], $types) && array_key_exists('subtypes', $types[$conversion[0]['source']]))
+      $subtypes = array_merge($subtypes, $types[$conversion[0]['source']]['subtypes']);
+  }
+  return $subtypes;
 }

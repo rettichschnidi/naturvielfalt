@@ -5,8 +5,6 @@
  * @return array to render
  */
 function inventory_modify() {
-  drupal_set_title(t('Modify Inventory'));
-
   // Own Inventories
   $tableHeader[] = t('Inventory Name');
   $tableHeader[] = t('Area name');

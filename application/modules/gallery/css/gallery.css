@@ -68,6 +68,15 @@ fieldset.gallery ul.action-links li {
   padding:0.2em 1em;
 }
 
+fieldset.gallery ul.action-links li.selected {
+  background-color:#95C590;
+}
+
+fieldset.gallery ul.action-links li.selected a {
+  font-weight:bold;
+  color:#fff;
+}
+
 fieldset.gallery p.info {
   margin:0;
   padding:0.2em 1em;
@@ -81,9 +90,17 @@ fieldset.gallery p.info {
 }
 
 #gallery-image-form .categories,
-#gallery-image-form .metadata {
-  float:right;
+#gallery-image-form .metadata,
+#gallery-image-form .form-type-file,
+#gallery-image-form .form-type-select {
+  float:left;
   width:45%;
+  margin-right:5%;
+}
+
+#gallery-image-form fieldset .form-type-select {
+  width:auto;
+  float:none;
 }
 
 #gallery-image-form fieldset input,
@@ -105,6 +122,7 @@ fieldset.gallery p.info {
 }
 
 #gallery-image-form .image {
+  clear:both;
   position:relative;
   padding:0 1em;
   margin-bottom:0.5em;
@@ -120,9 +138,11 @@ fieldset.gallery p.info {
 
 /* Gallery presentation */
 
-ul.presentation {
-  margin:1em 0 4em 0;
+ul.presentation,
+.block ul.presentation {
+  margin:1em 0 6em 0;
   border-top:1px solid #F7F6EF;
+  overflow:hidden;
 }
 
 ul.presentation li,
@@ -227,6 +247,12 @@ ul.gallery li .caption {
 
 #lightbox-image-details-caption p .title small {
   display:block;
+}
+
+#lightbox-image-details-caption .author {
+  float:left;
+  padding:0.5em 0;
+  margin:1px 0 0 0;
 }
 
 #lightbox-image-details-caption p em {

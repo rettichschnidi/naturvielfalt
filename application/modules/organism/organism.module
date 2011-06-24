@@ -82,26 +82,9 @@ function organism_menu() {
 function organism_gallery_types() {
   return array(
     'organism' => array(
-      'edit_gallery' => 'organism_gallery_access_callback',
       'image_caption' => 'organism_gallery_image_caption'
     )
   );
-}
-
-/**
- * Helper function referenced in organism_gallery_types to define the edit access
- * for images added to organisms
- * 
- * @param string $type
- *   The type of object to be accessed
- * @param string $id
- *   The id of object to be accessed
- * @param array $image
- *   The image to be accessed.
- * @return boolean
- */
-function organism_gallery_access_callback($type, $id, $image=false) {
-  return false; // restrict access to users having the 'manage gallery images' permission
 }
 
 /**

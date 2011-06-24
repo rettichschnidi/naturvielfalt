@@ -1245,6 +1245,7 @@ InfoBubble.prototype.setTabStyle_ = function(tab) {
 
   var marginRight = this.px(-(Math.max(padding, borderRadius)));
   var borderRadiusPx = this.px(borderRadius);
+  borderRadiusPx = borderRadiusPx+' '+borderRadiusPx+' 0 0';
 
   var index = this.baseZIndex_;
   if (tab.index) {
@@ -1261,12 +1262,9 @@ InfoBubble.prototype.setTabStyle_ = function(tab) {
     'padding': this.px(padding / 2) + ' ' + this.px(padding),
     'marginRight': marginRight,
     'whiteSpace': 'nowrap',
-    'borderRadiusTopLeft': borderRadiusPx,
-    'MozBorderRadiusTopleft': borderRadiusPx,
-    'webkitBorderTopLeftRadius': borderRadiusPx,
-    'borderRadiusTopRight': borderRadiusPx,
-    'MozBorderRadiusTopright': borderRadiusPx,
-    'webkitBorderTopRightRadius': borderRadiusPx,
+    'borderRadius': borderRadiusPx,
+    'MozBorderRadius': borderRadiusPx,
+    'webkitBorderRadius': borderRadiusPx,
     'zIndex': index,
     'display': 'inline'
   };
@@ -1696,7 +1694,7 @@ InfoBubble.prototype.figureOutSize_ = function() {
 
   if (this.tabsContainer_) {
     this.tabHeight_ = tabHeight;
-    this.tabsContainer_.style['width'] = this.px(tabWidth);
+    this.tabsContainer_.style['width'] = this.px(tabWidth+2);
   }
 
   this.contentContainer_.style['width'] = this.px(width);

@@ -11,23 +11,24 @@
  * @return array
  */
 function habitat_menu() {
-	$items['habitat'] = array(
+  $items['habitat'] = array(
     'title' => t('Habitats'),
     'description' => t('Show all habitats'),
     'page callback' => 'habitat_list',
     'access arguments' => array('access content'),
-	'file' => 'habitat.list.inc',
-	);
-	$items['habitat/%'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'habitat.list.inc',
+  );
+  $items['habitat/%'] = array(
     'title' => 'Show Habitat Areas',
     'description' => 'View existing Habitat Areas',
     'page callback' => 'habitat_show',
-	'access arguments' => array('access content'),
+    'access arguments' => array('access content'),
     'page arguments' => array(1),
-    'type' => MENU_CALLBACK,
-	'file' => 'habitat.show.inc',
-	);
-  	return $items;
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'habitat.show.inc',
+  );
+  return $items;
 }
 
 /**
@@ -39,7 +40,6 @@ function habitat_menu() {
 function habitat_gallery_types() {
   return array(
     'habitat' => array(
-      'edit_gallery' => 'habitat_gallery_access_callback',
       'image_caption' => 'habitat_gallery_image_caption'
     )
   );
@@ -57,23 +57,7 @@ function habitat_gallery_image_caption($id) {
     ->fields('h')
     ->execute()
     ->fetch();
-  return $result->name_de.' <small>'.$result->name_lt.'</small>';
-}
-
-/**
- * Helper function referenced in habitat_gallery_types to define the edit access
- * for images added to habitats
- * 
- * @param string $type
- *   The type of object to be accessed
- * @param string $id
- *   The id of object to be accessed
- * @param array $image
- *   The image to be accessed.
- * @return boolean
- */
-function habitat_gallery_access_callback($type, $id, $image=false) {
-  return false; // restrict access to users having the 'manage gallery images' permission
+  return l($result->label.' '.$result->name_de.' <small>'.$result->name_lt.'</small>', 'habitat/'.$id, array('html' => true));
 }
 
 /**

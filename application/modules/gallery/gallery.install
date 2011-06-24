@@ -32,6 +32,12 @@ function gallery_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE
       ),
+      'subtype' => array(
+        'description' => 'The subtype of the image.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+      ),
       'fid' => array(
         'description' => 'The {file_managed}.fid being referenced in this field.',
         'type' => 'int',

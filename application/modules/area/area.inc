@@ -3,39 +3,95 @@ function show_area($areaId) {
   $areaResult = db_query("SELECT * FROM {area} WHERE id = :id", array(':id' => $areaId));
   $area = $areaResult->fetch();
   drupal_set_title($area->field_name);
+  drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
   
   //include code for gmap_static_image_path
   module_load_include('inc', 'area', 'area.search');
   
-  //$rows = array();
-  $row[0][] = t('Area Name');
-  $row[0][]= $area->field_name;
-  $row[1][] = t('Altitude');
-  $row[1][] = $area->altitude;
-  $row[2][] = t('Surface area');
-  $row[2][] = $area->surface_area;
-  $row[3][] = t('Locality');
-  $row[3][] = $area->locality;
-  $row[4][] = t('Zip');
-  $row[4][] = $area->zip;
-  $row[5][] = t('Township');
-  $row[5][] = $area->township;
-  $row[6][] = t('Canton');
-  $row[6][] = $area->canton;
-  $row[7][] = t('Country');
-  $row[7][] = $area->country;
-  $row[8][] = t('Comment');
-  $row[8][] = $area->comment;
-  $row[9][] = t('Create time');
-  $row[9][] = date("j.m.Y", strtotime($area->create_time));
-  $row[10][] = t('Modify time');
-  $row[10][] = date("j.m.Y", strtotime($area->modify_time));
+  $rows = array();
+  $rows[] = array(
+    array(
+      'data' => t('Area Name'),
+      'header' => true
+    ),
+    $area->field_name
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Altitude'),
+      'header' => true
+    ),
+    $area->altitude
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Surface area'),
+      'header' => true
+    ),
+    $area->surface_area
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Locality'),
+      'header' => true
+    ),
+    $area->locality
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Zip'),
+      'header' => true
+    ),
+    $area->zip
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Township'),
+      'header' => true
+    ),
+    $area->township
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Canton'),
+      'header' => true
+    ),
+    $area->canton
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Country'),
+      'header' => true
+    ),
+    $area->country
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Comment'),
+      'header' => true
+    ),
+    $area->comment
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Create time'),
+      'header' => true
+    ),
+    date("j.m.Y", strtotime($area->create_time))
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Modify time'),
+      'header' => true
+    ),
+    date("j.m.Y", strtotime($area->modify_time))
+  );
   
-  $output['Area']['area_map'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Map'),
-    '#weight' => 5,
+  $output['area_details'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Area details'), 
+    '#weight' => 1, 
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
@@ -46,49 +102,50 @@ function show_area($areaId) {
     ),
     '#attributes' => array(
       'class' => array('collapsible'),
+      'id' => 'area-details'
+    ),
+  );
+  
+  $output['area_details']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+    '#id_table' => 'area_details',
+  );
+  
+  $output['area_map'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Map'),
+    '#weight' => 2,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+      'id' => 'area-map'
     ),
   );
 
-  $imagepath = gmap_static_image_path($areaId,400, 300, 14);
-  $output['Area']['area_map']['image'] = array(
-    '#markup'=>'<img src="'.$imagepath.'">',
-  );
+  $imagepath = gmap_static_image_path($areaId, 500, 500);
   $variables_map= array(
     'path' => $imagepath,
     'alt' => t('Map'),
     'title' => t('Map'),
-    'width' => '400px',
-    'height' => '300px',
   );
-  $img_map = theme('image', $variables_map);
-  
-  $output['Area']['area_details'] = array(
-    '#type' => 'fieldset', 
-    '#title' => t('Area details'), 
-    '#weight' => 5, 
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-    '#attached' => array (
-      'js' => array (
-        'misc/form.js',
-        'misc/collapse.js',
-      ),
-    ),
-    '#attributes' => array(
-      'class' => array('collapsible'),
-    ),
+  $output['area_map']['image'] = array(
+    '#markup' => theme('image', $variables_map)
   );
   
-  $output['Area']['area_details']['table'][0][] = array(
-    '#theme' => 'table',
-    '#rows' => $row,
-    '#id_table' => 'area_details',
-  );
+  $output = array_merge($output, showAreaInventories($areaId));
   
-  $output['Inventories'] = drupal_get_form('showAreaInventories', $areaId);
+  $output = array_merge($output, showAreaHabitats($areaId));
   
   if(function_exists('gallery_list_renderer'))
-    $output['Gallery'] = gallery_list_renderer('area', $areaId);
+    $output['gallery'] = gallery_list_renderer('area', $areaId, t('Area images'));
   return $output;
   
 }
@@ -154,6 +211,7 @@ function show_area_gallery($areaId) {
         $groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]] = array(
           'type' => 'inventory_entry',
           'id' => array(),
+          'subtype' => 'default',
           'alternative' => array(
             'type' => 'organism',
             'id' => $entry->organism_id
@@ -172,6 +230,33 @@ function show_area_gallery($areaId) {
     }
   }
   
+  $query = db_select('area_habitat', 'ah', array('fetch' => PDO::FETCH_ASSOC))->condition('area_id', $areaId);
+  $query->join('habitat', 'h', 'h.id = ah.habitat_id');
+  $query->fields('h');
+  $query->addField('ah', 'id', 'ah_id');
+  $habitats = $query->execute()->fetchAll();
+  
+  foreach($habitats as $habitat) {
+    if(!array_key_exists(t('Habitats'), $groups))
+      $groups[t('Habitats')] = array();
+    array_push($groups[t('Habitats')], array(
+      'type' => 'area_habitat',
+      'id' => $habitat['ah_id'],
+      'alternative' => array(
+        'type' => 'habitat',
+        'id' => $habitat['id']
+      ),
+      'content' => array(
+        'label' => array(
+          '#markup' => '<h3>'.l($habitat['name_de'], 'habitat/'.$habitat['id']).'</h3>'
+        ),
+        'label_latin' => array(
+          '#markup' => $habitat['name_lt'] ? '<h4>'.l($habitat['name_lt'], 'habitat/'.$habitat['id']).'</h4>' : ''
+        )
+      )
+    ));
+  }
+  
   foreach($groups as $group => $items) {
     if($items) {
       $page[$group] = array();
@@ -182,7 +267,7 @@ function show_area_gallery($areaId) {
   
   if(!$page)
     $page['empty'] = array(
-      '#markup' => '<p>'.t('There are no organisms available in this area.').'</p>'
+      '#markup' => '<p>'.t('There are no organisms and no habitats available in this area.').'</p>'
     );
   
   return $page;
@@ -190,12 +275,11 @@ function show_area_gallery($areaId) {
 
 /**
  * Display area linked inventories
- * @param unknown_type $form
- * @param unknown_type $form_state
  * @param unknown_type $areaId
  */
-function showAreaInventories($form, &$form_state, $areaId) {
+function showAreaInventories($areaId) {
   global $user;
+  $output = array();
   $result = db_query('
     SELECT distinct hi.name, hi.id, hi.shared, u.name uname, hi.modify_time, hi.create_time
     FROM area a
@@ -231,6 +315,7 @@ function showAreaInventories($form, &$form_state, $areaId) {
     ),
     '#attributes' => array(
       'class' => array('collapsible'),
+      'id' => 'area-inventories'
     ),
   );
   
@@ -252,12 +337,86 @@ function showAreaInventories($form, &$form_state, $areaId) {
 }
 
 /**
- * Display area linked organisms
- * @param unknown_type $form
- * @param unknown_type $form_state
+ * Display area linked habitats
  * @param unknown_type $areaId
  */
-function showAreaOrganisms($form, &$form_state, $areaId) {
+function showAreaHabitats($areaId) {
+  global $user;
+  $output = array();
+  $query = db_select('area_habitat', 'ah')
+    ->condition('ah.area_id', $areaId);
+  $query->join('habitat', 'h', 'h.id = ah.habitat_id');
+  $query->addField('ah', 'id', 'ah_id');
+  $query->fields('h');
+  
+  $result = $query->execute()->fetchAll();
+  
+  //Localize Image
+  $view_img_localize = theme('image', array(
+    'path' => 'misc/fatcow_icons/16x16/world.png',
+    'alt' => t('Details'),
+    'title' => t('Details'),
+  ));
+  
+  $header[] = t('Label');
+  $header[] = t('Name');
+  $header[] = t('Latin');
+  $header[] = t('id');
+  
+  $has_gallery = false;
+  $weight = 10;
+  foreach($result as $record) {
+    $row = array();
+    $row[] = $record->label;
+    $row[] = $record->name_de;
+    $row[] = $record->name_lt;
+    $row[] = $record->id;
+    if(function_exists('gallery_edit_link')) {
+      $row[] = gallery_edit_link('area_habitat', $record->ah_id);
+      if($row[4])
+        $has_gallery = true;
+      $output['gallery_'.$record->ah_id] = gallery_list_renderer('area_habitat', $record->ah_id, t('Images of !habitat', array('!habitat' => $record->name_de)), $weight++, true);
+    }
+    $rows[] = array('data' => $row, 'id' => 'habitat_'. $record->id);
+  }
+  
+  if($has_gallery)
+    $header[] = '&nbsp;';
+  
+  if(empty($rows))
+    return $output;
+  
+  $output['linked_habitats'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Linked habitats'),
+    '#weight' => 4,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+  
+  $output['linked_habitats']['habitats'] = array(
+    '#theme' => 'datatable', 
+    '#header' => $header,
+    '#rows' => $rows,
+    '#id_table' => 'habitats',
+  );
+  return $output;
+}
+
+/**
+ * Display area linked organisms
+ * @param unknown_type $areaId
+ */
+function showAreaOrganisms($areaId) {
   $organisms = db_query ('
     SELECT DISTINCT o.id oid, o.organism_type, flo."Gattung" gattung, flo."Art" art, flo."Familie" familie, flo.name_de, fao.order, fao.genus, fao.species, fao.name_de fauna_name, hi.id hid, hi.owner_id, hi.shared
     FROM AREA

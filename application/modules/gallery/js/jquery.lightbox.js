@@ -100,27 +100,22 @@
       // Unset image active information
       var cimg = settings.activeImage;
       settings.activeImage = 0;
-      // We have an image set? Or just an image? Let�s see it.
-      if (jQueryMatchedObj.length == 1) {
-        settings.imageArray.push(new Array(objClicked.getAttribute('href'), objClicked.getAttribute('title')));
-      } else {
-        // Add an Array (as many as we have), with href and title atributes, inside the Array that storage the images references    
-        for (var i = 0; i < jQueryMatchedObj.length; i++) {
-          var a = $(jQueryMatchedObj[i]);
-          var img = a;
-          var link = false;
-          if(settings.captionSelector)
-            a = a.find(settings.captionSelector);
-          if(settings.captionHTML)
-            var caption = a;
-          else
-            var caption = a.attr(settings.captionAttr);
-          if(settings.imageSelector)
-            img = img.find(settings.imageSelector);
-          if(settings.linkSelector)
-            link = $(jQueryMatchedObj[i]).find(settings.linkSelector).attr('href');
-          settings.imageArray.push(new Array(img.attr(settings.imageAttr),caption,link));
-        }
+      // Add an Array (as many as we have), with href and title atributes, inside the Array that storage the images references    
+      for (var i = 0; i < jQueryMatchedObj.length; i++) {
+        var a = $(jQueryMatchedObj[i]);
+        var img = a;
+        var link = false;
+        if(settings.captionSelector)
+          a = a.find(settings.captionSelector);
+        if(settings.captionHTML)
+          var caption = a;
+        else
+          var caption = a.attr(settings.captionAttr);
+        if(settings.imageSelector)
+          img = img.find(settings.imageSelector);
+        if(settings.linkSelector)
+          link = $(jQueryMatchedObj[i]).find(settings.linkSelector).attr('href');
+        settings.imageArray.push(new Array(img.attr(settings.imageAttr),caption,link));
       }
       var clicked = $(objClicked);
       if(settings.imageSelector)

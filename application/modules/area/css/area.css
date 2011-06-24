@@ -4,14 +4,36 @@
 }
 
 div.box {
-	height: 100px;
-	padding: 10px;
-	overflow: auto;
-	border: 1px solid #8080FF;
-	background-color: #E5E5FF;
+  height: 100px;
+  padding: 10px;
+  overflow: auto;
+  border: 1px solid #8080FF;
+  background-color: #E5E5FF;
 }
 
 #map_search-element input, #area_table_filter input {
-	width: 68%;
+  width: 68%;
+}
+
+#area-details {
+  width:430px;
+  float:left;
+}
+
+#area-details .fieldset-wrapper {
+  min-height:500px;
+}
+
+#area-map {
+  width:500px;
+  float:right;
+}
+
+#area-map img {
+  display:block;
+}
+
+#area-inventories {
+  clear:both;
 }
 

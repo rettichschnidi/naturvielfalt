@@ -30,8 +30,8 @@ function inventory_menu() {
     'file' => 'inventory.show.inc',
   );
   $items['inventory/%/normal'] = array(
-    'title' => t('Normal'),
-    'description' => t('Normal view of the inventory'),
+    'title' => t('View'),
+    'description' => t('View of the inventory'),
     'page callback' => 'inventory_show',
     'page arguments' => array(1),
     'access callback' => 'inventory_access',
@@ -139,7 +139,11 @@ function inventory_gallery_types() {
   return array(
     'inventory_entry' => array(
       'edit_gallery' => 'inventory_gallery_access_callback',
-      'image_caption' => 'inventory_gallery_image_caption'
+      'image_caption' => 'inventory_gallery_image_caption',
+      'subtypes' => array(
+        'default' => t('Presentational images'),
+        'evidence' => t('Evidence images')
+      )
     ),
     'head_inventory' => array(
       'edit_gallery' => 'gallery_owner_access_callback',
@@ -212,6 +216,7 @@ function inventory_gallery_type_conversions() {
         'source_key' => 'organism_id',
         'target' => 'organism',
         'target_key' => 'id',
+        'subtype' => 'default'
       )
     ),
     array(
@@ -251,6 +256,15 @@ function inventory_gallery_category_conditions() {
       'name' => t('Inventory entries'),
       'type' => 'inventory_entry'
     ),
+  );
+}
+
+function inventory_gallery_categories() {
+  return array(
+    array(
+      
+      
+    )
   );
 }
 
