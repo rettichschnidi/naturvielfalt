@@ -56,7 +56,12 @@ function organism_lexika_show($organism_id) {
 	$content = str_replace(array("\n", "\r"), '', $content);
 	$content = preg_replace($pattern1, '$2', $content);
 	$content = preg_replace($pattern2, '', $content);
-	$content = '<div class="wikientry">'.$content.'</div><div  class="wiki_source">Obenstehender Artikel basiert auf <a target="_blank" href="http://de.wikipedia.org/wiki/'.$organism_name.'">diesem Artikel</a> der freien Enzyklopädie <a target="_blank" href="http://de.wikipedia.org">Wikipedia</a> und steht unter der <a target="_blank" href="http://de.wikipedia.org/wiki/Wikipedia:Lizenzbestimmungen_Commons_Attribution-ShareAlike_3.0_Unported">„Creative Commons Attribution/Share Alike“</a>.Hier finden Sie <a target="_blank" href="http://de.wikipedia.org/w/index.php?title='.$organism_name.'&action=history">Versionen/Autoren</a>.</div>';
+	if(!empty($content)) {
+		$content = '<div class="wikientry">'.$content.'</div><div  class="wiki_source">Obenstehender Artikel basiert auf <a target="_blank" href="http://de.wikipedia.org/wiki/'.$organism_name.'">diesem Artikel</a> der freien Enzyklopädie <a target="_blank" href="http://de.wikipedia.org">Wikipedia</a> und steht unter der <a target="_blank" href="http://de.wikipedia.org/wiki/Wikipedia:Lizenzbestimmungen_Commons_Attribution-ShareAlike_3.0_Unported">„Creative Commons Attribution/Share Alike“</a>.Hier finden Sie <a target="_blank" href="http://de.wikipedia.org/w/index.php?title='.$organism_name.'&action=history">Versionen/Autoren</a>.</div>';
+	}
+	else {
+		$content = t('We are sorry, but Wikipedia does not have any german information about this organism.');
+	}
 	
 	return array(
 		'#markup' => $content
