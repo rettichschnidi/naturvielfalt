@@ -40,7 +40,7 @@ function organism_lexika_show($organism_id) {
 	fputs($fp,"$postdata\n\n");
 	$o = "";
 	while(!feof($fp))
-		$o .= fgets($fp, 4096);
+		$o .= fgets($fp, 1024);
 	fclose($fp);
 	 
 	$pos = strpos($o, '{"query":');
