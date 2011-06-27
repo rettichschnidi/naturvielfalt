@@ -150,14 +150,20 @@ function show_area($areaId) {
   
 }
 
-// Load functions of inventory
-require_once DRUPAL_ROOT . '/modules/inventory/inventory.show.inc';
+function area_gallery($areaId) {
+  return _area_presentation($areaId);
+}
 
-function show_area_gallery($areaId) {
-  $area = db_select('area', 'a')->condition('id', $areaId)->fields('a')->execute()->fetch();
-  drupal_set_title($area->field_name);
+function area_list($areaId) {
+  return _area_presentation($areaId, 'gallery_presentation_list', 'presentation-list', 1000000);
+}
+
+function _area_presentation($areaId, $size='gallery_presentation', $cssClass=false, $columns=GALLERY_COLUMNS) {
   if(!function_exists('gallery_presentation_renderer'))
     return;
+  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  $area = db_select('area', 'a')->condition('id', $areaId)->fields('a')->execute()->fetch();
+  drupal_set_title($area->field_name);
   $query = db_select('head_inventory', 'hi', array('fetch' => PDO::FETCH_ASSOC))->condition('area_id', $areaId);
   $query->join('inventory', 'i', 'i.head_inventory_id = hi.id');
   $query->join('inventory_type', 'it', 'it.id = i.inventory_type_id');
@@ -167,29 +173,48 @@ function show_area_gallery($areaId) {
   $query->addField('it', 'name', 'inventory_type_name');
   $inventories = $query->execute()->fetchAll();
   
+  $sorting = array('default', 'latin', 'german', 'family');
+  $sources = array('default', 'inventory', 'presentation', 'best');
+  
+  $key = md5('area_presentation'.$areaId);
+  if($_GET[$key.'_source'] && in_array($_GET[$key.'_source'], $sources))
+    $_SESSION[$key.'_source'] = $_GET[$key.'_source'];
+  $source = $_SESSION[$key.'_source'];
+  
+  if($_GET[$key.'_order'] && in_array($_GET[$key.'_order'], $sorting))
+    $_SESSION[$key.'_order'] = $_GET[$key.'_order'];
+  $order = $_SESSION[$key.'_order'];
+  
+  switch($order) {
+    case 'latin':
+      $sort = 'fauna.genus, fauna.species, flora."Gattung", flora."Art", e.id ASC';
+      break;
+    case 'german':
+      $sort = 'fauna.name_de, flora.name_de, e.id ASC';
+      break;
+    case 'family':
+      $sort = 'fauna.family, flora."Familie", e.id ASC';
+      break;
+    default:
+      $sort = 'e.position, e.id ASC';
+      break;
+  }
+  
+  
   $page = array();
   $seen = array();
   $groups = array();
+  $protected = inventory_redlisted_entries();
+  $weight = 1;
   foreach($inventories as $inventory) {
-    $show_red = hasRedListPermission($inventory['head_inventory_id']);
-    $sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
+    $sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, fauna.family, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart, flora."Familie" florafamilie
       FROM inventory_entry e
       LEFT JOIN organism o on e.organism_id = o.id
       LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
-      LEFT JOIN flora_organism flora ON o.organism_id = flora.id';
-    if($show_red) // Show everything
-      $sql .= ' WHERE e.inventory_id = :id;';
-    else // Show no red list organism
-      $sql .= '
-        LEFT JOIN flora_red_list flora_rl ON flora_rl.flora_organism_id = flora.id AND o.organism_type = 2
-        WHERE e.inventory_id = :id
-        AND (
-          (fauna.protection_ch != 1 AND o.organism_type = 1)
-          OR (
-            (flora_rl.red_list_ch != 1 OR flora_rl.red_list_ch IS NULL)
-            AND o.organism_type = 2
-          )
-        )';
+      LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+      WHERE e.inventory_id = :id '.
+      ($protected?'AND NOT e.id IN ('.implode(', ', $protected).')':'').
+      'ORDER BY '.$sort.';';
     $entries = db_query($sql ,array(':id' => $inventory['inventory_id']))->fetchAll();
     if(!$entries)
       continue;
@@ -203,30 +228,55 @@ function show_area_gallery($areaId) {
           // organism_type 1 is Fauna
           $label = $entry->faunanamede;
           $label_latin = $entry->genus." ".$entry->species;
+          $label_family = $entry->family;
         } else {
           // organism_type 2 is Flora
           $label = $entry->floranamede;
           $label_latin = $entry->floragattung." ".$entry->floraart;
+          $label_family = $entry->florafamilie;
         }
-        $groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]] = array(
-          'type' => 'inventory_entry',
-          'id' => array(),
-          'subtype' => 'default',
-          'alternative' => array(
-            'type' => 'organism',
-            'id' => $entry->organism_id
-          ),
+        $item = array(
           'content' => array(
-            'label' => array(
-              '#markup' => '<h3>'.l($label, 'organism/'.$entry->organism_id).'</h3>'
+            'label_family' => array(
+              '#markup' => '<h3>'.$label_family.'</h3>'
             ),
             'label_latin' => array(
               '#markup' => '<h4>'.l($label_latin, 'organism/'.$entry->organism_id).'</h4>'
+            ),
+            'label' => array(
+              '#markup' => '<h5>'.l($label, 'organism/'.$entry->organism_id).'</h5>'
             )
           )
         );
-        array_push($groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]]['id'], $entry->id);
-      }
+        switch($source) {
+          case 'best':
+            $item['type'] = 'organism';
+            $item['id'] = $entry->organism_id;
+            break;
+          case 'inventory':
+            $item['type'] = 'inventory_entry';
+            $item['id'] = $entry->id;
+            break;
+          case 'presentation':
+            $item['type'] = 'inventory_entry';
+            $item['id'] = $entry->id;
+            $item['subtype'] = 'presentation';
+            break;
+          default:
+            $item['type'] = 'inventory_entry';
+            $item['id'] = $entry->id;
+            $item['alternatives'] = array(
+              array(
+                'type' => 'organism',
+                'id' => $entry->organism_id
+              )
+            );
+            break;
+        }
+        $groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]] = $item;
+      } else if($source == 'best')
+        continue;
+      array_push($groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]]['id'], $entry->id);
     }
   }
   
@@ -259,9 +309,9 @@ function show_area_gallery($areaId) {
   
   foreach($groups as $group => $items) {
     if($items) {
-      $page[$group] = array();
+      $page[$group] = array('#weight' => $weight++);
       $page[$group]['title'] = array('#markup' => '<h2>'.$group.'</h2>');
-      $page[$group]['gallery'] = gallery_presentation_renderer($items);
+      $page[$group]['gallery'] = gallery_presentation_renderer($items, $size, $cssClass, $columns);
     }
   }
   
@@ -269,6 +319,37 @@ function show_area_gallery($areaId) {
     $page['empty'] = array(
       '#markup' => '<p>'.t('There are no organisms and no habitats available in this area.').'</p>'
     );
+  else {
+    $url = drupal_get_destination();
+    $url = drupal_parse_url($url['destination']);
+    $url = $url['path'];
+    
+    $sselected = array();
+    foreach($sources as $s)
+      $sselected[$s] = $source == $s ? ' selected="selected"' : '';
+    $oselected = array();
+    foreach($sorting as $o)
+      $oselected[$o] = $order == $o ? ' selected="selected"' : '';
+    $page['form'] = array(
+      '#markup' => 
+        '<form class="presentation-settings" method="get" action="'.url($url).'">'.
+          '<select size="1" name="'.$key.'_source">'.
+            '<option value="default"'.$sselected['default'].'>'.t('Prefer images from inventories').'</option>'.
+            '<option value="inventory"'.$sselected['inventory'].'>'.t('Show only images from inventories').'</option>'.
+            '<option value="presentation"'.$sselected['presentation'].'>'.t('Show only presentation images from inventories').'</option>'.
+            '<option value="best"'.$sselected['best'].'>'.t('Show the highest rated images of the site').'</option>'.
+          '</select> '.
+          '<select size="1" name="'.$key.'_order">'.
+            '<option value="default"'.$oselected['default'].'>'.t('Sort by position in inventory').'</option>'.
+            '<option value="german"'.$oselected['german'].'>'.t('Sort by german name').'</option>'.
+            '<option value="latin"'.$oselected['latin'].'>'.t('Sort by latin name').'</option>'.
+            '<option value="family"'.$oselected['family'].'>'.t('Sort by family').'</option>'.
+          '</select> '.
+          '<input type="submit" name="submit" value="'.t('apply').'" />'.
+        '</form>',
+      'weight' => -1
+    );
+  }
   
   return $page;
 }

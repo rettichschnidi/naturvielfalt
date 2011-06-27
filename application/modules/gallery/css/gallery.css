@@ -91,16 +91,20 @@ fieldset.gallery p.info {
 
 #gallery-image-form .categories,
 #gallery-image-form .metadata,
-#gallery-image-form .form-type-file,
-#gallery-image-form .form-type-select {
+#gallery-image-form .form-type-file {
   float:left;
   width:45%;
   margin-right:5%;
 }
 
-#gallery-image-form fieldset .form-type-select {
+#gallery-image-form fieldset .form-type-checkboxes {
   width:auto;
   float:none;
+}
+
+#gallery-image-form .form-type-checkbox {
+  float:left;
+  margin:0 0.5em 0 0;
 }
 
 #gallery-image-form fieldset input,
@@ -164,8 +168,66 @@ ul.presentation li span.image {
   text-align:center;
 }
 
-ul.presentation li .caption h4 {
+ul.presentation li .author-msg {
+  display:block;
+  position:relative;
+  top:-1em;
+  text-align:left;
+  font-size:10px;
+  line-height:14px;
+  color:#555;
+}
+
+ul.presentation li .msg {
+  display:block;
+  font-size:1em;
   font-style:italic;
+}
+
+ul.presentation li .caption h3 {
+  border-bottom:1px solid #F7F6EF;
+  margin-bottom:0.2em;
+}
+
+ul.presentation li .caption h3,
+ul.presentation li .caption h4,
+ul.presentation li .caption h5 {
+  line-height:1.4em;
+}
+
+ul.presentation-list li {
+  float:none;
+  width:auto;
+  clear:both;
+  text-align:left;
+  border-bottom:1px solid #F7F6EF;
+  padding:1em 0;
+  overflow:hidden;
+}
+
+ul.presentation-list li .image {
+  float:left;
+  margin:0 1em 0 0;
+}
+
+ul.presentation-list li span.image {
+  width:98px;
+  padding:20px 0;
+}
+
+ul.presentation-list li .author-msg {
+  float:left;
+  clear:left;
+  width:100px;
+  top:0;
+  font-size:10px;
+  margin:0;
+}
+
+ul.presentation-list li .caption h3,
+ul.presentation-list li .caption h4,
+ul.presentation-list li .caption h5 {
+  overflow:hidden;
 }
 
 /* Rating */
@@ -255,14 +317,33 @@ ul.gallery li .caption {
   margin:1px 0 0 0;
 }
 
+#lightbox-image-details-caption .author-msg .author {
+  padding:0;
+  margin:0;
+}
+
+#lightbox-image-details-caption .author-msg {
+  overflow:hidden;
+}
+
+#lightbox-image-details-caption em.msg,
 #lightbox-image-details-caption p em {
   display:block;
+  font-style:normal;
+  font-size:1em;
+}
+
+#lightbox-image-details-caption .author-msg,
+#lightbox-image-details-caption p em {
   text-align:right;
   border-top:1px solid #eee;
   border-bottom:1px solid #eee;
   margin:0 0 1em 0;
   padding:0.5em 0;
-  font-style:normal;
+}
+
+#lightbox-image-details-caption h5 {
+  margin-bottom:1em;
 }
 
 #lightbox-image-details-caption p em small {

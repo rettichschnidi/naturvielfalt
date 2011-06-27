@@ -5,7 +5,7 @@ function inventory_show($head_inventory_id) {
   
   $render_array = getInventoryBasics($head_inventory_id);
   
-  if(hasRedListPermission($head_inventory_id) == FALSE)
+  if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE)
     $render_array = array_merge($render_array, getRedListCount($head_inventory_id));
   
   if(function_exists('gallery_list_renderer'))
@@ -31,14 +31,51 @@ function getInventoryTitle($head_inventory_id) {
 }
 
 function inventory_gallery($head_inventory_id) {
+  return _inventory_presentation($head_inventory_id);
+}
+
+function inventory_list($head_inventory_id) {
+  return _inventory_presentation($head_inventory_id, 'gallery_presentation_list', 'presentation-list', 1000000);
+}
+
+function _inventory_presentation($head_inventory_id, $size='gallery_presentation', $cssClass=false, $columns=GALLERY_COLUMNS) {
   if(!function_exists('gallery_presentation_renderer'))
     return;
+  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
   
-  $invArr = getInventoriesData($head_inventory_id);
+  $sorting = array('default', 'latin', 'german', 'family');
+  $sources = array('default', 'inventory', 'presentation', 'best');
+  
+  $key = md5('inventory_presentation'.$head_inventory_id);
+  if($_GET[$key.'_source'] && in_array($_GET[$key.'_source'], $sources))
+    $_SESSION[$key.'_source'] = $_GET[$key.'_source'];
+  $source = $_SESSION[$key.'_source'];
+  
+  if($_GET[$key.'_order'] && in_array($_GET[$key.'_order'], $sorting))
+    $_SESSION[$key.'_order'] = $_GET[$key.'_order'];
+  $order = $_SESSION[$key.'_order'];
+  
+  switch($order) {
+    case 'latin':
+      $sort = 'fauna.genus, fauna.species, flora."Gattung", flora."Art", e.id ASC';
+      break;
+    case 'german':
+      $sort = 'fauna.name_de, flora.name_de, e.id ASC';
+      break;
+    case 'family':
+      $sort = 'fauna.family, flora."Familie", e.id ASC';
+      break;
+    default:
+      $sort = 'e.position, e.id ASC';
+      break;
+  }
+  
+  $invArr = getInventoriesData($head_inventory_id, $sort);
   
   $weight = 1;
-  foreach($invArr as $key => $inventory_group) {
+  $seen = array();
+  foreach($invArr as $inventory_group) {
     $items = array();
     
     $invGroupName = $inventory_group['invDesc']['name'];
@@ -48,31 +85,54 @@ function inventory_gallery($head_inventory_id) {
         'data' => $invDetail['name'],
         'header' => true
       ));
-    foreach($inventory_group as $iGKey => $invDetails) {
-      if($iGKey == 'invDesc')
+    foreach($inventory_group as $k => $invDetails) {
+      if((is_string($k) && $k == 'invDesc') || in_array($invDetails['orgId'], $seen))
         continue;
-      array_push($items, array(
-        'type' => 'inventory_entry',
-        'id' => $iGKey,
-        'subtype' => 'default',
-        'alternative' => array(
-          'type' => 'organism',
-          'id' => $invDetails['orgId']
-        ),
+      array_push($seen, $invDetails['orgId']);
+      $item = array(
         'content' => array(
-          'label' => array(
-            '#markup' => '<h3>'.l($invDetails['label'], 'organism/'.$invDetails['orgId']).'</h3>'
+          'label_family' => array(
+            '#markup' => '<h3>'.$invDetails['label_family'].'</h3>'
           ),
           'label_latin' => array(
             '#markup' => '<h4>'.l($invDetails['label_latin'], 'organism/'.$invDetails['orgId']).'</h4>'
+          ),
+          'label' => array(
+            '#markup' => '<h5>'.l($invDetails['label'], 'organism/'.$invDetails['orgId']).'</h5>'
           )
         )
-      ));
+      );
+      switch($source) {
+        case 'best':
+          $item['type'] = 'organism';
+          $item['id'] = $invDetails['orgId'];
+          break;
+        case 'inventory':
+          $item['type'] = 'inventory_entry';
+          $item['id'] = $invDetails['id'];
+          break;
+        case 'presentation':
+          $item['type'] = 'inventory_entry';
+          $item['id'] = $invDetails['id'];
+          $item['subtype'] = 'presentation';
+          break;
+        default:
+          $item['type'] = 'inventory_entry';
+          $item['id'] = $invDetails['id'];
+          $item['alternatives'] = array(
+            array(
+              'type' => 'organism',
+              'id' => $invDetails['orgId']
+            )
+          );
+          break;
+      }
+      array_push($items, $item);
     }
     if($items) {
-      $render_array[$invGroupName] = array();
+      $render_array[$invGroupName] = array('#weight' => $weight++);
       $render_array[$invGroupName]['title'] = array('#markup' => '<h2>'.$invGroupName.'</h2>');
-      $render_array[$invGroupName]['gallery'] = gallery_presentation_renderer($items);
+      $render_array[$invGroupName]['gallery'] = gallery_presentation_renderer($items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
     }
   }
   
@@ -80,45 +140,38 @@ function inventory_gallery($head_inventory_id) {
     $render_array['empty'] = array(
       '#markup' => '<p>'.t('There are no organisms available in this inventory.').'</p>'
     );
-  return $render_array;
-}
-
-/**
- * 
- * check if user is allowed to display red list organisms -> either by owning the inventory or group permissions
- * @param unknown_type $head_inventory_id
- */
-function hasRedListPermission($head_inventory_id) {
-  global $user;
-  //query group membership of user
-  $permissions = db_query(
-    'SELECT sgi.read, sgi.write, sgi.show_red, hi.owner_id
-    FROM sgroup_inventory sgi
-    LEFT JOIN head_inventory hi ON sgi.hiid = hi.id
-    LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
-    WHERE sgi.hiid = :invid AND sgu.uid = :userid',
-    array(':invid' => $head_inventory_id, ':userid' => $user->uid)
-  );
-  
-  //query inventory owner
-  $owner = db_query('
-    SELECT owner_id
-    FROM head_inventory
-    WHERE id = :hiid',
-    array(':hiid' => $head_inventory_id)
-  );
-  $owner = $owner->fetch()->owner_id;
-  
-  if($owner == $user->uid) {
-    return TRUE;
-  }
   else {
-    foreach($permissions as $permission) {
-      if($permission->show_red == '1') {
-        return TRUE;
-      }
-    }  
+    $url = drupal_get_destination();
+    $url = drupal_parse_url($url['destination']);
+    $url = $url['path'];
+    
+    $sselected = array();
+    foreach($sources as $s)
+      $sselected[$s] = $source == $s ? ' selected="selected"' : '';
+    $oselected = array();
+    foreach($sorting as $o)
+      $oselected[$o] = $order == $o ? ' selected="selected"' : '';
+    $render_array['form'] = array(
+      '#markup' => 
+        '<form class="presentation-settings" method="get" action="'.url($url).'">'.
+          '<select size="1" name="'.$key.'_source">'.
+            '<option value="default"'.$sselected['default'].'>'.t('Prefer images from inventory').'</option>'.
+            '<option value="inventory"'.$sselected['inventory'].'>'.t('Show only images from inventory').'</option>'.
+            '<option value="presentation"'.$sselected['presentation'].'>'.t('Show only presentation images from inventory').'</option>'.
+            '<option value="best"'.$sselected['best'].'>'.t('Show the highest rated images of the site').'</option>'.
+          '</select> '.
+          '<select size="1" name="'.$key.'_order">'.
+            '<option value="default"'.$oselected['default'].'>'.t('Sort by position in inventory').'</option>'.
+            '<option value="german"'.$oselected['german'].'>'.t('Sort by german name').'</option>'.
+            '<option value="latin"'.$oselected['latin'].'>'.t('Sort by latin name').'</option>'.
+            '<option value="family"'.$oselected['family'].'>'.t('Sort by family').'</option>'.
+          '</select> '.
+          '<input type="submit" name="submit" value="'.t('apply').'" />'.
+        '</form>',
+      'weight' => -1
+    );
   }
+  return $render_array;
 }
 
 /**
@@ -290,7 +343,7 @@ function getInventoryColumnDescription($inventoryId){
   return $invColDesc;
 }
 
-function getInventoriesData($head_inventory_id) {
+function getInventoriesData($head_inventory_id, $order='e.position, e.id ASC') {
   $invArr = array();
   $inventories = db_query('SELECT id
               FROM inventory 
@@ -298,7 +351,7 @@ function getInventoriesData($head_inventory_id) {
               array(':id' => $head_inventory_id)
               );
   
-  $show_red = hasRedListPermission($head_inventory_id);
+  $protected = inventory_redlisted_entries($head_inventory_id);
   
   foreach($inventories as $inventory) {
     $inventory_id = $inventory->id;
@@ -307,66 +360,52 @@ function getInventoriesData($head_inventory_id) {
     // Get the inventory column description
     $invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
     
-    // Get inventory entries
-    if($show_red) {
-      // Show everything
-      $sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
-        FROM inventory_entry e
-        LEFT JOIN organism o on e.organism_id = o.id
-        LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
-        LEFT JOIN flora_organism flora ON o.organism_id = flora.id
-        WHERE e.inventory_id = :id;';
-    }
-    else {
-      // Show no red list organism
-      $sql = '
-        SELECT flora_rl.red_list_ch, fauna.protection_ch, e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart
-        FROM inventory_entry e
-        LEFT JOIN organism o on e.organism_id = o.id
-        LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
-        LEFT JOIN flora_organism flora ON o.organism_id = flora.id
-        LEFT JOIN flora_red_list flora_rl ON flora_rl.flora_organism_id = flora.id AND o.organism_type = 2
-        WHERE e.inventory_id = :id
-        AND (
-          (fauna.protection_ch != 1 AND o.organism_type = 1)
-          OR (
-            (flora_rl.red_list_ch != 1 OR flora_rl.red_list_ch IS NULL)
-            AND o.organism_type = 2
-          )
-        );';
-    }
+    $sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, fauna.family, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart, flora."Familie" florafamilie
+      FROM inventory_entry e
+      LEFT JOIN organism o on e.organism_id = o.id
+      LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+      LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+      WHERE e.inventory_id = :id '.
+      ($protected?'AND NOT e.id IN ('.implode(', ', $protected).')':'').
+      'ORDER BY '.$order.';';
+    
     $inventoryEntries = db_query($sql ,array(':id' => $inventory_id));
 
     foreach($inventoryEntries as $inventoryEntry) {
       $inventoryEntryId = $inventoryEntry->id;
-      $invArr[$inventory_id][$inventoryEntryId] = array();
-      $invArr[$inventory_id][$inventoryEntryId]["orgId"] = $inventoryEntry->organism_id;
+      $entry = array(
+        'id' => $inventoryEntryId,
+        'orgId' => $inventoryEntry->organism_id
+      );
 
       if($inventoryEntry->organism_type==1){
         // organism_type 1 is Fauna
-        $invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->faunanamede;
-        $invArr[$inventory_id][$inventoryEntryId]["label_latin"] = $inventoryEntry->genus." ".$inventoryEntry->species;
+        $entry["label"] = $inventoryEntry->faunanamede;
+        $entry["label_latin"] = $inventoryEntry->genus." ".$inventoryEntry->species;
+        $entry["label_family"] = $inventoryEntry->family;
       } else {
         // organism_type 2 is Flora
-        $invArr[$inventory_id][$inventoryEntryId]["label"] = $inventoryEntry->floranamede;
-        $invArr[$inventory_id][$inventoryEntryId]["label_latin"] = $inventoryEntry->floragattung." ".$inventoryEntry->floraart;
+        $entry["label"] = $inventoryEntry->floranamede;
+        $entry["label_latin"] = $inventoryEntry->floragattung." ".$inventoryEntry->floraart;
+        $entry["label_family"] = $inventoryEntry->florafamilie;
       }
 
       // Get inventory columns
-      $entries = db_query('
+      $columns = db_query('
         SELECT * 
         FROM inventory_type_attribute_inventory_entry 
         WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
-      foreach ($entries as $entry) {
+      foreach ($columns as $column) {
         // Dropdown
         $colVal = "";
-        if($entry->inventory_type_attribute_dropdown_value_id > 0) {
-          $colVal = $entry->inventory_type_attribute_dropdown_value_id.'_dropdown';
+        if($column->inventory_type_attribute_dropdown_value_id > 0) {
+          $colVal = $column->inventory_type_attribute_dropdown_value_id.'_dropdown';
         } else {
-          $colVal = $entry->value;
+          $colVal = $column->value;
         }
-        $invArr[$inventory_id][$inventoryEntryId]["col_".$entry->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
+        $entry["col_".$column->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
       }
+      $invArr[$inventory_id][] = $entry;
     }
   }
   return $invArr;
@@ -392,40 +431,37 @@ function getInventories($head_inventory_id) {
     $colId = '';
     $invDetail = '';
     $has_gallery = false;
-  
-    foreach($inventory_group as $iGKey => $invDetails) {
-      //Define table header
-      if($iGKey == 'invDesc') {
-        $invGroupName = $invDetails['name'];
-        $header[] = t('Name');
-        $header[] = t('Latin name');
-        foreach($invDetails['cols'] as $invDetail) {
-          $header[] = $invDetail['name'];
-          $colIds[] = $invDetail['id'];
+    
+    
+    $invGroupName = $inventory_group['invDesc']['name'];
+    $header[] = t('Name');
+    $header[] = t('Latin name');
+    foreach($inventory_group['invDesc']['cols'] as $invDetail) {
+      $header[] = $invDetail['name'];
+      $colIds[] = $invDetail['id'];
+    }
+    foreach($inventory_group as $key => $invDetails) {
+      if(is_string($key) && $key == 'invDesc')
+        continue;
+      $row = array();
+      $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      $row[] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      foreach($colIds as $colId) {
+        $colValueDropdown = array (explode('_', $invDetails['col_'.$colId]));
+        if (isset($colValueDropdown[0][1])) {
+          $row[] = getInventoryEntryValue($colValueDropdown[0][0]);
         }
+        else {
+          $row[] = $invDetails['col_'.$colId];
+        }
+        $colValueDropdown = NULL; 
       }
-      //Define table content
-      else {
-        $row = array();
-        $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
-        $row[] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
-        foreach($colIds as $colId) {
-          $colValueDropdown = array (explode('_', $invDetails['col_'.$colId]));
-          if (isset($colValueDropdown[0][1])) {
-            $row[] = getInventoryEntryValue($colValueDropdown[0][0]);
-          }
-          else {
-            $row[] = $invDetails['col_'.$colId];
-          }
-          $colValueDropdown = NULL; 
-        }
-        if($gallery_available) {
-          $row[] = gallery_edit_link('inventory_entry', $iGKey);
-          if($row[(count($row)-1)])
-            $has_gallery = true;
-        }
-        $rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
+      if($gallery_available) {
+        $row[] = gallery_edit_link('inventory_entry', $invDetails['id']);
+        if($row[(count($row)-1)])
+          $has_gallery = true;
       }
+      $rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
     }
     if($has_gallery)
       $header[] = '&nbsp;';

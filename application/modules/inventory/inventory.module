@@ -53,6 +53,18 @@ function inventory_menu() {
     'file' => 'inventory.show.inc',
     'weight' => 2,
   );
+  $items['inventory/%/list'] = array(
+    'title' => t('List'),
+    'description' => t('View the inventory as a list of organisms'),
+    'page callback' => 'inventory_list',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.show.inc',
+    'weight' => 3,
+  );
   $items['inventory/edit'] = array(
     'title' => t('Edit Inventories'),
     'description' => t('Show all inventories to edit'),
@@ -141,15 +153,99 @@ function inventory_gallery_types() {
       'edit_gallery' => 'inventory_gallery_access_callback',
       'image_caption' => 'inventory_gallery_image_caption',
       'subtypes' => array(
-        'default' => t('Presentational images'),
-        'evidence' => t('Evidence images')
-      )
+        'presentation' => t('Presentational images')
+      ),
+      'condition' => 'inventory_gallery_condition'
     ),
     'head_inventory' => array(
       'edit_gallery' => 'gallery_owner_access_callback',
       'image_caption' => 'inventory_head_gallery_image_caption'
     )
   );
+}
+
+/**
+ * Helper function referenced in inventory_gallery_types to filter out 
+ * images of red listed organisms.
+ * 
+ * @return string SQL condition 
+ *  which excludes images bound to inventory entries of red listed organisms
+ *  based on the permissions of the current user
+ */
+function inventory_gallery_condition() {
+  $protected = inventory_redlisted_entries();
+  if(!$protected)
+    return false;
+  return '(gi.item_type != \'inventory_entry\' OR NOT gi.item_id IN ('.implode(', ', $protected).'))';
+}
+
+/**
+ * Helper function to get a list of inventory entry ids to exclude
+ * for the current user since they are on a red list
+ * 
+ * @return array 
+ *  List of inventory entry ids to exclude for the current user
+ * @param object $head_inventory_id[optional]
+ *  Only return the ids of the specified head inventory
+ * @param object $inventory_id[optional]
+ *  Only return the ids of the specified inventory
+ */
+function inventory_redlisted_entries($head_inventory_id=false, $inventory_id=false) {
+  global $user;
+  $query = db_select('inventory_entry', 'ie');
+  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
+  $query->join('head_inventory', 'hi', 'hi.id = i.head_inventory_id');
+  $query->join('organism', 'o', 'o.id = ie.organism_id');
+  $query->leftJoin('fauna_organism', 'fauna', 'fauna.id = o.organism_id');
+  $query->leftJoin('flora_organism', 'flora', 'flora.id = o.organism_id');
+  $query->leftJoin('flora_red_list', 'frl', 'frl.flora_organism_id = o.organism_id');
+  if($inventory_id)
+    $query->condition('i.id', $inventory_id);
+  if($head_inventory_id)
+    $query->condition('hi.id', $head_inventory_id);
+  $query->condition(db_and()
+    ->condition(db_and()
+      ->condition('hi.owner_id', $user->uid, '!=')
+      ->where('NOT EXISTS ('.
+        'SELECT sgu.uid FROM '.
+          '{sgroup_users} sgu '.
+        'INNER JOIN {sgroup_inventory} sgi ON sgi.sgid = sgu.sgid '.
+        'WHERE sgi.show_red = 1 AND sgi.hiid = hi.id AND sgu.uid = :uid)', array(':uid' => $user->uid)))
+    ->condition(db_or()
+      ->condition(db_and()
+        ->condition('fauna.protection_ch', '0', '>')
+        ->condition('o.organism_type', '1'))
+      ->condition(db_and()
+        ->condition('frl.red_list_ch', '0', '>')
+        ->condition('o.organism_type', '2'))));
+  $query->addField('ie', 'id');
+  $result = $query->execute();
+  $protected = array();
+  foreach($result as $record)
+    array_push($protected, $record->id);
+  return $protected;
+}
+
+/**
+ * Check if user is allowed to display red list organisms -> either by owning the inventory or group permissions
+ * 
+ * @return boolean
+ * @param object $head_inventory_id
+ */
+function inventory_user_has_redlist_permission($head_inventory_id) {
+  global $user;
+  //query group membership of user
+  $query = db_select('head_inventory', 'hi');
+  $query->condition('hi.id', $head_inventory_id);
+  $query->condition(db_or()
+    ->condition('hi.owner_id', $user->uid)
+    ->where('EXISTS ('.
+              'SELECT sgu.uid FROM '.
+                '{sgroup_users} sgu '.
+              'INNER JOIN {sgroup_inventory} sgi ON sgi.sgid = sgu.sgid '.
+              'WHERE sgi.show_red = 1 AND sgi.hiid = hi.id AND sgu.uid = :uid)', array(':uid' => $user->uid)));
+  $query->addField('hi', 'id');
+  return $query->execute()->rowCount() > 0;
 }
 
 /**
@@ -216,7 +312,7 @@ function inventory_gallery_type_conversions() {
         'source_key' => 'organism_id',
         'target' => 'organism',
         'target_key' => 'id',
-        'subtype' => 'default'
+        'subtype' => 'presentation'
       )
     ),
     array(
@@ -256,15 +352,6 @@ function inventory_gallery_category_conditions() {
       'name' => t('Inventory entries'),
       'type' => 'inventory_entry'
     ),
-  );
-}
-
-function inventory_gallery_categories() {
-  return array(
-    array(
-      
-      
-    )
   );
 }
 

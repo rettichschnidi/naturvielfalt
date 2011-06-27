@@ -10,7 +10,7 @@
     while(form.find('.form-item-files-images-'+i+'-file').size()) {
       var wrapper = $('<div id="image'+i+'" class="image" />');
       wrapper.insertBefore(actions);
-      wrapper.append($('#gallery-image-form > div > .form-item-images-'+i+'-subtype, #gallery-image-form > div > .form-item-files-images-'+i+'-file, #gallery-image-form > div > .categories:first, #gallery-image-form > div > .metadata:first'));
+      wrapper.append($('#gallery-image-form > div > .form-item-images-'+i+'-subtypes, #gallery-image-form > div > .form-item-files-images-'+i+'-file, #gallery-image-form > div > .categories:first, #gallery-image-form > div > .metadata:first'));
       if(i++ > 1)
         add_remove_button(wrapper);
     }

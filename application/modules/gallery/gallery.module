@@ -359,6 +359,16 @@ function gallery_image_default_styles() {
     )
   );
 
+  $styles['gallery_presentation_list'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 100),
+        'weight' => 0,
+      ),
+    )
+  );
+
   $styles['gallery_large'] = array(
     'effects' => array(
       array(
@@ -396,8 +406,8 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
   global $user;
   if (!_gallery_check_type_validity($type))
     return array();
+  $types = _gallery_types();
   if($crosslinked === null) {
-    $types = _gallery_types();
     $crosslinked = true;
     if(array_key_exists($type, $types) && array_key_exists('crosslinked', $types[$type]))
       $crosslinked = $types[$type]['crosslinked'];
@@ -406,6 +416,7 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
           'gi.*, '.
           'fm.*, ' .
           'gic.id AS gic_id, '.
+          'gis.subtype AS gis_subtype, '.
           'gco.id AS gco_id, '.
           'gco.id AS gco_name, '.
           'gc.id AS gc_id, '.
@@ -419,6 +430,8 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
             'gallery_image AS gi '.
           'INNER JOIN file_managed AS fm ON fm.fid = gi.fid '.
           'LEFT OUTER JOIN gallery_image_category AS gic ON gic.image_id = gi.id '.
+          'LEFT OUTER JOIN gallery_image_subtype AS gis ON gis.image_id = gi.id '.
+          'LEFT OUTER JOIN gallery_image_subtype AS gis2 ON gis2.image_id = gi.id '.
           'LEFT OUTER JOIN gallery_category_option AS gco ON gco.id = gic.option_id '.
           'LEFT OUTER JOIN gallery_category AS gc ON gc.id = gco.category_id '.
           'LEFT OUTER JOIN '.
@@ -434,7 +447,13 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
           ($rating ? 'LEFT OUTER JOIN gallery_rating_type AS grt ON grt.id IS NOT NULL ' : '');
   $joins = array();
   $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
-  $conditions = array('(gi.item_type = \''.$type.'\' AND gi.item_id '.$id_condition.')');
+  $condition = '';
+  if(array_key_exists('condition', $types[$type]) && function_exists($types[$type]['condition'])) {
+    $cond = call_user_func_array($types[$type]['ignore'], array($type, $id));
+    if($cond)
+      $condition = ' AND '.$cond;
+  }
+  $conditions = array('(gi.item_type = \''.$type.'\' AND gi.item_id '.$id_condition.$condition.')');
   $where = '';
   if (!user_access('view hidden gallery images'))
     $where .= 'AND ((COALESCE(r.overallrating, 0) >= '.variable_get('gallery_boundry', 0).' AND gi.visible = 1) OR gi.owner_id = '.$user->uid.') ';
@@ -449,16 +468,23 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
         if($i == 0)
           array_push($joins, 'LEFT OUTER JOIN '.$c['source'].' AS c'.$n.' ON c'.$n.'.id = gi.item_id');
         array_push($joins, 'LEFT OUTER JOIN '.$c['target'].' AS c'.$n.'_'.$i.' ON c'.$n.'_'.$i.'."'.$c['target_key'].'" = '.($i == 0 ? 'c'.$n : 'c'.$n.'_'.($i-1)).'."'.$c['source_key'].'"');
-        if($i == count($conversion)-1)
+        if($i == count($conversion)-1) {
+          $condition = '';
+          if(array_key_exists('condition', $types[$conversion[0]['source']]) && function_exists($types[$conversion[0]['source']]['condition'])) {
+            $cond = call_user_func_array($types[$conversion[0]['source']]['condition'], array($type, $id));
+            if($cond)
+              $condition = ' AND '.$cond.' ';
+          }
           array_push($conditions, '(gi.item_type = \''.$conversion[0]['source'].'\' AND '.
-                                    'c'.$n.'_'.$i.'.id '.$id_condition.
+                                    'c'.$n.'_'.$i.'.id '.$id_condition.$condition.
                                     (array_key_exists('subtype', $conversion[0]) ? ' AND '.
-                                    'gi.subtype = \''.$conversion[0]['subtype'].'\'' : '').')');
+                                    'gis2.subtype = \''.$conversion[0]['subtype'].'\'' : '').')');
+        }
       }
     }
   }
   if($subtype)
-    $where .= ' AND (gi.subtype = \''.$subtype.'\')';
+    $where .= ' AND (gis2.subtype = \''.$subtype.'\')';
   $sql .= implode(' ', $joins);
   $sql .= ' WHERE ('.implode(' OR ', $conditions).') '.$where;
   $sql .= ' ORDER BY overallrating DESC';
@@ -476,13 +502,18 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
       $seen[$record['id']] = count($images);
       if($limit && count($images) == $limit)
         continue;
-      $image = array('categories' => array());
+      $image = array(
+        'categories' => array(),
+        'subtypes' => array()
+      );
       if($rating)
         $image['ratings'] = array();
       foreach($record as $key => $value)
         if(!preg_match('/^gi?co?_/', $key))
           $image[$key] = $value;
     }
+    if($record['gis_subtype'] && !in_array($record['gis_subtype'], $image['subtypes']))
+      array_push($image['subtypes'], $record['gis_subtype']);
     if($record['gc_id'] !== null)
       array_push($image['categories'], array(
         'id' => $record['gc_id'],
@@ -513,7 +544,6 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
  *   - "id": The unique gallery image ID.
  *   - "item_type": The type of object this image belongs to (inventory_entry, area, habitant, organism)
  *   - "item_id": The id of the object this image belongs to
- *   - "subtype": The subtype of the image
  *   - "fid": The {file_managed}.fid being referenced in this field.
  *   - "alt": Alternative image text, for the image's 'alt' attribute.
  *   - "title": Image title text, for the image's 'title' attribute.
@@ -525,6 +555,7 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
  *   - "created_date": The date this image was created
  *   - "modified_date": The date this image was last modified
  *   - "categories": An array of all category values set for the image keyed by category ID
+ *   - "subtypes": An array of all selected sub types of an image
  *   If the category ID is not valid, an empty array is returned.
  */
 function gallery_image_load($id) {
@@ -535,6 +566,7 @@ function gallery_image_load($id) {
   $query->leftJoin('gallery_image_category', 'gic', 'gic.image_id = gi.id');
   $query->leftJoin('gallery_category_option', 'gco', 'gco.id = gic.option_id');
   $query->leftJoin('gallery_category', 'gc', 'gc.id = gco.category_id');
+  $query->leftJoin('gallery_image_subtype', 'gis', 'gis.image_id = gi.id');
   $query->condition('gi.id', $id)
     ->fields('gi')
     ->fields('fm');
@@ -544,11 +576,17 @@ function gallery_image_load($id) {
   $query->addField('gc', 'id', 'gc_id');
   $query->addField('gc', 'name', 'gc_name');
   $query->addField('gc', 'description', 'gc_description');
+  $query->addField('gis', 'subtype', 'gis_subtype');
   $result = $query->execute()->fetchAll();
   if (!$result)
     return array();
-  $image = array('categories' => array());
+  $image = array(
+    'categories' => array(),
+    'subtypes' => array()
+  );
   foreach($result as $record) {
+    if($record['gis_subtype'])
+      array_push($image['subtypes'], $record['gis_subtype']);
     if($record['gc_id'] === null)
       continue;
     $image['categories'][$record['gco_id']] = array(
@@ -561,7 +599,7 @@ function gallery_image_load($id) {
     );
   }
   foreach($record as $key => $value)
-    if(!preg_match('/^gi?co?_/', $key))
+    if(!preg_match('/^gi?[cs]o?_/', $key))
       $image[$key] = $value;
   return $image;
 }
@@ -587,6 +625,17 @@ function gallery_image_save($image) {
     drupal_write_record('gallery_image', $image);
   if(!is_array($image['categories']))
     return $image;
+  $query = db_delete('gallery_image_subtype')->condition('image_id', $image['id'])->execute();
+  if($image['subtypes'] && is_array($image['subtypes']))
+    foreach($image['subtypes'] as $subtype) {
+      if(!$subtype)
+        continue;
+      $entry = array(
+        'image_id' => $image['id'],
+        'subtype' => $subtype
+      );
+      drupal_write_record('gallery_image_subtype', $entry);
+    }
   $new_entries = array();
   foreach($image['categories'] as $category) {
     $entry = array(
