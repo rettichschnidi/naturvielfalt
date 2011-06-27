@@ -4,9 +4,6 @@
  *  Hook implementations
  *********************************/
 
-
-
-
 /**
  * Implements hook_theme()
  *
@@ -41,17 +38,8 @@ function organism_menu() {
     'type' => MENU_NORMAL_ITEM,
 	'file' => 'organism.overview.inc',
 	);
-	/*$items['organism'] = array(
-    'title' => 'Organism',
-    'description' => 'Shows a page with our own template organism_page.tpl.php.',
-    'page callback' => 'organism_page',
-    'access arguments' => array('access organism'),
-    'type' => MENU_NORMAL_ITEM,
-	//'file' => 'organism.pages.inc',
-	);*/
-
 	$items['organism/%'] = array(
-    'title' => 'Area',
+    'title' => 'Basisinfo',
     'description' => 'Show organism',
     'page callback' => 'organism_show',
 	'page arguments' => array(1),
@@ -59,15 +47,34 @@ function organism_menu() {
     'type' => MENU_CALLBACK,
 	'file' => 'organism.show.inc',
 	);
-	
+	$items['organism/%/normal'] = array(
+    'title' => 'Basisinfo',
+    'description' => 'Show organism',
+    'page callback' => 'organism_show',
+	'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	'file' => 'organism.show.inc',
+	);	
 	$items['organism/type/%'] = array(
-    'title' => 'Area',
+    'title' => 'Lexikon',
     'description' => 'Show organism',
     'page callback' => 'organism_showtype',
 	'page arguments' => array(2),
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
 	'file' => 'organism.showtype.inc',
+	);
+	$items['organism/%/lexikon'] = array(
+    'title' => t('Lexikon'),
+    'description' => 'Show organism lexika',
+    'page callback' => 'organism_lexika_show',
+	'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	'file' => 'organism.lexika.inc',
 	);
 	
 	return $items;
