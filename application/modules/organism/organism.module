@@ -89,7 +89,9 @@ function organism_menu() {
 function organism_gallery_types() {
   return array(
     'organism' => array(
-      'image_caption' => 'organism_gallery_image_caption'
+      'image_caption' => 'organism_gallery_image_caption',
+      'manage_title' => 'organism_gallery_manage_title',
+      'manage_description' => 'organism_gallery_manage_description'
     )
   );
 }
@@ -120,6 +122,30 @@ function organism_gallery_image_caption($id) {
   if($result->organism_type == '1')
     return $result->fauna_name.' <small>'.$result->fauna_genus.' '.$result->fauna_species.'</small>';
   return $result->flora_name.' <small>'.$result->flora_gattung.' '.$result->flora_art.'</small>';
+}
+
+/**
+ * Helper function referenced in organism_gallery_types to define the title of 
+ * the manage images page for organisms
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function organism_gallery_manage_title($id) {
+  return t('Images of the organism !title', array('!title' => '<em>'.organism_gallery_image_caption($id).'</em>'));
+}
+
+/**
+ * Helper function referenced in organism_gallery_types to define the description of 
+ * the manage images page for organisms
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function organism_gallery_manage_description($id) {
+  return t('Add and edit images of the specified organism.');
 }
 
 /**

@@ -140,12 +140,12 @@ function show_area($areaId) {
     '#markup' => theme('image', $variables_map)
   );
   
-  $output = array_merge($output, showAreaInventories($areaId));
+  $output = array_merge($output, area_inventories($areaId));
   
-  $output = array_merge($output, showAreaHabitats($areaId));
+  $output = array_merge($output, area_habitats($areaId));
   
   if(function_exists('gallery_list_renderer'))
-    $output['gallery'] = gallery_list_renderer('area', $areaId, t('Area images'));
+    $output['gallery'] = gallery_list_renderer('area', $areaId, t('Images of the area'));
   return $output;
   
 }
@@ -358,7 +358,7 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
  * Display area linked inventories
  * @param unknown_type $areaId
  */
-function showAreaInventories($areaId) {
+function area_inventories($areaId) {
   global $user;
   $output = array();
   $result = db_query('
@@ -421,7 +421,7 @@ function showAreaInventories($areaId) {
  * Display area linked habitats
  * @param unknown_type $areaId
  */
-function showAreaHabitats($areaId) {
+function area_habitats($areaId) {
   global $user;
   $output = array();
   $query = db_select('area_habitat', 'ah')
@@ -456,7 +456,7 @@ function showAreaHabitats($areaId) {
       $row[] = gallery_edit_link('area_habitat', $record->ah_id);
       if($row[4])
         $has_gallery = true;
-      $output['gallery_'.$record->ah_id] = gallery_list_renderer('area_habitat', $record->ah_id, t('Images of !habitat', array('!habitat' => $record->name_de)), $weight++, true);
+      $output['gallery_'.$record->ah_id] = gallery_list_renderer('area_habitat', $record->ah_id, t('Images of the habitat !habitat', array('!habitat' => $record->name_de)), $weight++, true);
     }
     $rows[] = array('data' => $row, 'id' => 'habitat_'. $record->id);
   }
