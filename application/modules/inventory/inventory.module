@@ -152,6 +152,8 @@ function inventory_gallery_types() {
     'inventory_entry' => array(
       'edit_gallery' => 'inventory_gallery_access_callback',
       'image_caption' => 'inventory_gallery_image_caption',
+      'manage_title' => 'inventory_gallery_manage_title',
+      'manage_description' => 'inventory_gallery_manage_description',
       'subtypes' => array(
         'presentation' => t('Presentational images')
       ),
@@ -159,7 +161,9 @@ function inventory_gallery_types() {
     ),
     'head_inventory' => array(
       'edit_gallery' => 'gallery_owner_access_callback',
-      'image_caption' => 'inventory_head_gallery_image_caption'
+      'image_caption' => 'inventory_head_gallery_image_caption',
+      'manage_title' => 'inventory_head_gallery_manage_title',
+      'manage_description' => 'inventory_head_gallery_manage_description'
     )
   );
 }
@@ -272,6 +276,8 @@ function inventory_gallery_access_callback($type, $id, $image=false) {
  * Helper function referenced in inventory_gallery_types to define the caption
  * for images added to intentory entries
  * 
+ * @param string $id
+ *   The id of object
  * @return string
  */
 function inventory_gallery_image_caption($id) {
@@ -281,6 +287,39 @@ function inventory_gallery_image_caption($id) {
     ->execute()
     ->fetch();
   return l(organism_gallery_image_caption($result->organism_id), 'organism/'.$result->organism_id, array('html' => true));
+}
+
+/**
+ * Helper function referenced in inventory_gallery_types to define the title of 
+ * the manage images page for intentory entries
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function inventory_gallery_manage_title($id) {
+  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
+  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
+  $query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
+  $query->fields('ie', array('organism_id'));
+  $query->fields('h', array('id', 'area_id'));
+  $result = $query->execute()->fetch();
+  return t('Images of the organism !title<br>observed in the inventory !context', array(
+    '!title' => '<em>'.organism_gallery_image_caption($result->organism_id).'</em>',
+    '!context' => '<em>'.inventory_head_gallery_caption($result->id).'</em>'
+  ));
+}
+
+/**
+ * Helper function referenced in inventory_gallery_types to define the description of 
+ * the manage images page for intentory entries
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function inventory_gallery_manage_description($id) {
+  return t('Add and edit images of the specified organism taken in the area of this inventory.');
 }
 
 /**
@@ -295,7 +334,47 @@ function inventory_head_gallery_image_caption($id) {
     ->fields('h', array('id', 'name', 'area_id'))
     ->execute()
     ->fetch();
-  return l($result->name, 'inventory/'.$result->id).' ['.l(area_gallery_image_caption($result->area_id), 'area/'.$result->area_id, array('html' => true)).']';
+  return l($result->name, 'inventory/'.$result->id).' ['.l(area_gallery_caption($result->area_id), 'area/'.$result->area_id, array('html' => true)).']';
+}
+
+/**
+ * Helper function referenced in inventory_gallery_types to define the title of 
+ * the manage images page for head intentories
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function inventory_head_gallery_manage_title($id) {
+  return t('Images of the inventory !title', array('!title' => '<em>'.inventory_head_gallery_caption($id).'</em>'));
+}
+
+/**
+ * Helper function creating a generic caption for a head inventory
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function inventory_head_gallery_caption($id) {
+  $result = db_select('head_inventory', 'h')
+    ->condition('id', $id)
+    ->fields('h', array('id', 'name', 'area_id'))
+    ->execute()
+    ->fetch();
+  return $result->name.' ['.area_gallery_caption($result->area_id).']';
+}
+
+/**
+ * Helper function referenced in inventory_gallery_types to define the description of 
+ * the manage images page for head intentories
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function inventory_head_gallery_manage_description($id) {
+  return t('Add and edit generic images of this inventory\'s area which are not related to any organism.');
 }
 
 /**

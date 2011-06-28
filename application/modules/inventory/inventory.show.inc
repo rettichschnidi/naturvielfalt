@@ -440,8 +440,8 @@ function getInventories($head_inventory_id) {
       $header[] = $invDetail['name'];
       $colIds[] = $invDetail['id'];
     }
-    foreach($inventory_group as $key => $invDetails) {
-      if(is_string($key) && $key == 'invDesc')
+    foreach($inventory_group as $k => $invDetails) {
+      if(is_string($k) && $k == 'invDesc')
         continue;
       $row = array();
       $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
@@ -487,7 +487,7 @@ function getInventories($head_inventory_id) {
         '#theme' => 'datatable', 
         '#header' => $header,
         '#rows' => $rows,
-        '#id_table' => $invGroupName, 
+        '#id_table' => 'invgroup'.$key, 
       );
     }
     
