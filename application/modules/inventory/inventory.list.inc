@@ -8,6 +8,7 @@ function inventory_list() {
 	// Own Inventories
 	$tableHeader[] = t('Inventory name');
 	$tableHeader[] = t('Area name');
+	$tableHeader[] = t('Township');
 	$tableHeader[] = t('Created on');
 	$tableHeader[] = t('Modified on');
 	$tableHeader[] = t('Public');
@@ -46,7 +47,7 @@ function inventory_list() {
       );
 	$img_remove = theme('image', $variables_remove);
 	
-	$result = db_query("SELECT a.field_name, a.id area_id, hi.id, hi.name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time
+	$result = db_query("SELECT a.field_name, a.id area_id, a.township, hi.id, hi.name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time
 		FROM head_inventory hi 
 		LEFT JOIN area a ON hi.area_id = a.id
 		WHERE (hi.owner_id=:id)
@@ -71,6 +72,7 @@ function inventory_list() {
 		$row = array();
 		$row[] = $name.' ('.$inventoryGroupId.')';
 		$row[] = $field_name;
+		$row[] = $record->township;
 		$row[] = date("j.m.Y", strtotime($record->create_time));
 		$row[] = date("j.m.Y", strtotime($record->modify_time));
 		$row[] = $shared;
@@ -119,6 +121,7 @@ function inventory_list() {
 	
 	$tableHeader[] = t('Inventory name');
 	$tableHeader[] = t('Area name');
+	$tableHeader[] = t('Township');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Groups');
 	$tableHeader[] = t('Created on');
@@ -126,7 +129,8 @@ function inventory_list() {
 	$tableHeader[] = t('Public');
 	$tableHeader[] = t('Action');
 
-	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name,  a.id area_id, u.name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time FROM head_inventory hi
+	$result = db_query("SELECT hi.name hi_name, hi.id, a.field_name,  a.id area_id, u.name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time, a.township 
+		FROM head_inventory hi 
 		LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 		LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 		LEFT JOIN users u ON hi.owner_id = u.uid
@@ -162,6 +166,7 @@ function inventory_list() {
 			$row = array(
 				'Inventory' => $name.' ('.$inventoryGroupId.')',
 				'Area' => $field_name,
+				'Township' => $record->township,
 				'Owner' => $owner,
 				'Groups' => $sgroups,
 				'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
@@ -219,13 +224,14 @@ function inventory_list() {
 	
 	$tableHeader[] = t('Inventory name');
 	$tableHeader[] = t('Area name');
+	$tableHeader[] = t('Township');
 	$tableHeader[] = t('Created on');
 	$tableHeader[] = t('Modified on');
 	$tableHeader[] = t('Owner');
 	$tableHeader[] = t('Action');
 
 	$result = db_query("
-		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name, a.id area_id, hi.create_time, hi.modify_time
+		SELECT hi.id, hi.name hi_name, u.name u_name, a.field_name, a.id area_id, hi.create_time, hi.modify_time, a.township
 		FROM head_inventory hi
 			LEFT JOIN users u ON hi.owner_id = u.uid
 			LEFT JOIN area a ON hi.area_id = a.id
@@ -248,6 +254,7 @@ function inventory_list() {
 		$row = array(
 			'Inventory' => $name.' ('.$inventoryGroupId.')',
 			'Area' => $field_name,
+			'Township' => $record->township,
 			'CreatedOn' => date("j.m.Y", strtotime($record->create_time)),
 			'ModifiedOn' => date("j.m.Y", strtotime($record->modify_time)),
 			'Owner' => $owner,

@@ -49,6 +49,7 @@ function organism_lexika_show($organism_id) {
 	$rev_key = key($lexika['query']['pages']);
 	$content = str_replace('/wiki/', 'http://de.wikipedia.org/wiki/', $lexika['query']['pages'][$rev_key]['revisions']['0']['*']); 
 	$content = str_replace('h2', 'h3', $content);
+	$content = str_replace('<a href="http://de.wikipedia.org/wiki', '<a target="blank" href="http://de.wikipedia.org/wiki', $content);
 	
 	$pattern = array();
 	$pattern1 = '/^.*(<table\s+id="toc" class="toc">)/i';
