@@ -373,7 +373,7 @@ function gallery_image_default_styles() {
     'effects' => array(
       array(
         'name' => 'image_scale',
-        'data' => array('width' => 1000, 'height' => 800, 'upscale' => 0),
+        'data' => array('width' => 1000, 'height' => 700, 'upscale' => 0),
         'weight' => 0,
       ),
     )

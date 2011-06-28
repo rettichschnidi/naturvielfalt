@@ -48,19 +48,19 @@ fieldset.gallery {
   padding-bottom:0;
 }
 
-fieldset.gallery ul.action-links,
-fieldset.gallery ul.action-links li {
+ul.gallery-action-links,
+ul.gallery-action-links li {
   margin:0;
   padding:0;
   list-style-image:none;
 }
 
-fieldset.gallery ul.action-links,
+ul.gallery-action-links,
 fieldset.gallery p.info {
   float:right;
 }
 
-fieldset.gallery ul.action-links li {
+ul.gallery-action-links li {
   display:block;
   float:left;
   background-color:#F7F6EF;
@@ -68,11 +68,11 @@ fieldset.gallery ul.action-links li {
   padding:0.2em 1em;
 }
 
-fieldset.gallery ul.action-links li.selected {
+ul.gallery-action-links li.selected {
   background-color:#95C590;
 }
 
-fieldset.gallery ul.action-links li.selected a {
+ul.gallery-action-links li.selected a {
   font-weight:bold;
   color:#fff;
 }

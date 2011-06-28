@@ -9,7 +9,7 @@ var galleryLightboxSettings = {
   $(document).ready(function() {
     $('a[rel^="lightbox"]').lightBox();
     $('ul.gallery:not(.presentation) li').lightBox(galleryLightboxSettings).find('.caption').hide();
-    $('ul.presentation li').lightBox(galleryLightboxSettings);
+    $('ul.presentation li:not(.noimage)').lightBox(galleryLightboxSettings);
     $('ul.presentation li .caption a').click(function(e) { e.stopPropagation(); });
   });
 })(jQuery);

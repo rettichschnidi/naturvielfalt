@@ -12,6 +12,7 @@ define('GALLERY_IMAGE_COUNT', 15);
  * Menu callback; Listing of all images for a given context.
  */
 function gallery_list($type, $id, $backlink=true) {
+  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   $page = array();
   $editable = gallery_edit_access_callback($type, $id);
   $params = _gallery_list_parameters($type, $id);
@@ -28,7 +29,6 @@ function gallery_list($type, $id, $backlink=true) {
     );
   }
   else if($editable) {
-    drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
     $page['gallery_list'] = array(
       '#markup' => '<p>'.t('There are no images available yet.').'</p>',
     );
@@ -47,7 +47,7 @@ function gallery_list($type, $id, $backlink=true) {
     $page['actions'] = array(
       '#theme' => 'links',
       '#links' => $links,
-      '#attributes' => array('class' => 'action-links'),
+      '#attributes' => array('class' => 'gallery-action-links'),
       '#weight' => 9
     );
   
@@ -108,7 +108,7 @@ function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $
       $page['actions'] = array(
         '#theme' => 'links',
         '#links' => $links,
-        '#attributes' => array('class' => 'action-links'),
+        '#attributes' => array('class' => 'gallery-action-links'),
         '#weight' => 9
       );
     return $page;
@@ -260,8 +260,11 @@ function gallery_presentation_renderer($items, $imgsize='gallery_presentation', 
       }
     }
     $image = $image['count'] ? $image['images'][0] : false;
+    $cls = _gallery_get_class($i-1, $columns);
+    if(!$image)
+      array_push($cls, 'noimage');
     
-    $images['image'.$i]['start'] = array('#markup' => '<li class="'.join(' ', _gallery_get_class($i-1, $columns)).'">');
+    $images['image'.$i]['start'] = array('#markup' => '<li class="'.join(' ', $cls).'">');
     if($image) {
       $images['image'.$i]['image'] = array(
         '#markup' => 
@@ -400,9 +403,31 @@ function gallery_images_edit($type, $id) {
   $title = t('Manage images');
   drupal_set_title($title, PASS_THROUGH);
   
+  $info = _gallery_get_title_description($type, $id);
+  if($info['title'])
+    drupal_set_title($info['title'], PASS_THROUGH);
+  if($info['description'])
+    $page['description'] = array(
+      '#markup' => '<p>'.$info['description'].'</p>',
+      '#weight' => -1
+    );
+  
   return $page;
 }
 
+function _gallery_get_title_description($type, $id) {
+  $types = _gallery_types();
+  $type = $types[$type];
+  $info = array(
+    'title' => false,
+    'description' => false
+  );
+  if($type['manage_title'] && function_exists($type['manage_title']))
+    $info['title'] = call_user_func_array($type['manage_title'], array($id));
+  if($type['manage_description'] && function_exists($type['manage_description']))
+    $info['description'] = call_user_func_array($type['manage_description'], array($id));
+  return $info;
+}
 
 /**
  * Form builder; Edit gallery images
@@ -559,7 +584,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#title' => t('Image'),
       '#size' => 48,
       '#element_validate' => array('_gallery_images_form_upload_validate'),
-      '#file_required' => !$image['id'],
+      '#file_required' => false,//!$image['id'],
     );
     
     if($subtypes)
@@ -668,6 +693,10 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
       return form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
     else
       return;
+  if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
+      return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
+        '!name' => $element['#title'],
+        '!size' => format_size(parse_size(file_upload_max_size())))));
   if(!in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
     return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
 }
@@ -676,13 +705,14 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
  * Submit handler for saving multiple gallery images.
  */
 function gallery_images_form_upload_submit($form, &$form_state) {
+  global $GALLERY_MAX_SIZE;
   $type = $form_state['gallery_type'];
   $id = $form_state['gallery_id'];
   $orig_image = $form_state['gallery_image'];
   
   $validators = array(
     'file_validate_extensions' => array('jpg jpeg gif png'),
-    'file_validate_size' => array(1000000, 0),
+    'file_validate_size' => array(parse_size(file_upload_max_size()), 0),
   );
 
   $destination = 'public://swissmon/gallery/'.$type.'/'.$id;
@@ -694,6 +724,8 @@ function gallery_images_form_upload_submit($form, &$form_state) {
     if(!is_array($values['metadata']) || !array_key_exists('title', $values['metadata']))
       continue;
     $name = $prefix.'_file';
+    if(!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
+      continue;
     $image = array(
       'item_type' => $type,
       'item_id' => $id,
