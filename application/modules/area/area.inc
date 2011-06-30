@@ -762,7 +762,7 @@ function area_files($area_id) {
   $render_array['files'] = array(
     '#type' => 'fieldset', 
     '#title' => t('Files'), 
-    '#weight' => '20', 
+    '#weight' => '5', 
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
