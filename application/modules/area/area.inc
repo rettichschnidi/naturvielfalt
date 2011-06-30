@@ -68,13 +68,6 @@ function show_area($areaId) {
   );
   $rows[] = array(
     array(
-      'data' => t('Comment'),
-      'header' => true
-    ),
-    $area->comment
-  );
-  $rows[] = array(
-    array(
       'data' => t('Create time'),
       'header' => true
     ),
@@ -86,6 +79,13 @@ function show_area($areaId) {
       'header' => true
     ),
     date("j.m.Y", strtotime($area->modify_time))
+  );
+    $rows[] = array(
+    array(
+      'data' => t('Comment'),
+      'header' => true
+    ),
+    $area->comment
   );
   
   $output['area_details'] = array(
