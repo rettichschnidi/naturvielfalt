@@ -141,8 +141,8 @@ function show_area($areaId) {
   );
   
   $output = array_merge($output, area_inventories($areaId));
-  
   $output = array_merge($output, area_habitats($areaId));
+  $output = array_merge($output, area_files($areaId));
   
   if(function_exists('gallery_list_renderer'))
     $output['gallery'] = gallery_list_renderer('area', $areaId, t('Images of the area'));
@@ -718,4 +718,70 @@ function array_unique_multi($array){
   return array_intersect_key($copy,$array);
 }
 
+function area_files($area_id) {
+  $render_array = array();
+  $result = db_query('
+    SELECT * 
+	FROM area_file_managed afm
+	LEFT JOIN file_managed fm ON afm.file_id = fm.fid
+	WHERE area_id = :aid',
+    array(':aid' => $area_id)
+  );
+  
+  foreach($result as $record) {
+    $mimeIconMap = array(
+      'path' => drupal_get_path('module', 'inventory').'/images/' . area_get_icon_map($record->filemime).'.png',
+      'alt' => $record->filemime,
+      'title' => $record->filemime,
+    );
+    $img_mime = theme('image', $mimeIconMap);
+    
+    $description = $record->description;
+    $filename = l($record->filename, 'sites/default/files/swissmon/area/'.$area_id.'/'.$record->filename);
+    $filemime = $img_mime;
+    $filesize = ($record->filesize / 1000)." KB";
+    $timestamp = date('d.m.Y',$record->timestamp);
+    $row = array();
+    $row[] = $description;
+    $row[] = $filename;
+    $row[] = $filemime;
+    $row[] = $filesize;
+    $row[] = $timestamp;
+    $rows[] = $row;
+  }
+  
+  if(empty($rows))
+    return $render_array;
+  
+  $tableHeader[] = t('Description');
+  $tableHeader[] = t('Filename');
+  $tableHeader[] = t('Typ');
+  $tableHeader[] = t('Size');
+  $tableHeader[] = t('Date');
+  
+  $render_array['files'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Files'), 
+    '#weight' => '20', 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+  
+  $render_array['files']['data'] = array(
+    '#theme' => 'datatable', 
+    '#header' => $tableHeader,
+    '#rows' => $rows,
+    '#id_table' => 'files', 
+  );
+  return $render_array;
+}
 ?>
