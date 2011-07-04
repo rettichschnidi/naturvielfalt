@@ -5,10 +5,14 @@ function area_edit($area_id) {
  	module_load_include('inc', 'area', 'area.search');
  	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	$render_array['area']['details'] = drupal_get_form('area_edit_form', $area_id);
+	//$render_array['area']['parcels'] = drupal_get_form('area_parcels_form', $area_id);
 	$render_array['area']['map'] = area_map($area_id);
 	$render_array['file']['upload'] = drupal_get_form('area_edit_files_form', $area_id);
+	
+	
 	return $render_array;
 }
 
@@ -181,20 +185,41 @@ function area_edit_form($form, &$form_state, $area_id) {
 	'#size' => 50,
 	'#required' => true,
 	);
-	
 	$form['AreaEditForm']['habitatText'] = array(
 	'#title' => 'Habitats',
 	'#type' => 'textfield',
 	'#size' => 50,
     '#autocomplete_path' => 'area/habitat_autocomplete',
-	'#suffix' => '<div id="habitatSelected"><table><tr>'.area_get_habitat_values($area_id).'</tr></table></div>',
+	'#suffix' => '<div id="habitatSelected"><table><tr>'.area_habitat_values($area_id).'</tr></table></div>',
+	);
+	$form['AreaEditForm']['parcels'] = area_parcels_form($area_id);	
+	$form['AreaEditForm']['protection_target'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Protection target'),
+	'#value' => $area->protection_target,
+    '#cols' => 50,
+    '#rows' => 2,
+	);
+	$form['AreaEditForm']['safety_precautions'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Safety precautions'),
+	'#value' => $area->safety_precautions,
+    '#cols' => 50,
+    '#rows' => 2,
+	);
+	$form['AreaEditForm']['tending_strategies'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Tending strategies'),
+	'#value' => $area->tending_strategies,
+    '#cols' => 50,
+    '#rows' => 2,
 	);
 	$form['AreaEditForm']['comment'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
 	'#value' => $area->comment,
     '#cols' => 50,
-    '#rows' => 10,
+    '#rows' => 3,
 	);
 	$form['AreaEditForm']['area_id'] = array(
     '#type' => 'hidden',
@@ -209,6 +234,10 @@ function area_edit_form($form, &$form_state, $area_id) {
 	  	'#type' => 'submit',
 	  	'#value' => t('Submit'),
 	);
+	
+	
+	
+	
 
 	return $form;
 }
@@ -227,6 +256,9 @@ function area_edit_form_submit($form, &$form_state) {
 	$area_id = $form_state['values']['area_id'];
 	$field_name = $form_state['input']['field_name'];
 	$comment = $form_state['input']['comment'];
+	$protection_target = $form_state['input']['protection_target'];
+	$safety_precautions = $form_state['input']['safety_precautions'];
+	$tending_strategies = $form_state['input']['tending_strategies'];
 //	global $user;
 	
 	// update area
@@ -234,6 +266,9 @@ function area_edit_form_submit($form, &$form_state) {
     	'field_name' => $field_name,
 		'comment' => $comment,
 		'modify_time' => 'now()',
+		'protection_target' => $protection_target,
+		'safety_precautions' => $safety_precautions,
+		'tending_strategies' => $tending_strategies,
 	))
 	->condition('id',$area_id)
 	->execute();
@@ -243,21 +278,38 @@ function area_edit_form_submit($form, &$form_state) {
 	->condition('area_id', $area_id)
 	->execute();
 	
-	//if (array_key_exists('habitat', $form_state['input']) OR array_key_exists('habitat', $form_state['values'])) {
-		foreach (array_values($form_state['input']['habitat']) as $habitat) {
-				db_insert('area_habitat')->fields(array(
-					'area_id' => $area_id,
-					'habitat_id' => $habitat,
-				))
-				->execute();
-		//}
+	foreach (array_values($form_state['input']['habitat']) as $habitat) {
+			db_insert('area_habitat')->fields(array(
+				'area_id' => $area_id,
+				'habitat_id' => $habitat,
+			))
+			->execute();
+	}
+	
+	//insert parcels
+	$area_parcel_delete = db_delete('area_parcel')
+	->condition('area_id', $area_id)
+	->execute();
+	
+	foreach(array_values($form_state['input']['parcel']) as $parcel) {
+		$parcel_nr = $parcel['parcel_nr'];
+		$parcel_owner = $parcel['owner'];
+		$delete = $parcel['delete'];
+		if($delete != '1') {
+			db_insert('area_parcel')->fields(array(
+				'area_id' => $area_id,
+				'parcel' => $parcel_nr,
+				'parcel_owner_name' => $parcel_owner,
+			))
+			->execute();
+		}
 	}
 
 	// redirect to create a new inventory assigned to the area just created
 	$form_state['redirect'] = 'area/'.$area_id.'/edit';
 }
 
-function area_get_habitat_values($area_id) {
+function area_habitat_values($area_id) {
 	$result = db_query('
 		SELECT h.id, h.name_de, h.label
 		FROM AREA
@@ -312,4 +364,48 @@ function area_map($area_id) {
   return $output;
 }
 
+function area_parcels_form($area_id) {
+	$parcels = db_select('area_parcel', 'ap')
+		->condition('area_id', $area_id)
+		->fields('ap')
+		->execute();
+		
+	$count = $parcels->rowCount();
+	$headings = array(
+		t('Parcel'),
+		t('Parcel owner'),
+		t('Delete')
+		);
+	$rows = array();
+	$i = 0;
+	if($count != '0') {
+		foreach($parcels as $parcel) {
+		array_push($rows, array(
+			'<input type="text" size="4" name="parcel['.$i.'][parcel_nr]" value="'.$parcel->parcel.'" />',
+			'<input type="text" size="33" name="parcel['.$i.'][owner]" value="'.$parcel->parcel_owner_name.'" />'.
+			'<input type="hidden" name="parcel['.$i.'][id]" value="'.$parcel->id.'" />',
+			'<input type="checkbox" name="parcel['.$i++.'][delete]" value="1" />'
+			));
+		}
+	}
+	else {
+		array_push($rows, array(
+			'<input type="text" size="4" name="parcel['.$i.'][parcel_nr]" value="'.'" />',
+			'<input type="text" size="33" name="parcel['.$i.'][owner]" value="'.'" />'.
+			'<input type="hidden" name="parcel['.$i.'][id]" value="'.'" />',
+			'<input type="checkbox" name="parcel['.$i++.'][delete]" value="1" />'
+			));
+	}
+
+	$form['parcels'] = array(
+	'#theme' => 'table',
+	'#header' => $headings,
+	'#rows' => $rows,
+	'#attributes' => array(
+		'id' => 'parcels',
+	),
+	);
+
+return $form;	
+}
 ?>
