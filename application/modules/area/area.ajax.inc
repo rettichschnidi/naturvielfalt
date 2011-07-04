@@ -21,13 +21,14 @@ function area_json($areaId) {
   $output['surface_area'] = t('Surface area: !surface m<sup>2</sup>', array('!surface' => $area->surface_area));
 
   // information about containing inventories
-  $records = db_query('SELECT hi.id AS hiid, hi.name AS hiname, i.id AS iid, it.name AS itname, count(ie.id) AS count FROM {head_inventory} hi
+  $records = db_query('SELECT hi.id AS hiid, hi.name AS hiname, i.id AS iid, it.name AS itname, u.name AS u_name, count(ie.id) AS count FROM {head_inventory} hi
     LEFT JOIN area a ON hi.area_id = a.id
     LEFT JOIN inventory i ON i.head_inventory_id = hi.id
     LEFT JOIN inventory_type it ON i.inventory_type_id = it.id
     LEFT JOIN inventory_entry ie ON ie.inventory_id = i.id
+    LEFT JOIN users u ON hi.owner_id = u.uid
     WHERE a.id = :id
-    GROUP BY hi.id, hi.name, i.id, it.name
+    GROUP BY hi.id, hi.name, i.id, it.name, u.name
     ORDER BY hi.id', array(':id' => $areaId));
   $countInventories = 0;
   $output['inventories']['invs'] = array();
@@ -35,7 +36,7 @@ function area_json($areaId) {
     if ($record->hiid != $hiid) {
       $hiid = $record->hiid;
       $countInventories++;
-      $output['inventories']['invs'][] = array('name' => $record->hiname, 'id' => $record->hiid);
+      $output['inventories']['invs'][] = array('name' => $record->hiname, 'id' => $record->hiid, 'owner' => $record->u_name);
     }
     $type = array('name' => $record->itname, 'count' => $record->count);
     $output['inventories']['invs'][$countInventories-1][types][] = $type;
@@ -45,11 +46,11 @@ function area_json($areaId) {
 
   // information about habitats
   $countHabitats = 0;
-  $habitats = db_query('SELECT name_de, label FROM area_habitat ah
+  $habitats = db_query('SELECT h.id, h.name_de, h.label FROM area_habitat ah
     LEFT JOIN habitat h ON ah.habitat_id = h.id
     WHERE ah.area_id = :areaId', array(':areaId' => $areaId));
   foreach ($habitats as $habitat) {
-    $output['habitats']['habs'][] = $habitat->name_de;
+    $output['habitats']['habs'][] = array('name' => '<small>'.$habitat->label.'</small> '.$habitat->name_de, 'id' => $habitat->id);
     $countHabitats++;
   }
   $output['habitats']['title'] = t('Habitats (!count)', array('!count'=>$countHabitats));

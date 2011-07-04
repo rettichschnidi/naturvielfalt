@@ -315,6 +315,41 @@ span.form-required {
 }
 
 /**
+ * System messages
+ */
+
+div.messages {
+  color:#fff;
+  border-radius:5px;
+  font-size:1.2em;
+  background-position:8px center;
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  -o-border-radius:5px;
+}
+
+div.messages a {
+  color:#fff;
+  text-decoration:underline;
+}
+
+div.status {
+  background-color: #659560;
+  border-color: #457540;
+}
+
+div.warning {
+  background-color: #d9a700;
+  border-color: #b98700;
+}
+
+div.error {
+  background-color: #b54045;
+  border-color: #952025;
+}
+
+
+/**
  * Skip link
  */
 #skip-link {
@@ -712,6 +747,14 @@ ul.secondary-menu li a:hover,
 ul.secondary-menu li a.active {
   color: #cfe0cd;
   background: transparent;
+}
+
+#sidebar-first li.active-trail {
+  font-weight:bold;
+}
+
+#sidebar-first li.active-trail li {
+  font-weight:normal;
 }
 
 /**

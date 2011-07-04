@@ -1,6 +1,6 @@
 <?php
 // Load all content functions for Gallery.
-require_once DRUPAL_ROOT . '/modules/gallery/gallery.content.inc';
+module_load_include('inc', 'gallery', 'gallery.content');
 
 /**
 * Implements hook_block_info().

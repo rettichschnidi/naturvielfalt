@@ -1,32 +1,31 @@
 .progress_block {
-	border:0px solid;
-	border-color:black;
-	overflow:auto;
+  border:0px solid;
+  border-color:black;
+  overflow:auto;
+  margin:2em 0;
 }
 
 .progress_elem_cont {
-
-	float:left;	
+  float:left;
 }
 
 .progress_elem {
-	border:1px solid;
-	padding:3px 7px;
-	margin:1px;
+  padding:5px 10px;
+  margin:1px;
+  font-size:1.2em;
 }
 
 .progress_elem.done {
-	background-color:#F5FFEF;
-	border-color:#AAD0A6;
+  background-color:#F5FFEF;
 }
 
 .progress_elem.active {
-	background-color:#AAD0A6;
-	font-weight: bold;
+  background-color:#95C590;
+  color:#fff;
+  font-weight: bold;
 }
 
 .progress_elem.pending {
-	background-color:#F0F0EF;
-	border-color:#767676;
-	color:#767676;
+  background-color:#F0F0EF;
+  color:#767676;
 }

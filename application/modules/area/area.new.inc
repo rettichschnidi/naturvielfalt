@@ -235,6 +235,12 @@ function area_new_form($form, &$form_state) {
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,
 	);
+  $form['AreaNewForm']['comment'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Description'),
+    '#cols' => 60,
+    '#rows' => 10,
+  );
 	$form['AreaNewForm']['field_name'] = array(
   	'#type' => 'textfield',
   	'#title' => t('Area name'),
@@ -273,12 +279,6 @@ function area_new_form($form, &$form_state) {
 	$form['AreaNewForm']['country'] = array(
 	'#type' => 'textfield',
 	'#title' => t('Country'),
-	);
-	$form['AreaNewForm']['comment'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Description'),
-    '#cols' => 60,
-    '#rows' => 10,
 	);
 	$form['AreaNewForm']['latitude'] = array(
     '#type' => 'hidden',

@@ -48,6 +48,7 @@ fieldset.gallery {
   padding-bottom:0;
 }
 
+.block ul.gallery-action-links,
 ul.gallery-action-links,
 ul.gallery-action-links li {
   margin:0;
@@ -162,8 +163,8 @@ ul.presentation li .image {
 
 ul.presentation li span.image {
   color:#999;
-  background-color:#FBFAF7;
-  border:1px solid #F7F6EF;
+  background-color:#eee;
+  border:1px solid #ccc;
   padding:50px 0;
   text-align:center;
 }
@@ -207,7 +208,7 @@ ul.presentation-list li {
 
 ul.presentation-list li .image {
   float:left;
-  margin:0 1em 0 0;
+  margin:0 20px 0 0;
 }
 
 ul.presentation-list li span.image {
@@ -227,7 +228,7 @@ ul.presentation-list li .author-msg {
 ul.presentation-list li .caption h3,
 ul.presentation-list li .caption h4,
 ul.presentation-list li .caption h5 {
-  overflow:hidden;
+  margin-left:120px;
 }
 
 /* Rating */

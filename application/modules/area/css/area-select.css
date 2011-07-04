@@ -1,3 +1,16 @@
+#edit-areanewform .form-item,
+#edit-areanewform #habitatSelected {
+  width:400px;
+  float:left;
+  clear:left;
+}
+
+#edit-areanewform .form-item-comment {
+  clear:none;
+  float:right;
+  width:550px;
+}
+
 .controlAreaChoose {
   height: 31px;
   width: 31px;
@@ -24,9 +37,54 @@
   display: none;  
 }
 
+#area-google-maps-form {
+  clear:both;
+}
+
 #map {
+  clear:both;
   width: 100%;
   height: 600px;
+}
+
+.block ul.area-choices,
+.block ul.area-choices li {
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+.block ul.area-choices {
+  margin:1em 0;
+}
+
+.block ul.area-choices li {
+  clear:both;
+  line-height:31px;
+  font-size:1.2em;
+}
+
+.block ul.area-choices li div {
+  float:left;
+  margin:0 1em 1em 0;
+}
+
+.area-search-map #map_search-element {
+  float:left;
+}
+
+.area-search-map ul.area-choices {
+  float:right;
+  margin:0;
+}
+
+.area-search-map ul.area-choices li {
+  text-align:right;
+}
+
+.area-search-map ul.area-choices li div {
+  float:right;
+  margin:0 0 0.2em 1em;
 }
 
 tr.even, tr.odd {

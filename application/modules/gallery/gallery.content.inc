@@ -955,11 +955,11 @@ function _gallery_get_class($i, $columns=GALLERY_COLUMNS) {
  */
 function theme_gallery_image_rating($variables) {
   global $base_url;
-  drupal_add_css($base_url . '/misc/ui/jquery.ui.core.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  drupal_add_css('misc/ui/jquery.ui.core.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.ui.stars.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-  drupal_add_js($base_url . '/misc/ui/jquery.ui.core.min.js');
-  drupal_add_js($base_url . '/misc/ui/jquery.ui.widget.min.js');
+  drupal_add_js('misc/ui/jquery.ui.core.min.js');
+  drupal_add_js('misc/ui/jquery.ui.widget.min.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.ui.stars.min.js', array('weight' => 101));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 110));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.rating.js', array('weight' => 111));
