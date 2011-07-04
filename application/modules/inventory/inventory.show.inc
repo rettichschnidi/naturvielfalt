@@ -1,48 +1,71 @@
-<?php 
+<?php
+
+/**
+ * Menu callback; View of an inventory
+ * 
+ * @param object $head_inventory_id
+ * @return array
+ *  Drupal render array
+ */
 function inventory_show($head_inventory_id) {
-  drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+  drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
   drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
   
-  $render_array = getInventoryBasics($head_inventory_id);
+  $render_array = inventory_basics($head_inventory_id);
   
   if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE)
-    $render_array = array_merge($render_array, getRedListCount($head_inventory_id));
+    $render_array = array_merge($render_array, inventory_redlist_count($head_inventory_id));
   
   if(function_exists('gallery_list_renderer'))
     $render_array['Gallery'] = gallery_list_renderer('head_inventory', $head_inventory_id, false, 100);
   
-  $render_array = array_merge($render_array, getInventories($head_inventory_id), getInventoryFiles($head_inventory_id));
+  $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
 
   return $render_array;
 }
 
-function getInventoryTitle($head_inventory_id) {
-  $inventory_title = '-';
-
-  $inventories = db_query('SELECT name
-                FROM head_inventory
-                WHERE id = :id;', array(':id' => $head_inventory_id));
-  foreach($inventories as $inventory) {
-    if(!is_null($inventory->name))
-    $inventory_title =  $inventory->name;
-  }
-
-  return $inventory_title;
-}
-
+/**
+ * Menu callback; Gallery view of an inventory
+ * 
+ * @param object $head_inventory_id
+ * @return array
+ *  Drupal render array
+ */
 function inventory_gallery($head_inventory_id) {
   return _inventory_presentation($head_inventory_id);
 }
 
+/**
+ * Menu callback; List view of an inventory
+ * 
+ * @param object $head_inventory_id
+ * @return array
+ *  Drupal render array
+ */
 function inventory_list($head_inventory_id) {
   return _inventory_presentation($head_inventory_id, 'gallery_presentation_list', 'presentation-list', 1000000);
 }
 
+/**
+ * Private helper function to render an inventory in presentation mode
+ *  used by inventory_gallery and inventory_list
+ * 
+ * @param object $head_inventory_id
+ *  The ID of the inventory
+ * @param object $size[optional]
+ *  The image style to be used for the images
+ * @param object $cssClass[optional]
+ *  Additional CSS class to be added to the container
+ * @param object $columns[optional]
+ *  The number of columns used to determine the CSS classes of the items
+ * @return array
+ *  Drupal render array
+ */
 function _inventory_presentation($head_inventory_id, $size='gallery_presentation', $cssClass=false, $columns=GALLERY_COLUMNS) {
   if(!function_exists('gallery_presentation_renderer'))
     return;
   drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-  drupal_set_title(getInventoryTitle($head_inventory_id)." (".$head_inventory_id.")");
+  drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
   
   $sorting = array('default', 'latin', 'german', 'family');
   $sources = array('default', 'inventory', 'presentation', 'best');
@@ -71,7 +94,7 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
       break;
   }
   
-  $invArr = getInventoriesData($head_inventory_id, $sort);
+  $invArr = inventory_data($head_inventory_id, $sort);
   
   $weight = 1;
   $seen = array();
@@ -175,11 +198,14 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
 }
 
 /**
+ * Basic information about an inventory
  * 
- * Returns form containing inventory basic information
- * @param unknown_type $head_inventory_id
+ * @param int $head_inventory_id
+ *  The ID of the inventory
+ * @return array
+ *  Drupal render array
  */
-function getInventoryBasics($head_inventory_id) {
+function inventory_basics($head_inventory_id) {
   //Display Inventory Basics
   $query = db_select('head_inventory', 'hi')
     ->condition('hi.id', $head_inventory_id)
@@ -297,223 +323,14 @@ function getInventoryBasics($head_inventory_id) {
 }
 
 /**
- * Gets organism table table header
- * @param unknown_type $inventoryId
- */
-function getInventoryColumnDescription($inventoryId){
-  $invColDesc = array();
-
-  $resInventory = db_query_range("
-    SELECT t.name, i.inventory_type_id 
-    FROM inventory i 
-    LEFT JOIN inventory_type t ON i.inventory_type_id = t.id 
-    WHERE i.id = :id", 0, 1, 
-    array(':id' => $inventoryId)
-  );
-  foreach ($resInventory as $inventory) {
-    $typeId = $inventory->inventory_type_id;
-    $invColDesc["name"] = $inventory->name;
-    $invColDesc["id"] = $inventory->inventory_type_id;
-  }
-
-  $resAttributes = db_query('SELECT a.id, a.name, f.format
-    FROM inventory_type_attribute a 
-    LEFT JOIN attribute_format f ON a.attribute_format_id = f.id 
-    WHERE inventory_type_id = :typeId', array(':typeId' => $typeId));
-
-  $i = 0;
-  foreach ($resAttributes as $attribute) {
-    $i++;
-    $invColDesc["cols"][$i] = array(
-      "name" => $attribute->name,
-      "id" => $attribute->id,
-      "format" => $attribute->format,
-    );
-
-    // If it is a dropdown list
-    if($attribute->format == "dropdown") {
-      $invColDesc["cols"][$i]["dropdown_values"] = array();
-      $dropdownValues = db_query('SELECT * FROM inventory_type_attribute_dropdown_value WHERE inventory_type_attribute_id = :id', array(':id' => $attribute->id));
-      foreach($dropdownValues as $dropdownValue) {
-        array_push($invColDesc["cols"][$i]["dropdown_values"], array("id" =>$dropdownValue->id, "value" => $dropdownValue->value));
-      }
-    }
-
-  }
-  return $invColDesc;
-}
-
-function getInventoriesData($head_inventory_id, $order='e.position, e.id ASC') {
-  $invArr = array();
-  $inventories = db_query('SELECT id
-              FROM inventory 
-              WHERE head_inventory_id = :id;', 
-              array(':id' => $head_inventory_id)
-              );
-  
-  $protected = inventory_redlisted_entries($head_inventory_id);
-  
-  foreach($inventories as $inventory) {
-    $inventory_id = $inventory->id;
-    $invArr[$inventory_id] = array();
-    
-    // Get the inventory column description
-    $invArr[$inventory_id]["invDesc"] = getInventoryColumnDescription($inventory_id);
-    
-    $sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, fauna.family, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart, flora."Familie" florafamilie
-      FROM inventory_entry e
-      LEFT JOIN organism o on e.organism_id = o.id
-      LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
-      LEFT JOIN flora_organism flora ON o.organism_id = flora.id
-      WHERE e.inventory_id = :id '.
-      ($protected?'AND NOT e.id IN ('.implode(', ', $protected).')':'').
-      'ORDER BY '.$order.';';
-    
-    $inventoryEntries = db_query($sql ,array(':id' => $inventory_id));
-
-    foreach($inventoryEntries as $inventoryEntry) {
-      $inventoryEntryId = $inventoryEntry->id;
-      $entry = array(
-        'id' => $inventoryEntryId,
-        'orgId' => $inventoryEntry->organism_id
-      );
-
-      if($inventoryEntry->organism_type==1){
-        // organism_type 1 is Fauna
-        $entry["label"] = $inventoryEntry->faunanamede;
-        $entry["label_latin"] = $inventoryEntry->genus." ".$inventoryEntry->species;
-        $entry["label_family"] = $inventoryEntry->family;
-      } else {
-        // organism_type 2 is Flora
-        $entry["label"] = $inventoryEntry->floranamede;
-        $entry["label_latin"] = $inventoryEntry->floragattung." ".$inventoryEntry->floraart;
-        $entry["label_family"] = $inventoryEntry->florafamilie;
-      }
-
-      // Get inventory columns
-      $columns = db_query('
-        SELECT * 
-        FROM inventory_type_attribute_inventory_entry 
-        WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
-      foreach ($columns as $column) {
-        // Dropdown
-        $colVal = "";
-        if($column->inventory_type_attribute_dropdown_value_id > 0) {
-          $colVal = $column->inventory_type_attribute_dropdown_value_id.'_dropdown';
-        } else {
-          $colVal = $column->value;
-        }
-        $entry["col_".$column->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
-      }
-      $invArr[$inventory_id][] = $entry;
-    }
-  }
-  return $invArr;
-}
-
-/**
+ * Information about red listed organisms in an inventory
  * 
- * Returns form containing inventory organisms
- * @param unknown_type $head_inventory_id
+ * @param int $head_inventory_id
+ *  The ID of the inventory
+ * @return array
+ *  Drupal render array
  */
-function getInventories($head_inventory_id) {
-  $output = array();
-  $invArr = getInventoriesData($head_inventory_id);
-  
-  if(function_exists('gallery_edit_link'))
-    $gallery_available = true;
-  
-  $weight = 4;
-  foreach($invArr as $key => $inventory_group) {
-    $rows = array();
-    $header = array();
-    $colIds = array();
-    $colId = '';
-    $invDetail = '';
-    $has_gallery = false;
-    
-    
-    $invGroupName = $inventory_group['invDesc']['name'];
-    $header[] = t('Name');
-    $header[] = t('Latin name');
-    foreach($inventory_group['invDesc']['cols'] as $invDetail) {
-      $header[] = $invDetail['name'];
-      $colIds[] = $invDetail['id'];
-    }
-    foreach($inventory_group as $k => $invDetails) {
-      if(is_string($k) && $k == 'invDesc')
-        continue;
-      $row = array();
-      $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
-      $row[] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
-      foreach($colIds as $colId) {
-        $colValueDropdown = array (explode('_', $invDetails['col_'.$colId]));
-        if (isset($colValueDropdown[0][1])) {
-          $row[] = getInventoryEntryValue($colValueDropdown[0][0]);
-        }
-        else {
-          $row[] = $invDetails['col_'.$colId];
-        }
-        $colValueDropdown = NULL; 
-      }
-      if($gallery_available) {
-        $row[] = gallery_edit_link('inventory_entry', $invDetails['id']);
-        if($row[(count($row)-1)])
-          $has_gallery = true;
-      }
-      $rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
-    }
-    if($has_gallery)
-      $header[] = '&nbsp;';
-    if($rows[0] != '') {
-      $output[$invGroupName] = array(
-        '#type' => 'fieldset', 
-        '#title' => $invGroupName, 
-        '#weight' => $weight++, 
-        '#collapsible' => TRUE,
-        '#collapsed' => FALSE,
-        '#attached' => array (
-          'js' => array (
-            'misc/form.js',
-            'misc/collapse.js',
-          ),
-        ),
-        '#attributes' => array(
-          'class' => array('collapsible'),
-        ),
-      );
-    
-      $output[$invGroupName]['Details'] = array(
-        '#theme' => 'datatable', 
-        '#header' => $header,
-        '#rows' => $rows,
-        '#id_table' => 'invgroup'.$key, 
-      );
-    }
-    
-  }
-  if($output)
-    krsort($output);
-  return $output;
-}
-
-/**
- * Gets inventory attribute values for dropdown fields
- * @param unknown_type $valueId
- */
-function getInventoryEntryValue($valueId) {
-  $result = db_query('
-    SELECT * 
-    FROM inventory_type_attribute_dropdown_value itadv
-    WHERE itadv.id = :id',
-    array(':id' => $valueId)
-  );
-  $value = $result->fetch()->value;
-  
-  return $value;
-}
-
-function getRedListCount($head_inventory_id) {
+function inventory_redlist_count($head_inventory_id) {
   $count = db_query('
     SELECT COUNT (o.organism_id)
     FROM head_inventory hi
@@ -570,7 +387,122 @@ function getRedListCount($head_inventory_id) {
   }
 }
 
-function getInventoryFiles($head_inventory_id) {
+/**
+ * The organisms contained in this inventory grouped by type
+ * 
+ * @param int $head_inventory_id
+ *  The ID of the inventory
+ * @return array
+ *  Drupal render array
+ */
+function inventory_inventories($head_inventory_id) {
+  $output = array();
+  $invArr = inventory_data($head_inventory_id);
+  
+  if(function_exists('gallery_edit_link'))
+    $gallery_available = true;
+  
+  $weight = 4;
+  foreach($invArr as $key => $inventory_group) {
+    $rows = array();
+    $header = array();
+    $colIds = array();
+    $colId = '';
+    $invDetail = '';
+    $has_gallery = false;
+    
+    
+    $invGroupName = $inventory_group['invDesc']['name'];
+    $header[] = t('Name');
+    $header[] = t('Latin name');
+    foreach($inventory_group['invDesc']['cols'] as $invDetail) {
+      $header[] = $invDetail['name'];
+      $colIds[] = $invDetail['id'];
+    }
+    foreach($inventory_group as $k => $invDetails) {
+      if(is_string($k) && $k == 'invDesc')
+        continue;
+      $row = array();
+      $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      $row[] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      foreach($colIds as $colId) {
+        $colValueDropdown = array (explode('_', $invDetails['col_'.$colId]));
+        if (isset($colValueDropdown[0][1])) {
+          $row[] = _inventory_entry_value($colValueDropdown[0][0]);
+        }
+        else {
+          $row[] = $invDetails['col_'.$colId];
+        }
+        $colValueDropdown = NULL; 
+      }
+      if($gallery_available) {
+        $row[] = gallery_edit_link('inventory_entry', $invDetails['id']);
+        if($row[(count($row)-1)])
+          $has_gallery = true;
+      }
+      $rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
+    }
+    if($has_gallery)
+      $header[] = '&nbsp;';
+    if($rows[0] != '') {
+      $output[$invGroupName] = array(
+        '#type' => 'fieldset', 
+        '#title' => $invGroupName, 
+        '#weight' => $weight++, 
+        '#collapsible' => TRUE,
+        '#collapsed' => FALSE,
+        '#attached' => array (
+          'js' => array (
+            'misc/form.js',
+            'misc/collapse.js',
+          ),
+        ),
+        '#attributes' => array(
+          'class' => array('collapsible'),
+        ),
+      );
+    
+      $output[$invGroupName]['Details'] = array(
+        '#theme' => 'datatable', 
+        '#header' => $header,
+        '#rows' => $rows,
+        '#id_table' => 'invgroup'.$key, 
+      );
+    }
+    
+  }
+  if($output)
+    krsort($output);
+  return $output;
+}
+
+/**
+ * Private helper function to get inventory attribute values for dropdown fields
+ * 
+ * @param int $valueId
+ * @return string
+ */
+function _inventory_entry_value($valueId) {
+  $result = db_query('
+    SELECT * 
+    FROM inventory_type_attribute_dropdown_value itadv
+    WHERE itadv.id = :id',
+    array(':id' => $valueId)
+  );
+  $value = $result->fetch()->value;
+  
+  return $value;
+}
+
+/**
+ * The files attached to an inventory
+ * 
+ * @param int $head_inventory_id
+ *  The ID of the inventory
+ * @return array
+ *  Drupal render array
+ */
+function inventory_files($head_inventory_id) {
   $render_array = array();
   $result = db_query('
     SELECT * FROM head_inventory_file_managed hifm
@@ -581,7 +513,7 @@ function getInventoryFiles($head_inventory_id) {
   
   foreach($result as $record) {
     $mimeIconMap = array(
-      'path' => drupal_get_path('module', 'inventory').'/images/' . getInventoryIconMap($record->filemime).'.png',
+      'path' => drupal_get_path('module', 'inventory').'/images/' . inventory_icon_map($record->filemime).'.png',
       'alt' => $record->filemime,
       'title' => $record->filemime,
     );
@@ -634,126 +566,5 @@ function getInventoryFiles($head_inventory_id) {
     '#id_table' => 'files', 
   );
   return $render_array;
-}
-function getInventoryIconMap($filemime) {
-
-  switch ($filemime) {
-    // Word document types.
-    case 'application/msword':
-    case 'application/vnd.ms-word.document.macroEnabled.12':
-    case 'application/vnd.oasis.opendocument.text':
-    case 'application/vnd.oasis.opendocument.text-template':
-    case 'application/vnd.oasis.opendocument.text-master':
-    case 'application/vnd.oasis.opendocument.text-web':
-    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-    case 'application/vnd.stardivision.writer':
-    case 'application/vnd.sun.xml.writer':
-    case 'application/vnd.sun.xml.writer.template':
-    case 'application/vnd.sun.xml.writer.global':
-    case 'application/vnd.wordperfect':
-    case 'application/x-abiword':
-    case 'application/x-applix-word':
-    case 'application/x-kword':
-    case 'application/x-kword-crypt':
-      return 'x-office-document';
-
-      // Spreadsheet document types.
-    case 'application/vnd.ms-excel':
-    case 'application/vnd.ms-excel.sheet.macroEnabled.12':
-    case 'application/vnd.oasis.opendocument.spreadsheet':
-    case 'application/vnd.oasis.opendocument.spreadsheet-template':
-    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-    case 'application/vnd.stardivision.calc':
-    case 'application/vnd.sun.xml.calc':
-    case 'application/vnd.sun.xml.calc.template':
-    case 'application/vnd.lotus-1-2-3':
-    case 'application/x-applix-spreadsheet':
-    case 'application/x-gnumeric':
-    case 'application/x-kspread':
-    case 'application/x-kspread-crypt':
-      return 'x-office-spreadsheet';
-
-      // Presentation document types.
-    case 'application/vnd.ms-powerpoint':
-    case 'application/vnd.ms-powerpoint.presentation.macroEnabled.12':
-    case 'application/vnd.oasis.opendocument.presentation':
-    case 'application/vnd.oasis.opendocument.presentation-template':
-    case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-    case 'application/vnd.stardivision.impress':
-    case 'application/vnd.sun.xml.impress':
-    case 'application/vnd.sun.xml.impress.template':
-    case 'application/x-kpresenter':
-      return 'x-office-presentation';
-
-      // Compressed archive types.
-    case 'application/zip':
-    case 'application/x-zip':
-    case 'application/stuffit':
-    case 'application/x-stuffit':
-    case 'application/x-7z-compressed':
-    case 'application/x-ace':
-    case 'application/x-arj':
-    case 'application/x-bzip':
-    case 'application/x-bzip-compressed-tar':
-    case 'application/x-compress':
-    case 'application/x-compressed-tar':
-    case 'application/x-cpio-compressed':
-    case 'application/x-deb':
-    case 'application/x-gzip':
-    case 'application/x-java-archive':
-    case 'application/x-lha':
-    case 'application/x-lhz':
-    case 'application/x-lzop':
-    case 'application/x-rar':
-    case 'application/x-rpm':
-    case 'application/x-tzo':
-    case 'application/x-tar':
-    case 'application/x-tarz':
-    case 'application/x-tgz':
-      return 'package-x-generic';
-
-      // Script file types.
-    case 'application/ecmascript':
-    case 'application/javascript':
-    case 'application/mathematica':
-    case 'application/vnd.mozilla.xul+xml':
-    case 'application/x-asp':
-    case 'application/x-awk':
-    case 'application/x-cgi':
-    case 'application/x-csh':
-    case 'application/x-m4':
-    case 'application/x-perl':
-    case 'application/x-php':
-    case 'application/x-ruby':
-    case 'application/x-shellscript':
-    case 'text/vnd.wap.wmlscript':
-    case 'text/x-emacs-lisp':
-    case 'text/x-haskell':
-    case 'text/x-literate-haskell':
-    case 'text/x-lua':
-    case 'text/x-makefile':
-    case 'text/x-matlab':
-    case 'text/x-python':
-    case 'text/x-sql':
-    case 'text/x-tcl':
-      return 'text-x-script';
-
-      // HTML aliases.
-    case 'application/xhtml+xml':
-      return 'text-html';
-
-      // Executable types.
-    case 'application/x-macbinary':
-    case 'application/x-ms-dos-executable':
-    case 'application/x-pef-executable':
-      return 'application-x-executable';
-
-      // PDF
-    case 'application/pdf':
-      return 'application-pdf';
-
-    default:
-      return $return;
-  }
 }
 ?>

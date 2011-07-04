@@ -1,442 +1,557 @@
 /**
- * @author Janosch Rohdewald
+ * @author Simon Käser
  */
-var changedRows = [];
-var saveTimerRunning = false;
-var rowTrackingEnabled = true;
-var saveTimeout = 0;
-var newRowId = 0;
-var invNum = 0;
 
-/*
- * Inventory initialisiern. Die bereits bestehenden Inventories werden hier aus
- * der JSON Variable exInvs geladen.
- * 
- */
-function initInventory() {
-	var inventories = jQuery('<div id="inventories">');
+var inventory = {
+  
+  id: false,
+  container: false,
+  add: false,
+  message: false,
+  form: false,
+  loading: false,
+  count: 1,
+  group_count: 1
+  
+};
 
-	jQuery("#Inventory").prepend(inventories);
-
-	// Disable autosave
-	rowTrackingEnabled = false;
-	// Go through each existing inventory
-	jQuery.each(exInvs, function(invId, inv) {
-		invTbody = addInventory(inv["invDesc"], invId);
-		// Go through each inventory entry
-		jQuery.each(inv, function(entryId, entry) {
-			if (entryId == "invDesc")
-				return;
-			// Add the row
-			row = addRow(invTbody, inv["invDesc"]["cols"], entryId, entry);
-			// And activate it
-			activateRow(row, invTbody, inv["invDesc"]["cols"]);
-		});
-		if(jQuery("input[name=editMode]").attr("value")=='1')
-		{
-			addRow(invTbody, inv["invDesc"]["cols"]);
-		}
-	});
-
-	// Enable autosave
-	rowTrackingEnabled = true;
-}
-
-// Called when the button 'Inventar hinzufügen' is clicked.
-// Gets the attributes of the inventory and passes them to addInventory()
-function onAddInventory() {
-	jQuery.getJSON(Drupal.settings.basePath + "inventory/add_inventory/" + jQuery('#edit-inventory-types').val(), function(json) {
-		tbody = addInventory(json);
-		addRow(tbody, json["cols"]);
-		jQuery("#edit-inventory-types option[value='0']").attr('selected',true);
-	});
-}
-
-// Adds a new inventory to the page.
-// Params: - json with the inventory specifications (attributes)
-// - The inventory id (null when new inventory)
-function addInventory(json, id) {
-	
-	var inventories = jQuery('#inventories');
-	id = (id == null ? "inv_new_" + (invNum++) : id);
-
-	jQuery('<b>').text(json["name"]).appendTo(inventories);
-
-	var table = jQuery("<table cellspacing=0 cellpadding=0 class='invTable'>");
-	var invDef = jQuery("<input type='hidden' name='invId' value='" + id + "'>");
-	var invTypeDef = jQuery("<input type='hidden' name='invTypeId' value='" + json["id"] + "'>");
-
-	var thead = jQuery("<thead>");
-	var trow = jQuery("<tr>");
-	jQuery("<td>").text("Art").appendTo(trow);
-	
-	jQuery.each(json["cols"], function(key, value) {
-		jQuery("<td>").text(value["name"]).appendTo(trow);
-	});
-	trow.appendTo(thead);
-
-	table.append(invDef);
-	table.append(invTypeDef);
-	table.append(thead);
-	
-	var tbody = jQuery("<tbody>");
-	table.append(tbody);
-	inventories.append(table);
-	inventories.append('<br>');
-
-	return tbody;
-}
-
-// Activate a row. This means disable the 'Art' input field and enable the other
-// fields.
-// Params: The jQuery row object
-// The tbody of the inventory
-// The columns (attributes) of the inventory (JSON)
-function activateRow(row, tbody, cols) {
-	var i = 0;
-	row.find('td').each(function() {
-		// Activate custom attributes
-		if (i > 0) {
-			// Copy dates from last row
-			/*
-			 * if (cols[i] == null && cols[i]["format"] == "date") {
-			 * $(this).children().attr( "value", row.prev().find('td:eq(' + i +
-			 * ')').children() .attr("value")); rowChanged(row); }
-			 */
-			
-			if(jQuery("input[name=editMode]").attr("value")=='1')
-			{
-				jQuery(this).children().attr("disabled", false);
-			}
-			else
-			{
-				jQuery(this).children().attr("readonly", true);	
-			}
-		} else
-		// Deactivate the 'nature' field
-		{
-			jQuery(this).children().attr("readonly", true);
-		}
-		i++;
-	});
-
-	if(jQuery("input[name=editMode]").attr("value")=='1')
-	{
-		// Add remove icon
-		jQuery("<td>").append("<img src='../../modules/inventory/images/can_delete.png' onclick='javascript:deleteRow(jQuery(this));' class='a'>")
-				.appendTo(row);
-	}
-}
-
-// Delete a row
-// Params: The jQuery row object
-function deleteRow(img) {
-	var row = img.parent().parent();
-	// Row must also be deleted in database
-	if (rowTrackingEnabled) {
-		rowId = row.find("input[name='rowId']").attr("value").substr(0, 8);
-		if (rowId != "row_new_") {
-			changedRows.push({
-				"action" : "delete",
-				"rowId" : rowId
-			});
-		}
-	}
-	row.remove();
-
-	if (!saveTimerRunning) {
-		saveTimerRunning = true;
-		setTimeout("saveRows()", saveTimeout);
-	}
-}
-
-// Add a row, which should be saved at the next save
-// Params: The jQuery row object
-function rowChanged(row) {
-	if (!rowTrackingEnabled)
-		return;
-
-	var newRow = true;
-	for (key in changedRows) {
-		if (changedRows[key]["action"] == "save") {
-			value = changedRows[key]["row"];
-			if (value.get(0) === row.get(0)) {
-				newRow = false;
-				return;
-			}
-		}
-	}
-
-	if (newRow) {
-		changedRows.push({
-			"action" : "save",
-			"row" : row
-		});
-	}
-
-	if (!saveTimerRunning) {
-		saveTimerRunning = true;
-		setTimeout("saveRows()", saveTimeout);
-	}
-}
-
-// Save all rows which have changed (collected by rowChanged)
-function saveRows() {
-	saveTimerRunning = false;
-	var rowsToSave = changedRows;
-	changedRows = [];
-
-	var saveArray = {};
-	var newColCnt = 0;
-
-	saveArray["headInventoryId"] = jQuery('input[name="head_inventory_id"]').attr("value");
-	for (key in rowsToSave) {
-		if (rowsToSave[key]["action"] == "save") {
-			row = rowsToSave[key]["row"];
-			if (saveArray["addRows"] == undefined)
-				saveArray["addRows"] = {};
-
-			var rowId = row.find("input[name='rowId']").attr("value");
-			var invId = row.parent().parent().find("input[name='invId']").attr("value");
-
-			if (saveArray["addRows"][invId] == undefined)
-				saveArray["addRows"][invId] = {};
-			saveArray["addRows"][invId]['invTypeId'] = row.parent().parent().find("input[name='invTypeId']").attr("value");
-
-			saveArray["addRows"][invId][rowId] = {};
-			saveArray["addRows"][invId][rowId]['orgId'] = row.find("input[name='orgId']").attr("value");
-
-			row.find("td").each(function() {
-				cell = jQuery(this).children();
-				// Jump over non-input cells
-				if (cell.attr("name") == null || cell.attr("name").substr(0, 4) != "col_")
-					return true;
-				saveArray["addRows"][invId][rowId][cell.attr("name")] = cell.attr("value");
-			});
-
-			newColCnt++;
-		} else if (rowsToSave[key]["action"] == "delete") {
-			if (saveArray["deleteRows"] == undefined)
-				saveArray["deleteRows"] = [];
-			saveArray["deleteRows"].push(rowsToSave[key]["rowId"]);
-		}
-	}
-
-	jQuery.post(Drupal.settings.basePath + "inventory/" + saveArray["headInventoryId"] + "/entries_ajax", saveArray, function(ids) {
-		jQuery.each(ids, function(key, value) {
-			var name = "";
-			if (key.substr(0, 8) == "row_new_")
-				name = "rowId";
-			else if (key.substr(0, 8) == "inv_new_")
-				name = "invId";
-
-			jQuery("input[type=hidden][name='" + name + "'][value='" + key + "']").attr("value", value);
-		});
-		
-		jQuery('#last_saved').removeClass("messages error");
-		
-		var now = new Date();
-		var displayTime = now.getHours()+':'+now.getMinutes();
-		var displayDate = (now.getDate()) + '.' + (now.getMonth()+1) + '.' + now.getFullYear();
-		jQuery('#last_saved').text('Zuletzt gespeichert am ' + displayDate + ' um ' + displayTime);
-		jQuery('#last_saved').addClass('messages status');		
-	}, "json");
-	
-	jQuery('#last_saved').ajaxError(function() {
-		jQuery('#last_saved').removeClass('messages status');
-		jQuery(this).addClass("messages error");
-		jQuery(this).text( "Fehler beim speichern" );
-	});
-
-	// TODO: overwrite exInvs with the actual inventorys
-	// var exInvs = $this->inventorys;
-}
-
-// Add a new row to an inventory
-// Params: The jQuery tbody of the inventory
-// The inventory attribute columns
-// The row id (mysql id of inventoryentry) (on a new row: null)
-// The values of the cells (if it is no a new row) otherwise null
-function addRow(tbody, cols, rowId, cellValues) {
-	var trow = jQuery("<tr>");
-	organismField = jQuery("<input>").attr("type", "text");
-	organismIdField = jQuery("<input>").attr("type", "hidden").attr("name", "orgId");
-	if (cellValues != null)
-		organismIdField = organismIdField.attr("value", cellValues["orgId"])
-
-	isNewRow = false;
-	if(rowId==null){
-		isNewRow = true;
-	}
-
-	rowId = (rowId == null ? "row_new_" + (newRowId++) : rowId);
-	var invDef = jQuery("<input type='hidden' name='rowId' value='" + rowId + "'>");
-
-	organismField = organismField.width(300);
-	if (cellValues != null)
-		organismField = organismField.attr("value", cellValues["label"]);
-
-	jQuery("<td>").append(organismField).appendTo(trow);
-	trow.append(organismIdField);
-	trow.append(invDef);
-
-	jQuery.each(cols, function(key, value) {
-		var input = jQuery("<input>").attr("type", "text");
-
-		switch (value["format"]) {
-		case "date":
-			input = input.datepicker({
-				dateFormat : 'dd.mm.yy'
-			});
-			input = input.width(80);
-			break;
-		case "int":
-			input = input.numeric();
-			input = input.width(70);
-			break;
-		case "dropdown":
-			input = jQuery('<select>').width(180);
-			input = input.append(jQuery('<option>').attr("value", "0").text(""));
-			jQuery.each(value["dropdown_values"], function(key, value) {
-				input = input.append(jQuery('<option>').attr("value", value["id"]).text(value["value"]));
-			});
-			break;
-		default:
-			break;
-		}
-
-		jQuery("<td>").append(input).appendTo(trow);
-		input.attr("name", "col_" + value['id']).attr("disabled", true);
-		if (cellValues != null)
-			input.attr("value", cellValues["col_" + value['id']]);
-
-		if(value['name'] == 'Identifiziert von' && isNewRow){
-			input.attr("value", jQuery('#username').val());
-		}
-		
-		input.change(function() {
-			rowChanged(jQuery(this).parent().parent());
-		});
-	});
-	// TODO: Thats exactly where the magic happens
-	trow.appendTo(tbody);
-
-	organismField.autocomplete(
-
-			{
-				minLength : 2,
-				noCache : true,
-				matchSubset : false,
-				cacheLength : 0,
-				source : function(request, response) {
-					//new search, so we change the indicator to searching
-					this.element.removeClass("notfound");
-					this.element.addClass("searching");
-					actualElement = this.element;
-					jQuery.ajax({
-						url : Drupal.settings.basePath + 'inventory/organism_autocomplete',
-						dataType : "json",
-						data : {
-							inv_id : this.element.parent().parent().parent().parent().find('input[name|=invTypeId]').val(),
-							term : this.element.val()
-						},
-						// success : response,
-						success : function(data){
-							if(data.length==0){
-								//change visual indicator to notfound and hide menu again
-								actualElement.removeClass("searching");
-								actualElement.addClass("notfound");
-								jQuery('.ui-widget-content').css("display","none");
-								
-							} else {
-								// Remove search symbol
-								actualElement.removeClass("searching");
-								response(data);
-							}
-							},
-						
-					});
-				},
-				focus : function(event, ui) {
-					jQuery(this).val(ui.item.label);
-					return false;
-				},
-				select : function(event, ui) {
-					jQuery(this).val(ui.item.label);
-					jQuery(this).parent().next().val(ui.item.id);
-					activateRow(trow, tbody, cols);
-					addRow(tbody, cols);
-					return false;
-				},
-				change : function(event, ui) {
-					// if the value of the textbox does not match a
-					// suggestion, clear its value
-					if (jQuery(
-							".ui-menu-item-label:textEquals('"
-									+ jQuery(this).val().replace(/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g, '\\$1') + "')").size() == 0) {
-					}
-				}
-			}).live(
-			'keydown',
-			function(e) {
-				var keyCode = e.keyCode || e.which;
-				// if TAB or RETURN is pressed and the text in the
-				// textbox does not match a suggestion, set the value of
-				// the textbox to the text of the first suggestion
-				if ((keyCode == 9 || keyCode == 13)){
-					if (jQuery(
-							".ui-menu-item-label:textEquals('"
-									+ jQuery(this).val().replace(/([{}\(\)\^$&.\*\?\/\+\|\[\\\\]|\]|\-)/g, '\\$1') + "')").size() == 0) {
-
-					} else {
-						// Magic
-						var item = jQuery(this).data('autocomplete').selectedItem;
-						
-						activateRow(trow, tbody, cols);
-						addRow(tbody, cols);
-						jQuery(this).focus();
-					}
-
-				}
-			}).focus(function() {
-		// jQuery(this).autocomplete("search");
-	}).keyup(function(){
-		//monitor field and remove class 'notfound' if its length is less than 2
-		if(this.value.length<2){
-			jQuery(this).removeClass("notfound");
-		}
-	}).data("autocomplete")._renderItem = function(ul, item) {
-		
-		var term = this.term.replace(/[aou]/, function(m) {
-			// to find with term 'wasser' -> 'wasser' and 'gewasesser'
-			var hash = {
-				'a' : '(Ã¤|a)',
-				'o' : '(Ã¶|o)',
-				'u' : '(Ã¤|u)'
-			};
-			return hash[m];
-		})
-
-		// highlighting of matches
-		var label = item.name_de.replace(new RegExp(term, 'ig'), "<span class='ui-term-match'>$&</span>");
-
-		var buffer = this.term.split(" ");
-		label += " [" + item.genus.replace(new RegExp(buffer[0], 'ig'), "<span class='ui-term-match'>$&</span>");
-		label += " " + item.species.replace(new RegExp(buffer[1], 'ig'), "<span class='ui-term-match'>$&</span>") + "]";
-
-		// If there is a old name (synonym)
-		var old_label = "";
-		if (item.old_name_de != undefined) {
-			old_label = item.old_name_de.replace(new RegExp(term, 'ig'), "<span class='ui-term-match'>$&</span>");
-
-			old_label += " [" + item.old_genus.replace(new RegExp(buffer[0], 'ig'), "<span class='ui-term-match'>$&</span>");
-			old_label += " " + item.old_species.replace(new RegExp(buffer[1], 'ig'), "<span class='ui-term-match'>$&</span>") + "]";
-			old_label = "<span>&nbsp;&nbsp;&nbsp;&nbsp; Synonym: " + old_label + "</span>";
-		}
-
-		return jQuery("<li></li>").data("item.autocomplete", item).append(
-				"<a><div class='ui-menu-item-label'>" + label + "</div>" + old_label + "<div class='ui-menu-item-name'>" + name
-						+ "</div></a>").appendTo(ul);
-	};
-	return trow;
-}
+(function($) {
+  
+  inventory.init = function() {
+    inventory.initCustomFields();
+    inventory.initAdditionalFields();
+    inventory.container = $('#inventories');
+    if(!inventory.container.size())
+      return;
+    
+    inventory.form = inventory.container.parents('form');
+    inventory.id = inventory.form.find('#invId').val();
+    inventory.form.find('#edit-actions').append(inventory.form.find('.form-item-add'));
+    inventory.form.find('input[name^="form_"]').remove();
+    inventory.form.submit(inventory.saveEntries);
+    inventory.add = inventory.form.find('#add-inventory-group');
+    inventory.add.change(inventory.addInventory)
+    inventory.message = inventory.form.find('#message');
+    if(!inventory.message.size()) {
+      inventory.message = $('<div id="message" class="messages"></div>').hide();
+      inventory.form.find('#edit-actions').append(inventory.message);
+    }
+    inventory.message.ajaxError(inventory.ajaxError);
+    inventory.container.find('.invTable').each(function() {
+      inventory.initializeTable($(this));
+    });
+  }
+  
+  inventory.setMessage = function(message, type, time) {
+    if(inventory.messageTimer)
+      window.clearTimeout(inventory.messageTimer);
+    inventory.message.html(message).attr('class', 'messages').addClass(type).stop().fadeIn();
+    if(time)
+      inventory.messageTimer = window.setTimeout(function() {
+        inventory.message.fadeOut();
+      }, time);
+  }
+  
+  inventory.ajaxError = function() {
+    inventory.hideLoading();
+    inventory.setMessage(Drupal.t('An AJAX HTTP request terminated abnormally.'), 'error', 15000);
+  }
+  
+  inventory.showLoading = function() {
+    if(!inventory.loading) {
+      inventory.loading = $('<div><img src="'+Drupal.settings.basePath+'modules/inventory/images/loading.gif" /></div>').hide();
+      inventory.form.append(inventory.loading);
+    }
+    inventory.loading.dialog({
+      modal: true,
+      draggable: false,
+      resizable: false,
+      closeOnEscape: false,
+      closeText: '',
+      dialogClass: 'inventory-edit-loading',
+      width: 42,
+      height:42,
+      minWidth: 42,
+      minHeight: 42
+    });
+  }
+  
+  inventory.hideLoading = function() {
+    if(!inventory.loading)
+      return;
+    inventory.loading.dialog('close');
+  }
+  
+  inventory.saveEntries = function(event) {
+    inventory.showLoading();
+    $.post(
+      inventory.form.attr('action').replace('/edit', '/save_entries')+'?ajax=1',
+      inventory.form.serializeArray(),
+      function(data) {
+        inventory.hideLoading();
+        if(!data)
+          return;
+        for(var i=0; i<data.inventories.length; i++) {
+          inventory.container.find('#invTitle'+data.inventories[i]['id_old']).attr('id', 'invTitle'+data.inventories[i]['id_new']);
+          inventory.container.find('#invTable'+data.inventories[i]['id_old']).attr('id', 'invTable'+data.inventories[i]['id_new']);
+          inventory.container.find('input.inventory[name="inventories['+data.inventories[i]['id_old']+']"]').attr('name', 'inventories['+data.inventories[i]['id_new']+']');
+          inventory.container.find('input[name^="entries['+data.inventories[i]['id_old']+']"]').each(function() {
+            $(this).attr('name', $(this).attr('name').replace('entries['+data.inventories[i]['id_old']+']', 'entries['+data.inventories[i]['id_new']+']'));
+          });
+        }
+        for(var i=0; i<data.entries.length; i++) {
+          var entry = inventory.container.find('input.entry_id[value="'+data.entries[i]['id_old']+'"]');
+          entry.val(data.entries[i]['id_new']);
+          var additional = entry.parents('tr').find('.additional');
+          if(!additional.size())
+            continue;
+          var href = additional.attr('href').split('/');
+          href[href.length-1] = entry.val();
+          entry.parents('tr').find('.additional').attr('href', href.join('/'));
+        }
+        inventory.group_count = data.group_count;
+        if(data.message)
+          inventory.setMessage(data.message, data.result == 1 ? 'status' : 'error', 15000);
+      },
+      'json'
+    );
+    return false;
+  }
+  
+  inventory.resetOddEven = function() {
+    inventory.container.find('.invTable tbody tr:odd').removeClass('odd').addClass('even');
+    inventory.container.find('.invTable tbody tr:even').removeClass('even').addClass('odd');
+  }
+  
+  inventory.deleteEntry = function() {
+    var row = $(this).parents('tr');
+    var id = row.find('input.entry_id').val();
+    if(id.substr(0, 4) == 'new_') { // The entry has not yet been stored, therefor we just delete the row
+      inventory.removeEntry(row);
+      return;
+    }
+    inventory.showLoading();
+    $.getJSON(
+      inventory.form.attr('action').replace('/edit', '/delete_entry') + '/' + id,
+      {ajax : 1},
+      $.proxy(function(data) {
+        if(!data)
+          return;
+        if(data.result == 1)
+          inventory.removeEntry(row);
+        if(data.message)
+          inventory.setMessage(data.message, data.result == 1 ? 'status' : 'error', 15000);
+        inventory.hideLoading();
+      }, row)
+    );
+  }
+  
+  inventory.removeEntry = function(row) {
+    var table = row.parents('table');
+    row.remove();
+    inventory.updateGroupCount(table);
+    inventory.resetOddEven();
+    inventory.updateRowPositions();
+    inventory.initializeSortable(table);
+  }
+  
+  inventory.updateGroupCount = function(table) {
+    var count = table.find('tbody tr:not(.disabled)').size();
+    var prev = table.prev();
+    while(!prev.hasClass('invTitle'))
+      prev = prev.prev();
+    prev.find('small').html('('+count+')');
+  }
+  
+  inventory.enableDisable = function(row) {
+    if(row.find == undefined)
+      row = $(row);
+    if(!row.find('input.organism_id').val()) {
+      row.addClass('disabled');
+      row.find('td input:not(input[type="hidden"], .organism)').attr('disabled', 'disabled');
+    } else {
+      row.removeClass('disabled');
+      row.find('td input:not(input[type="hidden"], .organism)').attr('disabled', '');
+    }
+    inventory.updateGroupCount(row.parents('table'));
+  }
+  
+  inventory.updateRowPositions = function() {
+    inventory.container.find('tbody tr').each(function() {
+      inventory.updateRowPosition($(this));
+    });
+  }
+  
+  inventory.updateRowPosition = function(row) {
+    var position = row.parents('tbody').find('tr').index(row);
+    row.find('*[name^="entries["]').each(function() {
+      var name = $(this).attr('name').split('[');
+      name[2] = position+']';
+      $(this).attr('name', name.join('['));
+    });
+  }
+  
+  inventory.duplicateRow = function(row) {
+    var clone = $('<tr>'+row.html()+'</tr>');
+    clone.addClass(row.hasClass('odd') ? 'even' : 'odd');
+    clone.find('a.delete').remove();
+    clone.find('em').html('');
+    clone.find('td.image').html('');
+    clone.find('input:not(.identifier, .date)').val('');
+    clone.find('select option').attr('selected', '');
+    clone.find('input.date').attr('id', '').removeClass('hasDatepicker');
+    row.parents('tbody').append(clone);
+    inventory.initializeRow(clone);
+    inventory.initializeSortable(clone.parents('.invTable'));
+    inventory.updateRowPosition(clone);
+  }
+  
+  inventory.getImage = function(row) {
+    var id = row.find('input.organism_id').val();
+    row.find('td.image').html('');
+    $.getJSON(
+      Drupal.settings.basePath+'inventory/get_entry_image/'+id,
+      $.proxy(function(data) {
+        if(!data)
+          return;
+        this.find('td.image').html(data.data);
+      }, row)
+    );
+  }
+  
+  inventory.addInventory = function() {
+    inventory.showLoading();
+    $.getJSON(
+      inventory.form.attr('action').replace('/edit', '/add_inventory_group') + '/' + $(this).val() + '/' + inventory.group_count++,
+      function(data) {
+        inventory.hideLoading();
+        if(!data)
+          return;
+        if(data.data) {
+          data = $(data.data);
+          inventory.container.append(data);
+          inventory.initializeTable(data);
+          data.find('.organism').focus();
+          inventory.form.find('p.empty').fadeOut();
+        }
+        inventory.add.find('option[value=""]').attr('selected', true);
+    });
+  }
+  
+  inventory.customFieldsDialog = function(e) {
+    e.preventDefault();
+    inventory.showLoading();
+    $.getJSON($(this).attr('href'), {ajax: 1}, function(data) {
+      if(data && data.form) {
+        var dialog = $('<div title="' + inventory.form.find('.custom').attr('title') + '" />');
+        dialog.append($(data.form));
+        dialog.dialog({
+          modal: true,
+          resizable: false,
+          closeOnEscape: false,
+          closeText: '',
+          close: function(event, ui) {
+            $(this).remove();
+          },
+          width: 500
+        });
+        inventory.initCustomFields();
+        dialog.find('#edit-actions a').click(function(e) {
+          e.preventDefault();
+          $(this).parents('.ui-dialog-content').dialog('close');
+        });
+        dialog.find('form').submit(function(e) {
+          $.post(
+            $(this).attr('action'),
+            $(this).serializeArray(),
+            function(data) {
+              inventory.hideLoading();
+              if(!data)
+                return;
+              if(data.message)
+                inventory.setMessage(data.message, data.result == 1 ? 'status' : 'error', 15000);
+            },
+            'json'
+          );
+          inventory.showLoading();
+          $(this).parents('.ui-dialog-content').dialog('close');
+          return false;
+        });
+      }
+      inventory.hideLoading();
+    });
+  }
+  
+  inventory.additionalFieldsDialog = function(e) {
+    e.preventDefault();
+    inventory.showLoading();
+    var data = {ajax: 1};
+    $(this).parents('tr').find('td:last input[type="hidden"]').each(function() {
+      var name = $(this).attr('name');
+      data[name.substring(name.indexOf('col_'), name.length-1)] = $(this).val();
+    });
+    $.getJSON($(this).attr('href'),
+      data,
+      function(data) {
+        if(data && data.form) {
+          var dialog = $('<div title="'+inventory.form.find('.additional').attr('title')+'" />');
+          dialog.append($(data.form));
+          dialog.dialog({
+            modal: true,
+            resizable: false,
+            closeOnEscape: false,
+            closeText: '',
+            close: function(event, ui) {
+              $(this).remove();
+            },
+            width: 500
+          });
+          inventory.initAdditionalFields();
+          dialog.find('#edit-actions a').click(function(e) {
+            e.preventDefault();
+            $(this).parents('.ui-dialog-content').dialog('close');
+          });
+          dialog.find('form').submit(function(e) {
+            var values = $(this).serializeArray();
+            var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
+            var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').parents('tr');
+            var base_name = row.find('input.entry_id').attr('name');
+            var inventory_id = row.parents('table').find('.inventory').attr('name');
+            inventory_id = inventory_id.substring(12, inventory_id.length-1);
+            for(var i=0; i<values.length; i++) {
+              var name = values[i]['name'];
+              if(name.substr(0, 4) != 'col_')
+                continue;
+              var value = values[i]['value'];
+              var iname = base_name.replace('[id]', '['+name+']');
+              var input = row.find('input[name="'+iname+'"]');
+              if(!input.size()) { // create the hidden field if it is not yet present
+                input = $('<input type="hidden" name="'+iname+'" value="" />');
+                row.find('td:last').append(input);
+              }
+              input.val(value);
+            }
+            inventory.setMessage(Drupal.t('The additional fields data will be stored only after saving the whole form by pressing the <em>Save</em> button in the lower right.'), 'warning', 15000)
+            $(this).parents('.ui-dialog-content').dialog('close');
+            return false;
+          }
+        );
+      }
+      inventory.hideLoading();
+    });
+  }
+  
+  inventory.initializeTable = function(table) {
+    table.find('tbody tr').each(function() {
+      inventory.initializeRow($(this));
+    });
+    table.find('tr th:last-child').html('');
+    
+    table.find('thead tr').prepend('<th>&nbsp;</th>');
+    table.find('tbody tr').prepend('<td><a class="handler"><img src="'+Drupal.settings.basePath+'modules/inventory/images/sort.gif" /></a></td>');
+    inventory.initializeSortable(table);
+    
+    var prev = table.prev();
+    while(!prev.hasClass('invTitle'))
+      prev = prev.prev();
+    prev.find('.custom').click(inventory.customFieldsDialog);
+  }
+  
+  inventory.initializeSortable = function(table) {
+    table.sortable('destroy');
+    table.sortable({
+      items: 'tbody tr:not(.disabled)',
+      handle: '.handler',
+      axis: 'y',
+      tolerance: 'pointer',
+      update: function(event, ui) {
+        inventory.resetOddEven();
+        inventory.updateRowPositions();
+      }
+    });
+  }
+  
+  inventory.initializeFields = function(container) {
+    // Date fields
+    container.find('input.date').datepicker({
+      dateFormat : 'dd.mm.yy',
+      duration : 0
+    }).width(80);
+    
+    // Numeric fields
+    container.find('input.int').numeric().width(70);
+  }
+  
+  inventory.initializeRow = function(row) {
+    row.find('input, select').focus(function(e) {
+      if($(this).offset().top+$(this).outerHeight()-$('html').scrollTop() > $(window).height()-100) {
+        console.log('scroll');
+        $('html').scrollTop($(this).offset().top+$(this).outerHeight()-$(window).height()+100);
+      }
+      
+    });
+    
+    row.find('td.image a').lightBox();
+    
+    row.find('input.entry_id[value=""]').each(function() {
+      $(this).val('new_'+inventory.count++);
+      var additional = $(this).parents('tr').find('.additional');
+      if(!additional.size())
+        return;
+      var href = additional.attr('href').split('/');
+      href[href.length-1] = $(this).val();
+      additional.attr('href', href.join('/'));
+    });
+    
+    // Replace delete checkbox
+    row.find('input.delete').attr('checked', '').hide();
+    row.find('td:last-child').append(
+      '<a class="delete" href="javascript://" title="'+row.parents('table').find('tr th:last').html()+'">'+
+        '<img src="'+Drupal.settings.basePath+'modules/inventory/images/delete.gif" />'+
+      '</a>'
+    );
+    row.find('a.delete').click(inventory.deleteEntry);
+    
+    // Add dialog for additional fields form
+    row.find('a.additional').click(inventory.additionalFieldsDialog);
+    
+    // Disable input fields if no organism is selected
+    inventory.enableDisable(row);
+    
+    // Initialize fields
+    inventory.initializeFields(row);
+    
+    // Organism field
+    row.find('input.organism').autocomplete({
+      minLength : 2,
+      autoFocus : true,
+      source : function(request, response) {
+        //new search, so we change the indicator to searching
+        this.element.removeClass('notfound');
+        this.element.addClass('searching');
+        actualElement = this.element;
+        $.ajax({
+          url : Drupal.settings.basePath + 'inventory/organism_autocomplete',
+          dataType : "json",
+          data : {
+            inv_id : this.element.parents('table').find('input.inventory').val(),
+            term : this.element.val()
+          },
+          // success : response,
+          success : function(data){
+            if(data.length==0){
+              //change visual indicator to notfound and hide menu again
+              actualElement.removeClass("searching");
+              actualElement.addClass("notfound");
+              $('.ui-widget-content').css("display","none");
+            } else {
+              // Remove search symbol
+              actualElement.removeClass("searching");
+              response(data);
+            }
+          }
+        });
+      },
+      focus: function(event, ui) {
+        return false;
+      },
+      select: function(event, ui) {
+        $(this).val(ui.item.label || ui.item.label_latin);
+        $(this).parents('td').find('input.organism_id').val(ui.item.id);
+        $(this).parents('tr').find('td > em').html(ui.item.label_latin);
+        inventory.enableDisable($(this).parents('tr'));
+        if(event.keyCode == 9) { // TAB
+          $(this).parents('tr').find('input.date').parents('td').next().find('input').focus();
+          event.preventDefault();
+        } else if(event.keyCode == 13) // ENTER
+          $(this).parents('tr').find('input.date').focus();
+        if($(this).parents('tr:last-child').size())
+          inventory.duplicateRow($(this).parents('tr'));
+        inventory.getImage($(this).parents('tr'));
+        return false;
+      }
+    })
+    .keyup(function() {
+      //monitor field and remove class 'notfound' if its length is less than 2
+      if($(this).val().length < 2) {
+        $(this).removeClass('notfound');
+        $(this).parents('td').find('input.organism_id').val('');
+        $(this).parents('tr').find('td > em').html('');
+        inventory.enableDisable($(this).parents('tr'));
+      }
+    })
+    .blur(function() {
+      inventory.enableDisable($(this).parents('tr'));
+    })
+    .each(function() {
+      $(this).data('autocomplete')._renderItem = function(ul, item) {
+        var term = this.term.replace(/[aou]/, function(m) {
+          // to find with term 'wasser' -> 'wasser' and 'gewasesser'
+          var hash = {
+            'a' : '(ä|a)',
+            'o' : '(ö|o)',
+            'u' : '(ä|u)'
+          };
+          return hash[m];
+        });
+        var term = $.trim(term).split(' ')
+        // highlighting of matches
+        var label = item.label;
+        var label_latin = item.label_latin;
+        var old_label = item.old_label;
+        var old_label_latin = item.old_label_latin;
+        while(term.length) {
+          var re = new RegExp(term.pop(), 'ig');
+          if(old_label || old_label_latin) {
+            old_label = old_label.replace(re, '<span class="ui-state-highlight">$&</span>');
+            old_label_latin = old_label_latin.replace(re, '<span class="ui-state-highlight">$&</span>');
+          } else {
+            label = label.replace(re, '<span class="ui-state-highlight">$&</span>');
+            label_latin = label_latin.replace(re, '<span class="ui-state-highlight">$&</span>');
+          }
+        }
+        var old = '';
+        if(old_label || old_label_latin)
+          old = '<small>'+ old_label + '<em>' + old_label_latin + '</em></small>';
+        return $('<li></li>')
+          .data('item.autocomplete', item)
+          .append('<a>' + label + '<em>' + label_latin + '</em>' + old + '</a>')
+          .appendTo(ul);
+      };
+    })
+  }
+  
+  // Additional fields form
+  inventory.initAdditionalFields = function() {
+    var additionalfields = $('#inventory-edit-entry-form');
+    if(!additionalfields.size())
+      return;
+    inventory.initializeFields(additionalfields);
+  }
+  
+  // Custom fields form
+  inventory.initCustomFields = function() {
+    var customfields = $('#customfields');
+    if(!customfields.size())
+      return;
+    customfields.find('tr:last td:first input').blur(inventory.addCustomField);
+  }
+  
+  inventory.addCustomField = function() {
+    if(!$(this).val())
+      return;
+    var row = $(this).parents('tr');
+    var clone = $('<tr>'+row.html()+'</tr>');
+    clone.addClass(row.hasClass('odd') ? 'even' : 'odd');
+    row.parents('tbody').append(clone);
+    clone.find('td:first input').blur(inventory.addCustomField);
+    clone.find('input, select').each(function() {
+      var name = $(this).attr('name');
+      var i = parseInt(name.replace(/[^\d]+(\d+)[^\d]+/, '$1'));
+      $(this).attr('name', name.replace('['+i+']', '['+(i+1)+']'));
+    });
+    $(this).unbind('blur');
+  }
+  
+  $(document).ready(inventory.init);
+})(jQuery);

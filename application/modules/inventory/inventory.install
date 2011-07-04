@@ -6,23 +6,166 @@
 
 function inventory_schema() {
   $schema['head_inventory_file_managed'] = array(
-	'description' => t('Relation between head inventory and file managed'),
+    'description' => 'Relation between head inventory and file managed',
     'fields' => array(
       'head_inventory_id' => array(
-        'description' => t('Relation to table head_inventory'),
-        'type' => 'int4',
+        'description' => 'Relation to table head_inventory',
+        'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => TRUE
+      ),
       'file_id' => array(
-        'description' => t('Relation to table file_managed'),
-        'type' => 'int4',
+        'description' => 'Relation to table file_managed',
+        'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
-       'description' => array(
-        'description' => t('A description for the uploaded file'),
-        'type' => 'varchar(50)',
-        'not null' => FALSE),
-        ),
+        'not null' => TRUE
+      ),
+      'description' => array(
+        'description' => 'A description for the uploaded file',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => FALSE
+      ),
+    ),
+  );
+  $schema['inventory_template'] = array(
+    'description' => 'Templates for inventories',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for a template',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The name of the template',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+      ),
+      'description' => array(
+        'description' => 'Long description of the tempalte',
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'public' => array(
+        'description' => 'Whether this template is public or not',
+        'type' => 'int',
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+        'default' => '0',
+      ),
+      'owner_id' => array(
+        'description' => 'The {users}.uid of this template',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'create_time' => array(
+        'description' => 'The date this template was created',
+        'pgsql_type' => 'timestamp with time zone',
+        'not null' => TRUE,
+      ),
+      'modify_time' => array(
+        'description' => 'The date this tempalte was last modified',
+        'pgsql_type' => 'timestamp with time zone',
+        'not null' => TRUE,
+      )
+    ),
+    'indexes' => array(
+      'public' => array('public'),
+      'owner_id' => array('owner_id')
+    ),
+    'foreign keys' => array(
+      'owner_id' => array(
+        'table' => 'users',
+        'columns' => array('owner_id' => 'uid'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  $schema['inventory_template_inventory'] = array(
+    'description' => 'Inventories of templates',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for a template inventory',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'inventory_template_id' => array(
+        'description' => 'The id of the template this inventory belongs to',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'inventory_type_id' => array(
+        'description' => 'The id of the inventory type of this inventory',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      )
+    ),
+    'indexes' => array(
+      'inventory_template_id' => array('inventory_template_id'),
+      'inventory_type_id' => array('inventory_type_id')
+    ),
+    'foreign keys' => array(
+      'inventory_template_id' => array(
+        'table' => 'inventory_template',
+        'columns' => array('inventory_template_id' => 'id'),
+      ),
+      'inventory_type_id' => array(
+        'table' => 'inventory_type',
+        'columns' => array('inventory_type_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  $schema['inventory_template_inventory_entry'] = array(
+    'description' => 'Entries for template  inventories',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for a template inventory entry',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'inventory_template_inventory_id' => array(
+        'description' => 'The id of the template inventory this entry belongs to',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'organism_id' => array(
+        'description' => 'The id of the organism this entry references',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'position' => array(
+        'description' => 'The position of this entry in the inventory',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      )
+    ),
+    'indexes' => array(
+      'organism_id' => array('organism_id'),
+      'inventory_template_inventory_id' => array('inventory_template_inventory_id'),
+      'position' => array('position')
+    ),
+    'foreign keys' => array(
+      'inventory_template_inventory_id' => array(
+        'table' => 'inventory_template_inventory',
+        'columns' => array('inventory_template_inventory_id' => 'id'),
+      ),
+      'organism_id' => array(
+        'table' => 'organism',
+        'columns' => array('organism_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
   );
   return $schema;
 }

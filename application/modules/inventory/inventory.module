@@ -68,9 +68,9 @@ function inventory_menu() {
   $items['inventory/edit'] = array(
     'title' => t('Edit Inventories'),
     'description' => t('Show all inventories to edit'),
-    'page callback' => 'inventory_modify',
+    'page callback' => 'inventory_editable',
     'access arguments' => array('access inventories'),
-    'file' => 'inventory.edit.list.inc',
+    'file' => 'inventory.list.inc',
     'type' => MENU_NORMAL_ITEM,
     'weight' => 5,
   );
@@ -82,23 +82,6 @@ function inventory_menu() {
     'access arguments' => array('access inventories'),
     'file' => 'inventory.new.inc',
     'weight' => 0,
-  );
-  $items['inventory/organism_autocomplete'] = array(
-    'title' => 'Organism Autocomplete',
-    'description' => 'JSON Organism Autocomplete',
-    'page callback' => 'inventory_organism_autocomplete',
-    'access arguments' => array('access inventories'),
-    'type' => MENU_CALLBACK,
-    'file' => 'inventory.ajax.inc',
-  );
-  $items['inventory/add_inventory/%'] = array(
-    'title' => 'Add Inventory Category',
-    'description' => 'JSON Inventory Category Adder',
-    'page callback' => 'inventory_add_inventory',
-    'page arguments' => array(2),
-    'access arguments' => array('access inventories'),
-    'type' => MENU_CALLBACK,
-    'file' => 'inventory.ajax.inc',
   );
   $items['inventory/%/edit'] = array(
     'title' => t('Edit'),
@@ -112,14 +95,74 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
     'weight' => 10,
   );
-  $items['inventory/%/entries_ajax'] = array(
-    'title' => 'Entries Ajax Request',
-    'description' => 'JSON Entries Ajax Request',
-    'page callback' => 'inventory_entries_ajax',
+  
+  // AJAX
+  $items['inventory/%/delete_entry/%'] = array(
+    'title' => t('Delete an entry'),
+    'description' => t('Deletes an entry of an existing inventory'),
+    'page callback' => 'inventory_delete_entry',
+    'page arguments' => array(1, 3),
     'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-    'file' => 'inventory.ajax.inc',
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/save_entries'] = array(
+    'title' => t('Save inventory entries'),
+    'description' => t('Save an inventory\'s entries'),
+    'page callback' => 'inventory_save_entries',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/edit_entry/%/%'] = array(
+    'title' => t('Edit additional fields of an inventory entry'),
+    'description' => t('Edit additional fields of an inventory entry'),
+    'page callback' => 'inventory_edit_entry',
+    'page arguments' => array(1, 3, 4),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/add_inventory_group/%/%'] = array(
+    'title' => t('Return inventory group'),
+    'description' => t('Returns the html for a new inventory group'),
+    'page callback' => 'inventory_add_inventory_group',
+    'page arguments' => array(1, 3, 4),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/custom_fields/%'] = array(
+    'title' => t('Custom fields'),
+    'description' => t('Add and edit custom fields of an inventory'),
+    'page callback' => 'inventory_custom_fields',
+    'page arguments' => array(1, 3),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/organism_autocomplete'] = array(
+    'title' => 'Organism Autocomplete',
+    'description' => 'JSON Organism Autocomplete',
+    'page callback' => 'inventory_organism_autocomplete',
+    'access arguments' => array('access inventories'),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/get_entry_image/%'] = array(
+    'title' => t('Get entry image'),
+    'description' => t('Returns the html for an inventory entry\'s image'),
+    'page callback' => 'inventory_get_entry_image',
+    'page arguments' => array(2),
+    'access arguments' => array('access inventories'),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/sgroup_autocomplete'] = array(
     'title' => 'sgroup autocomplete',
@@ -127,7 +170,7 @@ function inventory_menu() {
     'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-    'file' => 'inventory.ajax.inc',
+    'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/delete_sgroup/%'] = array(
     'title' => 'JSON request to delete a group from permission list',
@@ -136,7 +179,88 @@ function inventory_menu() {
     'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-    'file' => 'inventory.ajax.inc',
+    'file' => 'inventory.edit.inc',
+  );
+  
+  
+  $items['inventorytemplate'] = array(
+    'title' => t('Templates'),
+    'description' => t('List of existing inventory templates'),
+    'page callback' => 'inventory_template_list',
+    'access arguments' => array('access inventories'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'inventory.edit.template.inc'
+  );
+  $items['inventorytemplate/list'] = array(
+    'title' => t('Available templates'),
+    'description' => t('List of existing inventory templates'),
+    'page callback' => 'inventory_template_list',
+    'access arguments' => array('access inventories'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE,
+    'file' => 'inventory.edit.template.inc',
+    'weight' => 1
+  );
+  $items['inventorytemplate/new'] = array(
+    'title' => t('Create new template'),
+    'description' => t('Form to create a new inventory template'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inventory_template_edit_metadata'),
+    'access arguments' => array('access inventories'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE,
+    'file' => 'inventory.edit.template.inc',
+    'weight' => 2
+  );
+  $items['inventorytemplate/%/edit'] = array(
+    'title' => t('Edit'),
+    'description' => t('Edit an existing inventory template'),
+    'page callback' => 'inventory_template_edit',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_template_edit_access',
+    'access arguments' => array(1),
+    'file' => 'inventory.edit.template.inc'
+  );
+  $items['inventorytemplate/%/delete'] = array(
+    'title' => t('Delete'),
+    'description' => t('Delete an inventory template'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inventory_template_delete_form', 1),
+    'access callback' => 'inventory_template_edit_access',
+    'access arguments' => array(1),
+    'file' => 'inventory.edit.template.inc'
+  );
+  
+  // AJAX
+  $items['inventorytemplate/%/delete_entry/%'] = array(
+    'title' => t('Delete an entry'),
+    'description' => t('Deletes an entry of an existing inventory template'),
+    'page callback' => 'inventory_template_delete_entry',
+    'page arguments' => array(1, 3),
+    'access callback' => 'inventory_template_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.template.inc',
+  );
+  $items['inventorytemplate/%/save_entries'] = array(
+    'title' => t('Save inventory entries'),
+    'description' => t('Save an inventory template\'s entries'),
+    'page callback' => 'inventory_template_save_entries',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_template_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.template.inc',
+  );
+  $items['inventorytemplate/%/add_inventory_group/%/%'] = array(
+    'title' => t('Return inventory group'),
+    'description' => t('Returns the html for a new inventory group'),
+    'page callback' => 'inventory_template_add_inventory_group',
+    'page arguments' => array(1, 3, 4),
+    'access callback' => 'inventory_template_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.template.inc',
   );
   return $items;
 }
@@ -450,13 +574,32 @@ function inventory_permission() {
 }
 
 /**
+ * Implements hook_image_default_styles().
+ */
+function inventory_image_default_styles() {
+  $styles = array();
+
+  $styles['inventory_mini'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 40, 'height' => 40),
+        'weight' => 0,
+      ),
+    )
+  );
+  return $styles;
+}
+
+/**
  * Check write acces to inventory
  * 
  * @param unknown_type $inventoryId
  * @return true if access ok, false if not
  */
 function inventory_edit_access($inventoryId) {
-  $access = user_access('access inventories');
+  if(!user_access('access inventories') || !$inventoryId)
+    return false;
   // check if this user has write access to the inventory
   global $user;
   $adminRecords = db_query('
@@ -469,8 +612,28 @@ function inventory_edit_access($inventoryId) {
     array(':hiid' => $inventoryId, ':uid' => $user->uid)
   );
   $write = $adminRecords->fetch();
-  $access = $access && $write && $write->id == $inventoryId;
-  return $access;
+  return $write && $write->id == $inventoryId;
+}
+
+/**
+ * Check write acces to inventory template
+ * 
+ * @param unknown_type $template_id
+ * @return true if access ok, false if not
+ */
+function inventory_template_edit_access($template_id) {
+  if(!user_access('access inventories') || !$template_id)
+    return false;
+  // check if this user has write access to the inventory
+  global $user;
+  $owner = db_query('
+    SELECT id FROM inventory_template t
+    WHERE (t.owner_id = :uid AND t.id = :id)
+    LIMIT 1',
+    array(':id' => $template_id, ':uid' => $user->uid)
+  );
+  $write = $owner->fetch();
+  return $write && $write->id == $template_id;
 }
 
 /**
@@ -496,6 +659,317 @@ function inventory_access($inventoryId) {
   $read = $adminRecords->fetch();
   $access = $access && (($read->read == 1) || ($read->shared == true)) || ($read->owner_id == $user->uid);
   return $access;
+}
+
+/**
+ * ...
+ * Enter description here ...
+ * @param unknown_type $head_inventory_id
+ * @return name of actual inventory to be modified
+ */
+function inventory_title($head_inventory_id) {
+  $inventory_title = '-';
+
+  $inventories = db_query('
+    SELECT name
+    FROM head_inventory
+    WHERE id = :id;', array(':id' => $head_inventory_id));
+  foreach($inventories as $inventory) {
+    if(!is_null($inventory->name))
+      $inventory_title =  $inventory->name;
+  }
+
+  return $inventory_title;
+}
+
+/**
+ * Gets organism table table header
+ * @param unknown_type $inventoryId
+ */
+function inventory_column_description($inventory_id, $type_id=false, $custom_fields=false, $head_inventory_id=false) {
+  $invColDesc = array();
+
+  if($type_id) {
+    $inventory = db_query('
+      SELECT t.name, t.id 
+      FROM inventory_type t 
+      WHERE t.id = :id
+      LIMIT 1', 
+      array(':id' => $type_id)
+    )->fetch();
+  } else {
+    $inventory = db_query('
+      SELECT t.name, i.inventory_type_id id 
+      FROM inventory i 
+      LEFT JOIN inventory_type t ON i.inventory_type_id = t.id 
+      WHERE i.id = :id
+      LIMIT 1', 
+      array(':id' => $inventory_id)
+    )->fetch();
+  }
+  $type_id = $inventory->id;
+  $invColDesc["name"] = $inventory->name;
+  $invColDesc["id"] = $inventory->id;
+  
+  $inventory = 'a.head_inventory_id IS NULL';
+  if($head_inventory_id && $custom_fields)
+    $inventory = '('.$inventory.' OR a.head_inventory_id = '.intval($head_inventory_id).')';
+  $resAttributes = db_query('SELECT a.id, a.name, f.format, (a.head_inventory_id IS NOT NULL) custom
+    FROM inventory_type_attribute a 
+    LEFT JOIN attribute_format f ON a.attribute_format_id = f.id 
+    WHERE a.inventory_type_id = :typeId AND '.$inventory, array(':typeId' => $type_id));
+
+  $i = 0;
+  foreach ($resAttributes as $attribute) {
+    $i++;
+    $invColDesc["cols"][$i] = array(
+      "name" => $attribute->name,
+      "id" => $attribute->id,
+      "format" => $attribute->format,
+      "custom" => $attribute->custom,
+    );
+
+    // If it is a dropdown list
+    if($attribute->format == "dropdown") {
+      $invColDesc["cols"][$i]["dropdown_values"] = array();
+      $dropdownValues = db_query('SELECT * FROM inventory_type_attribute_dropdown_value WHERE inventory_type_attribute_id = :id', array(':id' => $attribute->id));
+      foreach($dropdownValues as $dropdownValue) {
+        array_push($invColDesc["cols"][$i]["dropdown_values"], array("id" =>$dropdownValue->id, "value" => $dropdownValue->value));
+      }
+    }
+
+  }
+  return $invColDesc;
+}
+
+function inventory_data($head_inventory_id, $order=false, $extended=false, $entry_id=false, $custom_fields=false) {
+  $invArr = array();
+  if($entry_id)
+    $inventories = db_query('SELECT inventory_id id
+                FROM inventory_entry 
+                WHERE id = :id;', 
+                array(':id' => $entry_id)
+                );
+  else
+    $inventories = db_query('SELECT id
+                FROM inventory 
+                WHERE head_inventory_id = :id;', 
+                array(':id' => $head_inventory_id)
+                );
+  
+  $protected = inventory_redlisted_entries($head_inventory_id);
+  
+  foreach($inventories as $inventory) {
+    $inventory_id = $inventory->id;
+    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_entry', 'inventory_id', $order, $entry_id, $protected);
+    
+    // Get the inventory column description
+    $invArr[$inventory_id]["invDesc"] = inventory_column_description($inventory_id, false, $custom_fields, $head_inventory_id);
+    
+  }
+  return $invArr;
+}
+
+function inventory_type_entries($id, $table, $relation, $order=false, $entry_id=false, $protected=false, $columns=true) {
+  if(!$order)
+    $order = 'e.position, e.id ASC';
+  $sql = 'SELECT 
+      e.id, 
+      e.organism_id, 
+      fauna.name_de faunanamede, 
+      fauna.genus, 
+      fauna.species, 
+      fauna.sub_species, 
+      fauna.family, 
+      o.organism_type, 
+      flora.name_de floranamede, 
+      flora.name floraname, 
+      flora."Familie" florafamilie, 
+      flora."Gattung" floragattung, 
+      flora."Art" floraart, 
+      flora."Rang" florarang, 
+      flora."NameUnterart" floraunterart 
+    FROM '.$table.' e
+    LEFT JOIN organism o on e.organism_id = o.id
+    LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+    LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+    WHERE e.'.$relation.' = :id '.
+    ($entry_id ? 
+      'AND e.id = '.intval($entry_id).' ' : 
+      ($protected?'AND NOT e.id IN ('.implode(', ', $protected).') ':'')
+    ).
+    'ORDER BY '.$order.';';
+  
+  $inventoryEntries = db_query($sql ,array(':id' => $id));
+  $entries = array();
+  
+  foreach($inventoryEntries as $inventoryEntry) {
+    $inventoryEntryId = $inventoryEntry->id;
+    $entry = array(
+      'id' => $inventoryEntryId,
+      'orgId' => $inventoryEntry->organism_id
+    );
+    
+    if($inventoryEntry->organism_type==1){
+      // organism_type 1 is Fauna
+      $entry["label"] = $inventoryEntry->faunanamede;
+      if($extended)
+        $entry["label_latin"] = trim($inventoryEntry->family." ".$inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
+      else
+        $entry["label_latin"] = trim($inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
+      $entry["label_family"] = $inventoryEntry->family;
+    } else {
+      // organism_type 2 is Flora
+      $entry["label"] = $inventoryEntry->floranamede;
+      if($extended)
+        $entry["label_latin"] = trim($inventoryEntry->floraname);
+      else
+        $entry["label_latin"] = trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart);
+      $entry["label_family"] = $inventoryEntry->florafamilie;
+    }
+    
+    if($columns) {
+      // Get inventory columns
+      $columns = db_query('
+        SELECT * 
+        FROM inventory_type_attribute_inventory_entry 
+        WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
+      foreach ($columns as $column) {
+        // Dropdown
+        $colVal = "";
+        if($column->inventory_type_attribute_dropdown_value_id > 0) {
+          $colVal = $column->inventory_type_attribute_dropdown_value_id.'_dropdown';
+        } else {
+          $colVal = $column->value;
+        }
+        $entry["col_".$column->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
+      }
+    }
+    $entries[] = $entry;
+  }
+  return $entries;
+}
+
+function inventory_icon_map($filemime) {
+
+  switch ($filemime) {
+    // Word document types.
+    case 'application/msword':
+    case 'application/vnd.ms-word.document.macroEnabled.12':
+    case 'application/vnd.oasis.opendocument.text':
+    case 'application/vnd.oasis.opendocument.text-template':
+    case 'application/vnd.oasis.opendocument.text-master':
+    case 'application/vnd.oasis.opendocument.text-web':
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    case 'application/vnd.stardivision.writer':
+    case 'application/vnd.sun.xml.writer':
+    case 'application/vnd.sun.xml.writer.template':
+    case 'application/vnd.sun.xml.writer.global':
+    case 'application/vnd.wordperfect':
+    case 'application/x-abiword':
+    case 'application/x-applix-word':
+    case 'application/x-kword':
+    case 'application/x-kword-crypt':
+      return 'x-office-document';
+
+      // Spreadsheet document types.
+    case 'application/vnd.ms-excel':
+    case 'application/vnd.ms-excel.sheet.macroEnabled.12':
+    case 'application/vnd.oasis.opendocument.spreadsheet':
+    case 'application/vnd.oasis.opendocument.spreadsheet-template':
+    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    case 'application/vnd.stardivision.calc':
+    case 'application/vnd.sun.xml.calc':
+    case 'application/vnd.sun.xml.calc.template':
+    case 'application/vnd.lotus-1-2-3':
+    case 'application/x-applix-spreadsheet':
+    case 'application/x-gnumeric':
+    case 'application/x-kspread':
+    case 'application/x-kspread-crypt':
+      return 'x-office-spreadsheet';
+
+      // Presentation document types.
+    case 'application/vnd.ms-powerpoint':
+    case 'application/vnd.ms-powerpoint.presentation.macroEnabled.12':
+    case 'application/vnd.oasis.opendocument.presentation':
+    case 'application/vnd.oasis.opendocument.presentation-template':
+    case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+    case 'application/vnd.stardivision.impress':
+    case 'application/vnd.sun.xml.impress':
+    case 'application/vnd.sun.xml.impress.template':
+    case 'application/x-kpresenter':
+      return 'x-office-presentation';
+
+      // Compressed archive types.
+    case 'application/zip':
+    case 'application/x-zip':
+    case 'application/stuffit':
+    case 'application/x-stuffit':
+    case 'application/x-7z-compressed':
+    case 'application/x-ace':
+    case 'application/x-arj':
+    case 'application/x-bzip':
+    case 'application/x-bzip-compressed-tar':
+    case 'application/x-compress':
+    case 'application/x-compressed-tar':
+    case 'application/x-cpio-compressed':
+    case 'application/x-deb':
+    case 'application/x-gzip':
+    case 'application/x-java-archive':
+    case 'application/x-lha':
+    case 'application/x-lhz':
+    case 'application/x-lzop':
+    case 'application/x-rar':
+    case 'application/x-rpm':
+    case 'application/x-tzo':
+    case 'application/x-tar':
+    case 'application/x-tarz':
+    case 'application/x-tgz':
+      return 'package-x-generic';
+
+      // Script file types.
+    case 'application/ecmascript':
+    case 'application/javascript':
+    case 'application/mathematica':
+    case 'application/vnd.mozilla.xul+xml':
+    case 'application/x-asp':
+    case 'application/x-awk':
+    case 'application/x-cgi':
+    case 'application/x-csh':
+    case 'application/x-m4':
+    case 'application/x-perl':
+    case 'application/x-php':
+    case 'application/x-ruby':
+    case 'application/x-shellscript':
+    case 'text/vnd.wap.wmlscript':
+    case 'text/x-emacs-lisp':
+    case 'text/x-haskell':
+    case 'text/x-literate-haskell':
+    case 'text/x-lua':
+    case 'text/x-makefile':
+    case 'text/x-matlab':
+    case 'text/x-python':
+    case 'text/x-sql':
+    case 'text/x-tcl':
+      return 'text-x-script';
+
+      // HTML aliases.
+    case 'application/xhtml+xml':
+      return 'text-html';
+
+      // Executable types.
+    case 'application/x-macbinary':
+    case 'application/x-ms-dos-executable':
+    case 'application/x-pef-executable':
+      return 'application-x-executable';
+
+      // PDF
+    case 'application/pdf':
+      return 'application-pdf';
+
+    default:
+      return $return;
+  }
 }
 
 ?>
