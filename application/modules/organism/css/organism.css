@@ -1,0 +1,18 @@
+div.wikientry   {
+	border: 1px solid #F2F2F2;
+	background-color: #F7F7F7;
+	padding: 8px;
+
+}
+div.thumb {
+	border: 1px solid #DEDEDE;
+	float:right;
+	clear:right;
+	margin: 0 0 1em 1em;
+	padding: 3px;
+	padding-left: 5px;
+	padding-top: 5px;	
+}
+div.wiki_source {
+	font-size: 10px;	
+}

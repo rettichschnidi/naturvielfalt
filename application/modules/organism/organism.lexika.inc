@@ -3,6 +3,7 @@
  * Queries Wikipedia for organism entry and displays content on local page
  */
 function organism_lexika_show($organism_id) {
+	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	$organism = db_query('
 		SELECT o.organism_type, fo."Gattung" gattung, fo."Art" art, fa.genus, fa.species, fo.name_de floraname, fa.name_de faunaname
 		FROM organism o

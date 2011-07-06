@@ -88,7 +88,19 @@ function area_menu() {
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'area.edit.inc',
-    'weight' => 3
+    'weight' => 6
+  );
+     $items['area/%/delete'] = array(
+    'title' => t('Delete'),
+    'description' => t('Delete area'),
+    'page callback' => 'area_delete',
+    'page arguments' => array(1),
+    'access arguments' => array(1),
+    'access callback' => 'area_edit_access',
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'area.delete.inc',
+    'weight' => 7
   );
   $items['area/new'] = array(
     'title' => 'Create new area',
@@ -487,6 +499,51 @@ function area_edit_access($area_id) {
   $write = $adminRecords->fetch();
   $access = $access && $write && $write->id == $area_id;
   return $access;
+}
+
+/**
+ * 
+ * Converts coordinates to system CH1903 (for Switzerland) or WGS84 (ROW)
+ * @param integer $area_id
+ */
+function area_convert_coordinates($area_id) {
+	$result = db_select('area', 'a')
+    ->condition('id', $area_id)
+    ->fields('a')
+    ->execute()
+    ->fetch();
+    
+    $lat = $result->centroid_lat;
+	$lng = $result->centroid_lng;
+    if($result->country == 'Schweiz' OR $result->country == 'Switzerland') {	    
+	    $latsex = $lat * 3600;
+	    $lngsex = $lng * 3600;
+	    
+	    $lathlp = ($latsex - 169028.66) / 10000 ;
+	    $lnghlp = ($lngsex - 26782.5) / 10000;
+	    
+	    $x = 200147.07 + 308807.95 * $lathlp + 3745.25 * pow($lnghlp, 2) + 76.63 * pow($lathlp, 2) + 119.79 * pow($lathlp, 3) - 194.56 * pow($lnghlp, 2) * $lathlp;
+	    $y = 600072.37 + 211455.93 * $lnghlp - 10938.51 * $lnghlp * $lathlp - 0.36 * $lnghlp * pow($lathlp, 2) - 44.54 * pow($lnghlp, 3);
+	    
+	    
+	    $coords = substr(round($y), 0, 3).'.'.substr(round($y), 3).' / '.substr(round($x), 0, 3).'.'.substr(round($x), 3).t(' (CH1903)');
+    }
+    else {
+    	$coords = round($lat, 3).' / '.round($lng, 4).t(' (WGS84)');
+    }
+    
+    return $coords;  
+}
+
+function area_habitat_dropdown_values($area_id) {
+	$habitats = db_select('habitat', 'h')
+    ->fields('h')
+    ->execute();
+    
+    foreach($habitats as $habitat) {
+    	$dropdown[$habitat->id] = $habitat->name_de;
+    }
+    return $dropdown;
 }
 
 ?>

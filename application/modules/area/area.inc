@@ -9,6 +9,8 @@ function show_area($areaId) {
   //include code for gmap_static_image_path
   module_load_include('inc', 'area', 'area.search');
   
+  $coords = area_convert_coordinates($areaId);
+  
   $rows = array();
   $rows[] = array(
     array(
@@ -79,6 +81,34 @@ function show_area($areaId) {
       'header' => true
     ),
     date("j.m.Y", strtotime($area->modify_time))
+  );
+    $rows[] = array(
+    array(
+      'data' => t('Coordinates'),
+      'header' => true
+    ),
+    	$coords
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Protection Target'),
+      'header' => true
+    ),
+    $area->protection_target
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Safety precautions'),
+      'header' => true
+    ),
+    $area->safety_precautions
+  );
+  $rows[] = array(
+    array(
+      'data' => t('Tending strategies'),
+      'header' => true
+    ),
+    $area->tending_strategies
   );
     $rows[] = array(
     array(
@@ -410,7 +440,7 @@ function area_inventories($areaId) {
     );
   }
   else{
-    $output['linked_organisms']['area_organisms'] = array(
+    $output['linked_inventories']['area_inventory'] = array(
       '#markup' => t("There are no inventories linked to this area"),
     );
   }

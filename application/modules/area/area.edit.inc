@@ -185,14 +185,22 @@ function area_edit_form($form, &$form_state, $area_id) {
 	'#size' => 50,
 	'#required' => true,
 	);
-	$form['AreaEditForm']['habitatText'] = array(
+	$form['AreaEditForm']['habitat_dropdown'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Habitats (hold CTRL to select multiple values)'),
+	'#options' => area_habitat_dropdown_values($area_id),
+	'#multiple' => TRUE,
+	'#default_value' => area_habitat_values($area_id),
+	'#size' => 10
+	);
+/*	$form['AreaEditForm']['habitatText'] = array(
 	'#title' => 'Habitats',
 	'#type' => 'textfield',
 	'#size' => 50,
     '#autocomplete_path' => 'area/habitat_autocomplete',
 	'#suffix' => '<div id="habitatSelected"><table><tr>'.area_habitat_values($area_id).'</tr></table></div>',
 	);
-	$form['AreaEditForm']['parcels'] = area_parcels_form($area_id);	
+*/	$form['AreaEditForm']['parcels'] = area_parcels_form($area_id);	
 	$form['AreaEditForm']['protection_target'] = array(
     '#type' => 'textarea',
     '#title' => t('Protection target'),
@@ -278,7 +286,7 @@ function area_edit_form_submit($form, &$form_state) {
 	->condition('area_id', $area_id)
 	->execute();
 	
-	foreach (array_values($form_state['input']['habitat']) as $habitat) {
+	foreach (array_values($form_state['input']['habitat_dropdown']) as $habitat) {
 			db_insert('area_habitat')->fields(array(
 				'area_id' => $area_id,
 				'habitat_id' => $habitat,
@@ -319,7 +327,7 @@ function area_habitat_values($area_id) {
 		array('id' => $area_id)
 	);
 	$habitat = '';
-	$removeImg = drupal_get_path('module', 'inventory')."/images/can_delete.png";
+/*	$removeImg = drupal_get_path('module', 'inventory')."/images/can_delete.png";
 	foreach($result as $record) {
 		if(!empty($record->id)) {
 			$id = "<input type='hidden' name='habitat[" . $record->id."]' value='" . $record->id."'/>";
@@ -329,6 +337,10 @@ function area_habitat_values($area_id) {
 			$habitat = $habitat."<tr>" . $id . $label . $name . $remove . "</tr>";
 			$form_state['input']['habitat'][$record->id] = $record->id;
 		}
+	}
+*/
+	foreach ($result as $record) {
+		$habitat[] = $record->id;
 	}
 	return $habitat;	
 }
