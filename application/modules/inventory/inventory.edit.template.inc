@@ -267,7 +267,7 @@ function inventory_template_edit_entries($form, &$form_state, $template) {
   $data = _inventory_template_data($template['id']);
   $weight = 1;
   foreach($data as $inventory_id => $inventory_group) {
-    $form = array_merge(_inventory_group_factory($template['id'], $inventory_group['invDesc'], $inventory_id, array(), $inventory_group, $weight, false), $form);
+    $form = array_merge(_inventory_group_factory($template['id'], $inventory_group['invDesc'], $inventory_id, $inventory_group, $weight, false), $form);
     $weight += 2;
   }
   $form['inventories_end'] = array(
@@ -433,7 +433,7 @@ function inventory_template_add_inventory_group($template_id, $inventory_type_id
     ->execute()
     ->fetchAssoc();
   return drupal_json_output(array(
-    'data' => drupal_render(_inventory_group_factory($template_id, $desc, 'new_'.$key, array(), array(), 1, false))
+    'data' => drupal_render(_inventory_group_factory($template_id, $desc, 'new_'.$key, array(), 1, false))
   ));
 }
 

@@ -185,11 +185,10 @@ function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
     '#weight' => 0
   );
   
-  $visible_fields = _inventory_visible_fields();
   $data = inventory_data($head_inventory_id, false, true, false, true);
   $weight = 1;
   foreach($data as $inventory_id => $inventory_group) {
-    $form = array_merge(_inventory_group_factory($head_inventory_id, $inventory_group['invDesc'], $inventory_id, $visible_fields, $inventory_group, $weight), $form);
+    $form = array_merge(_inventory_group_factory($head_inventory_id, $inventory_group['invDesc'], $inventory_id, $inventory_group, $weight), $form);
     $weight += 2;
   }
   $form['inventories_end'] = array(
@@ -542,7 +541,6 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
   $form_state['entry_id'] = $entry_id;
   $form_state['ajax'] = $ajax;
   
-  $visible_fields = _inventory_visible_fields();
   if($entry_id)
     $data = array_pop(inventory_data($head_inventory_id, false, true, $entry_id, true));
   else
@@ -556,7 +554,7 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
   $form_state['columns'] = $columns;
   $count = 0;
   foreach($columns as $column) {
-    if(!$column['custom'] && array_key_exists($column['name'], $visible_fields))
+    if($column['visible'])
       continue; // We do not want to edit fields which are visible in the edit entries form
     $name = 'col_'.$column['id'];
     $value = array_key_exists($name, $_REQUEST) ? htmlentities($_REQUEST[$name]) : $entry[$name];
@@ -981,7 +979,6 @@ function inventory_templates_form_submit($form, &$form_state) {
   
   if($ajax) {
     $group_count = count($inventories);
-    $visible_fields = _inventory_visible_fields();
     $new_entries = array();
     $new_inventories = array();
   } else {
@@ -1020,7 +1017,7 @@ function inventory_templates_form_submit($form, &$form_state) {
       continue;
     if($new_groups || !in_array($group['invDesc']['id'], $inventories)) {
       if($ajax)
-        array_push($new_inventories, drupal_render(_inventory_group_factory($head_inventory_id, $group['invDesc'], 'new_'.$group_count++, $visible_fields, $entries)));
+        array_push($new_inventories, drupal_render(_inventory_group_factory($head_inventory_id, $group['invDesc'], 'new_'.$group_count++, $entries)));
       else {
         $inventory_id = $iid++;
         $record = array(
@@ -1036,7 +1033,7 @@ function inventory_templates_form_submit($form, &$form_state) {
         if(!array_key_exists($inventory_id, $new_entries))
           $new_entries[$inventory_id] = array();
         foreach($entries as $entry) {
-          $row = _inventory_render_row(_inventory_row_factory($head_inventory_id, $entry, $i++, $inventory_id, $group['invDesc']['id'], $columns, $visible_fields));
+          $row = _inventory_render_row(_inventory_row_factory($head_inventory_id, $entry, $i++, $inventory_id, $group['invDesc']['id'], $columns));
           array_push($new_entries[$inventory_id], $row);
         }
       }
@@ -1416,7 +1413,7 @@ function _inventory_update_modify_time($head_inventory_id) {
  * @return array
  *  Drupal render array
  */
-function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $entries=array(), $weight=1, $additional=true) {
+function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $weight=1, $additional=true) {
   global $user;
   $output = array();
   $headings = array();
@@ -1437,13 +1434,12 @@ function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $e
   $columns = $desc['cols'];
   if($columns) {
     foreach($columns as $column) {
-      if(!$column['custom'] && array_key_exists($column['name'], $visible_fields))
+      if($column['visible'])
         $headings[] = array(
           'data' => $column['name'],
-          'colspan' => $visible_fields[$column['name']],
-          'class' => array(($column['name'] == 'Identifiziert von' ? 'identifier' : ''))
+          'class' => array(($column['name'] == 'Beobachter' ? 'identifier' : ''))
         );
-      if($column['name'] == 'Identifiziert von')
+      if($column['name'] == 'Beobachter')
         $identifier = $column['id'];
       if($column['name'] == 'Funddatum')
         $date = $column['id'];
@@ -1454,10 +1450,10 @@ function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $e
   $headings[] = t('Delete');
   $rows = array();
   $k = -1;
-  foreach($entries as $k => $entry) {
-    if(is_string($k) && $k == 'invDesc')
+  foreach($entries as $key => $entry) {
+    if(is_string($key) && $key == 'invDesc')
       continue;
-    $row = _inventory_row_factory($id, $entry, $k, $inventory_id, $desc['id'], $columns, $visible_fields, $additional);
+    $row = _inventory_row_factory($id, $entry, $k++, $inventory_id, $desc['id'], $columns, $additional);
     array_push($rows, $row);
   }
   if(!$entries || $rows) {
@@ -1474,11 +1470,11 @@ function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $e
     if($columns)
       $entry = array(
         'col_'.$identifier => $user->name,
-        'col_'.$date => $entry ? $entry['col_'.$date] : date('j.m.Y', time())
+        'col_'.$date => $entry['col_'.$date] ? $entry['col_'.$date] : date('d.m.Y', time())
       );
     else
       $entry = array();
-    array_push($rows, _inventory_row_factory($id, $entry, $k+1, $inventory_id, $desc['id'], $columns, $visible_fields, $additional));
+    array_push($rows, _inventory_row_factory($id, $entry, $k+1, $inventory_id, $desc['id'], $columns, $additional));
     $output['table'.$inventory_id] = array(
       '#theme' => 'table', 
       '#header' => $headings,
@@ -1509,14 +1505,12 @@ function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $e
  *  The ID of the inventory type
  * @param array $columns
  *  The description of the columns
- * @param array $visible_fields
- *  The fields to display in the row
  * @param boolean $additional[optional]
  *  Whether to add additional fields or not
  * @return array
  *  A row array to be used in a table
  */
-function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $columns, $visible_fields, $additional=true) {
+function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $columns, $additional=true) {
   $row = array();
   if(function_exists('gallery_images'))
     $row[] = inventory_get_entry_image($data['orgId'], true);
@@ -1527,14 +1521,17 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
       '<input type="text" class="organism" name="entries['.$key.']['.$i.'][organism]" value="'.$data['label'].'" />'
   );
   $row[] = array(
-    'data' => '<em>'.$data['label_latin'].'</em>'
+    'data' => '<em>'.$data['label_latin'].'</em>',
+    'class' => array((!$columns ? 'last' : ''))
   );
   $hidden = '';
   if($columns) {
+    $n = 0;
     foreach($columns as $column) {
+      $n++;
       $name = 'col_'.$column['id'];
       $value = $data[$name];
-      if(!$column['custom'] && array_key_exists($column['name'], $visible_fields)) {
+      if($column['visible']) {
         if($column['format'] == 'dropdown') {
           $cell = '<select name="entries['.$key.']['.$i.']['.$name.']" size="1">';
           $cell .= '<option value="0"></option>';
@@ -1542,11 +1539,10 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
             $cell .= '<option value="'.$v['id'].'_dropdown"'.($v['id'].'_dropdown' == $value ? ' selected="selected"' : '').'>'.$v['value'].'</option>';
           $cell .= '</select>';
         } else
-          $cell = '<input type="text" name="entries['.$key.']['.$i.']['.$name.']" value="'.$value.'" class="'.$column['format'].($column['name'] == 'Identifiziert von' ? ' identifier' : '').'" />';
+          $cell = '<input type="text" name="entries['.$key.']['.$i.']['.$name.']" value="'.$value.'" class="'.$column['format'].($column['name'] == 'Beobachter' ? ' identifier' : '').'" />';
         $row[] = array(
           'data' => $cell,
-          'colspan' => $visible_fields[$column['name']],
-          'class' => array(($column['name'] == 'Identifiziert von' ? ' identifier' : ''))
+          'class' => array(($n == count($columns) ? 'last' : ''))
         );
       } else
         $hidden .= '<input type="hidden" name="entries['.$key.']['.$i.']['.$name.']" value="'.$value.'" />';
@@ -1561,20 +1557,6 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
     'data' => '<input type="checkbox" class="delete" name="entries['.$key.']['.$i.'][delete]" value="1" />'.$hidden
   );
   return $row;
-}
-
-/**
- * Private helper function defining the fields to be displayed in the table
- * 
- * @return array Array where the keys are the names and the values the colspan of the columns
- *  to be displayed in the table
- */
-function _inventory_visible_fields() {
-  return array(
-    'Name' => '1', 
-    'Funddatum' => '1', 
-    'Anzahl' => '1', 
-    'Identifiziert von' => '1');
 }
 
 /**

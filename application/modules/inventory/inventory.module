@@ -594,7 +594,7 @@ function inventory_column_description($inventory_id, $type_id=false, $custom_fie
   $inventory = 'a.head_inventory_id IS NULL';
   if($head_inventory_id && $custom_fields)
     $inventory = '('.$inventory.' OR a.head_inventory_id = '.intval($head_inventory_id).')';
-  $resAttributes = db_query('SELECT a.id, a.name, f.format, (a.head_inventory_id IS NOT NULL) custom
+  $resAttributes = db_query('SELECT a.id, a.name, a.visible, f.format
     FROM inventory_type_attribute a 
     LEFT JOIN attribute_format f ON a.attribute_format_id = f.id 
     WHERE a.inventory_type_id = :typeId AND '.$inventory, array(':typeId' => $type_id));
@@ -606,7 +606,7 @@ function inventory_column_description($inventory_id, $type_id=false, $custom_fie
       "name" => $attribute->name,
       "id" => $attribute->id,
       "format" => $attribute->format,
-      "custom" => $attribute->custom,
+      "visible" => $attribute->visible,
     );
 
     // If it is a dropdown list

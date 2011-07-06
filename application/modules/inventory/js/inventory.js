@@ -647,6 +647,9 @@ var inventory = {
         return false;
       }
     })
+    .focus(function() {
+      $(this).autocomplete('search', $(this).val());
+    })
     .keyup(function() {
       //monitor field and remove class 'notfound' if its length is less than 2
       if($(this).val().length < 2) {

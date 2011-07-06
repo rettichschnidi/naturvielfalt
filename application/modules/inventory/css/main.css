@@ -153,8 +153,7 @@ body.page-inventory-edit {
   display:none;
 }
 
-#inventory-template-edit-entries #inventories th.latin_name,
-#inventories td.identifier {
+#inventories td.last {
   width:100%;
 }
 
