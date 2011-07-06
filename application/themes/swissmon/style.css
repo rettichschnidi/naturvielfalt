@@ -1015,6 +1015,10 @@ fieldset {
   padding-top: 1em;
 }
 
+html.js fieldset.collapsible {
+  position:static;
+}
+
 html.js fieldset.collapsed {
   background: transparent;
   padding-top: 0;
