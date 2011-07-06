@@ -1,0 +1,146 @@
+<?php
+/**
+ * Hook implementations for gallery integration
+ */
+
+/**
+ * Implements hook of gallery module to activate the gallery
+ * functionality for organism
+ * 
+ * @return array
+ */
+function organism_gallery_types() {
+  return array(
+    'organism' => array(
+      'image_caption' => 'organism_gallery_image_caption',
+      'manage_title' => 'organism_gallery_manage_title',
+      'manage_description' => 'organism_gallery_manage_description'
+    )
+  );
+}
+
+/**
+ * Helper function referenced in organism_gallery_types to define the caption
+ * for images added to organisms
+ * 
+ * @param $id
+ * @return string
+ */
+function organism_gallery_image_caption($id) {
+  $result = db_query('SELECT '.
+                      'o.organism_type, '.
+                      'fauna.name_de AS fauna_name, '.
+                      'fauna.genus AS fauna_genus, '.
+                      'fauna.species AS fauna_species, '.
+                      'flora.name_de AS flora_name, '.
+                      'flora."Gattung" AS flora_gattung, '.
+                      'flora."Art" AS flora_art '.
+                     'FROM '.
+                      'organism AS o '.
+                     'LEFT OUTER JOIN fauna_organism AS fauna ON fauna.id = o.organism_id '.
+                     'LEFT OUTER JOIN flora_organism AS flora ON flora.id = o.organism_id '.
+                     'WHERE '.
+                      'o.id = :id', array(':id' => $id));
+  $result = $result->fetch();
+  if($result->organism_type == '1')
+    return $result->fauna_name.' <small>'.$result->fauna_genus.' '.$result->fauna_species.'</small>';
+  return $result->flora_name.' <small>'.$result->flora_gattung.' '.$result->flora_art.'</small>';
+}
+
+/**
+ * Helper function referenced in organism_gallery_types to define the title of 
+ * the manage images page for organisms
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function organism_gallery_manage_title($id) {
+  return t('Images of the organism !title', array('!title' => '<em>'.organism_gallery_image_caption($id).'</em>'));
+}
+
+/**
+ * Helper function referenced in organism_gallery_types to define the description of 
+ * the manage images page for organisms
+ * 
+ * @param string $id
+ *   The id of object
+ * @return string
+ */
+function organism_gallery_manage_description($id) {
+  return t('Add and edit images of the specified organism.');
+}
+
+/**
+ * Implements hook of gallery module to define the different category
+ * conditions available for organisms
+ * 
+ * @return array
+ */
+function organism_gallery_category_conditions() {
+  return array(
+    'organism' => array(
+      'name' => t('Organisms'),
+      'type' => 'organism'
+    ),
+    'organism_flora' => array(
+      'name' => t('Flora'),
+      'type' => 'organism',
+      'table' => 'organism',
+      'column' => 'organism_type',
+      'value' => '2'
+    ),
+    'organism_fauna' => array(
+      'name' => t('Fauna'),
+      'type' => 'organism',
+      'table' => 'organism',
+      'column' => 'organism_type',
+      'value' => '1'
+    ),
+    'organism_flora_custom' => array(
+      'name' => t('Flora individual'),
+      'type' => 'organism',
+      'table' => array('flora_organism', array(
+        'organism_id' => 'flora_organism.id',
+        'organism_type' => '2'
+      )),
+      'columns' => array(/*
+        'Familie' => t('Familie'),
+        'Gattung' => t('Gattung'),
+        'Art' => t('Art'),*/
+        'is_neophyte' => t('Neophyte')
+      )
+    ),
+    'organism_fauna_custom' => array(
+      'name' => t('Fauna individual'),
+      'type' => 'organism',
+      'table' => array('fauna_organism', array(
+        'organism_id' => 't.id',
+        'organism_type' => '1'
+      )),
+      'columns' => array(
+        'fauna_class_id' => array(t('Inventory Group'), 'organism_gallery_catgory_invgroup_columns'),/*
+        'family' => t('Family'),
+        'genus' => t('Genus'),
+        'sub_genus' => t('Sub genus'),
+        'species' => t('Species'),
+        'sub_species' => t('Sub species')*/
+      ),
+    ),
+  );
+}
+
+/**
+ * Option factory for the organism_fauna_custom condition
+ * 
+ * @return array
+ */
+function organism_gallery_catgory_invgroup_columns() {
+  $result = db_select('fauna_class', 'fc', array('fetch' => PDO::FETCH_ASSOC))->fields('fc')->execute()->fetchAll();
+  $columns = array();
+  foreach($result as $record)
+    $columns[$record['id']] = $record['name_de'];
+  return $columns;
+}
+
+?>
