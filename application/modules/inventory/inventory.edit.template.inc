@@ -2,6 +2,12 @@
 
 module_load_include('inc', 'inventory', 'inventory.edit');
 
+/**
+ * Menu callback; List of a users templates
+ * 
+ * @return array
+ *  Drupal render array
+ */
 function inventory_template_list() {
   global $user;
   drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
@@ -107,6 +113,13 @@ function inventory_template_delete_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'inventorytemplate';
 }
 
+/**
+ * Menu callback; Edit forms for editing a template's metadata and entries
+ * 
+ * @param int $template_id
+ * @return array
+ *  Drupal render array
+ */
 function inventory_template_edit($template_id) {
   $render_array = array();
   _include_js_and_css();
@@ -158,6 +171,13 @@ function inventory_template_edit($template_id) {
   return $render_array;
 }
 
+/**
+ * Menu callback; Form to edit the metadata of a template
+ * 
+ * @param array $template[optional]
+ * @return array
+ *  Drupal form array
+ */
 function inventory_template_edit_metadata($form, &$form_state, $template=false) {
   if(!$template)
     drupal_set_title(t('Create new template'));
@@ -198,6 +218,10 @@ function inventory_template_edit_metadata($form, &$form_state, $template=false) 
   return $form;
 }
 
+/**
+ * Submit handler for inventory_template_edit_metadata
+ * @return 
+ */
 function inventory_template_edit_metadata_submit($form, &$form_state) {
   $template = $form_state['template'];
   
@@ -220,6 +244,13 @@ function inventory_template_edit_metadata_submit($form, &$form_state) {
   $form_state['redirect'] = 'inventorytemplate/'.$template['id'].'/edit';
 }
 
+/**
+ * Form to edit the entries of a template
+ * 
+ * @param array $template
+ * @return array
+ *  Drupal form array
+ */
 function inventory_template_edit_entries($form, &$form_state, $template) {
   global $user;
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
@@ -289,7 +320,7 @@ function inventory_template_edit_entries($form, &$form_state, $template) {
 
 /**
  * Menu callback; Saving the entries of a template using AJAX
- *  (wrapper around inventory_template_save_entries)
+ *  (wrapper around inventory_template_save_entries_submit)
  * 
  * @return JSON Object with the following keys:
  *  - "entries": Mapping of ids which changed after saving. Array of arrays with the following keys:
@@ -301,7 +332,7 @@ function inventory_template_edit_entries($form, &$form_state, $template) {
  *  - "result": Whether the request was successfull or not (1|0)
  *  - "group_count": The new group count (Determining which group ID to use for the next new inventory group)
  *  - "message": The message to be displayed to the user
- * @param object $template_id
+ * @param int $template_id
  */
 function inventory_template_save_entries($template_id) {
   $form_state = form_state_defaults();
@@ -314,9 +345,9 @@ function inventory_template_save_entries($template_id) {
 /**
  * Submit handler for the inventory_template_edit_entries form
  * 
- * @param object $form
- * @param object $form_state
- * @param object $template_id[optional]
+ * @param array $form
+ * @param array $form_state
+ * @param int $template_id[optional]
  */
 function inventory_template_edit_entries_submit($form, &$form_state, $template_id=false) {
   if(!$template_id)
@@ -333,6 +364,13 @@ function inventory_template_edit_entries_submit($form, &$form_state, $template_i
   $form_state['redirect'] = 'inventorytemplate/'.$template_id.'/edit';
 }
 
+/**
+ * Private helper function to get the data (inventories and their columns and rows)
+ * of a template
+ * 
+ * @param int $template_id
+ * @return array
+ */
 function _inventory_template_data($template_id) {
   $invArr = array();
   $query = db_select('inventory_template_inventory', 'ti')
@@ -345,7 +383,7 @@ function _inventory_template_data($template_id) {
   
   foreach($inventories as $inventory) {
     $inventory_id = $inventory->id;
-    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_template_inventory_entry', 'inventory_template_inventory_id', false, false, false, false);
+    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_template_inventory_entry', 'inventory_template_inventory_id', false, false, false, false, false);
     $invArr[$inventory_id]['invDesc'] = array(
       'id' => $inventory->it_id,
       'name' => $inventory->it_name
@@ -357,9 +395,9 @@ function _inventory_template_data($template_id) {
 /**
  * Menu callback; Deletes a template inventory entry (called over AJAX)
  * 
- * @param object $template_id
- * @param object $entry_id
- * @param object $plain[optional]
+ * @param int $template_id
+ * @param int $entry_id
+ * @param boolean $plain[optional]
  * @return 
  */
 function inventory_template_delete_entry($template_id, $entry_id, $plain=false) {
@@ -384,9 +422,9 @@ function inventory_template_delete_entry($template_id, $entry_id, $plain=false) 
  * Menu callback; Returns the HTML for a new inventory group (called over AJAX)
  * 
  * @return 
- * @param object $template_id
- * @param object $inventory_type_id
- * @param object $key
+ * @param int $template_id
+ * @param int $inventory_type_id
+ * @param mixed $key
  */
 function inventory_template_add_inventory_group($template_id, $inventory_type_id, $key) {
   $desc = db_select('inventory_type', 'it')
@@ -399,6 +437,12 @@ function inventory_template_add_inventory_group($template_id, $inventory_type_id
   ));
 }
 
+/**
+ * Private helper function to load the metadata of a template
+ * 
+ * @param int $inventory_template_id
+ * @return array
+ */
 function _inventory_template_load($inventory_template_id) {
   return db_select('inventory_template', 'it')
     ->condition('id', $inventory_template_id)
@@ -410,7 +454,7 @@ function _inventory_template_load($inventory_template_id) {
 /**
  * Private helper function to update the modification date of a template
  * 
- * @param object $template_id
+ * @param int $template_id
  * @return 
  */
 function _inventory_template_update_modify_time($template_id) {

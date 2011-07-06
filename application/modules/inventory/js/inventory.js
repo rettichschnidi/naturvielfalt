@@ -9,9 +9,11 @@ var inventory = {
   add: false,
   message: false,
   form: false,
+  template: false,
   loading: false,
   count: 1,
-  group_count: 1
+  group_count: 1,
+  templates: false
   
 };
 
@@ -20,10 +22,10 @@ var inventory = {
   inventory.init = function() {
     inventory.initCustomFields();
     inventory.initAdditionalFields();
+    inventory.initTemplates();
     inventory.container = $('#inventories');
     if(!inventory.container.size())
       return;
-    
     inventory.form = inventory.container.parents('form');
     inventory.id = inventory.form.find('#invId').val();
     inventory.form.find('#edit-actions').append(inventory.form.find('.form-item-add'));
@@ -40,15 +42,18 @@ var inventory = {
     inventory.container.find('.invTable').each(function() {
       inventory.initializeTable($(this));
     });
+    inventory.template = inventory.form.find('#template');
+    if(inventory.template.size())
+      inventory.template.click(inventory.templatesDialog);
   }
   
   inventory.setMessage = function(message, type, time) {
     if(inventory.messageTimer)
       window.clearTimeout(inventory.messageTimer);
-    inventory.message.html(message).attr('class', 'messages').addClass(type).stop().fadeIn();
+    inventory.message.html(message).attr('class', 'messages').addClass(type).stop().slideDown('fast');
     if(time)
       inventory.messageTimer = window.setTimeout(function() {
-        inventory.message.fadeOut();
+        inventory.message.slideUp('fast');
       }, time);
   }
   
@@ -238,6 +243,91 @@ var inventory = {
     });
   }
   
+  inventory.templatesDialog = function(e) {
+    e.preventDefault();
+    inventory.showLoading();
+    var data = {ajax: 1};
+    $.post(
+      $(this).attr('href'),
+      data,
+      inventory.templatesCreateDialog,
+      'json'
+    );
+  }
+  
+  inventory.templatesCreateDialog = function(data) {
+    if(data && data.form) {
+      var dialog = $('<div title="'+inventory.template.html()+'" />');
+      dialog.append($(data.form));
+      dialog.dialog({
+        modal: true,
+        resizable: false,
+        closeOnEscape: false,
+        closeText: '',
+        close: function(event, ui) {
+          $(this).remove();
+        },
+        width: 700
+      });
+      inventory.initTemplates();
+      dialog.find('#edit-actions a').click(function(e) {
+        e.preventDefault();
+        $(this).parents('.ui-dialog-content').dialog('close');
+      });
+      dialog.find('form').submit(function(e) {
+        var data = $(this).serializeArray();
+        inventory.form.find('.inventory').each(function() {
+          data.push({name: $(this).attr('name'), value: $(this).val()});
+        });
+        inventory.form.find('.organism_id').each(function() {
+          data.push({name: 'organisms[]', value: $(this).val()});
+        });
+        $.post(
+          $(this).attr('action')+'?ajax=1',
+          data,
+          function(data) {
+            inventory.hideLoading();
+            if(!data.result && data.form) {
+              inventory.templatesCreateDialog(data);
+              return;
+            }
+            if(!data)
+              return;
+            inventory.group_count = data.group_count;
+            for(var id in data.new_inventories) {
+              inv = $(data.new_inventories[id]);
+              inventory.container.append(inv);
+              inventory.initializeTable(inv);
+              inventory.form.find('p.empty').fadeOut();
+            }
+            for(var inventory_id in data.new_entries) {
+              var entries = data.new_entries[inventory_id];
+              var table = inventory.container.find('#invTable'+inventory_id);
+              var lastrow = table.find('tr:last');
+              for(var i=0; i<entries.length; i++) {
+                if(!entries[i])
+                  continue;
+                var entry = $(entries[i]);
+                entry.insertBefore(lastrow);
+                inventory.initializeRow(entry);
+              }
+              inventory.initializeSortable(table);
+            }
+            inventory.updateRowPositions();
+            inventory.resetOddEven();
+            if(data.message)
+              inventory.setMessage(data.message, data.result == 1 ? 'status' : 'error', 15000);
+          },
+          'json'
+        );
+        inventory.showLoading();
+        $(this).parents('.ui-dialog-content').dialog('close');
+        return false;
+      });
+    }
+    inventory.hideLoading();
+  }
+  
   inventory.customFieldsDialog = function(e) {
     e.preventDefault();
     inventory.showLoading();
@@ -348,7 +438,6 @@ var inventory = {
     table.find('tr th:last-child').html('');
     
     table.find('thead tr').prepend('<th>&nbsp;</th>');
-    table.find('tbody tr').prepend('<td><a class="handler"><img src="'+Drupal.settings.basePath+'modules/inventory/images/sort.gif" /></a></td>');
     inventory.initializeSortable(table);
     
     var prev = table.prev();
@@ -383,13 +472,8 @@ var inventory = {
   }
   
   inventory.initializeRow = function(row) {
-    row.find('input, select').focus(function(e) {
-      if($(this).offset().top+$(this).outerHeight()-$('html').scrollTop() > $(window).height()-100) {
-        console.log('scroll');
-        $('html').scrollTop($(this).offset().top+$(this).outerHeight()-$(window).height()+100);
-      }
-      
-    });
+    if(!row.find('.handler').size())
+      row.prepend('<td><a class="handler"><img src="'+Drupal.settings.basePath+'modules/inventory/images/sort.gif" /></a></td>');
     
     row.find('td.image a').lightBox();
     
@@ -443,7 +527,7 @@ var inventory = {
               //change visual indicator to notfound and hide menu again
               actualElement.removeClass("searching");
               actualElement.addClass("notfound");
-              $('.ui-widget-content').css("display","none");
+              $('.ui-autocomplete').hide();
             } else {
               // Remove search symbol
               actualElement.removeClass("searching");
@@ -519,6 +603,78 @@ var inventory = {
           .appendTo(ul);
       };
     })
+  }
+  
+  // Templates form
+  inventory.initTemplates = function() {
+    inventory.templates = $('#inventory-templates-form');
+    if(!inventory.templates.size())
+      return;
+    inventory.templates.find('input[name="source"]').change(function() {
+      inventory.templates.find('input.id, input.term').val('');
+    });
+    inventory.templates.find('input.term').autocomplete({
+      minLength : 0,
+      autoFocus : true,
+      source : function(request, response) {
+        //new search, so we change the indicator to searching
+        this.element.removeClass('notfound');
+        this.element.addClass('searching');
+        var source = inventory.templates.find('input[name="source"]:checked').val();
+        $.getJSON(
+          inventory.templates.attr('action').replace('templates', source+'_autocomplete'),
+          {term : this.element.val()},
+          function(data){
+            if(data.length==0){
+              //change visual indicator to notfound and hide menu again
+              inventory.templates.find('input.term').removeClass("searching");
+              inventory.templates.find('input.term').addClass("notfound");
+              $('.ui-autocomplete').hide();
+            } else {
+              // Remove search symbol
+              inventory.templates.find('input.term').removeClass("searching");
+              response(data);
+            }
+          }
+        );
+      },
+      focus: function(event, ui) {
+        return false;
+      },
+      select: function(event, ui) {
+        $(this).val(ui.item.name);
+        inventory.templates.find('input.id').val(ui.item.id);
+        return false;
+      }
+    })
+    .keyup(function() {
+      //monitor field and remove class 'notfound' if its length is less than 2
+      if($(this).val().length < 2) {
+        $(this).removeClass('notfound');
+        inventory.templates.find('input.id').val('');
+      }
+    })
+    .data('autocomplete')._renderItem = function(ul, item) {
+      var term = this.term.replace(/[aou]/, function(m) {
+        // to find with term 'wasser' -> 'wasser' and 'gewasesser'
+        var hash = {
+          'a' : '(ä|a)',
+          'o' : '(ö|o)',
+          'u' : '(ä|u)'
+        };
+        return hash[m];
+      });
+      // highlighting of matches
+      var name = item.name;
+      if($.trim(term)) {
+        var re = new RegExp($.trim(term), 'ig');
+        name = name.replace(re, '<span class="ui-state-highlight">$&</span>');
+      }
+      return $('<li></li>')
+        .data('item.autocomplete', item)
+        .append('<a>' + (item.owner ? '<em class="owner">'+item.owner+'</em> ' : '') + name + '</a>')
+        .appendTo(ul);
+    };
   }
   
   // Additional fields form

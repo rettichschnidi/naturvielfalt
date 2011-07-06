@@ -1,11 +1,24 @@
-@CHARSET "UTF-8";
-
 td.delete div {
-	height: 16px;
-	width: 16px;
-	background-color: inherit;
-	background-image: url(../images/delete.gif);
-	background-repeat: no-repeat;
-	background-position: center;
-	cursor: pointer;
+  height: 16px;
+  width: 16px;
+  background-color: inherit;
+  background-image: url(../images/delete.gif);
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+#right_overview_other th {
+  white-space:nowrap;
+}
+
+#right_overview_other td:first-child {
+  width:100%;
+}
+
+#right_overview_other tbody th {
+  padding-top:20px;
+  font-size:1.2em;
+  background-color:#fff;
+  border-bottom-width:2px;
 }

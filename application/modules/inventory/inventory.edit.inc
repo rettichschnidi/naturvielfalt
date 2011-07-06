@@ -121,6 +121,47 @@ function inventory_edit($head_inventory_id) {
   return $render_array;
 }
 
+function inventory_delete($form, &$form_state, $head_inventory_id) {
+  $form_state['head_inventory_id'] = $head_inventory_id;
+  
+  $name = inventory_title($head_inventory_id);
+  return confirm_form(
+    $form,
+    t('Delete %name?', array('%name' => $name)),
+    'inventory/' . $head_inventory_id,
+    t('Are you sure you want to delete the inventory %name? All contained entries and files will also be deleted.', array('%name' => $name)),
+    t('Delete'),  t('Cancel')
+  );
+}
+
+function inventory_delete_submit($form, &$form_state) {
+  $head_inventory_id = $form_state['head_inventory_id'];
+  
+  $files = db_select('head_inventory_file_managed', 'hifm')
+    ->condition('head_inventory_id', $head_inventory_id)
+    ->fields('hifm', array('file_id'))
+    ->execute()
+    ->fetchCol(0);
+  foreach($files as $fid)
+    file_delete(file_load($fid));
+  db_delete('head_inventory_file_managed')
+    ->condition('head_inventory_id', $head_inventory_id)
+    ->execute();
+  db_delete('head_inventory_export_type')
+    ->condition('head_inventory_id', $head_inventory_id)
+    ->execute();
+  db_delete('inventory_type_attribute')
+    ->condition('head_inventory_id', $head_inventory_id)
+    ->execute();
+  db_delete('head_inventory')
+    ->condition('id', $head_inventory_id)
+    ->execute();
+  
+  drupal_set_message(t('The inventory was successfully deleted'));
+  $form_state['redirect'] = 'inventory';
+}
+
+
 /**
  * Form to edit the entries of an inventory
  * 
@@ -133,6 +174,11 @@ function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 100));
   
   $form_state['head_inventory_id'] = $head_inventory_id;
+  
+  $form['templates'] = array(
+    '#markup' => l(t('Add organisms from template'), 'inventory/'.$head_inventory_id.'/templates', array('attributes' => array('id' => 'template'))),
+    '#weight' => -1
+  );
   
   $form['inventories_start'] = array(
     '#markup' => '<div id="inventories">',
@@ -153,7 +199,8 @@ function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
   
   if($weight == 2)
     $form['empty'] = array(
-      '#markup' => '<p class="empty">'.t('There are no inventory groups available yet. Add a new one by using the select box in the lower left.</p>')
+      '#markup' => '<p class="empty">'.t('There are no inventory groups available yet. Add a new one by using the select box in the lower left.</p>'),
+      '#weight' => $weight++
     );
   
   $form['head_inventory_id'] = array(
@@ -164,11 +211,10 @@ function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
     )
   );
   
-  $result = db_query("
-    SELECT it.id, it.name
-    FROM inventory_type it
-    ORDER BY it.id desc;"
-  );
+  $result = db_select('inventory_type', 'it')
+    ->fields('it', array('id', 'name'))
+    ->orderBy('it.id', 'DESC')
+    ->execute();
   
   $options = array('' => t('- Please choose -'));
   foreach($result as $record)
@@ -228,7 +274,7 @@ function inventory_save_entries($head_inventory_id) {
 function inventory_edit_entries_submit($form, &$form_state, $head_inventory_id=false) {
   if(!$head_inventory_id)
     $head_inventory_id = $form_state['head_inventory_id'];
-  $ajax = $_GET['ajax'];
+  $ajax = $_REQUEST['ajax'];
   
   _inventory_update_modify_time($head_inventory_id);
   
@@ -240,6 +286,19 @@ function inventory_edit_entries_submit($form, &$form_state, $head_inventory_id=f
   $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
 }
 
+/**
+ * Private helper function to store entries of an inventory
+ *  (used by inventory_edit_entries_submit and inventory_template_edit_entries_submit
+ * 
+ * @return 
+ * @param object $id
+ * @param object $input
+ * @param object $inventory_table[optional]
+ * @param object $inventory_relation[optional]
+ * @param object $entry_table[optional]
+ * @param object $entry_relation[optional]
+ * @param object $additional[optional]
+ */
 function _inventory_save_entries($id, $input, $inventory_table='inventory', $inventory_relation='head_inventory_id', $entry_table='inventory_entry', $entry_relation='inventory_id', $additional=true) {
   $new_entries = array();
   $new_inventories = array();
@@ -346,6 +405,8 @@ function inventory_organism_autocomplete() {
   $terms = explode(' ', trim($term));
   $terms = array_filter($terms);
   
+  $limit = strlen(trim($term)) > 3 ? 100000 : 20;
+  
   $fauna = ($invId == 16 ? false : true);
   
   $organisms = array();
@@ -353,7 +414,7 @@ function inventory_organism_autocomplete() {
   $where = array();
   $params = array(
     ':inventoryTypeId' => $invId,
-    ':limit' => 15
+    ':limit' => $limit
   );
   $i = 1;
   $query = 
@@ -377,12 +438,8 @@ function inventory_organism_autocomplete() {
     $values = array('f.name_de', 'f.name', 'f.official_flora_orfganism_id ref_id');
     $columns = array('"Gattung"', '"Art"');
   }
-  foreach($terms as $t) {
-    array_push($where, 'f.name_de LIKE :term'.$i);
-    $params[':term'.$i++] = '%'.$t.'%';
-    array_push($where, 'f.name_de LIKE :term'.$i);
-    $params[':term'.$i++] = '%'.ucfirst($t).'%';
-  }
+  array_push($where, 'f.name_de ILIKE :term'.$i);
+  $params[':term'.$i++] = '%'.trim($term).'%';
   $combined = array();
   foreach($columns as $k => $column) {
     if(!array_key_exists($k, $terms))
@@ -402,40 +459,6 @@ function inventory_organism_autocomplete() {
       implode(', ', $values)), $query)
     , $params
   );
-  if($result->rowCount() < 15) {
-    $result = $result->fetchAll();
-    $found = array();
-    foreach($result as $record)
-      array_push($found, $record->id);
-    if($found)
-      $query = str_replace('({where})', '({where}) AND NOT f.id IN ('.implode(', ', $found).')', $query);
-    $params = array(
-      ':inventoryTypeId' => $invId,
-      ':limit' => 15-count($found)
-    );
-    $i = 1;
-    $where = array();
-    foreach($terms as $t) {
-      foreach($columns as $column) {
-        array_push($where, 'f.'.$column.' LIKE :term'.$i);
-        array_push($where, 'f.'.$column.' LIKE :term'.($i+1));
-      }
-      $params[':term'.$i++] = $t.'%';
-      $params[':term'.$i++] = ucfirst($t).'%';
-    }
-    $result2 = db_query(
-      str_replace(array(
-        '{where}',
-        '{table}',
-        '{values}'), array(
-        implode(' OR ', $where),
-        $table,
-        implode(', ', $values)), $query)
-      , $params
-    );
-    foreach($result2 as $record)
-      array_push($result, $record);
-  }
   foreach($result as $record){
     $organism = array(
       'id' => $record->o_id,
@@ -484,7 +507,7 @@ function inventory_organism_autocomplete() {
  * @return form to edit the additional attributes of an inventory entry
  */
 function inventory_edit_entry($head_inventory_id, $inventory_type_id, $entry_id) {
-  $ajax = $_GET['ajax'];
+  $ajax = $_REQUEST['ajax'];
   
   if(substr($entry_id, 0, 4) == 'new_')
     $entry_id = false;
@@ -513,7 +536,7 @@ function inventory_edit_entry($head_inventory_id, $inventory_type_id, $entry_id)
  */
 function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inventory_type_id, $entry_id) {
   _include_js_and_css();
-  $ajax = $_GET['ajax'];
+  $ajax = $_REQUEST['ajax'];
   $form_state['head_inventory_id'] = $head_inventory_id;
   $form_state['inventory_type_id'] = $inventory_type_id;
   $form_state['entry_id'] = $entry_id;
@@ -699,18 +722,7 @@ function inventory_add_inventory_group($head_inventory_id, $inventory_type_id, $
  * @return Form to edit the custom fields of an inventory
  */
 function inventory_custom_fields($head_inventory_id, $inventory_type_id) {
-  $ajax = $_GET['ajax'];
-  
-  $form = drupal_get_form('inventory_custom_fields_form', $head_inventory_id, $inventory_type_id);
-  
-  if($ajax) {
-    if(array_key_exists('#result', $form))
-      return drupal_json_output($form['#result']);
-    return drupal_json_output(array(
-      'form' => drupal_render($form)
-    ));
-  }
-  return $form;
+  return _inventory_form_ajax_wrapper('inventory_custom_fields_form', $head_inventory_id, $inventory_type_id);
 }
 
 /**
@@ -723,7 +735,7 @@ function inventory_custom_fields($head_inventory_id, $inventory_type_id) {
  * @return Form to edit the custom fields of an inventory
  */
 function inventory_custom_fields_form($form, &$form_state, $head_inventory_id, $inventory_type_id) {
-  $ajax = $_GET['ajax'];
+  $ajax = $_REQUEST['ajax'];
   if($ajax && $form_state['storage']['result']) {
     $form['#result'] = $form_state['storage']['result'];
     return $form;
@@ -852,6 +864,502 @@ function inventory_custom_fields_form_submit($form, &$form_state) {
 }
 
 /**
+ * Menu callback; Form for adding organisms from a template
+ *  (wrapper around inventory_templates_form)
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ */
+function inventory_templates($head_inventory_id) {
+  return _inventory_form_ajax_wrapper('inventory_templates_form', $head_inventory_id);
+}
+
+/**
+ * Form for adding organisms from a template
+ * 
+ * @return 
+ * @param object $form
+ * @param object $form_state
+ * @param object $head_inventory_id
+ */
+function inventory_templates_form($form, &$form_state, $head_inventory_id) {
+  $ajax = $_REQUEST['ajax'];
+  if($ajax && $form_state['storage']['result']) {
+    $form['#result'] = $form_state['storage']['result'];
+    return $form;
+  }
+  drupal_set_title(t('Add organisms from template'));
+  
+  _include_js_and_css();
+  $form_state['head_inventory_id'] = $head_inventory_id;
+  $form_state['ajax'] = $ajax;
+  
+  $result = db_select('inventory_type', 'it')
+    ->fields('it', array('id', 'name'))
+    ->orderBy('it.id', 'DESC')
+    ->execute();
+  
+  $options = array();
+  foreach($result as $record)
+    $options[$record->id] = $record->name;
+  $form['types'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Organism types to include'),
+    '#options' => $options,
+    '#required' => true,
+    '#default_value' => array_keys($options)
+  );
+  
+  $form['source'] = array(
+    '#type' => 'radios',
+    '#title' => t('Source'),
+    '#required' => true,
+    '#options' => array(
+      'template' => t('Template'),
+      'inventory' => t('Own and shared inventory'),
+      'public_inventory' => t('Public inventory'),
+      'habitat' => t('Habitat')
+    ),
+    '#default_value' => 'template'
+  );
+  
+  $form['term'] = array(
+    '#type' => 'textfield',
+    '#attributes' => array(
+      'class' => array('term')
+    )
+  );
+  
+  $form['id'] = array(
+    '#type' => 'hidden',
+    '#required' => true,
+    '#attributes' => array(
+      'class' => array('id')
+    )
+  );
+  
+  $form['new_groups'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Create new inventory groups')
+  );
+  
+  $form['head_inventory_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $head_inventory_id
+  );
+  
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save')
+  );
+  $form['actions']['cancel'] = array(
+    '#markup' => l(t('Cancel'), 'inventory/'.$head_inventory_id.'/edit')
+  );
+  
+  return $form;
+}
+
+/**
+ * Submit handler of inventory_templates_form
+ * 
+ * @return 
+ * @param object $form
+ * @param object $form_state
+ */
+function inventory_templates_form_submit($form, &$form_state) {
+  global $user;
+  $ajax = $form_state['ajax'];
+  $head_inventory_id = $form_state['head_inventory_id'];
+  
+  $inventories = is_array($_REQUEST['inventories']) ? $_REQUEST['inventories'] : array();
+  $organisms = is_array($_REQUEST['organisms']) ? $_REQUEST['organisms'] : array();
+  $new_groups = $form_state['values']['new_groups'];
+  $id = $form_state['values']['id'];
+  $source = $form_state['values']['source'];
+  $types = $form_state['values']['types'];
+  
+  if($ajax) {
+    $group_count = count($inventories);
+    $visible_fields = _inventory_visible_fields();
+    $new_entries = array();
+    $new_inventories = array();
+  } else {
+    $iid = db_select('inventory', 'i')->orderBy('i.id', 'DESC')->range(0, 1)->fields('i', array('id'))->execute()->fetchColumn(0)+1;
+    $eid = db_select('inventory_entry', 'e')->orderBy('e.id', 'DESC')->range(0, 1)->fields('e', array('id'))->execute()->fetchColumn(0)+1;
+  }
+  $seen = $new_groups ? array() : $organisms;
+  $data = call_user_func_array('_inventory_template_data_'.$source, array($id, $types));
+  $i = 1;
+  foreach($data as $group) {
+    $columns = $group['invDesc']['cols'];
+    $identifier = false;
+    $date = false;
+    if($columns) {
+      foreach($columns as $column) {
+        if($column['name'] == 'Identifiziert von')
+          $identifier = $column['id'];
+        if($column['name'] == 'Funddatum')
+          $date = $column['id'];
+      }
+    }
+    $entries = array();
+    foreach($group as $k => $entry) {
+      if(is_string($k) && $k == 'invDesc')
+        continue;
+      if(in_array($entry['orgId'], $seen))
+        continue;
+      if($identifier)
+        $entry['col_'.$identifier] = $user->name;
+      if($date)
+        $entry['col_'.$date] = date('j.m.Y', time());
+      array_push($seen, $entry['orgId']);
+      array_push($entries, $entry);
+    }
+    if(!$entries)
+      continue;
+    if($new_groups || !in_array($group['invDesc']['id'], $inventories)) {
+      if($ajax)
+        array_push($new_inventories, drupal_render(_inventory_group_factory($head_inventory_id, $group['invDesc'], 'new_'.$group_count++, $visible_fields, $entries)));
+      else {
+        $inventory_id = $iid++;
+        $record = array(
+          'id' => $inventory_id,
+          'head_inventory_id' => $head_inventory_id,
+          'inventory_type_id' => $group['invDesc']['id']
+        );
+        db_insert('inventory')->fields($record)->execute();
+      }
+    } else {
+      $inventory_id = array_search($group['invDesc']['id'], $inventories);
+      if($ajax) {
+        if(!array_key_exists($inventory_id, $new_entries))
+          $new_entries[$inventory_id] = array();
+        foreach($entries as $entry) {
+          $row = _inventory_render_row(_inventory_row_factory($head_inventory_id, $entry, $i++, $inventory_id, $group['invDesc']['id'], $columns, $visible_fields));
+          array_push($new_entries[$inventory_id], $row);
+        }
+      }
+    }
+    if(!$ajax) {
+      foreach($entries as $entry) {
+        $record = array(
+          'id' => $eid++,
+          'organism_id' => $entry['orgId'],
+          'inventory_id' => $inventory_id
+        );
+        db_insert('inventory_entry')->fields($record)->execute();
+      }
+    }
+  }
+  
+  $success = count($new_entries) || count($new_inventories);
+  switch($source) {
+    case 'habitat':
+      $source_name = t('habitat'); break;
+    case 'template':
+      $source_name = t('template'); break;
+    default:
+      $source_name = t('inventory');
+  }
+  $message = $success ? t('Organisms successfully imported into the inventory') : t('The selected !source did not contain any organisms', array('!source' => $source_name));
+  if($ajax) {
+    $form_state['storage']['result'] = array(
+      'result' => $success ? '1' : '0',
+      'message' => $message,
+      'group_count' => $group_count,
+      'new_inventories' => $new_inventories,
+      'new_entries' => $new_entries,
+      'inventories' => $inventories
+    );
+    $form_state['rebuild'] = true;
+    return;
+  }
+  drupal_set_message($message);
+  $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
+}
+
+/**
+ * Renders a row of a table
+ *  (copied from includes/theme.inc[theme_table])
+ * 
+ * @return 
+ * @param object $row
+ */
+function _inventory_render_row($row) {
+  // Check if we're dealing with a simple or complex row
+  if (isset($row['data'])) {
+    foreach ($row as $key => $value) {
+      if ($key == 'data') {
+        $cells = $value;
+      }
+      else {
+        $attributes[$key] = $value;
+      }
+    }
+  }
+  else {
+    $cells = $row;
+  }
+  if (count($cells)) {
+    // Add odd/even class
+    if (empty($row['no_striping'])) {
+      $class = $flip[$class];
+      $attributes['class'][] = $class;
+    }
+
+    // Build row
+    $output = ' <tr' . drupal_attributes($attributes) . '>';
+    $i = 0;
+    foreach ($cells as $cell) {
+      $cell = tablesort_cell($cell, $header, $ts, $i++);
+      $output .= _theme_table_cell($cell);
+    }
+    $output .= " </tr>\n";
+  }
+  return $output;
+}
+
+/**
+ * Private helper function to get the organism data for templates
+ *  (used by inventory_templates_form_submit)
+ * 
+ * @return 
+ * @param object $template_id
+ * @param object $types
+ */
+function _inventory_template_data_template($template_id, $types) {
+  $query = db_select('inventory_template_inventory', 'i')
+    ->condition('i.inventory_template_id', $template_id)
+    ->condition('i.inventory_type_id', $types, 'IN');
+  $query->fields('i', array('id', 'inventory_type_id'));
+  $inventories = $query->execute();
+  
+  $data = array();
+  foreach($inventories as $inventory) {
+    $data[$inventory->id] = inventory_type_entries($inventory->id, 'inventory_template_inventory_entry', 'inventory_template_inventory_id', false, true, false, false, false, false);
+    $data[$inventory->id]['invDesc'] = inventory_column_description(false, $inventory->inventory_type_id);
+  }
+  return $data;
+}
+
+/**
+ * Private helper function to get the organism data for inventories
+ *  (used by inventory_templates_form_submit)
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ * @param object $types
+ */
+function _inventory_template_data_inventory($head_inventory_id, $types) {
+  $query = db_select('inventory', 'i')
+    ->condition('i.head_inventory_id', $head_inventory_id)
+    ->condition('i.inventory_type_id', $types, 'IN');
+  $query->fields('i', array('id', 'inventory_type_id'));
+  $inventories = $query->execute();
+  
+  $protected = inventory_redlisted_entries($head_inventory_id);
+  $data = array();
+  foreach($inventories as $inventory) {
+    $data[$inventory->id] = inventory_type_entries($inventory->id, 'inventory_entry', 'inventory_id', false, true, false, $protected, false, false);
+    $data[$inventory->id]['invDesc'] = inventory_column_description(false, $inventory->inventory_type_id);
+  }
+  return $data;
+}
+
+/**
+ * Private helper function to get the organism data for public inventories
+ *  (used by inventory_templates_form_submit)
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ * @param object $types
+ */
+function _inventory_template_data_public_inventory($head_inventory_id, $types) {
+  $query = db_select('inventory', 'i')
+    ->condition('i.head_inventory_id', $head_inventory_id)
+    ->condition('i.inventory_type_id', $types, 'IN');
+  $query->fields('i', array('id', 'inventory_type_id'));
+  $inventories = $query->execute();
+  
+  $protected = inventory_redlisted_entries($head_inventory_id);
+  $data = array();
+  foreach($inventories as $inventory) {
+    $data[$inventory->id] = inventory_type_entries($inventory->id, 'inventory_entry', 'inventory_id', false, true, false, $protected, false, false);
+    $data[$inventory->id]['invDesc'] = inventory_column_description(false, $inventory->inventory_type_id);
+  }
+  return $data;
+}
+
+/**
+ * Private helper function to get the organism data for habitats
+ *  (used by inventory_templates_form_submit)
+ * 
+ * @return 
+ * @param object $habitat_id
+ * @param object $types
+ */
+function _inventory_template_data_habitat($habitat_id, $types) {
+  $sql = 'SELECT 
+      oh.organism_id, 
+      fauna.name_de faunanamede, 
+      fauna.genus, 
+      fauna.species, 
+      fauna.sub_species, 
+      fauna.family, 
+      o.organism_type, 
+      flora.name_de floranamede, 
+      flora.name floraname, 
+      flora."Familie" florafamilie, 
+      flora."Gattung" floragattung, 
+      flora."Art" floraart, 
+      flora."Rang" florarang, 
+      flora."NameUnterart" floraunterart,
+      i.inventory_type_id
+    FROM organism_habitat oh
+    INNER JOIN inventory_type_organism i ON i.organism_id = oh.organism_id
+    INNER JOIN organism o ON oh.organism_id = o.id
+    LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+    LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+    WHERE oh.habitat_id = :id AND i.inventory_type_id IN ('.implode(', ', $types).')
+    ORDER BY oh.organism_id;';
+  $organisms = db_query($sql, array(':id' => $habitat_id));
+  
+  $data = array();
+  foreach($organisms as $organism) {
+    if(!array_key_exists($organism->inventory_type_id, $data))
+      $data[$organism->inventory_type_id] = array(
+        'invDesc' => inventory_column_description(false, $organism->inventory_type_id)
+      );
+    array_push($data[$organism->inventory_type_id], inventory_entry_factory($organism, true));
+  }
+  return $data;
+}
+
+/**
+ * Menu callback; AJAX autocomplete for selecting templates
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ */
+function inventory_template_autocomplete($head_inventory_id) {
+  global $user;
+  $term = '%'.trim($_GET['term']).'%';
+  
+  $query = db_select('inventory_template', 't', array('fetch' => PDO::FETCH_ASSOC))
+    ->condition(db_or()
+      ->condition('t.owner_id', $user->uid)
+      ->condition('t.public', '1'))
+    ->condition('t.name', $term, 'ILIKE')
+    ->fields('t', array('id', 'name'))
+    ->range(0, 40);
+  $query->join('users', 'u', 'u.uid = t.owner_id');
+  $query->addField('u', 'name', 'owner');
+  
+  $results = $query->execute()->fetchAll();
+  
+  return drupal_json_output($results);
+}
+
+/**
+ * Menu callback; AJAX autocomplete for selecting inventories
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ */
+function inventory_inventory_autocomplete($head_inventory_id) {
+  global $user;
+  $term = '%'.trim($_GET['term']).'%';
+  
+  $query = db_select('head_inventory', 'i', array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('i', array('id', 'name'))
+    ->condition('i.name', $term, 'ILIKE')
+    ->range(0, 40);
+  $query->join('users', 'u', 'u.uid = i.owner_id');
+  $query->leftJoin('sgroup_inventory', 'sgi', 'sgi.hiid = i.id');
+  $query->leftJoin('sgroup_users', 'sgu', 'sgu.sgid = sgi.sgid AND sgu.uid = '.$user->uid);
+  $query->condition(db_or()
+    ->condition('sgi.write', '1')
+    ->condition('i.owner_id', $user->uid));
+  $query->addField('u', 'name', 'owner');
+  $query->groupBy('i.id, i.name, u.name');
+  
+  $results = $query->execute()->fetchAll();
+  
+  return drupal_json_output($results);
+}
+
+/**
+ * Menu callback; AJAX autocomplete for selecting public inventories
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ */
+function inventory_public_inventory_autocomplete($head_inventory_id) {
+  global $user;
+  $term = '%'.trim($_GET['term']).'%';
+  
+  $query = db_select('head_inventory', 'i', array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('i', array('id', 'name'))
+    ->condition('i.name', $term, 'ILIKE')
+    ->condition('i.shared', '1')
+    ->range(0, 40);
+  $query->join('users', 'u', 'u.uid = i.owner_id');
+  $query->addField('u', 'name', 'owner');
+  
+  $results = $query->execute()->fetchAll();
+  
+  return drupal_json_output($results);
+}
+
+/**
+ * Menu callback; AJAX autocomplete for selecting habitats
+ * 
+ * @return 
+ * @param object $head_inventory_id
+ */
+function inventory_habitat_autocomplete($head_inventory_id) {
+  global $user;
+  $term = '%'.trim($_GET['term']).'%';
+  
+  $query = db_select('habitat', 'h', array('fetch' => PDO::FETCH_ASSOC))
+    ->condition(db_or()
+      ->condition('h.label', $term, 'ILIKE')
+      ->condition('h.name_de', $term, 'ILIKE')
+      ->condition('h.name_lt', $term, 'ILIKE'))
+    ->fields('h', array('id'))
+    ->range(0, 40);
+  $query->addField('h', 'name_de', 'name');
+  $query->join('area_habitat', 'ah', 'ah.habitat_id = h.id');
+  $query->join('head_inventory', 'i', 'i.area_id = ah.area_id');
+  $query->condition('i.id', $head_inventory_id);
+  return drupal_json_output($query->execute()->fetchAll());
+}
+
+/**
+ * Private helper function to render a form where the form may
+ * define the result by setting the '#result' attribute in the $form
+ * array
+ * 
+ * @return 
+ * @param object $form_id
+ */
+function _inventory_form_ajax_wrapper($form_id) {
+  $ajax = $_REQUEST['ajax'];
+  
+  $form = call_user_func_array('drupal_get_form', func_get_args());
+  
+  if($ajax) {
+    if(array_key_exists('#result', $form))
+      return drupal_json_output($form['#result']);
+    return drupal_json_output(array(
+      'form' => drupal_render($form)
+    ));
+  }
+  return $form;
+}
+
+/**
  * Menu callback; Gets the image of an organism (if available)
  * 
  * @param object $organism_id
@@ -893,15 +1401,20 @@ function _inventory_update_modify_time($head_inventory_id) {
 /**
  * Private helper function to create an inventory group
  * 
- * @param object $id
+ * @param int $id
  *  The ID of the inventory
- * @param object $desc
+ * @param array $desc
  *  Description of the columns
- * @param object $inventory_id
+ * @param int $inventory_id
  *  The ID of the inventory group
- * @param object $entries[optional]
+ * @param array $entries[optional]
  *  The rows to display
- * @return 
+ * @param int $weight[optional]
+ *  The weight for the resulting output
+ * @param boolean $additional[optional]
+ *  Whether to add additional fields or not
+ * @return array
+ *  Drupal render array
  */
 function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $entries=array(), $weight=1, $additional=true) {
   global $user;
@@ -982,25 +1495,28 @@ function _inventory_group_factory($id, $desc, $inventory_id, $visible_fields, $e
 }
 
 /**
- * Private helper function to create a row of a inventory group table
+ * Private helper function to create a row of an inventory group table
  * 
- * @param object $id
+ * @param int $id
  *  The ID of the inventory
- * @param object $data
+ * @param array $data
  *  The data of the inventory entry
- * @param object $i
+ * @param int $i
  *  Incrementing integer to identify the row
- * @param object $key
+ * @param mixed $key
  *  The key for this entry (usually the ID of the inventory group)
- * @param object $inventory_type_id
+ * @param int $inventory_type_id
  *  The ID of the inventory type
- * @param object $columns
+ * @param array $columns
  *  The description of the columns
- * @param object $visible_fields
+ * @param array $visible_fields
  *  The fields to display in the row
- * @return 
+ * @param boolean $additional[optional]
+ *  Whether to add additional fields or not
+ * @return array
+ *  A row array to be used in a table
  */
-function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $columns, $visible_fields, $additional) {
+function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $columns, $visible_fields, $additional=true) {
   $row = array();
   if(function_exists('gallery_images'))
     $row[] = inventory_get_entry_image($data['orgId'], true);
@@ -1073,18 +1589,20 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
   $tableHeader[] = t('Typ');
   $tableHeader[] = t('Size');
   $tableHeader[] = t('Date');
+  $tableHeader[] = '&nbsp;';
 
   $result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid, fm.filesize, hifm.description
             FROM head_inventory_file_managed hifm, file_managed fm
             WHERE fm.fid = hifm.file_id
             AND hifm.head_inventory_id = :id;', array(':id' => $head_inventory_id)
   );
-
+  $img_delete = '<img src="'.url(drupal_get_path('module', 'inventory').'/images/can_delete.png').'" alt="'.t('Delete').'" />';
+  
   if(!empty($result)) {
     foreach ($result as $record) {
       $description = $record->description;
       $filename = l($record->filename, 'sites/default/files/swissmon/inventory/'.$head_inventory_id.'/'.$record->filename);
-      $filemime = '<img class="file-icon" alt="" title="' . $record->filemime . '" src="../../modules/inventory/images/' . getInventoryIconMap($record->filemime) . '.png" />';
+      $filemime = '<img class="file-icon" alt="" title="' . $record->filemime . '" src="../../modules/inventory/images/' . inventory_icon_map($record->filemime) . '.png" />';
       $filesize = ($record->filesize / 1000)." KB";
       $timestamp = date('d.m.Y',$record->timestamp);
       $row = array();
@@ -1093,6 +1611,7 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
       $row[] = $filemime;
       $row[] = $filesize;
       $row[] = $timestamp;
+      $row[] = l($img_delete, 'inventory/'.$head_inventory_id.'/delete_file/'.$record->fid, array('html' => true));
       $rows[] = $row;
     }
 
@@ -1138,11 +1657,6 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
  * @return form to edit inventory rights
  */
 function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
-  $tableHeader[] = t('Groups I am Member of');
-  $tableHeader[] = t('Full Access');
-  $tableHeader[] = t('Show Protected Organisms');
-  $tableHeader[] = t('Read Access');
-  
   global $user;
   
   // Shared flag
@@ -1159,132 +1673,114 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
         '#title' => t('Allow read access to all users'),
         '#value' => $shared,
         '#checked' => $shared,
-        '#name' => 'share',
       );
     }
   }
   
-  // Groups active user is member of
-  $result = db_query('
-    SELECT * FROM sgroup sg
-    LEFT JOIN sgroup_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid 
-    LEFT JOIN sgroup_users sgu ON sgu.sgid = sg.sgid
-    WHERE sgu.uid = :uid',
-    array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
-  );
-  $cnt = 0;
-  if(!empty($result)) {
-    foreach ($result as $record) {
-      // Saveing something to the form_state makes it accessible in the submit function.
-      // We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-      $form_state['storage']['sg_id'.$cnt] = $record->sgid;
-      
-      $name = $record->sgroup_name;
-      $read = false;
-      $write = false;
-      $show_red = false;
-      $form_state['storage']['set_db'.$cnt] = false;
-      if($record->read == '1') $read = true;
-      elseif ($record->read == '0') $read = false;
-      else $form_state['storage']['set_db'.$cnt] = true;  // no db entry yet -> set in submit fct
-      if($record->write == '1') $write = true;
-      if($record->show_red == '1') $show_red = true;
-      $form['read'.$cnt] = array(
-        '#type' => 'checkbox',
-        '#value' => $read,
-        '#checked' => $read,
-        '#name' => 'read'.$cnt,
-      );
-      $form['write'.$cnt] = array(
-        '#type' => 'checkbox',
-        '#value' => $write,
-        '#checked' => $write,
-        '#name' => 'write'.$cnt,
-      );
-      $form['show_red'.$cnt] = array(
-        '#type' => 'checkbox',
-        '#value' => $show_red,
-        '#checked' => $show_red,
-        '#name' => 'show_red'.$cnt,
-      );
-      $row = array();
-      $row[] = $name;
-      $row[] = array('data' => drupal_render($form['write'.$cnt]));
-      $row[] = array('data' => drupal_render($form['show_red'.$cnt]));
-      $row[] = array('data' => drupal_render($form['read'.$cnt]));
-      $rows[] = $row;
-      $cnt++;
-    }
-
-    if(isset($rows)) {
-      $form['right_overview_my'] = array(
-        '#theme' => 'table', 
-        '#header' => $tableHeader,
-        '#rows' => $rows,
-      );
-    }
+  // Export selection
+  $options = inventory_export_types();
+  if($options) {
+    $export = db_select('head_inventory_export_type', 'hiet')
+      ->condition('hiet.head_inventory_id', $head_inventory_id)
+      ->fields('hiet', array('export_type_id'))
+      ->execute()
+      ->fetchCol(0);
+    $form['export'] = array (
+      '#type' => 'checkboxes', 
+      '#title' => t('Allow export to the following platforms'),
+      '#options' => $options,
+      '#default_value' => $export,
+    );
   }
   
-  // Additional groups, active user is no member of but wants to allow group-members to access inventory 
-  
-  // if you change anything in this table dont forger to change it also in invenrory/js/sgroups.js -> sgroupAutocompleteSelect()
-  $tableHeader = NULL;
-  $tableHeader[] = t('Other Groups');
+  $tableHeader[] = '&nbsp;';
+  $tableHeader[] = t('Full Access');
   $tableHeader[] = t('Show Protected Organisms');
   $tableHeader[] = t('Read Access');
   $tableHeader[] = t('Remove');
-  $rows = array();
-  
+ 
   $result = db_query('
-    SELECT * FROM sgroup_inventory sgi
-    LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
-    WHERE sgi.hiid = :hiid
-    AND sg.sgid NOT IN (SELECT sguEx.sgid FROM sgroup_users sguEx WHERE sguEx.uid = :uid);',
+    SELECT DISTINCT sg.sgid, sg.sgroup_name, sgi.read, sgi.write, sgi.show_red, 
+      (EXISTS (SELECT sgu.uid FROM sgroup_users sgu WHERE sgu.sgid = sg.sgid AND sgu.uid = :uid)) member 
+    FROM sgroup sg
+      LEFT JOIN sgroup_inventory sgi ON sgi.sgid = sg.sgid AND sgi.hiid = :hiid 
+      LEFT JOIN sgroup_users sgu ON sgu.sgid = sg.sgid
+    WHERE
+      EXISTS (SELECT sgu.uid FROM sgroup_users sgu WHERE sgu.sgid = sg.sgid AND sgu.uid = :uid) OR
+      sgi.read IS NOT NULL',
     array(':uid' => $user->uid, ':hiid' => $head_inventory_id)
   );
-  if(!empty($result)) {
-    foreach ($result as $record) {
-      // Saving something to the form_state makes it accessible in the submit function.
-      // We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-      $form_state['storage']['sg_id'.$cnt] = $record->sgid;
-      
-      $name = $record->sgroup_name;
-      $read = false;
-      $show_red = false;
-      $form_state['storage']['set_db'.$cnt] = false;
-      if($record->read == '1') $read = true;
-      elseif ($record->read == '0') $read = false;
-      if($record->show_red == '1') $show_red = true;
-      $form['read'.$cnt] = array(
-        '#type' => 'checkbox',
-        '#value' => $read,
-        '#checked' => $read,
-        '#name' => 'read'.$cnt,
-      );
-      $form['show_red'.$cnt] = array(
-        '#type' => 'checkbox',
-        '#value' => $show_red,
-        '#checked' => $show_red,
-        '#name' => 'show_red'.$cnt,
-      );
-      $row = array();
-      $row[] = $name;
-      $row[] = array('data' => drupal_render($form['show_red'.$cnt]));
-      $row[] = array('data' => drupal_render($form['read'.$cnt]));
-      $row[] = array('data' => '<div id="'.$head_inventory_id.'/'.$form_state['storage']['sg_id'.$cnt].'"></div>', 'class' => 'delete');
+  
+  $rows = array();
+  $additional = array();
+  $additional[] = array(
+    array(
+      'data' => t('Other Groups'),
+      'colspan' => 5,
+      'header' => true
+    )
+  );
+  
+  $cnt = 0;
+  foreach ($result as $record) {
+    // Saveing something to the form_state makes it accessible in the submit function.
+    // We do this to make sure the sgid is taken from the url which has passed security checkpoints.
+    $form_state['storage']['sg_id'.$cnt] = $record->sgid;
+    
+    $name = $record->sgroup_name;
+    $read = $record->read;
+    $write = $record->write;
+    $show_red = $record->show_red;
+    $form_state['storage']['set_db'.$cnt] = false;
+    if($record->read === null) 
+      $form_state['storage']['set_db'.$cnt] = true;  // no db entry yet -> set in submit fct
+    $form['read'.$cnt] = array(
+      '#type' => 'checkbox',
+      '#value' => $read,
+      '#checked' => $read,
+      '#name' => 'read'.$cnt,
+    );
+    $form['write'.$cnt] = array(
+      '#type' => 'checkbox',
+      '#value' => $write,
+      '#checked' => $write,
+      '#name' => 'write'.$cnt,
+    );
+    $form['show_red'.$cnt] = array(
+      '#type' => 'checkbox',
+      '#value' => $show_red,
+      '#checked' => $show_red,
+      '#name' => 'show_red'.$cnt,
+    );
+    $row = array();
+    $row[] = $name;
+    $row[] = array('data' => drupal_render($form['write'.$cnt]));
+    $row[] = array('data' => drupal_render($form['read'.$cnt]));
+    $row[] = array('data' => drupal_render($form['show_red'.$cnt]));
+    if($record->member) {
+      $row[] = '&nbsp;';
       $rows[] = $row;
-      $cnt++;
+    } else {
+      $row[] = array('data' => '<div id="'.$head_inventory_id.'/'.$form_state['storage']['sg_id'.$cnt].'"></div>', 'class' => 'delete');
+      $additional[] = $row;
     }
-
-    if(isset($rows)) {
-      $form['right_overview_other'] = array(
-        '#theme' => 'table', 
-        '#header' => $tableHeader,
-        '#rows' => $rows,
-        '#attributes' => array('id' => 'right_overview_other'),
-      );
-    }
+    $cnt++;
   }
+  
+  if(!empty($rows))
+    array_unshift($rows, array(array(
+      'data' => t('Groups I am Member of'),
+      'colspan' => 5,
+      'header' => true
+    )));
+  array_splice($rows, count($rows), 0, $additional);
+  
+  $form['right_overview_other'] = array(
+    '#theme' => 'table', 
+    '#header' => $tableHeader,
+    '#rows' => $rows,
+    '#attributes' => array('id' => 'right_overview_other'),
+  );
   
   $form['sgrouptext'] = array(
     '#title' => t('Search through existing Groups'),
@@ -1384,6 +1880,42 @@ function inventory_update_file($form, &$form_state){
   return $form_state['redirect'] = 'inventory/'.$head_inventory_id.'/edit';
 }
 
+function inventory_delete_file($form, &$form_state, $head_inventory_id, $file_id) {
+  $query = db_select('head_inventory_file_managed', 'hifm')
+    ->condition('hifm.head_inventory_id', $head_inventory_id)
+    ->condition('hifm.file_id', $file_id)
+    ->fields('hifm', array('description'));
+  $query->join('file_managed', 'fm', 'fm.fid = hifm.file_id');
+  $query->fields('fm', array('filename'));
+  $file = $query->execute()->fetch();
+  
+  $form_state['head_inventory_id'] = $head_inventory_id;
+  $form_state['file_id'] = $file_id;
+  
+  $name = $file->description ? $file->description : $file->filename;
+  return confirm_form(
+    $form,
+    t('Delete %name?', array('%name' => $name)),
+    'inventory/' . $head_inventory_id . '/edit',
+    t('Are you sure you want to delete the file %name?', array('%name' => $name)),
+    t('Delete'),  t('Cancel')
+  );
+}
+
+function inventory_delete_file_submit($form, &$form_state) {
+  $head_inventory_id = $form_state['head_inventory_id'];
+  $file_id = $form_state['file_id'];
+  
+  $file = file_load($file_id);
+  file_delete($file);
+  db_delete('head_inventory_file_managed')
+    ->condition('head_inventory_id', $head_inventory_id)
+    ->condition('file_id', $file_id)
+    ->execute();
+  drupal_set_message(t('The file was successfully deleted'));
+  $form_state['redirect'] = 'inventory/' . $head_inventory_id . '/edit';
+}
+
 /**
  * Submit function to modify inventory permissions
  * 
@@ -1392,29 +1924,28 @@ function inventory_update_file($form, &$form_state){
  * @return Instruction to redirect on initial page
  */
 function inventory_update_rights($form, &$form_state) {
-  
   $head_inventory_id = $form_state['storage']['hi_id'];
-  $shared = '0';
-  if(isset($form_state['input']['share'])) $shared = '1';
   $check = false;
   
+  $seen = array();
   // update own group permissions
   for($i=0; $i<$form_state['storage']['sg_cnt']; $i++) {
     $sgid = $form_state['storage']['sg_id'.$i];
+    if(in_array($sgid, $seen))
+      continue;
+    array_push($seen, $sgid);
     $read = '0';
     $write = '0';
     $show_red = '0';
-    if(isset($form_state['input']['read'.$i]) && $form_state['input']['read'.$i]) $read = '1';
-    if(isset($form_state['input']['show_red'.$i]) && $form_state['input']['show_red'.$i]) {
-      $show_red = '1';
-      $read = '1';
-    }
     if(isset($form_state['input']['write'.$i]) && $form_state['input']['write'.$i]) {
       $write = '1';
       $show_red = '1';
       $read = '1';
-    }
-    if($write == '1') $read = '1'; // write access implies also read access
+    } else if(isset($form_state['input']['show_red'.$i]) && $form_state['input']['show_red'.$i]) {
+      $show_red = '1';
+      $read = '1';
+    } else if(isset($form_state['input']['read'.$i]) && $form_state['input']['read'.$i])
+      $read = '1';
     if($form_state['storage']['set_db'.$i]) {
       // entry missing in db
       $nid = db_insert('sgroup_inventory')->fields (
@@ -1452,10 +1983,30 @@ function inventory_update_rights($form, &$form_state) {
   $i = 0;
   while(isset($form_state['input']['sgroup_id_'.$i])) {
     $sgid = $form_state['input']['sgroup_id_'.$i];
+    if(in_array($sgid, $seen)) {
+      $i++;
+      continue;
+    }
+    array_push($seen, $sgid);
     $read = '0';
+    $write = '0';
     $show_red = '0';
+    if(isset($form_state['input']['write_new_'.$i]) && $form_state['input']['write_new_'.$i]) {
+      $write = '1';
+      $show_red = '1';
+      $read = '1';
+    } else if(isset($form_state['input']['show_red_new_'.$i]) && $form_state['input']['show_red_new_'.$i]) {
+      $show_red = '1';
+      $read = '1';
+    } else if(isset($form_state['input']['read_new_'.$i]) && $form_state['input']['read_new_'.$i])
+      $read = '1';
     if(isset($form_state['input']['read_new_'.$i]) && $form_state['input']['read_new_'.$i]) $read = '1';
     if(isset($form_state['input']['show_red_new_'.$i]) && $form_state['input']['show_red_new_'.$i]) {
+      $show_red = '1';
+      $read = '1';
+    }
+    if(isset($form_state['input']['write'.$i]) && $form_state['input']['write'.$i]) {
+      $write = '1';
       $show_red = '1';
       $read = '1';
     }
@@ -1464,7 +2015,7 @@ function inventory_update_rights($form, &$form_state) {
           'sgid' => $sgid,
           'hiid' => $head_inventory_id,
           'read' => $read,
-          'write' => '0',
+          'write' => $write,
           'show_red' => $show_red,
         )
       )
@@ -1474,12 +2025,16 @@ function inventory_update_rights($form, &$form_state) {
   }
   
   // update shared flag
+  $shared = $form_state['input']['share'] ? '1' : '0';
   $affectedRows = db_update('head_inventory')
     ->condition('id', $head_inventory_id)
     ->fields(
       array('shared' => $shared)
     )
     ->execute();
+  
+  // update export type
+  inventory_save_export_type($head_inventory_id, $form_state['input']['export']);
   
   if($affectedRows == 1) $check = true;
   else $check = false;

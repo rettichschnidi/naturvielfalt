@@ -12,28 +12,21 @@ body.page-inventory-edit {
   z-index:5;
 }
 
-#inventory-edit-entries #edit-actions,
-#inventory-template-edit-entries #edit-actions {
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  padding:0;
-  z-index:5;
-  margin:0;/*
-  border-top:1px solid #F7F6EF;
-  background-color:#FBFAF7;
-  box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);*/
-}
-
 #inventory-edit-entries #edit-actions #message,
 #inventory-template-edit-entries #edit-actions #message {
-  position:relative;
+  z-index:5;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
   background-repeat:no-repeat;
   overflow:hidden;
-  margin:20px 0 0 0;
+  margin:0;
+  border-width:0 0 1px 0;
+  border-radius:0;
+  -moz-border-radius:0;
+  -webkit-border-radius:0;
+  -o-border-radius:0;
   box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
@@ -41,9 +34,12 @@ body.page-inventory-edit {
 
 #inventory-edit-entries #edit-actions .form-item-add,
 #inventory-template-edit-entries #edit-actions .form-item-add {
-  float:left;
-  padding:20px 2em;
-  margin:0 20px 0 0;
+  z-index:5;
+  position:fixed;
+  bottom:0;
+  left:0;
+  margin:0;
+  padding:20px;
   border-top:1px solid #F7F6EF;
   border-right:1px solid #F7F6EF;
   background-color:#FBFAF7;
@@ -58,8 +54,10 @@ body.page-inventory-edit {
 
 #inventory-edit-entries #edit-actions input,
 #inventory-template-edit-entries #edit-actions input {
-  float:right;
-  margin:20px 2em 0 20px;
+  z-index:5;
+  position:fixed;
+  bottom:20px;
+  right:10px;
   font-size:2em;
   background-color:#659560;
   color:#fff;
@@ -73,6 +71,16 @@ body.page-inventory-edit {
   box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+#inventory-edit-entries #template {
+  float:right;
+  padding-right:20px;
+  background:url("../images/templates.gif") transparent no-repeat right center;
+  height:16px;
+  line-height:16px;
+  position:relative;
+  top:-15px;
 }
 
 #inventories input {
@@ -158,6 +166,37 @@ body.page-inventory-edit {
   margin-top:-25px;
 }
 
+#inventory-templates-form .form-item-source,
+#inventory-templates-form .form-item-term,
+#inventory-templates-form .form-item-new-groups {
+  clear:left;
+  width:40%;
+  float:left;
+}
+
+#inventory-templates-form .form-item-source .form-item-source {
+  float:none;
+  width:auto;
+}
+
+#inventory-templates-form .form-item-term input {
+  width:90%;
+}
+
+#inventory-templates-form .form-item-types {
+  width:58%;
+  float:right;
+}
+
+#inventory-templates-form #edit-actions {
+  clear:both;
+}
+
+#inventory-templates-form .form-item-types .form-type-checkbox {
+  width:48%;
+  float:left;
+}
+
 .ui-menu-item {
   border-top:1px solid #F6F5ED;
 }
@@ -184,6 +223,11 @@ body.page-inventory-edit {
   margin-left:1em;
 }
 
+.ui-menu-item .ui-corner-all em.owner {
+  float:right;
+}
+
+.term,
 .organism {
   background-image:url('../images/search.gif');
   background-repeat:no-repeat;

@@ -167,6 +167,58 @@ function inventory_schema() {
     ),
     'primary key' => array('id'),
   );
+  $schema['export_type'] = array(
+    'description' => 'The available types of export',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for an export type',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The name of the export type',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE
+      )
+    ),
+    'primary key' => array('id'),
+  );
+  $schema['head_inventory_export_type'] = array(
+    'description' => 'The export types allowed for the inventory',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for an allowed export type of an inventory',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'head_inventory_id' => array(
+        'description' => 'The ID of the related inventory',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'export_type_id' => array(
+        'description' => 'The ID of the related export type',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      )
+    ),
+    'foreign keys' => array(
+      'head_inventory_id' => array(
+        'table' => 'head_inventory',
+        'columns' => array('head_inventory_id' => 'id'),
+      ),
+      'export_type_id' => array(
+        'table' => 'export_type',
+        'columns' => array('export_type_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
   return $schema;
 }
 ?>

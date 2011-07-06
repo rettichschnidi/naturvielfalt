@@ -5,6 +5,9 @@
 
 module_load_include('inc', 'inventory');
 
+// Load gallery integration
+module_load_include('inc', 'inventory', 'inventory.gallery');
+
 /**
  * Implements hook_menu()
  *
@@ -65,6 +68,18 @@ function inventory_menu() {
     'file' => 'inventory.show.inc',
     'weight' => 3,
   );
+  $items['inventory/%/delete_inventory'] = array(
+    'title' => t('Delete'),
+    'description' => t('Delete an existing inventory'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inventory_delete', 1),
+    'access callback' => 'inventory_delete_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.edit.inc',
+    'weight' => 11,
+  );
   $items['inventory/edit'] = array(
     'title' => t('Edit Inventories'),
     'description' => t('Show all inventories to edit'),
@@ -83,6 +98,8 @@ function inventory_menu() {
     'file' => 'inventory.new.inc',
     'weight' => 0,
   );
+  
+  // Inventory edit form
   $items['inventory/%/edit'] = array(
     'title' => t('Edit'),
     'description' => t('Edit an existing inventory'),
@@ -95,8 +112,16 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
     'weight' => 10,
   );
-  
-  // AJAX
+  $items['inventory/%/delete_file/%'] = array(
+    'title' => t('Delete file'),
+    'description' => t('Delete an existing file'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inventory_delete_file', 1, 3),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'file' => 'inventory.edit.inc',
+    'weight' => 10,
+  );
   $items['inventory/%/delete_entry/%'] = array(
     'title' => t('Delete an entry'),
     'description' => t('Deletes an entry of an existing inventory'),
@@ -142,6 +167,56 @@ function inventory_menu() {
     'description' => t('Add and edit custom fields of an inventory'),
     'page callback' => 'inventory_custom_fields',
     'page arguments' => array(1, 3),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/templates'] = array(
+    'title' => t('Add organisms from template'),
+    'description' => t('Import organisms from a template, inventory or habitat'),
+    'page callback' => 'inventory_templates',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/template_autocomplete'] = array(
+    'title' => 'Template Autocomplete',
+    'description' => 'JSON Template Autocomplete',
+    'page callback' => 'inventory_template_autocomplete',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/inventory_autocomplete'] = array(
+    'title' => 'Inventory Autocomplete',
+    'description' => 'JSON Inventory Autocomplete',
+    'page callback' => 'inventory_inventory_autocomplete',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/public_inventory_autocomplete'] = array(
+    'title' => 'Public Inventory Autocomplete',
+    'description' => 'JSON Public Inventory Autocomplete',
+    'page callback' => 'inventory_public_inventory_autocomplete',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/habitat_autocomplete'] = array(
+    'title' => 'Habitat Autocomplete',
+    'description' => 'JSON Habitat Autocomplete',
+    'page callback' => 'inventory_habitat_autocomplete',
+    'page arguments' => array(1),
     'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
@@ -212,6 +287,8 @@ function inventory_menu() {
     'file' => 'inventory.edit.template.inc',
     'weight' => 2
   );
+  
+  // Inventory template edit form
   $items['inventorytemplate/%/edit'] = array(
     'title' => t('Edit'),
     'description' => t('Edit an existing inventory template'),
@@ -230,8 +307,6 @@ function inventory_menu() {
     'access arguments' => array(1),
     'file' => 'inventory.edit.template.inc'
   );
-  
-  // AJAX
   $items['inventorytemplate/%/delete_entry/%'] = array(
     'title' => t('Delete an entry'),
     'description' => t('Deletes an entry of an existing inventory template'),
@@ -263,48 +338,6 @@ function inventory_menu() {
     'file' => 'inventory.edit.template.inc',
   );
   return $items;
-}
-
-/**
- * Implements hook of gallery module to activate the gallery
- * functionality for inventory_entries
- * 
- * @return array
- */
-function inventory_gallery_types() {
-  return array(
-    'inventory_entry' => array(
-      'edit_gallery' => 'inventory_gallery_access_callback',
-      'image_caption' => 'inventory_gallery_image_caption',
-      'manage_title' => 'inventory_gallery_manage_title',
-      'manage_description' => 'inventory_gallery_manage_description',
-      'subtypes' => array(
-        'presentation' => t('Presentational images')
-      ),
-      'condition' => 'inventory_gallery_condition'
-    ),
-    'head_inventory' => array(
-      'edit_gallery' => 'gallery_owner_access_callback',
-      'image_caption' => 'inventory_head_gallery_image_caption',
-      'manage_title' => 'inventory_head_gallery_manage_title',
-      'manage_description' => 'inventory_head_gallery_manage_description'
-    )
-  );
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to filter out 
- * images of red listed organisms.
- * 
- * @return string SQL condition 
- *  which excludes images bound to inventory entries of red listed organisms
- *  based on the permissions of the current user
- */
-function inventory_gallery_condition() {
-  $protected = inventory_redlisted_entries();
-  if(!$protected)
-    return false;
-  return '(gi.item_type != \'inventory_entry\' OR NOT gi.item_id IN ('.implode(', ', $protected).'))';
 }
 
 /**
@@ -377,188 +410,6 @@ function inventory_user_has_redlist_permission($head_inventory_id) {
 }
 
 /**
- * Helper function referenced in inventory_gallery_types to define the edit access
- * for images added to intentory entries
- * 
- * @param string $type
- *   The type of object to be accessed
- * @param string $id
- *   The id of object to be accessed
- * @param array $image
- *   The image to be accessed.
- * @return boolean
- */
-function inventory_gallery_access_callback($type, $id, $image=false) {
-  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
-  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
-  $query->fields('i', array('head_inventory_id'));
-  $result = $query->execute()->fetch();
-  return inventory_edit_access($result->head_inventory_id);
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to define the caption
- * for images added to intentory entries
- * 
- * @param string $id
- *   The id of object
- * @return string
- */
-function inventory_gallery_image_caption($id) {
-  $result = db_select('inventory_entry', 'ie')
-    ->condition('id', $id)
-    ->fields('ie', array('organism_id'))
-    ->execute()
-    ->fetch();
-  return l(organism_gallery_image_caption($result->organism_id), 'organism/'.$result->organism_id, array('html' => true));
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to define the title of 
- * the manage images page for intentory entries
- * 
- * @param string $id
- *   The id of object
- * @return string
- */
-function inventory_gallery_manage_title($id) {
-  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
-  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
-  $query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
-  $query->fields('ie', array('organism_id'));
-  $query->fields('h', array('id', 'area_id'));
-  $result = $query->execute()->fetch();
-  return t('Images of the organism !title<br>observed in the inventory !context', array(
-    '!title' => '<em>'.organism_gallery_image_caption($result->organism_id).'</em>',
-    '!context' => '<em>'.inventory_head_gallery_caption($result->id).'</em>'
-  ));
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to define the description of 
- * the manage images page for intentory entries
- * 
- * @param string $id
- *   The id of object
- * @return string
- */
-function inventory_gallery_manage_description($id) {
-  return t('Add and edit images of the specified organism taken in the area of this inventory.');
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to define the caption
- * for images added to head intentories
- * 
- * @return string
- */
-function inventory_head_gallery_image_caption($id) {
-  $result = db_select('head_inventory', 'h')
-    ->condition('id', $id)
-    ->fields('h', array('id', 'name', 'area_id'))
-    ->execute()
-    ->fetch();
-  return l($result->name, 'inventory/'.$result->id).' ['.l(area_gallery_caption($result->area_id), 'area/'.$result->area_id, array('html' => true)).']';
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to define the title of 
- * the manage images page for head intentories
- * 
- * @param string $id
- *   The id of object
- * @return string
- */
-function inventory_head_gallery_manage_title($id) {
-  return t('Images of the inventory !title', array('!title' => '<em>'.inventory_head_gallery_caption($id).'</em>'));
-}
-
-/**
- * Helper function creating a generic caption for a head inventory
- * 
- * @param string $id
- *   The id of object
- * @return string
- */
-function inventory_head_gallery_caption($id) {
-  $result = db_select('head_inventory', 'h')
-    ->condition('id', $id)
-    ->fields('h', array('id', 'name', 'area_id'))
-    ->execute()
-    ->fetch();
-  return $result->name.' ['.area_gallery_caption($result->area_id).']';
-}
-
-/**
- * Helper function referenced in inventory_gallery_types to define the description of 
- * the manage images page for head intentories
- * 
- * @param string $id
- *   The id of object
- * @return string
- */
-function inventory_head_gallery_manage_description($id) {
-  return t('Add and edit generic images of this inventory\'s area which are not related to any organism.');
-}
-
-/**
- * Implements hook of gallery module to define the conversion of a inventory entry
- * to the related organism and head inventory to the related area
- * 
- * @return array
- */
-function inventory_gallery_type_conversions() {
-  return array(
-    array(
-      array(
-        'source' => 'inventory_entry',
-        'source_key' => 'organism_id',
-        'target' => 'organism',
-        'target_key' => 'id',
-        'subtype' => 'presentation'
-      )
-    ),
-    array(
-      array(
-        'source' => 'head_inventory',
-        'source_key' => 'area_id',
-        'target' => 'area',
-        'target_key' => 'id',
-      )
-    ),
-    array(
-      array(
-        'source' => 'inventory_entry',
-        'source_key' => 'inventory_id',
-        'target' => 'inventory',
-        'target_key' => 'id',
-      ),
-      array(
-        'source' => 'inventory',
-        'source_key' => 'head_inventory_id',
-        'target' => 'head_inventory',
-        'target_key' => 'id',
-      )
-    ),
-  );
-}
-
-/**
- * Implements hook of gallery module to define the different category
- * conditions available for inventory types
- * 
- * @return array
- */
-function inventory_gallery_category_conditions() {
-  return array(
-    'inventory_entry' => array(
-      'name' => t('Inventory entries'),
-      'type' => 'inventory_entry'
-    ),
-  );
-}
-
-/**
  * Default permission function
  * 
  */
@@ -574,31 +425,29 @@ function inventory_permission() {
 }
 
 /**
- * Implements hook_image_default_styles().
+ * Check delete access to inventory
+ * 
+ * @param int $head_inventory_id
+ * @return true if access ok, false if not
  */
-function inventory_image_default_styles() {
-  $styles = array();
-
-  $styles['inventory_mini'] = array(
-    'effects' => array(
-      array(
-        'name' => 'image_scale_and_crop',
-        'data' => array('width' => 40, 'height' => 40),
-        'weight' => 0,
-      ),
-    )
-  );
-  return $styles;
+function inventory_delete_access($head_inventory_id) {
+  global $user;
+  $owner = db_select('head_inventory', 'hi')
+    ->condition('hi.id', $head_inventory_id)
+    ->condition('hi.owner_id', $user->uid)
+    ->fields('hi', array('id'))
+    ->execute();
+  return $owner->rowCount() > 0;
 }
 
 /**
- * Check write acces to inventory
+ * Check write access to inventory
  * 
- * @param unknown_type $inventoryId
+ * @param int $head_inventory_id
  * @return true if access ok, false if not
  */
-function inventory_edit_access($inventoryId) {
-  if(!user_access('access inventories') || !$inventoryId)
+function inventory_edit_access($head_inventory_id) {
+  if(!user_access('access inventories') || !$head_inventory_id)
     return false;
   // check if this user has write access to the inventory
   global $user;
@@ -609,10 +458,10 @@ function inventory_edit_access($inventoryId) {
     WHERE (sgu.uid = :uid AND sgi.hiid = :hiid AND sgi.write = 1)
     OR (hi.owner_id = :uid AND hi.id = :hiid)
     ORDER BY write DESC LIMIT 1',
-    array(':hiid' => $inventoryId, ':uid' => $user->uid)
+    array(':hiid' => $head_inventory_id, ':uid' => $user->uid)
   );
   $write = $adminRecords->fetch();
-  return $write && $write->id == $inventoryId;
+  return $write && $write->id == $head_inventory_id;
 }
 
 /**
@@ -664,22 +513,53 @@ function inventory_access($inventoryId) {
 /**
  * ...
  * Enter description here ...
- * @param unknown_type $head_inventory_id
+ * @param int $head_inventory_id
  * @return name of actual inventory to be modified
  */
 function inventory_title($head_inventory_id) {
-  $inventory_title = '-';
+  return db_select('head_inventory', 'hi')
+    ->condition('hi.id', $head_inventory_id)
+    ->fields('hi', array('name'))
+    ->execute()
+    ->fetchField(0);
+}
 
-  $inventories = db_query('
-    SELECT name
-    FROM head_inventory
-    WHERE id = :id;', array(':id' => $head_inventory_id));
-  foreach($inventories as $inventory) {
-    if(!is_null($inventory->name))
-      $inventory_title =  $inventory->name;
-  }
+function inventory_export_types() {
+  return db_select('export_type', 'et')
+    ->fields('et', array('id', 'name'))
+    ->orderBy('et.name')
+    ->execute()
+    ->fetchAllKeyed(0, 1);
+}
 
-  return $inventory_title;
+function inventory_save_export_type($head_inventory_id, $export) {
+  $seen = array();
+  if(is_array($export))
+    foreach($export as $export_type_id) {
+      if(!$export_type_id)
+        continue;
+      $id = db_select('head_inventory_export_type', 'hiet')
+        ->condition('hiet.head_inventory_id', $head_inventory_id)
+        ->condition('hiet.export_type_id', $export_type_id)
+        ->fields('hiet', array('id'))
+        ->execute()
+        ->fetch();
+      if($id) {
+        array_push($seen, $id->id);
+        continue;
+      }
+      $entry = array(
+        'head_inventory_id' => $head_inventory_id,
+        'export_type_id' => $export_type_id
+      );
+      drupal_write_record('head_inventory_export_type', $entry);
+      array_push($seen, $entry['id']);
+    }
+  $delete = db_delete('head_inventory_export_type')
+    ->condition('head_inventory_id', $head_inventory_id);
+  if($seen)
+    $delete->condition('id', $seen, 'NOT IN');
+  $delete->execute();
 }
 
 /**
@@ -761,7 +641,7 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
   
   foreach($inventories as $inventory) {
     $inventory_id = $inventory->id;
-    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_entry', 'inventory_id', $order, $entry_id, $protected);
+    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_entry', 'inventory_id', $order, $extended, $entry_id, $protected);
     
     // Get the inventory column description
     $invArr[$inventory_id]["invDesc"] = inventory_column_description($inventory_id, false, $custom_fields, $head_inventory_id);
@@ -770,11 +650,11 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
   return $invArr;
 }
 
-function inventory_type_entries($id, $table, $relation, $order=false, $entry_id=false, $protected=false, $columns=true) {
+function inventory_type_entries($id, $table, $relation, $order=false, $extended=false, $entry_id=false, $protected=false, $columns=true, $include_id=true) {
   if(!$order)
     $order = 'e.position, e.id ASC';
   $sql = 'SELECT 
-      e.id, 
+      '.($include_id ? 'e.id,' : '').'
       e.organism_id, 
       fauna.name_de faunanamede, 
       fauna.genus, 
@@ -804,36 +684,14 @@ function inventory_type_entries($id, $table, $relation, $order=false, $entry_id=
   $entries = array();
   
   foreach($inventoryEntries as $inventoryEntry) {
-    $inventoryEntryId = $inventoryEntry->id;
-    $entry = array(
-      'id' => $inventoryEntryId,
-      'orgId' => $inventoryEntry->organism_id
-    );
-    
-    if($inventoryEntry->organism_type==1){
-      // organism_type 1 is Fauna
-      $entry["label"] = $inventoryEntry->faunanamede;
-      if($extended)
-        $entry["label_latin"] = trim($inventoryEntry->family." ".$inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
-      else
-        $entry["label_latin"] = trim($inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
-      $entry["label_family"] = $inventoryEntry->family;
-    } else {
-      // organism_type 2 is Flora
-      $entry["label"] = $inventoryEntry->floranamede;
-      if($extended)
-        $entry["label_latin"] = trim($inventoryEntry->floraname);
-      else
-        $entry["label_latin"] = trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart);
-      $entry["label_family"] = $inventoryEntry->florafamilie;
-    }
+    $entry = inventory_entry_factory($inventoryEntry, $extended);
     
     if($columns) {
       // Get inventory columns
       $columns = db_query('
         SELECT * 
         FROM inventory_type_attribute_inventory_entry 
-        WHERE inventory_entry_id = :id', array(':id' => $inventoryEntryId));
+        WHERE inventory_entry_id = :id', array(':id' => $inventoryEntry->id));
       foreach ($columns as $column) {
         // Dropdown
         $colVal = "";
@@ -848,6 +706,32 @@ function inventory_type_entries($id, $table, $relation, $order=false, $entry_id=
     $entries[] = $entry;
   }
   return $entries;
+}
+
+function inventory_entry_factory($inventoryEntry, $extended) {
+  $entry = array(
+    'id' => $inventoryEntry->id,
+    'orgId' => $inventoryEntry->organism_id
+  );
+  
+  if($inventoryEntry->organism_type==1){
+    // organism_type 1 is Fauna
+    $entry["label"] = $inventoryEntry->faunanamede;
+    if($extended)
+      $entry["label_latin"] = trim($inventoryEntry->family." ".$inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
+    else
+      $entry["label_latin"] = trim($inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
+    $entry["label_family"] = $inventoryEntry->family;
+  } else {
+    // organism_type 2 is Flora
+    $entry["label"] = $inventoryEntry->floranamede;
+    if($extended)
+      $entry["label_latin"] = trim($inventoryEntry->floraname);
+    else
+      $entry["label_latin"] = trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart);
+    $entry["label_family"] = $inventoryEntry->florafamilie;
+  }
+  return $entry;
 }
 
 function inventory_icon_map($filemime) {

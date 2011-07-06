@@ -86,12 +86,17 @@ function inventory_new_form($form, &$form_state) {
     '#title' => t('Allow read access to all users'),
     '#default_value' => true,
   );
-
-  $form['new']['export'] = array (
-    '#type' => 'checkbox', 
-    '#title' => t('Allow export to CRSF and CSCF'),
-    '#default_value' => true,
-  );
+  
+  // Export selection
+  $options = inventory_export_types();
+  if($options) {
+    $form['new']['export'] = array (
+      '#type' => 'checkboxes', 
+      '#title' => t('Allow export to the following platforms'),
+      '#options' => $options,
+      '#default_value' => array_keys($options),
+    );
+  }
   
   $form['new']['description'] = array(
     '#type' => 'text_format',
@@ -130,13 +135,15 @@ function inventory_new_form_submit($form, &$form_state){
     'area_id' => $_SESSION['inventory']['area_id'],
     'name' => $form_state['values']['name'],
     'shared' => $form_state['values']['share'] == 1 ? '1' : '0',
-    'export' => $form_state['values']['export'] == 1 ? '1' : '0',
     'owner_id' => $owner,
     'description' => $form_state['values']['description']['value'],
     'create_time' => 'now()',
     'modify_time' => 'now()',
   ))
   ->execute();
+  
+  // update export type
+  inventory_save_export_type($hiid, $form_state['input']['export']);
   
   $_SESSION['inventory']['workflow'] = true;
   return $form_state['redirect'] = 'inventory/'.$hiid.'/edit';
