@@ -3,13 +3,14 @@
  * Chose or create new area
  * @return render array
  */
-function area_new() {
+function area_new_form() {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_set_title(t('Choose or Create New Area'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
-	
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
+/*	
 	// Display Progress Bar
 	$progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
 	$output['progress'] = array(
@@ -18,23 +19,23 @@ function area_new() {
 		'#active' => 1, 		// Indicate active Element
 	);
 	
-	$output['new'] = array(
-		'#theme' => 'area.new',
-	);
-
-	/* Laut Albert nicht mehr benoetigt
-	$output['LastUsed'] = array(
-		'#type' => 'fieldset',
-		'#title' => t('Last Used Areas'),
-	);
-	$output['LastUsed']['table'] = area_last_used_table();
-	*/
+*/	
 	
-	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
-	$output['FieldName'] = drupal_get_form('area_field_name_form');
-  	$output['areaNew'] = drupal_get_form('area_new_form');
-  	$output['areaNew']['#attributes']['class']='hidden';
-	$output['areaChose'] = drupal_get_form('area_choose_form');
+	if($_POST['locality'] != '') {
+		$output = drupal_get_form('area_new_details_form');
+	}
+	else {
+		$output['new'] = array(
+		'#theme' => 'area.new',
+		);
+		$output['googleMaps'] = drupal_get_form('area_google_maps_form');
+		$output['FieldName'] = drupal_get_form('area_field_name_form');
+		$output['areaNew'] = drupal_get_form('area_create_form');
+	  	$output['areaNew']['#attributes']['class']='hidden';
+		$output['areaChose'] = drupal_get_form('area_choose_form');	
+	}
+
+	
 	
 	return $output;
 }
@@ -59,7 +60,7 @@ function area_back_button() {
 function area_google_maps_form() {
 	$form['GoogleMaps'] = array(
 		'#type' => 'fieldset', 
-  		'#title' => t('Map'),
+  		//'#title' => t('Map'),
   		'#weight' => 3, 
   		'#collapsible' => FALSE, 
 		'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
@@ -131,46 +132,6 @@ function area_search($form, &$form_state) {
 }
 
 /**
- * Table with the 5 last used areas
- * @return table element to render
- */
-function area_last_used_table() {
-	global $user;
-
-	$head_inventories= db_query(
-		"SELECT * FROM area 
-		WHERE owner_id = :owner_id
-		ORDER BY modify_time DESC
-		LIMIT 5",
-		array(':owner_id'=>$user->uid)
-	);
-
-	foreach ($head_inventories as $record) {
-		$row = array();
-		$row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea('.$record->id.')">'.$record->field_name.'</a>';
-		$row[] = $record->zip;
-		$row[] = $record->locality;
-		$row[] = $record->canton;
-		$rows[] = $row;
-	}
-
-	$header = array(t('Area Name'),t('Zip Code'),t('Locality'),t('Canton'),);
-
-	if ($rows){
-		$table['organisms'] = array(
-		    '#theme' => 'table', 
-			'#header' => $header,
-		    '#rows' => $rows,
-		);
-	} else {
-		$table['noArea'] = array (
-			'#markup'=> t('You haven\'t used an area yet')
-		);
-	}
-	return $table;
-}
-
-/**
  * Form is visible only if an area was selected and none created
  * Form gets hidden again if onControlAreaCreateClicked() in JS is called
  * 
@@ -220,65 +181,44 @@ function area_choose_form_submit($form, &$form_state, $area_id) {
 }
 
 /**
- * Form is visible only if onControlAreaCreateClicked() in JS was called, happens when user starts editing on the map
- * Form gets hidden again if onControlAreaChooseClicked() in JS is called
+ * Form is hidden and used to store values handed over by JS
  * 
  * @param array $form
  * @param *array $form_state
  * @return form to submit area properties
  */
-function area_new_form($form, &$form_state) {
-	$form['AreaNewForm'] = array(
+function area_create_form($form, &$form_state) {
+	$form['AreaNewForm'] = array (
 		'#type' => 'fieldset',
-  		'#title' => t('Enter area properties:'), 
-  		'#weight' => 7, 
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => FALSE,
-	);
-  $form['AreaNewForm']['comment'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Description'),
-    '#cols' => 60,
-    '#rows' => 10,
-  );
-	$form['AreaNewForm']['field_name'] = array(
-  	'#type' => 'textfield',
-  	'#title' => t('Area name'),
-	'#required' => true,
-	);
-	$form['AreaNewForm']['habitatText'] = array(
-	'#title' => 'Habitats',
-	'#type' => 'textfield',   
-    '#autocomplete_path' => 'area/habitat_autocomplete',
-	'#suffix' => '<div id="habitatSelected"><table></table></div>',
+		'#weight' => 8,
 	);
 	$form['AreaNewForm']['locality'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Locality'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-locality'),
 	);
 	$form['AreaNewForm']['zip'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Zip'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-zip'),
 	);
 	$form['AreaNewForm']['township'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Township'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-township'),
 	);
 	$form['AreaNewForm']['canton'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Canton'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-canton'),
 	);
 	$form['AreaNewForm']['altitude'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Altitude'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-altitude'),
 	);
 	$form['AreaNewForm']['surface-area'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Surface area (m2)'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-surface-area'),
 	);
 	$form['AreaNewForm']['country'] = array(
-	'#type' => 'textfield',
-	'#title' => t('Country'),
+	'#type' => 'hidden',
+	'#attributes' => array('id' => 'edit-country'),
 	);
 	$form['AreaNewForm']['latitude'] = array(
     '#type' => 'hidden',
@@ -296,21 +236,25 @@ function area_new_form($form, &$form_state) {
     '#type' => 'hidden',
 	'#attributes' => array('id' => 'edit-area-type'),
 	);
-	$form['save_new'] = array (
-		'#type' => 'fieldset',
-		'#weight' => 8,
-	);
-
-	$form['save_new']['AreaNewForm_submit'] = array(
+	$form['AreaNewForm']['AreaNewForm_submit'] = array(
 	  	'#type' => 'submit',
 	  	'#value' => t('Continue'),
 	);
-
 	return $form;
 }
 
 /**
- * Saves the new area after user created markers or polys and clicks on the submit button
+ * 
+ * Rebuilds the area map form to display area_new_details_form
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ */
+function area_create_form_submit($form, $form_state) {
+	$form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Saves the new area after user entered details for the new area and clicks on the submit button
  * 
  * Creates a new entry in the DB with the area that was just created and redirects to inventory/new to create
  * new inventory assigned to the area that was just created
@@ -318,21 +262,41 @@ function area_new_form($form, &$form_state) {
  * @param array $form
  * @param *array $form_state
  */
-function area_new_form_submit($form, &$form_state) {
+function area_new_details_form($form, $form_state) {
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	drupal_set_title(t('Enter new area details'));
+
+	$output['AreaNewForm']['basics'] = area_edit_basics_form($form, $form_state, '');
+	$output['AreaNewForm']['map'] = area_edit_map_form($form, $form_state);
+	$output['AreaNewForm']['comment'] = area_edit_comment_form($form, $form_state, '');
+	$output['AreaNewForm']['habitats'] = area_edit_habitat_form($form, $form_state, '');
+	$output['AreaNewForm']['concept'] = area_edit_concept_form($form, $form_state, '');
+	$output['AreaNewForm']['hidden'] = area_edit_hidden_form($form, $form_state);
+	$output['actions'] = array('#type' => 'actions');
+	$output['actions']['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Save')
+	);
+	return $output;
+}
+function area_new_details_form_submit($form, $form_state) {
 	// get values from form
-	$field_name = $form_state['values']['field_name'];
+	$field_name = $form_state['input']['field_name'];
 	$locality = $form_state['values']['locality'];
 	$zip = $form_state['values']['zip'];
 	$canton = $form_state['values']['canton'];
 	$country = $form_state['values']['country'];
 	$areaType = $form_state['values']['area_type'];
-	$comment = $form_state['values']['comment'];
+	$comment = $form_state['input']['comment'];
 	$altitude = $form_state['values']['altitude'];
 	$surface_area = $form_state['values']['surface-area'];
 	$township = $form_state['values']['township'];
 	$latitude = $form_state['values']['latitude'];
 	$longitude = $form_state['values']['longitude'];
 	$jsonCoords = $form_state['values']['area-coords'];
+	$protectiontarget = $form_state['input']['protection_target'];
+	$safetyprecautions = $form_state['input']['safety_precautions'];
+	$tendingstrategies = $form_state['input']['tending_strategies'];
 
 	// get area type id from table area_type
 	$result = db_query('SELECT id FROM area_type at WHERE at.desc like :desc', array(':desc' => $areaType));
@@ -358,6 +322,9 @@ function area_new_form_submit($form, &$form_state) {
 		'owner_id' => $user->uid,
 		'create_time' => 'now()',
 		'modify_time' => 'now()',
+		'protection_target' => $protectiontarget,
+		'safety_precautions' => $safetyprecautions,
+		'tending_strategies' => $tendingstrategies
 	))
 	->execute();
 
@@ -384,7 +351,6 @@ function area_new_form_submit($form, &$form_state) {
 		/*	contains NO points in coords because area-select.js doesn't add coordinates 
 		 *	to coords variable if it is only a marker. To save the marker nonetheless we 
 		 *	will	use its centroid lat and lng */
-		$abc= 'aewfwef';
 		db_insert('area_point')->fields(array(
 			'area_id' => $area_id,
 			'lat' => $latitude,
@@ -395,8 +361,8 @@ function area_new_form_submit($form, &$form_state) {
 	}
 
 	// insert habitats
-	if (array_key_exists('habitat', $form_state['input'])) {
-		foreach (array_values($form_state['input']['habitat']) as $habitat) {
+	if (array_key_exists('habitat_dropdown', $form_state['input'])) {
+		foreach (array_values($form_state['input']['habitat_dropdown']) as $habitat) {
 			db_insert('area_habitat')->fields(array(
 				'area_id' => $area_id,
 				'habitat_id' => $habitat,
@@ -404,8 +370,29 @@ function area_new_form_submit($form, &$form_state) {
 			->execute();
 		}
 	}
+	
+	//insert parcels
+	$area_parcel_delete = db_delete('area_parcel')
+	->condition('area_id', $area_id)
+	->execute();
+	
+	foreach(array_values($form_state['input']['parcel']) as $parcel) {
+		$parcel_nr = $parcel['parcel_nr'];
+		$parcel_owner = $parcel['owner'];
+		$delete = $parcel['delete'];
+		if($delete != '1') {
+			db_insert('area_parcel')->fields(array(
+				'area_id' => $area_id,
+				'parcel' => $parcel_nr,
+				'parcel_owner_name' => $parcel_owner,
+			))
+			->execute();
+		}
+	}
 
-	// redirect to create a new inventory assigned to the area just created
-	$form_state['redirect'] = 'inventory/new/area/'.$area_id;
+	// redirect to the new area	
+	drupal_set_message('Area successfully created');
+	drupal_goto('area/'.$area_id);
 }
+
 ?>

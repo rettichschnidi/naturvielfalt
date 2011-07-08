@@ -25,23 +25,3 @@ foreach ($jsLibs as $jsLib) {
   echo "<script type=\"text/javascript\" src=\"" . $jsLib . "\"></script>\n";
 }
 ?>
-
-<h3 class="choice">
-  <?php 
-    echo t('You have two choices. You can:');
-  ?>
-</h3>
-<ul class="area-choices">
-  <li>
-    <div class="controlAreaChoose selected"></div>
-    <?php 
-      echo t('select an area by clicking on it in the map or in the table');
-    ?>
-  </li>
-  <li>
-    <div class="controlAreaCreate"></div>
-    <?php
-      echo t('create a new area by using the drawing symbol and drawing on the map');
-    ?>
-  </li>
-</ul>

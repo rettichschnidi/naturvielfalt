@@ -6,9 +6,6 @@ function show_area($areaId) {
   drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
   
-  //include code for gmap_static_image_path
-  module_load_include('inc', 'area', 'area.search');
-  
   $coords = area_convert_coordinates($areaId);
   
   $rows = array();
@@ -31,7 +28,7 @@ function show_area($areaId) {
       'data' => t('Surface area'),
       'header' => true
     ),
-    $area->surface_area
+    number_format($area->surface_area, '0', '', "'").' m2'
   );
   $rows[] = array(
     array(
@@ -89,33 +86,42 @@ function show_area($areaId) {
     ),
     	$coords
   );
-  $rows[] = array(
+    $rows[] = array(
+    array(
+      'data' => t('Parcels'),
+      'header' => true
+    ),
+    	_area_parcels_table($areaId)
+  );  
+  
+  
+    $comment[] = array(
+    array(
+      'data' => t('Description'),
+      'header' => true
+    ),
+    $area->comment
+  );
+  $concept[] = array(
     array(
       'data' => t('Protection Target'),
       'header' => true
     ),
     $area->protection_target
   );
-  $rows[] = array(
+  $concept[] = array(
     array(
       'data' => t('Safety precautions'),
       'header' => true
     ),
     $area->safety_precautions
   );
-  $rows[] = array(
+  $concept[] = array(
     array(
       'data' => t('Tending strategies'),
       'header' => true
     ),
     $area->tending_strategies
-  );
-    $rows[] = array(
-    array(
-      'data' => t('Comment'),
-      'header' => true
-    ),
-    $area->comment
   );
   
   $output['area_details'] = array(
@@ -158,6 +164,53 @@ function show_area($areaId) {
       'class' => array('collapsible'),
       'id' => 'area-map'
     ),
+  );
+    $output['area_comment'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Description'),
+    '#weight' => 3,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+      'id' => 'area-description'
+    ),
+  );
+  
+  $output['area_comment']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $comment,
+    '#id_table' => 'area_details',
+  );
+  
+  $output['area_concept'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Area concept'),
+    '#weight' => 4,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+      'id' => 'area-concept'
+    ),
+  );
+  
+  $output['area_concept']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $concept,
+    '#id_table' => 'area_details',
   );
 
   $imagepath = gmap_static_image_path($areaId, 500, 500);
@@ -415,7 +468,7 @@ function area_inventories($areaId) {
   $output['linked_inventories'] = array(
     '#type' => 'fieldset',
     '#title' => t('Linked inventories'),
-    '#weight' => 3,
+    '#weight' => 6,
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
@@ -500,7 +553,7 @@ function area_habitats($areaId) {
   $output['linked_habitats'] = array(
     '#type' => 'fieldset',
     '#title' => t('Linked habitats'),
-    '#weight' => 4,
+    '#weight' => 7,
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
@@ -792,7 +845,7 @@ function area_files($area_id) {
   $render_array['files'] = array(
     '#type' => 'fieldset', 
     '#title' => t('Files'), 
-    '#weight' => '5', 
+    '#weight' => 8, 
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
@@ -813,5 +866,16 @@ function area_files($area_id) {
     '#id_table' => 'files', 
   );
   return $render_array;
+}
+
+function _area_parcels_table($area_id) {
+	$result = db_select('area_parcel')
+		->fields('area_parcel')
+		->condition('area_id', $area_id)
+		->execute();
+	foreach($result as $record) {
+		$parcels = $parcels.' '.$record->parcel.'<br>';
+	}
+	return $parcels;
 }
 ?>

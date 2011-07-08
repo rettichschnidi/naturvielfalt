@@ -7,13 +7,14 @@ function area_edit($area_id) {
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
-	$render_array['area']['details'] = drupal_get_form('area_edit_form', $area_id);
+	//$render_array['area']['details'] = drupal_get_form('area_edit_form', $area_id);
 	//$render_array['area']['parcels'] = drupal_get_form('area_parcels_form', $area_id);
-	$render_array['area']['map'] = area_map($area_id);
-	$render_array['file']['upload'] = drupal_get_form('area_edit_files_form', $area_id);
+	//$render_array['area']['map'] = area_map($area_id);
+	$output['area'] = drupal_get_form('area_edit_form', $area_id);
+	$output['file']['upload'] = drupal_get_form('area_edit_files_form', $area_id);
 	
 	
-	return $render_array;
+	return $output;
 }
 
 /**
@@ -25,7 +26,7 @@ function area_edit_files_form($form, &$form_state, $area_id) {
 	$form['AreaFileForm'] = array(
 		'#type' => 'fieldset',
   		'#title' => t('Files'), 
-  		'#weight' => 7, 
+  		'#weight' => 1, 
   		'#collapsible' => TRUE, 
   		'#collapsed' => FALSE,
 		'#attached' => array (
@@ -45,6 +46,7 @@ function area_edit_files_form($form, &$form_state, $area_id) {
   $tableHeader[] = t('Typ');
   $tableHeader[] = t('Size');
   $tableHeader[] = t('Date');
+  $tableHeader[] = '&nbsp;';
 
   $result = db_query('SELECT fm.filename, fm.filemime, fm.timestamp, fm.fid, fm.filesize, afm.description
             FROM area_file_managed afm, file_managed fm
@@ -63,7 +65,8 @@ function area_edit_files_form($form, &$form_state, $area_id) {
 	    
 	    $description = $record->description;
 	    $filename = l($record->filename, 'sites/default/files/swissmon/area/'.$area_id.'/'.$record->filename);
-
+	  
+	  $img_delete = '<img src="'.url(drupal_get_path('module', 'inventory').'/images/can_delete.png').'" alt="'.t('Delete').'" />';
       $filemime = $img_mime;
       $filesize = ($record->filesize / 1000)." KB";
       $timestamp = date('d.m.Y',$record->timestamp);
@@ -73,6 +76,7 @@ function area_edit_files_form($form, &$form_state, $area_id) {
       $row[] = $filemime;
       $row[] = $filesize;
       $row[] = $timestamp;
+      $row[] = l($img_delete, 'area/'.$area_id.'/delete_file/'.$record->fid, array('html' => true));
       $rows[] = $row;
     }
 
@@ -99,10 +103,11 @@ function area_edit_files_form($form, &$form_state, $area_id) {
     '#required' => FALSE,
   );
 
-  $form['AreaFileForm']['upload_submit'] = array(
+  $form['upload_submit'] = array(
     '#type' => 'submit', 
     '#value' => t("Upload"),
     '#submit' => array('area_update_file'),
+  	'#weight' => 2,
   );
   
   // Saving something to the form_state makes it accessible in the submit function.
@@ -151,103 +156,25 @@ function area_update_file($form, &$form_state){
 }
 
 function area_edit_form($form, &$form_state, $area_id) {
-	$area = db_query('
-	SELECT *
-	FROM area
-	WHERE id = :id',
-	array(':id' => $area_id)
-	);
-	$area = $area->fetch();
-	drupal_set_title($area->field_name);
+	$title = db_select('area', 'a')->condition('id', $area_id)->fields('a')->execute()->fetch();
+	drupal_set_title($title->field_name);
+	$output['area']['basics'] = area_edit_basics_form($form, $form_state, $area_id);
+	$output['area']['map'] = area_edit_map_form($form, $form_state, $area_id);
+	$output['area']['comment'] = area_edit_comment_form($form, $form_state, $area_id);
+	$output['area']['habitat'] = area_edit_habitat_form($form, $form_state, $area_id);
+	$output['area']['concept'] = area_edit_concept_form($form, $form_state, $area_id);
 	
-	
-	$form['AreaEditForm'] = array(
-		'#type' => 'fieldset',
-  		'#title' => t('Edit area properties'), 
-  		'#weight' => 1, 
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => FALSE,
-		'#attached' => array (
-      		'js' => array (
-      		'misc/form.js',
-        	'misc/collapse.js',
-      		),
-    	),
-    	'#attributes' => array(
-      		'class' => array('collapsible'),
-      		'id' => 'area-details'
-    	),
-	);
-	$form['AreaEditForm']['field_name'] = array(
-  	'#type' => 'textfield',
-  	'#title' => t('Area name'),
-	'#value' => $area->field_name,
-	'#size' => 50,
-	'#required' => true,
-	);
-	$form['AreaEditForm']['habitat_dropdown'] = array(
-  	'#type' => 'select',
-  	'#title' => t('Habitats (hold CTRL to select multiple values)'),
-	'#options' => area_habitat_dropdown_values($area_id),
-	'#multiple' => TRUE,
-	'#default_value' => area_habitat_values($area_id),
-	'#size' => 10
-	);
-/*	$form['AreaEditForm']['habitatText'] = array(
-	'#title' => 'Habitats',
-	'#type' => 'textfield',
-	'#size' => 50,
-    '#autocomplete_path' => 'area/habitat_autocomplete',
-	'#suffix' => '<div id="habitatSelected"><table><tr>'.area_habitat_values($area_id).'</tr></table></div>',
-	);
-*/	$form['AreaEditForm']['parcels'] = area_parcels_form($area_id);	
-	$form['AreaEditForm']['protection_target'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Protection target'),
-	'#value' => $area->protection_target,
-    '#cols' => 50,
-    '#rows' => 2,
-	);
-	$form['AreaEditForm']['safety_precautions'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Safety precautions'),
-	'#value' => $area->safety_precautions,
-    '#cols' => 50,
-    '#rows' => 2,
-	);
-	$form['AreaEditForm']['tending_strategies'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Tending strategies'),
-	'#value' => $area->tending_strategies,
-    '#cols' => 50,
-    '#rows' => 2,
-	);
-	$form['AreaEditForm']['comment'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Description'),
-	'#value' => $area->comment,
-    '#cols' => 50,
-    '#rows' => 3,
-	);
-	$form['AreaEditForm']['area_id'] = array(
-    '#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-id'),
-	'#value' => $area_id,
-	);
-	$form['AreaEditForm']['area_type'] = array(
-    '#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-area-type'),
-	);
-	$form['AreaEditForm']['AreaEditForm_submit'] = array(
-	  	'#type' => 'submit',
-	  	'#value' => t('Submit'),
+	$output['actions'] = array('#type' => 'actions');
+	$output['actions']['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Save')
 	);
 	
 	
 	
 	
 
-	return $form;
+	return $output;
 }
 
 /**
@@ -301,48 +228,23 @@ function area_edit_form_submit($form, &$form_state) {
 	
 	foreach(array_values($form_state['input']['parcel']) as $parcel) {
 		$parcel_nr = $parcel['parcel_nr'];
-		$parcel_owner = $parcel['owner'];
-		$delete = $parcel['delete'];
-		if($delete != '1') {
-			db_insert('area_parcel')->fields(array(
-				'area_id' => $area_id,
-				'parcel' => $parcel_nr,
-				'parcel_owner_name' => $parcel_owner,
-			))
-			->execute();
+		if($parcel_nr != '') {
+			$parcel_owner = $parcel['owner'];
+			$delete = $parcel['delete'];
+			if($delete != '1') {
+				db_insert('area_parcel')->fields(array(
+					'area_id' => $area_id,
+					'parcel' => $parcel_nr,
+					'parcel_owner_name' => $parcel_owner,
+				))
+				->execute();
+			}
 		}
 	}
 
 	// redirect to create a new inventory assigned to the area just created
 	$form_state['redirect'] = 'area/'.$area_id.'/edit';
-}
-
-function area_habitat_values($area_id) {
-	$result = db_query('
-		SELECT h.id, h.name_de, h.label
-		FROM AREA
-		LEFT JOIN area_habitat ah ON area.id = ah.area_id
-		LEFT JOIN habitat h ON ah.habitat_id = h.id
-		WHERE area.id = :id',
-		array('id' => $area_id)
-	);
-	$habitat = '';
-/*	$removeImg = drupal_get_path('module', 'inventory')."/images/can_delete.png";
-	foreach($result as $record) {
-		if(!empty($record->id)) {
-			$id = "<input type='hidden' name='habitat[" . $record->id."]' value='" . $record->id."'/>";
-			$label = "<td>" . $record->label . "</td>";
-			$name = "<td>" .$record->name_de. "</td>";
-			$remove = "<td><img alt ='remove' src='../../" . $removeImg . "' onClick='removeHabitat(this);' style='cursor:pointer'/>";
-			$habitat = $habitat."<tr>" . $id . $label . $name . $remove . "</tr>";
-			$form_state['input']['habitat'][$record->id] = $record->id;
-		}
-	}
-*/
-	foreach ($result as $record) {
-		$habitat[] = $record->id;
-	}
-	return $habitat;	
+	drupal_set_message('Area successfully updated');
 }
 
 function area_map($area_id) {
@@ -376,48 +278,39 @@ function area_map($area_id) {
   return $output;
 }
 
-function area_parcels_form($area_id) {
-	$parcels = db_select('area_parcel', 'ap')
-		->condition('area_id', $area_id)
-		->fields('ap')
-		->execute();
-		
-	$count = $parcels->rowCount();
-	$headings = array(
-		t('Parcel'),
-		t('Parcel owner'),
-		t('Delete')
-		);
-	$rows = array();
-	$i = 0;
-	if($count != '0') {
-		foreach($parcels as $parcel) {
-		array_push($rows, array(
-			'<input type="text" size="4" name="parcel['.$i.'][parcel_nr]" value="'.$parcel->parcel.'" />',
-			'<input type="text" size="33" name="parcel['.$i.'][owner]" value="'.$parcel->parcel_owner_name.'" />'.
-			'<input type="hidden" name="parcel['.$i.'][id]" value="'.$parcel->id.'" />',
-			'<input type="checkbox" name="parcel['.$i++.'][delete]" value="1" />'
-			));
-		}
-	}
-	else {
-		array_push($rows, array(
-			'<input type="text" size="4" name="parcel['.$i.'][parcel_nr]" value="'.'" />',
-			'<input type="text" size="33" name="parcel['.$i.'][owner]" value="'.'" />'.
-			'<input type="hidden" name="parcel['.$i.'][id]" value="'.'" />',
-			'<input type="checkbox" name="parcel['.$i++.'][delete]" value="1" />'
-			));
-	}
+function area_delete_file($form, &$form_state, $area_id, $file_id) {
+  $query = db_select('area_file_managed', 'afm')
+    ->condition('afm.area_id', $area_id)
+    ->condition('afm.file_id', $file_id)
+    ->fields('afm', array('description'));
+  $query->join('file_managed', 'fm', 'fm.fid = afm.file_id');
+  $query->fields('fm', array('filename'));
+  $file = $query->execute()->fetch();
+  
+  $form_state['area_id'] = $area_id;
+  $form_state['file_id'] = $file_id;
+  
+  $name = $file->description ? $file->description : $file->filename;
+  return confirm_form(
+    $form,
+    t('Delete %name?', array('%name' => $name)),
+    'area/' . $area_id . '/edit',
+    t('Are you sure you want to delete the file %name?', array('%name' => $name)),
+    t('Delete'),  t('Cancel')
+  );
+}
 
-	$form['parcels'] = array(
-	'#theme' => 'table',
-	'#header' => $headings,
-	'#rows' => $rows,
-	'#attributes' => array(
-		'id' => 'parcels',
-	),
-	);
-
-return $form;	
+function area_delete_file_submit($form, &$form_state) {
+  $area_id = $form_state['area_id'];
+  $file_id = $form_state['file_id'];
+  
+  $file = file_load($file_id);
+  file_delete($file);
+  db_delete('area_file_managed')
+    ->condition('area_id', $area_id)
+    ->condition('file_id', $file_id)
+    ->execute();
+  drupal_set_message(t('The file was successfully deleted'));
+  $form_state['redirect'] = 'area/' . $area_id . '/edit';
 }
 ?>

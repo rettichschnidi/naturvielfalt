@@ -5,40 +5,30 @@ function area_delete($area_id) {
 }
 
 function area_delete_form($form, &$form_state, $area_id) {
-	$form_state['storage']['area_id'] = $area_id;
-	$form['area_delete'] = array(
-		'#type' => 'fieldset',
- // 		'#title' => t('Delete'), 
-  		//'#weight' => 7, 
-  		'#collapsible' => FALSE, 
-  		'#collapsed' => FALSE,
-/*		'#attached' => array (
-      		'js' => array (
-      		'misc/form.js',
-        	'misc/collapse.js',
-      		),
-    	),
-    	'#attributes' => array(
-      		'class' => array('collapsible'),
-      		'id' => 'area-files'
-    	),
-*/	);	
-	$form['area_delete']['confirm'] = array(
-	    '#type' => 'checkbox', 
-	    '#title' => t("I am aware that I will permanently delete this area"),
-	    '#required' => TRUE,
-  	);
-	$form['area_delete']['delete_submit'] = array(
-	    '#type' => 'submit', 
-	    '#value' => t("Delete"),
-	    '#submit' => array('area_delete_form_submit'),
-  	);
-  	
-  	return $form;
+  $form_state['area_id'] = $area_id;
+  
+  $name = area_title($area_id);
+  return confirm_form(
+    $form,
+    t('Delete %name?', array('%name' => $name)),
+    'inventory/' . $head_inventory_id,
+    t('Are you sure you want to delete the area %name? All contained entries and files will also be deleted.', array('%name' => $name)),
+    t('Delete'),  t('Cancel')
+  );
+}
+
+function area_title($area_id) {
+	$result = db_select('area', 'a')
+		->fields('a')
+		->condition('id', $area_id)
+		->execute()
+		->fetch();
+	$title = $result->field_name;
+	return $title;
 }
 /**
  * 
- * Deletes area record from DB. Only deletes if no inventories are assigned.
+ * Deletes area record from DB and assigned files. Only deletes if no inventories are assigned.
  * @param unknown_type $form
  * @param unknown_type $form_state
  */

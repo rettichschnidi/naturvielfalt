@@ -55,30 +55,7 @@ function AreaSelect() {
   var lastHoverId = 0;
   AreaSelect.prototype.showStaticImage = function(event) {
     var pos = jQuery(event.target).position();
-    console.info(jQuery(event.target));
-  
-    
-    if(event.type == 'mouseover'){
-      jQuery('#static_image').css('display','block');
-      jQuery('#static_image').css('left', pos.left-215);
-      jQuery('#static_image').css('top', pos.top+jQuery('#show_areas').find('td').height()+5);
-      
-      if(event.currentTarget.parentNode.id!=lastHoverId){
-        jQuery('#static_image img').css({
-          'left': '84px',
-          'top': '84px'
-        }).attr('src', Drupal.settings.basePath+'/modules/area/images/ajax-loader.gif');
-        var img = new Image();
-        img.onload = function() {
-          jQuery('#static_image img').attr('src', '').attr('src', this.src).css({
-            'left': 'auto',
-            'top': 'auto'
-          });
-        };
-        img.src = Drupal.settings.basePath+'/area/gmap_image_redirect/'+event.currentTarget.parentNode.id.split('_')[1];
-      }
-      lastHoverId = event.currentTarget.parentNode.id;
-    } else if (event.type == 'mouseout'){
+    if (event.type == 'mouseout'){
       jQuery('#static_image').css('display', 'none');
     }
   }
@@ -332,7 +309,7 @@ function AreaSelect() {
     jQuery('.controlAreaChoose').addClass('selected');
     jQuery('.controlAreaCreate').removeClass('selected');
     areaselect.overlayControl.stopDigitizing();
-    jQuery('#area-new-form').addClass('hidden');
+    jQuery('#area-create-form').addClass('hidden');
     jQuery('#area-choose-form').removeClass('hidden');
     jQuery('#area-field-name-form').removeClass('hidden');
   }
@@ -340,7 +317,7 @@ function AreaSelect() {
   AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
     jQuery('.controlAreaChoose').removeClass('selected');
     jQuery('.controlAreaCreate').addClass('selected');
-    jQuery('#area-new-form').removeClass('hidden');
+    jQuery('#area-create-form').removeClass('hidden');
     jQuery('#area-choose-form').addClass('hidden');
     jQuery('#area-field-name-form').addClass('hidden');
     areaselect.overlayControl.startDigitizing();

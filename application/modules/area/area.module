@@ -96,8 +96,8 @@ function area_menu() {
      $items['area/%/delete'] = array(
     'title' => t('Delete'),
     'description' => t('Delete area'),
-    'page callback' => 'area_delete',
-    'page arguments' => array(1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('area_delete_form', 1),
     'access arguments' => array(1),
     'access callback' => 'area_edit_access',
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
@@ -108,10 +108,19 @@ function area_menu() {
   $items['area/new'] = array(
     'title' => 'Create new area',
     'description' => 'Create an area',
-    'page callback' => 'area_new',
+    'page callback' => 'area_new_form',
     'access arguments' => array(AREA_CREATE),
     'type' => MENU_CALLBACK,
     'file' => 'area.new.inc',
+  );
+  //temp form
+    $items['area/new/details'] = array(
+    'title' => 'Enter area details',
+    'description' => 'Create an area',
+    'page callback' => 'area_new_details',
+    'access arguments' => array(AREA_CREATE),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.new.details.inc',
   );
   $items['area/gmap_image_redirect/%'] = array(
     'title' => 'Redirect to Google Maps static image URL',
@@ -156,6 +165,16 @@ function area_menu() {
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
     'file' => 'area.ajax.inc',
+  );
+  $items['area/%/delete_file/%'] = array(
+    'title' => t('Delete file'),
+    'description' => t('Delete an existing file'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('area_delete_file', 1, 3),
+    'access callback' => 'area_edit_access',
+    'access arguments' => array(1),
+    'file' => 'area.edit.inc',
+    'weight' => 10,
   );
 
   return $items;
@@ -327,7 +346,6 @@ function area_get_icon_map($filemime) {
  * @return true if access ok, false if not
  */
 function area_edit_access($area_id) {
-  $access = user_access('access areas');
   // check if this user has write access to the inventory
   global $user;
   $adminRecords = db_query('
@@ -337,25 +355,33 @@ function area_edit_access($area_id) {
     array(':aid' => $area_id, ':uid' => $user->uid)
   );
   $write = $adminRecords->fetch();
-  $access = $access && $write && $write->id == $area_id;
+  $access = $write && $write->id == $area_id;
   return $access;
 }
 
 /**
  * 
- * Converts coordinates to system CH1903 (for Switzerland) or WGS84 (ROW)
- * @param integer $area_id
+ * Converts coordinates to system CH1903 (for Switzerland) or WGS84 (ROW). Parameter can either be an area id or an array containing latitude, longitude and country
+ * @param int $area_id
  */
 function area_convert_coordinates($area_id) {
-	$result = db_select('area', 'a')
-    ->condition('id', $area_id)
-    ->fields('a')
-    ->execute()
-    ->fetch();
-    
-    $lat = $result->centroid_lat;
-	$lng = $result->centroid_lng;
-    if($result->country == 'Schweiz' OR $result->country == 'Switzerland') {	    
+		if(!is_array($area_id)) {
+			$result = db_select('area', 'a')
+		    ->condition('id', $area_id)
+		    ->fields('a')
+		    ->execute()
+		    ->fetch();
+		    $lat = $result->centroid_lat;
+			$lng = $result->centroid_lng;
+			$country = $result->country;
+		} else {
+			$lat = $area_id['0'];
+			$lng = $area_id['1'];
+			$country = $area_id['2'];
+		}
+		
+	
+    if($country == 'Schweiz' OR $country == 'Switzerland') {	    
 	    $latsex = $lat * 3600;
 	    $lngsex = $lng * 3600;
 	    
@@ -366,10 +392,10 @@ function area_convert_coordinates($area_id) {
 	    $y = 600072.37 + 211455.93 * $lnghlp - 10938.51 * $lnghlp * $lathlp - 0.36 * $lnghlp * pow($lathlp, 2) - 44.54 * pow($lnghlp, 3);
 	    
 	    
-	    $coords = substr(round($y), 0, 3).'.'.substr(round($y), 3).' / '.substr(round($x), 0, 3).'.'.substr(round($x), 3).t(' (CH1903)');
+	    $coords = substr(round($y), 0, 3).'.'.substr(round($y), 3).' / '.substr(round($x), 0, 3).'.'.substr(round($x), 3).' '.l(t('(CH1903)'), 'http://de.wikipedia.org/wiki/CH1903', array('attributes' => array('target' => 'new'))).'<br>'.round($lat, 3).' / '.round($lng, 4).' '.l(t('(WGS84)'), 'http://de.wikipedia.org/wiki/WGS84', array('attributes' => array('target' => 'new')));
     }
     else {
-    	$coords = round($lat, 3).' / '.round($lng, 4).t(' (WGS84)');
+    	$coords = round($lat, 3).' / '.round($lng, 4).' '.l(t('(WGS84)'), 'http://de.wikipedia.org/wiki/WGS84', array('attributes' => array('target' => 'new')));
     }
     
     return $coords;  
@@ -386,4 +412,454 @@ function area_habitat_dropdown_values($area_id) {
     return $dropdown;
 }
 
+/**
+ * Redirects the browser to the Google Maps static image 
+ * @param int $area_id
+ * @return link to Google Maps static image URL with a 302 header
+ */
+function googlemaps_static_redirect($area_id){
+	$path = gmap_static_image_path($area_id, 200, 200);
+	header("Location: ".$path);
+}
+
+/**
+ * Generate GoogleMap static image path 
+ * @param int $area_id
+ * @param int $width
+ * @param int $height
+ * @param int $zoom
+ * 
+ * @return link to Google Maps static path
+ */
+function gmap_static_image_path($area_id, $width, $height, $zoom=false){
+	//define default values if none are passed
+	if(!$width){$width = 320;}				// the width of the resulting image
+	if(!$height){$height = 320;}			// the width of the resulting image
+	
+	//other params
+	$sensor = 'false';			// we don't need no stinkin sensors
+	$fillcolor = '0x0000ff';	// color of the overlay
+	$weight = 0;				// how thick should the outer line be? will get set to 2 if there's just two points, to make line visible
+	
+
+	$counter = 0;
+	$center = false;
+	if(!is_array($area_id)) {
+		//$center and $points get fetched from database entry
+		$areas = db_query('
+			SELECT * FROM area a
+			LEFT JOIN area_point ap ON a.id = ap.area_id
+			WHERE a.id = :id
+			ORDER BY seq ASC',
+		array(":id" => $area_id)
+		);
+		
+		foreach ($areas as $entry){
+			$points .= '|'.$entry->lat.','.$entry->lng;
+		    if($entry->centroid_lat || $entry->centroid_lng)
+			$center = $entry->centroid_lat.",".$entry->centroid_lng;
+			$counter++;
+		}
+	} else {
+		if(key_exists('latitude', $area_id)) {
+			$center = $area_id['latitude'].','.$area_id['longitude'];
+			$coords = json_decode($area_id['area-coords']);
+			foreach ($coords as $coord) {
+				$points .= '|'.$coord['0'].','.$coord['1'];
+				$counter++;
+			}
+		}
+	}
+
+	
+  if($counter<=1 && !$zoom)
+    $zoom = 18;
+  $zoom = $zoom?'&zoom='.$zoom:'';
+  $center = $center?'center='.$center:'';
+	//it could be a marker, a path or an area
+	if($counter==1){
+		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=roadmap&markers=color:blue|'.$center.'&sensor='.$sensor;
+	} else if ($counter == 2){
+		//setting weight to at least 3, otherwise the path will not get drawn (if 0) or be really thin (if 1 or 2)
+		if($weight<3){$weight=3;}
+		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+	}
+	//tschenereit si link
+	return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+}
+
+/**
+ * Displays form to edit parcel information of a specific area
+ * Enter description here ...
+ * @param  $area_id
+ */
+function area_edit_parcels_form($area_id) {
+	if($area_id != '') {
+		$parcels = db_select('area_parcel', 'ap')
+			->condition('area_id', $area_id)
+			->fields('ap')
+			->execute();	
+		$count = $parcels->rowCount();
+	} else {
+		$count = '0';
+	}
+	$headings = array(
+		t('Parcel'),
+		t('Parcel owner'),
+		t('Delete')
+		);
+	$rows = array();
+	$i = 0;
+	if($count != '0') {
+		foreach($parcels as $parcel) {
+		array_push($rows, array(
+				'<input type="text" maxlength="7" size="5" name="parcel['.$i.'][parcel_nr]" value="'.$parcel->parcel.'" />',
+				'<input type="text" size="33" name="parcel['.$i.'][owner]" value="'.$parcel->parcel_owner_name.'" />'.
+				'<input type="hidden" name="parcel['.$i.'][id]" value="'.$parcel->id.'" />',
+				'<input type="checkbox" name="parcel['.$i++.'][delete]" value="1" />'
+			));
+		}
+	}
+	array_push($rows, array(
+		'<input type="text" maxlength="7" size="5" name="parcel['.$i.'][parcel_nr]" value="'.'" />',
+		'<input type="text" size="33" name="parcel['.$i.'][owner]" value="'.'" />'.
+		'<input type="hidden" name="parcel['.$i.'][id]" value="'.'" />',
+		'<input type="checkbox" name="parcel['.$i++.'][delete]" value="1" />'
+	));
+
+	$form['parcels'] = array(
+		'#theme' => 'table',
+		'#header' => $headings,
+		'#rows' => $rows,
+		'#attributes' => array(
+			'id' => 'parcels',
+		),
+	);
+
+return $form;	
+}
+
+function area_edit_habitat_form($form, &$form_state, $area_id) {
+	if($area_id == '') {
+		$habitats = array();
+	} else {
+		$result = db_query('
+			SELECT h.id, h.name_de, h.label
+			FROM AREA
+			LEFT JOIN area_habitat ah ON area.id = ah.area_id
+			LEFT JOIN habitat h ON ah.habitat_id = h.id
+			WHERE area.id = :id',
+		array('id' => $area_id));
+		foreach ($result as $record) {
+			$habitats[] = $record->id;
+		}
+	}
+	
+	$form['AreaNewFormHabitats'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Habitats'), 
+  		'#weight' => 3, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => FALSE,
+	    '#attributes' => array(
+      		'class' => array('collapsible'),
+      		'id' => 'area-habitats'
+    	),
+	);
+	$form['AreaNewFormHabitats']['habitat_dropdown'] = array(
+	  	'#type' => 'select',
+	  	'#title' => t('Habitats (hold CTRL to select multiple values)'),
+		'#options' => area_habitat_dropdown_values($area_id),
+		'#multiple' => TRUE,
+		'#default_value' => $habitats,
+		'#size' => 10
+	);
+	return $form;
+}
+
+function area_edit_concept_form($form, &$form_state, $area_id) {
+	if($area_id == '') {
+		$protection_target = '';
+		$safety_precautions = '';
+		$tending_strategies = '';
+	} else {
+		$area = db_query('
+			SELECT *
+			FROM area
+			WHERE id = :id',
+		array(':id' => $area_id)
+		);
+		$area = $area->fetch();
+		$protection_target = $area->protection_target;
+		$safety_precautions = $area->safety_precautions;
+		$tending_strategies = $area->tending_strategies;				
+	}
+	
+	$form['AreaEditFormConcept'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Area concept'), 
+  		'#weight' => 4, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => FALSE,
+	    '#attributes' => array(
+      		'class' => array('collapsible'),
+      		'id' => 'area-concept'
+    	),
+	);
+	$form['AreaEditFormConcept']['protection_target'] = array(
+	  	'#type' => 'textarea',
+	  	'#title' => t('Protection target'),
+	    '#rows' => 2,
+		'#value' => $protection_target,
+	);
+	$form['AreaEditFormConcept']['safety_precautions'] = array(
+	  	'#type' => 'textarea',
+	  	'#title' => t('Safety precautions'),
+	    '#rows' => 2,
+		'#value' => $safety_precautions,
+	);
+	$form['AreaEditFormConcept']['tending_strategies'] = array(
+	  	'#type' => 'textarea',
+	  	'#title' => t('Tending strategies'),
+	    '#rows' => 2,
+		'#value' => $tending_strategies,
+	);	
+	return $form;	
+}
+
+function area_edit_map_form($form, $form_state, $area_id) {
+	$form['AreaNewFormMap'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Map'), 
+  		'#weight' => 2, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => FALSE,
+    	'#attributes' => array(
+      		'class' => array('collapsible'),
+      		'id' => 'area-map'
+    	),
+  	);
+  	if($area_id != '') {
+  		$imagepath = gmap_static_image_path($area_id, 500, 500, 14);
+  	} else {
+	  	$gmap_data = $form_state['input'];
+		$imagepath = gmap_static_image_path($gmap_data, 500, 500, 14);  		
+  	}
+  	$variables_map= array(
+		'path' => $imagepath,
+		'alt' => t('Map'),
+		'title' => t('Map'),
+	);
+	$form['AreaNewFormMap']['image'] = array(
+	    '#markup' => theme('image', $variables_map)
+	);
+	return $form;
+}
+
+function area_edit_basics_form($form, &$form_state, $area_id) {
+	if($area_id == '') {
+		$coords = array($form_state['input']['latitude'], $form_state['input']['longitude'], $form_state['input']['country']);
+		$coords = area_convert_coordinates($coords);
+		$locality = $_POST['locality'];
+		$zip = $_POST['zip'];
+		$canton = $_POST['canton'];
+		$country = $_POST['country'];
+		$altitude = $_POST['altitude'].' m.ü.M.';
+		$surface_area = number_format($_POST['surface-area'], '0', '', "'").' m2';
+		$field_name = '';
+		$area_id = '';
+	} else {
+		$area = db_query('
+			SELECT *
+			FROM area
+			WHERE id = :id',
+		array(':id' => $area_id)
+		);
+		$area = $area->fetch();
+		$coords = area_convert_coordinates($area_id);
+		$locality = $area->locality;
+		$zip = $area->zip;
+		$canton = $area->canton;
+		$country = $area->country;
+		$altitude = $area->altitude.' m.ü.M.';
+		$surface_area = number_format($area->surface_area, '0', '', "'").' m2';
+		$field_name = $area->field_name;		
+	}
+
+	
+	$rows = array();
+	$rows[] = array(
+		array(
+	      'data' => t('Locality'),
+	      'header' => true
+	    ),
+	    $locality,
+	  );
+	$rows[] = array(
+		array(
+	      'data' => t('ZIP'),
+	      'header' => true
+	    ),
+	    $zip,
+	  );
+	$rows[] = array(
+		array(
+	      'data' => t('Canton'),
+	      'header' => true
+	    ),
+	    $canton,
+	  );
+	$rows[] = array(
+		array(
+	      'data' => t('Country'),
+	      'header' => true
+	    ),
+	    $country,
+	 );
+	$rows[] = array(
+		array(
+	      'data' => t('Altitude'),
+	      'header' => true
+	    ),
+	    $altitude,
+	  );
+	$rows[] = array(
+		array(
+	      'data' => t('Surface Area'),
+	      'header' => true
+	    ),
+	    $surface_area,
+	  );
+	$rows[] = array(
+		array(
+	      'data' => t('Coordinates'),
+	      'header' => true
+	    ),
+	    $coords,
+	  );	
+	$form['AreaNewFormBasics'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Area details'), 
+  		'#weight' => 1, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => FALSE,
+    	'#attributes' => array(
+      		'class' => array('collapsible'),
+      		'id' => 'area-details'
+    	),
+	);
+	$form['AreaNewFormBasics']['area_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $area_id,
+  	);
+	$form['AreaNewFormBasics']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+  	);
+	$form['AreaNewFormBasics']['field_name'] = array(
+  	'#type' => 'textfield',
+  	'#title' => t('Area name'),
+	'#required' => true,
+	'#size' => 50,
+	'#value' => $field_name,
+	);
+	$form['AreaNewFormBasics']['parcels'] = area_edit_parcels_form($area_id);	
+/*	$form['AreaNewForm']['habitatText'] = array(
+	'#title' => 'Habitats',
+	'#type' => 'textfield',   
+    '#autocomplete_path' => 'area/habitat_autocomplete',
+	'#suffix' => '<div id="habitatSelected"><table></table></div>',
+	);
+*/
+	return $form;
+}
+
+function area_edit_comment_form($form, &$form_state, $area_id) {
+	if($area_id == '') {
+		$comment = '';
+	} else {
+		$area = db_query('
+			SELECT *
+			FROM area
+			WHERE id = :id',
+		array(':id' => $area_id)
+		);
+		$area = $area->fetch();
+		$comment = $area->comment;		
+	}
+	$form['AreaNewFormComment'] = array(
+		'#type' => 'fieldset',
+  		'#title' => t('Description'), 
+  		'#weight' => 1, 
+  		'#collapsible' => TRUE, 
+  		'#collapsed' => FALSE,
+    	'#attributes' => array(
+      		'class' => array('collapsible'),
+      		'id' => 'area-description'
+    	),
+	);
+	$form['AreaNewFormComment']['comment'] = array(
+	    '#type' => 'textarea',
+	    '#title' => t('Description'),
+	    '#cols' => 60,
+	    '#rows' => 5,
+		'#value' => $comment,
+  	);
+  	return $form;
+}
+
+function area_edit_hidden_form($form, &$form_state) {
+	$form['AreaNewFormDetails']['locality'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Locality'),
+	'#value' => $_POST['locality'],
+	);
+	$form['AreaNewFormDetails']['zip'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Zip'),
+	'#value' => $_POST['zip'],
+	);
+	$form['AreaNewFormDetails']['township'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Township'),
+	'#value' => $_POST['township'],
+	);
+	$form['AreaNewFormDetails']['canton'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Canton'),
+	'#value' => $_POST['canton'],
+	);
+	$form['AreaNewFormDetails']['altitude'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Altitude'),
+	'#value' => $_POST['altitude'],
+	);
+	$form['AreaNewFormDetails']['surface-area'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Surface area (m2)'),
+	'#value' => $_POST['surface-area'],
+	);
+	$form['AreaNewFormDetails']['country'] = array(
+	'#type' => 'hidden',
+	'#title' => t('Country'),
+	'#value' => $_POST['country'],
+	);
+	$form['AreaNewFormDetails']['latitude'] = array(
+    '#type' => 'hidden',
+	'#value' => $_POST['latitude'],
+	);
+	$form['AreaNewFormDetails']['longitude'] = array(
+    '#type' => 'hidden',
+	'#value' => $_POST['longitude'],
+	);
+	$form['AreaNewFormDetails']['area-coords'] = array(
+    '#type' => 'hidden',
+	'#value' => $_POST['area-coords'],
+	);
+	$form['AreaNewFormDetails']['area_type'] = array(
+    '#type' => 'hidden',
+	'#value' => $_POST['area_type'],
+	);
+	return $form;
+}
 ?>
