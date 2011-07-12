@@ -92,15 +92,19 @@ function AreaSelect() {
    * 'map_canvas'. Returns a google.maps.Map
    */
   AreaSelect.prototype.createGoogleMaps = function() {
-    var bruggCenter = new google.maps.LatLng(47.487084, 8.207273);
+    var mapcenter = [47.487084, 8.207273];
+    if(jQuery('#map_canvas').data('center'))
+      mapcenter = jQuery('#map_canvas').data('center').split(',');
+    mapcenter = new google.maps.LatLng(parseFloat(mapcenter[0]), parseFloat(mapcenter[1]));
     var mapsOptions = {
-        zoom : 15,
-        center : bruggCenter,
+        zoom : jQuery('#map_canvas').data('zoom') ? parseInt(jQuery('#map_canvas').data('zoom')) : 15,
+        center : mapcenter,
         mapTypeId : google.maps.MapTypeId.ROADMAP,
         scrollwheel: false
       };
     var map = new google.maps.Map(document.getElementById('map_canvas'), mapsOptions);
-    util.geocode('map_search', 'map_search_button', map);
+    if(document.getElementById('map_search'))
+      util.geocode('map_search', 'map_search_button', map);
     return map;
   }
 
@@ -109,6 +113,8 @@ function AreaSelect() {
    * Returns an InfoBubble
    */
   AreaSelect.prototype.createAreaInfo = function(map) {
+    if(typeof InfoBubble == "undefined")
+      return;
     areaInfo = new InfoBubble({
       map : map,
       shadowStyle : 1,
@@ -195,14 +201,16 @@ function AreaSelect() {
         jQuery.ajax( {
             "dataType": 'json',
             "type": "GET",
-            "url": Drupal.settings.basePath + "area/getareas",
+            "url": Drupal.settings.basePath + "area/getareas" + (jQuery('#map_canvas').data('areaid') ? '/'+jQuery('#map_canvas').data('areaid') : ''),
             
             "success": function (json) {
                 var aaData = [];
                 var areas = json;
                 me.mapOverlays.clear();
                 me.mapOverlays.addOverlaysJson(areas);
-
+                
+                if(typeof InfoBubble == "undefined")
+                  return;
                 for(var i in me.mapOverlays.overlays) {
                     var overlay = me.mapOverlays.overlays[i];
                     me.addOverlayListener(overlay);
@@ -330,13 +338,14 @@ function AreaSelect() {
   me.map = this.createGoogleMaps();
   me.mapOverlays = this.createOverlays(me.map); // Overlays representing areas
   me.selected_area = null; // index of currently selected area
-  me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
+  if(typeof InfoBubble != "undefined")
+    me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
   me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
   getareasJSON();
 
   // register events
   jQuery("#show_areas").live('click', this.onTableRowClicked);
-  jQuery('tbody > tr').live('mouseover mouseout', this.onTableRowHover);
+  jQuery('#show_areas_wrapper tbody > tr').live('mouseover mouseout', this.onTableRowHover);
   jQuery('.show_static_image').live('mouseover mouseout', this.showStaticImage);
   jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
   jQuery('.controlAreaChoose').click(this.onControlAreaChooseClicked);

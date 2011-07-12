@@ -60,6 +60,8 @@
 // === first support methods that don't (yet) exist in v3
 google.maps.LatLng.prototype.distanceFrom = function(newLatLng) {
   //var R = 6371; // km (change this constant to get miles)
+  if(typeof newLatLng == 'undefined')
+    return 0;
   var R = 6378100; // meters
   var lat1 = this.lat();
   var lon1 = this.lng();

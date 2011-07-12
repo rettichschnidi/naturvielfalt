@@ -159,6 +159,14 @@ function area_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'area.ajax.inc',
   );
+  $items['area/getareas/%'] = array(
+    'title' => 'area information in json format',
+    'page callback' => 'get_areas',
+    'page arguments' => array(2),
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_CALLBACK,
+    'file' => 'area.ajax.inc',
+  );
   $items['area/datatable'] = array(
     'title' => 'area information in json format for datatable',
     'page callback' => 'area_datatable',
@@ -862,4 +870,30 @@ function area_edit_hidden_form($form, &$form_state) {
 	);
 	return $form;
 }
+
+function area_add_gmap_resources($bubble=true) {
+  drupal_add_library('system', 'ui.autocomplete');
+  
+  $areaJsPath = drupal_get_path('module', 'area') . '/js/';
+  $areaCSSPath = drupal_get_path('module', 'area') . '/css/';
+  $inventoryJsPath = drupal_get_path('module', 'inventory') . '/js/';
+  
+  drupal_add_css($areaCSSPath . 'area-select.css');
+  
+  drupal_add_js('http://maps.google.com/maps/api/js?sensor=true');
+  drupal_add_js($areaCSSPath . 'overlay-style.js');
+  drupal_add_js($inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js');
+  drupal_add_js($inventoryJsPath . 'util.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Config.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/MapGeometryOverlays.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlay.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlayControl.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Polygon.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Marker.js');
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js');
+  if($bubble)
+    drupal_add_js($areaJsPath . 'lib/infobubble.js');
+  drupal_add_js($areaJsPath . 'area-select.js');
+}
+
 ?>

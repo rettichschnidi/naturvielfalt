@@ -34,7 +34,7 @@ function organism_showtype($typeId) {
     );
   }
   $has_gallery = false;
-  $gallery_available = function_exists('gallery_edit_link');
+  $gallery_available = function_exists('gallery_view_link');
   foreach ($result as $record) {
     $count = db_query('
       SELECT COUNT(DISTINCT inventory_id) FROM inventory_entry
@@ -59,20 +59,24 @@ function organism_showtype($typeId) {
       $row[] = ($record->red_list_ch == '0' || $record->red_list_ch == '') ? t('No') : t('Yes');
     }
     if($gallery_available) {
-      $row[] = gallery_edit_link('organism', $record->id);
+      $row[] = gallery_view_link('organism', $record->id, 'organism/'.$record->id);
       if($row[6])
         $has_gallery = true;
     }
     $rows[] = array('data' => $row, 'id' => 'organism_'. $record->id);
   }
   if($has_gallery)
-  $header[] = '&nbsp';
+    $header[] = '&nbsp';
+  else
+    array_walk($rows, create_function('&$row', 'array_pop($row[\'data\']);'));
   $render_array['organisms'] = array(
     '#theme' => 'datatable', 
     '#header' => $header,
     '#rows' => $rows,
     '#id_table' => 'organisms',
   );
+  if(function_exists('gallery_list_renderer'))
+    $render_array['Gallery'] = gallery_list_renderer('inventory_type', $typeId);
   return $render_array;
 }
 ?>

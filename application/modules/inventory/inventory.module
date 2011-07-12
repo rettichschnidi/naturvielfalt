@@ -264,7 +264,7 @@ function inventory_menu() {
     'page callback' => 'inventory_template_list',
     'access arguments' => array('access inventories'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'inventory.edit.template.inc'
+    'file' => 'inventory.template.inc'
   );
   $items['inventorytemplate/list'] = array(
     'title' => t('Available templates'),
@@ -273,7 +273,7 @@ function inventory_menu() {
     'access arguments' => array('access inventories'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE,
-    'file' => 'inventory.edit.template.inc',
+    'file' => 'inventory.template.inc',
     'weight' => 1
   );
   $items['inventorytemplate/new'] = array(
@@ -284,8 +284,29 @@ function inventory_menu() {
     'access arguments' => array('access inventories'),
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE,
-    'file' => 'inventory.edit.template.inc',
+    'file' => 'inventory.template.inc',
     'weight' => 2
+  );
+  $items['inventorytemplate/%'] = array(
+    'title' => t('View'),
+    'description' => t('View an existing inventory template'),
+    'page callback' => 'inventory_template_show',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_template_access',
+    'access arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'inventory.template.inc'
+  );
+  $items['inventorytemplate/%/normal'] = array(
+    'title' => t('View'),
+    'description' => t('View an existing inventory template'),
+    'page callback' => 'inventory_template_show',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_template_access',
+    'access arguments' => array(1),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE,
+    'file' => 'inventory.template.inc'
   );
   
   // Inventory template edit form
@@ -296,7 +317,9 @@ function inventory_menu() {
     'page arguments' => array(1),
     'access callback' => 'inventory_template_edit_access',
     'access arguments' => array(1),
-    'file' => 'inventory.edit.template.inc'
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE,
+    'file' => 'inventory.template.inc'
   );
   $items['inventorytemplate/%/delete'] = array(
     'title' => t('Delete'),
@@ -305,7 +328,9 @@ function inventory_menu() {
     'page arguments' => array('inventory_template_delete_form', 1),
     'access callback' => 'inventory_template_edit_access',
     'access arguments' => array(1),
-    'file' => 'inventory.edit.template.inc'
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE,
+    'file' => 'inventory.template.inc'
   );
   $items['inventorytemplate/%/delete_entry/%'] = array(
     'title' => t('Delete an entry'),
@@ -315,7 +340,7 @@ function inventory_menu() {
     'access callback' => 'inventory_template_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-    'file' => 'inventory.edit.template.inc',
+    'file' => 'inventory.template.inc',
   );
   $items['inventorytemplate/%/save_entries'] = array(
     'title' => t('Save inventory entries'),
@@ -325,7 +350,7 @@ function inventory_menu() {
     'access callback' => 'inventory_template_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-    'file' => 'inventory.edit.template.inc',
+    'file' => 'inventory.template.inc',
   );
   $items['inventorytemplate/%/add_inventory_group/%/%'] = array(
     'title' => t('Return inventory group'),
@@ -335,7 +360,7 @@ function inventory_menu() {
     'access callback' => 'inventory_template_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
-    'file' => 'inventory.edit.template.inc',
+    'file' => 'inventory.template.inc',
   );
   return $items;
 }
@@ -486,7 +511,7 @@ function inventory_template_edit_access($template_id) {
 }
 
 /**
- * Check read acces to inventory
+ * Check read access to inventory
  * 
  * @param unknown_type $inventoryId
  * @return true if access ok, false if not
@@ -508,6 +533,27 @@ function inventory_access($inventoryId) {
   $read = $adminRecords->fetch();
   $access = $access && (($read->read == 1) || ($read->shared == true)) || ($read->owner_id == $user->uid);
   return $access;
+}
+
+/**
+ * Check read access to inventory templates
+ * 
+ * @param int $template_id
+ * @return true if access ok, false if not
+ */
+function inventory_template_access($template_id) {
+  if(!user_access('access inventories'))
+    return false;
+  // check if this user is the owner of the inventory template or the inventory template is public
+  global $user;
+  return db_select('inventory_template', 't')
+    ->condition('t.id', $template_id)
+    ->condition(db_or()
+      ->condition('t.public', '1')
+      ->condition('t.owner_id', $user->uid))
+    ->fields('t')
+    ->execute()
+    ->rowCount() > 0;
 }
 
 /**
@@ -597,7 +643,7 @@ function inventory_column_description($inventory_id, $type_id=false, $custom_fie
   $resAttributes = db_query('SELECT a.id, a.name, a.visible, f.format
     FROM inventory_type_attribute a 
     LEFT JOIN attribute_format f ON a.attribute_format_id = f.id 
-    WHERE a.inventory_type_id = :typeId AND '.$inventory, array(':typeId' => $type_id));
+    WHERE (a.inventory_type_id = :typeId OR a.inventory_type_id IS NULL) AND '.$inventory, array(':typeId' => $type_id));
 
   $i = 0;
   foreach ($resAttributes as $attribute) {
@@ -622,7 +668,7 @@ function inventory_column_description($inventory_id, $type_id=false, $custom_fie
   return $invColDesc;
 }
 
-function inventory_data($head_inventory_id, $order=false, $extended=false, $entry_id=false, $custom_fields=false) {
+function inventory_data($head_inventory_id, $order=false, $extended=false, $entry_id=false, $custom_fields=false, $columns=true) {
   $invArr = array();
   if($entry_id)
     $inventories = db_query('SELECT inventory_id id
@@ -641,7 +687,7 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
   
   foreach($inventories as $inventory) {
     $inventory_id = $inventory->id;
-    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_entry', 'inventory_id', $order, $extended, $entry_id, $protected);
+    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_entry', 'inventory_id', $order, $extended, $entry_id, $protected, $columns);
     
     // Get the inventory column description
     $invArr[$inventory_id]["invDesc"] = inventory_column_description($inventory_id, false, $custom_fields, $head_inventory_id);

@@ -4,7 +4,7 @@
   
   function initializeGroupRow() {
     $(this).find('input[name^="write"]').change(function() {
-      $(this).parents('tr').find('input[name^="show_red"], input[name^="read"]')
+      $(this).closest('tr').find('input[name^="show_red"], input[name^="read"]')
         .attr('disabled', $(this).is(':checked') ? 'disabled' : '')
         .attr('checked', $(this).is(':checked') ? 'checked' : '');
     }).change();

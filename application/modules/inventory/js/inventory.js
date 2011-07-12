@@ -13,7 +13,8 @@ var inventory = {
   loading: false,
   count: 1,
   group_count: 1,
-  templates: false
+  templates: false,
+  base: false
   
 };
 
@@ -26,7 +27,26 @@ var inventory = {
     inventory.container = $('#inventories');
     if(!inventory.container.size())
       return;
-    inventory.form = inventory.container.parents('form');
+    $('form').each(function() {
+      if($(this).find('#inventories').size())
+        return;
+      $(this).submit(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        inventory.saveEntries(e, $.proxy(function() {
+          $(this).unbind('submit').submit();
+        }, this));
+      });
+      $(this).find('a:not(a[href^="javascript"])').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        inventory.saveEntries(e, $.proxy(function() {
+          document.location = $(this).attr('href');
+        }, this));
+      });
+    });
+    inventory.form = inventory.container.closest('form');
+    inventory.base = inventory.form.attr('action').replace(/\/e?d?i?t?$/, '');
     inventory.id = inventory.form.find('#invId').val();
     inventory.form.find('#edit-actions').append(inventory.form.find('.form-item-add'));
     inventory.form.find('input[name^="form_"]').remove();
@@ -87,10 +107,11 @@ var inventory = {
     inventory.loading.dialog('close');
   }
   
-  inventory.saveEntries = function(event) {
+  inventory.saveEntries = function(event, callback) {
     inventory.showLoading();
+    inventory.callback = callback;
     $.post(
-      inventory.form.attr('action').replace('/edit', '/save_entries')+'?ajax=1',
+      inventory.base+'/save_entries?ajax=1',
       inventory.form.serializeArray(),
       function(data) {
         inventory.hideLoading();
@@ -107,14 +128,16 @@ var inventory = {
         for(var i=0; i<data.entries.length; i++) {
           var entry = inventory.container.find('input.entry_id[value="'+data.entries[i]['id_old']+'"]');
           entry.val(data.entries[i]['id_new']);
-          var additional = entry.parents('tr').find('.additional');
+          var additional = entry.closest('tr').find('.additional');
           if(!additional.size())
             continue;
           var href = additional.attr('href').split('/');
           href[href.length-1] = entry.val();
-          entry.parents('tr').find('.additional').attr('href', href.join('/'));
+          entry.closest('tr').find('.additional').attr('href', href.join('/'));
         }
         inventory.group_count = data.group_count;
+        if(inventory.callback)
+          inventory.callback();
         if(data.message)
           inventory.setMessage(data.message, data.result == 1 ? 'status' : 'error', 15000);
       },
@@ -129,7 +152,7 @@ var inventory = {
   }
   
   inventory.deleteEntry = function() {
-    var row = $(this).parents('tr');
+    var row = $(this).closest('tr');
     var id = row.find('input.entry_id').val();
     if(id.substr(0, 4) == 'new_') { // The entry has not yet been stored, therefor we just delete the row
       inventory.removeEntry(row);
@@ -137,7 +160,7 @@ var inventory = {
     }
     inventory.showLoading();
     $.getJSON(
-      inventory.form.attr('action').replace('/edit', '/delete_entry') + '/' + id,
+      inventory.base + '/delete_entry/' + id,
       {ajax : 1},
       $.proxy(function(data) {
         if(!data)
@@ -152,7 +175,7 @@ var inventory = {
   }
   
   inventory.removeEntry = function(row) {
-    var table = row.parents('table');
+    var table = row.closest('table');
     row.remove();
     inventory.updateGroupCount(table);
     inventory.resetOddEven();
@@ -178,7 +201,7 @@ var inventory = {
       row.removeClass('disabled');
       row.find('td input:not(input[type="hidden"], .organism)').attr('disabled', '');
     }
-    inventory.updateGroupCount(row.parents('table'));
+    inventory.updateGroupCount(row.closest('table'));
   }
   
   inventory.updateRowPositions = function() {
@@ -188,7 +211,7 @@ var inventory = {
   }
   
   inventory.updateRowPosition = function(row) {
-    var position = row.parents('tbody').find('tr').index(row);
+    var position = row.closest('tbody').find('tr').index(row);
     row.find('*[name^="entries["]').each(function() {
       var name = $(this).attr('name').split('[');
       name[2] = position+']';
@@ -205,9 +228,9 @@ var inventory = {
     clone.find('input:not(.identifier, .date)').val('');
     clone.find('select option').attr('selected', '');
     clone.find('input.date').attr('id', '').removeClass('hasDatepicker');
-    row.parents('tbody').append(clone);
+    row.closest('tbody').append(clone);
     inventory.initializeRow(clone);
-    inventory.initializeSortable(clone.parents('.invTable'));
+    inventory.initializeSortable(clone.closest('.invTable'));
     inventory.updateRowPosition(clone);
   }
   
@@ -227,7 +250,7 @@ var inventory = {
   inventory.addInventory = function() {
     inventory.showLoading();
     $.getJSON(
-      inventory.form.attr('action').replace('/edit', '/add_inventory_group') + '/' + $(this).val() + '/' + inventory.group_count++,
+      inventory.base + '/add_inventory_group/' + $(this).val() + '/' + inventory.group_count++,
       function(data) {
         inventory.hideLoading();
         if(!data)
@@ -272,7 +295,7 @@ var inventory = {
       inventory.initTemplates();
       dialog.find('#edit-actions a').click(function(e) {
         e.preventDefault();
-        $(this).parents('.ui-dialog-content').dialog('close');
+        $(this).closest('.ui-dialog-content').dialog('close');
       });
       dialog.find('form').submit(function(e) {
         var data = $(this).serializeArray();
@@ -321,7 +344,7 @@ var inventory = {
           'json'
         );
         inventory.showLoading();
-        $(this).parents('.ui-dialog-content').dialog('close');
+        $(this).closest('.ui-dialog-content').dialog('close');
         return false;
       });
     }
@@ -348,7 +371,7 @@ var inventory = {
         inventory.initCustomFields();
         dialog.find('#edit-actions a').click(function(e) {
           e.preventDefault();
-          $(this).parents('.ui-dialog-content').dialog('close');
+          $(this).closest('.ui-dialog-content').dialog('close');
         });
         dialog.find('form').submit(function(e) {
           $.post(
@@ -364,7 +387,7 @@ var inventory = {
             'json'
           );
           inventory.showLoading();
-          $(this).parents('.ui-dialog-content').dialog('close');
+          $(this).closest('.ui-dialog-content').dialog('close');
           return false;
         });
       }
@@ -376,7 +399,7 @@ var inventory = {
     e.preventDefault();
     inventory.showLoading();
     var data = {ajax: 1};
-    $(this).parents('tr').find('td:last input[type="hidden"]').each(function() {
+    $(this).closest('tr').find('td:last input[type="hidden"]').each(function() {
       var name = $(this).attr('name');
       data[name.substring(name.indexOf('col_'), name.length-1)] = $(this).val();
     });
@@ -399,14 +422,14 @@ var inventory = {
           inventory.initAdditionalFields();
           dialog.find('#edit-actions a').click(function(e) {
             e.preventDefault();
-            $(this).parents('.ui-dialog-content').dialog('close');
+            $(this).closest('.ui-dialog-content').dialog('close');
           });
           dialog.find('form').submit(function(e) {
             var values = $(this).serializeArray();
             var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
-            var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').parents('tr');
+            var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').closest('tr');
             var base_name = row.find('input.entry_id').attr('name');
-            var inventory_id = row.parents('table').find('.inventory').attr('name');
+            var inventory_id = row.closest('table').find('.inventory').attr('name');
             inventory_id = inventory_id.substring(12, inventory_id.length-1);
             for(var i=0; i<values.length; i++) {
               var name = values[i]['name'];
@@ -422,13 +445,41 @@ var inventory = {
               input.val(value);
             }
             inventory.setMessage(Drupal.t('The additional fields data will be stored only after saving the whole form by pressing the <em>Save</em> button in the lower right.'), 'warning', 15000)
-            $(this).parents('.ui-dialog-content').dialog('close');
+            $(this).closest('.ui-dialog-content').dialog('close');
             return false;
           }
         );
       }
       inventory.hideLoading();
     });
+  }
+  
+  inventory.scrollToAutocompleteItem = function(context) {
+    var widget = $(context).autocomplete('widget');
+    var item = widget.find('#ui-active-menuitem');
+    var offset = item.offset();
+    var height = item.outerHeight();
+    var wheight = $(window).height();
+    var scrolltop = $(document).scrollTop();
+    if((offset.top + height - scrolltop <= wheight) && offset.top >= scrolltop)
+      return false;
+    var cover = $('#ui-autocomplete-cover');
+    if(!cover.size())
+      var cover = $('<div id="ui-autocomplete-cover" />').appendTo($('body')).mousemove(function(e) {
+        $(this).remove();
+      });
+    cover.css({
+      'position': 'absolute',
+      'left': widget.position().left,
+      'top': widget.position().top,
+      'height': widget.outerHeight(),
+      'width': widget.outerWidth(),
+      'z-index': 100000
+    });
+    if(offset.top + height - scrolltop > wheight)
+      $(document).scrollTop(offset.top + height - wheight + 2);
+    else if(offset.top < scrolltop)
+      $(document).scrollTop(offset.top - 2);
   }
   
   inventory.initializeTable = function(table) {
@@ -464,7 +515,8 @@ var inventory = {
     // Date fields
     container.find('input.date').datepicker({
       dateFormat : 'dd.mm.yy',
-      duration : 0
+      duration : 0,
+      showButtonPanel: true
     }).width(80);
     
     // Numeric fields
@@ -479,7 +531,7 @@ var inventory = {
     
     row.find('input.entry_id[value=""]').each(function() {
       $(this).val('new_'+inventory.count++);
-      var additional = $(this).parents('tr').find('.additional');
+      var additional = $(this).closest('tr').find('.additional');
       if(!additional.size())
         return;
       var href = additional.attr('href').split('/');
@@ -490,7 +542,7 @@ var inventory = {
     // Replace delete checkbox
     row.find('input.delete').attr('checked', '').hide();
     row.find('td:last-child').append(
-      '<a class="delete" href="javascript://" title="'+row.parents('table').find('tr th:last').html()+'">'+
+      '<a class="delete" href="javascript://" title="'+row.closest('table').find('tr th:last').html()+'">'+
         '<img src="'+Drupal.settings.basePath+'modules/inventory/images/delete.gif" />'+
       '</a>'
     );
@@ -498,6 +550,14 @@ var inventory = {
     
     // Add dialog for additional fields form
     row.find('a.additional').click(inventory.additionalFieldsDialog);
+    
+    // Save entries before going to the manage images page
+    row.find('a.images').click(function(e) {
+      e.preventDefault();
+      inventory.saveEntries(e, $.proxy(function() {
+        document.location = $(this).attr('href');
+      }, this));
+    });
     
     // Disable input fields if no organism is selected
     inventory.enableDisable(row);
@@ -511,18 +571,18 @@ var inventory = {
       autoFocus : true,
       source : function(request, response) {
         //new search, so we change the indicator to searching
-        this.element.removeClass('notfound');
-        this.element.addClass('searching');
         actualElement = this.element;
+        actualElement.removeClass('notfound');
+        actualElement.addClass('searching');
         $.ajax({
           url : Drupal.settings.basePath + 'inventory/organism_autocomplete',
           dataType : "json",
           data : {
-            inv_id : this.element.parents('table').find('input.inventory').val(),
-            term : this.element.val()
+            inv_id : actualElement.closest('table').find('input.inventory').val(),
+            term : actualElement.val()
           },
           // success : response,
-          success : function(data){
+          success : function(data) {
             if(data.length==0){
               //change visual indicator to notfound and hide menu again
               actualElement.removeClass("searching");
@@ -537,21 +597,22 @@ var inventory = {
         });
       },
       focus: function(event, ui) {
+        inventory.scrollToAutocompleteItem(this);
         return false;
       },
       select: function(event, ui) {
         $(this).val(ui.item.label || ui.item.label_latin);
-        $(this).parents('td').find('input.organism_id').val(ui.item.id);
-        $(this).parents('tr').find('td > em').html(ui.item.label_latin);
-        inventory.enableDisable($(this).parents('tr'));
+        $(this).closest('td').find('input.organism_id').val(ui.item.id);
+        $(this).closest('tr').find('td > em').html(ui.item.label_latin);
+        inventory.enableDisable($(this).closest('tr'));
         if(event.keyCode == 9) { // TAB
-          $(this).parents('tr').find('input.date').parents('td').next().find('input').focus();
+          $(this).closest('tr').find('input.date').closest('td').next().find('input').focus();
           event.preventDefault();
         } else if(event.keyCode == 13) // ENTER
-          $(this).parents('tr').find('input.date').focus();
-        if($(this).parents('tr:last-child').size())
-          inventory.duplicateRow($(this).parents('tr'));
-        inventory.getImage($(this).parents('tr'));
+          $(this).closest('tr').find('input.date').focus();
+        if($(this).closest('tr:last-child').size())
+          inventory.duplicateRow($(this).closest('tr'));
+        inventory.getImage($(this).closest('tr'));
         return false;
       }
     })
@@ -559,13 +620,14 @@ var inventory = {
       //monitor field and remove class 'notfound' if its length is less than 2
       if($(this).val().length < 2) {
         $(this).removeClass('notfound');
-        $(this).parents('td').find('input.organism_id').val('');
-        $(this).parents('tr').find('td > em').html('');
-        inventory.enableDisable($(this).parents('tr'));
+        $(this).closest('td').find('input.organism_id').val('');
+        $(this).closest('tr').find('td > em').html('');
+        $(this).closest('tr').find('.image').html('');
+        inventory.enableDisable($(this).closest('tr'));
       }
     })
     .blur(function() {
-      inventory.enableDisable($(this).parents('tr'));
+      inventory.enableDisable($(this).closest('tr'));
     })
     .each(function() {
       $(this).data('autocomplete')._renderItem = function(ul, item) {
@@ -578,21 +640,23 @@ var inventory = {
           };
           return hash[m];
         });
-        var term = $.trim(term).split(' ')
         // highlighting of matches
         var label = item.label;
         var label_latin = item.label_latin;
         var old_label = item.old_label;
         var old_label_latin = item.old_label_latin;
+        var re = new RegExp($.trim(term), 'ig');
+        if(old_label)
+          old_label = old_label.replace(re, '<span class="ui-state-highlight">$&</span>');
+        else
+          label = label.replace(re, '<span class="ui-state-highlight">$&</span>');
+        var term = $.trim(term).split(' ')
         while(term.length) {
-          var re = new RegExp(term.pop(), 'ig');
-          if(old_label || old_label_latin) {
+          re = new RegExp(term.pop(), 'ig');
+          if(old_label_latin)
             old_label = old_label.replace(re, '<span class="ui-state-highlight">$&</span>');
-            old_label_latin = old_label_latin.replace(re, '<span class="ui-state-highlight">$&</span>');
-          } else {
-            label = label.replace(re, '<span class="ui-state-highlight">$&</span>');
+          else
             label_latin = label_latin.replace(re, '<span class="ui-state-highlight">$&</span>');
-          }
         }
         var old = '';
         if(old_label || old_label_latin)
@@ -639,6 +703,7 @@ var inventory = {
         );
       },
       focus: function(event, ui) {
+        inventory.scrollToAutocompleteItem(this);
         return false;
       },
       select: function(event, ui) {
@@ -699,10 +764,10 @@ var inventory = {
   inventory.addCustomField = function() {
     if(!$(this).val())
       return;
-    var row = $(this).parents('tr');
+    var row = $(this).closest('tr');
     var clone = $('<tr>'+row.html()+'</tr>');
     clone.addClass(row.hasClass('odd') ? 'even' : 'odd');
-    row.parents('tbody').append(clone);
+    row.closest('tbody').append(clone);
     clone.find('td:first input').blur(inventory.addCustomField);
     clone.find('input, select').each(function() {
       var name = $(this).attr('name');

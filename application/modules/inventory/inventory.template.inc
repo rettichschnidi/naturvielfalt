@@ -1,6 +1,9 @@
 <?php
 
+// Load all edit functions from inventory.
 module_load_include('inc', 'inventory', 'inventory.edit');
+// Load all show functions from inventory.
+module_load_include('inc', 'inventory', 'inventory.show');
 
 /**
  * Menu callback; List of a users templates
@@ -9,10 +12,11 @@ module_load_include('inc', 'inventory', 'inventory.edit');
  *  Drupal render array
  */
 function inventory_template_list() {
-  global $user;
   drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
+  global $user;
   $render_array = array();
   
+  // Own templates
   $templates = db_select('inventory_template', 't')
     ->condition('t.owner_id', $user->uid)
     ->fields('t');
@@ -22,11 +26,10 @@ function inventory_template_list() {
   $templates->groupBy('t.id, t.name, t.description, t.public, t.owner_id, t.create_time, t.modify_time');
   $templates = $templates->execute();
   
-  //Delete Image
-  $img_delete = theme('image', array(
-    'path' => 'misc/fatcow_icons/16x16/delete.png',
-    'alt' => t('Delete'),
-    'title' => t('Delete'),
+  $img_edit = theme('image', array(
+    'path' => 'misc/fatcow_icons/16x16/application_edit.png',
+    'alt' => t('Edit'),
+    'title' => t('Edit'),
   ));
   
   $headings = array(
@@ -34,6 +37,7 @@ function inventory_template_list() {
     t('Organisms'),
     t('Created on'),
     t('Modified on'),
+    t('Public'),
     '&nbsp;'
   );
   $rows = array();
@@ -45,25 +49,160 @@ function inventory_template_list() {
         $record->organisms,
         date("j.m.Y", strtotime($record->create_time)),
         date("j.m.Y", strtotime($record->modify_time)),
-        l($img_delete, 'inventorytemplate/'.$record->id.'/delete', array('html' => true))
+        $record->public ? t('Yes') : t('No'),
+        l($img_edit, 'inventorytemplate/'.$record->id.'/edit',array('html' => TRUE, ))
       )
     ));
   }
   
+  $render_array['own'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Own templates'), 
+    '#weight' => 1, 
+    '#collapsible' => TRUE, 
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),  // add 'collapsed' to array, to close by default
+    ),
+  );
+  
   if($rows)
-    $render_array['templates'] = array(
+    $render_array['own']['templates'] = array(
       '#theme' => 'datatable',
       '#header' => $headings,
       '#rows' => $rows,
-      '#id_table' => 'templates',
+      '#id_table' => 'templates_own',
     );
   else
-    $render_array['empty'] = array(
+    $render_array['own']['empty'] = array(
       '#markup' => t('You have not yet created any templates. !add', array(
         '!add' => l(t('Add one'), 'inventorytemplate/new')
       )),
     );
   
+  // Public templates
+  $templates = db_select('inventory_template', 't')
+    ->condition('t.owner_id', $user->uid, '!=')
+    ->condition('t.public', '1')
+    ->fields('t');
+  $templates->leftJoin('users', 'u', 'u.uid = t.owner_id');
+  $templates->leftJoin('inventory_template_inventory', 'ti', 'ti.inventory_template_id = t.id');
+  $templates->leftJoin('inventory_template_inventory_entry', 'tie', 'tie.inventory_template_inventory_id = ti.id');
+  $templates->addExpression('COUNT(tie.id)', 'organisms');
+  $templates->addField('u', 'name', 'owner');
+  $templates->groupBy('t.id, t.name, t.description, t.public, t.owner_id, t.create_time, t.modify_time, u.name');
+  $templates = $templates->execute();
+  
+  array_pop($headings);
+  $headings[count($headings)-1] = t('Owner');
+  
+  $rows = array();
+  foreach($templates as $record) {
+    array_push($rows, array(
+      'id' => 'template_'.$record->id,
+      'data' => array(
+        $record->name,
+        $record->organisms,
+        date("j.m.Y", strtotime($record->create_time)),
+        date("j.m.Y", strtotime($record->modify_time)),
+        $record->owner
+      )
+    ));
+  }
+  
+  if($rows) {
+    $render_array['public'] = array(
+      '#type' => 'fieldset', 
+      '#title' => t('Public templates'), 
+      '#weight' => 2, 
+      '#collapsible' => TRUE, 
+      '#collapsed' => FALSE,
+      '#attached' => array (
+        'js' => array (
+          'misc/form.js',
+          'misc/collapse.js',
+        ),
+      ),
+      '#attributes' => array(
+        'class' => array('collapsible'),  // add 'collapsed' to array, to close by default
+      ),
+    );
+    $render_array['public']['templates'] = array(
+      '#theme' => 'datatable',
+      '#header' => $headings,
+      '#rows' => $rows,
+      '#id_table' => 'templates_public',
+    );
+  }
+  
+  return $render_array;
+}
+
+/**
+ * Menu callback; View of an inventory template
+ * 
+ * @param int $template_id
+ * @return array
+ *  Drupal render array
+ */
+function inventory_template_show($template_id) {
+  $template = _inventory_template_load($template_id);
+  drupal_set_title($template['name']);
+  
+  $rows = array();
+  $rows[] = array(
+    array('data' => t('Owner'), 'header' => true), 
+    l($template['owner'], 'user/'.$template['owner'].'/contact')
+  );
+  $rows[] = array(
+    array('data' => t('Modified on'), 'header' => true), 
+    date("j.m.Y", strtotime($template['modify_time']))
+  );
+  $rows[] = array(
+    array('data' => t('Created on'), 'header' => true), 
+    date("j.m.Y", strtotime($template['create_time']))
+  );
+  $rows[] = array(
+    array('data' => t('Public'), 'header' => true), 
+    $template['public'] ? t('Yes') : t('No')
+  );
+  $rows[] = array(
+    array('data' => t('Description'), 'header' => true), 
+    $template['description']
+  );
+  
+  $render_array['details'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Template details'), 
+    '#weight' => 1, 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+  $render_array['details']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+    '#attributes' => array(
+      'class' => array('inventory_show'),
+    ),
+  );
+  
+  $render_array = array_merge($render_array, inventory_inventories($head_inventory_id, _inventory_template_data($template['id']), false));
+
   return $render_array;
 }
 
@@ -83,7 +222,7 @@ function inventory_template_delete_form($form, &$form_state, $template_id) {
   return confirm_form(
     $form,
     t('Delete %name?', array('%name' => $template['name'])),
-    'inventorytemplate',
+    'inventorytemplate/'.$template_id,
     t('Are you sure you want to delete the template %name?', array('%name' => $template['name'])),
     t('Delete'),  t('Cancel')
   );
@@ -444,10 +583,12 @@ function inventory_template_add_inventory_group($template_id, $inventory_type_id
  * @return array
  */
 function _inventory_template_load($inventory_template_id) {
-  return db_select('inventory_template', 'it')
+  $query = db_select('inventory_template', 'it')
     ->condition('id', $inventory_template_id)
-    ->fields('it')
-    ->execute()
+    ->fields('it');
+  $query->join('users', 'u', 'u.uid = it.owner_id');
+  $query->addField('u', 'name', 'owner');
+  return $query->execute()
     ->fetchAssoc();
 }
 

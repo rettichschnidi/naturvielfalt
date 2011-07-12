@@ -6,6 +6,8 @@ function show_area($areaId) {
   drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
   
+  area_add_gmap_resources(false);
+  
   $coords = area_convert_coordinates($areaId);
   
   $rows = array();
@@ -91,11 +93,11 @@ function show_area($areaId) {
       'data' => t('Parcels'),
       'header' => true
     ),
-    	_area_parcels_table($areaId)
-  );  
+    _area_parcels_table($areaId)
+  );
   
   
-    $comment[] = array(
+  $comment[] = array(
     array(
       'data' => t('Description'),
       'header' => true
@@ -212,15 +214,32 @@ function show_area($areaId) {
     '#rows' => $concept,
     '#id_table' => 'area_details',
   );
-
-  $imagepath = gmap_static_image_path($areaId, 500, 500);
-  $variables_map= array(
-    'path' => $imagepath,
-    'alt' => t('Map'),
-    'title' => t('Map'),
+  
+  $areas = db_query('
+    SELECT * FROM area a
+    LEFT JOIN area_point ap ON a.id = ap.area_id
+    WHERE a.id = :id
+    ORDER BY seq ASC',
+    array(":id" => $areaId)
   );
-  $output['area_map']['image'] = array(
-    '#markup' => theme('image', $variables_map)
+  $center = false;
+  $points = array();
+  foreach ($areas as $entry) {
+    array_push($points, $entry->lat.','.$entry->lng);
+    if($entry->centroid_lat || $entry->centroid_lng)
+      $center = $entry->centroid_lat.','.$entry->centroid_lng;
+  }
+  
+  if(count($points)<=1 && !$zoom) {
+    if(count($points))
+      $center = array_pop($points);
+    $zoom = 18;
+  }
+  $zoom = $zoom?' data-zoom="'.$zoom:'"';
+  $center = $center?' data-center="'.$center:'"';
+  
+  $output['area_map']['map'] = array(
+    '#markup' => '<div id="map"><div id="map_canvas" data-areaid="'.$areaId.'"'.$center.$zoom.' style="height: 100%"></div></div>'
   );
   
   $output = array_merge($output, area_inventories($areaId));
@@ -228,7 +247,7 @@ function show_area($areaId) {
   $output = array_merge($output, area_files($areaId));
   
   if(function_exists('gallery_list_renderer'))
-    $output['gallery'] = gallery_list_renderer('area', $areaId, t('Images of the area'));
+    $output['gallery'] = gallery_list_renderer('area', $areaId);
   return $output;
   
 }
@@ -535,17 +554,18 @@ function area_habitats($areaId) {
     $row[] = $record->name_de;
     $row[] = $record->name_lt;
     $row[] = $record->id;
-    if(function_exists('gallery_edit_link')) {
-      $row[] = gallery_edit_link('area_habitat', $record->ah_id);
+    if(function_exists('gallery_view_link')) {
+      $row[] = gallery_view_link('area_habitat', $record->ah_id);
       if($row[4])
         $has_gallery = true;
-      $output['gallery_'.$record->ah_id] = gallery_list_renderer('area_habitat', $record->ah_id, t('Images of the habitat !habitat', array('!habitat' => $record->name_de)), $weight++, true);
     }
     $rows[] = array('data' => $row, 'id' => 'habitat_'. $record->id);
   }
   
   if($has_gallery)
     $header[] = '&nbsp;';
+  else
+    array_walk($rows, create_function('&$row', 'array_pop($row[\'data\']);'));
   
   if(empty($rows))
     return $output;
@@ -869,13 +889,14 @@ function area_files($area_id) {
 }
 
 function _area_parcels_table($area_id) {
-	$result = db_select('area_parcel')
-		->fields('area_parcel')
-		->condition('area_id', $area_id)
-		->execute();
-	foreach($result as $record) {
-		$parcels = $parcels.' '.$record->parcel.'<br>';
-	}
-	return $parcels;
+  $result = db_select('area_parcel')
+    ->fields('area_parcel')
+    ->condition('area_id', $area_id)
+    ->execute();
+  foreach($result as $record) {
+    $parcels = $parcels.' '.$record->parcel.'<br>';
+  }
+  return $parcels;
 }
+
 ?>

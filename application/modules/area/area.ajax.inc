@@ -110,7 +110,7 @@ function area_saved_autocomplete($string) {
  * 
  * @return a json string with all areas
  */
-function get_areas() {
+function get_areas($area_id=false) {
   $areas = db_query('
     SELECT area.id area_id, at.desc at_desc, field_name, altitude, surface_area,locality, township, canton,
       centroid_lat, centroid_lng, comment, lat, lng, seq, habitat_id, label, name_de, ah.id ah_id, ah.habitat_id ah_habitat_id
@@ -119,6 +119,7 @@ function get_areas() {
       LEFT JOIN area_habitat ah ON ah.area_id = area.id
       LEFT JOIN habitat h ON h.id = ah.habitat_id
       LEFT JOIN area_type at ON at.id = area.type_id
+    '.($area_id ? 'WHERE area.id = '.$area_id : '').'
     ORDER BY area_id, seq, ah_id asc
   ');
 

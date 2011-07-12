@@ -4,27 +4,23 @@
  * @return render array
  */
 function show_area_search() {
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
-	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
-	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
-	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
-	
-	$output['search'] = array(
-		'#theme' => 'area.search',
-	);
+  
+  $output['search'] = array(
+    '#theme' => 'area.search',
+  );
 
-	/*
-	 * Last Used areas ist laut Albert nicht mehr erforderlich
-	$output['LastUsed'] = array(
-		'#type' => 'fieldset',
-		'#title' => t('Last Used Areas'),
-	);
-	$output['LastUsed']['table'] = area_last_used_table();
-	*/
-	
-	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
-	$output['FieldName'] = drupal_get_form('area_field_name_form');
-	return $output;
+  /*
+   * Last Used areas ist laut Albert nicht mehr erforderlich
+  $output['LastUsed'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Last Used Areas'),
+  );
+  $output['LastUsed']['table'] = area_last_used_table();
+  */
+  
+  $output['googleMaps'] = drupal_get_form('area_google_maps_form');
+  $output['FieldName'] = drupal_get_form('area_field_name_form');
+  return $output;
 }
 
 /**
@@ -32,12 +28,12 @@ function show_area_search() {
  * @return a button linking to step 1 of workflow
  */
 function area_back_button() {
-	$button = array(
-		'#type' => 'button',
-		'#attributes' => array('onClick' => 'location.replace("../inventory/new"); return false;'),
-		'#value' => t('Back'),
-  	);
-  	return $button;
+  $button = array(
+    '#type' => 'button',
+    '#attributes' => array('onClick' => 'location.replace("../inventory/new"); return false;'),
+    '#value' => t('Back'),
+    );
+    return $button;
 }
 
 /**
@@ -45,15 +41,15 @@ function area_back_button() {
  * @return Google Maps input search field
  */
 function area_google_maps_form() {
-	$form['GoogleMaps'] = array(
-		'#type' => 'fieldset', 
-  		'#title' => t('Map'),
-  		'#weight' => 3, 
-  		'#collapsible' => FALSE, 
-		'searchByMaps' => array('#theme' => 'area.search.byMaps.show'), // map
-	);
-	
-	return $form;
+  $form['GoogleMaps'] = array(
+    '#type' => 'fieldset', 
+      '#title' => t('Map'),
+      '#weight' => 3, 
+      '#collapsible' => FALSE, 
+    'searchByMaps' => array('#theme' => 'area.search.byMaps.show'), // map
+  );
+  
+  return $form;
 }
 
 /**
@@ -61,79 +57,71 @@ function area_google_maps_form() {
  * @return input search field for saved areas
  */
 function area_field_name_form() {
-	$area = db_query(
-		"SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, art.desc art_dest FROM area
-		LEFT JOIN users u ON u.uid = owner_id
-		LEFT JOIN area_type art ON art.id = type_id
-		ORDER BY field_name;"
-	);
-	
-	//Localize Image
-	$view_img_localize = theme('image', array(
+  $area = db_query(
+    "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, art.desc art_dest FROM area
+    LEFT JOIN users u ON u.uid = owner_id
+    LEFT JOIN area_type art ON art.id = type_id
+    ORDER BY field_name;"
+  );
+  
+  //Localize Image
+  $view_img_localize = theme('image', array(
     'path' => 'misc/fatcow_icons/16x16/world.png',
     'alt' => t('Details'),
     'title' => t('Details'),
   ));
-	
-  $has_gallery = false;
-	foreach ($area as $record) {
-		$row = array();
-		$row[] = $record->field_name;
-		$row[] = $record->zip;
-		$row[] = $record->locality;
-		$row[] = $record->canton;
-		$row[] = $record->country;
-		if($record->create_time){
-			$row[] = date("j.m.Y", strtotime($record->create_time));
-		} else {
-			$row[] = '';
-		}
-		$row[] = $record->u_name;
-		$row[] = $record->art_dest;
-		$row[] = array('data' => l($view_img_localize, 'area/'.$record->a_id, array('html'=>true)), 'class' => 'show_static_image');
-    if(function_exists('gallery_edit_link')) {
-      $row[] = gallery_edit_link('area', $record->a_id);
-      if($row[3])
-        $has_gallery = true;
+  
+  foreach ($area as $record) {
+    $row = array();
+    $row[] = $record->field_name;
+    $row[] = $record->zip;
+    $row[] = $record->locality;
+    $row[] = $record->canton;
+    $row[] = $record->country;
+    if($record->create_time){
+      $row[] = date("j.m.Y", strtotime($record->create_time));
+    } else {
+      $row[] = '';
     }
-		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
-	}
-	
-	$tableHeader[] = t('Area Name');
-	$tableHeader[] = t('Zip');
-	$tableHeader[] = t('Locality');
-	$tableHeader[] = t('Canton');
-	$tableHeader[] = t('Country');
-	$tableHeader[] = t('Created on');
-	$tableHeader[] = t('Area Creator');
-	$tableHeader[] = t('Area Type');
-	$tableHeader[] = '&nbsp;';
-  if($has_gallery)
-    $tableHeader[] = '&nbsp;';
-	$form['FieldName'] = array(
-		'#type' => 'fieldset',
-  		'#title' => t('Search by field name:'),
-  		'#weight' => 5,
-	);
+    $row[] = $record->u_name;
+    $row[] = $record->art_dest;
+    $row[] = array('data' => l($view_img_localize, 'area/'.$record->a_id, array('html'=>true)), 'class' => 'show_static_image');
+    $rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
+  }
+  
+  $tableHeader[] = t('Area Name');
+  $tableHeader[] = t('Zip');
+  $tableHeader[] = t('Locality');
+  $tableHeader[] = t('Canton');
+  $tableHeader[] = t('Country');
+  $tableHeader[] = t('Created on');
+  $tableHeader[] = t('Area Creator');
+  $tableHeader[] = t('Area Type');
+  $tableHeader[] = '&nbsp;';
+  $form['FieldName'] = array(
+    '#type' => 'fieldset',
+      '#title' => t('Search by field name:'),
+      '#weight' => 5,
+  );
 
-	$form['FieldName']['show_areas'] = array(
-		'#theme' => 'datatable',
-		'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#id_table' => 'show_areas',
-		'#len' => 220,
-	);
+  $form['FieldName']['show_areas'] = array(
+    '#theme' => 'datatable',
+    '#header' => $tableHeader,
+    '#rows' => $rows,
+    '#id_table' => 'show_areas',
+    '#len' => 220,
+  );
 
-	return $form;
+  return $form;
 }
 
  function area_search($form, &$form_state) {
-	$form['AreaText'] = array(
-		'#title' => t('Search through existing areas'),
-		'#type' => 'textfield',   
-		'#autocomplete_path' => 'area/area_saved_autocomplete',
-	);
-	return $form;
+  $form['AreaText'] = array(
+    '#title' => t('Search through existing areas'),
+    '#type' => 'textfield',   
+    '#autocomplete_path' => 'area/area_saved_autocomplete',
+  );
+  return $form;
 }
 
 /**
@@ -141,39 +129,39 @@ function area_field_name_form() {
  * @return table element to render
  */
 function area_last_used_table() {
-	global $user;
+  global $user;
 
-	$head_inventories= db_query(
-		"SELECT * FROM area 
-		WHERE owner_id = :owner_id
-		ORDER BY modify_time DESC
-		LIMIT 5",
-	array(':owner_id'=>$user->uid)
-	);
+  $head_inventories= db_query(
+    "SELECT * FROM area 
+    WHERE owner_id = :owner_id
+    ORDER BY modify_time DESC
+    LIMIT 5",
+  array(':owner_id'=>$user->uid)
+  );
 
-	foreach ($head_inventories as $record) {
-		$row = array();
-		$row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea('.$record->id.')">'.$record->field_name.'</a>';
-		$row[] = $record->zip;
-		$row[] = $record->locality;
-		$row[] = $record->canton;
-		$rows[] = $row;
-	}
+  foreach ($head_inventories as $record) {
+    $row = array();
+    $row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea('.$record->id.')">'.$record->field_name.'</a>';
+    $row[] = $record->zip;
+    $row[] = $record->locality;
+    $row[] = $record->canton;
+    $rows[] = $row;
+  }
 
-	$header = array(t('Area Name'),t('Zip Code'),t('Locality'),t('Canton'),);
+  $header = array(t('Area Name'),t('Zip Code'),t('Locality'),t('Canton'),);
 
-	if ($rows){
-		$table['organisms'] = array(
-		    '#theme' => 'table', 
-			'#header' => $header,
-		    '#rows' => $rows,
-		);
-	} else {
-		$table['noArea'] = array (
-			'#markup'=> t('You haven\'t used an area yet')
-		);
-	}
-	return $table;
+  if($rows) {
+    $table['organisms'] = array(
+        '#theme' => 'table', 
+      '#header' => $header,
+        '#rows' => $rows,
+    );
+  } else {
+    $table['noArea'] = array (
+      '#markup'=> t('You haven\'t used an area yet')
+    );
+  }
+  return $table;
 }
 
 

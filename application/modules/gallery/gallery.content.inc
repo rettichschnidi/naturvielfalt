@@ -12,6 +12,10 @@ define('GALLERY_IMAGE_COUNT', 15);
  * Menu callback; Listing of all images for a given context.
  */
 function gallery_list($type, $id, $backlink=true) {
+  $types = _gallery_types();
+  $type_info = $types[$type];
+  if(array_key_exists($type, $types) && array_key_exists('image_caption', $types[$type]))
+    drupal_set_title(call_user_func_array($types[$type]['image_caption'], array($id)), PASS_THROUGH);
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   $page = array();
   $editable = gallery_edit_access_callback($type, $id);
@@ -127,7 +131,7 @@ function _gallery_list_parameters($type, $id) {
   if($params['crosslinking'] && array_key_exists($key.'_crosslinked', $_GET))
     $_SESSION[$key.'_crosslinked'] = $_GET[$key.'_crosslinked'] ? true : false;
   $params['crosslinked'] = array_key_exists($key.'_crosslinked', $_SESSION) ? $_SESSION[$key.'_crosslinked'] : null;
-  $params['subtypes'] = _gallery_get_subtypes($type, $crosslinked);
+  $params['subtypes'] = _gallery_get_subtypes($type, $params['crosslinked']);
   if($params['subtypes'] && array_key_exists($key.'_subtype', $_GET))
     $_SESSION[$key.'_subtype'] = $_GET[$key.'_subtype'];
   $params['subtype'] = array_key_exists($key.'_subtype', $_SESSION) ? $_SESSION[$key.'_subtype'] : '';
@@ -317,22 +321,27 @@ function gallery_presentation_renderer($items, $imgsize='gallery_presentation', 
 }
 
 /**
- * Renders an edit link to manage the images of a given object type and id
- * if the user has edit permissions
+ * Renders a link to view the images of a given object type and id
+ * if the user has view permissions and there are images available
  * 
  * @return 
  * @param object $type
  * @param object $id
+ * @param object $url[Optional]
  */
-function gallery_edit_link($type, $id) {
-  if(!gallery_edit_access_callback($type, $id))
+function gallery_view_link($type, $id, $url=false) {
+  if(!gallery_access_callback($type))
+    return false;
+  $params = _gallery_list_parameters($type, $id);
+  $images = gallery_images($type, $id, $params['crosslinked'], true, 1, $params['subtype']);
+  if(!$images['count'])
     return false;
   $gallery_img_localize = theme('image', array(
     'path' => drupal_get_path('module', 'gallery').'/images/image.png',
-    'alt' => t('Manage images'),
-    'title' => t('Manage images'),
+    'alt' => t('View images'),
+    'title' => t('View images'),
   ));
-  return l($gallery_img_localize, 'gallery/'.$type.'/'.$id.'/edit', array('html'=>true));
+  return l($gallery_img_localize, $url ? $url : 'gallery/'.$type.'/'.$id, array('html'=>true));
 }
 
 /**
@@ -356,7 +365,6 @@ function gallery_thumb($type, $id, $image, $size) {
  * Menu callback; Gallery edit view
  */
 function gallery_images_edit($type, $id) {
-  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.upload.js');
   
   $back = _gallery_back_link($type, $id);
   if($back)
@@ -447,6 +455,7 @@ function gallery_images_form($form, &$form_state, $type, $id) {
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
+  $types = _gallery_types();
   $subtypes = _gallery_get_subtypes($type, false);
   
   $header = array('', t('Filename'), t('Title'));
@@ -454,26 +463,31 @@ function gallery_images_form($form, &$form_state, $type, $id) {
     $header[] = t('Type');
   $header[] = t('Author');
   $header[] = t('Location');
+  $header[] = t('Caption');
   $header[] = t('Operations');
   $header[] = t('Delete');
 
-  $images = gallery_images($type, $id, false);
+  $images = gallery_images($type, $id, 'edit');
   
   $rows = array();
   foreach($images['images'] as $image) {
+    $caption = '';
+    if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
+      $caption = call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id']));
     $editable = gallery_edit_access_callback($type, $id, $image);
     $row = array();
     $row[] = '<a rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
     $row[] = $image['filename'];
     $row[] = $image['title'];
     if($subtypes) {
-      $types = array();
+      $stypes = array();
       foreach($image['subtypes'] as $subtype)
-        $types[] = $subtypes[$subtype];
-      $row[] = implode(', ', $types);
+        $stypes[] = $subtypes[$subtype];
+      $row[] = implode(', ', $stypes);
     }
     $row[] = $image['author'];
     $row[] = $image['location'];
+    $row[] = $caption;
     $row[] = $editable ? l(t('edit'), 'gallery/'.$type.'/'.$id.'/edit/'.$image['id']) : '&nbsp;';
     $row[] = $editable ? '<input type="checkbox" name="delete_'.$image['id'].'" value="1" />' : '&nbsp;';
     $rows[] = $row;
@@ -521,10 +535,12 @@ function gallery_images_form($form, &$form_state, $type, $id) {
  * @see gallery_image_form_submit()
  */
 function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
+  global $user;
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
+  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.upload.js');
   if($image['id']) {
     $title = t('Edit %name', array('%name' => ($image['title'] ? $image['title'] : $image['filename'])));
     $form_state['gallery_image_id'] = $image['id'];
@@ -532,6 +548,14 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
     $title = t('Add new image');
   drupal_set_title($title, PASS_THROUGH);
   
+  $types = _gallery_types();
+  $item_provider = array_key_exists('item_provider', $types[$type]) ? $types[$type]['item_provider'] : false;
+  $form_state['item_provider'] = $item_provider;
+  $item_provider_autocomplete = array_key_exists('item_provider_autocomplete', $types[$type]) ? $types[$type]['item_provider_autocomplete'] : false;
+  if($item_provider_autocomplete)
+    drupal_add_library('system', 'ui.autocomplete');
+  else
+    $items = call_user_func_array($item_provider, array($id));
   $subtypes = _gallery_get_subtypes($type, false);
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
@@ -542,36 +566,12 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
     $form['thumb'] = array(
       '#markup' => '<a class="user-picture" rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>'
     );
+  if(!$image['item_type'])
+    $image['item_type'] = $type;
+  if(!$image['item_id'])
+    $image['item_id'] = $id;
   
-  $available = gallery_available_categories($type, $id);
-  $categories = array();
-  foreach($available as $category) {
-    if(!$category['options']) // no options available for this category
-      continue;
-    $options = array();
-    foreach($category['options'] as $option)
-      $options[$option['id']] = $option['name'];
-    $categories[$category['id']] = array(
-      '#type' => $category['multiple'] ? 'checkboxes' : 'select',
-      '#title' => $category['name'],
-      '#options' => $options,
-      '#description' => $category['description'],
-      '#required' => $category['required'],
-    );
-    
-    if($category['multiple'])
-      $categories[$category['id']]['#default_value'] = array();
-    foreach($options as $value => $option) {
-      if(is_array($image['categories']) && array_key_exists($value, $image['categories']))
-        if($category['multiple'])
-          array_push($categories[$category['id']]['#default_value'], $value);
-        else {
-          $categories[$category['id']]['#default_value'] = $value;
-          break;
-        }
-    }
-    $c++;
-  }
+  $default_location = _gallery_get_default_location($type, $id);
 
   $num = 1;
   while(array_key_exists('images_'.($i+$num), $form_state['input']))
@@ -587,41 +587,53 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#file_required' => false,//!$image['id'],
     );
     
+    $form[$prefix] = array();
     if($subtypes)
-      $form[$prefix.'_subtypes'] = array(
+      $form[$prefix]['subtypes'] = array(
         '#type' => 'checkboxes',
         '#title' => t('Type'),
         '#options' => $subtypes,
         '#default_value' => $image['subtypes'],
         '#required' => false,
       );
-    
-    $form[$prefix] = array();
-    if($categories) {
-      $form[$prefix]['categories'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Categories'),
-        '#weight' => 1,
-        '#collapsible' => true,
-        '#collapsed' => $image['id'] ? false : true,
-        '#attached' => array (
-          'js' => array (
-            'misc/form.js',
-            'misc/collapse.js',
-          ),
-        ),
-        '#attributes' => array(
-          'class' => array('categories collapsible'),
-        ),
-      );
-      foreach($categories as $id => $category)
-        $form[$prefix]['categories'][$id] = $category;
+    if($item_provider) {
+      if($item_provider_autocomplete) {
+        $search = call_user_func_array($item_provider, array($image['item_type'], $image['item_id']));
+        $form[$prefix]['item'] = array(
+          '#type' => 'hidden',
+          '#default_value' => $search ? $image['item_type'].':'.$image['item_id'] : '',
+          '#attributes' => array(
+            'class' => array('item')
+          )
+        );
+        $form[$prefix]['item_search'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Related item'),
+          '#default_value' => $search,
+          '#required' => true,
+          '#attributes' => array(
+            'class' => array('search'),
+            'rel' => url('gallery/'.$item_provider_autocomplete.'/'.$type.'/'.$id)
+          )
+        );
+      } else {
+        $form[$prefix]['item'] = array(
+          '#type' => 'select',
+          '#title' => t('Related item'),
+          '#options' => $items,
+          '#default_value' => $image['item_type'].':'.$image['item_id'],
+          '#required' => true,
+          '#attributes' => array(
+            'class' => array('item')
+          )
+        );
+      }
     }
     
     $form[$prefix]['metadata'] = array(
       '#type' => 'fieldset',
       '#title' => t('Metadata'),
-      '#weight' => 2,
+      '#weight' => 1,
       '#collapsible' => true,
       '#collapsed' => $image['id'] ? false : true,
       '#attached' => array (
@@ -655,7 +667,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#title' => t('Author'),
       '#size' => 100,
       '#maxlength' => 255,
-      '#default_value' => $image['author'],
+      '#default_value' => $image['author'] ? $image['author'] : $user->name,
       '#description' => t('The author of the image.'),
       '#required' => FALSE,
     );
@@ -664,10 +676,36 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#title' => t('Location'),
       '#size' => 100,
       '#maxlength' => 255,
-      '#default_value' => $image['location'],
+      '#default_value' => $image['location'] ? $image['location'] : $default_location,
       '#description' => t('The location the image was taken at.'),
       '#required' => FALSE,
     );
+    
+    if($form_state['input'][$prefix]['item']) {
+      $item = explode(':', $form_state['input'][$prefix]['item']);
+      $categories = _gallery_image_form_categories($item[0], $item[1], $image);
+    } else
+      $categories = _gallery_image_form_categories($image['item_type'], $image['item_id'], $image);
+    $form[$prefix]['categories'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Categories'),
+      '#weight' => 2,
+      '#collapsible' => true,
+      '#collapsed' => $image['id'] ? false : true,
+      '#attached' => array (
+        'js' => array (
+          'misc/form.js',
+          'misc/collapse.js',
+        ),
+      ),
+      '#attributes' => array(
+        'class' => array('categories collapsible'),
+      ),
+    );
+    if($categories)
+      $form[$prefix]['categories'] = array_merge($form[$prefix]['categories'], $categories);
+    else
+      $form[$prefix]['categories']['#attributes']['style'] = 'display:none';
   }
   
   // Show the Override or Submit button for this style.
@@ -675,12 +713,76 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
   $form['actions']['upload_submit'] = array(
     '#type' => 'submit',
     '#value' => $image['id'] ? t('Change image') : t('Upload images'),
-    '#access' => $editable,
     '#submit' => array('gallery_images_form_upload_submit'),
-    '#attributes' => array('data-add' => t('Add another image'), 'data-remove' => t('Remove image'))
+    '#attributes' => $image['id'] ? array() : array('data-add' => t('Add another image'), 'data-remove' => t('Remove image'))
   );
 
   return $form;
+}
+
+function gallery_image_form_categories($type, $id) {
+  $prefix = $_REQUEST['prefix'];
+  $data = array(
+    'categories' => array(),
+    'item_type' => $_REQUEST['item_type'],
+    'item_id' => $_REQUEST['item_id']
+  );
+  if(is_array($_REQUEST[$prefix]['categories']))
+    foreach($_REQUEST[$prefix]['categories'] as $cat) {
+      if(is_array($cat)) {
+        foreach($cat as $value)
+          if($value)
+            $data['categories'][substr($value, 4)] = substr($value, 4);
+      } else
+        $data['categories'][substr($cat, 4)] = substr($cat, 4);
+    }
+  $base_form = drupal_get_form('gallery_image_form', $type, $id, $data, intval(substr($prefix, 7)));
+  $form = drupal_render(drupal_get_form('gallery_image_form_categories_form', $_REQUEST['item_type'], $_REQUEST['item_id'], $data, $prefix));
+  $form = preg_replace('/<form[^>]*>\s*<div>(.*)(<input[^>]*type="hidden"[^>]*>\s*){3}<\/div>\s*<\/form>/', '$1', str_replace("\n", '', $form));
+  return drupal_json_output(array(
+    'request' => $_REQUEST[$prefix]['categories'],
+    'values' => $data['categories'],
+    'form_build_id' => $base_form['form_build_id']['#value'],
+    'form_token' => $base_form['form_token']['#value'],
+    'categories' => $form
+  ));
+}
+
+function gallery_image_form_categories_form($form, &$form_state, $type, $id, $image, $prefix) {
+  $form['#tree'] = true;
+  $form[$prefix]['categories'] = _gallery_image_form_categories($type, $id, $image);
+  return $form;
+}
+
+function _gallery_image_form_categories($type, $id, $image) {
+  $available = gallery_available_categories($type, $id);
+  $categories = array();
+  foreach($available as $category) {
+    if(!$category['options']) // no options available for this category
+      continue;
+    $options = array();
+    foreach($category['options'] as $option)
+      $options['opt_'.$option['id']] = $option['name'];
+    $categories['cat_'.$category['id']] = array(
+      '#type' => $category['multiple'] ? 'checkboxes' : 'select',
+      '#title' => $category['name'],
+      '#options' => $options,
+      '#description' => $category['description'],
+      '#required' => $category['required'],
+    );
+    if($category['multiple'])
+      $categories['cat_'.$category['id']]['#default_value'] = array();
+    foreach($options as $value => $option) {
+      if(is_array($image['categories']) && array_key_exists(substr($value, 4), $image['categories']))
+        if($category['multiple'])
+          array_push($categories['cat_'.$category['id']]['#default_value'], $value);
+        else {
+          $categories['cat_'.$category['id']]['#default_value'] = $value;
+          break;
+        }
+    }
+  }
+  return $categories;
 }
 
 /**
@@ -709,55 +811,63 @@ function gallery_images_form_upload_submit($form, &$form_state) {
   $type = $form_state['gallery_type'];
   $id = $form_state['gallery_id'];
   $orig_image = $form_state['gallery_image'];
+  $item_provider = $form_state['item_provider'];
   
   $validators = array(
     'file_validate_extensions' => array('jpg jpeg gif png'),
     'file_validate_size' => array(parse_size(file_upload_max_size()), 0),
   );
-
-  $destination = 'public://swissmon/gallery/'.$type.'/'.$id;
-  $categories = gallery_available_categories($type, $id);
+  
+  $destination = array();
+  $categories = array();
 
   $saved = false;
-  file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
   foreach($form_state['values'] as $prefix => $values) {
-    if(!is_array($values['metadata']) || !array_key_exists('title', $values['metadata']))
+    if(!is_array($values['metadata']))
       continue;
     $name = $prefix.'_file';
-    if(!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
+    if(!$orig_image['id'] && (!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name]))
       continue;
+    $item = explode(':', $values['item']);
     $image = array(
-      'item_type' => $type,
-      'item_id' => $id,
+      'item_type' => $item_provider ? $item[0] : $type,
+      'item_id' => $item_provider ? $item[1] : $id,
       'title' => $values['metadata']['title'],
       'description' => $values['metadata']['description'],
       'author' => $values['metadata']['author'],
       'location' => $values['metadata']['location'],
       'categories' => array(),
-      'subtypes' => $form_state['values'][$prefix.'_subtypes']
+      'subtypes' => $values['subtypes']
     );
+    $key = $image['item_type'].':'.$image['item_id'];
+    if(!array_key_exists($key, $destination)) {
+      $destination[$key] = 'public://swissmon/gallery/'.$image['item_type'].'/'.$image['item_id'];
+      file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
+    }
+    if(!array_key_exists($key, $categories))
+      $categories[$key] = gallery_available_categories($image['item_type'], $image['item_id']);
     if($orig_image['id'])
       $image['id'] = $orig_image['id'];
-    foreach($categories as $category) {
+    foreach($categories[$key] as $category) {
       if(!$category['options']) // no options available for this category
         continue;
-      if(!$values['categories'][$category['id']])
+      if(!$values['categories']['cat_'.$category['id']])
         continue;
-      $options = $values['categories'][$category['id']];
+      $options = $values['categories']['cat_'.$category['id']];
       if(!$category['multiple'])
         $options = array($options);
       foreach($options as $value) {
         if(!$value)
           continue;
         $cat = array(
-          'option_id' => $value,
+          'option_id' => substr($value, 4),
         );
         if(is_array($orig_image['categories']) && array_key_exists($value, $orig_image['categories']))
-            $cat['value_id'] = $orig_image['categories'][$value]['value_id'];
+          $cat['value_id'] = $orig_image['categories'][substr($value, 4)]['value_id'];
         array_push($image['categories'], $cat);
       }
     }
-    $file = file_save_upload($name, $validators, $destination);
+    $file = file_save_upload($name, $validators, $destination[$key]);
     if ($file) {
       $file->status |= FILE_STATUS_PERMANENT;
       $file = file_save($file);
@@ -955,11 +1065,9 @@ function _gallery_get_class($i, $columns=GALLERY_COLUMNS) {
  */
 function theme_gallery_image_rating($variables) {
   global $base_url;
-  drupal_add_css('misc/ui/jquery.ui.core.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  drupal_add_library('system', 'ui.widget');
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.ui.stars.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-  drupal_add_js('misc/ui/jquery.ui.core.min.js');
-  drupal_add_js('misc/ui/jquery.ui.widget.min.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.ui.stars.min.js', array('weight' => 101));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 110));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.rating.js', array('weight' => 111));

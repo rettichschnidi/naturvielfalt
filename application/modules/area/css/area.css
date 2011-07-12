@@ -29,6 +29,10 @@ div.box {
   float:right;
 }
 
+#area-map #map {
+  height:500px;
+}
+
 #area-map img {
   display:block;
 }

@@ -398,21 +398,24 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
  *  - "old_label_latin"[Optional]: The latin name of the initially found organism
  *    (only available if the found organism has a reference to an official one)
  */
-function inventory_organism_autocomplete() {
-  $invId = $_REQUEST['inv_id'];
-  $term = strtolower($_REQUEST['term']);
+function inventory_organism_autocomplete($type_id=false, $term=false, $plain=false) {
+  if(!$type_id)
+    $type_id = $_REQUEST['inv_id'];
+  if(!$term)
+    $term = $_REQUEST['term'];
+  $term = strtolower($term);
   $terms = explode(' ', trim($term));
   $terms = array_filter($terms);
   
   $limit = strlen(trim($term)) > 3 ? 100000 : 20;
   
-  $fauna = ($invId == 16 ? false : true);
+  $fauna = ($type_id == 16 ? false : true);
   
   $organisms = array();
   
   $where = array();
   $params = array(
-    ':inventoryTypeId' => $invId,
+    ':inventoryTypeId' => $type_id,
     ':limit' => $limit
   );
   $i = 1;
@@ -493,7 +496,9 @@ function inventory_organism_autocomplete() {
     
     $organisms[] = $organism;
   }
-  return drupal_json_output($organisms);
+  if(!$plain)
+    $organisms = drupal_json_output($organisms);
+  return $organisms;
 }
 
 /**
@@ -707,7 +712,7 @@ function inventory_delete_entry($head_inventory_id, $entry_id, $plain=false) {
 function inventory_add_inventory_group($head_inventory_id, $inventory_type_id, $key) {
   $desc = inventory_column_description($inventory['id'], $inventory_type_id, true, $head_inventory_id);
   return drupal_json_output(array(
-    'data' => drupal_render(_inventory_group_factory($head_inventory_id, $desc, 'new_'.$key, _inventory_visible_fields()))
+    'data' => drupal_render(_inventory_group_factory($head_inventory_id, $desc, 'new_'.$key))
   ));
 }
 
@@ -1431,6 +1436,8 @@ function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $
     'data' => t('Latin name'),
     'class' => array('latin_name')
   );
+  $last_date = false;
+  $last_identifier = false;
   $columns = $desc['cols'];
   if($columns) {
     foreach($columns as $column) {
@@ -1445,14 +1452,19 @@ function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $
         $date = $column['id'];
     }
   }
-  if($additional)
+  array_push($headings[count($headings)-1]['class'], 'last');
+  if($additional) {
     $headings[] = '&nbsp;';
+    $headings[] = '&nbsp;';
+  }
   $headings[] = t('Delete');
   $rows = array();
-  $k = -1;
+  $k = 0;
   foreach($entries as $key => $entry) {
     if(is_string($key) && $key == 'invDesc')
       continue;
+    $last_date = $entry['col_'.$date];
+    $last_identifier = $entry['col_'.$identifier];
     $row = _inventory_row_factory($id, $entry, $k++, $inventory_id, $desc['id'], $columns, $additional);
     array_push($rows, $row);
   }
@@ -1469,12 +1481,12 @@ function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $
     );
     if($columns)
       $entry = array(
-        'col_'.$identifier => $user->name,
-        'col_'.$date => $entry['col_'.$date] ? $entry['col_'.$date] : date('d.m.Y', time())
+        'col_'.$identifier => $last_identifier ? $last_identifier : $user->name,
+        'col_'.$date => $last_date ? $last_date : date('d.m.Y', time())
       );
     else
       $entry = array();
-    array_push($rows, _inventory_row_factory($id, $entry, $k+1, $inventory_id, $desc['id'], $columns, $additional));
+    array_push($rows, _inventory_row_factory($id, $entry, $k++, $inventory_id, $desc['id'], $columns, $additional));
     $output['table'.$inventory_id] = array(
       '#theme' => 'table', 
       '#header' => $headings,
@@ -1522,7 +1534,7 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
   );
   $row[] = array(
     'data' => '<em>'.$data['label_latin'].'</em>',
-    'class' => array((!$columns ? 'last' : ''))
+    'class' => array()
   );
   $hidden = '';
   if($columns) {
@@ -1542,17 +1554,23 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
           $cell = '<input type="text" name="entries['.$key.']['.$i.']['.$name.']" value="'.$value.'" class="'.$column['format'].($column['name'] == 'Beobachter' ? ' identifier' : '').'" />';
         $row[] = array(
           'data' => $cell,
-          'class' => array(($n == count($columns) ? 'last' : ''))
+          'class' => array()
         );
       } else
         $hidden .= '<input type="hidden" name="entries['.$key.']['.$i.']['.$name.']" value="'.$value.'" />';
     }
   }
-  if($additional)
+  array_push($row[count($row)-1]['class'], 'last');
+  if($additional) {
     $row[] = 
       '<a class="additional" href="'.url('inventory/'.$id.'/edit_entry/'.$inventory_type_id.'/'.$data['id']).'" title="'.t('Additional fields').'">
         <img src="'.url(drupal_get_path('module', 'inventory').'/images/additional_fields.gif').'" alt="'.t('Additional fields').'" />
       </a>';
+    $row[] = 
+      '<a class="images" href="'.url('gallery/inventory_entry/'.$data['id'].'/edit').'" title="'.t('Images').'">
+        <img src="'.url(drupal_get_path('module', 'inventory').'/images/images.gif').'" alt="'.t('Images').'" />
+      </a>';
+  }
   $row[] = array(
     'data' => '<input type="checkbox" class="delete" name="entries['.$key.']['.$i.'][delete]" value="1" />'.$hidden
   );

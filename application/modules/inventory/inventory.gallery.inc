@@ -19,13 +19,19 @@ function inventory_gallery_types() {
       'subtypes' => array(
         'presentation' => t('Presentational images')
       ),
-      'condition' => 'inventory_gallery_condition'
+      'condition' => 'inventory_gallery_condition',
+      'location_provider' => 'inventory_gallery_location_provider'
     ),
     'head_inventory' => array(
       'edit_gallery' => 'gallery_owner_access_callback',
       'image_caption' => 'inventory_head_gallery_image_caption',
       'manage_title' => 'inventory_head_gallery_manage_title',
-      'manage_description' => 'inventory_head_gallery_manage_description'
+      'manage_description' => 'inventory_head_gallery_manage_description',
+      'subtypes' => array(
+        'presentation' => t('Presentational images')
+      ),
+      'location_provider' => 'inventory_head_gallery_location_provider',
+      'item_provider' => 'inventory_head_gallery_item_provider'
     )
   );
 }
@@ -69,25 +75,30 @@ function inventory_gallery_access_callback($type, $id, $image=false) {
  * Helper function referenced in inventory_gallery_types to define the caption
  * for images added to intentory entries
  * 
- * @param string $id
- *   The id of object
+ * @param int $id
+ *   The ID of the inventory entry
  * @return string
  */
 function inventory_gallery_image_caption($id) {
-  $result = db_select('inventory_entry', 'ie')
-    ->condition('id', $id)
-    ->fields('ie', array('organism_id'))
-    ->execute()
-    ->fetch();
-  return l(organism_gallery_image_caption($result->organism_id), 'organism/'.$result->organism_id, array('html' => true));
+  $query = db_select('inventory_entry', 'ie')
+    ->condition('ie.id', $id)
+    ->fields('ie', array('organism_id'));
+  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
+  $query->join('head_inventory', 'hi', 'hi.id = i.head_inventory_id');
+  $query->fields('hi', array('area_id'));
+  $result = $query->execute()->fetch();
+  return t('!organism observed in !area', array(
+    '!organism' => organism_gallery_image_caption($result->organism_id),
+    '!area' => '<br>'.l(area_gallery_caption($result->area_id), 'area/'.$result->area_id, array('html' => true))
+  ));
 }
 
 /**
  * Helper function referenced in inventory_gallery_types to define the title of 
  * the manage images page for intentory entries
  * 
- * @param string $id
- *   The id of object
+ * @param int $id
+ *   The ID of the inventory entry
  * @return string
  */
 function inventory_gallery_manage_title($id) {
@@ -107,8 +118,8 @@ function inventory_gallery_manage_title($id) {
  * Helper function referenced in inventory_gallery_types to define the description of 
  * the manage images page for intentory entries
  * 
- * @param string $id
- *   The id of object
+ * @param int $id
+ *   The ID of the inventory entry
  * @return string
  */
 function inventory_gallery_manage_description($id) {
@@ -116,9 +127,52 @@ function inventory_gallery_manage_description($id) {
 }
 
 /**
+ * Helper function referenced in inventory_gallery_types providing the default location
+ * for images added to an inventory entry
+ * 
+ * @param int $id
+ *   The ID of the inventory entry
+ * @return string
+ */
+function inventory_gallery_location_provider($id) {
+  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
+  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
+  $query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
+  $query->fields('h', array('area_id'));
+  $result = $query->execute()->fetch();
+  return area_gallery_location_provider($result->area_id);
+}
+
+/**
+ * Helper function function referenced in inventory_gallery_types providing the 
+ * selectable "Related items" for images added to a head inventory
+ * 
+ * @param int $id
+ *   The ID of the inventory entry
+ * @return array
+ */
+function inventory_head_gallery_item_provider($id) {
+  $items = array();
+  $items['head_inventory:'.$id] = t('Not related to an organism');
+  $data = inventory_data($id, false, false, false, false, false);
+  foreach($data as $group) {
+    $name = $group['invDesc']['name'];
+    if(!array_key_exists($name, $items))
+      $items[$name] = array();
+    foreach($group as $k => $entry)
+      if(!is_string($k))
+        $items[$name]['inventory_entry:'.$entry['id']] = $entry['label'];
+  }
+  $items = array_filter($items);
+  return $items;
+}
+
+/**
  * Helper function referenced in inventory_gallery_types to define the caption
  * for images added to head intentories
  * 
+ * @param int $id
+ *   The ID of the head inventory
  * @return string
  */
 function inventory_head_gallery_image_caption($id) {
@@ -134,8 +188,8 @@ function inventory_head_gallery_image_caption($id) {
  * Helper function referenced in inventory_gallery_types to define the title of 
  * the manage images page for head intentories
  * 
- * @param string $id
- *   The id of object
+ * @param int $id
+ *   The ID of the head inventory
  * @return string
  */
 function inventory_head_gallery_manage_title($id) {
@@ -145,8 +199,8 @@ function inventory_head_gallery_manage_title($id) {
 /**
  * Helper function creating a generic caption for a head inventory
  * 
- * @param string $id
- *   The id of object
+ * @param int $id
+ *   The ID of the head inventory
  * @return string
  */
 function inventory_head_gallery_caption($id) {
@@ -162,16 +216,58 @@ function inventory_head_gallery_caption($id) {
  * Helper function referenced in inventory_gallery_types to define the description of 
  * the manage images page for head intentories
  * 
- * @param string $id
- *   The id of object
+ * @param int $id
+ *   The ID of the head inventory
  * @return string
  */
 function inventory_head_gallery_manage_description($id) {
-  return t('Add and edit generic images of this inventory\'s area which are not related to any organism.');
+  return t('Add and edit images of this inventory\'s area and optionally link them to an observed organism.');
 }
 
 /**
- * Implements hook of gallery module to define the conversion of a inventory entry
+ * Helper function referenced in inventory_gallery_types providing the default location
+ * for images added to an head inventory
+ * 
+ * @param int $id
+ *   The ID of the head inventory
+ * @return string
+ */
+function inventory_head_gallery_location_provider($id) {
+  $result = db_select('head_inventory', 'h')
+    ->condition('h.id', $id)
+    ->fields('h', array('area_id'))
+    ->execute()
+    ->fetch();
+  return area_gallery_location_provider($result->area_id);
+}
+
+/**
+ * Implements hook of gallery module to define the conversion of an inventory entry
+ * to the related head inventory type while editing the images of an head inventory
+ * 
+ * @return array
+ */
+function inventory_gallery_type_edit_conversions() {
+  return array(
+    array(
+      array(
+        'source' => 'inventory_entry',
+        'source_key' => 'inventory_id',
+        'target' => 'inventory',
+        'target_key' => 'id',
+      ),
+      array(
+        'source' => 'inventory',
+        'source_key' => 'head_inventory_id',
+        'target' => 'head_inventory',
+        'target_key' => 'id',
+      )
+    )
+  );
+}
+
+/**
+ * Implements hook of gallery module to define the conversion of an inventory entry
  * to the related organism and head inventory to the related area
  * 
  * @return array
@@ -185,6 +281,21 @@ function inventory_gallery_type_conversions() {
         'target' => 'organism',
         'target_key' => 'id',
         'subtype' => 'presentation'
+      )
+    ),
+    array(
+      array(
+        'source' => 'inventory_entry',
+        'source_key' => 'organism_id',
+        'target' => 'organism',
+        'target_key' => 'id',
+        'subtype' => 'presentation'
+      ),
+      array(
+        'source' => 'organism',
+        'source_key' => 'inventory_type_id',
+        'target' => 'inventory_type',
+        'target_key' => 'id'
       )
     ),
     array(
@@ -208,7 +319,7 @@ function inventory_gallery_type_conversions() {
         'target' => 'head_inventory',
         'target_key' => 'id',
       )
-    ),
+    )
   );
 }
 
@@ -224,6 +335,10 @@ function inventory_gallery_category_conditions() {
       'name' => t('Inventory entries'),
       'type' => 'inventory_entry'
     ),
+    'head_inventory' => array(
+      'name' => t('Inventories'),
+      'type' => 'head_inventory'
+    )
   );
 }
 

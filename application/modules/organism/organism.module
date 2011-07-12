@@ -84,7 +84,7 @@ function organism_menu() {
     'description' => t('Delete an existing file'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('organism_delete_file', 1, 3),
-    'access arguments' => array(ORGANISM_UPLOAD),
+    'access arguments' => array('organism upload'),
     'file' => 'organism.edit.inc',
     'weight' => 10,
   );
@@ -93,11 +93,21 @@ function organism_menu() {
     'description' => t('Delete or edit files'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('organism_edit_files_form', 1),
-    'access arguments' => array(ORGANISM_UPLOAD),
+    'access arguments' => array('organism upload'),
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'organism.edit.inc',
     'weight' => 10,
+  );
+  
+  $items['gallery/organism_type_gallery_autocomplete/%/%'] = array(
+    'title' => 'Gallery item autocomplete',
+    'page callback' => 'organism_type_gallery_autocomplete',
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'access callback' => 'gallery_edit_access_callback',
+    'access arguments' => array(2, 3),
+    'file' => 'organism.gallery.inc',
   );
   
   return $items;
@@ -105,7 +115,7 @@ function organism_menu() {
 
 function organism_permission() {
   return array(
-    ORGANISM_UPLOAD =>  array(
+    'organism upload' =>  array(
       'title' => t('Upload files to organism'),
     ),
   );

@@ -68,11 +68,6 @@ function inventory_list() {
     array(':id' => $user->uid)
   );
   $render_array = array_merge(_inventory_list_factory($result, 'inventories_public', t('Public inventories'), t('No public inventories have been created so far')), $render_array);
-  
-  $render_array['inventories']['static_image'] = array(
-    '#markup' => '<div id="static_image" style="position: absolute; height: 200px; width: 200px;  display: none; z-index: 100; border: solid 1px grey; background-color: white"><img style="display:block; position:absolute; left: 84px; top:84px" src="'.drupal_get_path('module', 'area').'/images/ajax-loader.gif"></div>',
-    'html'=> true,
-  );
 
   return $render_array;
 }
@@ -217,7 +212,6 @@ function _inventory_list_factory($result, $id, $title, $msg_empty=false, $headin
   //Localize Image
   $img_localize = theme('image', array(
     'path' => 'misc/fatcow_icons/16x16/world.png',
-    'attributes' => array('class' => 'show_static_image'),
     'alt' => t('Localize'),
     'title' => t('Localize'),
   ));

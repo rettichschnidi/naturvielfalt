@@ -149,11 +149,12 @@ body.page-inventory-edit {
 
 #inventories .invTable .disabled .handler,
 #inventories .invTable .disabled .additional,
+#inventories .invTable .disabled .images,
 #inventories .invTable .disabled .delete {
   display:none;
 }
 
-#inventories td.last {
+#inventories .last {
   width:100%;
 }
 

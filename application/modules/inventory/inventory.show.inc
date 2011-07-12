@@ -9,7 +9,6 @@
  */
 function inventory_show($head_inventory_id) {
   drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
-  drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
   
   $render_array = inventory_basics($head_inventory_id);
   
@@ -395,12 +394,13 @@ function inventory_redlist_count($head_inventory_id) {
  * @return array
  *  Drupal render array
  */
-function inventory_inventories($head_inventory_id) {
+function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true) {
+  drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
   $output = array();
-  $invArr = inventory_data($head_inventory_id);
+  if(!$invArr)
+    $invArr = inventory_data($head_inventory_id);
   
-  if(function_exists('gallery_edit_link'))
-    $gallery_available = true;
+  $gallery_available = $gallery && function_exists('gallery_view_link');
   
   $weight = 4;
   foreach($invArr as $key => $inventory_group) {
@@ -411,10 +411,10 @@ function inventory_inventories($head_inventory_id) {
     $invDetail = '';
     $has_gallery = false;
     
-    
     $invGroupName = $inventory_group['invDesc']['name'];
     $header[] = t('Name');
     $header[] = t('Latin name');
+    $header[] = t('Family');
     foreach($inventory_group['invDesc']['cols'] as $invDetail) {
       $header[] = $invDetail['name'];
       $colIds[] = $invDetail['id'];
@@ -425,18 +425,17 @@ function inventory_inventories($head_inventory_id) {
       $row = array();
       $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
       $row[] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      $row[] = l($invDetails['label_family'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
       foreach($colIds as $colId) {
-        $colValueDropdown = array (explode('_', $invDetails['col_'.$colId]));
-        if (isset($colValueDropdown[0][1])) {
-          $row[] = _inventory_entry_value($colValueDropdown[0][0]);
-        }
-        else {
-          $row[] = $invDetails['col_'.$colId];
-        }
+        $colValueDropdown = explode('_', array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '');
+        if (isset($colValueDropdown[1]))
+          $row[] = _inventory_entry_value($colValueDropdown[0]);
+        else
+          $row[] = array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '';
         $colValueDropdown = NULL; 
       }
       if($gallery_available) {
-        $row[] = gallery_edit_link('inventory_entry', $invDetails['id']);
+        $row[] = gallery_view_link('inventory_entry', $invDetails['id']);
         if($row[(count($row)-1)])
           $has_gallery = true;
       }
@@ -444,7 +443,9 @@ function inventory_inventories($head_inventory_id) {
     }
     if($has_gallery)
       $header[] = '&nbsp;';
-    if($rows[0] != '') {
+    else if($gallery_available)
+      array_walk($rows, create_function('&$row', 'array_pop($row[\'data\']);'));
+    if(!empty($rows)) {
       $output[$invGroupName] = array(
         '#type' => 'fieldset', 
         '#title' => $invGroupName, 
@@ -458,7 +459,7 @@ function inventory_inventories($head_inventory_id) {
           ),
         ),
         '#attributes' => array(
-          'class' => array('collapsible'),
+          'class' => array('collapsible', 'invgroup'),
         ),
       );
     
@@ -466,7 +467,7 @@ function inventory_inventories($head_inventory_id) {
         '#theme' => 'datatable', 
         '#header' => $header,
         '#rows' => $rows,
-        '#id_table' => 'invgroup'.$key, 
+        '#id_table' => 'invgroup'.$key
       );
     }
     
@@ -567,4 +568,5 @@ function inventory_files($head_inventory_id) {
   );
   return $render_array;
 }
+
 ?>
