@@ -41,14 +41,7 @@ function inventory_invalid_id() {
  * @param unknown_type $form_state
  * @return form of new inventory
  */
-function inventory_new_form($form, &$form_state) {
-  $progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
-  $form['progress'] = array(
-    '#theme' => 'progress_done',
-    '#elements' => $progressElement,
-    '#active' => 2,     // Indicate active Element
-  );
-  
+function inventory_new_form($form, &$form_state) {  
   // creating forms
   $form['new'] = array (
     '#type' => 'fieldset', 
