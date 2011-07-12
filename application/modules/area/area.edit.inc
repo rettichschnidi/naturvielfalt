@@ -213,7 +213,7 @@ function area_edit_form_submit($form, &$form_state) {
 	->condition('area_id', $area_id)
 	->execute();
 	
-	foreach (array_values($form_state['input']['habitat_dropdown']) as $habitat) {
+	foreach (array_values($form_state['input']['habitat']) as $habitat) {
 			db_insert('area_habitat')->fields(array(
 				'area_id' => $area_id,
 				'habitat_id' => $habitat,

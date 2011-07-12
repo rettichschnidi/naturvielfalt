@@ -105,6 +105,17 @@ function area_menu() {
     'file' => 'area.delete.inc',
     'weight' => 7
   );
+   $items['area/%/newinv'] = array(
+    'title' => t('Add inventory'),
+    'description' => t('Create a new inventory in this area'),
+    'page callback' => 'area_new_inventory',
+    'page arguments' => array(1),
+    'access arguments' => array(AREA_ACCESS),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    //'file' => 'area.inc',
+    'weight' => 8
+  );
   $items['area/new'] = array(
     'title' => 'Create new area',
     'description' => 'Create an area',
@@ -559,7 +570,7 @@ function area_edit_habitat_form($form, &$form_state, $area_id) {
 			WHERE area.id = :id',
 		array('id' => $area_id));
 		foreach ($result as $record) {
-			$habitats[] = $record->id;
+			$habitats_selected[$record->id] = $record->id;
 		}
 	}
 	
@@ -574,14 +585,32 @@ function area_edit_habitat_form($form, &$form_state, $area_id) {
       		'id' => 'area-habitats'
     	),
 	);
-	$form['AreaNewFormHabitats']['habitat_dropdown'] = array(
-	  	'#type' => 'select',
-	  	'#title' => t('Habitats (hold CTRL to select multiple values)'),
-		'#options' => area_habitat_dropdown_values($area_id),
-		'#multiple' => TRUE,
-		'#default_value' => $habitats,
-		'#size' => 10
+	$habitats = db_select('habitat', 'h')
+    ->fields('h')
+    ->execute();
+	
+	$header = array('Label','Name','Latin','');
+	foreach($habitats as $value) {
+		$row = array();
+		$row[] = $value->label;		
+		$row[] = $value->name_de;
+		$row[] = $value->name_lt;
+		
+		if(key_exists($value->id, $habitats_selected)) {
+			$row[] = '<input type="checkbox" name="habitat['.$value->id.']" value="'.$value->id.'" checked="TRUE"/>';
+		} else {
+			$row[] = '<input type="checkbox" name="habitat['.$value->id.']" value="'.$value->id.'"/>';
+		}
+		$rows[] = $row;
+	}
+	
+	$form['AreaNewFormHabitats']['habitats'] = array(
+		'#theme' => 'datatable', 
+		'#header' => $header,
+		'#rows' => $rows,
+		'#id_table' => 'test'
 	);
+	
 	return $form;
 }
 
@@ -869,6 +898,10 @@ function area_edit_hidden_form($form, &$form_state) {
 	'#value' => $_POST['area_type'],
 	);
 	return $form;
+}
+
+function area_new_inventory($area_id) {
+	drupal_goto('inventory/new/area/'.$area_id);
 }
 
 function area_add_gmap_resources($bubble=true) {

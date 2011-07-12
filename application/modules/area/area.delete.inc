@@ -33,7 +33,7 @@ function area_title($area_id) {
  * @param unknown_type $form_state
  */
 function area_delete_form_submit($form, &$form_state) {
-	$area_id = $form_state['storage']['area_id'];
+	$area_id = $form_state['area_id'];
 	$result = db_query('
 		SELECT COUNT (hi.id)
 		FROM area a

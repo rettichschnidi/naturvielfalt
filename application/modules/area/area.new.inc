@@ -10,6 +10,7 @@ function area_new_form() {
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 /*	
 	// Display Progress Bar
 	$progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
@@ -144,7 +145,7 @@ function area_choose_form($form, &$form_state) {
   		'#type' => 'hidden',
 		'#attributes' => array('id' => 'edit-id-area'),
 	);
-	$form['save_choose'] = array (
+/*	$form['save_choose'] = array (
 		'#type' => 'fieldset',
 		'#weight' => 10,
 	);
@@ -153,6 +154,13 @@ function area_choose_form($form, &$form_state) {
   		'#type' => 'submit',
   		'#value' => t('Continue'),
 	);
+*/	
+	$form['AreaChoseForm']['actions'] = array('#type' => 'actions');
+	$form['AreaChoseForm']['actions']['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Continue')
+	);
+	
   	return $form;
 }
 
@@ -236,9 +244,10 @@ function area_create_form($form, &$form_state) {
     '#type' => 'hidden',
 	'#attributes' => array('id' => 'edit-area-type'),
 	);
-	$form['AreaNewForm']['AreaNewForm_submit'] = array(
-	  	'#type' => 'submit',
-	  	'#value' => t('Continue'),
+	$form['AreaNewForm']['actions-new'] = array('#type' => 'actions');
+	$form['AreaNewForm']['actions-new']['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Continue'),
 	);
 	return $form;
 }
@@ -263,7 +272,6 @@ function area_create_form_submit($form, $form_state) {
  * @param *array $form_state
  */
 function area_new_details_form($form, $form_state) {
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	drupal_set_title(t('Enter new area details'));
 
 	$output['AreaNewForm']['basics'] = area_edit_basics_form($form, $form_state, '');
@@ -361,8 +369,8 @@ function area_new_details_form_submit($form, $form_state) {
 	}
 
 	// insert habitats
-	if (array_key_exists('habitat_dropdown', $form_state['input'])) {
-		foreach (array_values($form_state['input']['habitat_dropdown']) as $habitat) {
+	if (array_key_exists('habitat', $form_state['input'])) {
+		foreach (array_values($form_state['input']['habitat']) as $habitat) {
 			db_insert('area_habitat')->fields(array(
 				'area_id' => $area_id,
 				'habitat_id' => $habitat,
@@ -391,7 +399,7 @@ function area_new_details_form_submit($form, $form_state) {
 	}
 
 	// redirect to the new area	
-	drupal_set_message('Area successfully created');
+	drupal_set_message('Area successfully created. If you would like to add a new inventory in this Area please click '.l('here', 'inventory/new/area/'.$area_id));
 	drupal_goto('area/'.$area_id);
 }
 

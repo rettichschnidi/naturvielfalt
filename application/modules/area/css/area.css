@@ -61,7 +61,8 @@ th {
   clear:both;
 }
 
-#edit-actions {
+#edit-actions,
+#edit-actions-new {
   position:fixed;
   bottom:0;
   left:0;
@@ -76,7 +77,8 @@ th {
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);*/
 }
 
-#edit-actions #message {
+#edit-actions #message,
+#edit-actions-new #message {
   position:relative;
   background-repeat:no-repeat;
   overflow:hidden;
@@ -86,7 +88,8 @@ th {
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-#edit-actions .form-item-add {
+#edit-actions .form-item-add
+#edit-actions-new .form-item-add {
   float:left;
   padding:20px 2em;
   margin:0 20px 0 0;
@@ -102,7 +105,8 @@ th {
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-#edit-actions input {
+#edit-actions input,
+#edit-actions-new input {
   float:right;
   margin:20px 2em 0 20px;
   font-size:2em;
