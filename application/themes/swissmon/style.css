@@ -457,8 +457,7 @@ body.two-sidebars #wrapper #container {
 
 /* Unset container width when we are using the "fluid width" option. */
 body.fluid-width #wrapper #container {
-  width: auto;
-  max-width: 1270px;
+  width: 1270px;
 }
 
 #wrapper #container #header {
