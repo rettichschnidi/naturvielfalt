@@ -4,6 +4,7 @@ function organism_show($organismId) {
     $forms['Gallery'] = gallery_list_renderer('organism', $organismId, false, -1);
 	$forms['Details'] = drupal_get_form('getOrganismDetails', $organismId);
 	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);
+	$forms['Files'] = organism_files($organismId);
 	return $forms;
 }
 
@@ -47,7 +48,7 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 	}
 	else {
 	$form['redlist'] = array (
-			'#markup'=> t('Protection: Not member of a red list'));		
+			'#markup'=> t('Protection: Not member of a red list'));	
 	}
 	$GLOBALS['organismtype'] = $record->organism_type;
 	$GLOBALS['protected'] = $redlist;

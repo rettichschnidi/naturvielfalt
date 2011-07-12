@@ -79,8 +79,109 @@ function organism_menu() {
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'organism.lexika.inc',
   );
+  $items['organism/%/delete_file/%'] = array(
+    'title' => t('Delete file'),
+    'description' => t('Delete an existing file'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('organism_delete_file', 1, 3),
+    'access arguments' => array(ORGANISM_UPLOAD),
+    'file' => 'organism.edit.inc',
+    'weight' => 10,
+  );
+  $items['organism/%/edit'] = array(
+    'title' => t('File upload'),
+    'description' => t('Delete or edit files'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('organism_edit_files_form', 1),
+    'access arguments' => array(ORGANISM_UPLOAD),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'organism.edit.inc',
+    'weight' => 10,
+  );
   
   return $items;
+}
+
+function organism_permission() {
+  return array(
+    ORGANISM_UPLOAD =>  array(
+      'title' => t('Upload files to organism'),
+    ),
+  );
+}
+
+function organism_files($organism_id) {
+  global $user;
+  $render_array = array();
+  $result = db_query('
+    SELECT * 
+	FROM organism_file_managed ofm
+	LEFT JOIN file_managed fm ON ofm.file_id = fm.fid
+	WHERE organism_id = :oid',
+    array(':oid' => $organism_id)
+  );
+  
+  foreach($result as $record) {
+    $mimeIconMap = array(
+      'path' => drupal_get_path('module', 'inventory').'/images/' . area_get_icon_map($record->filemime).'.png',
+      'alt' => $record->filemime,
+      'title' => $record->filemime,
+    );
+    $img_mime = theme('image', $mimeIconMap);
+    
+    $description = $record->description;
+    $filename = l($record->filename, 'sites/default/files/swissmon/organism/'.$organism_id.'/'.$record->filename);
+    $filemime = $img_mime;
+    $filesize = ($record->filesize / 1000)." KB";
+    $timestamp = date('d.m.Y',$record->timestamp);
+    $author = $record->author;
+    $row = array();
+    $row[] = $description;
+    $row[] = $filename;
+    $row[] = $filemime;
+    $row[] = $filesize;
+    $row[] = $timestamp;
+    $row[] = $author;
+    $row[] = $user->name;
+    $rows[] = $row;
+  }
+  
+  if(empty($rows))
+    return $render_array;
+  
+  $tableHeader[] = t('Description');
+  $tableHeader[] = t('Filename');
+  $tableHeader[] = t('Typ');
+  $tableHeader[] = t('Size');
+  $tableHeader[] = t('Date');
+  $tableHeader[] = t('Author');
+  $tableHeader[] = t('Owner');
+  
+  $render_array['files'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Files'), 
+    '#weight' => 8, 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+  
+  $render_array['files']['data'] = array(
+    '#theme' => 'datatable', 
+    '#header' => $tableHeader,
+    '#rows' => $rows,
+    '#id_table' => 'files', 
+  );
+  return $render_array;
 }
 
 ?>
