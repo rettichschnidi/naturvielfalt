@@ -2,14 +2,14 @@
 function organism_show($organismId) {
   if(function_exists('gallery_list_renderer'))
     $forms['Gallery'] = gallery_list_renderer('organism', $organismId, false, -1);
-	$forms['Details'] = drupal_get_form('getOrganismDetails', $organismId);
-	$forms['Inventories'] = drupal_get_form('getOrganismInventories', $organismId);
-	$forms['Files'] = organism_files($organismId);
+    $forms = array_merge($forms, getOrganismDetails($organismId));
+	$forms = array_merge($forms, getOrganismInventories($organismId));
+	$forms = array_merge($forms, organism_files($organismId));
 	return $forms;
 }
 
 // display basic organism details	
-function getOrganismDetails($form, &$form_state, $organismId) {
+function getOrganismDetails($organismId) {
 	$result = db_query(
 		'SELECT organism.id, organism.organism_type, flo.name flora_name, flo.name_de, fao.genus fauna_genus, fao.species fauna_species, fao.name_de fauna_namede, frl.red_list_ch, fao.protection_ch
 		FROM organism
@@ -41,14 +41,25 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 			$redlist = TRUE;
 		}
 	}
+	$form['details'] = array(
+		'#type' => 'fieldset', 
+		'#title' => t('Protection state'), 
+		'#weight' => 1, 
+		'#collapsible' => TRUE,
+		'#collapsed' => FALSE,
+		'#attributes' => array(
+			'class' => array('collapsible'),
+        ),
+
+	);
 	
 	if($redlist==TRUE) {
-	$form['redlist'] = array (
-			'#markup'=> t('Protection: This organism is part of a red list, for more information about red lists please ').l(t('click here'),'http://www.bafu.admin.ch/biodiversitaet/10372/10393', array('attributes' => array('target'=>'_blank'))).t('. It is possible that some information about this organism is not visible.'));
+	$form['details']['redlist'] = array (
+			'#markup'=> t('This organism is part of a red list, for more information about red lists please ').l(t('click here'),'http://www.bafu.admin.ch/biodiversitaet/10372/10393', array('attributes' => array('target'=>'_blank'))).t('. It is possible that some information about this organism is not visible.'));
 	}
 	else {
-	$form['redlist'] = array (
-			'#markup'=> t('Protection: Not member of a red list'));	
+	$form['details']['redlist'] = array (
+			'#markup'=> t('Not member of a red list'));	
 	}
 	$GLOBALS['organismtype'] = $record->organism_type;
 	$GLOBALS['protected'] = $redlist;
@@ -56,7 +67,7 @@ function getOrganismDetails($form, &$form_state, $organismId) {
 }
 
 //display organism in inventories
-function getOrganismInventories($form, &$form_state, $organismId) {	
+function getOrganismInventories($organismId) {	
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	global $user;
 	if($GLOBALS['organismtype']== 1) {
@@ -157,7 +168,7 @@ function getOrganismInventories($form, &$form_state, $organismId) {
 	$form['linked_inventories'] = array(
 		'#type' => 'fieldset', 
 		'#title' => t('Linked inventories'), 
-		'#weight' => 3, 
+		'#weight' => 2, 
 		'#collapsible' => TRUE,
 		'#collapsed' => FALSE,
 		'#attached' => array (
