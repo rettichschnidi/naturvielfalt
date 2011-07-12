@@ -304,6 +304,7 @@ function inventory_gallery_type_conversions() {
         'source_key' => 'area_id',
         'target' => 'area',
         'target_key' => 'id',
+        'subtype' => 'presentation'
       )
     ),
     array(
