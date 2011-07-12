@@ -11,17 +11,7 @@ function area_new_form() {
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-/*	
-	// Display Progress Bar
-	$progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
-	$output['progress'] = array(
-		'#theme' => 'progress_done',
-		'#elements' => $progressElement,
-		'#active' => 1, 		// Indicate active Element
-	);
-	
-*/	
-	
+
 	if($_POST['locality'] != '') {
 		$output = drupal_get_form('area_new_details_form');
 	}
