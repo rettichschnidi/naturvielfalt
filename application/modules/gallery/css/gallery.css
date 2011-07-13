@@ -44,6 +44,7 @@ ul.gallery li.last {
 }
 
 fieldset.gallery {
+  clear:both;
   position:relative;
   padding-bottom:0;
 }

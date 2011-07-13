@@ -11,10 +11,10 @@ define('GALLERY_IMAGE_COUNT', 15);
 /**
  * Menu callback; Listing of all images for a given context.
  */
-function gallery_list($type, $id, $backlink=true) {
+function gallery_list($type, $id, $backlink=true, $title=true) {
   $types = _gallery_types();
   $type_info = $types[$type];
-  if(array_key_exists($type, $types) && array_key_exists('image_caption', $types[$type]))
+  if($title && array_key_exists($type, $types) && array_key_exists('image_caption', $types[$type]))
     drupal_set_title(call_user_func_array($types[$type]['image_caption'], array($id)), PASS_THROUGH);
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   $page = array();
@@ -71,7 +71,7 @@ function gallery_list($type, $id, $backlink=true) {
 function gallery_list_renderer($type, $id, $title=false, $weight=10, $collapsed=false) {
   if(!gallery_access_callback($type))
     return '';
-  $gallery = gallery_list($type, $id, false);
+  $gallery = gallery_list($type, $id, false, false);
   if(!$gallery['gallery_list'])
     return '';
   return _gallery_list_fieldset($gallery, $title, $weight, $collapsed && !array_key_exists(md5($type.$id).'_show_all', $_GET) && !array_key_exists(md5($type.$id).'_crosslinked', $_GET));
