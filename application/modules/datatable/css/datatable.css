@@ -21,14 +21,9 @@
 	margin:0em;
 }
 
+.dataTables_wrapper th,
 .dataTables_wrapper td {
-	padding:0em;
-	padding-left:0.5em;	
-}
-
-.dataTables_wrapper th {
-	padding:0em;
-	padding-left:0.5em;	
+	padding:3px 5px;
 }
 
 .dataTables_wrapper .ui-toolbar {
