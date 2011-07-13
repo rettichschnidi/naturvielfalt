@@ -2,7 +2,7 @@
  * @author Roger Wolfer, Roman Schaller
  */
 
-function AreaSelect() {
+function AreaSelect(map_id) {
   //////////////////////// Method declarations ///////////////////////
   /**
    * This function will be called if the user clicks on the plus or minus symbol at the beginning
@@ -93,16 +93,29 @@ function AreaSelect() {
    */
   AreaSelect.prototype.createGoogleMaps = function() {
     var mapcenter = [47.487084, 8.207273];
-    if(jQuery('#map_canvas').data('center'))
-      mapcenter = jQuery('#map_canvas').data('center').split(',');
-    mapcenter = new google.maps.LatLng(parseFloat(mapcenter[0]), parseFloat(mapcenter[1]));
+    var canvas = jQuery('#'+me.map_id);
+    if(!canvas.size())
+      return false;
+    if(canvas.data('center'))
+      mapcenter = canvas.data('center').split(',');
+    me.center = new google.maps.LatLng(parseFloat(mapcenter[0]), parseFloat(mapcenter[1]));
     var mapsOptions = {
-        zoom : jQuery('#map_canvas').data('zoom') ? parseInt(jQuery('#map_canvas').data('zoom')) : 15,
-        center : mapcenter,
+        zoom : canvas.data('zoom') ? parseInt(canvas.data('zoom')) : 15,
+        center : me.center,
         mapTypeId : google.maps.MapTypeId.ROADMAP,
         scrollwheel: false
       };
-    var map = new google.maps.Map(document.getElementById('map_canvas'), mapsOptions);
+    var map = new google.maps.Map(document.getElementById(me.map_id), mapsOptions);
+    if(canvas.data('layers')) {
+      var layers = canvas.data('layers').split(';');
+      for(var i=0; i<layers.length; i++) {
+        var parser = new geoXML3.parser({
+          map: map, 
+          singleInfoWindow: true
+        });
+        parser.parse(layers[i]);
+      }
+    }
     if(document.getElementById('map_search'))
       util.geocode('map_search', 'map_search_button', map);
     return map;
@@ -201,13 +214,13 @@ function AreaSelect() {
         jQuery.ajax( {
             "dataType": 'json',
             "type": "GET",
-            "url": Drupal.settings.basePath + "area/getareas" + (jQuery('#map_canvas').data('areaid') ? '/'+jQuery('#map_canvas').data('areaid') : ''),
+            "url": Drupal.settings.basePath + "area/getareas" + (jQuery('#'+me.map_id).data('areaid') ? '/'+jQuery('#'+me.map_id).data('areaid') : ''),
             
             "success": function (json) {
                 var aaData = [];
-                var areas = json;
+                me.areas = json;
                 me.mapOverlays.clear();
-                me.mapOverlays.addOverlaysJson(areas);
+                me.mapOverlays.addOverlaysJson(me.areas);
                 
                 if(typeof InfoBubble == "undefined")
                   return;
@@ -266,7 +279,7 @@ function AreaSelect() {
       inventories = '';
       for ( var i = 0, len = data.inventories.invs.length; i < len; ++i) {
         inventory = data.inventories.invs[i];
-        inventories += '<div><a href="inventory/' + inventory.id + '"><strong>' + inventory.name + ' [' + inventory.owner + ']:</strong></a></div><div>';
+        inventories += '<div><a href="' + Drupal.settings.basePath + 'inventory/' + inventory.id + '"><strong>' + inventory.name + ' [' + inventory.owner + ']:</strong></a></div><div>';
         for ( var ie = 0, ieLen = inventory.types.length; ie < ieLen; ++ie) {
           type = data.inventories.invs[i].types[ie];
           inventories += type.name + ' (' + type.count + ' x)';
@@ -282,7 +295,7 @@ function AreaSelect() {
       habitats = '<div><ul>';
       if (data.habitats.habs) {
         for ( var i = 0, len = data.habitats.habs.length; i < len; ++i) {
-          habitats += '<li><a href="area/'+data.habitats.habs[i].id+'">' +data.habitats.habs[i].name + '</a></li>';
+          habitats += '<li><a href="' + Drupal.settings.basePath + 'habitat/'+data.habitats.habs[i].id+'">' +data.habitats.habs[i].name + '</a></li>';
         }
       }
       habitats += '</ul></div>';
@@ -335,7 +348,10 @@ function AreaSelect() {
   
   // Member variable initialisation
   var me = this; // references to the instance of AreaSelect
+  me.map_id = map_id;
   me.map = this.createGoogleMaps();
+  if(!me.map)
+    return false;
   me.mapOverlays = this.createOverlays(me.map); // Overlays representing areas
   me.selected_area = null; // index of currently selected area
   if(typeof InfoBubble != "undefined")
@@ -412,7 +428,8 @@ function refresh_map_info(){
 
 var areaselect = null;
 jQuery(document).ready(function() {
-  areaselect = new AreaSelect();
+  if(jQuery('#map_canvas').size())
+    areaselect = new AreaSelect('map_canvas');
   /* clear edit-id-area field. Solves the problem that if a user navigates back problem that
    * he can continue to new inv without actually having selected an area */
   jQuery('#edit-id-area').val('');

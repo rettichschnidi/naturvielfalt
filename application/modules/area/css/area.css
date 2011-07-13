@@ -61,54 +61,12 @@ th {
   clear:both;
 }
 
-#edit-actions,
-#edit-actions-new {
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  padding:0;
-  z-index:5;
-  margin:0;/*
-  border-top:1px solid #F7F6EF;
-  background-color:#FBFAF7;
-  box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);*/
-}
-
-#edit-actions #message,
-#edit-actions-new #message {
-  position:relative;
-  background-repeat:no-repeat;
-  overflow:hidden;
-  margin:20px 0 0 0;
-  box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-}
-
-#edit-actions .form-item-add
-#edit-actions-new .form-item-add {
-  float:left;
-  padding:20px 2em;
-  margin:0 20px 0 0;
-  border-top:1px solid #F7F6EF;
-  border-right:1px solid #F7F6EF;
-  background-color:#FBFAF7;
-  border-radius:0 10px 0 0;
-  -moz-border-radius:0 10px 0 0;
-  -webkit-border-radius:0 10px 0 0;
-  -o-border-radius:0 10px 0 0;
-  box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-}
-
 #edit-actions input,
 #edit-actions-new input {
-  float:right;
-  margin:20px 2em 0 20px;
+  z-index:5;
+  position:fixed;
+  bottom:20px;
+  right:10px;
   font-size:2em;
   background-color:#659560;
   color:#fff;

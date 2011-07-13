@@ -9,6 +9,7 @@
  */
 function inventory_edit($head_inventory_id) {
   _include_js_and_css();
+  area_add_gmap_resources(false);
   
   drupal_set_title(t('Modify %name (%id)', array(
     '%name' => inventory_title($head_inventory_id),
@@ -333,6 +334,8 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
           'organism_id' => $entry['organism_id'],
           'position' => $position
         );
+        if(array_key_exists('lat', $entry) && array_key_exists('lng', $entry))
+          $data['location'] = $entry['lat'].','.$entry['lng'];
         $data[$entry_relation] = $new_inventory_id;
         if(substr($entry['id'], 0, 4) == 'new_') {
           array_push($new_entries, array(
@@ -675,6 +678,87 @@ function _inventory_save_entry_attributes($entry_id, $columns, $data) {
 }
 
 /**
+ * Menu callback; Edit form for the location of an inventory entry
+ *  (wrapper around inventory_edit_entry_location_form)
+ * 
+ * @param object $head_inventory_id
+ * @param object $entry_id
+ * @return form to edit the location of an inventory entry
+ */
+function inventory_edit_entry_location($head_inventory_id, $entry_id) {
+  $ajax = $_REQUEST['ajax'];
+  
+  if(substr($entry_id, 0, 4) == 'new_')
+    $entry_id = false;
+  
+  $form = drupal_get_form('inventory_edit_entry_location_form', $head_inventory_id, $entry_id);
+  
+  if($ajax)
+    return drupal_json_output(array(
+      'form' => drupal_render($form),
+      'head_inventory_id' => $head_inventory_id,
+      'entry_id' => $entry_id,
+      'title' => t('Set observation location')
+    ));
+  return $form;
+}
+
+/**
+ * Edit form for the location of an inventory entry
+ * 
+ * @param object $form
+ * @param object $form_state
+ * @param object $entry_id
+ * @return form to edit the location of an inventory entry
+ */
+function inventory_edit_entry_location_form($form, &$form_state, $head_inventory_id, $entry_id) {
+  $ajax = $_REQUEST['ajax'];
+  $form_state['head_inventory_id'] = $head_inventory_id;
+  $form_state['entry_id'] = $entry_id;
+  $form_state['ajax'] = $ajax;
+  
+  drupal_set_title(t('Set observation location'));
+  
+  $form = inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id);
+  
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save')
+  );
+  $form['actions']['close'] = array(
+    '#markup' => l(t('Cancel'), 'inventory/'.$head_inventory_id.'/edit')
+  );
+  
+  return $form;
+}
+
+/**
+ * Submit handler for the inventory_edit_entry_location_form saving the location of an inventory entry
+ * 
+ * @return 
+ * @param object $form
+ * @param object $form_state
+ */
+function inventory_edit_entry_location_form_submit($form, &$form_state) {
+  $ajax = $form_state['ajax'];
+  $entry_id = $form_state['entry_id'];
+  
+  _inventory_update_modify_time($head_inventory_id);
+  
+  $data = array(
+    'location' => $form_state['values']['lat'].', '.$form_state['values']['lng']
+  );
+  
+  db_update('inventory_entry')->fields($data)->condition('id', $entry_id)->execute();
+  
+  if($ajax)
+    return;
+  drupal_set_message(t('Changes successfully saved'));
+  $form_state['redirect'] = 'inventory/'.$form_state['head_inventory_id'].'/edit';
+}
+
+/**
  * Menu callback; Deletes an inventory entry (called over AJAX)
  * 
  * @param object $head_inventory_id
@@ -999,7 +1083,7 @@ function inventory_templates_form_submit($form, &$form_state) {
     $date = false;
     if($columns) {
       foreach($columns as $column) {
-        if($column['name'] == 'Identifiziert von')
+        if($column['name'] == 'Beobachter')
           $identifier = $column['id'];
         if($column['name'] == 'Funddatum')
           $date = $column['id'];
@@ -1456,13 +1540,17 @@ function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $
   if($additional) {
     $headings[] = '&nbsp;';
     $headings[] = '&nbsp;';
+    $headings[] = '&nbsp;';
   }
   $headings[] = t('Delete');
   $rows = array();
+  $orgs = array();
   $k = 0;
   foreach($entries as $key => $entry) {
     if(is_string($key) && $key == 'invDesc')
       continue;
+    if(!in_array($entry['orgId'], $orgs))
+      array_push($orgs, $entry['orgId']);
     $last_date = $entry['col_'.$date];
     $last_identifier = $entry['col_'.$identifier];
     $row = _inventory_row_factory($id, $entry, $k++, $inventory_id, $desc['id'], $columns, $additional);
@@ -1471,7 +1559,7 @@ function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $
   if(!$entries || $rows) {
     $output['title'.$inventory_id] = array(
       '#markup' => 
-        '<h3 class="invTitle" id="invTitle'.$inventory_id.'">'.$invGroupName.' <small>('.count($rows).')</small> '.
+        '<h3 class="invTitle" id="invTitle'.$inventory_id.'">'.$invGroupName.' <small>('.count($rows).'/'.count($orgs).')</small> '.
           ($additional ? 
           '<a class="custom" href="'.url('inventory/'.$id.'/custom_fields/'.$desc['id']).'" title="'.t('Custom fields').'">'.
             '<img src="'.url(drupal_get_path('module', 'inventory').'/images/custom_fields.gif').'" alt="'.t('Custom fields').'" />'.
@@ -1565,6 +1653,10 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
     $row[] = 
       '<a class="additional" href="'.url('inventory/'.$id.'/edit_entry/'.$inventory_type_id.'/'.$data['id']).'" title="'.t('Additional fields').'">
         <img src="'.url(drupal_get_path('module', 'inventory').'/images/additional_fields.gif').'" alt="'.t('Additional fields').'" />
+      </a>';
+    $row[] = 
+      '<a class="location" href="'.url('inventory/'.$id.'/edit_entry_location/'.$data['id']).'" title="'.t('Location').'">
+        <img src="'.url(drupal_get_path('module', 'inventory').'/images/location'.($data['location'] ? '' : '_unset').'.gif').'" alt="'.t('Location').'" />
       </a>';
     $row[] = 
       '<a class="images" href="'.url('gallery/inventory_entry/'.$data['id'].'/edit').'" title="'.t('Images').'">
@@ -2087,22 +2179,6 @@ function inventory_delete_sgroup($headInventoryId, $sgid) {
   ->execute();
 
   return drupal_json_output('success');
-}
-
-function _include_js_and_css() {
-  drupal_add_library('system', 'ui.dialog');
-  drupal_add_library('system', 'ui.datepicker');
-  drupal_add_library('system', 'ui.autocomplete');
-  drupal_add_library('system', 'ui.sortable');
-  
-  drupal_add_js(drupal_get_path('module', 'inventory') . '/js/sgroup.js');
-  drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
-
-  drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
-  drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
-
-  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 }
 
 ?>

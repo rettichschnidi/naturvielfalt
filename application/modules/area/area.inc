@@ -6,8 +6,6 @@ function show_area($areaId) {
   drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
   
-  area_add_gmap_resources(false);
-  
   $coords = area_convert_coordinates($areaId);
   
   $rows = array();
@@ -167,7 +165,8 @@ function show_area($areaId) {
       'id' => 'area-map'
     ),
   );
-    $output['area_comment'] = array(
+  
+  $output['area_comment'] = array(
     '#type' => 'fieldset',
     '#title' => t('Description'),
     '#weight' => 3,
@@ -215,32 +214,7 @@ function show_area($areaId) {
     '#id_table' => 'area_details',
   );
   
-  $areas = db_query('
-    SELECT * FROM area a
-    LEFT JOIN area_point ap ON a.id = ap.area_id
-    WHERE a.id = :id
-    ORDER BY seq ASC',
-    array(":id" => $areaId)
-  );
-  $center = false;
-  $points = array();
-  foreach ($areas as $entry) {
-    array_push($points, $entry->lat.','.$entry->lng);
-    if($entry->centroid_lat || $entry->centroid_lng)
-      $center = $entry->centroid_lat.','.$entry->centroid_lng;
-  }
-  
-  if(count($points)<=1 && !$zoom) {
-    if(count($points))
-      $center = array_pop($points);
-    $zoom = 18;
-  }
-  $zoom = $zoom?' data-zoom="'.$zoom:'"';
-  $center = $center?' data-center="'.$center:'"';
-  
-  $output['area_map']['map'] = array(
-    '#markup' => '<div id="map"><div id="map_canvas" data-areaid="'.$areaId.'"'.$center.$zoom.' style="height: 100%"></div></div>'
-  );
+  $output['area_map']['map'] = area_map($areaId);
   
   $output = array_merge($output, area_inventories($areaId));
   $output = array_merge($output, area_habitats($areaId));

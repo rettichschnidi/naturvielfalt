@@ -559,6 +559,7 @@ return $form;
 }
 
 function area_edit_habitat_form($form, &$form_state, $area_id) {
+  drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
 	if($area_id == '') {
 		$habitats = array();
 	} else {
@@ -589,18 +590,17 @@ function area_edit_habitat_form($form, &$form_state, $area_id) {
     ->fields('h')
     ->execute();
 	
-	$header = array('Label','Name','Latin','');
+	$header = array('','Label','Name','Latin');
 	foreach($habitats as $value) {
 		$row = array();
-		$row[] = $value->label;		
+    if(key_exists($value->id, $habitats_selected)) {
+      $row[] = '<input type="checkbox" name="habitat['.$value->id.']" value="'.$value->id.'" checked="TRUE"/>';
+    } else {
+      $row[] = '<input type="checkbox" name="habitat['.$value->id.']" value="'.$value->id.'"/>';
+    }
+		$row[] = $value->label;
 		$row[] = $value->name_de;
 		$row[] = $value->name_lt;
-		
-		if(key_exists($value->id, $habitats_selected)) {
-			$row[] = '<input type="checkbox" name="habitat['.$value->id.']" value="'.$value->id.'" checked="TRUE"/>';
-		} else {
-			$row[] = '<input type="checkbox" name="habitat['.$value->id.']" value="'.$value->id.'"/>';
-		}
 		$rows[] = $row;
 	}
 	
@@ -608,7 +608,11 @@ function area_edit_habitat_form($form, &$form_state, $area_id) {
 		'#theme' => 'datatable', 
 		'#header' => $header,
 		'#rows' => $rows,
-		'#id_table' => 'test'
+		'#id_table' => 'habitats-edit',
+    '#options' => array(
+      'aaSorting' => "[[1, 'asc']]",
+      'aoColumns' => "[{'bSortable': false, 'sWidth': '15px'}, null, null, null]"
+    )
 	);
 	
 	return $form;
@@ -662,35 +666,6 @@ function area_edit_concept_form($form, &$form_state, $area_id) {
 		'#value' => $tending_strategies,
 	);	
 	return $form;	
-}
-
-function area_edit_map_form($form, $form_state, $area_id) {
-	$form['AreaNewFormMap'] = array(
-		'#type' => 'fieldset',
-  		'#title' => t('Map'), 
-  		'#weight' => 2, 
-  		'#collapsible' => TRUE, 
-  		'#collapsed' => FALSE,
-    	'#attributes' => array(
-      		'class' => array('collapsible'),
-      		'id' => 'area-map'
-    	),
-  	);
-  	if($area_id != '') {
-  		$imagepath = gmap_static_image_path($area_id, 500, 500, 14);
-  	} else {
-	  	$gmap_data = $form_state['input'];
-		$imagepath = gmap_static_image_path($gmap_data, 500, 500, 14);  		
-  	}
-  	$variables_map= array(
-		'path' => $imagepath,
-		'alt' => t('Map'),
-		'title' => t('Map'),
-	);
-	$form['AreaNewFormMap']['image'] = array(
-	    '#markup' => theme('image', $variables_map)
-	);
-	return $form;
 }
 
 function area_edit_basics_form($form, &$form_state, $area_id) {
@@ -845,6 +820,28 @@ function area_edit_comment_form($form, &$form_state, $area_id) {
   	return $form;
 }
 
+function area_edit_map_form($form, &$form_state, $area_id) {
+  $form['map'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Map'),
+    '#weight' => 2,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+      'id' => 'area-map'
+    ),
+  );
+  $form['map']['map'] = area_map($area_id);
+  return $form;
+}
+
 function area_edit_hidden_form($form, &$form_state) {
 	$form['AreaNewFormDetails']['locality'] = array(
 	'#type' => 'hidden',
@@ -913,20 +910,51 @@ function area_add_gmap_resources($bubble=true) {
   
   drupal_add_css($areaCSSPath . 'area-select.css');
   
-  drupal_add_js('http://maps.google.com/maps/api/js?sensor=true');
-  drupal_add_js($areaCSSPath . 'overlay-style.js');
-  drupal_add_js($inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js');
-  drupal_add_js($inventoryJsPath . 'util.js');
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Config.js');
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/MapGeometryOverlays.js');
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlay.js');
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlayControl.js');
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Polygon.js');
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Marker.js');
+  drupal_add_js('http://maps.google.com/maps/api/js?sensor=true', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Config.js', array('group' => JS_LIBRARY));
+  drupal_add_js($inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/MapGeometryOverlays.js', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlay.js', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlayControl.js', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Polygon.js', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Marker.js', array('group' => JS_LIBRARY));
   drupal_add_js($areaJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js');
+  drupal_add_js($areaJsPath . 'lib/geoxml3/geoxml3.js', array('group' => JS_LIBRARY));
   if($bubble)
     drupal_add_js($areaJsPath . 'lib/infobubble.js');
+  drupal_add_js($areaCSSPath . 'overlay-style.js');
+  drupal_add_js($inventoryJsPath . 'util.js');
   drupal_add_js($areaJsPath . 'area-select.js');
+}
+
+function area_map($areaId, $map_id='map_canvas', $additional='') {
+  area_add_gmap_resources(false);
+  $areas = db_query('
+    SELECT * FROM area a
+    LEFT JOIN area_point ap ON a.id = ap.area_id
+    WHERE a.id = :id
+    ORDER BY seq ASC',
+    array(":id" => $areaId)
+  );
+  $center = false;
+  $points = array();
+  foreach ($areas as $entry) {
+    array_push($points, $entry->lat.','.$entry->lng);
+    if($entry->centroid_lat || $entry->centroid_lng)
+      $center = $entry->centroid_lat.','.$entry->centroid_lng;
+  }
+  
+  if(count($points)<=1 && !$zoom) {
+    if(count($points))
+      $center = array_pop($points);
+    $zoom = 18;
+  }
+  $zoom = $zoom?' data-zoom="'.$zoom.'"' : '';
+  $center = $center?' data-center="'.$center.'"' : '';
+  
+  return array(
+    '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div></div>'
+  );
 }
 
 ?>

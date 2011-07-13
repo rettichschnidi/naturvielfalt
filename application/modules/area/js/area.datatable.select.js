@@ -19,12 +19,17 @@ function inventoryRowSelect() {
 			window.location.href = Drupal.settings.basePath+'organism/'+idType[1];
     if (idType[0] == 'habitat')
       window.location.href = Drupal.settings.basePath+'habitat/'+idType[1];
+    if (jQuery(targ).closest('#habitats-edit').size()) {
+      var checkbox = jQuery(targ).closest('tr').find('input:checkbox');
+      checkbox.attr('checked', checkbox.attr('checked') ? '' : 'checked');
+    }
 		
 	}	
 	// register events
 	jQuery("#inventories").live('click', this.onTableRowClicked);
 	jQuery("#organisms").live('click', this.onTableRowClicked);
   jQuery("#habitats").live('click', this.onTableRowClicked);
+  jQuery("#habitats-edit").live('click', this.onTableRowClicked);
 }
 
 new inventoryRowSelect();

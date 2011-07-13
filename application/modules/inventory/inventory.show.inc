@@ -8,6 +8,8 @@
  *  Drupal render array
  */
 function inventory_show($head_inventory_id) {
+  _include_js_and_css(false);
+  area_add_gmap_resources(false);
   drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
   
   $render_array = inventory_basics($head_inventory_id);
@@ -20,6 +22,79 @@ function inventory_show($head_inventory_id) {
   
   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
 
+  return $render_array;
+}
+
+function inventory_entry_locations($head_inventory_id) {
+  $xml = '';
+  $data = inventory_data($head_inventory_id, false, true, false, false, false);
+  $entries = array();
+  foreach($data as $group) {
+    foreach($group as $k => $entry) {
+      if(is_string($k) || !$entry['location'])
+        continue;
+      $location = explode(',', substr($entry['location'], 1, strlen($entry['location'])-2));
+      $lat = floatval($location[0]);
+      $lng = floatval($location[1]);
+      $image = false;
+      if(function_exists('gallery_images')) {
+        $images = gallery_images('organism', $entry['orgId'], true, false, 1);
+        if($images['count'])
+          $image = $images['images'][0]['id'];
+      }
+      $xml .= '
+    <Placemark>
+      <name><![CDATA[]]></name>
+      <description><![CDATA[
+        <a href="'.url('organism/'.$entry['orgId']).'">
+          <img style="float:left; margin:0 1em 0 0;" src="'.url('gallery/organism/'.$entry['orgId'].'/thumb/'.$image.'/inventory_mini').'" />
+          <big>'.utf8_decode($entry['label']).'</big>
+          <br />
+          <em>'.utf8_decode($entry['label_latin']).'</em>
+        </a>
+        <span style="clear:both"></span>
+        
+      ]]></description>
+      <Point>
+        <extrude>1</extrude>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <coordinates>'.$lng.','.$lat.',0</coordinates>
+      </Point>
+    </Placemark>';
+    }
+  }
+  if(!$xml)
+    return drupal_exit();
+  
+  $xml = '<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>'.t('Observations').'</name>
+    '.$xml.'
+  </Document>
+</kml>';
+  drupal_add_http_header('Content-Length', strlen($xml));
+  drupal_add_http_header('Content-Type', 'text/xml');
+  echo $xml;
+  drupal_exit();
+}
+
+/**
+ * Menu callback; View of the observation location of an inventory entry
+ * 
+ * @param int $head_inventory_id
+ * @param int $entry_id
+ * @return array
+ *  Drupal render array
+ */
+function inventory_entry_location($head_inventory_id, $entry_id) {
+  $ajax = $_REQUEST['ajax'];
+  $render_array['map'] = drupal_get_form('inventory_entry_map', $head_inventory_id, $entry_id);
+  if($ajax)
+    return drupal_json_output(array(
+      'form' => drupal_render($render_array),
+      'title' => t('Observation location')
+    ));
   return $render_array;
 }
 
@@ -253,7 +328,7 @@ function inventory_basics($head_inventory_id) {
   $render_array['details'] = array(
     '#type' => 'fieldset', 
     '#title' => t('Inventory details'), 
-    '#weight' => 1, 
+    '#weight' => 2, 
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#attached' => array (
@@ -264,6 +339,7 @@ function inventory_basics($head_inventory_id) {
     ),
     '#attributes' => array(
       'class' => array('collapsible'),
+      'id' => 'inventory-details'
     ),
   );
   $render_array['details']['table'] = array(
@@ -292,7 +368,7 @@ function inventory_basics($head_inventory_id) {
     $area->owner
   );
   
-  $render_array['areas'] = array(
+  $render_array['area'] = array(
     '#type' => 'fieldset', 
     '#title' => t('Area details'), 
     '#weight' => 3, 
@@ -306,17 +382,36 @@ function inventory_basics($head_inventory_id) {
     ),
     '#attributes' => array(
       'class' => array('collapsible'),
+      'id' => 'inventory-area'
     ),
   );
-  $render_array['areas']['table'] = array(
+  $render_array['area']['table'] = array(
     '#theme' => 'table',
     '#rows' => $rows,
     '#attributes' => array(
       'class' => array('inventory_show'),
     ),
   );
-  $rows = '';
-  $row = '';
+  
+  $render_array['map'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Map'),
+    '#weight' => 1,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+      'id' => 'inventory-map'
+    ),
+  );
+  
+  $render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas', ' data-layers="'.url('inventory/'.$head_inventory_id.'/entry_locations').'"');
 
   return $render_array;
 }
@@ -396,9 +491,14 @@ function inventory_redlist_count($head_inventory_id) {
  */
 function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true) {
   drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
+  $img_localize = theme('image', array(
+    'path' => 'misc/fatcow_icons/16x16/location_pin.png',
+    'alt' => t('Observation location'),
+    'title' => t('Observation location'),
+  ));
   $output = array();
   if(!$invArr)
-    $invArr = inventory_data($head_inventory_id);
+    $invArr = inventory_data($head_inventory_id, false, false, false, false, true, true);
   
   $gallery_available = $gallery && function_exists('gallery_view_link');
   
@@ -409,42 +509,52 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
     $colIds = array();
     $colId = '';
     $invDetail = '';
+    $has_location = false;
     $has_gallery = false;
     
     $invGroupName = $inventory_group['invDesc']['name'];
-    $header[] = t('Name');
-    $header[] = t('Latin name');
-    $header[] = t('Family');
+    $header['name'] = t('Name');
+    $header['name_latin'] = t('Latin name');
+    $header['family'] = t('Family');
     foreach($inventory_group['invDesc']['cols'] as $invDetail) {
-      $header[] = $invDetail['name'];
+      $header['col'.$invDetail['id']] = $invDetail['name'];
       $colIds[] = $invDetail['id'];
     }
     foreach($inventory_group as $k => $invDetails) {
       if(is_string($k) && $k == 'invDesc')
         continue;
       $row = array();
-      $row[] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
-      $row[] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
-      $row[] = l($invDetails['label_family'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      $row['name'] = l($invDetails['label'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      $row['name_latin'] = l($invDetails['label_latin'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
+      $row['family'] = l($invDetails['label_family'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
       foreach($colIds as $colId) {
         $colValueDropdown = explode('_', array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '');
         if (isset($colValueDropdown[1]))
-          $row[] = _inventory_entry_value($colValueDropdown[0]);
+          $row['col'.$colId] = _inventory_entry_value($colValueDropdown[0]);
         else
-          $row[] = array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '';
+          $row['col'.$colId] = array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '';
         $colValueDropdown = NULL; 
       }
+      if(array_key_exists('location', $invDetails) && $invDetails['location']) {
+        $row['location'] = l($img_localize, 'inventory/'.$head_inventory_id.'/entry_location/'.$invDetails['id'], array('html' => true, 'attributes' => array('class' => array('location'))));
+        $has_location = true;
+      } else
+        $row['location'] = '';
       if($gallery_available) {
-        $row[] = gallery_view_link('inventory_entry', $invDetails['id']);
+        $row['gallery'] = gallery_view_link('inventory_entry', $invDetails['id']);
         if($row[(count($row)-1)])
           $has_gallery = true;
       }
       $rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
     }
     if($has_gallery)
-      $header[] = '&nbsp;';
+      $header['gallery'] = '&nbsp;';
     else if($gallery_available)
-      array_walk($rows, create_function('&$row', 'array_pop($row[\'data\']);'));
+      array_walk($rows, create_function('&$row', 'unset($row[\'data\'][\'gallery\']);'));
+    if($has_location)
+      $header['location'] = '&nbsp;';
+    else if($gallery_available)
+      array_walk($rows, create_function('&$row', 'unset($row[\'data\'][\'location\']);'));
     if(!empty($rows)) {
       $output[$invGroupName] = array(
         '#type' => 'fieldset', 

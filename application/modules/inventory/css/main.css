@@ -7,6 +7,26 @@ body.page-inventory-edit {
   padding-bottom:100px;
 }
 
+#inventory-map {
+  width:500px;
+  float:right;
+}
+
+#inventory-map #map {
+  height:400px;
+}
+
+#inventory-details,
+#inventory-area {
+  clear:left;
+  width:450px;
+  float:left;
+}
+
+.invgroup {
+  clear:both;
+}
+
 #inventory-edit-entries,
 #inventory-template-edit-entries {
   z-index:5;
@@ -150,6 +170,7 @@ body.page-inventory-edit {
 #inventories .invTable .disabled .handler,
 #inventories .invTable .disabled .additional,
 #inventories .invTable .disabled .images,
+#inventories .invTable .disabled .location,
 #inventories .invTable .disabled .delete {
   display:none;
 }

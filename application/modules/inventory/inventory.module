@@ -68,6 +68,25 @@ function inventory_menu() {
     'file' => 'inventory.show.inc',
     'weight' => 3,
   );
+  $items['inventory/%/entry_location/%'] = array(
+    'title' => t('Entry location'),
+    'description' => t('Displays the location of the inventory entry'),
+    'page callback' => 'inventory_entry_location',
+    'page arguments' => array(1, 3),
+    'access callback' => 'inventory_access',
+    'access arguments' => array(1),
+    'file' => 'inventory.show.inc',
+    'weight' => 3,
+  );
+  $items['inventory/%/entry_locations'] = array(
+    'title' => 'Entry locations',
+    'page callback' => 'inventory_entry_locations',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_access',
+    'access arguments' => array(1),
+    'file' => 'inventory.show.inc',
+    'weight' => 3,
+  );
   $items['inventory/%/delete_inventory'] = array(
     'title' => t('Delete'),
     'description' => t('Delete an existing inventory'),
@@ -147,6 +166,16 @@ function inventory_menu() {
     'description' => t('Edit additional fields of an inventory entry'),
     'page callback' => 'inventory_edit_entry',
     'page arguments' => array(1, 3, 4),
+    'access callback' => 'inventory_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['inventory/%/edit_entry_location/%'] = array(
+    'title' => t('Edit location of an inventory entry'),
+    'description' => t('Edit location of an inventory entry'),
+    'page callback' => 'inventory_edit_entry_location',
+    'page arguments' => array(1, 3),
     'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
     'type' => MENU_CALLBACK,
@@ -668,7 +697,7 @@ function inventory_column_description($inventory_id, $type_id=false, $custom_fie
   return $invColDesc;
 }
 
-function inventory_data($head_inventory_id, $order=false, $extended=false, $entry_id=false, $custom_fields=false, $columns=true) {
+function inventory_data($head_inventory_id, $order=false, $extended=false, $entry_id=false, $custom_fields=false, $columns=true, $combined=false) {
   $invArr = array();
   if($entry_id)
     $inventories = db_query('SELECT inventory_id id
@@ -677,7 +706,7 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
                 array(':id' => $entry_id)
                 );
   else
-    $inventories = db_query('SELECT id
+    $inventories = db_query('SELECT id, inventory_type_id
                 FROM inventory 
                 WHERE head_inventory_id = :id;', 
                 array(':id' => $head_inventory_id)
@@ -686,12 +715,17 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
   $protected = inventory_redlisted_entries($head_inventory_id);
   
   foreach($inventories as $inventory) {
-    $inventory_id = $inventory->id;
-    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_entry', 'inventory_id', $order, $extended, $entry_id, $protected, $columns);
+    $id = $combined && !$entry_id ? $inventory->inventory_type_id : $inventory->id;
+    
+    $entries = inventory_type_entries($inventory->id, 'inventory_entry', 'inventory_id', $order, $extended, $entry_id, $protected, $columns);
+    if(!array_key_exists($id, $invArr))
+      $invArr[$id] = $entries;
+    else
+      $invArr[$id] = array_merge($invArr[$id], $entries);
     
     // Get the inventory column description
-    $invArr[$inventory_id]["invDesc"] = inventory_column_description($inventory_id, false, $custom_fields, $head_inventory_id);
-    
+    if(!array_key_exists('invDesc', $invArr[$id]))
+      $invArr[$id]["invDesc"] = inventory_column_description($inventory->id, false, $custom_fields, $head_inventory_id);
   }
   return $invArr;
 }
@@ -701,6 +735,7 @@ function inventory_type_entries($id, $table, $relation, $order=false, $extended=
     $order = 'e.position, e.id ASC';
   $sql = 'SELECT 
       '.($include_id ? 'e.id,' : '').'
+      '.($table == 'inventory_entry' ? 'e.location, ': '').'
       e.organism_id, 
       fauna.name_de faunanamede, 
       fauna.genus, 
@@ -731,7 +766,8 @@ function inventory_type_entries($id, $table, $relation, $order=false, $extended=
   
   foreach($inventoryEntries as $inventoryEntry) {
     $entry = inventory_entry_factory($inventoryEntry, $extended);
-    
+    if($table == 'inventory_entry')
+      $entry['location'] = $inventoryEntry->location;
     if($columns) {
       // Get inventory columns
       $columns = db_query('
@@ -778,6 +814,62 @@ function inventory_entry_factory($inventoryEntry, $extended) {
     $entry["label_family"] = $inventoryEntry->florafamilie;
   }
   return $entry;
+}
+
+function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id) {
+  area_add_gmap_resources(false);
+  _include_js_and_css();
+  $form['map'] = area_map(db_select('head_inventory', 'hi')
+    ->condition('hi.id', $head_inventory_id)
+    ->fields('hi', array('area_id'))
+    ->execute()
+    ->fetchField(0), 'map_location');
+  
+  $lat = '';
+  $lng = '';
+  if($entry_id) {
+    $location = db_select('inventory_entry', 'e')
+      ->condition('e.id', $entry_id)
+      ->fields('e', array('location'))
+      ->execute()
+      ->fetchField(0);
+    if($location) {
+      $location = explode(',', substr($location, 1, strlen($location)-2));
+      $lat = floatval($location[0]);
+      $lng = floatval($location[1]);
+    }
+  }
+  if(array_key_exists('lat', $_REQUEST))
+    $lat = floatval($_REQUEST['lat']);
+  if(array_key_exists('lng', $_REQUEST))
+    $lng = floatval($_REQUEST['lng']);
+  
+  $form['lat'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $lat
+  );
+  $form['lng'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $lng
+  );
+  
+  return $form;
+}
+
+function _include_js_and_css() {
+  drupal_add_library('system', 'ui.dialog');
+  drupal_add_library('system', 'ui.datepicker');
+  drupal_add_library('system', 'ui.autocomplete');
+  drupal_add_library('system', 'ui.sortable');
+  
+  drupal_add_js(drupal_get_path('module', 'inventory') . '/js/sgroup.js');
+  drupal_add_js(drupal_get_path('module', 'inventory') .'/js/lib/jquery/jquery-texotela-numeric.js');
+
+  drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
+  drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
+
+  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 }
 
 function inventory_icon_map($filemime) {

@@ -14,7 +14,14 @@ var inventory = {
   count: 1,
   group_count: 1,
   templates: false,
-  base: false
+  base: false,
+  map: false,
+  entry_links: {
+    '.additional': 0,
+    '.images': 1,
+    '.location': 0
+  },
+  last_date: false
   
 };
 
@@ -24,7 +31,10 @@ var inventory = {
     inventory.initCustomFields();
     inventory.initAdditionalFields();
     inventory.initTemplates();
+    inventory.initLocation();
     inventory.container = $('#inventories');
+    // Add dialog for location form
+    $('td a.location').unbind('click').click(inventory.locationDialog);
     if(!inventory.container.size())
       return;
     $('form').each(function() {
@@ -70,7 +80,7 @@ var inventory = {
   inventory.setMessage = function(message, type, time) {
     if(inventory.messageTimer)
       window.clearTimeout(inventory.messageTimer);
-    inventory.message.html(message).attr('class', 'messages').addClass(type).stop().slideDown('fast');
+    inventory.message.html(message).attr('class', 'messages').addClass(type).stop().css('height', 'auto').slideDown('fast');
     if(time)
       inventory.messageTimer = window.setTimeout(function() {
         inventory.message.slideUp('fast');
@@ -85,7 +95,7 @@ var inventory = {
   inventory.showLoading = function() {
     if(!inventory.loading) {
       inventory.loading = $('<div><img src="'+Drupal.settings.basePath+'modules/inventory/images/loading.gif" /></div>').hide();
-      inventory.form.append(inventory.loading);
+      $('body').append(inventory.loading);
     }
     inventory.loading.dialog({
       modal: true,
@@ -128,12 +138,7 @@ var inventory = {
         for(var i=0; i<data.entries.length; i++) {
           var entry = inventory.container.find('input.entry_id[value="'+data.entries[i]['id_old']+'"]');
           entry.val(data.entries[i]['id_new']);
-          var additional = entry.closest('tr').find('.additional');
-          if(!additional.size())
-            continue;
-          var href = additional.attr('href').split('/');
-          href[href.length-1] = entry.val();
-          entry.closest('tr').find('.additional').attr('href', href.join('/'));
+          inventory.rewriteLinks(entry.closest('tr'), inventory.entry_links, data.entries[i]['id_new']);
         }
         inventory.group_count = data.group_count;
         if(inventory.callback)
@@ -184,11 +189,16 @@ var inventory = {
   }
   
   inventory.updateGroupCount = function(table) {
+    var orgs = [];
     var count = table.find('tbody tr:not(.disabled)').size();
+    table.find('tbody tr:not(.disabled) input.organism_id').each(function() {
+      if(orgs.indexOf($(this).val()) < 0)
+        orgs.push($(this).val());
+    });
     var prev = table.prev();
     while(!prev.hasClass('invTitle'))
       prev = prev.prev();
-    prev.find('small').html('('+count+')');
+    prev.find('small').html('('+count+'/'+orgs.length+')');
   }
   
   inventory.enableDisable = function(row) {
@@ -198,6 +208,8 @@ var inventory = {
       row.addClass('disabled');
       row.find('td input:not(input[type="hidden"], .organism)').attr('disabled', 'disabled');
     } else {
+      if(inventory.last_date && row.hasClass('disabled'))
+        row.find('input.date').val(inventory.last_date);
       row.removeClass('disabled');
       row.find('td input:not(input[type="hidden"], .organism)').attr('disabled', '');
     }
@@ -454,6 +466,68 @@ var inventory = {
     });
   }
   
+  inventory.locationDialog = function(e) {
+    e.preventDefault();
+    inventory.showLoading();
+    var data = {ajax: 1};
+    var lat = $(this).closest('tr').find('input.lat');
+    if(lat.size()) data['lat'] = lat.val();
+    var lng = $(this).closest('tr').find('input.lng');
+    if(lng.size()) data['lng'] = lng.val();
+    $.getJSON($(this).attr('href'),
+      data,
+      function(data) {
+        if(data && data.form) {
+          var dialog = $('<div title="'+data.title+'" />');
+          dialog.append($(data.form));
+          dialog.dialog({
+            modal: true,
+            resizable: false,
+            closeOnEscape: false,
+            closeText: '',
+            close: function(event, ui) {
+              $(this).remove();
+            },
+            width: 700
+          });
+          inventory.initLocation();
+          dialog.find('#edit-actions a').click(function(e) {
+            e.preventDefault();
+            $(this).closest('.ui-dialog-content').dialog('close');
+          });
+          dialog.find('form').submit(function(e) {
+            var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
+            var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').closest('tr');
+            var base_name = row.find('input.entry_id').attr('name');
+            
+            var iname = base_name.replace('[id]', '[lat]');
+            var input = row.find('input[name="'+iname+'"]');
+            if(!input.size()) { // create the hidden field if it is not yet present
+              input = $('<input type="hidden" class="lat" name="'+iname+'" value="" />');
+              row.find('td:last').append(input);
+            }
+            input.val($(this).find('input[name="lat"]').val());
+            
+            iname = base_name.replace('[id]', '[lng]');
+            input = row.find('input[name="'+iname+'"]');
+            if(!input.size()) { // create the hidden field if it is not yet present
+              input = $('<input type="hidden" class="lng" name="'+iname+'" value="" />');
+              row.find('td:last').append(input);
+            }
+            input.val($(this).find('input[name="lng"]').val());
+            
+            row.find('a.location img').attr('src', row.find('a.location img').attr('src').replace('_unset', ''));
+            
+            inventory.setMessage(Drupal.t('The location will be stored only after saving the whole form by pressing the <em>Save</em> button in the lower right.'), 'warning', 15000)
+            $(this).closest('.ui-dialog-content').dialog('close');
+            return false;
+          }
+        );
+      }
+      inventory.hideLoading();
+    });
+  }
+  
   inventory.scrollToAutocompleteItem = function(context) {
     var widget = $(context).autocomplete('widget');
     var item = widget.find('#ui-active-menuitem');
@@ -516,11 +590,26 @@ var inventory = {
     container.find('input.date').datepicker({
       dateFormat : 'dd.mm.yy',
       duration : 0,
-      showButtonPanel: true
+      showButtonPanel: true,
+      onSelect: function(date, inst) {
+        if($(this).closest('.invTable').size())
+          inventory.last_date = date;
+      }
     }).width(80);
     
     // Numeric fields
     container.find('input.int').numeric().width(70);
+  }
+  
+  inventory.rewriteLinks = function(context, links, id) {
+    for(var link in links) {
+      var element = context.find(link);
+      if(!element.size())
+        return;
+      var href = element.attr('href').split('/');
+      href[href.length-1-links[link]] = id;
+      element.attr('href', href.join('/'));
+    }
   }
   
   inventory.initializeRow = function(row) {
@@ -531,12 +620,7 @@ var inventory = {
     
     row.find('input.entry_id[value=""]').each(function() {
       $(this).val('new_'+inventory.count++);
-      var additional = $(this).closest('tr').find('.additional');
-      if(!additional.size())
-        return;
-      var href = additional.attr('href').split('/');
-      href[href.length-1] = $(this).val();
-      additional.attr('href', href.join('/'));
+      inventory.rewriteLinks($(this).closest('tr'), inventory.entry_links, $(this).val());
     });
     
     // Replace delete checkbox
@@ -546,13 +630,16 @@ var inventory = {
         '<img src="'+Drupal.settings.basePath+'modules/inventory/images/delete.gif" />'+
       '</a>'
     );
-    row.find('a.delete').click(inventory.deleteEntry);
+    row.find('a.delete').unbind('click').click(inventory.deleteEntry);
     
     // Add dialog for additional fields form
-    row.find('a.additional').click(inventory.additionalFieldsDialog);
+    row.find('a.additional').unbind('click').click(inventory.additionalFieldsDialog);
+    
+    // Add dialog for location form
+    row.find('a.location').unbind('click').click(inventory.locationDialog);
     
     // Save entries before going to the manage images page
-    row.find('a.images').click(function(e) {
+    row.find('a.images').unbind('click').click(function(e) {
       e.preventDefault();
       inventory.saveEntries(e, $.proxy(function() {
         document.location = $(this).attr('href');
@@ -775,6 +862,30 @@ var inventory = {
       $(this).attr('name', name.replace('['+i+']', '['+(i+1)+']'));
     });
     $(this).unbind('blur');
+  }
+  
+  inventory.initLocation = function() {
+    if(!$('#map_location').size())
+      return;
+    inventory.locationform = $('#inventory-edit-entry-location-form');
+    if(!inventory.locationform.size())
+      inventory.locationform = $('body');
+    inventory.map = new AreaSelect('map_location');
+    var position = inventory.map.center;
+    if(inventory.locationform.find('input[name="lat"]').val() !== '' || inventory.locationform.find('input[name="lng"]').val() !== '')
+      position = new google.maps.LatLng(parseFloat(inventory.locationform.find('input[name="lat"]').val()), parseFloat(inventory.locationform.find('input[name="lng"]').val()));
+    inventory.location = new google.maps.Marker({
+      map: inventory.map.map,
+      draggable: inventory.locationform.is('form'),
+      animation: google.maps.Animation.DROP,
+      position: position
+    });
+    inventory.map.map.panTo(position);
+    google.maps.event.addListener(inventory.location, 'position_changed', function() {
+      var pos = inventory.location.getPosition();
+      inventory.locationform.find('input[name="lat"]').val(pos.lat());
+      inventory.locationform.find('input[name="lng"]').val(pos.lng());
+    });
   }
   
   $(document).ready(inventory.init);

@@ -247,37 +247,6 @@ function area_edit_form_submit($form, &$form_state) {
 	drupal_set_message('Area successfully updated');
 }
 
-function area_map($area_id) {
-	$output['area_map'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Map'),
-    '#weight' => 2,
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-    '#attached' => array (
-      'js' => array (
-        'misc/form.js',
-        'misc/collapse.js',
-      ),
-    ),
-    '#attributes' => array(
-      'class' => array('collapsible'),
-      'id' => 'area-map'
-    ),
-  );
-
-  $imagepath = gmap_static_image_path($area_id, 500, 500);
-  $variables_map= array(
-    'path' => $imagepath,
-    'alt' => t('Map'),
-    'title' => t('Map'),
-  );
-  $output['area_map']['image'] = array(
-    '#markup' => theme('image', $variables_map)
-  );
-  return $output;
-}
-
 function area_delete_file($form, &$form_state, $area_id, $file_id) {
   $query = db_select('area_file_managed', 'afm')
     ->condition('afm.area_id', $area_id)
