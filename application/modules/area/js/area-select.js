@@ -328,19 +328,10 @@ function AreaSelect(map_id) {
   
   AreaSelect.prototype.onControlAreaChooseClicked = function(event) {
     jQuery('.controlAreaChoose').addClass('selected');
-    jQuery('.controlAreaCreate').removeClass('selected');
-    areaselect.overlayControl.stopDigitizing();
-    jQuery('#area-create-form').addClass('hidden');
-    jQuery('#area-choose-form').removeClass('hidden');
-    jQuery('#area-field-name-form').removeClass('hidden');
   }
 
   AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
-    jQuery('.controlAreaChoose').removeClass('selected');
     jQuery('.controlAreaCreate').addClass('selected');
-    jQuery('#area-create-form').removeClass('hidden');
-    jQuery('#area-choose-form').addClass('hidden');
-    jQuery('#area-field-name-form').addClass('hidden');
     areaselect.overlayControl.startDigitizing();
   }
 

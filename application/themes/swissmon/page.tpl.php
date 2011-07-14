@@ -26,9 +26,6 @@
         <?php endif; ?>
         <?php endif; ?>
         </div>
-
-        <?php if ($primary_nav): print $primary_nav; endif; ?>
-        <?php if ($secondary_nav): print $secondary_nav; endif; ?>
       </div> <!-- /#header -->
 
       <?php if ($page['sidebar_first']): ?>

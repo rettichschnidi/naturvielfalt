@@ -138,7 +138,6 @@ function inventory_new_form_submit($form, &$form_state){
   // update export type
   inventory_save_export_type($hiid, $form_state['input']['export']);
   
-  $_SESSION['inventory']['new'] = true;
   return $form_state['redirect'] = 'inventory/'.$hiid.'/edit';
 }
 ?>

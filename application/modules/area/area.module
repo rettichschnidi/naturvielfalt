@@ -113,7 +113,6 @@ function area_menu() {
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    //'file' => 'area.inc',
     'weight' => 8
   );
   $items['area/new'] = array(
@@ -124,14 +123,14 @@ function area_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'area.new.inc',
   );
-  //temp form
-    $items['area/new/details'] = array(
-    'title' => 'Enter area details',
-    'description' => 'Create an area',
-    'page callback' => 'area_new_details',
+  $items['area/choose'] = array(
+    'title' => 'Choose existing area',
+    'description' => 'Choose an area',
+    'page callback' => 'drupal_get_form',
+  	'page arguments' => array('area_choose_form'),
     'access arguments' => array(AREA_CREATE),
     'type' => MENU_CALLBACK,
-    'file' => 'area.new.details.inc',
+    'file' => 'area.new.inc',
   );
   $items['area/gmap_image_redirect/%'] = array(
     'title' => 'Redirect to Google Maps static image URL',
@@ -222,6 +221,14 @@ function area_theme() {
       'template' => 'area.search.byMaps.show',
       'variables' => array()
     ),
+     'area.create' => array(
+      'template' => 'area.create',
+      'variables' => array()
+    ),
+     'area.choose' => array(
+      'template' => 'area.choose',
+      'variables' => array()
+    ),
   );
 }
 
@@ -237,7 +244,6 @@ function area_permission() {
 }
 
 function area_get_icon_map($filemime) {
-
   switch ($filemime) {
     // Word document types.
     case 'application/msword':
@@ -668,6 +674,9 @@ function area_edit_concept_form($form, &$form_state, $area_id) {
 	return $form;	
 }
 
+/*
+ * Basic habitat information form
+ */
 function area_edit_basics_form($form, &$form_state, $area_id) {
 	if($area_id == '') {
 		$coords = array($form_state['input']['latitude'], $form_state['input']['longitude'], $form_state['input']['country']);
@@ -776,16 +785,13 @@ function area_edit_basics_form($form, &$form_state, $area_id) {
 	'#value' => $field_name,
 	);
 	$form['AreaNewFormBasics']['parcels'] = area_edit_parcels_form($area_id);	
-/*	$form['AreaNewForm']['habitatText'] = array(
-	'#title' => 'Habitats',
-	'#type' => 'textfield',   
-    '#autocomplete_path' => 'area/habitat_autocomplete',
-	'#suffix' => '<div id="habitatSelected"><table></table></div>',
-	);
-*/
+
 	return $form;
 }
 
+/*
+ * Comment edit form
+ */
 function area_edit_comment_form($form, &$form_state, $area_id) {
 	if($area_id == '') {
 		$comment = '';
@@ -820,6 +826,9 @@ function area_edit_comment_form($form, &$form_state, $area_id) {
   	return $form;
 }
 
+/*
+ * Hidden form used to store values when new area is created
+ */
 function area_edit_map_form($form, &$form_state, $area_id) {
   $form['map'] = array(
     '#type' => 'fieldset',

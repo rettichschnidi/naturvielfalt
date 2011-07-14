@@ -1,13 +1,13 @@
 <?php
 /**
- * Chose or create new area
+ * Create new area
  * @return render array
  */
 function area_new_form() {
+	drupal_set_title(t('Create New Area'));
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
-	drupal_set_title(t('Choose or Create New Area'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
-	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
+	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
@@ -19,15 +19,11 @@ function area_new_form() {
 		$output['new'] = array(
 		'#theme' => 'area.new',
 		);
-		$output['googleMaps'] = drupal_get_form('area_google_maps_form');
-		$output['FieldName'] = drupal_get_form('area_field_name_form');
+		$output['googleMaps'] = area_google_maps_form('create');
 		$output['areaNew'] = drupal_get_form('area_create_form');
-	  	$output['areaNew']['#attributes']['class']='hidden';
-		$output['areaChose'] = drupal_get_form('area_choose_form');	
+	  	//$output['areaNew']['#attributes']['class']='hidden';	
 	}
 
-	
-	
 	return $output;
 }
 
@@ -48,14 +44,31 @@ function area_back_button() {
  * Search by Google Maps (City, Street, etc.)
  * @return Google Maps input search field
  */
-function area_google_maps_form() {
-	$form['GoogleMaps'] = array(
-		'#type' => 'fieldset', 
-  		//'#title' => t('Map'),
-  		'#weight' => 3, 
-  		'#collapsible' => FALSE, 
-		'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
-	);
+function area_google_maps_form($task) {
+		if($task == 'create') {
+			$form['GoogleMaps'] = array(
+				'#type' => 'fieldset', 
+		  		'#weight' => 3, 
+		  		'#collapsible' => FALSE, 
+				'searchByMaps' => array('#theme' => 'area.create'), // map
+			);			
+		}
+		if($task == 'choose') {
+			$form['GoogleMaps'] = array(
+				'#type' => 'fieldset', 
+		  		'#weight' => 3, 
+		  		'#collapsible' => FALSE, 
+				'searchByMaps' => array('#theme' => 'area.choose'), // map
+			);
+		}
+		if($task == '') {
+			$form['GoogleMaps'] = array(
+				'#type' => 'fieldset', 
+		  		'#weight' => 3, 
+		  		'#collapsible' => FALSE, 
+				'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
+			);
+		}
 	
 	return $form;
 }
@@ -131,22 +144,33 @@ function area_search($form, &$form_state) {
  * @return hidden form to submit area_id to next step
  */
 function area_choose_form($form, &$form_state) {
-	$form['AreaChoseForm']['id-area'] = array(
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
+	drupal_set_title(t('Choose existing area'));
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
+	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+
+	$form['new'] = array(
+	'#theme' => 'area.new',
+	);
+	$form['AreaChooseForm'] = array (
+		'#type' => 'fieldset',
+		'#weight' => -1,
+	);
+	$form['AreaChooseForm']['help'] = array (
+		'#markup' => t('If you would like to create a new inventory, please select an existing area. If your desired area is not listed here, please create one first.')
+	);
+	
+	$form['FieldName'] = area_field_name_form();
+	$form['googleMaps'] = area_google_maps_form('choose');
+	
+
+	$form['id-area'] = array(
   		'#type' => 'hidden',
 		'#attributes' => array('id' => 'edit-id-area'),
 	);
-/*	$form['save_choose'] = array (
-		'#type' => 'fieldset',
-		'#weight' => 10,
-	);
-
-	$form['save_choose']['AreaChoseForm_submit'] = array(
-  		'#type' => 'submit',
-  		'#value' => t('Continue'),
-	);
-*/	
-	$form['AreaChoseForm']['actions'] = array('#type' => 'actions');
-	$form['AreaChoseForm']['actions']['submit'] = array(
+	$form['actions'] = array('#type' => 'actions');
+	$form['actions']['submit'] = array(
 		'#type' => 'submit',
 		'#value' => t('Continue')
 	);
@@ -295,7 +319,7 @@ function area_new_details_form_submit($form, $form_state) {
 	$protectiontarget = $form_state['input']['protection_target'];
 	$safetyprecautions = $form_state['input']['safety_precautions'];
 	$tendingstrategies = $form_state['input']['tending_strategies'];
-
+	
 	// get area type id from table area_type
 	$result = db_query('SELECT id FROM area_type at WHERE at.desc like :desc', array(':desc' => $areaType));
 	$areaTypeRow = $result->fetchAssoc();
@@ -391,6 +415,12 @@ function area_new_details_form_submit($form, $form_state) {
 	// redirect to the new area	
 	drupal_set_message('Area successfully created. If you would like to add a new inventory in this Area please click '.l('here', 'inventory/new/area/'.$area_id));
 	drupal_goto('area/'.$area_id);
+}
+
+function area_new_details_form_validate($form, &$form_state) {
+	if($form_state['input']['field_name'] == '') {
+		form_set_error('id', t('An area name is required'));
+	}
 }
 
 ?>

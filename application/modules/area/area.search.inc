@@ -9,15 +9,6 @@ function show_area_search() {
     '#theme' => 'area.search',
   );
 
-  /*
-   * Last Used areas ist laut Albert nicht mehr erforderlich
-  $output['LastUsed'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Last Used Areas'),
-  );
-  $output['LastUsed']['table'] = area_last_used_table();
-  */
-  
   $output['googleMaps'] = drupal_get_form('area_google_maps_form');
   $output['FieldName'] = drupal_get_form('area_field_name_form');
   return $output;

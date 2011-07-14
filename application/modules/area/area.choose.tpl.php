@@ -15,13 +15,6 @@
         echo t('Choose area:');
       ?>
     </li>
-    <li>
-      <div class="controlAreaCreate"></div>
-      <?php
-        echo t('Create new area:');
-      ?>
-    </li>
-    <li>
   </ul>
   
   <div id="map">

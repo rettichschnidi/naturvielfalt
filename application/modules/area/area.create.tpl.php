@@ -10,12 +10,6 @@
   
   <ul class="area-choices">
     <li>
-      <div class="controlAreaChoose selected"></div>
-      <?php 
-        echo t('Choose area:');
-      ?>
-    </li>
-    <li>
       <div class="controlAreaCreate"></div>
       <?php
         echo t('Create new area:');
