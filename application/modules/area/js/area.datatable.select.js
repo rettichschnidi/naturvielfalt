@@ -20,11 +20,13 @@ function inventoryRowSelect() {
     if (idType[0] == 'habitat')
       window.location.href = Drupal.settings.basePath+'habitat/'+idType[1];
     if (jQuery(targ).closest('#habitats-edit').size()) {
+      if(e.target.tagName.toLowerCase() == 'input')
+        return;
       var checkbox = jQuery(targ).closest('tr').find('input:checkbox');
       checkbox.attr('checked', checkbox.attr('checked') ? '' : 'checked');
     }
 		
-	}	
+	}
 	// register events
 	jQuery("#inventories").live('click', this.onTableRowClicked);
 	jQuery("#organisms").live('click', this.onTableRowClicked);
