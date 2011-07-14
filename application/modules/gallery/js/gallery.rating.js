@@ -1,4 +1,6 @@
-var gallery_rating = {};
+var gallery_rating = {
+  message: false
+};
 
 (function($) {
   
@@ -9,6 +11,19 @@ var gallery_rating = {};
   
   gallery_rating.init = function() {
     $('form.show_hide').each(gallery_rating.show_hide);
+    gallery_rating.message = $('<div id="rating-message"><div class="messages" /></div>').hide();
+    $('body').append(gallery_rating.message);
+  }
+  
+  gallery_rating.setMessage = function(message, type, time) {
+    if(gallery_rating.messageTimer)
+      window.clearTimeout(gallery_rating.messageTimer);
+    gallery_rating.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
+    gallery_rating.message.stop().css('height', 'auto').slideDown('fast');
+    if(time)
+      gallery_rating.messageTimer = window.setTimeout(function() {
+        gallery_rating.message.slideUp('fast');
+      }, time);
   }
   
   gallery_rating.stars = function() {
@@ -50,6 +65,8 @@ var gallery_rating = {};
       if(!data || !data.rating)
         return;
       var rating = $(data.rating);
+      if(data.message)
+        gallery_rating.setMessage(data.message, 'status', 15000);
       ui.$form.parents('.rating').replaceWith(rating);
       rating.find('form').each(function() {
         var average = $(this).data('average');

@@ -23,7 +23,8 @@ body.page-inventory-edit {
   float:left;
 }
 
-.invgroup {
+.invgroup,
+.inventory-protection {
   clear:both;
 }
 
@@ -40,7 +41,10 @@ body.page-inventory-edit {
   left:0;
   width:100%;
   background-repeat:no-repeat;
-  overflow:hidden;
+}
+
+#inventory-edit-entries #edit-actions #message .messages,
+#inventory-template-edit-entries #edit-actions #message .messages {
   margin:0;
   border-width:0 0 1px 0;
   border-radius:0;
@@ -218,6 +222,11 @@ body.page-inventory-edit {
   float:left;
 }
 
+#edit-actions .inventory-location-info {
+  margin-left:20px;
+  float:right;
+}
+
 .ui-menu-item {
   border-top:1px solid #F6F5ED;
 }
@@ -227,7 +236,7 @@ body.page-inventory-edit {
 }
 
 .ui-menu-item:nth-child(odd) {
-  background-color:#FBFAF7;
+  background-color:#f6f5f3;
 }
 
 .ui-menu-item .ui-state-hover {

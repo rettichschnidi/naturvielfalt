@@ -406,7 +406,7 @@ function gallery_images_edit($type, $id) {
       'class' => array('collapsible'.($_GET['saved'] ? '' : ' collapsed')),
     ),
   );
-  $page['edit']['edit'] = drupal_get_form('gallery_images_form', $type, $id);
+  $page['edit']['edit'] = drupal_get_form('gallery_images_form', $type, $id, false, 'gallery/'.$type.'/'.$id.'/edit');
   
   $title = t('Manage images');
   drupal_set_title($title, PASS_THROUGH);
@@ -449,14 +449,15 @@ function _gallery_get_title_description($type, $id) {
  * @ingroup forms
  * @see gallery_images_form_submit()
  */
-function gallery_images_form($form, &$form_state, $type, $id) {
+function gallery_images_form($form, &$form_state, $type=false, $id=false, $images=false, $camefrom=false) {
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
   $types = _gallery_types();
-  $subtypes = _gallery_get_subtypes($type, false);
+  
+  $subtypes = $type ? _gallery_get_subtypes($type, false) : false;
   
   $header = array('', t('Filename'), t('Title'));
   if($subtypes)
@@ -466,17 +467,18 @@ function gallery_images_form($form, &$form_state, $type, $id) {
   $header[] = t('Caption');
   $header[] = t('Operations');
   $header[] = t('Delete');
-
-  $images = gallery_images($type, $id, 'edit');
+  
+  if(!$images)
+    $images = gallery_images($type, $id, 'edit');
   
   $rows = array();
   foreach($images['images'] as $image) {
     $caption = '';
     if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
       $caption = call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id']));
-    $editable = gallery_edit_access_callback($type, $id, $image);
+    $editable = gallery_edit_access_callback($image['item_type'], $image['item_id'], $image);
     $row = array();
-    $row[] = '<a rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
+    $row[] = '<a rel="lightbox" href="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
     $row[] = $image['filename'];
     $row[] = $image['title'];
     if($subtypes) {
@@ -488,8 +490,8 @@ function gallery_images_form($form, &$form_state, $type, $id) {
     $row[] = $image['author'];
     $row[] = $image['location'];
     $row[] = $caption;
-    $row[] = $editable ? l(t('edit'), 'gallery/'.$type.'/'.$id.'/edit/'.$image['id']) : '&nbsp;';
-    $row[] = $editable ? '<input type="checkbox" name="delete_'.$image['id'].'" value="1" />' : '&nbsp;';
+    $row[] = $editable ? l(t('edit'), 'gallery/'.$image['item_type'].'/'.$image['item_id'].'/edit/'.$image['id'], $camefrom ? array('query' => array('camefrom' => $camefrom)) : array()) : '&nbsp;';
+    $row[] = $editable ? '<input type="checkbox" name="delete['.$image['id'].']" value="1" />' : '&nbsp;';
     $rows[] = $row;
   }
   
@@ -557,9 +559,14 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
   else
     $items = call_user_func_array($item_provider, array($id));
   $subtypes = _gallery_get_subtypes($type, false);
+  if($_REQUEST['camefrom'])
+    $_SESSION[md5('camefrom_'.$type.'_'.$id)] = $_REQUEST['camefrom'];
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
   $form_state['gallery_image'] = $image;
+  $url = drupal_get_destination();
+  $url = drupal_parse_url($url['destination']);
+  $form_state['camefrom'] = $url['path'];
   $form['#tree'] = TRUE;
   
   if($image['fid'])
@@ -768,8 +775,13 @@ function _gallery_image_form_categories($type, $id, $image) {
       '#title' => $category['name'],
       '#options' => $options,
       '#description' => $category['description'],
-      '#required' => $category['required'],
+      '#category' => $category,
     );
+    if($category['required']) {
+      $categories['cat_'.$category['id']]['#needs_validation'] = true;
+      $categories['cat_'.$category['id']]['#title'] .= ' '.theme('form_required_marker', array('element' => $categories['cat_'.$category['id']]));
+      $categories['cat_'.$category['id']]['#element_validate'] = array('_gallery_images_form_upload_category_validate');
+    }
     if($category['multiple'])
       $categories['cat_'.$category['id']]['#default_value'] = array();
     foreach($options as $value => $option) {
@@ -801,6 +813,19 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
         '!size' => format_size(parse_size(file_upload_max_size())))));
   if(!in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
     return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
+}
+
+function _gallery_images_form_upload_category_validate($element, &$form_state, $form) {
+  $value = $element['#value'];
+  $image = $form_state['gallery_image'];
+  $name = substr($element['#name'], 0, strpos($element['#name'], '[')).'_file';
+  if(!$image['id'] && !array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
+    return;
+  if($element['#multiple'] && is_array($value))
+    $value = array_filter($value);
+  if(!$value)
+    return form_error($element, t('!name field is required.', array('!name' => $element['#category']['name'])));
+  return;
 }
 
 /**
@@ -879,7 +904,12 @@ function gallery_images_form_upload_submit($form, &$form_state) {
     $saved = true;
     $orig_image = array();
   }
-  drupal_goto('gallery/'.$type.'/'.$id.'/edit', ($saved ? array('query' => array('saved' => '1')) : array()));
+  $camefrom = 'gallery/'.$type.'/'.$id.'/edit';
+  if($_SESSION[md5('camefrom_'.$type.'_'.$id)]) {
+    $camefrom = $_SESSION[md5('camefrom_'.$type.'_'.$id)];
+    unset($_SESSION[md5('camefrom_'.$type.'_'.$id)]);
+  }
+  drupal_goto($camefrom, ($saved ? array('query' => array('saved' => '1')) : array()));
 }
 
 /**
@@ -889,19 +919,25 @@ function gallery_images_form_delete_submit($form, &$form_state) {
   $type = $form_state['gallery_type'];
   $id = $form_state['gallery_id'];
   
-  $images = gallery_images($type, $id, false);
+  $delete = $form_state['input']['delete'];
   
-  foreach($images['images'] as $image) {
-    if(!$form_state['input']['delete_'.$image['id']])
-      continue;
-    if(!gallery_edit_access_callback($type, $id, $image)) {
-      drupal_set_message(t('You do not have the permission to delete the image %file', array('%file' => $image['filename']), 'error'));
-      continue;
+  if(is_array($delete)) {
+    foreach($delete as $iid => $del) {
+      if(!$del)
+        continue;
+      $image = gallery_image_load($iid);
+      if(!gallery_edit_access_callback($image['item_type'], $image['item_id'], $image)) {
+        drupal_set_message(t('You do not have the permission to delete the image %file', array('%file' => $image['filename']), 'error'));
+        continue;
+      }
+      gallery_image_delete($image);
+      drupal_set_message(t('File %file deleted', array('%file' => $image['filename'])));
     }
-    gallery_image_delete($image);
-    drupal_set_message(t('File %file deleted', array('%file' => $image['filename'])));
   }
-  drupal_goto('gallery/'.$type.'/'.$id.'/edit', array('query' => array('saved' => '1')));
+  $url = drupal_get_destination();
+  $url = drupal_parse_url($url['destination']);
+  $url = $url['path'];
+  drupal_goto($url, array('query' => array('saved' => '1')));
 }
 
 /**
@@ -966,12 +1002,62 @@ function gallery_image_rate($image) {
       'rating' => theme('gallery_image_rating', array(
         'image' => $image,
         'rating_types' => gallery_available_rating_types()
-      )
-    )));
+      )),
+      'message' => t('Your rating has successfully been registered')
+    ));
   }
   drupal_set_message(t('Your rating was successfully placed.'));
   $camefrom = $_POST['camefrom'];
   return drupal_goto($camefrom);
+}
+
+/**
+ * Menu callback; Listing of all images added by a given user.
+ */
+function gallery_own_list($user) {
+  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  $page = array();
+  $images = gallery_images(false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  $links = array();
+  if($images['count']) {
+    $page['anchor'] = array(
+      '#markup' => '<a name="'.$params['key'].'"></a>'
+    );
+    $page['gallery_list'] = array(
+      '#theme' => 'gallery_list',
+      '#images' => $images['images'],
+      '#rating_types' => gallery_available_rating_types()
+    );
+  }
+  else
+    $page['gallery_list'] = array(
+      '#markup' => '<p>'.t('You have not added any images yet.').'</p>',
+    );
+  array_push($links, array(
+    'title' => t('Manage images'),
+    'href' => 'user/'.$user->uid.'/gallery/edit'
+  ));
+  if($backlink) {
+    $back = _gallery_back_link('user', $user->uid);
+    if($back)
+      array_push($links, $back);
+  }
+  if($links)
+    $page['actions'] = array(
+      '#theme' => 'links',
+      '#links' => $links,
+      '#attributes' => array('class' => 'gallery-action-links'),
+      '#weight' => 9
+    );
+  drupal_set_title(t('Images added by %user', array('%user' => $user->name)), PASS_THROUGH);
+  return $page;
+}
+
+function gallery_own_edit($user) {
+  $images = gallery_images(false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  $form = drupal_get_form('gallery_images_form', false, false, $images, 'user/'.$user->uid.'/gallery/edit');
+  drupal_set_title(t('Images added by %user', array('%user' => $user->name)), PASS_THROUGH);
+  return $form;
 }
 
 /**
@@ -1078,6 +1164,7 @@ function theme_gallery_image_rating($variables) {
   $url = drupal_get_destination();
   $url = drupal_parse_url($url['destination']);
   $url = $url['path'];
+  $allowed = user_access('rate gallery images');
   $ratings = '';
   foreach($rating_types as $rating_type) {
     $rating = is_array($image['ratings']) && array_key_exists($rating_type['id'], $image['ratings']) ? $image['ratings'][$rating_type['id']] : array('count' => 0, 'average' => 0);
@@ -1086,14 +1173,14 @@ function theme_gallery_image_rating($variables) {
       '<input type="hidden" name="type" value="'.$rating_type['id'].'" />'.
       '<input type="hidden" name="camefrom" value="'.$url.'" />'.
       '<label for="rating_'.$rating_type['id'].'" title="'.$rating_type['description'].'">'.$rating_type['name'].' <small>('.t('Average: %avg; %num votes', array('%avg' => $avg, '%num' => intval($rating['count']))).')</small></label>'.
-      '<select name="rating_'.$rating_type['id'].'" id="rating_'.$rating_type['id'].'" size="1">'.
+      '<select name="rating_'.$rating_type['id'].'" id="rating_'.$rating_type['id'].'" size="1"'.(!$allowed ? ' disabled="disabled"' : '').'>'.
         '<option value="-2">'.t('Poor').'</option>'.
         '<option value="-1">'.t('Not that bad').'</option>'.
         '<option value="0" selected="selected">'.t('Average').'</option>'.
         '<option value="1">'.t('Good').'</option>'.
         '<option value="2">'.t('Perfect').'</option>'.
       '</select>'.
-      '<input type="submit" name="rate" value="'.t('Rate').'" />'.
+      ($allowed ? '<input type="submit" name="rate" value="'.t('Rate').'" />' : '').
     '</form>';
   }
   return '<div class="rating">'.$ratings.'</div>';

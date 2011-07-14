@@ -154,14 +154,18 @@ function inventory_gallery_location_provider($id) {
 function inventory_head_gallery_item_provider($id) {
   $items = array();
   $items['head_inventory:'.$id] = t('Not related to an organism');
-  $data = inventory_data($id, false, false, false, false, false);
+  $data = inventory_data($id, 'flora.name_de, fauna.name_de ASC', false, false, false, false);
+  $seen = array();
   foreach($data as $group) {
     $name = $group['invDesc']['name'];
     if(!array_key_exists($name, $items))
       $items[$name] = array();
-    foreach($group as $k => $entry)
-      if(!is_string($k))
-        $items[$name]['inventory_entry:'.$entry['id']] = $entry['label'];
+    foreach($group as $k => $entry) {
+      if(is_string($k) || in_array($entry['orgId'], $seen))
+        continue;
+      array_push($seen, $entry['orgId']);
+      $items[$name]['inventory_entry:'.$entry['id']] = $entry['label'].' ('.$entry['label_latin'].')';
+    }
   }
   $items = array_filter($items);
   return $items;

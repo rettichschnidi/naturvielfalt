@@ -271,6 +271,39 @@ function gallery_menu() {
     'access arguments' => array('manage gallery images'),
     'file' => 'gallery.content.inc',
   );
+  
+  $items['user/%user/gallery'] = array(
+    'title' => t('Images'),
+    'description' => t('Images added by a given user.'),
+    'page callback' => 'gallery_own_list',
+    'page arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'weight' => 2,
+    'access arguments' => array('add gallery images'),
+    'file' => 'gallery.content.inc',
+  );
+  $items['user/%user/gallery/list'] = array(
+    'title' => t('Gallery'),
+    'page callback' => 'gallery_own_list',
+    'page arguments' => array(1),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'access arguments' => array('add gallery images'),
+    'file' => 'gallery.content.inc',
+  );
+  $items['user/%user/gallery/edit'] = array(
+    'title' => t('Manage images'),
+    'description' => t('Add and edit own gallery images.'),
+    'page callback' => 'gallery_own_edit',
+    'page arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'weight' => 2,
+    'access callback' => 'gallery_own_edit_access',
+    'access arguments' => array(1),
+    'file' => 'gallery.content.inc',
+  );
   return $items;
 }
 
@@ -421,9 +454,9 @@ function gallery_image_default_styles() {
  *   - "images": Array of gallery images
  *   - "count": Number of images found
  */
-function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=false, $subtype=false) {
+function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false, $limit=false, $subtype=false, $conditions=array(), $required_conditions=array(), $joins=array()) {
   global $user;
-  if (!_gallery_check_type_validity($type))
+  if($type && !_gallery_check_type_validity($type))
     return array();
   $types = _gallery_types();
   if($crosslinked === null) {
@@ -464,19 +497,23 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
               'GROUP BY s.image_id '.
             ') AS r ON r.image_id = gi.id '.
           ($rating ? 'LEFT OUTER JOIN gallery_rating_type AS grt ON grt.id IS NOT NULL ' : '');
-  $joins = array();
-  $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
-  $condition = '';
-  if(array_key_exists('condition', $types[$type]) && function_exists($types[$type]['condition'])) {
+  $id_conditions = array();
+  if($id) {
+    $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
+    array_push($id_conditions, 'gi.item_id ' . $id_condition);
+  }
+  if($type && array_key_exists('condition', $types[$type]) && function_exists($types[$type]['condition'])) {
     $cond = call_user_func_array($types[$type]['condition'], array($type, $id));
     if($cond)
-      $condition = ' AND '.$cond;
+      array_push($id_conditions, $cond);
   }
-  $conditions = array('(gi.item_type = \''.$type.'\' AND gi.item_id '.$id_condition.$condition.')');
-  $where = '';
-  if (!user_access('view hidden gallery images'))
-    $where .= 'AND ((COALESCE(r.overallrating, 0) >= '.variable_get('gallery_boundry', 0).' AND gi.visible = 1) OR gi.owner_id = '.$user->uid.') ';
-  if ($crosslinked) {
+  if($type)
+    array_push($id_conditions, 'gi.item_type = \''.$type.'\'');
+  if($id_conditions)
+    array_push($conditions, '('.implode(' AND ', $id_conditions).')');
+  if(!user_access('view hidden gallery images'))
+    array_push($required_conditions, '((COALESCE(r.overallrating, 0) >= '.variable_get('gallery_boundry', 0).' AND gi.visible = 1) OR gi.owner_id = '.$user->uid.')');
+  if($crosslinked && $type) {
     $conversions = $crosslinked === 'edit' ? _gallery_type_edit_conversions() : _gallery_type_conversions();
     $n = 0;
     foreach($conversions as $conversion) {
@@ -503,9 +540,12 @@ function gallery_images($type, $id, $crosslinked=true, $rating=false, $limit=fal
     }
   }
   if($subtype)
-    $where .= ' AND (gis2.subtype = \''.$subtype.'\')';
+    array_push($required_conditions, '(gis2.subtype = \''.$subtype.'\')');
+  if($conditions)
+    array_push($required_conditions, '('.implode(' OR ', $conditions).')');
   $sql .= implode(' ', $joins);
-  $sql .= ' WHERE ('.implode(' OR ', $conditions).') '.$where;
+  if($required_conditions)
+    $sql .= ' WHERE '.implode(' AND ', $required_conditions);
   $sql .= ' ORDER BY overallrating DESC';
   $images = array();
   $seen = array();
@@ -692,6 +732,7 @@ function gallery_image_delete($image) {
   db_delete('gallery_image')->condition('id', $image['id'])->execute();
   db_delete('gallery_image_category')->condition('image_id', $image['id'])->execute();
   db_delete('gallery_image_rating')->condition('image_id', $image['id'])->execute();
+  db_delete('gallery_image_subtype')->condition('image_id', $image['id'])->execute();
   db_delete('file_managed')->condition('fid', $image['fid'])->execute();
   return true;
 }
@@ -1227,6 +1268,11 @@ function gallery_owner_access_callback($type, $id, $image=false) {
     ->condition('t.id', $id)
     ->condition('t.owner_id', $user->uid)
     ->execute()->rowCount() > 0;
+}
+
+function gallery_own_edit_access($owner) {
+  global $user;
+  return $user->uid == $owner->uid && user_access('add gallery images');
 }
 
 /**

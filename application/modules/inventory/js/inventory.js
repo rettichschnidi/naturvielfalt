@@ -65,7 +65,7 @@ var inventory = {
     inventory.add.change(inventory.addInventory)
     inventory.message = inventory.form.find('#message');
     if(!inventory.message.size()) {
-      inventory.message = $('<div id="message" class="messages"></div>').hide();
+      inventory.message = $('<div id="message"><div class="messages" /></div>').hide();
       inventory.form.find('#edit-actions').append(inventory.message);
     }
     inventory.message.ajaxError(inventory.ajaxError);
@@ -80,7 +80,8 @@ var inventory = {
   inventory.setMessage = function(message, type, time) {
     if(inventory.messageTimer)
       window.clearTimeout(inventory.messageTimer);
-    inventory.message.html(message).attr('class', 'messages').addClass(type).stop().css('height', 'auto').slideDown('fast');
+    inventory.message.children('.messages').html(message).attr('class', 'messages').addClass(type)
+    inventory.message.stop().css('height', 'auto').slideDown('fast');
     if(time)
       inventory.messageTimer = window.setTimeout(function() {
         inventory.message.slideUp('fast');

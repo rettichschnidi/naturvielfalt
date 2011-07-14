@@ -209,17 +209,40 @@ function area_edit_form_submit($form, &$form_state) {
 	->execute();
 
 	// insert habitats
-	$area_habitat_delete = db_delete('area_habitat')
-	->condition('area_id', $area_id)
-	->execute();
+  $existing = db_select('area_habitat', 'ah')
+    ->condition('ah.area_id', $area_id)
+    ->fields('ah', array('habitat_id', 'id'))
+    ->execute()
+    ->fetchAllKeyed(0);
+  $new = array_values($form_state['input']['habitat']);
+  array_walk($existing, 'intval');
+  array_walk($new, 'intval');
 	
-	foreach (array_values($form_state['input']['habitat']) as $habitat) {
+	foreach($new as $habitat) {
+	    if(array_key_exists($habitat, $existing)) // habitat already stored
+	      continue;
 			db_insert('area_habitat')->fields(array(
 				'area_id' => $area_id,
 				'habitat_id' => $habitat,
 			))
 			->execute();
 	}
+  foreach($existing as $habitat => $record) {
+    if(in_array($habitat, $new)) // habitat still selected
+      continue;
+    db_delete('area_habitat')
+      ->condition('id', $record)
+      ->execute();
+    $images = db_select('gallery_image', 'gi', array('fetch' => PDO::FETCH_ASSOC))
+      ->condition('gi.item_type', 'area_habitat')
+      ->condition('gi.item_id', $record)
+      ->fields('gi', array('id'));
+    $images->join('file_managed', 'f', 'f.fid = gi.fid');
+    $images->fields('f');
+    $images = $images->execute();
+    foreach($images as $image)
+      gallery_image_delete($image);
+  }
 	
 	//insert parcels
 	$area_parcel_delete = db_delete('area_parcel')

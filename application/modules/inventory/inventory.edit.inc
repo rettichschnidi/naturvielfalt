@@ -16,16 +16,6 @@ function inventory_edit($head_inventory_id) {
     '%id' => $head_inventory_id
   )), PASS_THROUGH);
   
-  if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
-    //we'll only display the progressbar if we are part of a workflow
-    $progressElement = array(t('Choose or Create New Area'), t('Create New Inventory'), t('Edit Inventory')); // List of elements
-    $render_array['progress'] = array(
-      '#theme' => 'progress_done',
-      '#elements' => $progressElement,
-      '#active' => 3,     // Indicate active Element
-    );
-  }
-  
   //------------------
   $render_array['basics'] = array(
     '#type' => 'fieldset', 
@@ -44,12 +34,13 @@ function inventory_edit($head_inventory_id) {
     ),
   );
 
-  if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
+  if(isset($_SESSION['inventory']['new']) && $_SESSION['inventory']['new']) {
     $render_array['suggestion'] = array(
       '#prefix' => '<p>',
-      '#markup' => t('You can edit your newly created inventory now. You can:<ul><li>add organisms by using the "Add new inventory group" select box in the lower left</li><li>edit the permissions for this inventory</li><li>attach files to this inventory</li></ul>'),
+      '#markup' => t('You can now edit your newly created inventory:<ul><li>add organisms by using the "Add new inventory group" select box in the lower left</li><li>edit the permissions for this inventory</li><li>attach files to this inventory</li></ul>'),
       '#suffix' => '</p>'
     );
+    unset($_SESSION['inventory']['new']);
   }
   
   $render_array['basics']['edit'] = drupal_get_form('inventory_edit_basics', $head_inventory_id, false);
@@ -113,12 +104,7 @@ function inventory_edit($head_inventory_id) {
   );
 
   $render_array['file']['upload'] = drupal_get_form('inventory_edit_files', $head_inventory_id);
-
-  if(isset($_SESSION['inventory']['workflow']) && $_SESSION['inventory']['workflow']) {
-    //workflow has been completed, so we unset it
-    //next time we come here with NO workflow, the progressbar will not get displayed again
-    unset($_SESSION['inventory']['workflow']);
-  }
+  
   return $render_array;
 }
 
@@ -145,6 +131,22 @@ function inventory_delete_submit($form, &$form_state) {
     ->fetchCol(0);
   foreach($files as $fid)
     file_delete(file_load($fid));
+  $images = db_select('gallery_image', 'gi', array('fetch' => PDO::FETCH_ASSOC))
+    ->fields('gi', array('id'));
+  $images->join('file_managed', 'f', 'f.fid = gi.fid');
+  $images->fields('f');
+  $images->leftJoin('inventory_entry', 'e', 'e.id = gi.item_id AND gi.item_type = \'inventory_entry\'');
+  $images->leftJoin('inventory', 'i', 'i.id = e.inventory_id');
+  $images->condition(db_or()
+    ->condition(db_and()
+      ->condition('gi.item_type', 'head_inventory')
+      ->condition('gi.item_id', $head_inventory_id)
+    )
+    ->condition('i.head_inventory_id', $head_inventory_id)
+  );
+  $images = $images->execute();
+  foreach($images as $image)
+    gallery_image_delete($image);
   db_delete('head_inventory_file_managed')
     ->condition('head_inventory_id', $head_inventory_id)
     ->execute();
@@ -730,6 +732,10 @@ function inventory_edit_entry_location_form($form, &$form_state, $head_inventory
     '#markup' => l(t('Cancel'), 'inventory/'.$head_inventory_id.'/edit')
   );
   
+  $form['actions']['info'] = array(
+    '#markup' => '<em class="inventory-location-info">'.t('Drag and drop the marker to the location you observed the organism.').'</p>'
+  );
+  
   return $form;
 }
 
@@ -770,6 +776,16 @@ function inventory_delete_entry($head_inventory_id, $entry_id, $plain=false) {
   try {
     db_delete('inventory_entry')->condition('id', $entry_id)->execute();
     db_delete('inventory_type_attribute_inventory_entry')->condition('inventory_entry_id', $entry_id)->execute();
+    $images = db_select('gallery_image', 'gi', array('fetch' => PDO::FETCH_ASSOC))
+      ->fields('gi', array('id'));
+    $images->join('file_managed', 'f', 'f.fid = gi.fid');
+    $images->fields('f')
+      ->condition('gi.item_type', 'inventory_entry')
+      ->condition('gi.item_id', $entry_id);
+    echo $sql;
+    $images = $images->execute();
+    foreach($images as $image)
+      gallery_image_delete($image);
     _inventory_update_modify_time($head_inventory_id);
     $result = array(
       'result' => '1'

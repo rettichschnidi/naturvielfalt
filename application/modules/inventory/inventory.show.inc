@@ -3,7 +3,8 @@
 /**
  * Menu callback; View of an inventory
  * 
- * @param object $head_inventory_id
+ * @param int $head_inventory_id
+ *  The ID of the inventory
  * @return array
  *  Drupal render array
  */
@@ -25,6 +26,14 @@ function inventory_show($head_inventory_id) {
   return $render_array;
 }
 
+/**
+ * Menu callback; Renders the KML for displaying all located observations of an inventory
+ * in google maps
+ * 
+ * @param int $head_inventory_id
+ *  The ID of the inventory
+ * @return
+ */
 function inventory_entry_locations($head_inventory_id) {
   $xml = '';
   $data = inventory_data($head_inventory_id, false, true, false, false, false);
@@ -459,7 +468,7 @@ function inventory_redlist_count($head_inventory_id) {
         ),
       ),
       '#attributes' => array(
-        'class' => array('collapsible'),
+        'class' => array('collapsible', 'inventory-protection'),
       ),
     );
     $owner = db_select('head_inventory', 'hi')->condition('hi.id', $head_inventory_id)->fields('hi', array('owner_id'))->execute()->fetch()->owner_id;
@@ -542,7 +551,7 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
         $row['location'] = '';
       if($gallery_available) {
         $row['gallery'] = gallery_view_link('inventory_entry', $invDetails['id']);
-        if($row[(count($row)-1)])
+        if($row['gallery'])
           $has_gallery = true;
       }
       $rows[] = array('data' => $row, 'id' => 'organism_'. $invDetails['orgId']);
@@ -590,15 +599,15 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
 /**
  * Private helper function to get inventory attribute values for dropdown fields
  * 
- * @param int $valueId
+ * @param int $value_id
  * @return string
  */
-function _inventory_entry_value($valueId) {
+function _inventory_entry_value($value_id) {
   $result = db_query('
     SELECT * 
     FROM inventory_type_attribute_dropdown_value itadv
     WHERE itadv.id = :id',
-    array(':id' => $valueId)
+    array(':id' => $value_id)
   );
   $value = $result->fetch()->value;
   

@@ -1,5 +1,26 @@
 /* Gallery list */
 
+#rating-message {
+  z-index:110;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  background-repeat:no-repeat;
+}
+
+#rating-message .messages {
+  margin:0;
+  border-width:0 0 1px 0;
+  border-radius:0;
+  -moz-border-radius:0;
+  -webkit-border-radius:0;
+  -o-border-radius:0;
+  box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+}
+
 ul.gallery {
   width:1000px;
 }
@@ -185,7 +206,7 @@ fieldset.gallery p.info {
 }
 
 .ui-menu-item:nth-child(odd) {
-  background-color:#FBFAF7;
+  background-color: #f6f5f3;
 }
 
 .ui-menu-item .ui-state-hover {

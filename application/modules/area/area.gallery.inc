@@ -190,6 +190,25 @@ function area_habitat_gallery_location_provider($id) {
 }
 
 /**
+ * Implements hook of gallery module to define the conversion of an area's habitat
+ * to the related area type while editing the images of an area
+ * 
+ * @return array
+ */
+function area_gallery_type_edit_conversions() {
+  return array(
+    array(
+      array(
+        'source' => 'area_habitat',
+        'source_key' => 'area_id',
+        'target' => 'area',
+        'target_key' => 'id',
+      )
+    )
+  );
+}
+
+/**
  * Implements hook of gallery module to define the conversion of a area habitat
  * to the related habitat
  * 

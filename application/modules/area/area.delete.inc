@@ -55,6 +55,22 @@ function area_delete_form_submit($form, &$form_state) {
 				$file = file_load($area_file->file_id);
 				file_delete($file);
 		}
+    
+    $images = db_select('gallery_image', 'gi', array('fetch' => PDO::FETCH_ASSOC))
+      ->fields('gi', array('id'));
+    $images->join('file_managed', 'f', 'f.fid = gi.fid');
+    $images->fields('f');
+    $images->leftJoin('area_habitat', 'ah', 'ah.id = gi.item_id AND gi.item_type = \'area_habitat\'');
+    $images->condition(db_or()
+      ->condition(db_and()
+        ->condition('gi.item_type', 'area')
+        ->condition('gi.item_id', $area_id)
+      )
+      ->condition('ah.area_id', $area_id)
+    );
+    $images = $images->execute();
+    foreach($images as $image)
+      gallery_image_delete($image);
 		
 		//delete area
 		$delete_area = db_delete('area')
