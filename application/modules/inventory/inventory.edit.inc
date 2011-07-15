@@ -7,7 +7,7 @@
  *   The id of inventory to be modified
  * @return all inventory forms to modify the inventory
  */
-function inventory_edit($head_inventory_id) {
+function inventory_edit($head_inventory_id, $redirect=true) {
   _include_js_and_css();
   area_add_gmap_resources(false);
   
@@ -15,6 +15,21 @@ function inventory_edit($head_inventory_id) {
     '%name' => inventory_title($head_inventory_id),
     '%id' => $head_inventory_id
   )), PASS_THROUGH);
+  
+  if($redirect) {
+    $hidden = db_select('head_inventory', 'hi')
+      ->condition('hi.id', $head_inventory_id)
+      ->fields('hi', array('hidden', 'owner_id'))
+      ->execute()
+      ->fetch();
+    if($hidden->hidden) {
+      global $user;
+      if($user->uid == $hidden->owner_id)
+        return drupal_goto('singleobservations/edit');
+      else
+        return drupal_goto('user/'.$hidden->owner_id.'/singleobservations/edit');
+    }
+  }
   
   //------------------
   $render_array['basics'] = array(
@@ -244,7 +259,7 @@ function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
 
 /**
  * Menu callback; Saving the entries of an inventory using AJAX
- *  (wrapper around inventory_save_entries)
+ *  (wrapper around inventory_edit_entries_submit)
  * 
  * @return JSON Object with the following keys:
  *  - "entries": Mapping of ids which changed after saving. Array of arrays with the following keys:
@@ -721,6 +736,14 @@ function inventory_edit_entry_location_form($form, &$form_state, $head_inventory
   
   drupal_set_title(t('Set observation location'));
   
+  $form['search'] = array(
+    '#markup' => '<div id="inventory-location-search">
+      '.t('Search with Google Maps').'
+      <input type="text" id="map_search" name="map_search" value="" size="60" maxlength="128"/>
+      <button id="map_search_button">'.t('Search map').'</button>
+    </div>'
+  );
+  
   $form = inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id);
   
   $form['actions'] = array('#type' => 'actions');
@@ -782,7 +805,6 @@ function inventory_delete_entry($head_inventory_id, $entry_id, $plain=false) {
     $images->fields('f')
       ->condition('gi.item_type', 'inventory_entry')
       ->condition('gi.item_id', $entry_id);
-    echo $sql;
     $images = $images->execute();
     foreach($images as $image)
       gallery_image_delete($image);
@@ -1376,6 +1398,7 @@ function inventory_inventory_autocomplete($head_inventory_id) {
   $query = db_select('head_inventory', 'i', array('fetch' => PDO::FETCH_ASSOC))
     ->fields('i', array('id', 'name'))
     ->condition('i.name', $term, 'ILIKE')
+    ->condition('i.hidden', 'TRUE', 'IS NOT')
     ->range(0, 40);
   $query->join('users', 'u', 'u.uid = i.owner_id');
   $query->leftJoin('sgroup_inventory', 'sgi', 'sgi.hiid = i.id');
@@ -1405,6 +1428,7 @@ function inventory_public_inventory_autocomplete($head_inventory_id) {
     ->fields('i', array('id', 'name'))
     ->condition('i.name', $term, 'ILIKE')
     ->condition('i.shared', '1')
+    ->condition('i.hidden', 'TRUE', 'IS NOT')
     ->range(0, 40);
   $query->join('users', 'u', 'u.uid = i.owner_id');
   $query->addField('u', 'name', 'owner');

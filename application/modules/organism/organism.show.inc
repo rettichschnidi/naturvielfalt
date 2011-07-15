@@ -83,7 +83,7 @@ function getOrganismInventories($organismId) {
 			LEFT JOIN users u ON hi.owner_id = u.uid
 			LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
 			LEFT JOIN fauna_organism fo ON o.organism_id = fo.id
-			WHERE o.id = :id AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
+			WHERE o.id = :id AND hi.hidden IS NOT TRUE AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
 			array(':id' => $organismId, ':userid' => $user->uid)
 		);
 	}
@@ -101,7 +101,7 @@ function getOrganismInventories($organismId) {
 			LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
 			LEFT JOIN flora_organism fo ON o.organism_id = fo.id
 			LEFT JOIN flora_red_list frl ON fo.id = frl.flora_organism_id
-			WHERE o.id = :id AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
+			WHERE o.id = :id AND hi.hidden IS NOT TRUE AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
 			array(':id' => $organismId, ':userid' => $user->uid)
 		);
 	}

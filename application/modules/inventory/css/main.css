@@ -12,7 +12,8 @@ body.page-inventory-edit {
   float:right;
 }
 
-#inventory-map #map {
+#inventory-map #map,
+#singleobservations-map #map {
   height:400px;
 }
 
@@ -220,6 +221,16 @@ body.page-inventory-edit {
 #inventory-templates-form .form-item-types .form-type-checkbox {
   width:48%;
   float:left;
+}
+
+#inventory-location-search {
+  margin:1em 0;
+  text-align:right;
+}
+
+#map_location .map-control {
+  cursor:pointer;
+  padding:2.5em 0.5em 0 0;
 }
 
 #edit-actions .inventory-location-info {

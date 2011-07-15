@@ -487,6 +487,8 @@ var inventory = {
             closeOnEscape: false,
             closeText: '',
             close: function(event, ui) {
+              inventory.location = false;
+              inventory.tmp_location = false;
               $(this).remove();
             },
             width: 700
@@ -797,6 +799,7 @@ var inventory = {
       select: function(event, ui) {
         $(this).val(ui.item.name);
         inventory.templates.find('input.id').val(ui.item.id);
+        inventory.templates.find('input[type="submit"]').focus();
         return false;
       }
     })
@@ -871,22 +874,95 @@ var inventory = {
     inventory.locationform = $('#inventory-edit-entry-location-form');
     if(!inventory.locationform.size())
       inventory.locationform = $('body');
-    inventory.map = new AreaSelect('map_location');
-    var position = inventory.map.center;
+    inventory.map = new AreaSelect('map_location', 'map_search', 'map_search_button');
+    var position = false;
     if(inventory.locationform.find('input[name="lat"]').val() !== '' || inventory.locationform.find('input[name="lng"]').val() !== '')
       position = new google.maps.LatLng(parseFloat(inventory.locationform.find('input[name="lat"]').val()), parseFloat(inventory.locationform.find('input[name="lng"]').val()));
-    inventory.location = new google.maps.Marker({
-      map: inventory.map.map,
-      draggable: inventory.locationform.is('form'),
-      animation: google.maps.Animation.DROP,
-      position: position
-    });
-    inventory.map.map.panTo(position);
-    google.maps.event.addListener(inventory.location, 'position_changed', function() {
-      var pos = inventory.location.getPosition();
-      inventory.locationform.find('input[name="lat"]').val(pos.lat());
-      inventory.locationform.find('input[name="lng"]').val(pos.lng());
-    });
+    if(position) {
+      inventory.placeMarker(position);
+      inventory.map.map.panTo(position);
+    }
+    if(!inventory.locationform.is('form'))
+      return;
+    inventory.map_pan = document.createElement('div');
+    inventory.map_pan.className = 'map-control';
+    var pan = document.createElement('img');
+    pan.src = Drupal.settings.basePath+'/modules/area/images/map_controls/hand-selected.png';
+    inventory.map_pan.appendChild(pan);
+    
+    inventory.map_place = document.createElement('div');
+    inventory.map_place.className = 'map-control';
+    var place = document.createElement('img');
+    place.src = Drupal.settings.basePath+'/modules/area/images/map_controls/markerCtl.png';
+    inventory.map_place.appendChild(place);
+    
+    inventory.map.map.controls[google.maps.ControlPosition.TOP_LEFT].push(inventory.map_pan);
+    inventory.map.map.controls[google.maps.ControlPosition.TOP_LEFT].push(inventory.map_place);
+    
+    google.maps.event.addDomListener(inventory.map_pan, 'click', inventory.activatePan);
+    google.maps.event.addDomListener(inventory.map_place, 'click', inventory.activatePlace);
+  }
+  
+  inventory.activatePan = function(e) {
+    $(inventory.map_pan).find('img').attr('src', $(inventory.map_pan).find('img').attr('src').replace('-selected', '').replace('.png', '-selected.png'));
+    $(inventory.map_place).find('img').attr('src', $(inventory.map_place).find('img').attr('src').replace('-selected', ''));
+    if(inventory.tmp_location) {
+      inventory.tmp_location.setVisible(false);
+      for(var listener in inventory.listeners)
+        google.maps.event.removeListener(listener);
+    }
+  }
+  
+  inventory.activatePlace = function(e) {
+    $(inventory.map_place).find('img').attr('src', $(inventory.map_place).find('img').attr('src').replace('-selected', '').replace('.png', '-selected.png'));
+    $(inventory.map_pan).find('img').attr('src', $(inventory.map_pan).find('img').attr('src').replace('-selected', ''));
+    if(!inventory.tmp_location)
+      inventory.tmp_location = new google.maps.Marker({
+        map: inventory.map.map,
+        draggable: false,
+        position: e.latLng
+      });
+    else {
+      inventory.tmp_location.setVisible(true);
+      inventory.tmp_location.setPosition(e.latLng);
+    }
+    inventory.listeners = [];
+    inventory.listeners.push(google.maps.event.addDomListener(inventory.map.map, 'mousemove', inventory.moveHandler, true));
+    inventory.listeners.push(google.maps.event.addDomListener(inventory.map.map, 'click', inventory.clickHandler, true));
+    inventory.listeners.push(google.maps.event.addDomListener(inventory.tmp_location, 'mousemove', inventory.moveHandler, true));
+    inventory.listeners.push(google.maps.event.addDomListener(inventory.tmp_location, 'click', inventory.clickHandler, true));
+    for(var overlay in inventory.map.mapOverlays.overlays) {
+      if(typeof inventory.map.mapOverlays.overlays[overlay].getOverlay == "undefined")
+        continue;
+      inventory.listeners.push(google.maps.event.addDomListener(inventory.map.mapOverlays.overlays[overlay].getOverlay(), 'mousemove', inventory.moveHandler, true));
+      inventory.listeners.push(google.maps.event.addDomListener(inventory.map.mapOverlays.overlays[overlay].getOverlay(), 'click', inventory.clickHandler, true));
+    }
+  }
+  
+  inventory.clickHandler = function(e) {
+    inventory.placeMarker(e.latLng);
+    inventory.activatePan();
+  }
+  
+  inventory.moveHandler = function(e) {
+    inventory.tmp_location.setPosition(e.latLng);
+  }
+  
+  inventory.placeMarker = function(position) {
+    if(!inventory.location) {
+      inventory.location = new google.maps.Marker({
+        map: inventory.map.map,
+        draggable: inventory.locationform.is('form'),
+        animation: google.maps.Animation.DROP,
+        position: position
+      });
+      google.maps.event.addListener(inventory.location, 'position_changed', function() {
+        var pos = inventory.location.getPosition();
+        inventory.locationform.find('input[name="lat"]').val(pos.lat());
+        inventory.locationform.find('input[name="lng"]').val(pos.lng());
+      });
+    }
+    inventory.location.setPosition(position);
   }
   
   $(document).ready(inventory.init);

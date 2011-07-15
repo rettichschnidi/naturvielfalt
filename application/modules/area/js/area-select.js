@@ -2,7 +2,7 @@
  * @author Roger Wolfer, Roman Schaller
  */
 
-function AreaSelect(map_id) {
+function AreaSelect(map_id, search_id, search_button_id) {
   //////////////////////// Method declarations ///////////////////////
   /**
    * This function will be called if the user clicks on the plus or minus symbol at the beginning
@@ -65,23 +65,31 @@ function AreaSelect(map_id) {
    */
   AreaSelect.prototype.selectArea = function(overlayId, targ) {
     // deselect area if it was previously selected
-    if(areaselect.selected_area){
-      areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
+    if(this.selected_area){
+      this.mapOverlays.overlays[this.selected_area].setStyle('selected-disable');
     }
 
     // handle map highlighting
-    overlay = areaselect.mapOverlays.overlays[overlayId];
+    overlay = this.mapOverlays.overlays[overlayId];
+    if(!overlay)
+      return;
     overlay.setStyle('selected');
-    areaselect.map.panTo(overlay.getCenter());
-    areaselect.showAreaInfoBubble(overlay);
+    var bounds = new google.maps.LatLngBounds();
+    var points = overlay.getLatLngs().getArray();
+    for(var n=0; n<points.length; n++)
+      bounds.extend(points[n]);
+    this.map.fitBounds(bounds);
+    this.map.setZoom(this.map.getZoom() - 2);
+    //areaselect.map.panTo(overlay.getCenter());
+    this.showAreaInfoBubble(overlay);
     // remember selected area
-    areaselect.selected_area = overlayId;
+    this.selected_area = overlayId;
     // set area id, used when we just assign an area to a already existing inventory
     jQuery('#edit-id-area').val(overlayId);
     
-    if(jQuery('#show_areas')) {
+    if(jQuery('#show_areas').size()) {
       if(targ == null) targ = jQuery('#area_'+overlayId+' td');
-      jQuery("td.selected_row", oTable.fnGetNodes()).removeClass('selected_row');
+      jQuery("#show_areas td.selected_row").removeClass('selected_row');
       jQuery(targ).parent().find("td").addClass('selected_row');
       jQuery('#show_areas').parent().scrollTo(jQuery('#area_'+overlayId));
     }
@@ -92,15 +100,18 @@ function AreaSelect(map_id) {
    * 'map_canvas'. Returns a google.maps.Map
    */
   AreaSelect.prototype.createGoogleMaps = function() {
-    var mapcenter = [47.487084, 8.207273];
+    var mapcenter = [46.77373, 8.25073];
     var canvas = jQuery('#'+me.map_id);
     if(!canvas.size())
       return false;
+    zoom = canvas.data('zoom') ? parseInt(canvas.data('zoom')) : 15;
     if(canvas.data('center'))
       mapcenter = canvas.data('center').split(',');
+    else
+      zoom = 8;
     me.center = new google.maps.LatLng(parseFloat(mapcenter[0]), parseFloat(mapcenter[1]));
     var mapsOptions = {
-        zoom : canvas.data('zoom') ? parseInt(canvas.data('zoom')) : 15,
+        zoom : zoom,
         center : me.center,
         mapTypeId : google.maps.MapTypeId.ROADMAP,
         scrollwheel: false
@@ -116,8 +127,10 @@ function AreaSelect(map_id) {
         parser.parse(layers[i]);
       }
     }
-    if(document.getElementById('map_search'))
-      util.geocode('map_search', 'map_search_button', map);
+    if(me.search_id && document.getElementById(me.search_id))
+      util.geocode(me.search_id, me.search_button_id, map);
+    if(me.search_button_id && document.getElementById(me.search_button_id))
+      jQuery('#'+me.search_button_id).hide();
     return map;
   }
 
@@ -217,6 +230,8 @@ function AreaSelect(map_id) {
             "url": Drupal.settings.basePath + "area/getareas" + (jQuery('#'+me.map_id).data('areaid') ? '/'+jQuery('#'+me.map_id).data('areaid') : ''),
             
             "success": function (json) {
+                if(!json || !json.length)
+                  return;
                 var aaData = [];
                 me.areas = json;
                 me.mapOverlays.clear();
@@ -236,6 +251,16 @@ function AreaSelect(map_id) {
    * adds a listener for selecting and hover to geometry overlays
    */
   AreaSelect.prototype.addOverlayListener = function(overlay) {
+      //select
+      if(typeof InfoBubble != "undefined")
+        google.maps.event.addListener(overlay.gOverlay, 'click', function(event) {
+          me.selectArea(overlay.id);
+        });
+      else
+        overlay.setClickable(false);
+      
+      if(!jQuery('tr[overlay_id="'+overlay.id+'"]').size())
+        return;
       //hover
       google.maps.event.addListener(overlay.gOverlay, 'mouseover', function(event) {
           jQuery('tr[overlay_id="'+overlay.id+'"]').addClass('row_highlighted');
@@ -244,11 +269,6 @@ function AreaSelect(map_id) {
       google.maps.event.addListener(overlay.gOverlay, 'mouseout', function(event) {
           jQuery('tr[overlay_id="'+overlay.id+'"]').removeClass('row_highlighted');
           overlay.setStyle('highlighted-disable');
-      });
-
-      //select
-      google.maps.event.addListener(overlay.gOverlay, 'click', function(event) {
-        me.selectArea(overlay.id);
       });
   };
   
@@ -265,7 +285,7 @@ function AreaSelect(map_id) {
     jQuery.getJSON(Drupal.settings.basePath + 'area/json/' + overlay.id, function(data, textStatus, jqXHR) {
       // area details
       var details = '<div>';
-      details += '<strong>' + data.field_name + '</strong>';
+      details += '<strong><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '">' + data.field_name + '</a></strong>';
       details += '<div>' + data.creator + '<br>';
       details += data.locality + '<br>';
       details += data.zip + ' ' + data.township + '<br>';
@@ -340,6 +360,8 @@ function AreaSelect(map_id) {
   // Member variable initialisation
   var me = this; // references to the instance of AreaSelect
   me.map_id = map_id;
+  me.search_id = search_id;
+  me.search_button_id = search_button_id;
   me.map = this.createGoogleMaps();
   if(!me.map)
     return false;
@@ -351,12 +373,13 @@ function AreaSelect(map_id) {
   getareasJSON();
 
   // register events
-  jQuery("#show_areas").live('click', this.onTableRowClicked);
-  jQuery('#show_areas_wrapper tbody > tr').live('mouseover mouseout', this.onTableRowHover);
-  jQuery('.show_static_image').live('mouseover mouseout', this.showStaticImage);
-  jQuery('#area_table tbody td img').live( 'click', this.onTableExpanderClicked);
+  jQuery("#show_areas").bind('click', this.onTableRowClicked);
+  jQuery('#show_areas_wrapper tbody > tr').bind('mouseover mouseout', this.onTableRowHover);
+  jQuery('.show_static_image').bind('mouseover mouseout', this.showStaticImage);
+  jQuery('#area_table tbody td img').bind( 'click', this.onTableExpanderClicked);
   jQuery('.controlAreaChoose').click(this.onControlAreaChooseClicked);
   jQuery('.controlAreaCreate').click(this.onControlAreaCreateClicked);
+  
 };
 
 var lastQuery = null;
@@ -420,7 +443,7 @@ function refresh_map_info(){
 var areaselect = null;
 jQuery(document).ready(function() {
   if(jQuery('#map_canvas').size())
-    areaselect = new AreaSelect('map_canvas');
+    areaselect = new AreaSelect('map_canvas', 'map_search', 'map_search_button');
   /* clear edit-id-area field. Solves the problem that if a user navigates back problem that
    * he can continue to new inv without actually having selected an area */
   jQuery('#edit-id-area').val('');

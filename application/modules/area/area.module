@@ -829,7 +829,7 @@ function area_edit_comment_form($form, &$form_state, $area_id) {
 /*
  * Hidden form used to store values when new area is created
  */
-function area_edit_map_form($form, &$form_state, $area_id) {
+function area_edit_map_form($form, &$form_state, $area_id=false) {
   $form['map'] = array(
     '#type' => 'fieldset',
     '#title' => t('Map'),
@@ -847,7 +847,19 @@ function area_edit_map_form($form, &$form_state, $area_id) {
       'id' => 'area-map'
     ),
   );
-  $form['map']['map'] = area_map($area_id);
+  if(!$area_id) {
+    $gmap_data = $form_state['input'];
+    $imagepath = gmap_static_image_path($gmap_data, 500, 500, 14);
+    $variables_map= array(
+      'path' => $imagepath,
+      'alt' => t('Map'),
+      'title' => t('Map'),
+    );
+    $form['map']['map'] = array(
+        '#markup' => theme('image', $variables_map)
+    );
+  } else
+    $form['map']['map'] = area_map($area_id);
   return $form;
 }
 
@@ -920,8 +932,8 @@ function area_add_gmap_resources($bubble=true) {
   drupal_add_css($areaCSSPath . 'area-select.css');
   
   drupal_add_js('http://maps.google.com/maps/api/js?sensor=true', array('group' => JS_LIBRARY));
-  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Config.js', array('group' => JS_LIBRARY));
   drupal_add_js($inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js', array('group' => JS_LIBRARY));
+  drupal_add_js($areaJsPath . 'lib/rwo_gmaps/Config.js', array('group' => JS_LIBRARY));
   drupal_add_js($areaJsPath . 'lib/rwo_gmaps/MapGeometryOverlays.js', array('group' => JS_LIBRARY));
   drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlay.js', array('group' => JS_LIBRARY));
   drupal_add_js($areaJsPath . 'lib/rwo_gmaps/GeometryOverlayControl.js', array('group' => JS_LIBRARY));
@@ -936,28 +948,33 @@ function area_add_gmap_resources($bubble=true) {
   drupal_add_js($areaJsPath . 'area-select.js');
 }
 
-function area_map($areaId, $map_id='map_canvas', $additional='') {
+function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) {
   area_add_gmap_resources(false);
-  $areas = db_query('
-    SELECT * FROM area a
-    LEFT JOIN area_point ap ON a.id = ap.area_id
-    WHERE a.id = :id
-    ORDER BY seq ASC',
-    array(":id" => $areaId)
-  );
-  $center = false;
-  $points = array();
-  foreach ($areas as $entry) {
-    array_push($points, $entry->lat.','.$entry->lng);
-    if($entry->centroid_lat || $entry->centroid_lng)
-      $center = $entry->centroid_lat.','.$entry->centroid_lng;
+  if(!$center) {
+    $areas = db_query('
+      SELECT * FROM area a
+      LEFT JOIN area_point ap ON a.id = ap.area_id
+      WHERE a.id = :id
+      ORDER BY seq ASC',
+      array(":id" => $areaId)
+    );
+    $points = array();
+    foreach ($areas as $entry) {
+      if($entry->lat || $entry->lng)
+        array_push($points, floatval($entry->lat).','.floatval($entry->lng));
+      if($entry->centroid_lat || $entry->centroid_lng)
+        $center = $entry->centroid_lat.','.$entry->centroid_lng;
+    }
+    
+    if(count($points)<=1 && !$zoom) {
+      if(count($points))
+        $center = array_pop($points);
+    }
   }
-  
-  if(count($points)<=1 && !$zoom) {
-    if(count($points))
-      $center = array_pop($points);
-    $zoom = 18;
-  }
+  if(!$center)
+    $zoom = false;
+  else
+    $zoom = 15;
   $zoom = $zoom?' data-zoom="'.$zoom.'"' : '';
   $center = $center?' data-center="'.$center.'"' : '';
   

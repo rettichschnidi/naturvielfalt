@@ -27,7 +27,7 @@ function area_json($areaId) {
     LEFT JOIN inventory_type it ON i.inventory_type_id = it.id
     LEFT JOIN inventory_entry ie ON ie.inventory_id = i.id
     LEFT JOIN users u ON hi.owner_id = u.uid
-    WHERE a.id = :id
+    WHERE a.id = :id AND hi.hidden IS NOT TRUE
     GROUP BY hi.id, hi.name, i.id, it.name, u.name
     ORDER BY hi.id', array(':id' => $areaId));
   $countInventories = 0;
@@ -88,9 +88,9 @@ function area_saved_autocomplete($string) {
 
   $areas = db_query('
     SELECT id, field_name, zip, locality, create_time, modify_time FROM area
-    WHERE field_name ILIKE :term
+    WHERE (field_name ILIKE :term
       OR zip ILIKE :term
-      OR locality ILIKE :term
+      OR locality ILIKE :term) AND hidden IS NOT TRUE
     ORDER BY field_name
   ', array(":term" => "%".$string."%")
   );
@@ -119,7 +119,8 @@ function get_areas($area_id=false) {
       LEFT JOIN area_habitat ah ON ah.area_id = area.id
       LEFT JOIN habitat h ON h.id = ah.habitat_id
       LEFT JOIN area_type at ON at.id = area.type_id
-    '.($area_id ? 'WHERE area.id = '.$area_id : '').'
+    WHERE area.hidden IS NOT TRUE
+    '.($area_id ? 'AND area.id = '.$area_id : '').'
     ORDER BY area_id, seq, ah_id asc
   ');
 

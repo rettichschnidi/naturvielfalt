@@ -25,7 +25,7 @@ function habitat_show($habitatGroupId) {
     FROM area_habitat
     LEFT JOIN area ON area.id = area_habitat.area_id
     LEFT JOIN users ON users.uid = area.owner_id
-    WHERE habitat_id = :id',
+    WHERE habitat_id = :id AND area.hidden IS NOT TRUE',
     array(':id' => $habitatGroupId)
   );
   
@@ -33,7 +33,7 @@ function habitat_show($habitatGroupId) {
     $inventories = db_query('
       SELECT COUNT (area_id)
       FROM head_inventory
-      WHERE area_id = :aid',
+      WHERE area_id = :aid AND hidden IS NOT TRUE',
       array(':aid' => $record->area_id)
     );
     $row = array();
@@ -65,7 +65,7 @@ function habitat_show($habitatGroupId) {
   
   //render only if there are any records returned
   if($rows){
-    $render_array['linked_areas']['areas]'] = array(
+    $render_array['linked_areas']['areas'] = array(
       '#theme' => 'datatable', 
       '#header' => $tableHeader,
       '#rows' => $rows,

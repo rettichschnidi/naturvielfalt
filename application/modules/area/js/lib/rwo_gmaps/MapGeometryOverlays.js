@@ -11,6 +11,7 @@
  */
 function MapGeometryOverlays(map){
 	this.map = map;
+  this.bounds = new google.maps.LatLngBounds();
 	this.overlays = []; //contains all the overlays currently shown on the map; key = overlay.id
 }
 /*
@@ -31,15 +32,19 @@ MapGeometryOverlays.prototype.addOverlaysJson = function(overlayJson){
     for(var i in overlayJson) {
         if(overlayJson[i].type == 'polygon') {
             overlay = new Polygon(me.map, overlayJson[i]);
+            var points = overlay.getLatLngs().getArray();
+            for(var n=0; n<points.length; n++)
+              me.bounds.extend(points[n]);
             me.overlays[overlayJson[i].id] = overlay;
         } else if (overlayJson[i].type == 'marker') {
             overlay = new Marker(me.map, overlayJson[i]);
+            me.bounds.extend(overlay.getLatLng());
             me.overlays[overlayJson[i].id] = overlay;
         } else {
             console.error('Type of overlay is undefined!');
         }
-
     }
+    me.map.fitBounds(me.bounds);
 };
 
 //Removes all Overlays from the Map

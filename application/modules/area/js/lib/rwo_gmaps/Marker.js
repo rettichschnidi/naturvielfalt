@@ -1,6 +1,7 @@
 /**
  * @author Roger Wolfer
  */
+
 Marker.prototype = new GeometryOverlay();
 Marker.prototype.constructor = Marker;
 

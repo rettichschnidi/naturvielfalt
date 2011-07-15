@@ -286,6 +286,172 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   
+  // Single observations
+  $items['user/%user/singleobservations'] = array(
+    'title' => t('Single observations'),
+    'description' => t('View single observations'),
+    'page callback' => 'inventory_single_show',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_single_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 2,
+  );
+  $items['user/%user/singleobservations/normal'] = array(
+    'title' => t('View'),
+    'description' => t('View single observations'),
+    'page callback' => 'inventory_single_show',
+    'access callback' => 'inventory_single_access',
+    'access arguments' => array(1),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 1,
+  );
+  $items['user/%user/singleobservations/gallery'] = array(
+    'title' => t('Gallery'),
+    'description' => t('View the inventory as gallery of organisms'),
+    'page callback' => 'inventory_single_gallery',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_single_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 2,
+  );
+  $items['user/%user/singleobservations/list'] = array(
+    'title' => t('List'),
+    'description' => t('View the inventory as a list of organisms'),
+    'page callback' => 'inventory_single_list',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_single_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 3,
+  );
+  $items['singleobservations'] = array(
+    'title' => t('Single observations'),
+    'description' => t('View single observations'),
+    'page callback' => 'inventory_single_current_show',
+    'access arguments' => array('create inventories'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'inventory.single.inc',
+  );
+  $items['singleobservations/normal'] = array(
+    'title' => t('View'),
+    'description' => t('View single observations'),
+    'page callback' => 'inventory_single_current_show',
+    'access arguments' => array('create inventories'),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 1,
+  );
+  $items['singleobservations/gallery'] = array(
+    'title' => t('Gallery'),
+    'description' => t('View the inventory as gallery of organisms'),
+    'page callback' => 'inventory_single_current_gallery',
+    'access arguments' => array('create inventories'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 2,
+  );
+  $items['singleobservations/list'] = array(
+    'title' => t('List'),
+    'description' => t('View the inventory as a list of organisms'),
+    'page callback' => 'inventory_single_current_list',
+    'access arguments' => array('create inventories'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 3,
+  );
+  
+  // Single observations edit form
+  $items['user/%user/singleobservations/edit'] = array(
+    'title' => t('Edit'),
+    'description' => t('Edit single observations'),
+    'page callback' => 'inventory_single_edit',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_single_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 10,
+  );
+  $items['user/%user/singleobservations/delete_entry/%'] = array(
+    'title' => t('Delete an entry'),
+    'description' => t('Deletes an entry of an existing inventory'),
+    'page callback' => 'inventory_single_delete_entry',
+    'page arguments' => array(1, 4),
+    'access callback' => 'inventory_single_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['user/%user/singleobservations/save_entries'] = array(
+    'title' => t('Save inventory entries'),
+    'description' => t('Save an inventory\'s entries'),
+    'page callback' => 'inventory_single_save_entries',
+    'page arguments' => array(1),
+    'access callback' => 'inventory_single_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.single.inc',
+  );
+  $items['user/%user/singleobservations/add_inventory_group/%/%'] = array(
+    'title' => t('Return inventory group'),
+    'description' => t('Returns the html for a new inventory group'),
+    'page callback' => 'inventory_single_add_inventory_group',
+    'page arguments' => array(1, 4, 5),
+    'access callback' => 'inventory_single_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.single.inc',
+  );
+  $items['singleobservations/edit'] = array(
+    'title' => t('Edit'),
+    'description' => t('Edit single observations'),
+    'page callback' => 'inventory_single_current_edit',
+    'access arguments' => array('create inventories'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'inventory.single.inc',
+    'weight' => 10,
+  );
+  $items['singleobservations/delete_entry/%'] = array(
+    'title' => t('Delete an entry'),
+    'description' => t('Deletes an entry of an existing inventory'),
+    'page callback' => 'inventory_single_current_delete_entry',
+    'page arguments' => array(2),
+    'access arguments' => array('create inventories'),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.edit.inc',
+  );
+  $items['singleobservations/save_entries'] = array(
+    'title' => t('Save inventory entries'),
+    'description' => t('Save an inventory\'s entries'),
+    'page callback' => 'inventory_single_current_save_entries',
+    'access arguments' => array('create inventories'),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.single.inc',
+  );
+  $items['singleobservations/add_inventory_group/%/%'] = array(
+    'title' => t('Return inventory group'),
+    'description' => t('Returns the html for a new inventory group'),
+    'page callback' => 'inventory_single_current_add_inventory_group',
+    'page arguments' => array(2, 3),
+    'access arguments' => array('create inventories'),
+    'type' => MENU_CALLBACK,
+    'file' => 'inventory.single.inc',
+  );
   
   $items['inventorytemplate'] = array(
     'title' => t('Templates'),
@@ -519,6 +685,17 @@ function inventory_edit_access($head_inventory_id) {
 }
 
 /**
+ * Check write access to the single observations inventory of a specified user
+ * 
+ * @param int $user
+ * @return true if access ok, false if not
+ */
+function inventory_single_edit_access($user) {
+  $head_inventory_id = _inventory_single_get_id($user, false);
+  return $head_inventory_id && inventory_edit_access($head_inventory_id);
+}
+
+/**
  * Check write acces to inventory template
  * 
  * @param unknown_type $template_id
@@ -562,6 +739,17 @@ function inventory_access($inventoryId) {
   $read = $adminRecords->fetch();
   $access = $access && (($read->read == 1) || ($read->shared == true)) || ($read->owner_id == $user->uid);
   return $access;
+}
+
+/**
+ * Check read access to the single observations inventory of a specified user
+ * 
+ * @param int $user
+ * @return true if access ok, false if not
+ */
+function inventory_single_access($user) {
+  $head_inventory_id = _inventory_single_get_id($user, false);
+  return $head_inventory_id && inventory_access($head_inventory_id);
 }
 
 /**
@@ -817,13 +1005,8 @@ function inventory_entry_factory($inventoryEntry, $extended) {
 }
 
 function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id) {
-  area_add_gmap_resources(false);
+  area_add_gmap_resources(false, false);
   _include_js_and_css();
-  $form['map'] = area_map(db_select('head_inventory', 'hi')
-    ->condition('hi.id', $head_inventory_id)
-    ->fields('hi', array('area_id'))
-    ->execute()
-    ->fetchField(0), 'map_location');
   
   $lat = '';
   $lng = '';
@@ -844,6 +1027,12 @@ function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id)
   if(array_key_exists('lng', $_REQUEST))
     $lng = floatval($_REQUEST['lng']);
   
+  $form['map'] = area_map(db_select('head_inventory', 'hi')
+    ->condition('hi.id', $head_inventory_id)
+    ->fields('hi', array('area_id'))
+    ->execute()
+    ->fetchField(0), 'map_location', '', $lat || $lng ? $lat.','.$lng : false);
+  
   $form['lat'] = array(
     '#type' => 'hidden',
     '#default_value' => $lat
@@ -854,6 +1043,50 @@ function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id)
   );
   
   return $form;
+}
+
+function _inventory_single_get_id($user) {
+  $head_inventory_id = db_select('head_inventory', 'hi')
+    ->condition('hi.hidden', 'TRUE')
+    ->condition('hi.owner_id', $user->uid)
+    ->fields('hi', array('id'))
+    ->execute()
+    ->fetchField(0);
+  if(!$head_inventory_id) {
+    $area_id = db_select('area', 'a')
+      ->condition('a.hidden', 'TRUE')
+      ->fields('a', array('id'))
+      ->execute()
+      ->fetchField(0);
+    if(!$area_id) {
+      $area_id = db_insert('area')->fields(array(
+        'field_name' => 'Hidden area',
+        'locality' => 'locality',
+        'zip' => 'zip',
+        'canton' => 'canton',
+        'country' => 'country',
+        'type_id' => 1,
+        'altitude' => 1,
+        'surface_area' => 1,
+        'township' => 'township',
+        'centroid_lat' => 1,
+        'centroid_lng' => 1,
+        'create_time' => 'now()',
+        'modify_time' => 'now()',
+        'hidden' => 'TRUE'
+      ))->execute();
+    }
+    $head_inventory_id = db_insert('head_inventory')->fields(array(
+      'area_id' => $area_id,
+      'name' => t('Single observations'),
+      'owner_id' => $user->uid,
+      'shared' => '0',
+      'create_time' => 'now()',
+      'modify_time' => 'now()',
+      'hidden' => 'TRUE'
+    ))->execute();
+  }
+  return $head_inventory_id;
 }
 
 function _include_js_and_css() {

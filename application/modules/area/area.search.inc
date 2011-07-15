@@ -52,6 +52,7 @@ function area_field_name_form() {
     "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, art.desc art_dest FROM area
     LEFT JOIN users u ON u.uid = owner_id
     LEFT JOIN area_type art ON art.id = type_id
+    WHERE hidden IS NOT TRUE
     ORDER BY field_name;"
   );
   
@@ -124,7 +125,7 @@ function area_last_used_table() {
 
   $head_inventories= db_query(
     "SELECT * FROM area 
-    WHERE owner_id = :owner_id
+    WHERE owner_id = :owner_id AND hidden IS NOT TRUE
     ORDER BY modify_time DESC
     LIMIT 5",
   array(':owner_id'=>$user->uid)

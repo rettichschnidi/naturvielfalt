@@ -240,7 +240,9 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
   drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   $area = db_select('area', 'a')->condition('id', $areaId)->fields('a')->execute()->fetch();
   drupal_set_title($area->field_name);
-  $query = db_select('head_inventory', 'hi', array('fetch' => PDO::FETCH_ASSOC))->condition('area_id', $areaId);
+  $query = db_select('head_inventory', 'hi', array('fetch' => PDO::FETCH_ASSOC))
+    ->condition('area_id', $areaId)
+    ->where('hi.hidden IS NOT TRUE');
   $query->join('inventory', 'i', 'i.head_inventory_id = hi.id');
   $query->join('inventory_type', 'it', 'it.id = i.inventory_type_id');
   $query->addField('hi', 'id', 'head_inventory_id');
@@ -275,7 +277,6 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
       $sort = 'e.position, e.id ASC';
       break;
   }
-  
   
   $page = array();
   $seen = array();
@@ -360,6 +361,21 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
   $query->join('habitat', 'h', 'h.id = ah.habitat_id');
   $query->fields('h');
   $query->addField('ah', 'id', 'ah_id');
+  switch($order) {
+    case 'latin':
+      $query->orderBy('h.name_lt, h.label', 'ASC');
+      break;
+    case 'german':
+      $query->orderBy('h.name_de, h.label', 'ASC');
+      break;
+    case 'family':
+      $query->orderBy('h.label', 'ASC');
+      break;
+    default:
+      $query->orderBy('h.label', 'ASC');
+      break;
+  }
+  
   $habitats = $query->execute()->fetchAll();
   
   foreach($habitats as $habitat) {
@@ -374,10 +390,13 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
       ),
       'content' => array(
         'label' => array(
-          '#markup' => '<h3>'.l($habitat['name_de'], 'habitat/'.$habitat['id']).'</h3>'
+          '#markup' => '<h3>'.$habitat['label'].'</h3>'
+        ),
+        'label_de' => array(
+          '#markup' => '<h4>'.l($habitat['name_de'], 'habitat/'.$habitat['id']).'</h4>'
         ),
         'label_latin' => array(
-          '#markup' => $habitat['name_lt'] ? '<h4>'.l($habitat['name_lt'], 'habitat/'.$habitat['id']).'</h4>' : ''
+          '#markup' => $habitat['name_lt'] ? '<h5>'.l($habitat['name_lt'], 'habitat/'.$habitat['id']).'</h5>' : ''
         )
       )
     ));
@@ -445,7 +464,7 @@ function area_inventories($areaId) {
     LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
     LEFT JOIN users u ON hi.owner_id = u.uid
     LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
-    WHERE a.id = :aid AND (hi.shared = TRUE OR hi.owner_id = :uid OR (sgu.uid = :uid AND (sgi.read != 0 OR sgi.write != 0)))',
+    WHERE a.id = :aid AND hi.hidden IS NOT TRUE AND (hi.shared = TRUE OR hi.owner_id = :uid OR (sgu.uid = :uid AND (sgi.read != 0 OR sgi.write != 0)))',
     array(':aid' => $areaId, ':uid' => $user->uid)
   );
   
@@ -584,7 +603,7 @@ function showAreaOrganisms($areaId) {
     LEFT JOIN organism o ON ie.organism_id = o.id
     LEFT JOIN flora_organism flo ON o.organism_id = flo.id
     LEFT JOIN fauna_organism fao ON o.organism_id = fao.id
-    WHERE  area.id = :aid
+    WHERE  area.id = :aid AND hi.hidden IS NOT TRUE
     ORDER BY oid ASC',
     array(':aid' => $areaId)
   );
@@ -711,7 +730,7 @@ function getOrganismCount($organismId, $areaId) {
     LEFT JOIN inventory i ON ie.inventory_id = i.id
     LEFT JOIN head_inventory hi ON i.head_inventory_id = hi.id
     LEFT JOIN area a ON hi.area_id = a.id
-    WHERE ie.organism_id = :oid AND a.id = :aid AND (hi.owner_id = :uid OR hi.shared = TRUE OR hi.id
+    WHERE ie.organism_id = :oid AND hi.hidden IS NOT TRUE AND a.id = :aid AND (hi.owner_id = :uid OR hi.shared = TRUE OR hi.id
       IN(SELECT sgu.uid
       FROM sgroup_inventory sgi
       LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
@@ -739,7 +758,7 @@ function getOrganismDates($organismId, $areaId) {
     LEFT JOIN area a ON hi.area_id = a.id
     LEFT JOIN inventory_type_attribute_inventory_entry itaie ON ie.id = itaie.inventory_entry_id
     LEFT JOIN inventory_type_attribute ita ON itaie.inventory_type_attribute_id = ita.id
-    WHERE o.id = :oid AND ita.name = 'Funddatum' AND a.id = :aid",
+    WHERE o.id = :oid AND ita.name = 'Funddatum' AND a.id = :aid AND hi.hidden IS NOT TRUE",
     array(":oid" => $organismId, ":aid" => $areaId)
   );
   $dateTable = array();

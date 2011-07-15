@@ -10,7 +10,7 @@ function inventory_list() {
       (SELECT COUNT(e.id) FROM inventory_entry e LEFT JOIN inventory i ON i.id = e.inventory_id WHERE i.head_inventory_id = hi.id) entries
     FROM head_inventory hi 
       LEFT JOIN area a ON hi.area_id = a.id
-    WHERE (hi.owner_id=:id)
+    WHERE (hi.owner_id=:id AND hi.hidden IS NOT TRUE)
     ORDER BY hi.name, a.field_name asc;",
     array(':id' => $user->uid)
   );
@@ -35,7 +35,7 @@ function inventory_list() {
       LEFT JOIN users u ON hi.owner_id = u.uid
       LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
       LEFT JOIN area a ON hi.area_id = a.id
-    WHERE (u.uid != :id AND sgu.uid = :id AND sgi.read = 1)
+    WHERE (u.uid != :id AND sgu.uid = :id AND sgi.read = 1 AND hi.hidden IS NOT TRUE)
     ORDER BY hi.name, hi.id, sg.sgroup_name;",
     array(':id' => $user->uid)
   );
@@ -63,7 +63,7 @@ function inventory_list() {
       SELECT sgiEx.hiid FROM sgroup_inventory sgiEx
       LEFT JOIN sgroup_users sguEx ON sgiEx.sgid = sguEx.sgid
       WHERE sguEx.uid = :id AND (sgiEx.read != 0 OR sgiEX.write != 0)
-    )
+    ) AND hi.hidden IS NOT TRUE
     ORDER BY hi.name, hi.id;",
     array(':id' => $user->uid)
   );
@@ -83,7 +83,7 @@ function inventory_editable() {
       (SELECT COUNT(e.id) FROM inventory_entry e LEFT JOIN inventory i ON i.id = e.inventory_id WHERE i.head_inventory_id = hi.id) entries
     FROM head_inventory hi 
       LEFT JOIN area a ON hi.area_id = a.id
-    WHERE (hi.owner_id=:id)
+    WHERE (hi.owner_id=:id AND hi.hidden IS NOT TRUE)
     ORDER BY hi.name, a.field_name asc;",
     array(':id' => $user->uid)
   );
@@ -105,7 +105,7 @@ function inventory_editable() {
       LEFT JOIN users u ON hi.owner_id = u.uid
       LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
       LEFT JOIN area a ON hi.area_id = a.id
-    WHERE (u.uid != :id AND sgu.uid = :id AND sgi.write = 1)
+    WHERE (u.uid != :id AND sgu.uid = :id AND sgi.write = 1 AND hi.hidden IS NOT TRUE)
     ORDER BY hi.name, hi.id, sg.sgroup_name;",
     array(':id' => $user->uid)
   );

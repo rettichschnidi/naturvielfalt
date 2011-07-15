@@ -8,7 +8,21 @@
  * @return array
  *  Drupal render array
  */
-function inventory_show($head_inventory_id) {
+function inventory_show($head_inventory_id, $redirect=true) {
+  if($redirect) {
+    $hidden = db_select('head_inventory', 'hi')
+      ->condition('hi.id', $head_inventory_id)
+      ->fields('hi', array('hidden', 'owner_id'))
+      ->execute()
+      ->fetch();
+    if($hidden->hidden) {
+      global $user;
+      if($user->uid == $hidden->owner_id)
+        return drupal_goto('singleobservations');
+      else
+        return drupal_goto('user/'.$hidden->owner_id.'/singleobservations');
+    }
+  }
   _include_js_and_css(false);
   area_add_gmap_resources(false);
   drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
