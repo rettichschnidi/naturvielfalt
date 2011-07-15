@@ -152,7 +152,8 @@ function AreaSelect(map_id, search_id, search_button_id) {
       disableAutoPan : true,
       arrowPosition : 20,
       arrowStyle : 2,
-      maxHeight : 200
+      maxHeight : 200,
+      maxWidth : 300
     });
     areaInfo.addTab('Details', '');
     areaInfo.addTab('Inventories', '');
