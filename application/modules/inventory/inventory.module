@@ -987,18 +987,20 @@ function inventory_entry_factory($inventoryEntry, $extended) {
   if($inventoryEntry->organism_type==1){
     // organism_type 1 is Fauna
     $entry["label"] = $inventoryEntry->faunanamede;
+    $entry["label_latin_short"] = trim($inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
     if($extended)
       $entry["label_latin"] = trim($inventoryEntry->family." ".$inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
     else
-      $entry["label_latin"] = trim($inventoryEntry->genus." ".$inventoryEntry->species." ".$inventoryEntry->sub_species);
+      $entry["label_latin"] = $entry["label_latin_short"];
     $entry["label_family"] = $inventoryEntry->family;
   } else {
     // organism_type 2 is Flora
     $entry["label"] = $inventoryEntry->floranamede;
+    $entry["label_latin_short"] = trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart);
     if($extended)
       $entry["label_latin"] = trim($inventoryEntry->floraname);
     else
-      $entry["label_latin"] = trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart);
+      $entry["label_latin"] = $entry["label_latin_short"];
     $entry["label_family"] = $inventoryEntry->florafamilie;
   }
   return $entry;

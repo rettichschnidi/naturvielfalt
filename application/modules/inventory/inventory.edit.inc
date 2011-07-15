@@ -457,7 +457,7 @@ function inventory_organism_autocomplete($type_id=false, $term=false, $plain=fal
     $columns = array('genus', 'species');
   } else {
     $table = 'flora_organism';
-    $values = array('f.name_de', 'f.name', 'f.official_flora_orfganism_id ref_id');
+    $values = array('f.name_de', 'f.name', 'f."Gattung" floragattung', 'f."Art" floraart', 'f."Rang" florarang', 'f."NameUnterart" floraunterart', 'f.official_flora_orfganism_id ref_id');
     $columns = array('"Gattung"', '"Art"');
   }
   array_push($where, 'f.name_de ILIKE :term'.$i);
@@ -485,6 +485,7 @@ function inventory_organism_autocomplete($type_id=false, $term=false, $plain=fal
     $organism = array(
       'id' => $record->o_id,
       'label' => strval($record->name_de),
+      'label_latin_short' => strval($fauna ? trim($record->genus." ".$record->species." ".$record->sub_species) : trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart)),
       'label_latin' => strval($fauna ? trim($record->family." ".$record->genus." ".$record->species." ".$record->sub_species) : $record->name)
     );
     if(!$fauna && $record->id != $record->ref_id) {
@@ -1658,7 +1659,7 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
     'data' => 
       '<input type="hidden" class="organism_id" name="entries['.$key.']['.$i.'][organism_id]" value="'.$data['orgId'].'" />'.
       '<input type="hidden" class="entry_id" name="entries['.$key.']['.$i.'][id]" value="'.$data['id'].'" />'.
-      '<input type="text" class="organism" name="entries['.$key.']['.$i.'][organism]" value="'.$data['label'].'" />'
+      '<input type="text" class="organism" name="entries['.$key.']['.$i.'][organism]" value="'.($data['label'] ? $data['label'] : $data['label_latin_short']).'" />'
   );
   $row[] = array(
     'data' => '<em>'.$data['label_latin'].'</em>',

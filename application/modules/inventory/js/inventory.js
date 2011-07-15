@@ -691,7 +691,7 @@ var inventory = {
         return false;
       },
       select: function(event, ui) {
-        $(this).val(ui.item.label || ui.item.label_latin);
+        $(this).val(ui.item.label || ui.item.label_latin_short);
         $(this).closest('td').find('input.organism_id').val(ui.item.id);
         $(this).closest('tr').find('td > em').html(ui.item.label_latin);
         inventory.enableDisable($(this).closest('tr'));
