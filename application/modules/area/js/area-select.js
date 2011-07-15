@@ -78,8 +78,9 @@ function AreaSelect(map_id, search_id, search_button_id) {
     var points = overlay.getLatLngs().getArray();
     for(var n=0; n<points.length; n++)
       bounds.extend(points[n]);
+    var zoom = this.map.getZoom();
     this.map.fitBounds(bounds);
-    this.map.setZoom(this.map.getZoom() - 2);
+    this.map.setZoom(Math.max(zoom, this.map.getZoom() - 2));
     //areaselect.map.panTo(overlay.getCenter());
     this.showAreaInfoBubble(overlay);
     // remember selected area
