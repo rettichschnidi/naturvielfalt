@@ -594,6 +594,34 @@ function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false
 }
 
 /**
+ * Get count of all gallery images by type and id.
+ *
+ * @param $type
+ *   The type of the object.
+ * @param $id
+ *   The ID (or an array of IDs) of the object.
+ * @return
+ *   Number of images
+ */
+function gallery_images_count($type=false, $id=false) {
+    $sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi ';
+    $id_conditions = array();
+    if ($id) {
+        $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
+        array_push($id_conditions, 'gi.item_id ' . $id_condition);
+    }
+    if ($type) {
+        array_push($id_conditions, 'gi.item_type = \''.$type.'\'');
+    }
+    if ($id_conditions) {
+        $sql .= ' WHERE '.implode(' AND ', $id_conditions);
+    }
+    $sql .= ' LIMIT 1';
+    $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+    return $result;
+}
+
+/**
  * Load a gallery image by it's ID. May be used as a loader for menu items.
  *
  * @param $id
@@ -1294,7 +1322,11 @@ function _gallery_check_type_validity($type) {
 }
 
 function _gallery_type_conversions() {
-  return module_invoke_all('gallery_type_conversions');
+  static $conversions;
+  if (!isset($conversions)) {
+    $conversions = module_invoke_all('gallery_type_conversions');
+  }
+  return $conversions;
 }
 
 function _gallery_type_edit_conversions() {
@@ -1306,7 +1338,11 @@ function _gallery_category_conditions() {
 }
 
 function _gallery_types() {
-  return module_invoke_all('gallery_types');
+  static $types;
+  if (!isset($types)) {
+      $types = module_invoke_all('gallery_types');
+  }
+  return $types;
 }
 
 function _gallery_get_subtypes($type, $crosslinked=true) {

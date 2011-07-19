@@ -329,13 +329,16 @@ function gallery_presentation_renderer($items, $imgsize='gallery_presentation', 
  * @param object $id
  * @param object $url[Optional]
  */
-function gallery_view_link($type, $id, $url=false) {
+function gallery_view_link($type, $id, $url=false, $check=true) {
   if(!gallery_access_callback($type))
     return false;
   $params = _gallery_list_parameters($type, $id);
-  $images = gallery_images($type, $id, $params['crosslinked'], true, 1, $params['subtype']);
-  if(!$images['count'])
-    return false;
+  if ($check) {
+    $count = gallery_images_count($type, $id);
+    if (!$count) {
+      return false;
+    }
+  }
   $gallery_img_localize = theme('image', array(
     'path' => drupal_get_path('module', 'gallery').'/images/image.png',
     'alt' => t('View images'),

@@ -10,23 +10,20 @@ function habitat_list() {
   $tableHeader[] = t('id');
   
   $result = db_query('
-    SELECT label, name_de, id
-    FROM habitat'
+    SELECT habitat.label, habitat.name_de, habitat.id, COUNT(area_habitat.area_id) AS count
+    FROM habitat
+    LEFT JOIN area_habitat ON area_habitat.habitat_id = habitat.id
+    LEFT JOIN area ON area.id = area_habitat.area_id
+    GROUP BY habitat.label, habitat.name_de, habitat.id
+    ORDER BY habitat.label'
   );
   
   $has_gallery = false;
   foreach ($result as $record) {
-    $count = db_query('
-      SELECT count (area_habitat.area_id)
-      FROM area_habitat
-      LEFT JOIN area ON area.id = area_habitat.area_id
-      WHERE habitat_id = :id',
-      array(':id' => $record->id)
-    );
     $row = array();
     $row[] = $record->label;
     $row[] = $record->name_de;
-    $row[] = $count->fetch()->count;
+    $row[] = $record->count;
     $row[] = $record->id;
     if(function_exists('gallery_view_link')) {
       $row[] = gallery_view_link('habitat', $record->id);
