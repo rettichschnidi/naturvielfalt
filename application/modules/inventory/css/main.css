@@ -30,12 +30,14 @@ body.page-inventory-edit {
 }
 
 #inventory-edit-entries,
-#inventory-template-edit-entries {
+#inventory-template-edit-entries,
+#inventory-new-form {
   z-index:5;
 }
 
 #inventory-edit-entries #edit-actions #message,
-#inventory-template-edit-entries #edit-actions #message {
+#inventory-template-edit-entries #edit-actions #message,
+#inventory-new-form #edit-actions #message {
   z-index:5;
   position:fixed;
   top:0;
@@ -45,7 +47,8 @@ body.page-inventory-edit {
 }
 
 #inventory-edit-entries #edit-actions #message .messages,
-#inventory-template-edit-entries #edit-actions #message .messages {
+#inventory-template-edit-entries #edit-actions #message .messages,
+#inventory-new-form #edit-actions #message .messages {
   margin:0;
   border-width:0 0 1px 0;
   border-radius:0;
@@ -58,7 +61,8 @@ body.page-inventory-edit {
 }
 
 #inventory-edit-entries #edit-actions .form-item-add,
-#inventory-template-edit-entries #edit-actions .form-item-add {
+#inventory-template-edit-entries #edit-actions .form-item-add,
+#inventory-new-form #edit-actions .form-item-add {
   z-index:5;
   position:fixed;
   bottom:0;
@@ -78,7 +82,8 @@ body.page-inventory-edit {
 }
 
 #inventory-edit-entries #edit-actions input,
-#inventory-template-edit-entries #edit-actions input {
+#inventory-template-edit-entries #edit-actions input,
+#inventory-new-form #edit-actions input {
   z-index:5;
   position:fixed;
   bottom:20px;
