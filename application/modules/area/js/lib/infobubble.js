@@ -457,10 +457,10 @@ InfoBubble.prototype.getZIndex = function() {
  * zIndex changed MVC callback
  */
 InfoBubble.prototype.zIndex_changed = function() {
-  var zIndex = this.getZIndex_();
+  var zIndex = this.getZIndex();
 
   this.bubble_.style['zIndex'] = this.baseZIndex_ = zIndex;
-  this.close_.style['zIndex'] = zIndex_ + 1;
+  this.close_.style['zIndex'] = zIndex + 1;
 };
 InfoBubble.prototype['zIndex_changed'] = InfoBubble.prototype.zIndex_changed;
 
@@ -996,7 +996,7 @@ InfoBubble.prototype.open = function(opt_map, opt_anchor) {
 
   // Show the bubble and the show
   this.bubble_.style['display'] = this.bubbleShadow_.style['display'] = '';
-  var animation = !!!this.get('disableAnimation');
+  var animation = !this.get('disableAnimation');
 
   if (animation) {
     // Add the animation
@@ -1007,7 +1007,7 @@ InfoBubble.prototype.open = function(opt_map, opt_anchor) {
   this.redraw_();
   this.isOpen_ = true;
 
-  var pan = !!!this.get('disableAutoPan');
+  var pan = !this.get('disableAutoPan');
   if (pan) {
     var that = this;
     window.setTimeout(function() {
@@ -1206,7 +1206,7 @@ InfoBubble.prototype['content_changed'] =
  * @private
  */
 InfoBubble.prototype.imageLoaded_ = function() {
-  var pan = !!!this.get('disableAutoPan');
+  var pan = !this.get('disableAutoPan');
   this.redraw_();
   if (pan && (this.tabs_.length == 0 || this.activeTab_.index == 0)) {
     this.panToView();
@@ -1245,7 +1245,6 @@ InfoBubble.prototype.setTabStyle_ = function(tab) {
 
   var marginRight = this.px(-(Math.max(padding, borderRadius)));
   var borderRadiusPx = this.px(borderRadius);
-  borderRadiusPx = borderRadiusPx+' '+borderRadiusPx+' 0 0';
 
   var index = this.baseZIndex_;
   if (tab.index) {
@@ -1262,9 +1261,12 @@ InfoBubble.prototype.setTabStyle_ = function(tab) {
     'padding': this.px(padding / 2) + ' ' + this.px(padding),
     'marginRight': marginRight,
     'whiteSpace': 'nowrap',
-    'borderRadius': borderRadiusPx,
-    'MozBorderRadius': borderRadiusPx,
-    'webkitBorderRadius': borderRadiusPx,
+    'borderRadiusTopLeft': borderRadiusPx,
+    'MozBorderRadiusTopleft': borderRadiusPx,
+    'webkitBorderTopLeftRadius': borderRadiusPx,
+    'borderRadiusTopRight': borderRadiusPx,
+    'MozBorderRadiusTopright': borderRadiusPx,
+    'webkitBorderTopRightRadius': borderRadiusPx,
     'zIndex': index,
     'display': 'inline'
   };
@@ -1694,7 +1696,7 @@ InfoBubble.prototype.figureOutSize_ = function() {
 
   if (this.tabsContainer_) {
     this.tabHeight_ = tabHeight;
-    this.tabsContainer_.style['width'] = this.px(tabWidth+2);
+    this.tabsContainer_.style['width'] = this.px(tabWidth);
   }
 
   this.contentContainer_.style['width'] = this.px(width);
