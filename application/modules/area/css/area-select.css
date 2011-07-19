@@ -91,6 +91,16 @@ tr.even, tr.odd {
   cursor: pointer;
 }
 
+#map_search-element {
+    margin-bottom: 10px;
+}
+
+#map_search-element div {
+  line-height: 24px;
+  float: left;
+  margin-right: 5px;
+}
+
 /* Avoid line break in autocomplete address */
 .ui-autocomplete {
     overflow-y: auto;
