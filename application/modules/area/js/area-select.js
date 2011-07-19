@@ -76,12 +76,10 @@ function AreaSelect(map_id, search_id, search_button_id) {
     overlay.setStyle('selected');
     var bounds = new google.maps.LatLngBounds();
     var points = overlay.getLatLngs().getArray();
-    for(var n=0; n<points.length; n++)
+    for(var n=0; n<points.length; n++) {
       bounds.extend(points[n]);
-    var zoom = this.map.getZoom();
+    }
     this.map.fitBounds(bounds);
-    this.map.setZoom(Math.max(zoom, this.map.getZoom() - 2));
-    //areaselect.map.panTo(overlay.getCenter());
     this.showAreaInfoBubble(overlay);
     // remember selected area
     this.selected_area = overlayId;
@@ -145,14 +143,15 @@ function AreaSelect(map_id, search_id, search_button_id) {
     areaInfo = new InfoBubble({
       map : map,
       shadowStyle : 1,
-      padding : 8,
-      borderRadius : 8,
+      padding : 10,
+      borderRadius : 0,
       arrowSize : 10,
       borderWidth : 1,
-      borderColor : '#2c2c2c',
+      borderColor : '#ccc',
       disableAutoPan : true,
-      arrowPosition : 20,
-      arrowStyle : 2,
+      disableAnimation : true,
+      arrowPosition : 50,
+      arrowStyle : 0,
       maxHeight : 200,
       maxWidth : 300
     });

@@ -651,9 +651,10 @@ InfoBubble.prototype.borderRadius_changed = function() {
       this.bubbleShadow_.style['MozBorderRadius'] =
       this.bubbleShadow_.style['webkitBorderRadius'] = this.px(borderRadius);
 
+  // Naturwerk modification: removing padding of tabs container
   this.tabsContainer_.style['paddingLeft'] =
       this.tabsContainer_.style['paddingRight'] =
-      this.px(borderRadius + borderWidth);
+      0;
 
   this.redraw_();
 };
@@ -1243,7 +1244,8 @@ InfoBubble.prototype.setTabStyle_ = function(tab) {
   var borderWidth = this.getBorderWidth_();
   var padding = this.getPadding_();
 
-  var marginRight = this.px(-(Math.max(padding, borderRadius)));
+  // Naturwerk modification: remove ugly overlap 
+  var marginRight = this.px(-1);
   var borderRadiusPx = this.px(borderRadius);
 
   var index = this.baseZIndex_;
@@ -1456,7 +1458,11 @@ InfoBubble.prototype.addTab = function(label, content) {
     this.setTabActive_(tab);
   }
 
-  tab.className = tab.className + ' ' + this.animationName_;
+  // Naturwerk modification: disableAnimation
+  var animation = !this.get('disableAnimation');
+  if (animation) {
+      tab.className = tab.className + ' ' + this.animationName_;
+  }
 
   this.redraw_();
 };
