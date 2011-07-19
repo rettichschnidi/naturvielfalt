@@ -394,23 +394,8 @@ function area_new_details_form_submit($form, $form_state) {
 	}
 	
 	//insert parcels
-	$area_parcel_delete = db_delete('area_parcel')
-	->condition('area_id', $area_id)
-	->execute();
-	
-	foreach(array_values($form_state['input']['parcel']) as $parcel) {
-		$parcel_nr = $parcel['parcel_nr'];
-		$parcel_owner = $parcel['owner'];
-		$delete = $parcel['delete'];
-		if($delete != '1') {
-			db_insert('area_parcel')->fields(array(
-				'area_id' => $area_id,
-				'parcel' => $parcel_nr,
-				'parcel_owner_name' => $parcel_owner,
-			))
-			->execute();
-		}
-	}
+	$parcels = $form_state['input']['parcel'];
+	area_insert_parcels($area_id, $parcels);
 
 	// redirect to the new area	
 	drupal_set_message('Area successfully created. If you would like to add a new inventory in this Area please click '.l('here', 'inventory/new/area/'.$area_id));

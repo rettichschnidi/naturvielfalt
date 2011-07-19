@@ -983,4 +983,33 @@ function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) 
   );
 }
 
+/**
+ * 
+ * Inserts area parcels into DB.
+ * @param int $area_id
+ * @param aray $parcels
+ */
+function area_insert_parcels($area_id, $parcels) {
+	$area_parcel_delete = db_delete('area_parcel')
+	->condition('area_id', $area_id)
+	->execute();
+	
+	foreach ($parcels as $record) {
+		$parcel_nr = $record['parcel_nr'];
+		if($parcel_nr != '') {
+			$parcel_owner = $record['owner'];
+			$delete = $record['delete'];
+			if($delete != '1') {
+				db_insert('area_parcel')->fields(array(
+					'area_id' => $area_id,
+					'parcel' => $parcel_nr,
+					'parcel_owner_name' => $parcel_owner,
+				))
+				->execute();
+			}
+		}
+	}
+	return;
+}
+
 ?>

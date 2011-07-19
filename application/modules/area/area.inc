@@ -8,6 +8,20 @@ function show_area($areaId) {
   
   $coords = area_convert_coordinates($areaId);
   
+  
+  $tending_strategies = $area->tending_strategies;
+  $protection_target = $area->protection_target;
+  $safety_precautions = $area->safety_precautions;
+  if($tending_strategies == '') {
+  	$tending_strategies = 'not defined';
+  }
+  if($protection_target == '') {
+  	$protection_target = 'not defined';
+  }
+  if($safety_precautions == '') {
+  	$safety_precautions = 'not defined';
+  }
+  
   $rows = array();
   $rows[] = array(
     array(
@@ -107,21 +121,21 @@ function show_area($areaId) {
       'data' => t('Protection Target'),
       'header' => true
     ),
-    $area->protection_target
+    $protection_target
   );
   $concept[] = array(
     array(
       'data' => t('Safety precautions'),
       'header' => true
     ),
-    $area->safety_precautions
+    $safety_precautions
   );
   $concept[] = array(
     array(
       'data' => t('Tending strategies'),
       'header' => true
     ),
-    $area->tending_strategies
+    $tending_strategies
   );
   
   $output['area_details'] = array(

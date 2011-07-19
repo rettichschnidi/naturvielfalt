@@ -510,7 +510,8 @@ function inventory_organism_autocomplete($type_id=false, $term=false, $plain=fal
       $organism['old_id'] = $organism['id'];
       $organism['old_label'] = $organism['label'];
       $organism['old_label_latin'] = $organism['label_latin'];
-      $organism['id'] = $parent->o_id;
+//		temporary bugfix tryout (wrong organism appearing in flora)
+//    $organism['id'] = $parent->o_id;
       $organism['label'] = strval($parent->name_de);
       $organism['label_latin'] = strval($parent->name);
     }
@@ -1282,7 +1283,7 @@ function _inventory_template_data_inventory($head_inventory_id, $types) {
     ->condition('i.inventory_type_id', $types, 'IN');
   $query->fields('i', array('id', 'inventory_type_id'));
   $inventories = $query->execute();
-  
+ 
   $protected = inventory_redlisted_entries($head_inventory_id);
   $data = array();
   foreach($inventories as $inventory) {
@@ -1395,22 +1396,20 @@ function inventory_template_autocomplete($head_inventory_id) {
 function inventory_inventory_autocomplete($head_inventory_id) {
   global $user;
   $term = '%'.trim($_GET['term']).'%';
-  
-  $query = db_select('head_inventory', 'i', array('fetch' => PDO::FETCH_ASSOC))
-    ->fields('i', array('id', 'name'))
-    ->condition('i.name', $term, 'ILIKE')
-    ->condition('i.hidden', 'TRUE', 'IS NOT')
-    ->range(0, 40);
-  $query->join('users', 'u', 'u.uid = i.owner_id');
-  $query->leftJoin('sgroup_inventory', 'sgi', 'sgi.hiid = i.id');
-  $query->leftJoin('sgroup_users', 'sgu', 'sgu.sgid = sgi.sgid AND sgu.uid = '.$user->uid);
-  $query->condition(db_or()
-    ->condition('sgi.write', '1')
-    ->condition('i.owner_id', $user->uid));
-  $query->addField('u', 'name', 'owner');
-  $query->groupBy('i.id, i.name, u.name');
-  
-  $results = $query->execute()->fetchAll();
+  $query = db_query('
+  SELECT i.id AS id, i.name AS name, u.name AS owner
+	FROM 
+	head_inventory i
+	INNER JOIN users u ON u.uid = i.owner_id
+	LEFT OUTER JOIN sgroup_inventory sgi ON sgi.hiid = i.id
+	LEFT OUTER JOIN sgroup_users sgu ON sgu.sgid = sgi.sgid AND sgu.uid = 1
+	WHERE  (i.name ILIKE :term) AND (i.hidden IS NOT TRUE) AND( (sgi.write = 1) OR (i.owner_id = :uid) )
+	GROUP BY i.id, i.name, u.name
+	LIMIT 40 OFFSET 0', array(
+	    ':term' => $term,
+	    ':uid' => $user->uid,
+	));
+  $results = $query->fetchAll();
   
   return drupal_json_output($results);
 }
@@ -1423,18 +1422,17 @@ function inventory_inventory_autocomplete($head_inventory_id) {
  */
 function inventory_public_inventory_autocomplete($head_inventory_id) {
   global $user;
-  $term = '%'.trim($_GET['term']).'%';
-  
-  $query = db_select('head_inventory', 'i', array('fetch' => PDO::FETCH_ASSOC))
-    ->fields('i', array('id', 'name'))
-    ->condition('i.name', $term, 'ILIKE')
-    ->condition('i.shared', '1')
-    ->condition('i.hidden', 'TRUE', 'IS NOT')
-    ->range(0, 40);
-  $query->join('users', 'u', 'u.uid = i.owner_id');
-  $query->addField('u', 'name', 'owner');
-  
-  $results = $query->execute()->fetchAll();
+  $term = '%'.trim($_GET['term']).'%'; 
+  $query = db_query('
+  SELECT i.id AS id, i.name AS name, u.name AS owner
+  FROM 
+  head_inventory i
+  INNER JOIN users u ON u.uid = i.owner_id
+  WHERE  (i.name ILIKE :term) AND (i.shared = TRUE) AND (i.hidden IS NOT TRUE) 
+  LIMIT 40 OFFSET 0', array(
+    ':term' => $term,
+  ));
+  $results = $query->fetchAll();
   
   return drupal_json_output($results);
 }
@@ -1460,6 +1458,7 @@ function inventory_habitat_autocomplete($head_inventory_id) {
   $query->join('area_habitat', 'ah', 'ah.habitat_id = h.id');
   $query->join('head_inventory', 'i', 'i.area_id = ah.area_id');
   $query->condition('i.id', $head_inventory_id);
+
   return drupal_json_output($query->execute()->fetchAll());
 }
 

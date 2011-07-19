@@ -42,6 +42,7 @@ function inventory_invalid_id() {
  * @return form of new inventory
  */
 function inventory_new_form($form, &$form_state) {  
+  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   // creating forms
   $form['new'] = array (
     '#type' => 'fieldset', 
@@ -104,11 +105,11 @@ function inventory_new_form($form, &$form_state) {
     ),
   );
   
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['delete_submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Continue'),
-  );
+	$form['new']['actions'] = array('#type' => 'actions');
+	$form['new']['actions']['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Continue')
+	);
   
   return $form;
 }
