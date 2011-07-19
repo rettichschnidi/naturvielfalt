@@ -90,3 +90,9 @@
 tr.even, tr.odd {
   cursor: pointer;
 }
+
+/* Avoid line break in autocomplete address */
+.ui-autocomplete {
+    overflow-y: auto;
+    width: 400px;
+}
