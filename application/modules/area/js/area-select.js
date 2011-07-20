@@ -113,7 +113,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
         zoom : zoom,
         center : me.center,
         mapTypeId : google.maps.MapTypeId.SATELLITE,
-        scrollwheel: false
+        scrollwheel: true
       };
     var map = new google.maps.Map(document.getElementById(me.map_id), mapsOptions);
     if(canvas.data('layers')) {
