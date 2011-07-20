@@ -112,7 +112,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
     var mapsOptions = {
         zoom : zoom,
         center : me.center,
-        mapTypeId : google.maps.MapTypeId.SATELLITE,
+        mapTypeId : google.maps.MapTypeId.HYBRID,
         scrollwheel: true
       };
     var map = new google.maps.Map(document.getElementById(me.map_id), mapsOptions);
