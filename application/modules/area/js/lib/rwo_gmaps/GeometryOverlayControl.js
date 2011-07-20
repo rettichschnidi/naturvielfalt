@@ -112,6 +112,7 @@ GeometryOverlayControl.prototype.toggleButtons = function(button_name){
 
 GeometryOverlayControl.prototype.startDigitizing = function(){
 	var me = this;
+	me.map.setOptions({draggableCursor: 'crosshair'});
 	var eventListener = google.maps.event.addListener(me.map, "click", me.addLatLngEvent(), true);
 	this.eventListeners.addLatLng = eventListener;
 	
