@@ -20,12 +20,13 @@ function habitat_show($habitatGroupId) {
   $tableHeader[] = t('Linked inventories');
   $tableHeader[] = t('Author');
   
-  $result = db_query('
-    SELECT area_habitat.area_id, area_habitat.habitat_id, area.field_name, area.locality, area.zip, area.canton, users.name
+  $result = db_query("
+    SELECT area_habitat.area_id, area_habitat.habitat_id, area.field_name, area.locality, area.zip, area.canton, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name
     FROM area_habitat
     LEFT JOIN area ON area.id = area_habitat.area_id
     LEFT JOIN users ON users.uid = area.owner_id
-    WHERE habitat_id = :id AND area.hidden IS NOT TRUE',
+    LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
+    WHERE habitat_id = :id AND area.hidden IS NOT TRUE",
     array(':id' => $habitatGroupId)
   );
   
@@ -42,7 +43,7 @@ function habitat_show($habitatGroupId) {
     $row[] = $record->zip;
     $row[] = $record->canton;
     $row[] = $inventories->fetch()->count;
-    $row[] = $record->name;
+    $row[] = $record->u_name;
     $rows[] = array('data' => $row, 'id' => 'area_'. $record->area_id);
   }
   

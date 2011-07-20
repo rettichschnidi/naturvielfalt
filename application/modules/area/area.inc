@@ -470,15 +470,16 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
 function area_inventories($areaId) {
   global $user;
   $output = array();
-  $result = db_query('
-    SELECT distinct hi.name, hi.id, hi.shared, u.name uname, hi.modify_time, hi.create_time
+  $result = db_query("
+    SELECT distinct hi.name, hi.id, hi.shared, ua.field_address_first_name || ' ' || ua.field_address_last_name uname, hi.modify_time, hi.create_time
     FROM area a
     LEFT JOIN head_inventory hi on a.id = hi.area_id
     LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
     LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
     LEFT JOIN users u ON hi.owner_id = u.uid
+    LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
     LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
-    WHERE a.id = :aid AND hi.hidden IS NOT TRUE AND (hi.shared = TRUE OR hi.owner_id = :uid OR (sgu.uid = :uid AND (sgi.read != 0 OR sgi.write != 0)))',
+    WHERE a.id = :aid AND hi.hidden IS NOT TRUE AND (hi.shared = TRUE OR hi.owner_id = :uid OR (sgu.uid = :uid AND (sgi.read != 0 OR sgi.write != 0)))",
     array(':aid' => $areaId, ':uid' => $user->uid)
   );
   

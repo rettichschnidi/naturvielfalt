@@ -97,8 +97,9 @@
 	$iTotal = $row;
 	
 	$area = db_query(
-		"SELECT area.id a_id, field_name, zip, locality, canton, u.name u_name, art.desc art_dest FROM area
+		"SELECT area.id a_id, field_name, zip, locality, canton, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name, art.desc art_dest FROM area
 		LEFT JOIN users u ON u.uid = owner_id
+		LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
 		LEFT JOIN area_type art ON art.id = type_id".$sWhere.$sOrder.$sLimit
 	);
 	

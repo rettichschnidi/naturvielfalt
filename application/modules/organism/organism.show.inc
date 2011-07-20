@@ -72,7 +72,7 @@ function getOrganismInventories($organismId) {
 	global $user;
 	if($GLOBALS['organismtype']== 1) {
 		$result = db_query(
-			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, u.name author, hi.shared, fo.protection_ch, hi.owner_id as uid
+			"SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, ua.field_address_first_name || ' ' || ua.field_address_last_name author, hi.shared, fo.protection_ch, hi.owner_id as uid
 			FROM organism o
 			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
 			LEFT JOIN inventory i on ie.inventory_id = i.id
@@ -81,15 +81,16 @@ function getOrganismInventories($organismId) {
 			LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 			LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 			LEFT JOIN users u ON hi.owner_id = u.uid
+    		LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
 			LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
 			LEFT JOIN fauna_organism fo ON o.organism_id = fo.id
-			WHERE o.id = :id AND hi.hidden IS NOT TRUE AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
+			WHERE o.id = :id AND hi.hidden IS NOT TRUE AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)",
 			array(':id' => $organismId, ':userid' => $user->uid)
 		);
 	}
 	else {
 		$result = db_query(
-			'SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, u.name author, hi.shared, u.uid
+			"SELECT distinct o.organism_type, o.organism_id, ie.inventory_id, i.id, i.head_inventory_id, a.field_name, hi.name, hi.id, ua.field_address_first_name || ' ' || ua.field_address_last_name author, hi.shared, u.uid
 			FROM organism o
 			LEFT JOIN inventory_entry ie on o.id = ie.organism_id
 			LEFT JOIN inventory i on ie.inventory_id = i.id
@@ -98,10 +99,11 @@ function getOrganismInventories($organismId) {
 			LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
 			LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
 			LEFT JOIN users u ON hi.owner_id = u.uid
+    		LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
 			LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
 			LEFT JOIN flora_organism fo ON o.organism_id = fo.id
 			LEFT JOIN flora_red_list frl ON fo.id = frl.flora_organism_id
-			WHERE o.id = :id AND hi.hidden IS NOT TRUE AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)',
+			WHERE o.id = :id AND hi.hidden IS NOT TRUE AND (sgu.uid = :userid OR hi.shared = TRUE OR hi.owner_id = :userid)",
 			array(':id' => $organismId, ':userid' => $user->uid)
 		);
 	}
