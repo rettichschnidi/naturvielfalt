@@ -496,21 +496,20 @@ function gmap_static_image_path($area_id, $width, $height, $zoom=false){
 		}
 	}
 
-	
   if($counter<=1 && !$zoom)
     $zoom = 18;
   $zoom = $zoom?'&zoom='.$zoom:'';
   $center = $center?'center='.$center:'';
 	//it could be a marker, a path or an area
 	if($counter==1){
-		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=roadmap&markers=color:blue|'.$center.'&sensor='.$sensor;
+		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=satellite&markers=color:blue|'.$center.'&sensor='.$sensor;
 	} else if ($counter == 2){
 		//setting weight to at least 3, otherwise the path will not get drawn (if 0) or be really thin (if 1 or 2)
 		if($weight<3){$weight=3;}
-		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+		return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=satellite&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
 	}
 	//tschenereit si link
-	return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
+	return 'http://maps.google.com/maps/api/staticmap?'.$center.$zoom.'&size='.$width.'x'.$height.'&sensor='.$sensor.'&maptype=satellite&path=fillcolor:'.$fillcolor.'|weight:'.$weight.$points;
 }
 
 /**
@@ -849,7 +848,7 @@ function area_edit_map_form($form, &$form_state, $area_id=false) {
   );
   if(!$area_id) {
     $gmap_data = $form_state['input'];
-    $imagepath = gmap_static_image_path($gmap_data, 500, 500, 14);
+    $imagepath = gmap_static_image_path($gmap_data, 500, 500);
     $variables_map= array(
       'path' => $imagepath,
       'alt' => t('Map'),
