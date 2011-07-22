@@ -552,8 +552,13 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
       $row['family'] = l($invDetails['label_family'], 'organism/'.$invDetails['orgId'], array('html'=>true,'attributes'=>array('id'=>'organism_'.$invDetails['orgId'])));
       foreach($colIds as $colId) {
         $colValueDropdown = explode('_', array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '');
-        if (isset($colValueDropdown[1]))
-          $row['col'.$colId] = _inventory_entry_value($colValueDropdown[0]);
+        if (isset($colValueDropdown[1])) {
+          if($header['col0'] == 'Protection level') {
+          	$row['col'.$colId] = _inventory_protection_entry_value($colValueDropdown[0]);
+          } else {
+            $row['col'.$colId] = _inventory_entry_value($colValueDropdown[0]);
+          }
+        }
         else
           $row['col'.$colId] = array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '';
         $colValueDropdown = NULL; 
@@ -562,7 +567,10 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
         $row['location'] = l($img_localize, 'inventory/'.$head_inventory_id.'/entry_location/'.$invDetails['id'], array('html' => true, 'attributes' => array('class' => array('location'))));
         $has_location = true;
       } else
-        $row['location'] = '';
+        if($header['col0'] != 'Protection level') {
+          $row['location'] = '';
+        }
+        
       if($gallery_available) {
         $row['gallery'] = gallery_view_link('inventory_entry', $invDetails['id']);
         if($row['gallery'])
@@ -626,6 +634,19 @@ function _inventory_entry_value($value_id) {
   $value = $result->fetch()->value;
   
   return $value;
+}
+
+function _inventory_protection_entry_value($entry_id) {
+	$result = db_query('
+	SELECT *
+	FROM inventory_custom_protection_protection_level
+	WHERE id = :id',
+	array(':id' => $entry_id)
+	);
+	
+	$result = $result->fetch();
+	$value = $result->description.' ('.$result->protection_radius.'x'.$result->protection_radius.' km2)';
+	return $value;
 }
 
 /**

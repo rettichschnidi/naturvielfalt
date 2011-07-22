@@ -327,7 +327,7 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
     foreach($input['entries'] as $inventory_id => $entries) {
       $inventory_type_id = $input['inventories'][$inventory_id];
       if($additional)
-        $desc = inventory_column_description($inventory_id, $inventory_type_id, true, $head_inventory_id);
+        $desc = inventory_column_description($inventory_id, $inventory_type_id, true, $head_inventory_id);      		
       $new_inventory_id = $inventory_id;
       if(substr($inventory_id, 0, 4) == 'new_') {
         $new_inventory_id = $iid++;
@@ -364,7 +364,11 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
         } else
           db_update($entry_table)->fields($data)->condition('id', $data['id'])->execute();
         if($additional)
-          _inventory_save_entry_attributes($data['id'], $desc['cols'], $entry);
+          if(key_exists('inventory_protection_id', $input)) {
+            _inventory_protection_save_entry_attributes($data['id'], $entry);;	
+          } else {
+          	_inventory_save_entry_attributes($data['id'], $desc['cols'], $entry);
+          }         		
       }
       if($inventory_id != $new_inventory_id) {
         if($count > 0)
