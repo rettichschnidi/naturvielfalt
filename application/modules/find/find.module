@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * Implements hook_init().
+ */
+function find_init(){
+
+    set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/elastica/lib');
+
+    spl_autoload_register('find_autoload');
+}
+
+function find_autoload($class) {
+
+    if (substr($class, 0, 9) == 'Elastica_') {
+
+        $file = str_replace('_', '/', $class) . '.php';
+
+        require_once $file;
+    }
+}
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function find_menu() {
+
+    $items = array();
+
+    $items['find'] = array(
+        'title' => t('Search'),
+        'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'find.views.inc.php',
+    );
+
+    return $items;
+}
+
+
+/**
+ * Implements hook_theme()
+ *
+ * @return an array with theme template information
+ */
+function find_theme() {
+    return array(
+        'find.search' => array(
+            'template' => 'find.search',
+            'variables' => array('result' => null)
+        ),
+    );
+}

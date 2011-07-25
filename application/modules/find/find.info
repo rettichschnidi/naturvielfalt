@@ -1,0 +1,4 @@
+name = Find
+description = Find anything 
+core = 7.x
+files[] = find.inc.php
