@@ -139,7 +139,8 @@ class Indexer {
                 flora_organism."Gattung" || \' \' || flora_organism."Art" AS name,
                 flora_organism.name_de AS name_de,
                 flora_organism."Familie" AS family,
-                flora_organism."Gattung" AS genus
+                flora_organism."Gattung" AS genus,
+                \'organism/\' || organism.id AS url
             FROM organism
             LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
             WHERE organism.organism_type = 2';
@@ -156,7 +157,8 @@ class Indexer {
                 fauna_organism.genus || \' \' || fauna_organism.species AS name,
                 fauna_organism.name_de AS name_de,
                 fauna_organism.family AS family,
-                fauna_organism.genus AS genus
+                fauna_organism.genus AS genus,
+                \'organism/\' || organism.id AS url
             FROM organism
             LEFT JOIN fauna_organism ON organism.organism_id = fauna_organism.id
             LEFT JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
@@ -196,7 +198,8 @@ class Indexer {
             SELECT
             	inventory_entry.id AS id,
                 lat || \', \' || lng AS position,
-                inventory_entry.organism_id AS parent
+                inventory_entry.organism_id AS parent,
+                \'inventory/\' || organism.id AS url
             FROM area_point
             INNER JOIN area ON area.id = area_point.area_id
             INNER JOIN head_inventory ON head_inventory.area_id = area.id

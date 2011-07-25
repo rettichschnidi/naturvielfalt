@@ -55,8 +55,8 @@ function find_render_facet($facets, $filters, $title, $field, $value) {
 <table style="width: 100%;">
 <?php $i = 0; foreach ($result as $object): ?>
 <tr class="<?php echo $i++ % 2 ? 'even' : 'odd'; ?>">
-    <td><?php echo $object->name; ?></td>
-    <td><?php echo $object->name_de; ?></td>
+    <td><?php echo l($object->name_de, $object->url); ?></td>
+    <td><?php echo l($object->name, $object->url); ?></td>
 </tr>
 <?php endforeach; ?>
 </table>
