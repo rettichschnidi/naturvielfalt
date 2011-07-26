@@ -38,6 +38,35 @@ function find_menu() {
         'file' => 'find.views.inc.php',
     );
 
+    $items['find/organisms'] = array(
+        'title' => t('Tiere und Pflanzen'),
+        'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search_organisms',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'find.views.inc.php',
+    );
+
+    $items['find/sightings'] = array(
+        'title' => t('Beobachtungen'),
+        'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search_sightings',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'find.views.inc.php',
+        'weight' => 10,
+    );
+
+    $items['find/inventories'] = array(
+        'title' => t('Inventare'),
+        'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search_inventories',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'find.views.inc.php',
+        'weight' => 20,
+    );
+
     return $items;
 }
 

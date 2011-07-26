@@ -1,0 +1,25 @@
+body.page-find .tabs {
+    height: 32px;
+    list-style-type: none;
+    padding: 0;
+    border-bottom: 1px solid #ccc;
+    padding-left: 3px;
+}
+
+body.page-find .tabs li {
+    display: block;
+    margin: 0;
+    padding: 6px 16px;
+    float: left;
+}
+
+body.page-find .tabs li.active {
+    display: block;
+    margin: 0;
+    padding: 6px 15px;
+    height: 20px;
+    float: left;
+    border: 1px solid #ccc;
+    border-bottom: 0;
+    background-color: #fff;
+}

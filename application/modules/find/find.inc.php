@@ -18,10 +18,96 @@ class Finder {
         $this->index = $index;
     }
 
-    public function search($type, $search = '', $class = array(), $family = array(), $genus = array()) {
+    /**
+     * Find ogranisms (Tiere und Pflanzen).
+     * 
+     * @param string $search
+     * @param array $class
+     * @param array $family
+     * @param array $genus
+     * @return Elastica_ResultSet
+     */
+    public function organisms($search = '', $class = array(), $family = array(), $genus = array()) {
 
         $index = $this->index;
-        
+
+        if ($search) {
+            $all = $index->query()->string($search);
+            $all->setDefaultField('name');
+        } else {
+            $all = $index->query()->all();
+        }
+        $geo = $index->filter()->geo('sighting.position', 47.567261, 7.764587, 47.236355, 8.506165);
+        $filtered = $index->query()->filtered($all, $geo);
+        $hasChild = $index->query()->hasChild($filtered, 'sighting');
+
+        return $this->search('organism', $hasChild, $class, $family, $genus);
+    }
+
+    /**
+     * Find sightings (Beobachtungen).
+     *
+     * @param string $search
+     * @param array $class
+     * @param array $family
+     * @param array $genus
+     * @return Elastica_ResultSet
+     */
+    public function sightings($search = '', $class = array(), $family = array(), $genus = array()) {
+
+        $index = $this->index;
+
+        if ($search) {
+            $all = $index->query()->string($search);
+            $all->setDefaultField('name');
+        } else {
+            $all = $index->query()->all();
+        }
+        $geo = $index->filter()->geo('position', 47.567261, 7.764587, 47.236355, 8.506165);
+        $filtered = $index->query()->filtered($all, $geo);
+
+        return $this->search('sighting', $filtered, $class, $family, $genus);
+    }
+
+    /**
+     * Find inventories (Inventare).
+     *
+     * @param string $search
+     * @param array $class
+     * @param array $family
+     * @param array $genus
+     * @return Elastica_ResultSet
+     */
+    public function inventories($search = '', $class = array(), $family = array(), $genus = array()) {
+
+        $index = $this->index;
+
+        if ($search) {
+            $all = $index->query()->string($search);
+            $all->setDefaultField('name');
+        } else {
+            $all = $index->query()->all();
+        }
+        $geo = $index->filter()->geo('position', 47.567261, 7.764587, 47.236355, 8.506165);
+        $filtered = $index->query()->filtered($all, $geo);
+
+        return $this->search('inventory', $filtered, $class, $family, $genus);
+    }
+
+    /**
+     * Generic search method, provide the type name as first argument.
+     * 
+     * @param string $type
+     * @param Elastica_Query_Abstract $main Base query.
+     * @param array $class
+     * @param array $family
+     * @param array $genus
+     * @return Elastica_ResultSet
+     */
+    public function search($type, $main, $class = array(), $family = array(), $genus = array()) {
+
+        $index = $this->index;
+
         $facetClass = $index->facet()->terms('class');
         $facetClass->setField('class');
 
@@ -33,17 +119,7 @@ class Finder {
         $facetGenus->setField('genus');
         $facetGenus->setSize(900);
 
-        // main query
-        if ($search) {
-            $all = $index->query()->string($search);
-            $all->setDefaultField('name');
-        } else {
-            $all = $index->query()->all();
-        }
-        $geo = $index->filter()->geo('sighting.position', 47.567261, 7.764587, 47.236355, 8.506165);
-        $filtered = $index->query()->filtered($all, $geo);
-        $hasChild = $index->query()->hasChild($filtered, 'sighting');
-
+        // facets filter
         $filter = $index->filter()->and_();
         $f = false;
 
@@ -74,8 +150,9 @@ class Finder {
             $f = true;
         }
 
+        // build search query
         $query = new \Elastica_Query();
-        $query->setQuery($hasChild);
+        $query->setQuery($main);
         $query->addFacet($facetClass);
         $query->addFacet($facetFamily);
         $query->addFacet($facetGenus);
@@ -123,6 +200,7 @@ class Indexer {
         $this->clear();
         $this->organisms();
         $this->sightings();
+        $this->inventories();
     }
 
     /**
@@ -136,8 +214,8 @@ class Indexer {
                 organism.id,
                 organism.organism_type,
                 \'Planzen\' AS class,
-                flora_organism."Gattung" || \' \' || flora_organism."Art" AS name,
-                flora_organism.name_de AS name_de,
+                flora_organism.name_de AS name,
+                flora_organism."Gattung" || \' \' || flora_organism."Art" AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
                 \'organism/\' || organism.id AS url
@@ -154,17 +232,16 @@ class Indexer {
                 organism.id,
                 organism.organism_type,
                 fauna_class.name_de AS class,
-                fauna_organism.genus || \' \' || fauna_organism.species AS name,
-                fauna_organism.name_de AS name_de,
+                fauna_organism.name_de AS name,
+                fauna_organism.genus || \' \' || fauna_organism.species AS name_la,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
                 \'organism/\' || organism.id AS url
             FROM organism
-            LEFT JOIN fauna_organism ON organism.organism_id = fauna_organism.id
+            LEFT JOIN fauna_organism ON fauna_organism.id = organism.organism_id
             LEFT JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
             WHERE organism.organism_type = 1';
 
-        $mapping = \Elastica_Type_Mapping::create(array('family' => array('class' => array('type' => 'string', 'index' => 'not_analyzed'), 'type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
         $this->sql('organism', $sql, $mapping);
     }
 
@@ -175,16 +252,29 @@ class Indexer {
 
         $sql = '
             SELECT
-            	inventory_entry.id AS id,
+                inventory_entry.id AS id,
                 lat || \', \' || lng AS position,
-                inventory_entry.organism_id AS parent
+                inventory_entry.organism_id AS parent,
+                organism.organism_type,
+                fauna_class.name_de AS class,
+                fauna_organism.name_de AS name,
+                fauna_organism.genus || \' \' || fauna_organism.species AS name_la,
+                fauna_organism.family AS family,
+                fauna_organism.genus AS genus,
+                head_inventory.name AS inventory,
+                users.name AS user,
+                \'inventory/\' || inventory.head_inventory_id AS url
             FROM area_point
             INNER JOIN area ON area.id = area_point.area_id
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
             INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
-            INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id';
+            INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id
+            INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+            INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+            INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
+            INNER JOIN users ON users.uid = head_inventory.owner_id';
 
-        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point')));
+        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
         $mapping->setParam('_parent', array('type' => 'organism'));
         $this->sql('sighting', $sql, $mapping);
     }
@@ -196,19 +286,51 @@ class Indexer {
 
         $sql = '
             SELECT
-            	inventory_entry.id AS id,
-                lat || \', \' || lng AS position,
-                inventory_entry.organism_id AS parent,
-                \'inventory/\' || organism.id AS url
-            FROM area_point
-            INNER JOIN area ON area.id = area_point.area_id
-            INNER JOIN head_inventory ON head_inventory.area_id = area.id
-            INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
-            INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id';
+                head_inventory.id AS id,
+                head_inventory.name AS name,
+                users.name AS user,
+                \'inventory/\' || head_inventory.id AS url
+            FROM head_inventory
+            INNER JOIN users ON users.uid = head_inventory.owner_id';
 
-        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point')));
-        $mapping->setParam('_parent', array('type' => 'organism'));
-        $this->sql('sighting', $sql, $mapping);
+        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
+        $this->sql('inventory', $sql, $mapping, array(
+            'class' => '
+                SELECT
+                    DISTINCT fauna_class.name_de AS class
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+                INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+                INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
+                WHERE inventory.head_inventory_id = :id',
+
+            'family' => '
+                SELECT
+                    DISTINCT fauna_organism.family AS family
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+                INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+                WHERE inventory.head_inventory_id = :id',
+
+            'genus' => '
+                SELECT
+                    DISTINCT fauna_organism.genus AS genus
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+                INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+                WHERE inventory.head_inventory_id = :id',
+
+            'position' => '
+                SELECT
+                    lat || \', \' || lng AS position
+                FROM area_point
+                INNER JOIN area ON area.id = area_point.area_id
+                INNER JOIN head_inventory ON head_inventory.area_id = area.id
+                WHERE head_inventory.id = :id',
+        ));
     }
 
     /**
@@ -216,7 +338,7 @@ class Indexer {
      *
      * @param string $type Object type for the index
      * @param string $sql SQL query
-     * @param function $callback
+     * @param function|array $callback
      */
     protected function sql($type, $sql, $mapping = false, $callback = false) {
 
@@ -232,7 +354,22 @@ class Indexer {
         $result->setFetchMode(\PDO::FETCH_ASSOC);
         foreach ($result as $data) {
 
-            if ($callback) {
+            // array or function callback
+            if (is_array($callback)) {
+
+                foreach ($callback as $key => $sql) {
+
+                    $data[$key] = array();
+
+                    // fetch a single column for additional data
+                    $result = db_query($sql, array('id' => $data['id']));
+                    $result->setFetchMode(\PDO::FETCH_COLUMN, 0);
+                    foreach ($result as $object) {
+                        $data[$key][] = $object;
+                    }
+                }
+
+            } else if ($callback) {
                 $data = $callback($data);
             }
 
