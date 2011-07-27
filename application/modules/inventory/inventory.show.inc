@@ -324,11 +324,11 @@ function inventory_basics($head_inventory_id) {
   $query->leftJoin('users', 'u', 'u.uid = a.owner_id');
   $query->addField('u','name','owner');
   $area = $query->execute()->fetch();
-
+  $owner = inventory_username($inventory->uid);
   $rows = array();
   $rows[] = array(
     array('data' => t('Observer'), 'header' => true), 
-    l($inventory->owner, 'user/'.$inventory->uid.'/contact')
+    l($owner, 'user/'.$inventory->uid.'/contact')
   );
   $rows[] = array(
     array('data' => t('Modified on'), 'header' => true), 
@@ -554,7 +554,11 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
         $colValueDropdown = explode('_', array_key_exists('col_'.$colId, $invDetails) ? $invDetails['col_'.$colId] : '');
         if (isset($colValueDropdown[1])) {
           if($header['col0'] == 'Protection level') {
-          	$row['col'.$colId] = _inventory_protection_entry_value($colValueDropdown[0]);
+          	if(!empty($colValueDropdown[0])) {
+          	  $row['col'.$colId] = _inventory_protection_entry_value($colValueDropdown[0]);
+          	} else {
+          		$row['col'.$colId] = t('');
+          	}
           } else {
             $row['col'.$colId] = _inventory_entry_value($colValueDropdown[0]);
           }
@@ -645,7 +649,7 @@ function _inventory_protection_entry_value($entry_id) {
 	);
 	
 	$result = $result->fetch();
-	$value = $result->description.' ('.$result->protection_radius.'x'.$result->protection_radius.' km2)';
+	$value = $result->description.' ('.$result->protection_radius.'x'.$result->protection_radius.' km)';
 	return $value;
 }
 

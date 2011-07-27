@@ -49,9 +49,11 @@ function area_google_maps_form() {
  */
 function area_field_name_form() {
   $area = db_query(
-    "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, art.desc art_dest FROM area
+    "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, art.desc art_dest, fdaf.field_address_first_name fname, fdaf.field_address_last_name lname  
+    FROM area
     LEFT JOIN users u ON u.uid = owner_id
     LEFT JOIN area_type art ON art.id = type_id
+    LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
     WHERE hidden IS NOT TRUE
     ORDER BY field_name;"
   );
@@ -75,7 +77,7 @@ function area_field_name_form() {
     } else {
       $row[] = '';
     }
-    $row[] = $record->u_name;
+    $row[] = $record->fname. ' '.$record->lname;
     $row[] = $record->art_dest;
     $row[] = array('data' => l($view_img_localize, 'area/'.$record->a_id, array('html'=>true)), 'class' => 'show_static_image');
     $rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);

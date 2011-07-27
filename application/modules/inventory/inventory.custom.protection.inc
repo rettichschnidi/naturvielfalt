@@ -78,7 +78,7 @@ function inventory_protection_list() {
     );
   } else {
   	$render_array['lists']['protection'] = array(
-      '#markup' => t('empty shit!'),
+      '#markup' => t('No protection lists have been created.'.l(' Create a protection list', 'protection_lists/new'))
     );
   }
   

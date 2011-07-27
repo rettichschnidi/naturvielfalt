@@ -1,6 +1,10 @@
 <?php
 function show_area($areaId) {
-  $areaResult = db_query("SELECT * FROM {area} WHERE id = :id", array(':id' => $areaId));
+  $areaResult = db_query("
+    SELECT * 
+    FROM {area}
+    LEFT JOIN field_data_field_address fdfa ON fdfa.entity_id = area.owner_id 
+    WHERE id = :id", array(':id' => $areaId));
   $area = $areaResult->fetch();
   drupal_set_title($area->field_name);
   drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
@@ -25,10 +29,10 @@ function show_area($areaId) {
   $rows = array();
   $rows[] = array(
     array(
-      'data' => t('Area Name'),
+      'data' => t('Area creator'),
       'header' => true
     ),
-    $area->field_name
+    l($area->field_address_first_name.' '.$area->field_address_last_name, 'user/'.$area->owner_id.'/contact')
   );
   $rows[] = array(
     array(

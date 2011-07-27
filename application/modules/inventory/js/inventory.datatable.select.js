@@ -21,6 +21,8 @@ function inventoryRowSelect() {
       window.location.href = Drupal.settings.basePath+'inventorytemplate/'+idType[1];
     if (idType[0] == 'protected')
       window.location.href = Drupal.settings.basePath+'user/'+idType[1]+'/contact';
+    if (idType[0] == 'protection')
+        window.location.href = Drupal.settings.basePath+'protection_lists/'+idType[1];
   }
   
   // register events
@@ -31,6 +33,7 @@ function inventoryRowSelect() {
   jQuery("#inventories_own").live('click', this.onTableRowClicked);
   jQuery("#templates_own").live('click', this.onTableRowClicked);
   jQuery("#templates_public").live('click', this.onTableRowClicked);
+  jQuery("#protection_lists").live('click', this.onTableRowClicked);
   jQuery(".invgroup tr").live('click', this.onTableRowClicked);
 }
 
