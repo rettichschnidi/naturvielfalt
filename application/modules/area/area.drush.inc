@@ -14,13 +14,15 @@ function area_drush_command() {
 
 function area_drush_migrate_postgis() {
 
-    // add geom column
+    // add geom column and remove old centroid
     try {
-        
+
         db_query('SELECT AddGeometryColumn(\'area\', \'geom\', 4326, \'GEOMETRY\', 2);');
-        
+        db_query('ALTER TABLE area DROP COLUMN centroid_lat;');
+        db_query('ALTER TABLE area DROP COLUMN centroid_lng;');
+
     } catch (PDOException $e) {
-        
+
         // maybe column was already added?
         echo $e->getMessage();
         echo "\n";
