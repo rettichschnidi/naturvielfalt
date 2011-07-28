@@ -120,9 +120,9 @@ function AreaSelect(map_id, search_id, search_button_id) {
     // switch to satellite for near zoom
     google.maps.event.addListener(map, 'zoom_changed', function() {
         if (map.getMapTypeId() == google.maps.MapTypeId.ROADMAP && map.getZoom() > 13) {
-            map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+            map.setMapTypeId(google.maps.MapTypeId.HYBRID);
         }
-        if (map.getMapTypeId() == google.maps.MapTypeId.SATELLITE && map.getZoom() < 14) {
+        if (map.getMapTypeId() == google.maps.MapTypeId.HYBRID && map.getZoom() < 14) {
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
         }
     });
