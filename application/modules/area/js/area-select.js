@@ -112,10 +112,21 @@ function AreaSelect(map_id, search_id, search_button_id) {
     var mapsOptions = {
         zoom : zoom,
         center : me.center,
-        mapTypeId : google.maps.MapTypeId.HYBRID,
+        mapTypeId : google.maps.MapTypeId.ROADMAP,
         scrollwheel: true
       };
     var map = new google.maps.Map(document.getElementById(me.map_id), mapsOptions);
+
+    // switch to satellite for near zoom
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+        if (map.getMapTypeId() == google.maps.MapTypeId.ROADMAP && map.getZoom() > 13) {
+            map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+        }
+        if (map.getMapTypeId() == google.maps.MapTypeId.SATELLITE && map.getZoom() < 14) {
+            map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+        }
+    });
+
     if(canvas.data('layers')) {
       var layers = canvas.data('layers').split(';');
       for(var i=0; i<layers.length; i++) {
