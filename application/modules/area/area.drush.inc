@@ -26,7 +26,7 @@ function area_drush_migrate_postgis() {
         echo "\n";
     }
 
-    $points = db_query('SELECT * FROM area_point');
+    $points = db_query('SELECT * FROM area_point ORDER BY seq ASC');
 
     $areas = array();
     foreach ($points as $point) {
