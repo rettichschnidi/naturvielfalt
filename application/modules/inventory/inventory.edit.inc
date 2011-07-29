@@ -351,8 +351,6 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
           'organism_id' => $entry['organism_id'],
           'position' => $position
         );
-        if(array_key_exists('lat', $entry) && array_key_exists('lng', $entry))
-          $data['location'] = $entry['lat'].','.$entry['lng'];
         $data[$entry_relation] = $new_inventory_id;
         if(substr($entry['id'], 0, 4) == 'new_') {
           array_push($new_entries, array(
@@ -361,8 +359,16 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
           ));
           $data['id'] = $eid++;
           db_insert($entry_table)->fields($data)->execute();
-        } else
+        } else {
           db_update($entry_table)->fields($data)->condition('id', $data['id'])->execute();
+        }
+
+        // update geom
+        if (isset($entry['lat']) && isset($entry['lng'])) {
+          $geom = 'ST_GeomFromText(\'POINT(' . $entry['lng'] . ' ' . $entry['lat'] . ')\', 4326)'; // SRID 4326 = WGS 84
+          db_update($entry_table)->expression('geom', $geom)->condition('id', $data['id'])->execute();
+        }
+
         if($additional)
           if(key_exists('inventory_protection_id', $input)) {
             _inventory_protection_save_entry_attributes($data['id'], $entry);;	

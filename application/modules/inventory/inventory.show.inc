@@ -56,7 +56,7 @@ function inventory_entry_locations($head_inventory_id) {
     foreach($group as $k => $entry) {
       if(is_string($k) || !$entry['location'])
         continue;
-      $location = explode(',', substr($entry['location'], 1, strlen($entry['location'])-2));
+      $location = explode(',', $entry['location']);
       $lat = floatval($location[0]);
       $lng = floatval($location[1]);
       $image = false;

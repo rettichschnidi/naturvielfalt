@@ -1049,10 +1049,10 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
 
 function inventory_type_entries($id, $table, $relation, $order=false, $extended=false, $entry_id=false, $protected=false, $columns=true, $include_id=true) {
   if(!$order)
-    $order = 'e.position, e.id ASC';
+    $order = 'e.id ASC';
   $sql = 'SELECT 
       '.($include_id ? 'e.id,' : '').'
-      '.($table == 'inventory_entry' ? 'e.location, ': '').'
+      '.($table == 'inventory_entry' ? 'ST_AsGeoJSON(e.geom) AS geom, ': '').'
       e.organism_id, 
       fauna.name_de faunanamede, 
       fauna.genus, 
@@ -1083,8 +1083,14 @@ function inventory_type_entries($id, $table, $relation, $order=false, $extended=
   
   foreach($inventoryEntries as $inventoryEntry) {
     $entry = inventory_entry_factory($inventoryEntry, $extended);
-    if($table == 'inventory_entry')
-      $entry['location'] = $inventoryEntry->location;
+    if ($table == 'inventory_entry') {
+        $json = json_decode($inventoryEntry->geom);
+        if ($json) {
+            if ('Point' == $json->type) {
+                $entry['location'] = $json->coordinates[1] . ',' . $json->coordinates[0];
+            }
+        }
+    }
     if($columns) {
       if($columns == 'protection_level') {
       	$column = db_query('
@@ -1154,15 +1160,15 @@ function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id)
   $lat = '';
   $lng = '';
   if($entry_id) {
-    $location = db_select('inventory_entry', 'e')
-      ->condition('e.id', $entry_id)
-      ->fields('e', array('location'))
-      ->execute()
-      ->fetchField(0);
-    if($location) {
-      $location = explode(',', substr($location, 1, strlen($location)-2));
-      $lat = floatval($location[0]);
-      $lng = floatval($location[1]);
+    $select = db_select('inventory_entry', 'e')->condition('e.id', $entry_id);
+    $select->addExpression('ST_AsGeoJSON(e.geom)', 'geom');
+    $location = $select->execute()->fetchField(0);
+    $json = json_decode($location);
+    if ($json) {
+      if ('Point' == $json->type) {
+        $lat = $json->coordinates[1];
+        $lng = $json->coordinates[0];
+      }
     }
   }
   if(array_key_exists('lat', $_REQUEST))
