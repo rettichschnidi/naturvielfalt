@@ -360,7 +360,7 @@ class Indexer {
                         foreach ($json->coordinates[0] as $coordinate) {
                             $data['position'][] = $coordinate[1] . ', ' . $coordinate[0];
                         }
-                    } else if ('Point') {
+                    } else if ('Point' == $json->type) {
                         $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
                     }
                 }

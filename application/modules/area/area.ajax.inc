@@ -158,7 +158,7 @@ function get_areas($area_id=false) {
               foreach ($json->coordinates[0] as $coordinate) {
                   $item['area_points'][] = array('lat' => $coordinate[1], 'lng' => $coordinate[0]);
               } 
-          } else if ('Point') {
+          } else if ('Point' == $json->type) {
               $item['type'] = 'marker';
               $item['area_points'][] = array('lat' => $json->coordinates[1], 'lng' => $json->coordinates[0]);
           }
