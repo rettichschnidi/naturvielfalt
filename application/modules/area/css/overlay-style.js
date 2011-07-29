@@ -6,9 +6,9 @@
 
 var overlayStyle = {
     'polygon' : {
-        strokeColor:    "#000000",
+        strokeColor:    "#AA0000",
         strokeWeight:   1,
-        strokeOpacity:  0.25,
+        strokeOpacity:  0.5,
         fillColor:      "#AA0000",
         fillOpacity:    0.25
     },
