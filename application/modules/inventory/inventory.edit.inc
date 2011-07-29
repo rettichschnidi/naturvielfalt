@@ -750,7 +750,7 @@ function inventory_edit_entry_location_form($form, &$form_state, $head_inventory
     </div>'
   );
   
-  $form = inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id);
+  $form = inventory_entry_map($form, $form_state, $head_inventory_id, $entry_id);
   
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
