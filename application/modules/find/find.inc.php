@@ -20,7 +20,7 @@ class Finder {
 
     /**
      * Find ogranisms (Tiere und Pflanzen).
-     * 
+     *
      * @param string $search
      * @param array $class
      * @param array $family
@@ -96,7 +96,7 @@ class Finder {
 
     /**
      * Generic search method, provide the type name as first argument.
-     * 
+     *
      * @param string $type
      * @param Elastica_Query_Abstract $main Base query.
      * @param array $class
@@ -253,7 +253,8 @@ class Indexer {
         $sql = '
             SELECT
                 inventory_entry.id AS id,
-                lat || \', \' || lng AS position,
+                ST_AsGeoJSON(area.geom) AS geom,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
                 organism.organism_type,
                 fauna_class.name_de AS class,
@@ -264,8 +265,7 @@ class Indexer {
                 head_inventory.name AS inventory,
                 users.name AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url
-            FROM area_point
-            INNER JOIN area ON area.id = area_point.area_id
+            FROM area
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
             INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
             INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id
@@ -288,9 +288,12 @@ class Indexer {
             SELECT
                 head_inventory.id AS id,
                 head_inventory.name AS name,
+                ST_AsGeoJSON(area.geom) AS geom,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 users.name AS user,
                 \'inventory/\' || head_inventory.id AS url
             FROM head_inventory
+            INNER JOIN area ON area.id = head_inventory.area_id
             INNER JOIN users ON users.uid = head_inventory.owner_id';
 
         $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
@@ -322,14 +325,6 @@ class Indexer {
                 INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
                 INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
                 WHERE inventory.head_inventory_id = :id',
-
-            'position' => '
-                SELECT
-                    lat || \', \' || lng AS position
-                FROM area_point
-                INNER JOIN area ON area.id = area_point.area_id
-                INNER JOIN head_inventory ON head_inventory.area_id = area.id
-                WHERE head_inventory.id = :id',
         ));
     }
 
@@ -353,6 +348,40 @@ class Indexer {
         // fetch as associative array
         $result->setFetchMode(\PDO::FETCH_ASSOC);
         foreach ($result as $data) {
+
+            // convert geo
+            if (isset($data['geom'])) {
+
+                $json = json_decode($data['geom']);
+                if ($json) {
+
+                    $data['position'] = array();
+                    if ('Polygon' == $json->type) {
+                        foreach ($json->coordinates[0] as $coordinate) {
+                            $data['position'][] = $coordinate[1] . ', ' . $coordinate[0];
+                        }
+                    } else if ('Point') {
+                        $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
+                    }
+                }
+
+                unset($data['geom']);
+            }
+
+            // convert centroid
+            if (isset($data['centroid'])) {
+
+                $json = json_decode($data['centroid']);
+                if ($json) {
+
+                    if (!isset($data['position'])) {
+                        $data['position'] = array();
+                    }
+                    $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
+                }
+
+                unset($data['centroid']);
+            }
 
             // array or function callback
             if (is_array($callback)) {
