@@ -339,7 +339,6 @@ function area_new_details_form_submit($form, $form_state) {
 		'altitude' => $altitude,
 		'surface_area' => $surface_area,
 		'township' => $township,
-		'geom' => $geom,
 		'owner_id' => $user->uid,
 		'create_time' => 'now()',
 		'modify_time' => 'now()',
