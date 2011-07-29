@@ -1,7 +1,7 @@
 <div style="width: 200px; float: left; margin-right: 25px; padding-right: 20px; border-right: 1px solid #eee;">
 <form action="find" method="get">
 
-<h6>Suchbegriff: <a href="find" style="float: right; color: #AAA;">Neue Suche</a></h6>
+<h6>Suchbegriff: <a href="<?php echo check_url(url($_GET['q'])); ?>" style="float: right; color: #AAA;">Neue Suche</a></h6>
 
 <p><input type="search" name="search" /></p>
 
