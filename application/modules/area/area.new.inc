@@ -12,7 +12,7 @@ function area_new_form() {
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
-	if($_POST['locality'] != '') {
+	if(@$_POST['locality'] != '') {
 		$output = drupal_get_form('area_new_details_form');
 	}
 	else {
@@ -326,21 +326,20 @@ function area_new_details_form_submit($form, $form_state) {
 	$areaTypeId = $areaTypeRow['id'];
 
 	global $user;
-	
+
 	// insert area
 	$area_id = db_insert('area')->fields(array(
-    	'field_name' => $field_name,
-    	'locality' => $locality,
-	 	'zip' => $zip,
-	 	'canton' => $canton,
-	 	'country' => $country,
+		'field_name' => $field_name,
+		'locality' => $locality,
+		'zip' => $zip,
+		'canton' => $canton,
+		'country' => $country,
 		'type_id' => $areaTypeId,
 		'comment' => $comment,
 		'altitude' => $altitude,
 		'surface_area' => $surface_area,
 		'township' => $township,
-		'centroid_lat' => $latitude,
-		'centroid_lng' => $longitude,
+		'geom' => $geom,
 		'owner_id' => $user->uid,
 		'create_time' => 'now()',
 		'modify_time' => 'now()',
@@ -349,38 +348,33 @@ function area_new_details_form_submit($form, $form_state) {
 		'tending_strategies' => $tendingstrategies
 	))
 	->execute();
-
-	// insert field coordinates
-	$coords = json_decode($jsonCoords, true);
 	
-	if(sizeof($coords)!=0){
-		/*	contains at least two points added by area-select.js
-		 *	we will insert all coordinates as points into the DB  */
-		$i = 0;
-		foreach ($coords as $coord) {
-			$lat = $coord[0];
-			$lng = $coord[1];
-			db_insert('area_point')->fields(array(
-				'area_id' => $area_id,
-				'lat' => $lat,
-				'lng' => $lng,
-				'seq' => $i,
-			))
-			->execute();
-			$i++;
-		}
-	} else {
-		/*	contains NO points in coords because area-select.js doesn't add coordinates 
-		 *	to coords variable if it is only a marker. To save the marker nonetheless we 
-		 *	will	use its centroid lat and lng */
-		db_insert('area_point')->fields(array(
-			'area_id' => $area_id,
-			'lat' => $latitude,
-			'lng' => $longitude,
-			'seq' => 0,
-		))
-		->execute();
+	// field coordinates
+	$coords = json_decode($jsonCoords, true);
+	$points = array();
+	foreach ($coords as $coord) {
+    	$lat = $coord[0];
+    	$lng = $coord[1];
+    	$points[] = $lng . ' ' . $lat;
 	}
+	
+	if (count($points) > 1) {
+	    // polygon
+	
+	    // make sure line is closed
+	    if (end($points) != reset($points)) {
+	        $points[] = reset($points);
+	    }
+	
+	    $linestring = implode(', ', $points);
+	    $geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+	
+	} else {
+	    // point
+	
+	    $geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
+    }
+	db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
 
 	// insert habitats
 	if (array_key_exists('habitat', $form_state['input'])) {

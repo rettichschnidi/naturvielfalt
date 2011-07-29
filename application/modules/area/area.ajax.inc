@@ -113,70 +113,58 @@ function area_saved_autocomplete($string) {
  */
 function get_areas($area_id=false) {
   $areas = db_query('
-    SELECT area.id area_id, at.desc at_desc, field_name, altitude, surface_area,locality, township, canton,
-      centroid_lat, centroid_lng, comment, lat, lng, seq, habitat_id, label, name_de, ah.id ah_id, ah.habitat_id ah_habitat_id
+    SELECT id AS area_id, field_name, altitude, surface_area, locality, township, canton, ST_AsGeoJSON(area.geom) AS geom, comment
     FROM area
-      LEFT JOIN area_point ap ON ap.area_id = area.id
-      LEFT JOIN area_habitat ah ON ah.area_id = area.id
-      LEFT JOIN habitat h ON h.id = ah.habitat_id
-      LEFT JOIN area_type at ON at.id = area.type_id
     WHERE area.hidden IS NOT TRUE
     '.($area_id ? 'AND area.id = '.$area_id : '').'
-    ORDER BY area_id, seq, ah_id asc
+    ORDER BY area_id
   ');
 
   $items = array();
-  
-  $last_area_id = 0;
+
   foreach ($areas as $entry){
-    if ($last_area_id!=$entry->area_id){
-      // we have to reorder the habitats of the last area to make sure the first key of the array starts with 0
-      // otherwise json_encode() will treat the array as an object
-      if ($items[$last_area_id]['habitats']){
-        $items[$last_area_id]['habitats'] = array_values($items[$last_area_id]['habitats']);
-      }
-    }
-      $key = $entry->area_id;
-      settype( $key, "integer" );
 
-      $items[$key]['id'] = $key;
-      $items[$key]['field_name'] = $entry->field_name;
-      $items[$key]['parcel_nr'] = NULL;
-      $items[$key]['type'] = $entry->at_desc;
-      $items[$key]['altitude'] = $entry->altitude;
-      settype($items[$key]['altitude'] ,"integer");
-      $items[$key]['surface_area']= $entry->surface_area;
-      settype($items[$key]['surface_area'] ,"integer");
-      $items[$key]['locality'] = $entry->locality;
-      $items[$key]['township'] = $entry->township;
-      $items[$key]['canton'] = $entry->canton;
-      $items[$key]['centroid']['lat'] = $entry->centroid_lat;
-      $items[$key]['centroid']['lng'] = $entry->centroid_lng;
-      $items[$key]['comment'] = $entry->comment;
+      $item = array();
+      $item['id'] = (int) $entry->area_id;
+      $item['field_name'] = $entry->field_name;
+      $item['parcel_nr'] = NULL;
+      $item['altitude'] = (int) $entry->altitude;
+      $item['surface_area']= (int) $entry->surface_area;
+      $item['locality'] = $entry->locality;
+      $item['township'] = $entry->township;
+      $item['canton'] = $entry->canton;
+      $item['comment'] = $entry->comment;
+
+      $item['habitats'] = array();
+
+      $habitats = db_query('
+          SELECT ah.habitat_id, h.label, h.name_de
+          FROM habitat h
+            INNER JOIN area_habitat ah ON h.id = ah.habitat_id
+          WHERE ah.area_id = '.$entry->area_id.'
+          ORDER BY ah.id asc
+      ');
+      foreach ($habitats as $habitat) {
+            $item['habitats'][] = array('id' => (int) $habitat->habitat_id, 'label' => $habitat->label, 'name_de' => $habitat->name_de);
+      }
       
-      if ($entry->ah_id!=''){
-        $ah_id = $entry->ah_id;
-        settype($ah_id,"integer");
-        
-        $items[$key]['habitats'][$ah_id]['id'] = $entry->ah_habitat_id;
-        settype($items[$key]['habitats'][$ah_id]['id'],"integer");
-        
-        $items[$key]['habitats'][$ah_id]['label'] = $entry->label;
-        $items[$key]['habitats'][$ah_id]['name_de'] = $entry->name_de;
-      } else {
-        $items[$key]['habitats'] = array();
-      }
+      $item['type'] = '';
+      $item['area_points'] = array();
 
-      if($entry->seq!=''){
-        // if area is of type marker, it has no points --> we have to check for that
-        $seq = $entry->seq;
-        settype($seq,"integer");
-        $items[$key]['area_points'][$seq]['lat'] = $entry->lat;
-        $items[$key]['area_points'][$seq]['lng'] = $entry->lng;
-      } else {
-        $items[$key]['area_points'] = array();
+      $json = json_decode($entry->geom);
+      if ($json) {
+          if ('Polygon' == $json->type) {
+              $item['type'] = 'polygon';
+              foreach ($json->coordinates[0] as $coordinate) {
+                  $item['area_points'][] = array('lat' => $coordinate[1], 'lng' => $coordinate[0]);
+              } 
+          } else if ('Point') {
+              $item['type'] = 'marker';
+              $item['area_points'][] = array('lat' => $json->coordinates[1], 'lng' => $json->coordinates[0]);
+          }
       }
-      $last_area_id= $entry->area_id;
+      
+      $items[] = $item;
   }
 
   // json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and

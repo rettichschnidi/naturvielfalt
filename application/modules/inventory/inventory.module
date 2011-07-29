@@ -1212,8 +1212,6 @@ function _inventory_single_get_id($user) {
         'altitude' => 1,
         'surface_area' => 1,
         'township' => 'township',
-        'centroid_lat' => 1,
-        'centroid_lng' => 1,
         'create_time' => 'now()',
         'modify_time' => 'now()',
         'hidden' => 'TRUE'

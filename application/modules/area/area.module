@@ -132,15 +132,6 @@ function area_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'area.new.inc',
   );
-  $items['area/gmap_image_redirect/%'] = array(
-    'title' => 'Redirect to Google Maps static image URL',
-    'description' => 'Google Maps static image redirect',
-    'page callback' => 'googlemaps_static_redirect',
-    'page arguments' => array(2),
-    'access arguments' => array(AREA_ACCESS),
-    'type' => MENU_CALLBACK,
-    'file' => 'area.search.inc',
-  );
   $items['area/habitat_autocomplete'] = array(
     'title' => 'Habitat autocomplete',
     'page callback' => 'area_habitat_autocomplete',
@@ -391,13 +382,12 @@ function area_edit_access($area_id) {
  */
 function area_convert_coordinates($area_id) {
 		if(!is_array($area_id)) {
-			$result = db_select('area', 'a')
-		    ->condition('id', $area_id)
-		    ->fields('a')
-		    ->execute()
-		    ->fetch();
-		    $lat = $result->centroid_lat;
-			$lng = $result->centroid_lng;
+			$select = db_select('area', 'a')->fields('a', array('country'))->condition('id', $area_id);
+			$select->addExpression('ST_AsGeoJSON(ST_Centroid(geom))', 'centroid');
+		    $result = $select->execute()->fetch();
+			$json = json_decode($result->centroid);
+		    $lat = $json->coordinates[1];
+			$lng = $json->coordinates[0];
 			$country = $result->country;
 		} else {
 			$lat = $area_id['0'];
@@ -438,25 +428,15 @@ function area_habitat_dropdown_values($area_id) {
 }
 
 /**
- * Redirects the browser to the Google Maps static image 
- * @param int $area_id
- * @return link to Google Maps static image URL with a 302 header
- */
-function googlemaps_static_redirect($area_id){
-	$path = gmap_static_image_path($area_id, 200, 200);
-	header("Location: ".$path);
-}
-
-/**
  * Generate GoogleMap static image path 
- * @param int $area_id
+ * @param array $params
  * @param int $width
  * @param int $height
  * @param int $zoom
  * 
  * @return link to Google Maps static path
  */
-function gmap_static_image_path($area_id, $width, $height, $zoom=false){
+function gmap_static_image_path($params, $width, $height, $zoom=false){
 	//define default values if none are passed
 	if(!$width){$width = 320;}				// the width of the resulting image
 	if(!$height){$height = 320;}			// the width of the resulting image
@@ -469,30 +449,13 @@ function gmap_static_image_path($area_id, $width, $height, $zoom=false){
 
 	$counter = 0;
 	$center = false;
-	if(!is_array($area_id)) {
-		//$center and $points get fetched from database entry
-		$areas = db_query('
-			SELECT * FROM area a
-			LEFT JOIN area_point ap ON a.id = ap.area_id
-			WHERE a.id = :id
-			ORDER BY seq ASC',
-		array(":id" => $area_id)
-		);
-		
-		foreach ($areas as $entry){
-			$points .= '|'.$entry->lat.','.$entry->lng;
-		    if($entry->centroid_lat || $entry->centroid_lng)
-			$center = $entry->centroid_lat.",".$entry->centroid_lng;
+	$points = '';
+	if(isset($params['latitude'])) {
+		$center = $params['latitude'].','.$params['longitude'];
+		$coords = json_decode($params['area-coords']);
+		foreach ($coords as $coord) {
+			$points .= '|'.$coord['0'].','.$coord['1'];
 			$counter++;
-		}
-	} else {
-		if(key_exists('latitude', $area_id)) {
-			$center = $area_id['latitude'].','.$area_id['longitude'];
-			$coords = json_decode($area_id['area-coords']);
-			foreach ($coords as $coord) {
-				$points .= '|'.$coord['0'].','.$coord['1'];
-				$counter++;
-			}
 		}
 	}
 
@@ -565,6 +528,7 @@ return $form;
 
 function area_edit_habitat_form($form, &$form_state, $area_id) {
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
+	$habitats_selected = array();
 	if($area_id == '') {
 		$habitats = array();
 	} else {
@@ -950,24 +914,10 @@ function area_add_gmap_resources($bubble=true) {
 function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) {
   area_add_gmap_resources(false);
   if(!$center) {
-    $areas = db_query('
-      SELECT * FROM area a
-      LEFT JOIN area_point ap ON a.id = ap.area_id
-      WHERE a.id = :id
-      ORDER BY seq ASC',
-      array(":id" => $areaId)
-    );
-    $points = array();
-    foreach ($areas as $entry) {
-      if($entry->lat || $entry->lng)
-        array_push($points, floatval($entry->lat).','.floatval($entry->lng));
-      if($entry->centroid_lat || $entry->centroid_lng)
-        $center = $entry->centroid_lat.','.$entry->centroid_lng;
-    }
-    
-    if(count($points)<=1 && !$zoom) {
-      if(count($points))
-        $center = array_pop($points);
+    $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) FROM area WHERE id = :id', array(":id" => $areaId));
+    $json = json_decode($areas->fetchColumn(0));
+    if ($json) {
+        $center = $json->coordinates[1] . ','. $json->coordinates[0];
     }
   }
   if(!$center)
