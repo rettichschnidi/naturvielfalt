@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Naturwerk</title>
+<link rel="stylesheet" href="baseline/uncompressed/baseline.reset.css">
+<link rel="stylesheet" href="baseline/uncompressed/baseline.base.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="apple-touch-icon-precomposed" href="images/icon.png" />
+<link rel="apple-touch-startup-image" href="images/spash.png" />
+<style>
+body {
+    margin: 0;
+    font-size: 100%;
+}
+
+p+p {
+    text-indent: 0;
+}
+
+input {
+    font-size: 1em;
+}
+
+.wrapper {
+    width: 320px;
+    overflow: hidden;
+}
+
+.container {
+    position: relative;
+    -webkit-backface-visibility: hidden;
+    width: 960px;
+    height: 100%;
+    /*-webkit-perspective: 1000;
+    overflow: hidden;
+    width: 640px;*/
+}
+
+header {
+    padding: 12px 10px 5px;
+    border-bottom: 1px solid #0c443f;
+    height: 34px;
+    color: #fff;
+    line-height: 30px;
+    background-color: #2d6c63;
+    background-image: url("images/bar.png");
+    background-size: 320px 52px;
+}
+
+header h2 {
+    display: inline-block;
+    font-weight: normal;
+    margin-left: -3px;
+    text-align: center;
+    width: 160px;
+    padding: 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#content header h2 {
+    line-height: 42px;
+    font-size: 0.9em;
+    text-align: left;
+}
+
+header a {
+    font-size: 0.9em;
+    text-decoration: none;
+    color: #fff;
+    display: inline-block;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+header a:hover {
+    text-shadow: 1px 1px 10px #fff;
+}
+
+body header .icon {
+}
+
+.content {
+    position: relative;
+    width: 320px;
+    top: 0;
+    left: 0;
+}
+
+.inner {
+    -webkit-overflow-scrolling: touch;
+    overflow: auto;
+}
+
+#second {
+    position: absolute;
+    left: 320px;
+    top: 0px;
+    background-color: #fff; 
+}
+
+#third {
+    position: absolute;
+    left: 640px;
+    top: 0px;
+    background-color: #fff; 
+}
+
+.content ul {
+    margin: 0;
+}
+
+.content li {
+    list-style-type: none;
+    border-bottom: 1px dotted #ccc;
+}
+
+.content li a {
+    display: block;
+    padding: 10px 10px 11px;
+    text-decoration: none;
+    color: #000;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    background-image: none;
+}
+
+.content li a.active {
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#058cf5),to(#015de6));
+    color: white;
+}
+
+.content li:last-child {
+    border-bottom: 0;
+}
+
+.inner h3 {
+    padding: 15px 10px;
+    font-weight: bold;
+}
+
+.inner p {
+    padding: 10px;
+}
+
+.inner p.input {
+    border-bottom: 1px dotted #ccc;
+}
+
+.inner p label {
+    display: inline-block;
+    width: 80px;
+    padding-right: 10px;
+}
+
+.inner p input[type=submit] {
+    margin-left: 90px;
+}
+</style>
+<script src="zepto/zepto.min.js"></script>
+<script>
+
+var lat, lon;
+function updateLocation(position) {
+    if (lat != position.coords.latitude || lon != position.coords.longitude) {
+        lat = position.coords.latitude;
+        lon = position.coords.longitude;
+        $('#location').val(lat + ', ' + lon);
+    }
+}
+
+function updateMap() {
+    if (lat && lon) {
+        $('#map').html('<img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;markers=size:small|'+lat+','+lon+'&amp;sensor=true" width="320" height="150" />');
+    }
+}
+
+function handleError(error) {
+    console.log(error);
+}
+
+function scroll(target, i) {
+    $('.container').anim({translate: (-i * 320) + 'px, 0'}, 0.5, '', function () {
+        $('.active').removeClass('active');
+    });
+}
+
+var current;
+$(function () {
+
+    $('.inner').css('height', (document.height - 52) + 'px');
+
+    for (var i in db.classes) {
+        $('#classes').append('<li><a data="' + i + '">' + db.classes[i] + '</a></li>');
+    };
+
+    $('#content a').bind('click', function (e) {
+        $(e.target).addClass('active');
+
+        // clear organisms
+        $('#organisms').text('');
+
+        // build organisms
+        current = $(e.target).attr('data');
+        $('#class').text(db.classes[current]);
+        for (var i in db.organisms[current]) {
+            $('#organisms').append('<li><a data="' + i + '">' + db.organisms[current][i] + '</a></li>');
+        }
+
+        $('#second ul a').bind('click', function (e) {
+            $(e.target).addClass('active');
+
+            // update organism name
+            var id = $(e.target).attr('data');
+            $('#organism').text(db.organisms[current][id]);
+
+            // update map with fresh coordinates
+            updateMap();
+
+            scroll('#third', 2);
+        });
+
+        scroll('#second', 1);
+    });
+    $('#second header a').bind('click', function (e) {
+        scroll('#content', 0);
+    });
+    $('#third header a').bind('click', function (e) {
+        scroll('#second', 1);
+    });
+    if (navigator.geolocation) {
+        // Register for location changes and pass the returned position to the updateLocation method
+        watchId = navigator.geolocation.watchPosition(updateLocation, handleError);
+        navigator.geolocation.getCurrentPosition(updateLocation, handleError);
+    }
+});
+
+
+var db = {
+    classes: {
+        1: 'Amphibien',
+        2: 'Doppelfüsser',
+        3: 'Höhere Krebse',
+        4: 'Insekten',
+        5: 'Muscheln',
+        6: 'Reptilien',
+        7: 'Schnecken',
+        8: 'Spinnentiere',
+        9: 'Strahlenflosser (Fische)',
+        10: 'Säugetiere',
+        11: 'Vielborster',
+        12: 'Vögel',
+        13: 'Wirbeltiere',
+    },
+    organisms: {
+        1: {
+            "1":"Gemeine Kahnschnecke",
+            "2":"Kleine Walddeckelschnecke",
+            "3":"Italienische Sumpfdeckelschnecke",
+            "4":"Spitze Sumpfdeckelschnecke",
+            "5":"Schöne Landdeckelschnecke",
+            "6":"Puppen-Quellschnecke",
+            "7":"Schmidts Quellschnecke                  ",
+            "8":"Alpen-Brunnenschnecke                   ",
+            "9":"Durchscheinende Brunnenschnecke",
+            "10":"Rheinische Brunnenschnecke              ",
+            "11":"Lacheiners Quellschnecke                ",
+            "12":"Insubrische Quellschnecke",
+            "13":"Rundmündige Quellschnecke",
+            "14":"Neuseeland-Zwergdeckelschnecke          ",
+            "15":"Bauchige Schnauzenschnecke",
+            "16":"Gemeine Schnauzenschnecke",
+            "17":"Gestreifte Mulmnadel",
+            "18":"Gekritzte Mulmnadel                     ",
+            "19":"Dupuys Mulmnadel",
+            "20":"Glatte Mulmnadel",
+            "21":"Feinste Mulmnadel                       ",
+            "22":"Flache Federkiemenschnecke",
+            "23":"Sumpf-Federkiemenschnecke               ",
+            "24":"Alpen-Federkiemenschnecke",
+            "25":"Gemeine Federkiemenschnecke",
+            "26":"Moor-Federkiemenschnecke"
+        }, 2: {
+            "162":"Alpweiden-Glasschnecke                  ",
+            "163":"Gipfel-Glasschnecke                     ",
+            "164":"Gestreifte-Glasschnecke",
+            "165":"Grosse Glasschnecke",
+            "166":"Berg-Glasschnecke                       ",
+            "167":"Weitmündige Glasschnecke",
+            "168":"Kugelige Glasschnecke",
+            "169":"Kurze Glasschnecke                      ",
+            "170":"Südalpen-Glasschnecke                   ",
+            "171":"Wärmeliebende Wachsschnecke             ",
+            "172":"Weitmündige Wachsschnecke",
+            "173":"Klare Wachsschnecke",
+            "174":"Südalpen-Glanzschnecke                  ",
+            "175":"Knoblauch-Glanzschnecke",
+            "176":"Keller-Glanzschnecke",
+            "177":"Farblose Glanzschnecke                  ",
+            "178":"Flache Glanzschnecke                    ",
+            "179":"Grosse Glanzschnecke",
+            "180":"Glatte Glanzschnecke",
+            "181":"Schweizer Glanzschnecke",
+            "182":"Berg-Glanzschnecke                      ",
+            "183":"Streifenglanzschnecke",
+            "184":"Weisse Streifenglanzschnecke            "
+        }, 3: {
+            "241":"Inkarnatschnecke",
+            "242":"Zahnlose Haarschnecke",
+            "243":"Einzähnige Haarschnecke",
+            "244":"Nidwaldner Haarschnecke                 ",
+            "245":"Gekerbte Jura-Haarschnecke",
+            "246":"Aufgeblasene Haarschnecke               ",
+            "247":"Rauhe Haarschnecke",
+            "248":"Berg-Haarschnecke                       ",
+            "249":"Seidige Haarschnecke",
+            "250":"Gestreifte Haarschnecke",
+            "251":"Zottige Haarschnecke",
+            "252":"Zwerg-Heideschnecke                     ",
+            "253":"Östliche Heideschnecke",
+            "254":"Gefleckte Schnirkelschnecke",
+            "255":"Genabelte Maskenschnecke                ",
+            "314":"Kreisrunde Erbsenmuschel                ",
+            "256":"Garten-Bänderschnecke",
+            "257":"Hain-Bänderschnecke",
+            "258":"Berg-Bänderschnecke                     "
+        }, 4: {
+            "313":"Glatte Erbsenmuschel                    ",
+            "315":"Eckige Erbsenmuschel                    ",
+            "316":"Winzige Falten-Erbsenmuschel            ",
+            "317":"Glänzende Erbsenmuschel",
+            "318":"Stumpfe Erbsenmuschel",
+            "319":"Quell-Erbsenmuschel",
+            "320":"Kugelige Erbsenmuschel                  ",
+            "321":"Schöne Erbsenmuschel",
+            "322":"Kaltwasser-Erbsenmuschel",
+            "323":"Schiefe Erbsenmuschel                   ",
+            "324":"Dreieckige Erbsenmuschel",
+            "325":"Kleinste Erbsenmuschel                  ",
+            "326":"Gemeine Kugelmuschel"
+        }, 5: {
+            "1364":"Roter Amerikanischer Sumpfkrebs",
+            "1365":"Yabby",
+            "1680":"Gebänderte Prachtlibelle",
+            "1682":"Südliche Prachtlibelle",
+            "1683":"Blauflügel-Prachtlibelle",
+            "1684":"Südliche Binsenjungfer",
+            "1685":"Glänzende Binsenjungfer",
+            "1686":"Dunkle Binsenjungfer",
+            "1687":"Gemeine Binsenjungfer",
+            "1688":"Kleine Binsenjungfer",
+            "1689":"Weidenjungfer",
+            "1690":"Sibirische Winterlibelle",
+            "1691":"Gemeine Winterlibelle",
+            "1692":"Federlibelle",
+            "1693":"Pokal-Azurjungfer",
+            "1694":"Späte Adonislibelle",
+            "1695":"Speer-Azurjungfer",
+            "1696":"Mond-Azurjungfer",
+            "1697":"Helm-Azurjungfer",
+            "1698":"Vogel-Azurjungfer",
+            "1699":"Hufeisen-Azurjungfer",
+            "1700":"Fledermaus-Azurjungfer",
+            "1701":"Becher-Azurjungfer",
+            "1702":"Grosses Granatauge",
+            "1703":"Kleines Granatauge",
+            "1704":"Grosse Pechlibelle",
+            "1705":"Kleine Pechlibelle",
+            "1706":"Zwerglibelle",
+            "1707":"Frühe Adonislibelle",
+            "1708":"Südliche Mosaikjungfer"
+        }, 6: {
+            "1896":"Zweifarbige Beissschrecke",
+            "1897":"Kurzflüglige Beissschrecke",
+            "1898":"Bachufer-Beissschrecke",
+            "1899":"Roesels Beissschrecke",
+            "1900":"Gebirgs-Beissschrecke",
+            "1901":"Gestreifte Südschrecke",
+            "1902":"Gemeine Sichelschrecke",
+            "1903":"Vierpunktige Sichelschrecke",
+            "1904":"Alpen-Strauchschrecke",
+            "1905":"Südliche Strauchschrecke",
+            "1906":"Gewöhnliche Strauchschrecke",
+            "1907":"Fiebers Strauchschrecke",
+            "1908":"Westliche Beissschrecke",
+            "1909":"Graue Beissschrecke",
+            "1910":"Braunfleckige Beissschrecke",
+            "1911":"Gemeine Wanstschrecke",
+            "1912":"Grosse Schiefkopfschrecke",
+            "1913":"Sägeschrecke",
+            "1914":"Zwitscherschrecke",
+            "1915":"Oestliches Heupferd",
+            "1916":"Grünes Heupferd",
+            "1917":"Lilienblatt-Sichelschrecke"
+        }, 7: {
+            "1971":"Sumpfgrashüpfer",
+            "1972":"Gemeiner Grashüpfer",
+            "1973":"Kiesbank-Grashüpfer",
+            "1974":"Gebirgsgrashüpfer",
+            "1975":"Steppen-Grashüpfer",
+            "1976":"Kleine Goldschrecke",
+            "1977":"Grosse Goldschrecke",
+            "1978":"Schweizer Goldschrecke",
+            "1979":"Südwesteuropäischer Grashüpfer",
+            "1980":"Fluss-Strandschrecke",
+            "1981":"Dickkopf-Grashüpfer",
+            "1982":"Rote Keulenschrecke",
+            "1983":"Wanderheuschrecke",
+            "1984":"Langfühlerige Keulenschrecke",
+            "1985":"Gefleckte Keulenschrecke",
+            "1986":"Kreuzschrecke",
+            "1987":"Blauflügelige Oedlandschrecke",
+            "1988":"Rotflügelige Oedlandschrecke",
+            "1989":"Rotleibiger Grashüpfer",
+            "1990":"Fels-Grashüpfer",
+            "1991":"Buntbäuchiger Grashüpfer",
+            "1992":"Bunter Grashüpfer",
+            "1993":"Dreifarbschrecke",
+            "1994":"Grüne Lauchschrecke",
+            "1995":"Rotflügelige Schnarrschrecke",
+            "1996":"Blauflügelige Sandschrecke",
+            "1997":"Fischers Grashüpfer",
+            "1998":"Heidegrashüpfer",
+            "1999":"Schwarzfleckiger Grashüpfer",
+            "2000":"Bunter Alpengrashüpfer"
+        }, 8: {
+            "6573":"Kurzschröter",
+            "6574":"Körnerbock",
+            "6575":"Mulmbock",
+            "6576":"Sägebock",
+            "6577":"Zottenbock",
+            "6578":"Waldbock",
+            "6581":"Düsterbock",
+            "6582":"Fichtensplintbock",
+            "6583":"Brauner Fichtensplintbock",
+            "6584":"Lärchen-Splintbock",
+            "6585":"Gelbbindiger Zangenbock",
+            "6588":"Eichenzangenbock",
+            "6589":"Beulenkopfbock",
+            "6590":"Schulterbock",
+            "6591":"Variabler Stubbenbock",
+            "6592":"Schwarzer Buntschienenbock",
+            "6593":"Breitschulterbock",
+            "6594":"Schwarzrandiger Vierflecken-Bock",
+            "6595":"Vierfleckenbock",
+            "6596":"Fleckenbock"
+        }, 9: {
+            "6685":"Sauerkirschen-Widderbock",
+            "6686":"Panther-Holzwespenbock",
+            "6687":"Grauer Espenbock",
+            "6688":"Widderbock",
+            "6691":"Wendekreis-Widderbock",
+            "6700":"Weißbindiger Widderbock",
+            "6702":"Variabler Widderbock",
+            "6705":"Zierbock",
+            "6706":"Blutbock",
+            "6710":"Grauflügliger Erdbock",
+            "6714":"Weberbock",
+            "6715":"Bäckerbock",
+            "6717":"Schusterbock",
+            "6719":"Binden-Augenfleckenbock",
+            "6721":"Lindenbock",
+            "6722":"Kragenbock",
+            "6724":"Kiefern-Wipfelbock",
+            "6725":"Kiefernzweigbock",
+            "6726":"Doppeldorniger Wimperbock",
+            "6727":"Dorniger Wimperbock",
+            "6728":"Dunkelbeiniger Büschelflecken-Bock",
+            "6731":"Scheckenbock",
+            "6732":"Splintbock",
+            "6733":"Schwarzhörniger Splintbock",
+            "6734":"Zimmermannsbock",
+            "6735":"Braunbindiger Zimmerbock",
+            "6737":"Weißgefleckter Wimperhorn-Bock",
+            "6738":"Wimperhornbock",
+            "6739":"Rüstern-Wimperhornbock",
+            "6744":"Scheckhornbock"
+        }, 10: {
+            "11423":"Zwergbläuling",
+            "11424":"Kleiner Alpenbläuling",
+            "11425":"Violetter Waldbläuling",
+            "11426":"Schwarzbrauner Bläuling",
+            "11428":"Kurzschwänziger Bläuling",
+            "11429":"Pflaumen Zipfelfalter",
+            "11430":"Himmelblauer Steinkleebläuling",
+            "11431":"Frühlingsscheckenfalter",
+            "11432":"Blasenstrauchbläuling",
+            "11433":"Geschwänzter Blasenstrauchbläuling",
+            "11434":"Gemeiner Bläuling",
+            "11435":"Ginster-Bläuling",
+            "11436":"Violetter Feuerfalter",
+            "11437":"Grosser Feuerfalter",
+            "11438":"Blauschillernder Feuerfalter",
+            "11439":"Kleiner Ampferfeuerfalter",
+            "11440":"Kleiner Feuerfalter"
+        }, 11: {
+            "11571":"Gletscherfalter",
+            "11572":"Waldbrettspiel",
+            "11573":"Gelbes Ochsenauge",
+            "11579":"Frühlings-Wollrückenspinner",
+            "11580":"Südlicher Wollrückenspinner",
+            "11581":"Herbst-Wollrückenspinner",
+            "11582":"Achat-Wollrückenspinner",
+            "11583":"Erlen-Wollrückenspinner",
+            "11584":"Eichen-Wollrückenspinner",
+            "11585":"Augen-Wollrückenspinner",
+            "11586":"Pappel-Wollrückenspinner",
+            "11587":"Birken-Wollrückenspinner",
+            "11588":"Rosen-Wollrückenspinner",
+            "11589":"Schlehen-Sichelflügler",
+            "11590":"Erlen Sichelflügler",
+            "11591":"Heller Sichelflügler",
+            "11592":"Birken-Sichelflügler",
+            "11593":"Linden-Sichelsplügler",
+            "11594":"Eichen-Sichelflügler",
+            "11595":"Buchen-Sichelflügler",
+            "11596":"Stachelspanner",
+            "11597":"Traubenkirschenspanner",
+            "11610":"Kreuzflügel",
+            "11612":"Schlehenspanner. Pflaumenspanner"
+        }, 12: {
+            "20786":"Bergmolch",
+            "20787":"Alpen-Kammolch",
+            "20788":"Kammmolch",
+            "20789":"Fadenmolch",
+            "20790":"Teichmolch",
+            "20791":"Geburtshelferkröte",
+            "20792":"Gelbbauchunke",
+            "20793":"Knoblauchkröte",
+            "20794":"Erdkröte",
+            "20795":"Kreuzkröte",
+            "20796":"Wechselkröte",
+            "20797":"Italienischer Laubfrosch",
+            "20798":"Laubfrosch",
+            "20799":"Moorfrosch",
+            "20800":"Springfrosch",
+            "20801":"Teichfrosch",
+            "20802":"Italienischer Springfrosch",
+            "20803":"Kleiner Wasserfrosch",
+            "20804":"Seefrosch",
+            "20805":"Grasfrosch",
+            "20806":"Rotwangen-Schmuckschildkröte",
+            "20807":"Europ. Sumpfschildkröte",
+            "20808":"Zauneidechse",
+            "20809":"Smaragdeidechse",
+            "20810":"Bergeidechse",
+            "20811":"Mauereidechse",
+            "20812":"Ruineneidechse",
+            "20813":"Blindschleiche"
+        }, 13: {
+            "21190":"Saatkrähe",
+            "21191":"Dohle",
+            "21193":"Tannenhäher",
+            "21194":"Elster",
+            "21195":"Alpendohle",
+            "21196":"Alpenkrähe",
+            "21197":"Buschrohrsänger",
+            "21198":"Amerikanische Krickente",
+            "21199":"Waldpieper",
+            "21200":"Kleine Bergente",
+            "21201":"Marmelalk",
+            "21202":"Stummellerche",
+            "21203":"Alpenbirkenzeisig",
+            "21204":"Gleitaar",
+            "21205":"Fichtenammer",
+            "21206":"Waldammer",
+            "21207":"Buschspötter",
+            "21208":"Weisskehlsänger",
+            "21209":"Madeirawellenläufer",
+            "21210":"Wüstensteinschmätzer",
+            "21211":"Italiensperling",
+            "21212":"Rötelpelikan",
+            "21213":"Dunkellaubsänger",
+            "21215":"Brillengrasmücke",
+            "21216":"Grosse Hufeisennase",
+            "21217":"Kleine Hufeisennase",
+            "21218":"Rhinolophus sp.",
+            "21219":"Rhinolophidae sp.",
+            "21220":"Mittelmeer-Hufeisennase",
+            "21221":"Mopsfledermaus",
+            "21222":"Barbastella sp."
+        }
+    }
+};
+
+</script>
+</head>
+<body>
+<div class="wrapper">
+<div class="container">
+    <section class="content" id="content">
+        <header>
+            <img src="images/logo.png" alt="Naturwerk" width="106" height=""26 />
+            <h2>Einzelbeobachtung</h2>
+        </header>
+        <div class="inner">
+        <ul id="classes">
+        </ul>
+        </div>
+    </section>
+
+    <section class="content" id="second">
+        <header>
+            <a><span class="icon">&nbsp;«</span> Zurück</a>
+            <h2 id="class">Insekten</h2>
+        </header>
+        <div class="inner">
+        <ul id="organisms">
+        </ul>
+        </div>
+    </section>
+
+    <section class="content" id="third">
+        <header>
+            <a><span class="icon">&nbsp;«</span> Zurück</a>
+            <h2 id="organism">Insekten</h2>
+        </header>
+        <div class="inner">
+        <div id="map"><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;markers=size:small|47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
+        <p class="input"><label for="date">Datum: </label><input id="date" type="date" value="2011-07-28" /></p>
+        <p class="input"><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" /></p>
+        <p><input id="location" type="hidden" value="" /><input type="submit" value="Speichern" /></p>
+        </div>
+    </section>
+</div>
+</div>
+</body>
+</html>
