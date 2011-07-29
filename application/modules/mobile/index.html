@@ -13,6 +13,10 @@
 body {
     margin: 0;
     font-size: 100%;
+    background-image: url("images/bar.png");
+    background-repeat: no-repeat;
+    background-size: 320px 52px;
+    cursor: default;
 }
 
 p+p {
@@ -30,41 +34,40 @@ input {
 
 .container {
     position: relative;
-    -webkit-backface-visibility: hidden;
     width: 960px;
     height: 100%;
-    /*-webkit-perspective: 1000;
-    overflow: hidden;
-    width: 640px;*/
+    -webkit-transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
 }
 
 header {
-    padding: 12px 10px 5px;
-    border-bottom: 1px solid #0c443f;
-    height: 34px;
+    height: 52px;
     color: #fff;
     line-height: 30px;
-    background-color: #2d6c63;
-    background-image: url("images/bar.png");
-    background-size: 320px 52px;
+    -webkit-transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
 }
 
 header h2 {
     display: inline-block;
     font-weight: normal;
-    margin-left: -3px;
     text-align: center;
-    width: 160px;
-    padding: 0 10px;
+    width: 130px;
+    padding: 0 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: -1px;
 }
 
 #content header h2 {
-    line-height: 42px;
     font-size: 0.9em;
     text-align: left;
+}
+
+#content header {
+    padding: 12px 10px 0 10px;
+    height: 40px; // 52 - 12
 }
 
 header a {
@@ -72,11 +75,16 @@ header a {
     text-decoration: none;
     color: #fff;
     display: inline-block;
+    margin: 10px 7px;
+    padding: 2px 12px 2px 7px;
+    border-radius: 17px;
+    background-color: rgba(255, 255, 255, 0.1);
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 header a:hover {
-    text-shadow: 1px 1px 10px #fff;
+    background-color: rgba(255, 255, 255, 0.3);
+    text-shadow: 1px 1px 5px #fff;
 }
 
 body header .icon {
@@ -92,24 +100,24 @@ body header .icon {
 .inner {
     -webkit-overflow-scrolling: touch;
     overflow: auto;
+    background-color: #fff;
 }
 
 #second {
     position: absolute;
     left: 320px;
     top: 0px;
-    background-color: #fff; 
 }
 
 #third {
     position: absolute;
     left: 640px;
     top: 0px;
-    background-color: #fff; 
 }
 
 .content ul {
     margin: 0;
+    -webkit-user-select: none;
 }
 
 .content li {
@@ -157,6 +165,14 @@ body header .icon {
 .inner p input[type=submit] {
     margin-left: 90px;
 }
+
+#map {
+    background-image: url("images/loading.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px 16px;
+
+}
 </style>
 <script src="zepto/zepto.min.js"></script>
 <script>
@@ -180,10 +196,12 @@ function handleError(error) {
     console.log(error);
 }
 
-function scroll(target, i) {
+function scroll(from, to, i) {
     $('.container').anim({translate: (-i * 320) + 'px, 0'}, 0.5, '', function () {
         $('.active').removeClass('active');
     });
+    $(from + ' header').anim({opacity: 0});
+    $(to + ' header').anim({opacity: 1});
 }
 
 var current;
@@ -195,8 +213,30 @@ $(function () {
         $('#classes').append('<li><a data="' + i + '">' + db.classes[i] + '</a></li>');
     };
 
+    var touch = {target: false, moved: false, down: false};
+    $(document.body).bind('touchstart', function(e) {
+        touch.target = $(e.touches[0].target);
+        touch.down = true;
+        setTimeout(function () {
+            if (touch.down && !touch.moved) {
+                touch.target.addClass('active');
+            }
+        }, 100);
+    });
+    $(document.body).bind('touchmove', function(e) {
+        touch.moved = true;
+        $('.active').removeClass('active');
+    });
+    $(document.body).bind('touchend', function(e) {
+        if (!touch.moved) {
+            e.preventDefault();
+            touch.target.addClass('active').trigger('click');
+        }
+        touch.moved = false;
+        touch.down = false;
+    });
+
     $('#content a').bind('click', function (e) {
-        $(e.target).addClass('active');
 
         // clear organisms
         $('#organisms').text('');
@@ -218,16 +258,17 @@ $(function () {
             // update map with fresh coordinates
             updateMap();
 
-            scroll('#third', 2);
+            scroll('#second', '#third', 2);
         });
 
-        scroll('#second', 1);
+        scroll('#content', '#second', 1);
     });
     $('#second header a').bind('click', function (e) {
-        scroll('#content', 0);
+        scroll('#second', '#content', 0);
+        $('.active').removeClass('active');
     });
     $('#third header a').bind('click', function (e) {
-        scroll('#second', 1);
+        scroll('#third', '#second', 1);
     });
     if (navigator.geolocation) {
         // Register for location changes and pass the returned position to the updateLocation method
@@ -591,7 +632,7 @@ var db = {
 <div class="container">
     <section class="content" id="content">
         <header>
-            <img src="images/logo.png" alt="Naturwerk" width="106" height=""26 />
+            <img src="images/logo.png" alt="Naturwerk" width="106" height="26" />
             <h2>Einzelbeobachtung</h2>
         </header>
         <div class="inner">
