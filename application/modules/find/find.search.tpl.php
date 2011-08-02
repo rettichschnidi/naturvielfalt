@@ -1,7 +1,7 @@
-<div style="width: 200px; float: left; margin-right: 25px; padding-right: 20px; border-right: 1px solid #eee;">
+<div class="filters">
 <form action="find" method="get">
 
-<h6>Suchbegriff: <a href="<?php echo check_url(url($_GET['q'])); ?>" style="float: right; color: #AAA;">Neue Suche</a></h6>
+<h6>Suchbegriff: <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch">Neue Suche</a></h6>
 
 <p><input type="search" name="search" /></p>
 
@@ -11,7 +11,7 @@ $facets = $result->getFacets();
 $filters = array('class' => $class, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
 $reset = array_merge($filters, array('geo' => array()));
 ?>
-<h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" style="float: right; font-size: 1.3em; line-height: 12px; color: #860d0d; padding: 0 3px;">×</a><?php endif; ?></h6>
+<h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
 <p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (isset($box)): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
 <div class="map-overlay"><div id="map-canvas"></div></div>
@@ -21,9 +21,9 @@ $reset = array_merge($filters, array('geo' => array()));
 function find_render_facet($facets, $filters, $title, $field, $value) {
     $reset = array_merge($filters, array($field => array()));
 ?>
-    <h6 style="margin-top: 10px;"><?php echo $title; ?>: <?php if (count($value) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" style="float: right; font-size: 1.3em; line-height: 12px; color: #860d0d; padding: 0 3px;">×</a><?php endif; ?></h6>
+    <h6 class="filter"><?php echo $title; ?>: <?php if (count($value) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
-    <ul style="max-height: 200px; overflow: auto; border: 1px solid #eee; border-width: 1px 0 1px 0;">
+    <ul class="choices">
     <?php foreach ($facets[$field]['terms'] as $term): ?>
         <?php
         if ($active = in_array($term['term'], $value)) {
@@ -49,7 +49,7 @@ function find_render_facet($facets, $filters, $title, $field, $value) {
 </form>
 </div>
 
-<div style="width: 760px; float: left;">
+<div class="results">
 
 <ul class="tabs">
 <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>"><?php echo l('Tiere und Pflanzen (' . ($organisms ? $organisms->getTotalHits() : 0) . ')', 'find/organisms', array('query' => $filters)); ?></li>
@@ -57,7 +57,7 @@ function find_render_facet($facets, $filters, $title, $field, $value) {
 <li class="<?php echo 'find/inventories' == $_GET['q'] ? 'active' : ''; ?>"><?php echo l('Inventare (' . $inventories->getTotalHits() . ')', 'find/inventories', array('query' => $filters)); ?></li>
 </ul>
 
-<table style="width: 100%;">
+<table>
 <tr>
     <th>Name</th>
     <th>Fachbezeichnung</th>
