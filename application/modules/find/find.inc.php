@@ -22,12 +22,13 @@ class Finder {
      * Find ogranisms (Tiere und Pflanzen).
      *
      * @param string $search
+     * @param array $geo
      * @param array $class
      * @param array $family
      * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function organisms($search = '', $class = array(), $family = array(), $genus = array()) {
+    public function organisms($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
 
         $index = $this->index;
 
@@ -37,9 +38,11 @@ class Finder {
         } else {
             $all = $index->query()->all();
         }
-        $geo = $index->filter()->geo('sighting.position', 47.567261, 7.764587, 47.236355, 8.506165);
-        $filtered = $index->query()->filtered($all, $geo);
-        $hasChild = $index->query()->hasChild($filtered, 'sighting');
+        if (count($geo) == 2) {
+            $geo = $index->filter()->geo('sighting.position', $geo);
+            $all = $index->query()->filtered($all, $geo);
+        }
+        $hasChild = $index->query()->hasChild($all, 'sighting');
 
         return $this->search('organism', $hasChild, $class, $family, $genus);
     }
@@ -48,12 +51,13 @@ class Finder {
      * Find sightings (Beobachtungen).
      *
      * @param string $search
+     * @param array $geo
      * @param array $class
      * @param array $family
      * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function sightings($search = '', $class = array(), $family = array(), $genus = array()) {
+    public function sightings($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
 
         $index = $this->index;
 
@@ -63,22 +67,25 @@ class Finder {
         } else {
             $all = $index->query()->all();
         }
-        $geo = $index->filter()->geo('position', 47.567261, 7.764587, 47.236355, 8.506165);
-        $filtered = $index->query()->filtered($all, $geo);
+        if (count($geo) == 2) {
+            $geo = $index->filter()->geo('position', $geo);
+            $all = $index->query()->filtered($all, $geo);
+        }
 
-        return $this->search('sighting', $filtered, $class, $family, $genus);
+        return $this->search('sighting', $all, $class, $family, $genus);
     }
 
     /**
      * Find inventories (Inventare).
      *
      * @param string $search
+     * @param array $geo
      * @param array $class
      * @param array $family
      * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function inventories($search = '', $class = array(), $family = array(), $genus = array()) {
+    public function inventories($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
 
         $index = $this->index;
 
@@ -88,10 +95,12 @@ class Finder {
         } else {
             $all = $index->query()->all();
         }
-        $geo = $index->filter()->geo('position', 47.567261, 7.764587, 47.236355, 8.506165);
-        $filtered = $index->query()->filtered($all, $geo);
+        if (count($geo) == 2) {
+            $geo = $index->filter()->geo('position', $geo);
+            $all = $index->query()->filtered($all, $geo);
+        }
 
-        return $this->search('inventory', $filtered, $class, $family, $genus);
+        return $this->search('inventory', $all, $class, $family, $genus);
     }
 
     /**

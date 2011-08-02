@@ -5,15 +5,19 @@
 
 <p><input type="search" name="search" /></p>
 
-<h6>Gebiet:</h6>
-
-<p><img width="200" height="100" src="http://maps.google.com/maps/api/staticmap?center=47.482409,8.212452&amp;zoom=11&amp;size=200x100&amp;sensor=false" alt="" /></p>
-
-
 <?php
 
 $facets = $result->getFacets();
-$filters = array('class' => $class, 'family' => $family, 'genus' => $genus);
+$filters = array('class' => $class, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
+$reset = array_merge($filters, array('geo' => array()));
+?>
+<h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" style="float: right; font-size: 1.3em; line-height: 12px; color: #860d0d; padding: 0 3px;">×</a><?php endif; ?></h6>
+
+<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (isset($box)): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
+<div class="map-overlay"><div id="map-canvas"></div></div>
+
+<?php
+
 function find_render_facet($facets, $filters, $title, $field, $value) {
     $reset = array_merge($filters, array($field => array()));
 ?>
