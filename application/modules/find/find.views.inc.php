@@ -16,7 +16,7 @@ function find_search($key) {
     drupal_add_js('http://maps.google.com/maps/api/js?sensor=false', array('group' => JS_LIBRARY));
     drupal_add_js(drupal_get_path('module', 'find') . '/js/find.js');
 
-    $variables = array();
+    $variables = array('#theme' => 'find.search');
 
     $search = find_query_param('search', '');
     $geo = find_query_param('geo');
@@ -28,9 +28,9 @@ function find_search($key) {
     $index = $client->getIndex('naturwerk');
 
     $finder = new Naturwerk\Find\Finder($index);
-    $variables['organisms'] = $finder->organisms($search, $geo, $class, $family, $genus);
-    $variables['sightings'] = $finder->sightings($search, $geo, $class, $family, $genus);
-    $variables['inventories'] = $finder->inventories($search, $geo, $class, $family, $genus);
+    $variables['#organisms'] = $finder->organisms($search, $geo, $class, $family, $genus);
+    $variables['#sightings'] = $finder->sightings($search, $geo, $class, $family, $genus);
+    $variables['#inventories'] = $finder->inventories($search, $geo, $class, $family, $genus);
 
     // calculate bounding box for static map
     if (count($geo) == 2) {
@@ -38,19 +38,23 @@ function find_search($key) {
         list($a, $b) = explode(',', $geo[0]);
         list($c, $d) = explode(',', $geo[1]);
 
-        $variables['box'] = array($a . ',' . $b, $a . ',' . $d, $c . ',' . $d, $c . ',' . $b, $a . ',' . $b);
+        $variables['#box'] = array($a . ',' . $b, $a . ',' . $d, $c . ',' . $d, $c . ',' . $b, $a . ',' . $b);
     }
 
     drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => drupal_get_query_parameters(), 'geo' => $geo)), 'setting');
 
-    $variables['geo'] = $geo;
-    $variables['class'] = $class;
-    $variables['family'] = $family;
-    $variables['genus'] = $genus;
+    $variables['#geo'] = $geo;
+    $variables['#class'] = $class;
+    $variables['#family'] = $family;
+    $variables['#genus'] = $genus;
 
-    $variables['result'] = $variables[$key];
+    $variables['#result'] = $variables['#' . $key];
 
-    return theme('find.search', $variables);
+    
+    $output = array();
+    $output['search'] = $variables;
+    
+    return $output;
 }
 
 function find_show_search_organisms() {
