@@ -12,24 +12,20 @@
 class Elastica_Filter_GeoBoundingBox extends Elastica_Filter_Abstract
 {
 	protected $_key;
-	protected $_topLeftLatitude;
-	protected $_topLeftLongitude;
-	protected $_bottomRightLatitude;
-	protected $_bottomRightLongitude;
+	protected $_coordinates;
 
 	/**
 	 * @param string $key Key
-	 * @param string $topLeftLatitude
-	 * @param string $topLeftLongitude
-	 * @param string $bottomRightLatitude
-	 * @param string $bottomRightLongitude
+	 * @param array $coordinates
 	 */
-	public function __construct($key, $topLeftLatitude, $topLeftLongitude, $bottomRightLatitude, $bottomRightLongitude) {
+	public function __construct($key, $coordinates) {
+
+		if (!isset($coordinates[0]) || !isset($coordinates[1])) {
+			throw new Elastica_Exception_Invalid('expected $coordinates to be an array with two elements');
+		}
+
 		$this->_key = $key;
-		$this->_topLeftLatitude = $topLeftLatitude;
-		$this->_topLeftLongitude = $topLeftLongitude;
-		$this->_bottomRightLatitude = $bottomRightLatitude;
-		$this->_bottomRightLongitude = $bottomRightLongitude;
+		$this->_coordinates = $coordinates;
 	}
 
 	/**
@@ -42,14 +38,8 @@ class Elastica_Filter_GeoBoundingBox extends Elastica_Filter_Abstract
 		return array(
 			'geo_bounding_box' => array(
 				$this->_key => array(
-					'top_left' => array(
-						'lat' => $this->_topLeftLatitude,
-						'lon' => $this->_topLeftLongitude
-					),
-					'bottom_right' => array(
-						'lat' => $this->_bottomRightLatitude,
-						'lon' => $this->_bottomRightLongitude
-					)
+					'top_left' => $this->_coordinates[0],
+					'bottom_right' => $this->_coordinates[1]
 				),
 			)
 		);

@@ -2,8 +2,12 @@
 
 class Elastica_Factory_Filter
 {
-	public function geo($key, $topLeftLatitude, $topLeftLongitude, $bottomRightLatitude, $bottomRightLongitude) {
-		return new Elastica_Filter_GeoBoundingBox($key, $topLeftLatitude, $topLeftLongitude, $bottomRightLatitude, $bottomRightLongitude);
+    /**
+     * @param string $key
+     * @param array $coordinates
+     */
+	public function geo($key, $coordinates) {
+		return new Elastica_Filter_GeoBoundingBox($key, $coordinates);
 	}
 
 	public function and_() {
