@@ -27,10 +27,10 @@ function find_search($key) {
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $finder = new Naturwerk\Find\Finder($index, $search);
-    $variables['#organisms'] = $finder->organisms($geo, $class, $family, $genus);
-    $variables['#sightings'] = $finder->sightings($search, $geo, $class, $family, $genus);
-    $variables['#inventories'] = $finder->inventories($search, $geo, $class, $family, $genus);
+    $finder = new Naturwerk\Find\Finder($index, $search, $class, $family, $genus);
+    $variables['#organisms'] = $finder->organisms($geo);
+    $variables['#sightings'] = $finder->sightings($geo);
+    $variables['#inventories'] = $finder->inventories($geo);
 
     // calculate bounding box for static map
     if (count($geo) == 2) {
