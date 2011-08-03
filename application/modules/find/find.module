@@ -80,7 +80,7 @@ function find_theme() {
     return array(
         'find.search' => array(
             'template' => 'find.search',
-            'variables' => array('result' => null, 'class' => null, 'family' => null, 'genus' => null, 'geo' => array(), 'organisms' => null, 'sightings' => null, 'inventories' => null)
+            'variables' => array('result' => null, 'class' => null, 'family' => null, 'genus' => null, 'geo' => array(), 'box' => array(), 'organisms' => null, 'sightings' => null, 'inventories' => null)
         ),
     );
 }
