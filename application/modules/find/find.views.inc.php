@@ -41,7 +41,11 @@ function find_search($key) {
         $variables['#box'] = array($a . ',' . $b, $a . ',' . $d, $c . ',' . $d, $c . ',' . $b, $a . ',' . $b);
     }
 
-    drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => drupal_get_query_parameters(), 'geo' => $geo)), 'setting');
+    $parameters = drupal_get_query_parameters();
+    if (count($parameters) == 0) {
+        $parameters = new stdClass(); // force empty JSON object
+    }
+    drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $geo)), 'setting');
 
     $variables['#geo'] = $geo;
     $variables['#class'] = $class;
