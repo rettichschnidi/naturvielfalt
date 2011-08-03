@@ -13,7 +13,7 @@ $reset = array_merge($filters, array('geo' => array()));
 ?>
 <h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
-<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (isset($box)): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
+<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($box) > 0): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
 <div class="map-overlay"><div id="map-canvas"></div></div>
 
 <?php
