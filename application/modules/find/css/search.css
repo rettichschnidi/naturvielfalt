@@ -85,7 +85,9 @@ body.page-find #map-canvas {
 body.page-find .map-overlay .map-apply {
     font-size: 1.3em;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: white;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FEFEFE), to(#F3F3F3));
+    background: -moz-linear-gradient(#FEFEFE, #F3F3F3);
     color: #000;
     padding: 3px 7px 2px 7px;
     border: 1px solid #A9BBDF;
