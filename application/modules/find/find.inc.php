@@ -14,27 +14,40 @@ class Finder {
      */
     protected $index;
 
-    public function __construct($index) {
+    protected $search;
+    
+    protected $class;
+    
+    protected $family;
+    
+    protected $genus;
+
+    public function __construct($index, $search = '', $class = array(), $family = array(), $genus = array()) {
         $this->index = $index;
+
+        // make fuzzy search
+        if ($search && strpos($search, '~') === false) {
+            $search .= '~';
+        }
+        $this->search = $search;
+        
+        $this->class = $class;
+        $this->family = $family;
+        $this->genus = $genus;
     }
 
     /**
      * Find ogranisms (Tiere und Pflanzen).
      *
-     * @param string $search
      * @param array $geo
-     * @param array $class
-     * @param array $family
-     * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function organisms($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
+    public function organisms($geo = array()) {
 
         $index = $this->index;
 
-        if ($search) {
-            $all = $index->query()->string($search);
-            $all->setDefaultField('name');
+        if ($this->search) {
+            $all = $index->query()->string($this->search);
         } else {
             $all = $index->query()->all();
         }
@@ -44,26 +57,21 @@ class Finder {
         }
         $hasChild = $index->query()->hasChild($all, 'sighting');
 
-        return $this->search('organism', $hasChild, $class, $family, $genus);
+        return $this->search('organism', $hasChild);
     }
 
     /**
      * Find sightings (Beobachtungen).
      *
-     * @param string $search
      * @param array $geo
-     * @param array $class
-     * @param array $family
-     * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function sightings($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
+    public function sightings($geo = array()) {
 
         $index = $this->index;
 
-        if ($search) {
-            $all = $index->query()->string($search);
-            $all->setDefaultField('name');
+        if ($this->search) {
+            $all = $index->query()->string($this->search);
         } else {
             $all = $index->query()->all();
         }
@@ -72,26 +80,21 @@ class Finder {
             $all = $index->query()->filtered($all, $geo);
         }
 
-        return $this->search('sighting', $all, $class, $family, $genus);
+        return $this->search('sighting', $all);
     }
 
     /**
      * Find inventories (Inventare).
      *
-     * @param string $search
      * @param array $geo
-     * @param array $class
-     * @param array $family
-     * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function inventories($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
+    public function inventories($geo = array()) {
 
         $index = $this->index;
 
-        if ($search) {
-            $all = $index->query()->string($search);
-            $all->setDefaultField('name');
+        if ($this->search) {
+            $all = $index->query()->string($this->search);
         } else {
             $all = $index->query()->all();
         }
@@ -100,7 +103,7 @@ class Finder {
             $all = $index->query()->filtered($all, $geo);
         }
 
-        return $this->search('inventory', $all, $class, $family, $genus);
+        return $this->search('inventory', $all);
     }
 
     /**
@@ -108,12 +111,9 @@ class Finder {
      *
      * @param string $type
      * @param Elastica_Query_Abstract $main Base query.
-     * @param array $class
-     * @param array $family
-     * @param array $genus
      * @return Elastica_ResultSet
      */
-    public function search($type, $main, $class = array(), $family = array(), $genus = array()) {
+    public function search($type, $main) {
 
         $index = $this->index;
 
@@ -133,8 +133,8 @@ class Finder {
         $f = false;
 
         // add class filter
-        if (count($class) > 0) {
-            $term = $index->filter()->terms('class', $class);
+        if (count($this->class) > 0) {
+            $term = $index->filter()->terms('class', $this->class);
             $filter->addFilter($term);
             $facetGenus->setFilter($term);
             $facetFamily->setFilter($term);
@@ -142,8 +142,8 @@ class Finder {
         }
 
         // add family filter
-        if (count($family) > 0) {
-            $term = $index->filter()->terms('family', $family);
+        if (count($this->family) > 0) {
+            $term = $index->filter()->terms('family', $this->family);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
             $facetGenus->setFilter($term);
@@ -151,8 +151,8 @@ class Finder {
         }
 
         // add genus filter
-        if (count($genus) > 0) {
-            $term = $index->filter()->terms('genus', $genus);
+        if (count($this->genus) > 0) {
+            $term = $index->filter()->terms('genus', $this->genus);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
             $facetFamily->setFilter($term);

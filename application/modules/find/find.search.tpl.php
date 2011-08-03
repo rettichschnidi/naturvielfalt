@@ -1,15 +1,24 @@
 <div class="filters">
-<form action="find" method="get">
-
-<h6>Suchbegriff: <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch">Neue Suche</a></h6>
-
-<p><input type="search" name="search" /></p>
+<form action="<?php echo check_url(url($_GET['q'])); ?>" method="get">
 
 <?php
 $facets = $result->getFacets();
-$filters = array('class' => $class, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
-$reset = array_merge($filters, array('geo' => array()));
+$filters = array('search' => $search, 'class' => $class, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
 ?>
+
+<?php foreach ($filters as $field => $filter): ?>
+    <?php if (is_array($filter)): ?>
+        <?php foreach ($filter as $i => $v): ?>
+            <input type="hidden" name="<?php echo $field . '[' . $i . ']'; ?>" value="<?php echo check_plain($v); ?>" />
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+
+<h6>Suchbegriff: <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch">Neue Suche</a></h6>
+
+<p><input name="search" value="<?php echo check_plain($search); ?>" /></p>
+
+<?php $reset = array_merge($filters, array('geo' => array())); ?>
 <h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
 <p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($box) > 0): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>

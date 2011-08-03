@@ -15,6 +15,20 @@ body.page-find .filters h6.filter {
     margin-top: 10px;
 }
 
+body.page-find .filters input {
+    width: 182px;
+    padding: 3px 8px;
+    border: 1px solid #AAA;
+    border-color: #888 #CCC #CCC #888;
+    outline: none;
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+}
+
+body.page-find .filters input:focus {
+    border-color: #256485 #8da9b8 #8da9b8 #256485;
+}
+
 body.page-find .filters ul.choices {
     max-height: 200px;
     overflow: auto;

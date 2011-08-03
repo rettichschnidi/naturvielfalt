@@ -27,8 +27,8 @@ function find_search($key) {
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $finder = new Naturwerk\Find\Finder($index);
-    $variables['#organisms'] = $finder->organisms($search, $geo, $class, $family, $genus);
+    $finder = new Naturwerk\Find\Finder($index, $search);
+    $variables['#organisms'] = $finder->organisms($geo, $class, $family, $genus);
     $variables['#sightings'] = $finder->sightings($search, $geo, $class, $family, $genus);
     $variables['#inventories'] = $finder->inventories($search, $geo, $class, $family, $genus);
 
@@ -46,14 +46,14 @@ function find_search($key) {
         $parameters = new stdClass(); // force empty JSON object
     }
     drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $geo)), 'setting');
-
+    
+    $variables['#search'] = $search;
     $variables['#geo'] = $geo;
     $variables['#class'] = $class;
     $variables['#family'] = $family;
     $variables['#genus'] = $genus;
 
     $variables['#result'] = $variables['#' . $key];
-
     
     $output = array();
     $output['search'] = $variables;
