@@ -6,7 +6,6 @@ jQuery(function ($) {
 
     var latlng = new google.maps.LatLng(46.8, 8.233333); // CH
     var myOptions = {
-        zoom: 8,
         center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: false
@@ -59,6 +58,11 @@ jQuery(function ($) {
         draggable: true,
         title: 'Ziehen, um das Gebiet zu ändern.'
     });
+
+    var bounds = new google.maps.LatLngBounds();
+    bounds.extend(marker1.getPosition());
+    bounds.extend(marker2.getPosition());
+    map.fitBounds(bounds);
 
     // Allow user to drag each marker to resize the size of the Rectangle.
     google.maps.event.addListener(marker1, 'drag', redraw);
