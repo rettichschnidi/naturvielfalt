@@ -82,5 +82,9 @@ function find_theme() {
             'template' => 'find.search',
             'variables' => array('result' => null, 'class' => null, 'family' => null, 'genus' => null, 'geo' => array(), 'box' => array(), 'organisms' => null, 'sightings' => null, 'inventories' => null)
         ),
+        'find_facet' => array(
+            'template' => 'find_facet',
+            'variables' => array('facets' => array(), 'filters' => array(), 'title' => null, 'field' => null, 'value' => null)
+        ),
     );
 }

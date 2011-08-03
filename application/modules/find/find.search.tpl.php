@@ -6,7 +6,6 @@
 <p><input type="search" name="search" /></p>
 
 <?php
-
 $facets = $result->getFacets();
 $filters = array('class' => $class, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
 $reset = array_merge($filters, array('geo' => array()));
@@ -16,36 +15,11 @@ $reset = array_merge($filters, array('geo' => array()));
 <p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($box) > 0): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
 <div class="map-overlay"><div id="map-canvas"></div></div>
 
-<?php
+<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Klasse', 'field' => 'class', 'value' => $class)); ?>
 
-function find_render_facet($facets, $filters, $title, $field, $value) {
-    $reset = array_merge($filters, array($field => array()));
-?>
-    <h6 class="filter"><?php echo $title; ?>: <?php if (count($value) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
+<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Familie', 'field' => 'family', 'value' => $family)); ?>
 
-    <ul class="choices">
-    <?php foreach ($facets[$field]['terms'] as $term): ?>
-        <?php
-        if ($active = in_array($term['term'], $value)) {
-            $params = array_diff($value, (array) $term['term']); // remove current term for active
-        } else {
-            $params = array_merge($value, (array) $term['term']);
-        }
-        $filters = array_merge($filters, array($field => $params));
-        ?>
-        <li><a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>"><?php echo $term['term'] . ' (' . $term['count'] . ')'; ?></a></li>
-    <?php endforeach; ?>
-    </ul>
-<?php
-}
-
-?>
-
-<?php find_render_facet($facets, $filters, 'Klasse', 'class', $class); ?>
-
-<?php find_render_facet($facets, $filters, 'Familie', 'family', $family); ?>
-
-<?php find_render_facet($facets, $filters, 'Gattung', 'genus', $genus); ?>
+<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Gattung', 'field' => 'genus', 'value' => $genus)); ?>
 </form>
 </div>
 
