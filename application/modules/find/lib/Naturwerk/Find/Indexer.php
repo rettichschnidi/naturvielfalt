@@ -3,183 +3,6 @@
 namespace Naturwerk\Find;
 
 /**
- * Find Naturwerk objects.
- *
- * @author fabian.vogler
- */
-class Finder {
-
-    /**
-     * @var \Elastica_Index
-     */
-    protected $index;
-
-    protected $search;
-    
-    protected $class;
-    
-    protected $family;
-    
-    protected $genus;
-
-    public function __construct($index, $search = '', $class = array(), $family = array(), $genus = array()) {
-        $this->index = $index;
-
-        // make fuzzy search
-        if ($search && strpos($search, '~') === false) {
-            $search .= '~';
-        }
-        $this->search = $search;
-        
-        $this->class = $class;
-        $this->family = $family;
-        $this->genus = $genus;
-    }
-
-    /**
-     * Find ogranisms (Tiere und Pflanzen).
-     *
-     * @param array $geo
-     * @return Elastica_ResultSet
-     */
-    public function organisms($geo = array()) {
-
-        $index = $this->index;
-
-        if ($this->search) {
-            $all = $index->query()->string($this->search);
-        } else {
-            $all = $index->query()->all();
-        }
-        if (count($geo) == 2) {
-            $geo = $index->filter()->geo('sighting.position', $geo);
-            $all = $index->query()->filtered($all, $geo);
-        }
-        $hasChild = $index->query()->hasChild($all, 'sighting');
-
-        return $this->search('organism', $hasChild);
-    }
-
-    /**
-     * Find sightings (Beobachtungen).
-     *
-     * @param array $geo
-     * @return Elastica_ResultSet
-     */
-    public function sightings($geo = array()) {
-
-        $index = $this->index;
-
-        if ($this->search) {
-            $all = $index->query()->string($this->search);
-        } else {
-            $all = $index->query()->all();
-        }
-        if (count($geo) == 2) {
-            $geo = $index->filter()->geo('position', $geo);
-            $all = $index->query()->filtered($all, $geo);
-        }
-
-        return $this->search('sighting', $all);
-    }
-
-    /**
-     * Find inventories (Inventare).
-     *
-     * @param array $geo
-     * @return Elastica_ResultSet
-     */
-    public function inventories($geo = array()) {
-
-        $index = $this->index;
-
-        if ($this->search) {
-            $all = $index->query()->string($this->search);
-        } else {
-            $all = $index->query()->all();
-        }
-        if (count($geo) == 2) {
-            $geo = $index->filter()->geo('position', $geo);
-            $all = $index->query()->filtered($all, $geo);
-        }
-
-        return $this->search('inventory', $all);
-    }
-
-    /**
-     * Generic search method, provide the type name as first argument.
-     *
-     * @param string $type
-     * @param Elastica_Query_Abstract $main Base query.
-     * @return Elastica_ResultSet
-     */
-    public function search($type, $main) {
-
-        $index = $this->index;
-
-        $facetClass = $index->facet()->terms('class');
-        $facetClass->setField('class');
-
-        $facetFamily = $index->facet()->terms('family');
-        $facetFamily->setField('family');
-        $facetFamily->setSize(900);
-
-        $facetGenus = $index->facet()->terms('genus');
-        $facetGenus->setField('genus');
-        $facetGenus->setSize(900);
-
-        // facets filter
-        $filter = $index->filter()->and_();
-        $f = false;
-
-        // add class filter
-        if (count($this->class) > 0) {
-            $term = $index->filter()->terms('class', $this->class);
-            $filter->addFilter($term);
-            $facetGenus->setFilter($term);
-            $facetFamily->setFilter($term);
-            $f = true;
-        }
-
-        // add family filter
-        if (count($this->family) > 0) {
-            $term = $index->filter()->terms('family', $this->family);
-            $filter->addFilter($term);
-            $facetClass->setFilter($term);
-            $facetGenus->setFilter($term);
-            $f = true;
-        }
-
-        // add genus filter
-        if (count($this->genus) > 0) {
-            $term = $index->filter()->terms('genus', $this->genus);
-            $filter->addFilter($term);
-            $facetClass->setFilter($term);
-            $facetFamily->setFilter($term);
-            $f = true;
-        }
-
-        // build search query
-        $query = new \Elastica_Query();
-        $query->setQuery($main);
-        $query->addFacet($facetClass);
-        $query->addFacet($facetFamily);
-        $query->addFacet($facetGenus);
-        $query->setSize(100);
-
-        // add filter to query
-        if ($f) {
-            $query->setFilter($filter);
-        }
-
-        $type = $index->getType($type);
-        $result = $type->search($query);
-
-        return $result;
-    }
-}
-
-/**
  * Naturwerk indexer to index organisms, sightings, etc.
  *
  * @author fabian.vogler
@@ -216,13 +39,15 @@ class Indexer {
      * Index all organsims.
      */
     public function organisms() {
+        
+        $mapping = \Elastica_Type_Mapping::create(array('class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
 
         // Flora
         $sql = '
             SELECT
                 organism.id,
                 organism.organism_type,
-                \'Planzen\' AS class,
+                \'Pflanzen\' AS class,
                 flora_organism.name_de AS name,
                 flora_organism."Gattung" || \' \' || flora_organism."Art" AS name_la,
                 flora_organism."Familie" AS family,
@@ -232,7 +57,6 @@ class Indexer {
             LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
             WHERE organism.organism_type = 2';
 
-        $mapping = \Elastica_Type_Mapping::create(array('class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
         $this->sql('organism', $sql, $mapping);
 
         // Fauna
@@ -258,7 +82,38 @@ class Indexer {
      * Index all sightings.
      */
     public function sightings() {
+        
+        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
+        $mapping->setParam('_parent', array('type' => 'organism'));
 
+        // Flora
+        $sql = '
+            SELECT
+                inventory_entry.id AS id,
+                ST_AsGeoJSON(area.geom) AS geom,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
+                inventory_entry.organism_id AS parent,
+                organism.organism_type,
+                \'Pflanzen\' AS class,
+                flora_organism.name_de AS name,
+                flora_organism."Gattung" || \' \' || flora_organism."Art" AS name_la,
+                flora_organism."Familie" AS family,
+                flora_organism."Gattung" AS genus,
+                head_inventory.name AS inventory,
+                users.name AS user,
+                \'inventory/\' || inventory.head_inventory_id AS url
+            FROM area
+            INNER JOIN head_inventory ON head_inventory.area_id = area.id
+            INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
+            INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id
+            INNER JOIN organism ON organism.id = inventory_entry.organism_id
+            INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
+            INNER JOIN users ON users.uid = head_inventory.owner_id
+        	WHERE organism.organism_type = 2';
+
+        $this->sql('sighting', $sql, $mapping);
+
+        // Fauna
         $sql = '
             SELECT
                 inventory_entry.id AS id,
@@ -278,13 +133,12 @@ class Indexer {
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
             INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
             INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id
-            INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+            INNER JOIN organism ON organism.id = inventory_entry.organism_id
             INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
             INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
-            INNER JOIN users ON users.uid = head_inventory.owner_id';
+            INNER JOIN users ON users.uid = head_inventory.owner_id
+        	WHERE organism.organism_type = 1';
 
-        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
-        $mapping->setParam('_parent', array('type' => 'organism'));
         $this->sql('sighting', $sql, $mapping);
     }
 
@@ -312,28 +166,57 @@ class Indexer {
                     DISTINCT fauna_class.name_de AS class
                 FROM inventory_entry
                 INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
-                INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
                 INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
-                WHERE inventory.head_inventory_id = :id',
+                WHERE organism.organism_type = 1 AND inventory.head_inventory_id = :id
+
+                UNION
+
+                SELECT
+                    DISTINCT \'Pflanzen\' AS class
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
 
             'family' => '
                 SELECT
                     DISTINCT fauna_organism.family AS family
                 FROM inventory_entry
                 INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
-                INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
-                WHERE inventory.head_inventory_id = :id',
+                WHERE organism.organism_type = 1 AND inventory.head_inventory_id = :id
+
+                UNION
+
+                SELECT
+                    DISTINCT flora_organism."Familie" AS family
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
+                WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
 
             'genus' => '
                 SELECT
                     DISTINCT fauna_organism.genus AS genus
                 FROM inventory_entry
                 INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
-                INNER JOIN organism ON inventory_entry.organism_id = organism.organism_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
-                WHERE inventory.head_inventory_id = :id',
+                WHERE organism.organism_type = 1 AND inventory.head_inventory_id = :id
+
+                UNION
+
+                SELECT
+                    DISTINCT flora_organism."Gattung" AS genus
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
+                WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
         ));
     }
 
@@ -353,6 +236,8 @@ class Indexer {
         if ($mapping) {
             $type->setMapping($mapping);
         }
+
+        $i = 0;
 
         // fetch as associative array
         $result->setFetchMode(\PDO::FETCH_ASSOC);
@@ -412,7 +297,11 @@ class Indexer {
             }
 
             $this->index($type, $data['id'], $data, $data['parent'] ?: false);
+            
+            echo "  Indexing {$type->getName()}... " . $i++ . "\r";
         }
+        
+        echo "\n";
     }
 
     /**

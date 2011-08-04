@@ -5,6 +5,7 @@
  */
 function find_init(){
 
+    set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/lib');
     set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/elastica/lib');
 
     spl_autoload_register('find_autoload');
@@ -12,7 +13,13 @@ function find_init(){
 
 function find_autoload($class) {
 
-    if (substr($class, 0, 9) == 'Elastica_') {
+    if (substr($class, 0, 14) == 'Naturwerk\\Find') {
+
+        $file = str_replace('\\', '/', $class) . '.php';
+
+        require_once $file;
+
+    } else if (substr($class, 0, 9) == 'Elastica_') {
 
         $file = str_replace('_', '/', $class) . '.php';
 
@@ -81,10 +88,10 @@ function find_theme() {
         'find.search' => array(
             'template' => 'find.search',
             'variables' => array('result' => null, 'search' => '', 'class' => null, 'family' => null, 'genus' => null, 'geo' => array(), 'box' => array(), 'organisms' => null, 'sightings' => null, 'inventories' => null)
-        ),
+    ),
         'find_facet' => array(
             'template' => 'find_facet',
             'variables' => array('facets' => array(), 'filters' => array(), 'title' => null, 'field' => null, 'value' => null)
-        ),
+    ),
     );
 }

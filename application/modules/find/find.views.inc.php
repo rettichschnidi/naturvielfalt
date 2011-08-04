@@ -2,6 +2,12 @@
 
 module_load_include('inc.php', 'find', 'find');
 
+use Naturwerk\Find\Organisms;
+use Naturwerk\Find\Sightings;
+use Naturwerk\Find\Inventories;
+use Naturwerk\Find\Parameters;
+use Naturwerk\Find\Finder;
+
 function find_query_param($key, $default = array()) {
     return isset($_GET[$key]) ? $_GET[$key] : $default;
 }
@@ -27,10 +33,16 @@ function find_search($key) {
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $finder = new Naturwerk\Find\Finder($index, $search, $class, $family, $genus);
-    $variables['#organisms'] = $finder->organisms($geo);
-    $variables['#sightings'] = $finder->sightings($geo);
-    $variables['#inventories'] = $finder->inventories($geo);
+    $parameters = new Parameters($search, $geo, $class, $family, $genus);
+
+    $organisms = new Organisms($index, $parameters);
+    $variables['#organisms'] = $organisms->search();
+
+    $sightings = new Sightings($index, $parameters);
+    $variables['#sightings'] = $sightings->search();
+
+    $inventories = new Inventories($index, $parameters);
+    $variables['#inventories'] = $inventories->search();
 
     // calculate bounding box for static map
     if (count($geo) == 2) {
@@ -46,7 +58,7 @@ function find_search($key) {
         $parameters = new stdClass(); // force empty JSON object
     }
     drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $geo)), 'setting');
-    
+
     $variables['#search'] = $search;
     $variables['#geo'] = $geo;
     $variables['#class'] = $class;
@@ -54,10 +66,10 @@ function find_search($key) {
     $variables['#genus'] = $genus;
 
     $variables['#result'] = $variables['#' . $key];
-    
+
     $output = array();
     $output['search'] = $variables;
-    
+
     return $output;
 }
 
