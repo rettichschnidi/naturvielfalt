@@ -3,7 +3,7 @@
 
 <?php
 $facets = $result->getFacets();
-$filters = array('search' => $search, 'class' => $class, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
+$filters = array('search' => $search, 'class' => $class, 'user' => $user, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
 ?>
 
 <?php foreach ($filters as $field => $filter): ?>
@@ -26,7 +26,7 @@ $filters = array('search' => $search, 'class' => $class, 'family' => $family, 'g
 
 <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Klasse', 'field' => 'class', 'value' => $class)); ?>
 
-<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Benuter', 'field' => 'user', 'value' => $genus)); ?>
+<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Benuter', 'field' => 'user', 'value' => $user)); ?>
 
 <!-- <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Familie', 'field' => 'family', 'value' => $family)); ?> -->
 

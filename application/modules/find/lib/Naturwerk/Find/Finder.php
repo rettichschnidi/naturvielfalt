@@ -37,6 +37,11 @@ class Finder {
     /**
      * @var array
      */
+    protected $user;
+
+    /**
+     * @var array
+     */
     protected $family;
 
     /**
@@ -57,6 +62,7 @@ class Finder {
         $this->search = $parameters->getSearch();
         $this->geo = $parameters->getGeo();
         $this->class = $parameters->getClass();
+        $this->user = $parameters->getUser();
         $this->family = $parameters->getFamily();
         $this->genus = $parameters->getGenus();
     }
@@ -106,6 +112,9 @@ class Finder {
         $facetClass = $index->facet()->terms('class');
         $facetClass->setField('class');
 
+        $facetUser = $index->facet()->terms('user');
+        $facetUser->setField('user');
+
         $facetFamily = $index->facet()->terms('family');
         $facetFamily->setField('family');
         $facetFamily->setSize(900);
@@ -113,9 +122,6 @@ class Finder {
         $facetGenus = $index->facet()->terms('genus');
         $facetGenus->setField('genus');
         $facetGenus->setSize(900);
-
-        $facetUser = $index->facet()->terms('user');
-        $facetUser->setField('user');
 
         // facets filter
         $filter = $index->filter()->and_();
@@ -125,6 +131,17 @@ class Finder {
         if (count($this->class) > 0) {
             $term = $index->filter()->terms('class', $this->class);
             $filter->addFilter($term);
+            $facetUser->setFilter($term);
+            $facetGenus->setFilter($term);
+            $facetFamily->setFilter($term);
+            $f = true;
+        }
+
+        // add user filter
+        if (count($this->user) > 0) {
+            $term = $index->filter()->terms('user', $this->user);
+            $filter->addFilter($term);
+            $facetClass->setFilter($term);
             $facetGenus->setFilter($term);
             $facetFamily->setFilter($term);
             $f = true;
@@ -135,6 +152,7 @@ class Finder {
             $term = $index->filter()->terms('family', $this->family);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
+            $facetUser->setFilter($term);
             $facetGenus->setFilter($term);
             $f = true;
         }
@@ -144,6 +162,7 @@ class Finder {
             $term = $index->filter()->terms('genus', $this->genus);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
+            $facetUser->setFilter($term);
             $facetFamily->setFilter($term);
             $f = true;
         }

@@ -40,9 +40,13 @@ class Indexer {
      */
     public function organisms() {
         
-        $mapping = \Elastica_Type_Mapping::create(array('class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
+        $mapping = \Elastica_Type_Mapping::create(array(
+        	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+        ));
 
-        // Flora
+        // Flora, Fauna
         $sql = '
             SELECT
                 organism.id,
@@ -55,12 +59,10 @@ class Indexer {
                 \'organism/\' || organism.id AS url
             FROM organism
             LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
-            WHERE organism.organism_type = 2';
+            WHERE organism.organism_type = 2
 
-        $this->sql('organism', $sql, $mapping);
+			UNION
 
-        // Fauna
-        $sql = '
             SELECT
                 organism.id,
                 organism.organism_type,
@@ -92,7 +94,7 @@ class Indexer {
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
 
-        // Flora
+        // Flora, Fauna
         $sql = '
             SELECT
                 inventory_entry.id AS id,
@@ -116,12 +118,10 @@ class Indexer {
             INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
             INNER JOIN users ON users.uid = head_inventory.owner_id
     		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
-        	WHERE organism.organism_type = 2';
+        	WHERE organism.organism_type = 2
+    
+            UNION
 
-        $this->sql('sighting', $sql, $mapping);
-
-        // Fauna
-        $sql = '
             SELECT
                 inventory_entry.id AS id,
                 ST_AsGeoJSON(area.geom) AS geom,
@@ -168,7 +168,14 @@ class Indexer {
             INNER JOIN users ON users.uid = head_inventory.owner_id
     		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
-        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
+        $mapping = \Elastica_Type_Mapping::create(array(
+        	'position' => array('type' => 'geo_point'),
+        	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+        ));
+
         $this->sql('inventory', $sql, $mapping, array(
             'class' => '
                 SELECT
