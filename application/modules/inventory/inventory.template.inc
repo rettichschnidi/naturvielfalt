@@ -200,6 +200,7 @@ function inventory_template_show($template_id) {
       'class' => array('inventory_show'),
     ),
   );
+ 
   
   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id, _inventory_template_data($template['id']), false));
 

@@ -442,19 +442,38 @@ function inventory_protection_edit_entries_submit($form, &$form_state, $plist_id
  * @param int $template_id
  * @return array
  */
-function _inventory_protection_data($plist_id) {
+function _inventory_protection_data($plist_id, $category) {
   $invArr = array();
-  $query = db_select('inventory_custom_protection_inventory', 'pi')
-    ->condition('pi.inventory_custom_protection_id', $plist_id);
-  $query->join('inventory_type', 'it', 'it.id = pi.inventory_type_id');
-  $query->fields('pi');
-  $query->addField('it', 'name', 'it_name');
-  $query->addField('it', 'id', 'it_id');
+  if($plist_id != NULL and $category == NULL) {
+    $query = db_select('inventory_custom_protection_inventory', 'pi')
+      ->condition('pi.inventory_custom_protection_id', $plist_id);
+    $query->join('inventory_type', 'it', 'it.id = pi.inventory_type_id');
+    $query->fields('pi');
+    $query->addField('it', 'name', 'it_name');
+    $query->addField('it', 'id', 'it_id');  	
+  }
+  if($plist_id == NULL and $category != NULL) {
+    $query = db_select('inventory_custom_protection_inventory', 'pi')
+      ->condition('iccpl.name', $category);
+    $query->join('inventory_type', 'it', 'it.id = pi.inventory_type_id');
+    $query->fields('pi');
+    $query->addField('icpie', 'protection_level');
+    $query->join('inventory_custom_protection_inventory_entry', 'icpie', 'icpie.inventory_custom_protection_inventory_id = pi.id');
+    $query->join('inventory_custom_protection_protection_level', 'iccpl', 'iccpl.id = icpie.protection_level');
+    $query->addField('it', 'name', 'it_name');
+    $query->addField('it', 'id', 'it_id');    	
+  }
+  //echo $query;
   $inventories = $query->execute();
-  
+
   foreach($inventories as $inventory) {
-    $inventory_id = $inventory->id;
-    $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_custom_protection_inventory_entry', 'inventory_custom_protection_inventory_id', false, false, false, false, 'protection_level');
+  	$inventory_id = $inventory->id;
+  	if($plist_id != NULL and $category == NULL)
+  	  $invArr[$inventory_id] = inventory_type_entries($inventory_id, 'inventory_custom_protection_inventory_entry', 'inventory_custom_protection_inventory_id', false, false, false, false, 'protection_level');
+    if($plist_id == NULL and $category != NULL) {
+      $invCriteria = array('protection_level' => $inventory->protection_level, 'inv_id' => $inventory_id);
+      $invArr[$inventory_id] = inventory_type_entries($invCriteria, 'inventory_custom_protection_inventory_entry', 'inventory_custom_protection_inventory_id', false, false, false, false, 'protection_level');
+    }
     $invArr[$inventory_id]['invDesc'] = array(
       'id' => $inventory->it_id,
       'name' => $inventory->it_name
@@ -511,7 +530,7 @@ function inventory_protection_add_inventory_group($plist_id, $inventory_type_id,
 }
 
 /**
- * Private helper function to load the metadata of a template
+ * Private helper function to load the metadata of a protection list
  * 
  * @param int $inventory_protection_id
  * @return array
@@ -568,5 +587,62 @@ function _inventory_protection_save_entry_attributes($entry_id, $data) {
 	if($value)
 	  db_update('inventory_custom_protection_inventory_entry')->fields($attribute)->condition('id', $entry_id)->execute();
 }
+
+function inventory_protection_category_show($category) {
+  $categories = _inventory_protection_category_load($category);
+  drupal_set_title($categoriy);
+	
+  $rows = array();
+  $rows[] = array(
+    array('data' => t('Description'), 'header' => true), 
+    $categories['description']
+  );
+  $rows[] = array(
+    array('data' => t('Radius'), 'header' => true), 
+    $categories['radius']
+  );
+  
+    $render_array['details'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Protection list details'), 
+    '#weight' => 1, 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+    ),
+  );
+  $render_array['details']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+    '#attributes' => array(
+      'class' => array('inventory_show'),
+    ),
+  );
+  
+  $render_array = array_merge($render_array, inventory_inventories($head_inventory_id, _inventory_protection_data(NULL, $category), false));
+  return $render_array;	
+}
+
+function _inventory_protection_category_load($category) {
+  $query = db_select('inventory_custom_protection_inventory', 'pi')
+    ->condition('iccpl.name', $category)
+    ->fields('pi');
+  $query->join('inventory_type', 'it', 'it.id = pi.inventory_type_id');
+  $query->join('inventory_custom_protection_inventory_entry', 'icpie', 'icpie.inventory_custom_protection_inventory_id = pi.id');
+  $query->join('inventory_custom_protection_protection_level', 'iccpl', 'iccpl.id = icpie.protection_level');
+  $query->addField('it', 'name', 'it_name');
+  $query->addField('it', 'id', 'it_id');
+  return $query->execute()
+    ->fetchAssoc();
+}
+
+
 
 ?>

@@ -608,6 +608,17 @@ function inventory_menu() {
     'context' => MENU_CONTEXT_PAGE,
     'file' => 'inventory.custom.protection.inc'
   );
+    $items['protection_lists/category/%'] = array(
+    'title' => t('View protected organisms by category'),
+    'description' => t('View protected organisms by category'),
+    'page callback' => 'inventory_protection_category_show',
+    'page arguments' => array(2),
+    'access arguments' => array('access inventories'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE,
+    'file' => 'inventory.custom.protection.inc',
+    'weight' => 2
+  );
   
   // Inventory protection edit form
   $items['protection_lists/%/edit'] = array(
@@ -1050,6 +1061,10 @@ function inventory_data($head_inventory_id, $order=false, $extended=false, $entr
 function inventory_type_entries($id, $table, $relation, $order=false, $extended=false, $entry_id=false, $protected=false, $columns=true, $include_id=true) {
   if(!$order)
     $order = 'e.id ASC';
+  if(is_array($id)) {
+  	$prot_level = $id['protection_level'];
+  	$id = $id['inv_id'];
+  }
   $sql = 'SELECT 
       '.($include_id ? 'e.id,' : '').'
       '.($table == 'inventory_entry' ? 'ST_AsGeoJSON(e.geom) AS geom, ': '').'
@@ -1072,12 +1087,14 @@ function inventory_type_entries($id, $table, $relation, $order=false, $extended=
     LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
     LEFT JOIN flora_organism flora ON o.organism_id = flora.id
     WHERE e.'.$relation.' = :id '.
+    ($prot_level ? 
+      'AND protection_level = '.$prot_level.' ':''
+    ).
     ($entry_id ? 
       'AND e.id = '.intval($entry_id).' ' : 
       ($protected?'AND NOT e.id IN ('.implode(', ', $protected).') ':'')
     ).
-    'ORDER BY '.$order.';';
-  
+    'ORDER BY '.$order.';'; 
   $inventoryEntries = db_query($sql ,array(':id' => $id));
   $entries = array();
   
