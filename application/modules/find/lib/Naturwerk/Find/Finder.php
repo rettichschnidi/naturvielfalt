@@ -114,6 +114,9 @@ class Finder {
         $facetGenus->setField('genus');
         $facetGenus->setSize(900);
 
+        $facetUser = $index->facet()->terms('user');
+        $facetUser->setField('user');
+
         // facets filter
         $filter = $index->filter()->and_();
         $f = false;
@@ -151,6 +154,7 @@ class Finder {
         $query->addFacet($facetClass);
         $query->addFacet($facetFamily);
         $query->addFacet($facetGenus);
+        $query->addFacet($facetUser);
         $query->setSize(100);
 
         // add filter to query

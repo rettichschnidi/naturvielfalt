@@ -26,9 +26,11 @@ $filters = array('search' => $search, 'class' => $class, 'family' => $family, 'g
 
 <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Klasse', 'field' => 'class', 'value' => $class)); ?>
 
-<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Familie', 'field' => 'family', 'value' => $family)); ?>
+<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Benuter', 'field' => 'user', 'value' => $genus)); ?>
 
-<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Gattung', 'field' => 'genus', 'value' => $genus)); ?>
+<!-- <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Familie', 'field' => 'family', 'value' => $family)); ?> -->
+
+<!-- <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Gattung', 'field' => 'genus', 'value' => $genus)); ?> -->
 </form>
 </div>
 

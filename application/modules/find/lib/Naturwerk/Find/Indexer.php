@@ -83,7 +83,13 @@ class Indexer {
      */
     public function sightings() {
         
-        $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
+        $mapping = \Elastica_Type_Mapping::create(array(
+        	'position' => array('type' => 'geo_point'),
+        	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+        ));
         $mapping->setParam('_parent', array('type' => 'organism'));
 
         // Flora
