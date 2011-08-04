@@ -11,6 +11,9 @@ function find_init(){
     spl_autoload_register('find_autoload');
 }
 
+/**
+ * Autoloader for Naturwerk\Find and Elastica_.
+ */
 function find_autoload($class) {
 
     if (substr($class, 0, 14) == 'Naturwerk\\Find') {
