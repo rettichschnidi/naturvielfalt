@@ -1116,9 +1116,7 @@ function inventory_type_entries($id, $table, $relation, $order=false, $extended=
       	  WHERE id = :id',
       	  array(':id' => $inventoryEntry->id));
       	$column = $column->fetch();
-      	$colVal = "";
-      	$colVal = $column->protection_level.'_dropdown';
-      	$entry["col_0"] = isset($colVal) ? $colVal : "";
+      	$entry["col_0"] = isset($column->protection_level) ? $column->protection_level.'_dropdown' : "";
       } else {
         // Get inventory columns
         $columns = db_query('
