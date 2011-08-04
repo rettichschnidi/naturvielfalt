@@ -100,7 +100,7 @@ class Indexer {
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
                 head_inventory.name AS inventory,
-                users.name AS user,
+                ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url
             FROM area
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
@@ -109,6 +109,7 @@ class Indexer {
             INNER JOIN organism ON organism.id = inventory_entry.organism_id
             INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
             INNER JOIN users ON users.uid = head_inventory.owner_id
+    		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
         	WHERE organism.organism_type = 2';
 
         $this->sql('sighting', $sql, $mapping);
@@ -127,7 +128,7 @@ class Indexer {
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
                 head_inventory.name AS inventory,
-                users.name AS user,
+                ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url
             FROM area
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
@@ -137,6 +138,7 @@ class Indexer {
             INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
             INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
             INNER JOIN users ON users.uid = head_inventory.owner_id
+    		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
         	WHERE organism.organism_type = 1';
 
         $this->sql('sighting', $sql, $mapping);
@@ -153,11 +155,12 @@ class Indexer {
                 head_inventory.name AS name,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
-                users.name AS user,
+                ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
                 \'inventory/\' || head_inventory.id AS url
             FROM head_inventory
             INNER JOIN area ON area.id = head_inventory.area_id
-            INNER JOIN users ON users.uid = head_inventory.owner_id';
+            INNER JOIN users ON users.uid = head_inventory.owner_id
+    		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
         $mapping = \Elastica_Type_Mapping::create(array('position' => array('type' => 'geo_point'), 'class' => array('type' => 'string', 'index' => 'not_analyzed'), 'family' => array('type' => 'string', 'index' => 'not_analyzed'), 'genus' => array('type' => 'string', 'index' => 'not_analyzed')));
         $this->sql('inventory', $sql, $mapping, array(
@@ -229,7 +232,7 @@ class Indexer {
      */
     protected function sql($type, $sql, $mapping = false, $callback = false) {
 
-        $result = db_query($sql);
+        $statement = db_query($sql);
 
         // get type object from index
         $type = $this->index->getType($type);
@@ -237,10 +240,11 @@ class Indexer {
             $type->setMapping($mapping);
         }
 
-        $i = 0;
-
         // fetch as associative array
-        $result->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        $i = 0;
+        $total = count($result);
         foreach ($result as $data) {
 
             // convert geo
@@ -297,8 +301,8 @@ class Indexer {
             }
 
             $this->index($type, $data['id'], $data, $data['parent'] ?: false);
-            
-            echo "  Indexing {$type->getName()}... " . $i++ . "\r";
+
+            echo "  Indexing {$type->getName()}... " . ceil(++$i / $total * 100) . "%\r";
         }
         
         echo "\n";
