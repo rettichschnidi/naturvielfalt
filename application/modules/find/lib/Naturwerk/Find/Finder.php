@@ -68,7 +68,7 @@ class Finder {
 
         // main query
         if ($this->search) {
-            $query = $this->index->query()->string($this->search);
+            $query = $this->index->query()->flt($this->search);
         } else {
             $query = $this->index->query()->all();
         }

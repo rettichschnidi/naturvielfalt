@@ -17,4 +17,11 @@ class Elastica_Factory_Query
 	public function string($queryString = '') {
 		return new Elastica_Query_QueryString($queryString);
 	}
+
+	public function flt($likeText = '') {
+		$query = new Elastica_Query_FuzzyLikeThis();
+		$query->setLikeText($likeText);
+		$query->setMinSimilarity(0.8); // require some higher similarity
+		return $query;
+	}
 }

@@ -43,14 +43,8 @@ class Parameters {
      */
     public function __construct($search = '', $geo = array(), $class = array(), $family = array(), $genus = array()) {
 
-        // make fuzzy search
-        if ($search && strpos($search, '~') === false) {
-            $search .= '~';
-        }
         $this->search = $search;
-
         $this->geo = $geo;
-
         $this->class = $class;
         $this->family = $family;
         $this->genus = $genus;
