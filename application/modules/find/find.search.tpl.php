@@ -42,19 +42,24 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 <li class="<?php echo 'find/inventories' == $_GET['q'] ? 'active' : ''; ?>"><?php echo l('Inventare (' . ($inventories ? $inventories->getTotalHits() : 0) . ')', 'find/inventories', array('query' => $filters)); ?></li>
 </ul>
 
+<?php
+$technical = 'find/inventories' != $_GET['q'];
+$user = 'find/organisms' != $_GET['q'];
+$inventory = 'find/sightings' == $_GET['q'];
+?>
 <table>
 <tr>
     <th>Name</th>
-    <th>Fachbezeichnung</th>
-    <th>Benutzer</th>
-    <th>Inventar</th>
+    <?php if ($technical): ?><th>Fachbezeichnung</th><?php endif; ?>
+    <?php if ($user): ?><th>Benutzer</th><?php endif; ?>
+    <?php if ($inventory): ?><th>Inventar</th><?php endif; ?>
 </tr>
 <?php $i = 0; foreach ($result as $object): ?>
 <tr class="<?php echo $i++ % 2 ? 'even' : 'odd'; ?>">
     <td><?php echo l($object->name, $object->url); ?></td>
-    <td><?php echo l($object->name_la, $object->url); ?></td>
-    <td><?php echo $object->user; ?></td>
-    <td><?php echo $object->inventory; ?></td>
+    <?php if ($technical): ?><td><?php echo l($object->name_la, $object->url); ?></td><?php endif; ?>
+    <?php if ($user): ?><td><?php echo $object->user; ?></td><?php endif; ?>
+    <?php if ($inventory): ?><td><?php echo $object->inventory; ?></td><?php endif; ?>
 </tr>
 <?php endforeach; ?>
 </table>
