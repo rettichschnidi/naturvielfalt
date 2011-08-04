@@ -26,7 +26,7 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 
 <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Klasse', 'field' => 'class', 'value' => $class)); ?>
 
-<?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Benutzer', 'field' => 'user', 'value' => $user)); ?>
+<?php if ($_GET['q'] != 'find/organisms') { echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Benutzer', 'field' => 'user', 'value' => $user)); } ?>
 
 <!-- <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Familie', 'field' => 'family', 'value' => $family)); ?> -->
 
