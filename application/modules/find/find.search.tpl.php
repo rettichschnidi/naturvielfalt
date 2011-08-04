@@ -3,7 +3,7 @@
 
 <?php
 $facets = $result->getFacets();
-$filters = array('search' => $search, 'class' => $class, 'user' => $user, 'family' => $family, 'genus' => $genus, 'geo' => $geo);
+$filters = array('search' => $search, 'class' => $class, 'user' => $user, 'family' => $family, 'genus' => $genus, 'geo' => $geo, 'sort' => $sort);
 ?>
 
 <?php foreach ($filters as $field => $filter): ?>
@@ -49,7 +49,8 @@ $inventory = 'find/sightings' == $_GET['q'];
 ?>
 <table>
 <tr>
-    <th>Name</th>
+    <?php $asc = ('asc' == @$sort['name']); ?>
+    <th><a href="<?php echo check_url(url($_GET['q'], array('query' => array_merge($filters, array('sort' => array('name' => $asc ? 'desc' : 'asc')))))); ?>">Name <?php echo $asc ? '↓' : '↑'; ?></a></th>
     <?php if ($technical): ?><th>Fachbezeichnung</th><?php endif; ?>
     <?php if ($user): ?><th>Benutzer</th><?php endif; ?>
     <?php if ($inventory): ?><th>Inventar</th><?php endif; ?>

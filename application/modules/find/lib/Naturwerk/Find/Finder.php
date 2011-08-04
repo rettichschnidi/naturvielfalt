@@ -50,6 +50,11 @@ class Finder {
     protected $genus;
 
     /**
+     * @var Naturwerk\Find\Parameters
+     */
+    protected $parameters;
+
+    /**
      * @param \Elastica_Index $index
      * @param string $type
      * @param Naturwerk\Find\Parameters $parameter
@@ -58,6 +63,7 @@ class Finder {
 
         $this->index = $index;
         $this->type = $type;
+        $this->parameters = $parameters;
 
         $this->search = $parameters->getSearch();
         $this->geo = $parameters->getGeo();
@@ -175,6 +181,12 @@ class Finder {
         $query->addFacet($facetGenus);
         $query->addFacet($facetUser);
         $query->setSize(100);
+
+        // sorting
+        $sort = $this->parameters->getSort();
+        if (count($sort) > 0) {
+            $query->setSort($sort);
+        }
 
         // add filter to query
         if ($f) {

@@ -31,10 +31,12 @@ function find_search($key) {
     $family = find_query_param('family');
     $genus = find_query_param('genus');
 
+    $sort = find_query_param('sort');
+
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $parameters = new Parameters($search, $geo, $class, $user, $family, $genus);
+    $parameters = new Parameters($search, $geo, $class, $user, $family, $genus, $sort);
 
     $organisms = new Organisms($index, $parameters);
     $variables['#organisms'] = $organisms->search();
@@ -66,6 +68,8 @@ function find_search($key) {
     $variables['#user'] = $user;
     $variables['#family'] = $family;
     $variables['#genus'] = $genus;
+
+    $variables['#sort'] = $sort;
 
     $variables['#result'] = $variables['#' . $key];
 

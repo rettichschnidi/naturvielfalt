@@ -40,14 +40,20 @@ class Parameters {
     protected $genus;
 
     /**
+    * @var array
+     */
+    protected $sort;
+
+    /**
      * @param string $search
      * @param array $geo
      * @param array $class
      * @param array $user
      * @param array $family
      * @param array $genus
+     * @param array $sort
      */
-    public function __construct($search = '', $geo = array(), $class = array(), $user = array(), $family = array(), $genus = array()) {
+    public function __construct($search = '', $geo = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array()) {
 
         $this->search = $search;
         $this->geo = $geo;
@@ -55,6 +61,7 @@ class Parameters {
         $this->user = $user;
         $this->family = $family;
         $this->genus = $genus;
+        $this->sort = $sort;
     }
 
     /**
@@ -97,5 +104,12 @@ class Parameters {
      */
     public function getGenus() {
         return $this->genus;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSort() {
+        return $this->sort;
     }
 }

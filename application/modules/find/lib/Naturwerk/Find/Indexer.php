@@ -41,9 +41,12 @@ class Indexer {
     public function organisms() {
         
         $mapping = \Elastica_Type_Mapping::create(array(
+        	'name' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         // Flora, Fauna
@@ -86,10 +89,13 @@ class Indexer {
     public function sightings() {
         
         $mapping = \Elastica_Type_Mapping::create(array(
+        	'name' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'position' => array('type' => 'geo_point'),
         	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'inventory' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
@@ -169,6 +175,8 @@ class Indexer {
     		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
         $mapping = \Elastica_Type_Mapping::create(array(
+        	'name' => array('type' => 'string', 'index' => 'not_analyzed'),
+        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'position' => array('type' => 'geo_point'),
         	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
         	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
