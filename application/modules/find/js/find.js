@@ -49,14 +49,16 @@ jQuery(function ($) {
         map: map,
         position: new google.maps.LatLng(parseFloat(coords[0]), parseFloat(coords[1])),
         draggable: true,
-        title: 'Ziehen, um das Gebiet zu ändern.'
+        title: 'Ziehen, um das Gebiet zu ändern.',
+        icon: '/modules/find/images/marker.png'
     });
     var coords = (Drupal.settings.find.geo[1] ? Drupal.settings.find.geo[1] : '46.81, 9.62').split(',');
     marker2 = new google.maps.Marker({
         map: map,
         position: new google.maps.LatLng(parseFloat(coords[0]), parseFloat(coords[1])),
         draggable: true,
-        title: 'Ziehen, um das Gebiet zu ändern.'
+        title: 'Ziehen, um das Gebiet zu ändern.',
+        icon: '/modules/find/images/marker.png'
     });
 
     var bounds = new google.maps.LatLngBounds();
