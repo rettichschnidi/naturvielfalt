@@ -78,6 +78,16 @@ abstract class Elastica_Facet_Abstract
 	}
 
 	/**
+	* Sets the path to the nested document (can be a multi level nested docs).
+	*
+	* @param string $field Nested field name.
+	* @return Elastica_Facet_Abstract
+	*/
+	public function setNested($field) {
+		return $this->_setFacetParam('nested', $field);
+	}
+
+	/**
 	 * Basic definition of all specs of the facet. Each implementation
 	 * should override this function in order to set it's specific
 	 * settings.

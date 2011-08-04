@@ -15,6 +15,7 @@ class Elastica_Query_QueryString extends Elastica_Query_Abstract
 	protected $_defaultField = '';
 	protected $_fields = array();
 	protected $_useDisMax = null;
+	protected $_fuzzyPrefixLength = null;
 
 	/**
 	 * Creates query string object. Calls setQuery with argument
@@ -75,6 +76,10 @@ class Elastica_Query_QueryString extends Elastica_Query_Abstract
 		$this->_useDisMax = ($value == true);
 	}
 
+	public function setFuzzyPrefixLength($length) {
+	    $this->_fuzzyPrefixLength = $length;
+	}
+
 	/**
 	 * Sets the fields
 	 *
@@ -114,6 +119,10 @@ class Elastica_Query_QueryString extends Elastica_Query_Abstract
 
 		if(! is_null($this->_useDisMax)) {
 			$args['use_dis_max'] = $this->_useDisMax;
+		}
+
+		if(! is_null($this->_fuzzyPrefixLength)) {
+			$args['fuzzy_prefix_length'] = $this->_fuzzyPrefixLength;
 		}
 
 		return array('query_string' => $args);
