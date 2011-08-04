@@ -62,21 +62,6 @@ class Finder {
     }
 
     /**
-     * @param \Elastica_Query_Abstract $query
-     * @return \Elastica_Query_Abstract query with applied geo filter
-     */
-    protected function geo(\Elastica_Query_Abstract $query) {
-
-        // geo
-        if (count($this->geo) == 2) {
-            $geo = $this->index->filter()->geo('position', $this->geo);
-            $query = $this->index->query()->filtered($query, $geo);
-        }
-
-        return $query;
-    }
-
-    /**
      * @return \Elastica_Query_Abstract main query with search parameter
      */
     protected function getQuery() {
@@ -90,6 +75,21 @@ class Finder {
 
         // apply geo
         $query = $this->geo($query);
+
+        return $query;
+    }
+
+    /**
+     * @param \Elastica_Query_Abstract $query
+     * @return \Elastica_Query_Abstract query with applied geo filter
+     */
+    protected function geo(\Elastica_Query_Abstract $query) {
+
+        // geo
+        if (count($this->geo) == 2) {
+            $geo = $this->index->filter()->geo('position', $this->geo);
+            $query = $this->index->query()->filtered($query, $geo);
+        }
 
         return $query;
     }
