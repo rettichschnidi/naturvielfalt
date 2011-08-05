@@ -49,9 +49,12 @@ $inventory = 'find/sightings' == $_GET['q'];
 ?>
 <table>
 <tr>
-    <?php $asc = ('asc' == @$sort['name']); ?>
-    <th><a href="<?php echo check_url(url($_GET['q'], array('query' => array_merge($filters, array('sort' => array('name' => $asc ? 'desc' : 'asc')))))); ?>">Name <?php echo $asc ? '↓' : '↑'; ?></a></th>
-    <?php if ($technical): ?><th>Fachbezeichnung</th><?php endif; ?>
+    <?php $asc = ('asc' == @$sort['name']); $reset = array_merge($filters, array('sort' => array('name' => $asc ? 'desc' : 'asc'))); ?>
+    <th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Name <?php echo $asc ? '↓' : '↑'; ?></a></th>
+
+    <?php $asc = ('asc' == @$sort['name_la']); $reset = array_merge($filters, array('sort' => array('name_la' => $asc ? 'desc' : 'asc'))); ?>
+    <?php if ($technical): ?><th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Fachbezeichnung <?php echo $asc ? '↓' : '↑'; ?></a></th><?php endif; ?>
+
     <?php if ($user): ?><th>Benutzer</th><?php endif; ?>
     <?php if ($inventory): ?><th>Inventar</th><?php endif; ?>
 </tr>

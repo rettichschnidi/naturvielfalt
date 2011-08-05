@@ -22,7 +22,20 @@ class Indexer {
      * Delete complete index.
      */
     public function clear() {
-        $this->index->create(array(), true);
+        $this->index->create(array('settings' => array(
+            'analysis' => array(
+                'analyzer' => array(
+                    'sortable' => array(
+                        'tokenizer' => 'keyword',
+                        'filter' => array(
+                            'standard',
+                            'lowercase',
+                            'asciifolding',
+                        )
+                    )
+                )
+            )
+        )), true);
     }
 
     /**
@@ -41,12 +54,12 @@ class Indexer {
     public function organisms() {
         
         $mapping = \Elastica_Type_Mapping::create(array(
-        	'name' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'name_la' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         // Flora, Fauna
@@ -56,7 +69,7 @@ class Indexer {
                 organism.organism_type,
                 \'Pflanzen\' AS class,
                 flora_organism.name_de AS name,
-                flora_organism."Gattung" || \' \' || flora_organism."Art" AS name_la,
+                ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
                 \'organism/\' || organism.id AS url
@@ -64,14 +77,14 @@ class Indexer {
             LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
             WHERE organism.organism_type = 2
 
-			UNION
+            UNION
 
             SELECT
                 organism.id,
                 organism.organism_type,
                 fauna_class.name_de AS class,
                 fauna_organism.name_de AS name,
-                fauna_organism.genus || \' \' || fauna_organism.species AS name_la,
+                ARRAY_TO_STRING(ARRAY[fauna_organism.genus, fauna_organism.species], \' \') AS name_la,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
                 \'organism/\' || organism.id AS url
@@ -89,14 +102,14 @@ class Indexer {
     public function sightings() {
         
         $mapping = \Elastica_Type_Mapping::create(array(
-        	'name' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'position' => array('type' => 'geo_point'),
-        	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'inventory' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'name_la' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'position' => array('type' => 'geo_point'),
+            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'inventory' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
 
@@ -110,7 +123,7 @@ class Indexer {
                 organism.organism_type,
                 \'Pflanzen\' AS class,
                 flora_organism.name_de AS name,
-                flora_organism."Gattung" || \' \' || flora_organism."Art" AS name_la,
+                ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
                 head_inventory.name AS inventory,
@@ -123,8 +136,8 @@ class Indexer {
             INNER JOIN organism ON organism.id = inventory_entry.organism_id
             INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
             INNER JOIN users ON users.uid = head_inventory.owner_id
-    		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
-        	WHERE organism.organism_type = 2
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
+            WHERE organism.organism_type = 2
     
             UNION
 
@@ -136,7 +149,7 @@ class Indexer {
                 organism.organism_type,
                 fauna_class.name_de AS class,
                 fauna_organism.name_de AS name,
-                fauna_organism.genus || \' \' || fauna_organism.species AS name_la,
+                ARRAY_TO_STRING(ARRAY[fauna_organism.genus, fauna_organism.species], \' \') AS name_la,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
                 head_inventory.name AS inventory,
@@ -150,8 +163,8 @@ class Indexer {
             INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
             INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
             INNER JOIN users ON users.uid = head_inventory.owner_id
-    		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
-        	WHERE organism.organism_type = 1';
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
+            WHERE organism.organism_type = 1';
 
         $this->sql('sighting', $sql, $mapping);
     }
@@ -160,6 +173,16 @@ class Indexer {
      * Index all inventories.
      */
     public function inventories() {
+        
+        $mapping = \Elastica_Type_Mapping::create(array(
+            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'position' => array('type' => 'geo_point'),
+            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+        ));
 
         $sql = '
             SELECT
@@ -167,22 +190,12 @@ class Indexer {
                 head_inventory.name AS name,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
-                ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'inventory/\' || head_inventory.id AS url
             FROM head_inventory
             INNER JOIN area ON area.id = head_inventory.area_id
             INNER JOIN users ON users.uid = head_inventory.owner_id
-    		LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
-
-        $mapping = \Elastica_Type_Mapping::create(array(
-        	'name' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'position' => array('type' => 'geo_point'),
-        	'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-        	'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-        ));
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
         $this->sql('inventory', $sql, $mapping, array(
             'class' => '
