@@ -237,7 +237,7 @@ function _inventory_list_factory($result, $id, $title, $msg_empty=false, $headin
       $record->township,
       date("j.m.Y", strtotime($record->create_time)),
       date("j.m.Y", strtotime($record->modify_time)),
-      $record->u_name,
+      @$record->u_name,
       l($img_localize, 'area/'.$record->area_id, array('html'=>true,'attributes'=>array('id'=>'area_'.$record->area_id)))
     );
     if($row_factory && function_exists($row_factory))
