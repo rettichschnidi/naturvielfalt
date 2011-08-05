@@ -16,20 +16,50 @@ body.page-find .filters h6.filter {
 }
 
 body.page-find .filters input {
-    width: 182px;
-    padding: 3px 8px;
+    width: 138px;
+    padding: 3px 4px;
     border: 1px solid #AAA;
     border-color: #888 #CCC #CCC #888;
     outline: none;
-    border-radius: 15px;
-    -moz-border-radius: 15px;
 }
 
 body.page-find .filters input:focus {
     border-color: #256485 #8da9b8 #8da9b8 #256485;
 }
 
-body.page-find .filters ul.choices {
+body.page-find .filters input.search {
+    padding: 3px 8px;
+    width: 182px;
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+}
+
+body.page-find .filters label {
+    font-weight: normal;
+    display: inline-block;
+    width: 48px;
+}
+
+body.page-find .filters ::-webkit-scrollbar {
+    background:transparent;
+    overflow:visible;
+    width:15px;
+}
+
+body.page-find .filters ::-webkit-scrollbar-thumb {
+    background-color:#ddd;
+    border: 4px solid #fff;
+    min-width:40px;
+    -webkit-border-radius:10px;
+}
+
+body.page-find .filters ::-webkit-scrollbar-thumb:hover {
+    background:#bbb;
+}
+
+body.page-find .filters ul.choices,
+body.page-find .filters .fieldset {
+    margin: 0.5em 0 1em;
     max-height: 200px;
     overflow: auto;
     border: 1px solid #eee;

@@ -14,15 +14,23 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
     <?php endif; ?>
 <?php endforeach; ?>
 
-<h6>Suchbegriff: <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch">Neue Suche</a></h6>
+<h6><label for="search">Suchbegriff:</label> <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch">Neue Suche</a></h6>
 
-<p><input name="search" value="<?php echo check_plain($search); ?>" /></p>
+<p><input class="search" name="search" id="search" value="<?php echo check_plain($search); ?>" /></p>
 
 <?php $reset = array_merge($filters, array('geo' => array())); ?>
 <h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
 <p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($box) > 0): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
 <div class="map-overlay"><div id="map-canvas"></div></div>
+
+<h6 class="filter">Datum: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
+
+<div class="fieldset">
+<p><label for="from">Von:</label> <input name="from" id="from" value="<?php echo check_plain($search); ?>" /></p>
+
+<p><label for="to">Bis:</label> <input name="to" id="to" value="<?php echo check_plain($search); ?>" /></p>
+</div>
 
 <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Klasse', 'field' => 'class', 'value' => $class)); ?>
 
