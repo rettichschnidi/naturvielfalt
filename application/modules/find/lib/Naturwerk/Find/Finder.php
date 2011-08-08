@@ -182,7 +182,7 @@ class Finder {
         } else {
             $main = new \Elastica_Query_MatchAll();
         }
-        $this->geo($main);
+        $main = $this->geo($main);
 
         // build search query
         $query = new \Elastica_Query();
