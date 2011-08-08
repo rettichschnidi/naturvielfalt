@@ -11,37 +11,32 @@
  */
 class Elastica_Filter_GeoBoundingBox extends Elastica_Filter_Abstract
 {
-	protected $_key;
-	protected $_coordinates;
 
 	/**
 	 * @param string $key Key
-	 * @param array $coordinates
+	 * @param array $coordinates Array with top left coordinate as first and bottom right coordinate as second element
 	 */
 	public function __construct($key, $coordinates) {
+		$this->addCoordinates($key, $coordinates);
+	}
+
+	/**
+	 * @param string $key Key
+	 * @param array $coordinates Array with top left coordinate as first and bottom right coordinate as second element
+	 * @throws Elastica_Exception_Invalid If $coordinates doesn't have two elements
+	 * @return Elastica_Filter_GeoBoundingBox Current object
+	 */
+	public function addCoordinates($key, $coordinates) {
 
 		if (!isset($coordinates[0]) || !isset($coordinates[1])) {
 			throw new Elastica_Exception_Invalid('expected $coordinates to be an array with two elements');
 		}
 
-		$this->_key = $key;
-		$this->_coordinates = $coordinates;
-	}
+		$this->setParam($key, array(
+			'top_left' => $this->_coordinates[0],
+			'bottom_right' => $this->_coordinates[1]
+		));
 
-	/**
-	 * Converts filter to array
-	 *
-	 * @see Elastica_Filter_Abstract::toArray()
-	 * @return Elastica_Filter_GeoDistance Current object
-	 */
-	public function toArray() {
-		return array(
-			'geo_bounding_box' => array(
-				$this->_key => array(
-					'top_left' => $this->_coordinates[0],
-					'bottom_right' => $this->_coordinates[1]
-				),
-			)
-		);
+		return $this;
 	}
 }

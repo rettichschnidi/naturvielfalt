@@ -13,13 +13,28 @@ class Elastica_Filter_Range extends Elastica_Filter_Abstract
 	protected $_fields = array();
 
 	/**
+	 * 
+	 * @param string $fieldName Field name
+	 * @param array $args Field arguments
+	 * @return Elastica_Filter_Range
+	 */
+	public function __construct($fieldName = false, array $args = array()) {
+
+		if ($fieldName) {
+			$this->addField($fieldName, $args);
+		}
+	}
+
+	/**
 	 * Ads a field with arguments to the range query
 	 *
 	 * @param string $fieldName Field name
 	 * @param array $args Field arguments
+	 * @return Elastica_Filter_Range
 	 */
 	public function addField($fieldName, array $args) {
 		$this->_fields[$fieldName] = $args;
+		return $this;
 	}
 
 	/**
