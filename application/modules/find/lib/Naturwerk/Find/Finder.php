@@ -32,6 +32,11 @@ class Finder {
     /**
      * @var array
      */
+    protected $date;
+
+    /**
+     * @var array
+     */
     protected $class;
 
     /**
@@ -67,28 +72,11 @@ class Finder {
 
         $this->search = $parameters->getSearch();
         $this->geo = $parameters->getGeo();
+        $this->date = $parameters->getDate();
         $this->class = $parameters->getClass();
         $this->user = $parameters->getUser();
         $this->family = $parameters->getFamily();
         $this->genus = $parameters->getGenus();
-    }
-
-    /**
-     * @return \Elastica_Query_Abstract main query with search parameter
-     */
-    protected function getQuery() {
-
-        // main query
-        if ($this->search) {
-            $query = $this->index->query()->flt($this->search);
-        } else {
-            $query = $this->index->query()->all();
-        }
-
-        // apply geo
-        $query = $this->geo($query);
-
-        return $query;
     }
 
     /**
@@ -99,11 +87,19 @@ class Finder {
 
         // geo
         if (count($this->geo) == 2) {
-            $geo = $this->index->filter()->geo('position', $this->geo);
-            $query = $this->index->query()->filtered($query, $geo);
+            $geo = new \Elastica_Filter_GeoBoundingBox('position', $this->geo);
+            $query = new \Elastica_Query_Filtered($query, $geo);
         }
 
         return $query;
+    }
+
+    /**
+     * @return \Elastica_Filter_Abstract date filter
+     */
+    protected function getDateFilter() {
+        $range = new \Elastica_Filter_Range('date', $this->date);
+        return $range;
     }
 
     /**
@@ -115,27 +111,27 @@ class Finder {
 
         $index = $this->index;
 
-        $facetClass = $index->facet()->terms('class');
+        $facetClass = new \Elastica_Facet_Terms('class');
         $facetClass->setField('class');
 
-        $facetUser = $index->facet()->terms('user');
+        $facetUser = new \Elastica_Facet_Terms('user');
         $facetUser->setField('user');
 
-        $facetFamily = $index->facet()->terms('family');
+        $facetFamily = new \Elastica_Facet_Terms('family');
         $facetFamily->setField('family');
         $facetFamily->setSize(900);
 
-        $facetGenus = $index->facet()->terms('genus');
+        $facetGenus = new \Elastica_Facet_Terms('genus');
         $facetGenus->setField('genus');
         $facetGenus->setSize(900);
 
         // facets filter
-        $filter = $index->filter()->and_();
+        $filter = new \Elastica_Filter_And();
         $f = false;
 
         // add class filter
         if (count($this->class) > 0) {
-            $term = $index->filter()->terms('class', $this->class);
+            $term = new \Elastica_Filter_Terms('class', $this->class);
             $filter->addFilter($term);
             $facetUser->setFilter($term);
             $facetGenus->setFilter($term);
@@ -145,7 +141,7 @@ class Finder {
 
         // add user filter
         if (count($this->user) > 0) {
-            $term = $index->filter()->terms('user', $this->user);
+            $term = new \Elastica_Filter_Terms('user', $this->user);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
             $facetGenus->setFilter($term);
@@ -155,7 +151,7 @@ class Finder {
 
         // add family filter
         if (count($this->family) > 0) {
-            $term = $index->filter()->terms('family', $this->family);
+            $term = new \Elastica_Filter_Terms('family', $this->family);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
             $facetUser->setFilter($term);
@@ -165,7 +161,7 @@ class Finder {
 
         // add genus filter
         if (count($this->genus) > 0) {
-            $term = $index->filter()->terms('genus', $this->genus);
+            $term = new \Elastica_Filter_Terms('genus', $this->genus);
             $filter->addFilter($term);
             $facetClass->setFilter($term);
             $facetUser->setFilter($term);
@@ -173,9 +169,24 @@ class Finder {
             $f = true;
         }
 
+        // filter date
+        if (count($this->date) > 0) {
+            $range = $this->getDateFilter();
+            $filter->addFilter($range);
+            $f = true;
+        }
+
+        // main query
+        if ($this->search) {
+            $main = new \Elastica_Query_FuzzyLikeThis($this->search);
+        } else {
+            $main = new \Elastica_Query_MatchAll();
+        }
+        $this->geo($main);
+
         // build search query
         $query = new \Elastica_Query();
-        $query->setQuery($this->getQuery());
+        $query->setQuery($main);
         $query->addFacet($facetClass);
         $query->addFacet($facetFamily);
         $query->addFacet($facetGenus);

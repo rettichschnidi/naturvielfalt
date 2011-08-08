@@ -13,6 +13,6 @@ $reset = array_merge($filters, array($field => array()));
     }
     $filters = array_merge($filters, array($field => $params));
     ?>
-    <li><a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>"><?php echo $term['term'] . ' (' . $term['count'] . ')'; ?></a></li>
+    <li class="<?php echo $active ? 'active' : ''; ?>"><a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>"><?php echo $term['term'] . ' (' . $term['count'] . ')'; ?></a></li>
 <?php endforeach; ?>
 </ul>

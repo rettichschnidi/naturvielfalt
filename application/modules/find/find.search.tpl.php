@@ -3,7 +3,7 @@
 
 <?php
 $facets = $result->getFacets();
-$filters = array('search' => $search, 'class' => $class, 'user' => $user, 'family' => $family, 'genus' => $genus, 'geo' => $geo, 'sort' => $sort);
+$filters = array('search' => $search, 'class' => $class, 'user' => $user, 'family' => $family, 'genus' => $genus, 'geo' => $geo, 'date' => $date, 'sort' => $sort);
 ?>
 
 <?php foreach ($filters as $field => $filter): ?>
@@ -24,12 +24,13 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 <p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($box) > 0): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
 <div class="map-overlay"><div id="map-canvas"></div></div>
 
-<h6 class="filter">Datum: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
+<?php $reset = array_merge($filters, array('date' => array())); ?>
+<h6 class="filter">Datum: <?php if (count($date) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
 <div class="fieldset">
-<p><label for="from">Von:</label> <input name="from" id="from" value="<?php echo check_plain($search); ?>" /></p>
+<p><label for="date_from">Von:</label> <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" /></p>
 
-<p><label for="to">Bis:</label> <input name="to" id="to" value="<?php echo check_plain($search); ?>" /></p>
+<p><label for="date_to">Bis:</label> <input name="date[to]" id="date_to" value="<?php echo check_plain(@$date['to']); ?>" /></p>
 </div>
 
 <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Klasse', 'field' => 'class', 'value' => $class)); ?>
@@ -39,6 +40,9 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 <!-- <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Familie', 'field' => 'family', 'value' => $family)); ?> -->
 
 <!-- <?php echo theme('find_facet', array('facets' => $facets, 'filters' => $filters, 'title' => 'Gattung', 'field' => 'genus', 'value' => $genus)); ?> -->
+
+<input class="element-hidden" type="submit" />
+
 </form>
 </div>
 

@@ -2,6 +2,13 @@
 
 namespace Naturwerk\Find;
 
+use \Elastica_Filter_GeoBoundingBox as Geo;
+use \Elastica_Filter_Range as Range;
+use \Elastica_Filter_HasChild as HasChildFilter;
+use \Elastica_Query_Filtered as Filtered;
+use \Elastica_Query_HasChild as HasChild;
+use \Elastica_Query_MatchAll as All;
+
 /**
  * Find organisms, modifies the geo query to match sighting child position.
  *
@@ -24,11 +31,22 @@ class Organisms extends Finder {
 
         // geo
         if (count($this->geo) == 2) {
-            $geo = $this->index->filter()->geo('sighting.position', $this->geo);
-            $query = $this->index->query()->filtered($query, $geo);
-            $query = $this->index->query()->hasChild($query, 'sighting');
+            $geo = new Geo('sighting.position', $this->geo);
+            $query = new Filtered($query, $geo);
+            $query = new HasChild($query, 'sighting');
         }
 
         return $query;
     }
+
+    /**
+     * @return \Elastica_Filter_Abstract date filter
+     */
+    protected function getDateFilter() {
+        $range = new Range('sighting.date', $this->date);
+        $query = new Filtered(new All(), $range);
+        $hasChild = new HasChildFilter($query, 'sighting');
+        return $hasChild;
+    }
+
 }

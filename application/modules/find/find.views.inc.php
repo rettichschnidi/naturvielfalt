@@ -26,6 +26,7 @@ function find_search($key) {
 
     $search = find_query_param('search', '');
     $geo = find_query_param('geo');
+    $date = find_query_param('date');
     $class = find_query_param('class');
     $user = find_query_param('user');
     $family = find_query_param('family');
@@ -36,16 +37,24 @@ function find_search($key) {
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $parameters = new Parameters($search, $geo, $class, $user, $family, $genus, $sort);
+    $parameters = new Parameters($search, $geo, $date, $class, $user, $family, $genus, $sort);
 
-    $organisms = new Organisms($index, $parameters);
-    $variables['#organisms'] = $organisms->search();
+    try {
+        $organisms = new Organisms($index, $parameters);
+        $variables['#organisms'] = $organisms->search();
 
-    $sightings = new Sightings($index, $parameters);
-    $variables['#sightings'] = $sightings->search();
+        $sightings = new Sightings($index, $parameters);
+        $variables['#sightings'] = $sightings->search();
 
-    $inventories = new Inventories($index, $parameters);
-    $variables['#inventories'] = $inventories->search();
+        $inventories = new Inventories($index, $parameters);
+        $variables['#inventories'] = $inventories->search();
+
+    } catch (Elastica_Exception_Response $e) {
+        trigger_error($e->getMessage(), E_USER_WARNING);
+        $variables['#organisms'] = new Elastica_ResultSet(new Elastica_Response(''));
+        $variables['#sightings'] = new Elastica_ResultSet(new Elastica_Response(''));
+        $variables['#inventories'] = new Elastica_ResultSet(new Elastica_Response(''));
+    }
 
     // calculate bounding box for static map
     if (count($geo) == 2) {
@@ -64,6 +73,7 @@ function find_search($key) {
 
     $variables['#search'] = $search;
     $variables['#geo'] = $geo;
+    $variables['#date'] = $date;
     $variables['#class'] = $class;
     $variables['#user'] = $user;
     $variables['#family'] = $family;

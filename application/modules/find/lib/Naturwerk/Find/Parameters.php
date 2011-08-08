@@ -22,6 +22,11 @@ class Parameters {
     /**
      * @var array
      */
+    protected $date;
+
+    /**
+     * @var array
+     */
     protected $class;
 
     /**
@@ -40,7 +45,7 @@ class Parameters {
     protected $genus;
 
     /**
-    * @var array
+     * @var array
      */
     protected $sort;
 
@@ -53,10 +58,27 @@ class Parameters {
      * @param array $genus
      * @param array $sort
      */
-    public function __construct($search = '', $geo = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array()) {
+    public function __construct($search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array()) {
 
         $this->search = $search;
         $this->geo = $geo;
+
+        if (isset($date['from'])) {
+            if ($date['from']) {
+                $date['from'] = date('Y-m-d', strtotime($date['from']));
+            } else {
+                unset($date['from']);
+            }
+        }
+        if (isset($date['to'])) {
+            if ($date['to']) {
+                $date['to'] = date('Y-m-d', strtotime($date['to']));
+            }  else {
+                unset($date['to']);
+            }
+        }
+        $this->date = $date;
+
         $this->class = $class;
         $this->user = $user;
         $this->family = $family;
@@ -76,6 +98,13 @@ class Parameters {
      */
     public function getGeo() {
         return $this->geo;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDate() {
+        return $this->date;
     }
 
     /**

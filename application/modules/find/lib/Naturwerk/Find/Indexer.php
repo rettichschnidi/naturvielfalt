@@ -31,10 +31,10 @@ class Indexer {
                             'standard',
                             'lowercase',
                             'asciifolding',
-                        )
-                    )
-                )
-            )
+        )
+        )
+        )
+        )
         )), true);
     }
 
@@ -52,7 +52,7 @@ class Indexer {
      * Index all organsims.
      */
     public function organisms() {
-        
+
         $mapping = \Elastica_Type_Mapping::create(array(
             'name' => array('type' => 'string', 'analyzer' => 'sortable'),
             'name_la' => array('type' => 'string', 'analyzer' => 'sortable'),
@@ -100,7 +100,7 @@ class Indexer {
      * Index all sightings.
      */
     public function sightings() {
-        
+
         $mapping = \Elastica_Type_Mapping::create(array(
             'name' => array('type' => 'string', 'analyzer' => 'sortable'),
             'name_la' => array('type' => 'string', 'analyzer' => 'sortable'),
@@ -110,6 +110,7 @@ class Indexer {
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'inventory' => array('type' => 'string', 'index' => 'not_analyzed'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
 
@@ -128,7 +129,8 @@ class Indexer {
                 flora_organism."Gattung" AS genus,
                 head_inventory.name AS inventory,
                 ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
-                \'inventory/\' || inventory.head_inventory_id AS url
+                \'inventory/\' || inventory.head_inventory_id AS url,
+                (SELECT e.value FROM inventory_type_attribute_inventory_entry e INNER JOIN inventory_type_attribute a ON a.id = e.inventory_type_attribute_id WHERE a.name = \'Funddatum\' AND e.inventory_entry_id = inventory_entry.id) as date
             FROM area
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
             INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
@@ -154,7 +156,8 @@ class Indexer {
                 fauna_organism.genus AS genus,
                 head_inventory.name AS inventory,
                 ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
-                \'inventory/\' || inventory.head_inventory_id AS url
+                \'inventory/\' || inventory.head_inventory_id AS url,
+                (SELECT e.value FROM inventory_type_attribute_inventory_entry e INNER JOIN inventory_type_attribute a ON a.id = e.inventory_type_attribute_id WHERE a.name = \'Funddatum\' AND e.inventory_entry_id = inventory_entry.id) as date
             FROM area
             INNER JOIN head_inventory ON head_inventory.area_id = area.id
             INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
@@ -173,7 +176,7 @@ class Indexer {
      * Index all inventories.
      */
     public function inventories() {
-        
+
         $mapping = \Elastica_Type_Mapping::create(array(
             'name' => array('type' => 'string', 'analyzer' => 'sortable'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
@@ -182,6 +185,7 @@ class Indexer {
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
 
         $sql = '
@@ -254,7 +258,62 @@ class Indexer {
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
                 WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
+
+            'date' => '
+                SELECT
+                    DISTINCT e.value AS date
+                FROM inventory_type_attribute_inventory_entry e
+                INNER JOIN inventory_type_attribute a ON a.id = e.inventory_type_attribute_id
+                INNER JOIN inventory_entry ie ON ie.id = e.inventory_entry_id
+                INNER JOIN inventory i ON ie.inventory_id = i.id
+                WHERE a.name = \'Funddatum\' AND i.head_inventory_id = :id',
         ));
+    }
+
+    protected static function convert($data) {
+
+
+        // convert geo
+        if (isset($data['geom'])) {
+
+            $json = json_decode($data['geom']);
+            if ($json) {
+
+                $data['position'] = array();
+                if ('Polygon' == $json->type) {
+                    foreach ($json->coordinates[0] as $coordinate) {
+                        $data['position'][] = $coordinate[1] . ', ' . $coordinate[0];
+                    }
+                } else if ('Point' == $json->type) {
+                    $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
+                }
+            }
+
+            unset($data['geom']);
+        }
+
+        // convert centroid
+        if (isset($data['centroid'])) {
+
+            $json = json_decode($data['centroid']);
+            if ($json) {
+
+                if (!isset($data['position'])) {
+                    $data['position'] = array();
+                }
+                $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
+            }
+
+            unset($data['centroid']);
+        }
+
+        // convert date
+        if (isset($data['date'])) {
+
+            $data['date'] = date('Y-m-d', strtotime($data['date']));
+        }
+
+        return $data;
     }
 
     /**
@@ -281,39 +340,7 @@ class Indexer {
         $total = count($result);
         foreach ($result as $data) {
 
-            // convert geo
-            if (isset($data['geom'])) {
-
-                $json = json_decode($data['geom']);
-                if ($json) {
-
-                    $data['position'] = array();
-                    if ('Polygon' == $json->type) {
-                        foreach ($json->coordinates[0] as $coordinate) {
-                            $data['position'][] = $coordinate[1] . ', ' . $coordinate[0];
-                        }
-                    } else if ('Point' == $json->type) {
-                        $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
-                    }
-                }
-
-                unset($data['geom']);
-            }
-
-            // convert centroid
-            if (isset($data['centroid'])) {
-
-                $json = json_decode($data['centroid']);
-                if ($json) {
-
-                    if (!isset($data['position'])) {
-                        $data['position'] = array();
-                    }
-                    $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
-                }
-
-                unset($data['centroid']);
-            }
+            $data = self::convert($data);
 
             // array or function callback
             if (is_array($callback)) {
@@ -324,9 +351,12 @@ class Indexer {
 
                     // fetch a single column for additional data
                     $result = db_query($sql, array('id' => $data['id']));
-                    $result->setFetchMode(\PDO::FETCH_COLUMN, 0);
+                    $result->setFetchMode(\PDO::FETCH_ASSOC);
                     foreach ($result as $object) {
-                        $data[$key][] = $object;
+
+                        $object = self::convert($object);
+
+                        $data[$key][] = $object[$key];
                     }
                 }
 
@@ -338,7 +368,7 @@ class Indexer {
 
             echo "  Indexing {$type->getName()}... " . ceil(++$i / $total * 100) . "%\r";
         }
-        
+
         echo "\n";
     }
 
