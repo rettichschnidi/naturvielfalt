@@ -321,6 +321,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
         }
         inventories += '</div>';
       }
+      inventories += '<div><a href="' + Drupal.settings.basePath + 'inventory/new/area/' + overlay.id + '">Neues Inventar erfassen</a></div>';
       me.areaInfo.updateTab(1, data.inventories.title, inventories);
 
       // habitats
