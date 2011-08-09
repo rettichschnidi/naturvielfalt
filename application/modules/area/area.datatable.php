@@ -87,8 +87,7 @@
 	 */
 	$countArea = db_query(
 		"SELECT COUNT(*) FROM area
-		LEFT JOIN users u ON u.uid = owner_id
-		LEFT JOIN area_type art ON art.id = type_id;"
+		LEFT JOIN users u ON u.uid = owner_id;"
 	);
 	
 	foreach ($countArea as $record) {
@@ -99,8 +98,7 @@
 	$area = db_query(
 		"SELECT area.id a_id, field_name, zip, locality, canton, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name, art.desc art_dest FROM area
 		LEFT JOIN users u ON u.uid = owner_id
-		LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
-		LEFT JOIN area_type art ON art.id = type_id".$sWhere.$sOrder.$sLimit
+		LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid".$sWhere.$sOrder.$sLimit
 	);
 	
 	foreach ($area as $record) {

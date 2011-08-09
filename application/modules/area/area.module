@@ -874,10 +874,6 @@ function area_edit_hidden_form($form, &$form_state) {
     '#type' => 'hidden',
 	'#value' => $_POST['area-coords'],
 	);
-	$form['AreaNewFormDetails']['area_type'] = array(
-    '#type' => 'hidden',
-	'#value' => $_POST['area_type'],
-	);
 	return $form;
 }
 
