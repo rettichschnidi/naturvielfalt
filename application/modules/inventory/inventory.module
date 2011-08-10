@@ -1117,23 +1117,22 @@ function inventory_type_entries($id, $table, $relation, $order=false, $extended=
       	  array(':id' => $inventoryEntry->id));
       	$column = $column->fetch();
       	$entry["col_0"] = isset($column->protection_level) ? $column->protection_level.'_dropdown' : "";
-      } else {
-        // Get inventory columns
-        $columns = db_query('
-          SELECT * 
-          FROM inventory_type_attribute_inventory_entry 
-          WHERE inventory_entry_id = :id', array(':id' => $inventoryEntry->id)); 
-          foreach ($columns as $column) {
-            // Dropdown
-            $colVal = "";
-            if($column->inventory_type_attribute_dropdown_value_id > 0) {
-              $colVal = $column->inventory_type_attribute_dropdown_value_id.'_dropdown';
-            } else {
-              $colVal = $column->value;
-            }
-            $entry["col_".$column->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
-          }     	
       }
+      // Get inventory columns
+      $columns = db_query('
+        SELECT * 
+        FROM inventory_type_attribute_inventory_entry 
+        WHERE inventory_entry_id = :id', array(':id' => $inventoryEntry->id)); 
+        foreach ($columns as $column) {
+          // Dropdown
+          $colVal = "";
+          if($column->inventory_type_attribute_dropdown_value_id > 0) {
+            $colVal = $column->inventory_type_attribute_dropdown_value_id.'_dropdown';
+          } else {
+            $colVal = $column->value;
+          }
+          $entry["col_".$column->inventory_type_attribute_id] = isset($colVal) ? $colVal : "";
+        }
     }
     $entries[] = $entry;
   }
