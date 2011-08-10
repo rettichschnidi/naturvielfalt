@@ -296,7 +296,8 @@ function AreaSelect(map_id, search_id, search_button_id) {
     // update and show area info
     jQuery.getJSON(Drupal.settings.basePath + 'area/json/' + overlay.id, function(data, textStatus, jqXHR) {
       // area details
-      var details = '<div>';
+      var details = '<div style="position: relative;">';
+      details += '<div style="position: absolute; right: 0; bottom: 0;"><a href="' + Drupal.settings.basePath + 'inventory/new/area/' + overlay.id + '">+ Inventar erfassen</a></div>';
       details += '<strong><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '">' + data.field_name + '</a></strong>';
       details += '<div>' + data.creator + '<br>';
       details += data.locality + '<br>';
@@ -321,17 +322,20 @@ function AreaSelect(map_id, search_id, search_button_id) {
         }
         inventories += '</div>';
       }
-      inventories += '<div><a href="' + Drupal.settings.basePath + 'inventory/new/area/' + overlay.id + '">Neues Inventar erfassen</a></div>';
+      inventories += '<div><a href="' + Drupal.settings.basePath + 'inventory/new/area/' + overlay.id + '">+ Inventar erfassen</a></div>';
       me.areaInfo.updateTab(1, data.inventories.title, inventories);
 
       // habitats
-      habitats = '<div><ul>';
+      habitats = '<div>';
       if (data.habitats.habs) {
+        habitats += '<ul>';
         for ( var i = 0, len = data.habitats.habs.length; i < len; ++i) {
           habitats += '<li><a href="' + Drupal.settings.basePath + 'habitat/'+data.habitats.habs[i].id+'">' +data.habitats.habs[i].name + '</a></li>';
         }
+        habitats += '</ul>';
       }
-      habitats += '</ul></div>';
+      habitats += '</div>';
+      habitats += '<div><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '/edit">+ Lebensräume bearbeiten</a></div>';
       me.areaInfo.updateTab(2, data.habitats.title, habitats);
 
       // and finally show the fancy popup bubble:
@@ -432,7 +436,6 @@ function refresh_map_info(){
       area_coords = JSON.stringify(area_coords);
       
       jQuery('#edit-area-coords').val(area_coords);
-      jQuery('#edit-area-type').val(areaselect.overlayControl.overlay.type);
       lastQuery = area_coords + centGLatLng.lat() + centGLatLng.lng()
     } else {
       console.info("identical query");
@@ -449,7 +452,6 @@ function refresh_map_info(){
     jQuery('#edit-latitude').val('');
     jQuery('#edit-longitude').val('');
     jQuery('#edit-area-coords').val('');
-    jQuery('#edit-area-type').val('');
   };
 };
 
