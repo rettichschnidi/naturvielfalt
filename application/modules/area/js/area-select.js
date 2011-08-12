@@ -387,7 +387,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
       details += data.altitude + '<br>';
       details += data.surface_area + '<br>';
       details += '</div>';
-      details += '<div>' + data.comment + '</div>';
+      details += '<div style="max-width:60%;">' + data.comment + '</div>';
       me.areaInfo.updateTab(0, 'Details', details);
 
       // inventories
