@@ -31,13 +31,13 @@ var overlayStyle = {
 
     'polyline': {
         strokeColor:    "#AA0000",
-        strokeWeight:   3,
+        strokeWeight:   2,
         strokeOpacity:  0.75
     },
 
     'polyline-selected': {
         strokeColor:    "#0000FF",
-        strokeWeight:   3,
+        strokeWeight:   2,
         strokeOpacity:  0.75
     },
 
