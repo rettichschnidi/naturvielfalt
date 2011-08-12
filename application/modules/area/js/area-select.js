@@ -381,13 +381,13 @@ function AreaSelect(map_id, search_id, search_button_id) {
       } else {
           details += '<strong><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '">' + data.field_name + '</a></strong>';
       }
+      details += '<div>' + data.comment + '</div>';
       details += '<div>' + data.creator + '<br>';
       details += data.locality + '<br>';
       details += data.zip + ' ' + data.township + '<br>';
       details += data.altitude + '<br>';
       details += data.surface_area + '<br>';
       details += '</div>';
-      details += '<div style="max-width:60%;">' + data.comment + '</div>';
       me.areaInfo.updateTab(0, 'Details', details);
 
       // inventories
