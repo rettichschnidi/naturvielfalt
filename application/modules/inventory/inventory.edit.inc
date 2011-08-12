@@ -1663,7 +1663,7 @@ function _inventory_group_factory($id, $desc, $inventory_id, $entries=array(), $
 function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $columns, $additional=true) {
   $row = array();
   if(function_exists('gallery_images'))
-    $row[] = inventory_get_entry_image($data['orgId'], true);
+    $row[] = inventory_get_entry_image(@$data['orgId'], true);
   $row[] = array(
     'data' => 
       '<input type="hidden" class="organism_id" name="entries['.$key.']['.$i.'][organism_id]" value="'.$data['orgId'].'" />'.
@@ -1680,7 +1680,7 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
     foreach($columns as $column) {
       $n++;
       $name = 'col_'.$column['id'];
-      $value = $data[$name];
+      $value = @$data[$name];
       if($column['visible']) {
         if($column['format'] == 'dropdown') {
           $cell = '<select name="entries['.$key.']['.$i.']['.$name.']" size="1">';
