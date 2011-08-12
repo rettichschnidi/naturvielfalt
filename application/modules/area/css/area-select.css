@@ -11,28 +11,6 @@
   width:550px;
 }
 
-.controlAreaChoose {
-  height: 31px;
-  width: 31px;
-  background-image: url('../images/map_controls/hand.png');
-  background-repeat: no-repeat;
-}
-
-.controlAreaChoose.selected {
-  background-image: url('../images/map_controls/hand-selected.png');
-}
-
-.controlAreaCreate {
-  height: 31px;
-  width: 31px;
-  background-image: url('../images/map_controls/polygon.png');
-  background-repeat: no-repeat;
-}
-
-.controlAreaCreate.selected {
-  background-image: url('../images/map_controls/polygon-selected.png');
-}
-
 .hidden {
   display: none;  
 }

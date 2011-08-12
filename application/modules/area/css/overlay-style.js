@@ -8,17 +8,17 @@ var overlayStyle = {
     'polygon' : {
         strokeColor:    "#AA0000",
         strokeWeight:   1,
-        strokeOpacity:  0.5,
+        strokeOpacity:  0.75,
         fillColor:      "#AA0000",
         fillOpacity:    0.25
     },
 
     'polygon-selected': {
-        strokeColor:    "#000000",
+        strokeColor:    "#0000FF",
         strokeWeight:   1,
-        strokeOpacity:  0.25,
+        strokeOpacity:  0.75,
         fillColor:      "#0000FF",
-        fillOpacity:    0.4
+        fillOpacity:    0.25
     },
     
     'polygon-highlighted': {
@@ -28,18 +28,35 @@ var overlayStyle = {
         fillColor:      "#AA0000",
         fillOpacity:    0.4
     },
+
+    'polyline': {
+        strokeColor:    "#AA0000",
+        strokeWeight:   3,
+        strokeOpacity:  0.75
+    },
+
+    'polyline-selected': {
+        strokeColor:    "#0000FF",
+        strokeWeight:   3,
+        strokeOpacity:  0.75
+    },
+
     'marker' : {
-        flat:           false,
-        icon:           new google.maps.MarkerImage(Drupal.settings.basePath+'modules/area/images/map_controls/marker.png'),
-        raiseOnTrag:    false,
-        //shadow:         '',
+        strokeColor:    "#AA0000",
+        strokeOpacity:  0.75,
+        strokeWeight:   1,
+        fillColor:      "#AA0000",
+        fillOpacity:    0.25,
+        radius:         20
     },
 
     'marker-selected': {
-        flat:           false,
-        icon:           new google.maps.MarkerImage(Drupal.settings.basePath+'modules/area/images/map_controls/marker_blue.png'),
-        raiseOnTrag:    false,
-        //shadow:         '',
+        strokeColor:    "#0000FF",
+        strokeOpacity:  0.75,
+        strokeWeight:   1,
+        fillColor:      "#0000FF",
+        fillOpacity:    0.25,
+        radius:         20
     },
     
     'marker-highlighted': {

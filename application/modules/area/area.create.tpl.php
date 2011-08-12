@@ -8,16 +8,6 @@
     </button>
   </div>
   
-  <ul class="area-choices">
-    <li>
-      <div class="controlAreaCreate"></div>
-      <?php
-        echo t('Create new area:');
-      ?>
-    </li>
-    <li>
-  </ul>
-  
   <div id="map">
     <div id="map_canvas" style="height: 100%"></div>
   </div>

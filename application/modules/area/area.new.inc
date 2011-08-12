@@ -12,17 +12,12 @@ function area_new_form() {
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 
-	if(@$_POST['locality'] != '') {
-		$output = drupal_get_form('area_new_details_form');
-	}
-	else {
-		$output['new'] = array(
+	$output['new'] = array(
 		'#theme' => 'area.new',
-		);
-		$output['googleMaps'] = area_google_maps_form('create');
-		$output['areaNew'] = drupal_get_form('area_create_form');
-	  	//$output['areaNew']['#attributes']['class']='hidden';	
-	}
+	);
+	$output['googleMaps'] = area_google_maps_form('create');
+	$output['areaNew'] = drupal_get_form('area_create_form');
+  	//$output['areaNew']['#attributes']['class']='hidden';
 
 	return $output;
 }
@@ -79,9 +74,8 @@ function area_google_maps_form($task) {
  */
 function area_field_name_form() {
 	$area = db_query(
-		"SELECT area.id a_id, field_name, zip, locality, canton, country, u.name u_name, art.desc art_dest FROM area
+		"SELECT area.id a_id, field_name, zip, locality, canton, country, u.name u_name, ST_AsGeoJSON(area.geom) AS geom FROM area
 		LEFT JOIN users u ON u.uid = owner_id
-		LEFT JOIN area_type art ON art.id = type_id
 		ORDER BY field_name;"
 	);
 	
@@ -93,7 +87,14 @@ function area_field_name_form() {
 		$row[] = $record->canton;
 		$row[] = $record->country;
 		$row[] = $record->u_name;
-		$row[] = $record->art_dest;
+		
+		$json = json_decode($record->geom);
+		if ($json) {
+		    $row[] = $json->type;
+		} else {
+		    $row[] = '';
+		}
+		
 		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
 	}
 	
@@ -214,6 +215,12 @@ function area_create_form($form, &$form_state) {
 		'#type' => 'fieldset',
 		'#weight' => 8,
 	);
+	$form['AreaNewForm']['field_name'] = array(
+	'#type' => 'hidden',
+	'#required' => true,
+	'#size' => 50,
+	'#attributes' => array('id' => 'edit-field_name'),
+	);
 	$form['AreaNewForm']['locality'] = array(
 	'#type' => 'hidden',
 	'#attributes' => array('id' => 'edit-locality'),
@@ -258,11 +265,6 @@ function area_create_form($form, &$form_state) {
     '#type' => 'hidden',
 	'#attributes' => array('id' => 'edit-area-type'),
 	);
-	$form['AreaNewForm']['actions-new'] = array('#type' => 'actions');
-	$form['AreaNewForm']['actions-new']['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Continue'),
-	);
 	return $form;
 }
 
@@ -273,7 +275,82 @@ function area_create_form($form, &$form_state) {
  * @param unknown_type $form_state
  */
 function area_create_form_submit($form, $form_state) {
-	$form_state['rebuild'] = TRUE;
+    
+	// get values from form
+	$field_name = $form_state['input']['field_name'];
+	$locality = $form_state['values']['locality'];
+	$zip = $form_state['values']['zip'];
+	$canton = $form_state['values']['canton'];
+	$country = $form_state['values']['country'];
+	$areaType = $form_state['values']['area_type'];
+	$altitude = $form_state['values']['altitude'];
+	$surface_area = $form_state['values']['surface-area'];
+	$township = $form_state['values']['township'];
+	$latitude = $form_state['values']['latitude'];
+	$longitude = $form_state['values']['longitude'];
+	$jsonCoords = $form_state['values']['area-coords'];
+	$protectiontarget = $form_state['input']['protection_target'];
+	$safetyprecautions = $form_state['input']['safety_precautions'];
+	$tendingstrategies = $form_state['input']['tending_strategies'];
+
+	global $user;
+
+	// insert area
+	$area_id = db_insert('area')->fields(array(
+		'field_name' => $field_name,
+		'locality' => $locality,
+		'zip' => $zip,
+		'canton' => $canton,
+		'country' => $country,
+		'comment' => '',
+		'altitude' => $altitude,
+		'surface_area' => $surface_area,
+		'township' => $township,
+		'owner_id' => $user->uid,
+		'create_time' => 'now()',
+		'modify_time' => 'now()',
+		'protection_target' => $protectiontarget,
+		'safety_precautions' => $safetyprecautions,
+		'tending_strategies' => $tendingstrategies
+	))->execute();
+	
+	// field coordinates
+	$coords = json_decode($jsonCoords, true);
+	$points = array();
+	foreach ($coords as $coord) {
+    	$lat = $coord[0];
+    	$lng = $coord[1];
+    	$points[] = $lng . ' ' . $lat;
+	}
+	
+	switch ($areaType) {
+
+	    case 'polyline':
+
+	        $linestring = implode(', ', $points);
+	        $geom = 'ST_GeomFromText(\'LINESTRING(' . $linestring . ')\', 4326)'; // SRID 4326 = WGS 84
+	        break;
+
+	    case 'polygon':
+
+    	    // make sure line is closed
+    	    if (end($points) != reset($points)) {
+    	        $points[] = reset($points);
+    	    }
+
+    	    $linestring = implode(', ', $points);
+    	    $geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+    	    break;
+
+	    case 'marker':
+
+    	    $geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
+    	    break;
+	}
+	db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
+
+	// redirect to JSON
+	drupal_goto('area/getareas/'.$area_id);
 }
 
 /**
@@ -319,11 +396,6 @@ function area_new_details_form_submit($form, $form_state) {
 	$protectiontarget = $form_state['input']['protection_target'];
 	$safetyprecautions = $form_state['input']['safety_precautions'];
 	$tendingstrategies = $form_state['input']['tending_strategies'];
-	
-	// get area type id from table area_type
-	$result = db_query('SELECT id FROM area_type at WHERE at.desc like :desc', array(':desc' => $areaType));
-	$areaTypeRow = $result->fetchAssoc();
-	$areaTypeId = $areaTypeRow['id'];
 
 	global $user;
 
@@ -334,7 +406,6 @@ function area_new_details_form_submit($form, $form_state) {
 		'zip' => $zip,
 		'canton' => $canton,
 		'country' => $country,
-		'type_id' => $areaTypeId,
 		'comment' => $comment,
 		'altitude' => $altitude,
 		'surface_area' => $surface_area,

@@ -157,13 +157,21 @@ function get_areas($area_id=false) {
               $item['type'] = 'polygon';
               foreach ($json->coordinates[0] as $coordinate) {
                   $item['area_points'][] = array('lat' => $coordinate[1], 'lng' => $coordinate[0]);
-              } 
+              }
+          } else if ('LineString' == $json->type) {
+              $item['type'] = 'polyline';
+              foreach ($json->coordinates as $coordinate) {
+                  $item['area_points'][] = array('lat' => $coordinate[1], 'lng' => $coordinate[0]);
+              }
           } else if ('Point' == $json->type) {
+              
               $item['type'] = 'marker';
               $item['area_points'][] = array('lat' => $json->coordinates[1], 'lng' => $json->coordinates[0]);
           }
       }
-      
+
+      $item['edit'] = area_edit_access($item['id']);
+
       $items[] = $item;
   }
 

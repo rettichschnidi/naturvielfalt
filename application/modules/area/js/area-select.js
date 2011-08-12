@@ -80,6 +80,9 @@ function AreaSelect(map_id, search_id, search_button_id) {
       bounds.extend(points[n]);
     }
     this.map.fitBounds(bounds);
+    if (this.map.getZoom() > 17) {
+        this.map.setZoom(17);
+    }
     this.showAreaInfoBubble(overlay);
     // remember selected area
     this.selected_area = overlayId;
@@ -174,11 +177,86 @@ function AreaSelect(map_id, search_id, search_button_id) {
 
   /**
    * Creates the overlay representing areas
-   * Returns MapGeometryOverlays
+   * Returns GeometryOverlays
    */
   AreaSelect.prototype.createOverlays = function(map) {
-    var overlays = new MapGeometryOverlays(map);
+    var overlays = new GeometryOverlays(map);
     return overlays;
+  }
+
+  /**
+   * Creates the toolbar for the map controls
+   * Returns GeometryControl
+   */
+  AreaSelect.prototype.createControl = function(map) {
+
+      var that = this;
+
+      var control = new GeometryControl(map, function () {
+          bubble.close();
+      });
+      
+      var bubble = new InfoBubble({
+          map : this.map,
+          shadowStyle : 1,
+          padding : 10,
+          borderRadius : 0,
+          arrowSize : 10,
+          borderWidth : 1,
+          borderColor : '#ccc',
+          disableAutoPan : true,
+          disableAnimation : true,
+          arrowPosition : 50,
+          arrowStyle : 0,
+          maxHeight : 200,
+          maxWidth : 300
+      });
+      var html = '<div><div style="width: 275px; padding: 10px 0;"><label>Gebietsname: <span class="form-required" title="Diese Angabe wird benötigt.">*</span></label><input class="areaname" size="39" /></div><div style="padding: 10px 0;"><input class="submit" type="submit" value="Gebiet erstellen" style="font-weight: bold;" /></div></div>';
+      var tab = jQuery(html);
+      jQuery('.submit', tab).click(function (e) {
+          var name = jQuery.trim(jQuery('.areaname', tab).val());
+          if (name) {
+              jQuery('#edit-field_name').val(name);
+
+              jQuery(this).val('Gebiet wird erstellt...');
+              jQuery(this).attr('disabled', 'disabled');
+
+              jQuery.post(Drupal.settings.basePath + 'area/new', jQuery("#area-create-form").serialize(), function (json) {
+
+                  bubble.close();
+                  control.overlay.clear();
+
+                  areaselect.mapOverlays.addOverlaysJson(json);
+
+                  var overlay = areaselect.mapOverlays.overlays[json[0].id];
+                  areaselect.addOverlayListener(overlay);
+                  areaselect.selectArea(overlay.id);
+              });
+          } else {
+              alert('Bitte Gebietsnamen eingeben, um das Gebiet zu erstellen!')
+          }
+      });
+      bubble.addTab('Neues Gebiet', tab.get(0));
+
+      google.maps.event.addListener(bubble, 'closeclick', function() {
+          control.overlay.clear();
+      });
+
+      var display = function () {
+          refresh_map_info();
+          jQuery('.areaname', tab).val('');
+          jQuery('.submit', tab).val('Gebiet erstellen');
+          jQuery('.submit', tab).attr('disabled', '');
+          bubble.setPosition(control.overlay.getCenter());
+          bubble.open();
+      };
+
+      control.addHand(display);
+      control.addMarker(display);
+      control.addPath(display);
+      control.addPolygon(display);
+
+      return control;
   }
   
   /**
@@ -265,7 +343,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
   AreaSelect.prototype.addOverlayListener = function(overlay) {
       //select
       if(typeof InfoBubble != "undefined")
-        google.maps.event.addListener(overlay.gOverlay, 'click', function(event) {
+        google.maps.event.addListener(overlay.overlay, 'click', function(event) {
           me.selectArea(overlay.id);
         });
       else
@@ -298,7 +376,11 @@ function AreaSelect(map_id, search_id, search_button_id) {
       // area details
       var details = '<div style="position: relative;">';
       details += '<div style="position: absolute; right: 0; bottom: 0;"><a href="' + Drupal.settings.basePath + 'inventory/new/area/' + overlay.id + '">+ Inventar erfassen</a></div>';
-      details += '<strong><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '">' + data.field_name + '</a></strong>';
+      if (data.edit) {
+          details += '<strong>' + data.field_name + ' <a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '/edit">(bearbeiten)</a></strong>';
+      } else {
+          details += '<strong><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '">' + data.field_name + '</a></strong>';
+      }
       details += '<div>' + data.creator + '<br>';
       details += data.locality + '<br>';
       details += data.zip + ' ' + data.township + '<br>';
@@ -335,7 +417,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
         habitats += '</ul>';
       }
       habitats += '</div>';
-      habitats += '<div><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '/edit">+ Lebensräume bearbeiten</a></div>';
+      habitats += '<div><a href="' + Drupal.settings.basePath + 'area/' + overlay.id + '/edit#area-habitats">+ Lebensräume bearbeiten</a></div>';
       me.areaInfo.updateTab(2, data.habitats.title, habitats);
 
       // and finally show the fancy popup bubble:
@@ -362,15 +444,6 @@ function AreaSelect(map_id, search_id, search_button_id) {
     sHabitats += '</table>';
     return sHabitats;
   };
-  
-  AreaSelect.prototype.onControlAreaChooseClicked = function(event) {
-    jQuery('.controlAreaChoose').addClass('selected');
-  }
-
-  AreaSelect.prototype.onControlAreaCreateClicked = function(event) {
-    jQuery('.controlAreaCreate').addClass('selected');
-    areaselect.overlayControl.startDigitizing();
-  }
 
   //////////////////////// Class initialisation //////////////////////
   
@@ -384,9 +457,10 @@ function AreaSelect(map_id, search_id, search_button_id) {
     return false;
   me.mapOverlays = this.createOverlays(me.map); // Overlays representing areas
   me.selected_area = null; // index of currently selected area
-  if(typeof InfoBubble != "undefined")
+  if(typeof InfoBubble != "undefined") {
     me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
-  me.overlayControl = new GeometryOverlayControl(me.map); // class to control drawing of new areas
+    me.overlayControl = this.createControl(me.map); // class to control drawing of new areas
+  }
   getareasJSON();
 
   // register events
@@ -394,24 +468,12 @@ function AreaSelect(map_id, search_id, search_button_id) {
   jQuery('#show_areas_wrapper tbody > tr').bind('mouseover mouseout', this.onTableRowHover);
   jQuery('.show_static_image').bind('mouseover mouseout', this.showStaticImage);
   jQuery('#area_table tbody td img').bind( 'click', this.onTableExpanderClicked);
-  jQuery('.controlAreaChoose').click(this.onControlAreaChooseClicked);
-  jQuery('.controlAreaCreate').click(this.onControlAreaCreateClicked);
   
 };
 
-var lastQuery = null;
 function refresh_map_info(){
   if(areaselect.overlayControl.overlay != null) {
-    var area_coords_new = new Array();
-    var markers_new = areaselect.overlayControl.overlay.markers;
-    for (var i in markers_new) {
-      area_coords_new.push(new Array(markers_new[i].position.lat(), markers_new[i].position.lng()));
-    }
-    area_coords_new = JSON.stringify(area_coords_new);
-    var centGLatLng1 = areaselect.overlayControl.overlay.getCenter();
-    area_coords_new = area_coords_new + centGLatLng1.lat() + centGLatLng1.lng()
 
-    if (lastQuery!=area_coords_new) {
       jQuery('#edit-surface-area').val(areaselect.overlayControl.overlay.getArea());
       areaselect.overlayControl.overlay.getAltitude(function(altitude) {
         jQuery('#edit-altitude').val(altitude);
@@ -429,17 +491,14 @@ function refresh_map_info(){
       jQuery('#edit-latitude').val(centGLatLng.lat());
       jQuery('#edit-longitude').val(centGLatLng.lng());
       var area_coords = new Array();
-      var markers = areaselect.overlayControl.overlay.markers;
-      for (var i in markers) {
-        area_coords.push(new Array(markers[i].position.lat(), markers[i].position.lng()));
-      }
+      areaselect.overlayControl.overlay.getLatLngs().forEach(function (position) {
+          area_coords.push([position.lat(), position.lng()]);
+      });
       area_coords = JSON.stringify(area_coords);
       
       jQuery('#edit-area-coords').val(area_coords);
-      lastQuery = area_coords + centGLatLng.lat() + centGLatLng.lng()
-    } else {
-      console.info("identical query");
-    }
+      jQuery('#edit-area-type').val(areaselect.overlayControl.overlay.type);
+
   } else {
     console.info("overlay is null, cleaning up stuff");
     jQuery('#edit-surface-area').val('');
@@ -452,6 +511,7 @@ function refresh_map_info(){
     jQuery('#edit-latitude').val('');
     jQuery('#edit-longitude').val('');
     jQuery('#edit-area-coords').val('');
+    jQuery('#edit-area-type').val('');
   };
 };
 
