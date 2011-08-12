@@ -47,6 +47,9 @@ GeometryControl.prototype.click = function (event) {
 GeometryControl.prototype.finish = function () {
 
     this.map.fitBounds(this.overlay.getBounds());
+    if (this.map.getZoom() > 17) {
+        this.map.setZoom(17);
+    }
 
     this.reset(true);
 
