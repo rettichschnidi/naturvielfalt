@@ -459,6 +459,8 @@ function AreaSelect(map_id, search_id, search_button_id) {
   me.selected_area = null; // index of currently selected area
   if(typeof InfoBubble != "undefined") {
     me.areaInfo = this.createAreaInfo(me.map); // popup bubble shown if user clicks on an area
+  }
+  if (jQuery("#area-create-form").length) {
     me.overlayControl = this.createControl(me.map); // class to control drawing of new areas
   }
   getareasJSON();
