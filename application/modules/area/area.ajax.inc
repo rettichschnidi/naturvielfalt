@@ -56,6 +56,8 @@ function area_json($areaId) {
   }
   $output['habitats']['title'] = t('Habitats (!count)', array('!count'=>$countHabitats));
 
+  $output['edit'] = area_edit_access($areaId);
+
   return drupal_json_output($output);
 }
 
