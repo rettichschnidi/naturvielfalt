@@ -265,6 +265,11 @@ function area_create_form($form, &$form_state) {
     '#type' => 'hidden',
 	'#attributes' => array('id' => 'edit-area-type'),
 	);
+	$form['AreaNewForm']['actions-new'] = array('#type' => 'actions');
+    $form['AreaNewForm']['actions-new']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Continue'),
+    );
 	return $form;
 }
 
