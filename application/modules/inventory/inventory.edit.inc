@@ -495,7 +495,7 @@ function inventory_organism_autocomplete($type_id=false, $term=false, $plain=fal
     $organism = array(
       'id' => $record->o_id,
       'label' => strval($record->name_de),
-      'label_latin_short' => strval($fauna ? trim($record->genus." ".$record->species." ".$record->sub_species) : trim($inventoryEntry->floragattung." ".$inventoryEntry->floraart." ".$inventoryEntry->florarang." ".$inventoryEntry->floraunterart)),
+      'label_latin_short' => strval($fauna ? trim($record->genus." ".$record->species." ".$record->sub_species) : trim($record->floragattung." ".$record->floraart." ".$record->florarang." ".$record->floraunterart)),
       'label_latin' => strval($fauna ? trim($record->family." ".$record->genus." ".$record->species." ".$record->sub_species) : $record->name)
     );
     if(!$fauna && $record->id != $record->ref_id) {
