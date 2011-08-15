@@ -513,15 +513,14 @@ function inventory_organism_autocomplete($type_id=false, $term=false, $plain=fal
             f.official_flora_orfganism_id ref_id 
            FROM flora_organism f 
            INNER JOIN organism AS o ON o.organism_id = f.id
-           WHERE f.id = :ref_id'
+           WHERE o.organism_type = 2 AND f.id = :ref_id'
           , array(':ref_id' => $record->ref_id)
         )->fetch();
       }
       $organism['old_id'] = $organism['id'];
       $organism['old_label'] = $organism['label'];
       $organism['old_label_latin'] = $organism['label_latin'];
-//		temporary bugfix tryout (wrong organism appearing in flora)
-//    $organism['id'] = $parent->o_id;
+      $organism['id'] = $parent->o_id;
       $organism['label'] = strval($parent->name_de);
       $organism['label_latin'] = strval($parent->name);
     }
