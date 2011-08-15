@@ -11,6 +11,7 @@ var inventory = {
   form: false,
   template: false,
   loading: false,
+  request: false,
   count: 1,
   group_count: 1,
   templates: false,
@@ -88,9 +89,12 @@ var inventory = {
       }, time);
   }
   
-  inventory.ajaxError = function() {
-    inventory.hideLoading();
-    inventory.setMessage(Drupal.t('An AJAX HTTP request terminated abnormally.'), 'error', 15000);
+  inventory.ajaxError = function(event, jqXHR, settings) {
+    if (settings.url.indexOf('autocomplete') == -1) {
+      // show error for failed requests (ignore autocomplete)
+      inventory.hideLoading();
+      inventory.setMessage(Drupal.t('An AJAX HTTP request terminated abnormally.'), 'error', 15000);
+    }
   }
   
   inventory.showLoading = function() {
@@ -664,7 +668,10 @@ var inventory = {
         actualElement = this.element;
         actualElement.removeClass('notfound');
         actualElement.addClass('searching');
-        $.ajax({
+        if (inventory.request) {
+            inventory.request.abort();
+        }
+        inventory.request = $.ajax({
           url : Drupal.settings.basePath + 'inventory/organism_autocomplete',
           dataType : "json",
           data : {
