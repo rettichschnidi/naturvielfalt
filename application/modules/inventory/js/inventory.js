@@ -702,11 +702,10 @@ var inventory = {
         $(this).closest('td').find('input.organism_id').val(ui.item.id);
         $(this).closest('tr').find('td > em').html(ui.item.label_latin);
         inventory.enableDisable($(this).closest('tr'));
-        if(event.keyCode == 9) { // TAB
-          $(this).closest('tr').find('input.date').closest('td').next().find('input').focus();
-          event.preventDefault();
-        } else if(event.keyCode == 13) // ENTER
+        if (event.keyCode == 9 || event.keyCode == 13) { // TAB, ENTER
           $(this).closest('tr').find('input.date').focus();
+          event.preventDefault();
+        }
         if($(this).closest('tr:last-child').size())
           inventory.duplicateRow($(this).closest('tr'));
         inventory.getImage($(this).closest('tr'));
