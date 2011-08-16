@@ -11,6 +11,8 @@ jQuery(function ($) {
     var myOptions = {
         center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
+        maxZoom: 18,
+        minZoom: 5,
         mapTypeControl: false,
         zoom: 8
     };
