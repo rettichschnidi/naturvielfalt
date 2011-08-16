@@ -200,7 +200,7 @@ Geometry.prototype.start = function (control) {
         areaselect.areaInfo.close();
     }
 
-    this.hover = jQuery('<div style="index: 100; width: 200px; position: absolute; display: none; border: 1px solid #666; background-color: #fff; padding: 3px 6px 2px;"><span class="desc"></span><span class="distance" style="color: #666;"></span></div>');
+    this.hover = jQuery('<div style="z-index: 9999; width: 200px; position: absolute; display: none; border: 1px solid #666; background-color: #fff; padding: 3px 6px 2px;"><span class="desc"></span><span class="distance" style="color: #666;"></span></div>');
     jQuery('body').append(this.hover);
     
     var that = this;
