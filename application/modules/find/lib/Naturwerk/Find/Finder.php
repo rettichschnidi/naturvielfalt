@@ -86,8 +86,8 @@ class Finder {
     protected function geo(\Elastica_Query_Abstract $query) {
 
         // geo
-        if (count($this->geo) == 2) {
-            $geo = new \Elastica_Filter_GeoBoundingBox('position', $this->geo);
+        if (count($this->geo) > 1) {
+            $geo = new \Elastica_Filter_GeoPolygon('position', $this->geo);
             $query = new \Elastica_Query_Filtered($query, $geo);
         }
 

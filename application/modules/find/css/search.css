@@ -130,6 +130,13 @@ body.page-find #map-canvas {
     height: 600px;
 }
 
+body.page-find .map-overlay .map-close {
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    cursor: pointer;
+}
+
 body.page-find .map-overlay .map-apply {
     font-size: 1.3em;
     font-family: Helvetica, Arial, sans-serif;

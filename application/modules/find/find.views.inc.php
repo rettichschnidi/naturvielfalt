@@ -19,7 +19,9 @@ function find_show_search() {
 function find_search($key) {
 
     drupal_add_css(drupal_get_path('module', 'find') . '/css/search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
-    drupal_add_js('http://maps.google.com/maps/api/js?sensor=false', array('group' => JS_LIBRARY));
+    drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry', array('group' => JS_LIBRARY));
+    drupal_add_js(drupal_get_path('module', 'area') . '/css/overlay-style.js');
+    drupal_add_js(drupal_get_path('module', 'area') . '/js/geometry.js', array('cache' => false));
     drupal_add_js(drupal_get_path('module', 'find') . '/js/find.js');
 
     $variables = array('#theme' => 'find.search');
@@ -55,15 +57,6 @@ function find_search($key) {
         $variables['#organisms'] = new Elastica_ResultSet(new Elastica_Response(''));
         $variables['#sightings'] = new Elastica_ResultSet(new Elastica_Response(''));
         $variables['#inventories'] = new Elastica_ResultSet(new Elastica_Response(''));
-    }
-
-    // calculate bounding box for static map
-    if (count($geo) == 2) {
-
-        list($a, $b) = explode(',', $geo[0]);
-        list($c, $d) = explode(',', $geo[1]);
-
-        $variables['#box'] = array($a . ',' . $b, $a . ',' . $d, $c . ',' . $d, $c . ',' . $b, $a . ',' . $b);
     }
 
     $parameters = drupal_get_query_parameters();

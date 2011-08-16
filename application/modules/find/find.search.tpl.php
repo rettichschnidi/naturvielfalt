@@ -21,8 +21,8 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 <?php $reset = array_merge($filters, array('geo' => array())); ?>
 <h6>Gebiet: <?php if (count($geo) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
-<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($box) > 0): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $box); else: ?>center=CH<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
-<div class="map-overlay"><div id="map-canvas"></div></div>
+<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($geo) > 1): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $geo); else: ?>center=CH&amp;maptype=terrain&amp;zoom=5<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
+<div class="map-overlay"><div id="map-canvas"></div><img src="<?php echo base_path() . drupal_get_path('module', 'find') . '/images/close.png'; ?>" width="30" height="30" class="map-close" /></div>
 
 <?php $reset = array_merge($filters, array('date' => array())); ?>
 <h6 class="filter">Datum: <?php if (count($date) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>

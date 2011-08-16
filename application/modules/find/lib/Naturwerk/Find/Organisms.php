@@ -2,7 +2,7 @@
 
 namespace Naturwerk\Find;
 
-use \Elastica_Filter_GeoBoundingBox as Geo;
+use \Elastica_Filter_GeoPolygon as GeoPolygon;
 use \Elastica_Filter_Range as Range;
 use \Elastica_Filter_HasChild as HasChildFilter;
 use \Elastica_Query_Filtered as Filtered;
@@ -30,8 +30,8 @@ class Organisms extends Finder {
     protected function geo(\Elastica_Query_Abstract $query) {
 
         // geo
-        if (count($this->geo) == 2) {
-            $geo = new Geo('sighting.position', $this->geo);
+        if (count($this->geo) > 1) {
+            $geo = new GeoPolygon('sighting.position', $this->geo);
             $query = new Filtered($query, $geo);
             $query = new HasChild($query, 'sighting');
         }

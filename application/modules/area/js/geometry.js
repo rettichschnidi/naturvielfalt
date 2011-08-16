@@ -184,18 +184,21 @@ Geometry.prototype.start = function (control) {
 
     this.listener = google.maps.event.addListener(this.map, 'click', jQuery.proxy(this.addLatLng, this));
     
-    // remove all overlay listeners (just make overlays not clickable)
-    for(var i in areaselect.mapOverlays.overlays) {
-        var overlay = areaselect.mapOverlays.overlays[i];
-        overlay.overlay.setOptions({clickable: false});
-    }
+    if (typeof(areaselect) != 'undefined') {
 
-    //deselect area if one was previously selected
-    if (areaselect.selected_area){
-        areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
-    }
+        // remove all overlay listeners (just make overlays not clickable)
+        for(var i in areaselect.mapOverlays.overlays) {
+            var overlay = areaselect.mapOverlays.overlays[i];
+            overlay.overlay.setOptions({clickable: false});
+        }
 
-    areaselect.areaInfo.close();
+        //deselect area if one was previously selected
+        if (areaselect.selected_area){
+            areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
+        }
+
+        areaselect.areaInfo.close();
+    }
 
     this.hover = jQuery('<div style="index: 100; width: 200px; position: absolute; display: none; border: 1px solid #666; background-color: #fff; padding: 3px 6px 2px;"><span class="desc"></span><span class="distance" style="color: #666;"></span></div>');
     jQuery('body').append(this.hover);
@@ -236,10 +239,13 @@ Geometry.prototype.stop = function () {
 
     this.map.setOptions({disableDoubleClickZoom: false, draggableCursor: null});
 
-    //after editing stops we have to enable our fancy listeners again
-    for (var i in areaselect.mapOverlays.overlays) {
-        var overlay = areaselect.mapOverlays.overlays[i];
-        overlay.overlay.setOptions({clickable: true});
+    if (typeof(areaselect) != 'undefined') {
+
+        //after editing stops we have to enable our fancy listeners again
+        for (var i in areaselect.mapOverlays.overlays) {
+            var overlay = areaselect.mapOverlays.overlays[i];
+            overlay.overlay.setOptions({clickable: true});
+        }
     }
 };
 
