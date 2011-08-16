@@ -589,12 +589,18 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
   $columns = $data['invDesc']['cols'];
   $form_state['columns'] = $columns;
   $count = 0;
+  $form[null] = array(
+    '#type' => 'fieldset',
+  );
+  $form[$head_inventory_id] = array(
+    '#type' => 'fieldset',
+  );
   foreach($columns as $column) {
     if($column['visible'])
       continue; // We do not want to edit fields which are visible in the edit entries form
     $name = 'col_'.$column['id'];
     $value = array_key_exists($name, $_REQUEST) ? htmlentities($_REQUEST[$name]) : $entry[$name];
-    $form[$name] = array(
+    $form[$column['head_inventory_id']][$name] = array(
       '#type' => 'textfield',
       '#title' => $column['name'],
       '#required' => false,
@@ -607,8 +613,8 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
       $options = array('');
       foreach($column['dropdown_values'] as $v)
         $options[$v['id'].'_dropdown'] .= $v['value'];
-      $form[$name]['#type'] = 'select';
-      $form[$name]['#options'] = $options;
+      $form[$column['head_inventory_id']][$name]['#type'] = 'select';
+      $form[$column['head_inventory_id']][$name]['#options'] = $options;
     }
     $count++;
   }
