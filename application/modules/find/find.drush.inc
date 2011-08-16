@@ -4,15 +4,15 @@
  * Implements hook_drush_command().
  */
 function find_drush_command() {
-    $items['find-index'] = array(
-        'description' => 'Index Naturwerk objects.',
-        'callback' => 'find_drush_index',
+    $items['find-reindex'] = array(
+        'description' => 'Reindex Naturwerk objects.',
+        'callback' => 'find_drush_reindex',
         'drupal dependencies' => array('find'),
     );
     return $items;
 }
 
-function find_drush_index() {
+function find_drush_reindex() {
     module_load_include('inc.php', 'find', 'find');
 
     try {
