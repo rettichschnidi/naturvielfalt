@@ -401,7 +401,7 @@ class Indexer {
                 $data = $callback($data);
             }
 
-            $this->index($type, $data['id'], $data, $data['parent'] ?: false);
+            $this->index($type, $data['id'], $data, isset($data['parent']) ? $data['parent'] : false);
 
             echo "  Indexing {$type->getName()}... " . ceil(++$i / $total * 100) . "%\r";
         }
