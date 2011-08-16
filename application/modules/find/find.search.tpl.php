@@ -61,23 +61,23 @@ $inventory = 'find/sightings' == $_GET['q'];
 ?>
 <table>
 <tr>
-    <?php $dir = isset($sort['name']); ?>
-    <?php $asc = $dir ? ('asc' == $sort['name']) : false; ?>
-    <?php $reset = array_merge($filters, array('sort' => array('name' => $asc ? 'desc' : 'asc'))); ?>
-    <th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Name <?php echo $dir ? ($asc ? '↓' : '↑') : ''; ?></a></th>
-
     <?php $dir = isset($sort['name_la']); ?>
     <?php $asc = $dir ? ('asc' == $sort['name_la']) : false; ?>
     <?php $reset = array_merge($filters, array('sort' => array('name_la' => $asc ? 'desc' : 'asc'))); ?>
     <?php if ($technical): ?><th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Fachbezeichnung <?php echo $dir ? ($asc ? '↓' : '↑') : ''; ?></a></th><?php endif; ?>
+
+    <?php $dir = isset($sort['name']); ?>
+    <?php $asc = $dir ? ('asc' == $sort['name']) : false; ?>
+    <?php $reset = array_merge($filters, array('sort' => array('name' => $asc ? 'desc' : 'asc'))); ?>
+    <th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Name <?php echo $dir ? ($asc ? '↓' : '↑') : ''; ?></a></th>
 
     <?php if ($user): ?><th>Benutzer</th><?php endif; ?>
     <?php if ($inventory): ?><th>Inventar</th><?php endif; ?>
 </tr>
 <?php $i = 0; foreach ($result as $object): ?>
 <tr class="<?php echo $i++ % 2 ? 'even' : 'odd'; ?>">
-    <td><?php echo l($object->name, $object->url); ?></td>
     <?php if ($technical): ?><td><?php echo l($object->name_la, $object->url); ?></td><?php endif; ?>
+    <td><?php echo $object->name ? l($object->name, $object->url) : '-'; ?></td>
     <?php if ($user): ?><td><?php echo $object->user; ?></td><?php endif; ?>
     <?php if ($inventory): ?><td><?php echo $object->inventory; ?></td><?php endif; ?>
 </tr>
