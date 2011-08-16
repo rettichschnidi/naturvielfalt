@@ -21,7 +21,7 @@ function find_search($key) {
     drupal_add_css(drupal_get_path('module', 'find') . '/css/search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
     drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry', array('group' => JS_LIBRARY));
     drupal_add_js(drupal_get_path('module', 'area') . '/css/overlay-style.js');
-    drupal_add_js(drupal_get_path('module', 'area') . '/js/geometry.js', array('cache' => false));
+    drupal_add_js(drupal_get_path('module', 'area') . '/js/geometry.js');
     drupal_add_js(drupal_get_path('module', 'find') . '/js/find.js');
 
     $variables = array('#theme' => 'find.search');
