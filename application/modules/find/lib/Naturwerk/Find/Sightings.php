@@ -7,13 +7,13 @@ namespace Naturwerk\Find;
  *
  * @author fabian.vogler
  */
-class Sightings extends Finder {
+class Sightings extends Inventories {
 
     /**
      * @param \Elastica_Index $index
      * @param Parameters $parameter
      */
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
-        parent::__construct($index, 'sighting', $parameters);
+        Finder::__construct($index, 'sighting', $parameters);
     }
 }

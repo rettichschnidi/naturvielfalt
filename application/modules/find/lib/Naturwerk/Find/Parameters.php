@@ -8,6 +8,11 @@ namespace Naturwerk\Find;
  * @author fabian.vogler
  */
 class Parameters {
+    
+    /**
+    * @var int
+     */
+    protected $uid;
 
     /**
      * @var string
@@ -50,6 +55,7 @@ class Parameters {
     protected $sort;
 
     /**
+     * @param int $uid
      * @param string $search
      * @param array $geo
      * @param array $class
@@ -58,8 +64,9 @@ class Parameters {
      * @param array $genus
      * @param array $sort
      */
-    public function __construct($search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array()) {
+    public function __construct($uid = 0, $search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array()) {
 
+        $this->uid = $uid;
         $this->search = $search;
         $this->geo = $geo;
 
@@ -84,6 +91,13 @@ class Parameters {
         $this->family = $family;
         $this->genus = $genus;
         $this->sort = $sort;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUid() {
+        return $this->uid;
     }
 
     /**

@@ -24,6 +24,7 @@ function find_search($key) {
 
     $variables = array('#theme' => 'find.search');
 
+    $uid = $GLOBALS['user']->uid;
     $search = find_query_param('search', '');
     $geo = find_query_param('geo');
     $date = find_query_param('date');
@@ -37,7 +38,7 @@ function find_search($key) {
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $parameters = new Parameters($search, $geo, $date, $class, $user, $family, $genus, $sort);
+    $parameters = new Parameters($uid, $search, $geo, $date, $class, $user, $family, $genus, $sort);
 
     try {
         $organisms = new Organisms($index, $parameters);

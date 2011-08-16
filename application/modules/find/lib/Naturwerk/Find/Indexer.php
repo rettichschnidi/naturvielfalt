@@ -118,6 +118,7 @@ class Indexer {
         $sql = '
             SELECT
                 inventory_entry.id AS id,
+                head_inventory.shared AS shared,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
@@ -145,6 +146,7 @@ class Indexer {
 
             SELECT
                 inventory_entry.id AS id,
+                head_inventory.shared AS shared,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
@@ -169,7 +171,26 @@ class Indexer {
             LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
             WHERE organism.organism_type = 1';
 
-        $this->sql('sighting', $sql, $mapping);
+        $this->sql('sighting', $sql, $mapping, array(
+            'access' => '
+            	SELECT
+            		h.owner_id AS access
+    			FROM inventory_entry e
+            	INNER JOIN inventory i ON i.id = e.inventory_id
+            	INNER JOIN head_inventory h ON h.id = i.head_inventory_id
+    			WHERE e.id = :id
+            	
+    			UNION
+            	
+            	SELECT
+            		DISTINCT u.uid AS access
+    			FROM inventory_entry e
+            	INNER JOIN inventory i ON i.id = e.inventory_id
+            	INNER JOIN head_inventory h ON h.id = i.head_inventory_id
+    			INNER JOIN sgroup_inventory g ON g.hiid = h.id
+    			INNER JOIN sgroup_users u ON u.sgid = g.sgid
+    			WHERE (read = 1 OR admin = 1) AND e.id = :id',
+        ));
     }
 
     /**
@@ -191,6 +212,7 @@ class Indexer {
         $sql = '
             SELECT
                 head_inventory.id AS id,
+                head_inventory.shared AS shared,
                 head_inventory.name AS name,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
@@ -202,6 +224,21 @@ class Indexer {
             LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
         $this->sql('inventory', $sql, $mapping, array(
+            'access' => '
+            	SELECT
+            		owner_id AS access
+    			FROM head_inventory
+    			WHERE id = :id
+            	
+    			UNION
+            	
+            	SELECT
+            		DISTINCT u.uid AS access
+    			FROM head_inventory h
+    			INNER JOIN sgroup_inventory g ON g.hiid = h.id
+    			INNER JOIN sgroup_users u ON u.sgid = g.sgid
+    			WHERE (read = 1 OR admin = 1) AND h.id = :id',
+
             'class' => '
                 SELECT
                     DISTINCT fauna_class.name_de AS class

@@ -95,11 +95,27 @@ class Finder {
     }
 
     /**
+     * @param \Elastica_Query_Abstract $query
+     * @return \Elastica_Query_Abstract query with applied access filter
+     */
+    protected function access(\Elastica_Query_Abstract $query) {
+
+        return $query;
+    }
+
+    /**
      * @return \Elastica_Filter_Abstract date filter
      */
     protected function getDateFilter() {
         $range = new \Elastica_Filter_Range('date', $this->date);
         return $range;
+    }
+
+    /**
+     * @return \Elastica_Filter_Abstract|boolean access filter or false 
+     */
+    protected function getAccessFilter() {
+        return false;
     }
 
     /**
@@ -183,6 +199,7 @@ class Finder {
             $main = new \Elastica_Query_MatchAll();
         }
         $main = $this->geo($main);
+        $main = $this->access($main);
 
         // build search query
         $query = new \Elastica_Query();
