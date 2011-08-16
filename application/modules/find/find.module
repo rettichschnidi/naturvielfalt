@@ -98,3 +98,15 @@ function find_theme() {
     ),
     );
 }
+
+/**
+ * Implements hook_cron()
+ */
+function find_cron() {
+
+    $client = new Elastica_Client();
+    $index = $client->getIndex('naturwerk');
+
+    $indexer = new Naturwerk\Find\Indexer($index);
+    $indexer->all();
+}
