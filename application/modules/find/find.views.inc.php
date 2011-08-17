@@ -13,7 +13,7 @@ function find_query_param($key, $default = array()) {
 }
 
 function find_show_search() {
-    return drupal_goto('find/organisms');
+    return drupal_goto('find/sightings');
 }
 
 function find_search($key) {
@@ -42,22 +42,9 @@ function find_search($key) {
 
     $parameters = new Parameters($uid, $search, $geo, $date, $class, $user, $family, $genus, $sort);
 
-    try {
-        $organisms = new Organisms($index, $parameters);
-        $variables['#organisms'] = $organisms->search();
-
-        $sightings = new Sightings($index, $parameters);
-        $variables['#sightings'] = $sightings->search();
-
-        $inventories = new Inventories($index, $parameters);
-        $variables['#inventories'] = $inventories->search();
-
-    } catch (Elastica_Exception_Response $e) {
-        trigger_error($e->getMessage(), E_USER_WARNING);
-        $variables['#organisms'] = new Elastica_ResultSet(new Elastica_Response(''));
-        $variables['#sightings'] = new Elastica_ResultSet(new Elastica_Response(''));
-        $variables['#inventories'] = new Elastica_ResultSet(new Elastica_Response(''));
-    }
+    $variables['#organisms'] = new Organisms($index, $parameters);
+    $variables['#sightings'] = new Sightings($index, $parameters);
+    $variables['#inventories'] = new Inventories($index, $parameters);
 
     $parameters = drupal_get_query_parameters();
     if (count($parameters) == 0) {
@@ -75,7 +62,8 @@ function find_search($key) {
 
     $variables['#sort'] = $sort;
 
-    $variables['#result'] = $variables['#' . $key];
+    $variables['#key'] = $key;
+    $variables['#current'] = $variables['#' . $key];
 
     $output = array();
     $output['search'] = $variables;
@@ -93,4 +81,48 @@ function find_show_search_sightings() {
 
 function find_show_search_inventories() {
     return find_search('inventories');
+}
+
+function find_export_csv($key) {
+
+    $output = find_search($key);
+
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="naturwerk-' . $output['search']['#key'] . '.csv"');
+
+    $out = fopen('php://output', 'w');
+    $writer = new Csv_Writer($out, new Csv_Dialect_Excel());
+
+    $current = $output['search']['#current'];
+    $result = $current->search();
+
+    $data = array();
+    foreach ($current->getColumns() as $column) {
+        $data[] = $column->getTitle();
+    }
+    $writer->writeRow($data);
+
+    foreach ($result as $row) {
+
+        // convert to ISO-8859-1 for Excel
+        $data = array();
+        foreach ($current->getColumns() as $column) {
+
+            $data[] = utf8_decode($row->__get($column->getName()));
+        }
+
+        $writer->writeRow($data);
+    }
+}
+
+function find_export_csv_organisms() {
+    find_export_csv('organisms');
+}
+
+function find_export_csv_sightings() {
+    find_export_csv('sightings');
+}
+
+function find_export_csv_inventories() {
+    find_export_csv('inventories');
 }

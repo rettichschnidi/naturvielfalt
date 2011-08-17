@@ -31,10 +31,10 @@ class Indexer {
                             'standard',
                             'lowercase',
                             'asciifolding',
-        )
-        )
-        )
-        )
+                        )
+                    )
+                )
+            )
         )), true);
     }
 
@@ -108,7 +108,7 @@ class Indexer {
             'class' => array('type' => 'string', 'index' => 'not_analyzed'),
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'inventory' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'inventory' => array('type' => 'string', 'analyzer' => 'sortable'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
@@ -214,6 +214,7 @@ class Indexer {
                 head_inventory.id AS id,
                 head_inventory.shared AS shared,
                 head_inventory.name AS name,
+                area.field_name AS area,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,

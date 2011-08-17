@@ -7,6 +7,7 @@ function find_init(){
 
     set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
     set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/elastica/lib');
+    set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/php-csv-utils');
 
     spl_autoload_register('find_autoload');
 }
@@ -22,11 +23,12 @@ function find_autoload($class) {
 
         require_once $file;
 
-    } else if (substr($class, 0, 9) == 'Elastica_') {
+    } else if (substr($class, 0, 9) == 'Elastica_' || substr($class, 0, 4) == 'Csv_') {
 
         $file = str_replace('_', '/', $class) . '.php';
 
         require_once $file;
+
     }
 }
 
@@ -43,15 +45,6 @@ function find_menu() {
         'title' => t('Search'),
         'description' => t('Search Natuwerk'),
         'page callback' => 'find_show_search',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'find.views.inc.php',
-    );
-
-    $items['find/organisms'] = array(
-        'title' => t('Tiere und Pflanzen'),
-        'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_organisms',
         'access arguments' => array('access content'),
         'type' => MENU_NORMAL_ITEM,
         'file' => 'find.views.inc.php',
@@ -77,6 +70,37 @@ function find_menu() {
         'weight' => 20,
     );
 
+    $items['find/organisms'] = array(
+        'title' => t('Tiere und Pflanzen'),
+        'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search_organisms',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'find.views.inc.php',
+        'weight' => 30,
+    );
+
+    $items['find/organisms/export'] = array(
+        'page callback' => 'find_export_csv_organisms',
+        'access arguments' => array('access content'),
+        'type' => MENU_VISIBLE_IN_BREADCRUMB,
+        'file' => 'find.views.inc.php',
+    );
+
+    $items['find/sightings/export'] = array(
+        'page callback' => 'find_export_csv_sightings',
+        'access arguments' => array('access content'),
+        'type' => MENU_VISIBLE_IN_BREADCRUMB,
+        'file' => 'find.views.inc.php',
+    );
+
+    $items['find/inventories/export'] = array(
+        'page callback' => 'find_export_csv_inventories',
+        'access arguments' => array('access content'),
+        'type' => MENU_VISIBLE_IN_BREADCRUMB,
+        'file' => 'find.views.inc.php',
+    );
+
     return $items;
 }
 
@@ -90,12 +114,24 @@ function find_theme() {
     return array(
         'find.search' => array(
             'template' => 'find.search',
-            'variables' => array('result' => null, 'sort' => array(), 'search' => '', 'class' => null, 'user' => null, 'family' => null, 'genus' => null, 'geo' => array(), 'date' => array(), 'box' => array(), 'organisms' => null, 'sightings' => null, 'inventories' => null)
-    ),
+            'variables' => array('current' => null, 'key' => '', 'sort' => array(), 'search' => '', 'class' => null, 'user' => null, 'family' => null, 'genus' => null, 'geo' => array(), 'date' => array(), 'box' => array(), 'organisms' => null, 'sightings' => null, 'inventories' => null)
+        ),
         'find_facet' => array(
             'template' => 'find_facet',
             'variables' => array('facets' => array(), 'filters' => array(), 'title' => null, 'field' => null, 'value' => null)
-    ),
+        ),
+        'find_render_plain' => array(
+            'template' => 'find_render_plain',
+            'variables' => array('object' => null, 'name' => null)
+        ),
+        'find_render_link' => array(
+            'template' => 'find_render_link',
+            'variables' => array('object' => null, 'name' => null)
+        ),
+        'find_render_date' => array(
+            'template' => 'find_render_date',
+            'variables' => array('object' => null, 'name' => null)
+        ),
     );
 }
 

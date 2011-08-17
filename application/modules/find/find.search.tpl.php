@@ -2,6 +2,7 @@
 <form action="<?php echo check_url(url($_GET['q'])); ?>" method="get">
 
 <?php
+$result = $current->search();
 $facets = $result->getFacets();
 $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'family' => $family, 'genus' => $genus, 'geo' => $geo, 'date' => $date, 'sort' => $sort);
 ?>
@@ -49,37 +50,38 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 <div class="results">
 
 <ul class="tabs">
-<li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>"><?php echo l('Tiere und Pflanzen (' . ($organisms ? $organisms->getTotalHits() : 0) . ')', 'find/organisms', array('query' => $filters)); ?></li>
-<li class="<?php echo 'find/sightings' == $_GET['q'] ? 'active' : ''; ?>"><?php echo l('Beobachtungen (' . ($sightings ? $sightings->getTotalHits() : 0) . ')', 'find/sightings', array('query' => $filters)); ?></li>
-<li class="<?php echo 'find/inventories' == $_GET['q'] ? 'active' : ''; ?>"><?php echo l('Inventare (' . ($inventories ? $inventories->getTotalHits() : 0) . ')', 'find/inventories', array('query' => $filters)); ?></li>
+    <li class="<?php echo 'find/sightings' == $_GET['q'] ? 'active' : ''; ?>">
+        <?php echo l('Beobachtungen (' . $sightings->count() . ')', 'find/sightings', array('query' => $filters)); ?>
+    </li>
+    <li class="<?php echo 'find/inventories' == $_GET['q'] ? 'active' : ''; ?>">
+        <?php echo l('Inventare (' . $inventories->count() . ')', 'find/inventories', array('query' => $filters)); ?>
+    </li>
+    <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>">
+        <?php echo l('Tiere und Pflanzen (' . $organisms->count() . ')', 'find/organisms', array('query' => $filters)); ?>
+    </li>
 </ul>
 
-<?php
-$technical = 'find/inventories' != $_GET['q'];
-$user = 'find/organisms' != $_GET['q'];
-$inventory = 'find/sightings' == $_GET['q'];
-?>
+<p><a href="javascript:window.print();">Drucken</a>, <?php echo l('Export als CSV', 'find/' . $key . '/export', array('query' => $filters)); ?></p>
+
 <table>
 <tr>
-    <?php $dir = isset($sort['name_la']); ?>
-    <?php $asc = $dir ? ('asc' == $sort['name_la']) : false; ?>
-    <?php $reset = array_merge($filters, array('sort' => array('name_la' => $asc ? 'desc' : 'asc'))); ?>
-    <?php if ($technical): ?><th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Fachbezeichnung <?php echo $dir ? ($asc ? '↓' : '↑') : ''; ?></a></th><?php endif; ?>
-
-    <?php $dir = isset($sort['name']); ?>
-    <?php $asc = $dir ? ('asc' == $sort['name']) : false; ?>
-    <?php $reset = array_merge($filters, array('sort' => array('name' => $asc ? 'desc' : 'asc'))); ?>
-    <th><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">Name <?php echo $dir ? ($asc ? '↓' : '↑') : ''; ?></a></th>
-
-    <?php if ($user): ?><th>Benutzer</th><?php endif; ?>
-    <?php if ($inventory): ?><th>Inventar</th><?php endif; ?>
+    <?php foreach ($current->getColumns() as $column): ?>
+        <th>
+        <?php $dir = isset($sort[$column->getName()]); ?>
+            <?php $asc = $dir ? ('asc' == $sort[$column->getName()]) : false; ?>
+            <?php $reset = array_merge($filters, array('sort' => array($column->getName() => $asc ? 'desc' : 'asc'))); ?>
+            <a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">
+                <?php echo $column->getTitle(); ?>
+                <?php echo $dir ? ($asc ? '↓' : '↑') : ''; ?>
+            </a>
+        </th>
+    <?php endforeach; ?>
 </tr>
 <?php $i = 0; foreach ($result as $object): ?>
 <tr class="<?php echo $i++ % 2 ? 'even' : 'odd'; ?>">
-    <?php if ($technical): ?><td><?php echo l($object->name_la, $object->url); ?></td><?php endif; ?>
-    <td><?php echo $object->name ? l($object->name, $object->url) : '-'; ?></td>
-    <?php if ($user): ?><td><?php echo $object->user; ?></td><?php endif; ?>
-    <?php if ($inventory): ?><td><?php echo $object->inventory; ?></td><?php endif; ?>
+    <?php foreach ($current->getColumns() as $column): ?>
+        <?php echo theme('find_render_' . $column->getTemplate(), array('object' => $object, 'name' => $column->getName())); ?>
+    <?php endforeach; ?>
 </tr>
 <?php endforeach; ?>
 </table>

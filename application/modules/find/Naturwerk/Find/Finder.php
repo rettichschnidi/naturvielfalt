@@ -10,6 +10,11 @@ namespace Naturwerk\Find;
 class Finder {
 
     /**
+     * @var array
+     */
+    protected $columns = array();
+
+    /**
      * @var \Elastica_Index
      */
     protected $index;
@@ -79,6 +84,10 @@ class Finder {
         $this->genus = $parameters->getGenus();
     }
 
+    public function addColumn($name, $title, $template = 'plain') {
+        $this->columns[] = new Column($name, $title, $template);
+    }
+
     /**
      * @param \Elastica_Query_Abstract $query
      * @return \Elastica_Query_Abstract query with applied geo filter
@@ -112,18 +121,23 @@ class Finder {
     }
 
     /**
-     * @return \Elastica_Filter_Abstract|boolean access filter or false 
+     * @return \Elastica_Filter_Abstract|boolean access filter or false
      */
     protected function getAccessFilter() {
         return false;
     }
 
     /**
-     * Search method.
-     *
-     * @return Elastica_ResultSet
+     * @return array
      */
-    public function search() {
+    public function getColumns() {
+        return $this->columns;
+    }
+
+    /**
+     * @return \Elastica_Query
+     */
+    public function getQuery() {
 
         $index = $this->index;
 
@@ -221,9 +235,34 @@ class Finder {
             $query->setFilter($filter);
         }
 
-        $type = $index->getType($this->type);
-        $result = $type->search($query);
+        return $query;
+    }
+
+    /**
+     * @return \Elastica_Type
+     */
+    public function getType() {
+        return $this->index->getType($this->type);
+    }
+
+    /**
+     * Search method.
+     *
+     * @return Elastica_ResultSet
+     */
+    public function search() {
+
+        $result = $this->getType()->search($this->getQuery());
 
         return $result;
+    }
+
+    /**
+     * Count method.
+     *
+     * @return int
+     */
+    public function count() {
+        return $this->getType()->count($this->getQuery());
     }
 }
