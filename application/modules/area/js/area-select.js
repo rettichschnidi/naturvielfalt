@@ -213,7 +213,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
           maxHeight : 200,
           maxWidth : 300
       });
-      var html = '<div><div style="width: 275px; padding: 10px 0;"><label>' . Drupal.t('Gebietsname:') . '&nbsp;<span class="form-required" title="' . Drupal.t('Diese Angabe wird benötigt.') . '">*</span></label><input class="areaname" size="39" /></div><div style="padding: 10px 0;"><input class="submit" type="submit" value="' . Drupal.t('Gebiet erstellen') . '" style="font-weight: bold;" /></div></div>';
+      var html = '<div><div style="width: 275px; padding: 10px 0;"><label>' . Drupal.t('Area name:') . '&nbsp;<span class="form-required" title="' . Drupal.t('This information is required.') . '">*</span></label><input class="areaname" size="39" /></div><div style="padding: 10px 0;"><input class="submit" type="submit" value="' . Drupal.t('Create area') . '" style="font-weight: bold;" /></div></div>';
       var tab = jQuery(html);
       jQuery('.submit', tab).click(function (e) {
           var name = jQuery.trim(jQuery('.areaname', tab).val());
