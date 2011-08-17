@@ -28,6 +28,9 @@ jQuery(function ($) {
 
     control.addPolygon(function () {
 
+        // don't hide polygon
+        control.overlay.overlay.setMap(map);
+
         var geo = [];
         control.overlay.overlay.getPath().forEach(function (position) {
             geo.push(position.toUrlValue());
@@ -38,8 +41,6 @@ jQuery(function ($) {
 
         var url = Drupal.settings.find.url + '?' + $.param(parameters);
         window.location.href = url;
-
-        $('.map-overlay').css('left', '-9000px');
     });
 
     // add overlay if geo is set
