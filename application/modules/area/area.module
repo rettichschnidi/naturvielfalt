@@ -20,7 +20,7 @@ module_load_include('inc', 'area', 'area.gallery');
 function area_help($path, $arg) {
   switch ($path) {
     case "admin/help#area":
-      return '<p>'.  t("Area module") .'</p>';
+      return '<p>'.  t('Area module') .'</p>';
       break;
   }
 }
@@ -116,16 +116,16 @@ function area_menu() {
     'weight' => 8
   );
   $items['area/new'] = array(
-    'title' => 'Create new area',
-    'description' => 'Create an area',
+    'title' => t('Create a new areas'),
+    'description' => t('Create an areas'),
     'page callback' => 'area_new_form',
     'access arguments' => array(AREA_CREATE),
     'type' => MENU_CALLBACK,
     'file' => 'area.new.inc',
   );
   $items['area/choose'] = array(
-    'title' => 'Choose existing area',
-    'description' => 'Choose an area',
+    'title' => t('Choose existing area'),
+    'description' => t('Choose an area'),
     'page callback' => 'drupal_get_form',
   	'page arguments' => array('area_choose_form'),
     'access arguments' => array(AREA_CREATE),
@@ -133,35 +133,35 @@ function area_menu() {
     'file' => 'area.new.inc',
   );
   $items['area/habitat_autocomplete'] = array(
-    'title' => 'Habitat autocomplete',
+    'title' => t('Habitat autocomplete'),
     'page callback' => 'area_habitat_autocomplete',
     'access arguments' => array(AREA_CREATE),
     'type' => MENU_CALLBACK,
     'file' => 'area.ajax.inc',
   );
   $items['area/area_saved_autocomplete'] = array(
-    'title' => 'Area autocomplete',
+    'title' => t('Area autocomplete'),
     'page callback' => 'area_saved_autocomplete',
     'access arguments' => array(AREA_CREATE),
     'type' => MENU_CALLBACK,
     'file' => 'area.ajax.inc',
   );
   $items['area/json'] = array(
-    'title' => 'area information in json format',
+    'title' => t('Area information in JSON format'),
     'page callback' => 'area_json',
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
     'file' => 'area.ajax.inc',
   );
   $items['area/getareas'] = array(
-    'title' => 'area information in json format',
+    'title' => t('area information in json format'),
     'page callback' => 'get_areas',
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
     'file' => 'area.ajax.inc',
   );
   $items['area/getareas/%'] = array(
-    'title' => 'area information in json format',
+    'title' => t('Area information in JSON format'),
     'page callback' => 'get_areas',
     'page arguments' => array(2),
     'access arguments' => array(AREA_ACCESS),
@@ -169,7 +169,7 @@ function area_menu() {
     'file' => 'area.ajax.inc',
   );
   $items['area/datatable'] = array(
-    'title' => 'area information in json format for datatable',
+    'title' => t('Area information in JSON format for datatable'),
     'page callback' => 'area_datatable',
     'access arguments' => array(AREA_ACCESS),
     'type' => MENU_CALLBACK,
