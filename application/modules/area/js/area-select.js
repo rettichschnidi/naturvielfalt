@@ -220,7 +220,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
           if (name) {
               jQuery('#edit-field_name').val(name);
 
-              jQuery(this).val(Drupal.t('Gebiet wird erstellt...'));
+              jQuery(this).val(Drupal.t('Creating area...'));
               jQuery(this).attr('disabled', 'disabled');
 
               jQuery.post(Drupal.settings.basePath + 'area/new', jQuery("#area-create-form").serialize(), function (json) {
