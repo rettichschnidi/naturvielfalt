@@ -54,6 +54,9 @@ $parameters = $current->getParameters();
     <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l('Tiere und Pflanzen (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
     </li>
+    <li class="<?php echo 'find/areas' == $_GET['q'] ? 'active' : ''; ?>">
+        <?php echo l('Gebiete (' . $areas->count() . ')', 'find/areas', array('query' => $parameters->filter())); ?>
+    </li>
 </ul>
 
 <div class="toolbar">

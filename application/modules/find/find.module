@@ -80,6 +80,16 @@ function find_menu() {
         'weight' => 30,
     );
 
+    $items['find/areas'] = array(
+        'title' => t('Gebiete'),
+        'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search_areas',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'find.views.inc.php',
+        'weight' => 40,
+    );
+
     $items['find/organisms/export'] = array(
         'page callback' => 'find_export_csv_organisms',
         'access arguments' => array('access content'),
@@ -101,6 +111,13 @@ function find_menu() {
         'file' => 'find.views.inc.php',
     );
 
+    $items['find/areas/export'] = array(
+        'page callback' => 'find_export_csv_areas',
+        'access arguments' => array('access content'),
+        'type' => MENU_VISIBLE_IN_BREADCRUMB,
+        'file' => 'find.views.inc.php',
+    );
+
     return $items;
 }
 
@@ -114,7 +131,7 @@ function find_theme() {
     return array(
         'find.search' => array(
             'template' => 'find.search',
-            'variables' => array('current' => null, 'key' => '', 'parameters' => null, 'organisms' => null, 'sightings' => null, 'inventories' => null)
+            'variables' => array('current' => null, 'key' => '', 'parameters' => null, 'organisms' => null, 'sightings' => null, 'inventories' => null, 'areas' => null)
         ),
         'find_facet' => array(
             'template' => 'find_facet',

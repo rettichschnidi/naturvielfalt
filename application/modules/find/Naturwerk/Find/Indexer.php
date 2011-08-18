@@ -46,6 +46,7 @@ class Indexer {
         $this->organisms();
         $this->sightings();
         $this->inventories();
+        $this->areas();
     }
 
     /**
@@ -308,6 +309,116 @@ class Indexer {
         ));
     }
 
+    /**
+     * Index all areas.
+     */
+    public function areas() {
+
+        $mapping = \Elastica_Type_Mapping::create(array(
+            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'user' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'position' => array('type' => 'geo_point'),
+            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
+        ));
+
+        $sql = '
+            SELECT
+                area.id AS id,
+                area.field_name AS name,
+                area.locality AS town,
+                ST_AsGeoJSON(area.geom) AS geom,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
+                \'area/\' || area.id AS url
+            FROM area
+            INNER JOIN users ON users.uid = area.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
+
+        $this->sql('area', $sql, $mapping, array(
+            'class' => '
+                SELECT
+                    DISTINCT fauna_class.name_de AS class
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+                INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
+                WHERE organism.organism_type = 1 AND head_inventory.area_id = :id
+
+                UNION
+
+                SELECT
+                    DISTINCT \'Pflanzen\' AS class
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                WHERE organism.organism_type = 2 AND head_inventory.area_id = :id',
+
+            'family' => '
+                SELECT
+                    DISTINCT fauna_organism.family AS family
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+                WHERE organism.organism_type = 1 AND head_inventory.area_id = :id
+
+                UNION
+
+                SELECT
+                    DISTINCT flora_organism."Familie" AS family
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
+                WHERE organism.organism_type = 2 AND head_inventory.area_id = :id',
+
+            'genus' => '
+                SELECT
+                    DISTINCT fauna_organism.genus AS genus
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+                WHERE organism.organism_type = 1 AND head_inventory.area_id = :id
+
+                UNION
+
+                SELECT
+                    DISTINCT flora_organism."Gattung" AS genus
+                FROM inventory_entry
+                INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+                INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+                INNER JOIN organism ON inventory_entry.organism_id = organism.id
+                INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
+                WHERE organism.organism_type = 2 AND head_inventory.area_id = :id',
+
+        	'date' => '
+                SELECT
+                    DISTINCT e.value AS date
+                FROM inventory_type_attribute_inventory_entry e
+                INNER JOIN inventory_type_attribute a ON a.id = e.inventory_type_attribute_id
+                INNER JOIN inventory_entry ie ON ie.id = e.inventory_entry_id
+                INNER JOIN inventory i ON ie.inventory_id = i.id
+                INNER JOIN head_inventory h ON h.id = i.head_inventory_id
+                WHERE a.name = \'Funddatum\' AND h.area_id = :id'
+        ));
+    }
+
+    /**
+     * Convert geo, centroid and date for a single data row for ElasticSearch. 
+     * 
+     * @param array $data
+     */
     protected static function convert($data) {
 
 

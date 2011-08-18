@@ -5,6 +5,7 @@ module_load_include('inc.php', 'find', 'find');
 use Naturwerk\Find\Organisms;
 use Naturwerk\Find\Sightings;
 use Naturwerk\Find\Inventories;
+use Naturwerk\Find\Areas;
 use Naturwerk\Find\Parameters;
 use Naturwerk\Find\Finder;
 
@@ -48,6 +49,7 @@ function find_search($key) {
     $variables['#organisms'] = new Organisms($index, $parameters);
     $variables['#sightings'] = new Sightings($index, $parameters);
     $variables['#inventories'] = new Inventories($index, $parameters);
+    $variables['#areas'] = new Areas($index, $parameters);
 
     $parameters = drupal_get_query_parameters();
     if (count($parameters) == 0) {
@@ -74,6 +76,10 @@ function find_show_search_sightings() {
 
 function find_show_search_inventories() {
     return find_search('inventories');
+}
+
+function find_show_search_areas() {
+    return find_search('areas');
 }
 
 function find_export_csv($key) {
@@ -118,4 +124,8 @@ function find_export_csv_sightings() {
 
 function find_export_csv_inventories() {
     find_export_csv('inventories');
+}
+
+function find_export_csv_areas() {
+    find_export_csv('areas');
 }
