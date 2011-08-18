@@ -339,7 +339,7 @@ function inventory_menu() {
     'description' => t('View single observations'),
     'page callback' => 'inventory_single_current_show',
     'access arguments' => array('create inventories'),
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_VISIBLE_IN_BREADCRUMB,
     'file' => 'inventory.single.inc',
   );
   $items['singleobservations/normal'] = array(
