@@ -80,7 +80,11 @@ $filters = array('search' => $search, 'class' => $class, 'user' => $user, 'famil
 <?php $i = 0; foreach ($result as $object): ?>
 <tr class="<?php echo $i++ % 2 ? 'even' : 'odd'; ?>">
     <?php foreach ($current->getColumns() as $column): ?>
-        <?php echo theme('find_render_' . $column->getTemplate(), array('object' => $object, 'name' => $column->getName())); ?>
+        <?php if ($column->condition($object, $current->getParameters())): ?>
+            <?php echo theme('find_render_' . $column->getTemplate(), array('object' => $object, 'name' => $column->getName())); ?>
+        <?php else: ?>
+            <?php echo theme('find_render_plain', array('object' => $object, 'name' => $column->getName())); ?>
+        <?php endif; ?>
     <?php endforeach; ?>
 </tr>
 <?php endforeach; ?>

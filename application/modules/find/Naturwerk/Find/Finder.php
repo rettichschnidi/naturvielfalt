@@ -84,8 +84,8 @@ class Finder {
         $this->genus = $parameters->getGenus();
     }
 
-    public function addColumn($name, $title, $template = 'plain') {
-        $this->columns[] = new Column($name, $title, $template);
+    public function addColumn($name, $title, $template = 'plain', $condition = null) {
+        $this->columns[] = new Column($name, $title, $template, $condition);
     }
 
     /**
@@ -236,6 +236,13 @@ class Finder {
         }
 
         return $query;
+    }
+    
+    /**
+     * @return Parameters
+     */
+    public function getParameters() {
+        return $this->parameters;
     }
 
     /**
