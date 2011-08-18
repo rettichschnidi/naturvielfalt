@@ -269,7 +269,7 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
       //print_r($items);
       $render_array[$invGroupName] = array('#weight' => $weight++);
       $render_array[$invGroupName]['title'] = array('#markup' => '<h2>'.$invGroupName.'</h2>');
-      $render_array[$invGroupName]['galleryImages'] = gallery_presentation_renderer('images',$items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
+      $render_array[$invGroupName]['galleryImages'] = gallery_presentation_renderer($items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
   
     }
   }
