@@ -1,7 +1,7 @@
 /* Gallery list */
 
 #rating-message {
-  z-index:110;
+  z-index:500;
   position:fixed;
   top:0;
   left:0;
@@ -19,6 +19,7 @@
   box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+  
 }
 
 ul.gallery {
@@ -312,6 +313,28 @@ ul.presentation-list li .caption h4,
 ul.presentation-list li .caption h5 {
   margin-left:120px;
 }
+.gallery_listing{
+	overflow-x:auto; 
+	overflow-y:hidden;
+	white-space:nowrap;
+	height:100px;
+	
+
+}
+.gallery_listing .image_attributes{
+	padding-right:30px;
+	display: inline-block;
+
+	
+}
+.gallery_listing .attributes_name{
+	
+	font-weight: bold;
+}
+.gallery_listing .attributes_value{
+	
+}
+
 
 /* Rating */
 
