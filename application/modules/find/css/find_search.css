@@ -154,6 +154,11 @@ body.page-find .columns-overlay ul {
 
 body.page-find .columns-overlay label {
     cursor: move;
+    background-image: url("../../inventory/images/sort.gif");
+    background-repeat: no-repeat;
+    background-position: center right;
+    display: inline-block;
+    width: 87%;
 }
 
 body.page-find .results .table {
