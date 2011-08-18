@@ -190,69 +190,87 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
       $sort = 'e.position, e.id ASC';
       break;
   }
-  
-  $invArr = inventory_data($head_inventory_id, $sort);
-  
+  $result = inventory_data_gallery_list($head_inventory_id,$sort);
+  //print_r($result);
   $weight = 1;
-  $seen = array();
-  foreach($invArr as $inventory_group) {
-    $items = array();
-    
-    $invGroupName = $inventory_group['invDesc']['name'];
-    $rows = array();
-    foreach($inventory_group['invDesc']['cols'] as $invDetail)
-      $rows[] = array(array(
-        'data' => $invDetail['name'],
-        'header' => true
-      ));
-    foreach($inventory_group as $k => $invDetails) {
-      if((is_string($k) && $k == 'invDesc') || in_array($invDetails['orgId'], $seen))
-        continue;
-      array_push($seen, $invDetails['orgId']);
-      $item = array(
-        'content' => array(
-          'label_family' => array(
-            '#markup' => '<h3>'.$invDetails['label_family'].'</h3>'
-          ),
-          'label_latin' => array(
-            '#markup' => '<h4>'.l($invDetails['label_latin'], 'organism/'.$invDetails['orgId']).'</h4>'
-          ),
-          'label' => array(
-            '#markup' => '<h5>'.l($invDetails['label'], 'organism/'.$invDetails['orgId']).'</h5>'
-          )
-        )
-      );
+  $html  = "";	
+  $invGroupName = "title";
+  
+  foreach($result as $record){
+
+  	$items = array();
+  	foreach($record as $infos){
+  		
+  	   $html = "";
+  	   $invGroupName = $infos['basic_infos']['inventory_type_name'];
+  	   if($size != 'gallery_presentation_list'){
+
+	        $item = array(
+	          'content' => array(
+	          'label_family' => array('#markup' => '<h3>'.$infos['basic_infos']['family'].'</h3>'),
+	          'label_latin' => array('#markup' => '<h4>'.l($infos['basic_infos']['genus'].' '.$infos['basic_infos']['species'], 
+	          											 'organism/'.$infos['basic_infos']['organism_id']).'</h4>'),
+	          'label' => array('#markup' => '<h5>'.l($infos['basic_infos']['name_de'], 'organism/'.$infos['basic_infos']['organism_id']).'</h5>')));
+      }
+      else{
+      	$html .= '<div class="image_attributes">';
+      	$html .= '<div class="family_title">'.$infos['basic_infos']['family'].'</div>';
+      	$html .= '<div class="attributes_value">'.l($infos['basic_infos']['genus'].' '.$infos['basic_infos']['species'], 
+      												'organism/'.$infos['basic_infos']['organism_id']).'<br>'.l($infos['basic_infos']['name_de'], 
+      												'organism/'.$infos['basic_infos']['organism_id']).'</div>';
+      	$html .= '</div>';
+      	foreach($infos['fields'] as $fieldname){
+      		
+      	    $html .= '<div class="image_attributes">';
+      	  	$html .= '<div class="attributes_name">'.$fieldname.'</div>';
+      	  	if($infos['field_values'][$fieldname]=="")
+      	  		$value ="no data";
+      	  	else
+      	  		$value = $infos['field_values'][$fieldname];
+      	  	$html .= '<div class="attributes_value">'.$value.'</div><div>&nbsp;</div>';
+      	  	$html .= '</div>';
+      	}
+ 
+  	$item = array('content' => array(
+                  'label' => array(
+                  '#markup' => '<div class="gallery_listing">'.$html.'</div>')));
+
+    }
+
       switch($source) {
         case 'best':
           $item['type'] = 'organism';
-          $item['id'] = $invDetails['orgId'];
+          $item['id'] = $infos['basic_infos']['organism_id'];
           break;
         case 'inventory':
           $item['type'] = 'inventory_entry';
-          $item['id'] = $invDetails['id'];
+          $item['id'] = $infos['basic_infos']['inventory_entry_id']; 
           break;
         case 'presentation':
           $item['type'] = 'inventory_entry';
-          $item['id'] = $invDetails['id'];
+          $item['id'] = $infos['basic_infos']['inventory_entry_id']; 
           $item['subtype'] = 'presentation';
           break;
         default:
           $item['type'] = 'inventory_entry';
-          $item['id'] = $invDetails['id'];
+          $item['id'] = $infos['basic_infos']['inventory_entry_id']; 
           $item['alternatives'] = array(
             array(
               'type' => 'organism',
-              'id' => $invDetails['orgId']
+              'id' => $infos['basic_infos']['organism_id']
             )
           );
           break;
       }
       array_push($items, $item);
+
     }
     if($items) {
+      //print_r($items);
       $render_array[$invGroupName] = array('#weight' => $weight++);
       $render_array[$invGroupName]['title'] = array('#markup' => '<h2>'.$invGroupName.'</h2>');
-      $render_array[$invGroupName]['gallery'] = gallery_presentation_renderer($items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
+      $render_array[$invGroupName]['galleryImages'] = gallery_presentation_renderer('images',$items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
+  
     }
   }
   
