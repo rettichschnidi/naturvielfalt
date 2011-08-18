@@ -17,9 +17,10 @@ function find_show_search() {
 }
 
 function find_search($key) {
-
+    
     drupal_add_css(drupal_get_path('module', 'find') . '/css/search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
     drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry', array('group' => JS_LIBRARY));
+    drupal_add_library('system', 'ui.sortable');
     drupal_add_js(drupal_get_path('module', 'area') . '/css/overlay-style.js');
     drupal_add_js(drupal_get_path('module', 'area') . '/js/geometry.js');
     drupal_add_js(drupal_get_path('module', 'find') . '/js/find.js');
@@ -34,13 +35,14 @@ function find_search($key) {
     $user = find_query_param('user');
     $family = find_query_param('family');
     $genus = find_query_param('genus');
-
+    
+    $columns = find_query_param('columns', array());
     $sort = find_query_param('sort');
 
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $parameters = new Parameters($uid, $search, $geo, $date, $class, $user, $family, $genus, $sort);
+    $parameters = new Parameters($uid, $search, $geo, $date, $class, $user, $family, $genus, $sort, $columns);
 
     $variables['#organisms'] = new Organisms($index, $parameters);
     $variables['#sightings'] = new Sightings($index, $parameters);
@@ -51,16 +53,6 @@ function find_search($key) {
         $parameters = new stdClass(); // force empty JSON object
     }
     drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $geo)), 'setting');
-
-    $variables['#search'] = $search;
-    $variables['#geo'] = $geo;
-    $variables['#date'] = $date;
-    $variables['#class'] = $class;
-    $variables['#user'] = $user;
-    $variables['#family'] = $family;
-    $variables['#genus'] = $genus;
-
-    $variables['#sort'] = $sort;
 
     $variables['#key'] = $key;
     $variables['#current'] = $variables['#' . $key];
@@ -97,7 +89,7 @@ function find_export_csv($key) {
     $result = $current->search();
 
     $data = array();
-    foreach ($current->getColumns() as $column) {
+    foreach ($current->getActiveColumns() as $column) {
         $data[] = $column->getTitle();
     }
     $writer->writeRow($data);
@@ -106,7 +98,7 @@ function find_export_csv($key) {
 
         // convert to ISO-8859-1 for Excel
         $data = array();
-        foreach ($current->getColumns() as $column) {
+        foreach ($current->getActiveColumns() as $column) {
 
             $data[] = utf8_decode($row->__get($column->getName()));
         }

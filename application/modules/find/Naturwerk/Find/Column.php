@@ -27,9 +27,15 @@ class Column {
      */
     protected $condition;
 
-    public function __construct($name, $title, $template = 'plain', $condition = null) {
+    /**
+     * @var boolean
+     */
+    protected $active = true;
+
+    public function __construct($name, $title, $active = true, $template = 'plain', $condition = null) {
         $this->name = $name;
         $this->title = $title;
+        $this->active = $active;
         $this->template = $template;
         $this->condition = $condition;
     }
@@ -46,6 +52,20 @@ class Column {
      */
     public function getTitle() {
         return $this->title;
+    }
+
+    /**
+     * @param boolean $active
+     */
+    public function setActive($active) {
+        $this->active = $active;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isActive() {
+        return $this->active;
     }
 
     /**

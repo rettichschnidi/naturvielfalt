@@ -21,10 +21,11 @@ class Organisms extends Finder {
      * @param Parameters $parameter
      */
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
-        parent::__construct($index, 'organism', $parameters);
 
-        $this->addColumn('name_la', 'Fachbezeichnung', 'link');
-        $this->addColumn('name', 'Name', 'link');
+        $this->addColumn('name_la', 'Fachbezeichnung', true, 'link');
+        $this->addColumn('name', 'Name', true, 'link');
+
+        parent::__construct($index, 'organism', $parameters);
     }
 
     /**
@@ -33,8 +34,8 @@ class Organisms extends Finder {
     protected function geo(\Elastica_Query_Abstract $query) {
 
         // geo
-        if (count($this->geo) > 1) {
-            $geo = new GeoPolygon('sighting.position', $this->geo);
+        if (count($this->parameters->getGeo()) > 1) {
+            $geo = new GeoPolygon('sighting.position', $this->parameters->getGeo());
             $query = new Filtered($query, $geo);
             $query = new HasChild($query, 'sighting');
         }
@@ -46,7 +47,7 @@ class Organisms extends Finder {
      * @return \Elastica_Filter_Abstract date filter
      */
     protected function getDateFilter() {
-        $range = new Range('sighting.date', $this->date);
+        $range = new Range('sighting.date', $this->parameters->getDate());
         $query = new Filtered(new All(), $range);
         $hasChild = new HasChildFilter($query, 'sighting');
         return $hasChild;

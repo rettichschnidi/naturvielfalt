@@ -1,5 +1,12 @@
 jQuery(function ($) {
 
+    $('body.page-find .columns-overlay ul').sortable();
+
+    $('body.page-find .columns-select').click(function () {
+        $('body.page-find .columns-overlay').toggle();
+        return false;
+    });
+
     $('body.page-find .map-select').click(function () {
         $('body.page-find .map-overlay').css('left', '50%');
     });

@@ -14,12 +14,13 @@ class Sightings extends Inventories {
      * @param Parameters $parameter
      */
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
-        Finder::__construct($index, 'sighting', $parameters);
 
-        $this->addColumn('name_la', 'Fachbezeichnung', 'link', array($this, 'permission'));
-        $this->addColumn('name', 'Name', 'link', array($this, 'permission'));
+        $this->addColumn('name_la', 'Fachbezeichnung', true, 'link', array($this, 'permission'));
+        $this->addColumn('name', 'Name', true, 'link', array($this, 'permission'));
         $this->addColumn('user', 'Benutzer');
         $this->addColumn('inventory', 'Inventar');
-        $this->addColumn('date', 'Datum', 'date');
+        $this->addColumn('date', 'Datum', true, 'date');
+
+        Finder::__construct($index, 'sighting', $parameters);
     }
 }

@@ -25,41 +25,6 @@ class Finder {
     protected $type;
 
     /**
-     * @var string
-     */
-    protected $search;
-
-    /**
-     * @var array
-     */
-    protected $geo;
-
-    /**
-     * @var array
-     */
-    protected $date;
-
-    /**
-     * @var array
-     */
-    protected $class;
-
-    /**
-     * @var array
-     */
-    protected $user;
-
-    /**
-     * @var array
-     */
-    protected $family;
-
-    /**
-     * @var array
-     */
-    protected $genus;
-
-    /**
      * @var Naturwerk\Find\Parameters
      */
     protected $parameters;
@@ -75,17 +40,29 @@ class Finder {
         $this->type = $type;
         $this->parameters = $parameters;
 
-        $this->search = $parameters->getSearch();
-        $this->geo = $parameters->getGeo();
-        $this->date = $parameters->getDate();
-        $this->class = $parameters->getClass();
-        $this->user = $parameters->getUser();
-        $this->family = $parameters->getFamily();
-        $this->genus = $parameters->getGenus();
+        // resort and active columns
+        if (count($parameters->getColumns()) > 0) {
+
+            $columns = array();
+            foreach ($this->columns as $i => $column) {
+                $index = array_search($column->getName(), $parameters->getColumns());
+
+                if ($index === false) {
+                    $column->setActive(false);
+                    $columns[999 + $i] = $column;
+                } else {
+                    $column->setActive(true);
+                    $columns[$index] = $column;
+                }
+            }
+            
+            ksort($columns);
+            $this->columns = $columns;
+        }
     }
 
-    public function addColumn($name, $title, $template = 'plain', $condition = null) {
-        $this->columns[] = new Column($name, $title, $template, $condition);
+    public function addColumn($name, $title, $active = true, $template = 'plain', $condition = null) {
+        $this->columns[] = new Column($name, $title, $active, $template, $condition);
     }
 
     /**
@@ -95,8 +72,9 @@ class Finder {
     protected function geo(\Elastica_Query_Abstract $query) {
 
         // geo
-        if (count($this->geo) > 1) {
-            $geo = new \Elastica_Filter_GeoPolygon('position', $this->geo);
+        $geo = $this->parameters->getGeo();
+        if (count($geo) > 1) {
+            $geo = new \Elastica_Filter_GeoPolygon('position', $this->parameters->getGeo());
             $query = new \Elastica_Query_Filtered($query, $geo);
         }
 
@@ -116,7 +94,7 @@ class Finder {
      * @return \Elastica_Filter_Abstract date filter
      */
     protected function getDateFilter() {
-        $range = new \Elastica_Filter_Range('date', $this->date);
+        $range = new \Elastica_Filter_Range('date', $this->parameters->getDate());
         return $range;
     }
 
@@ -135,109 +113,68 @@ class Finder {
     }
 
     /**
-     * @return \Elastica_Query
+     * @return array
      */
-    public function getQuery() {
+    public function getActiveColumns() {
 
-        $index = $this->index;
+        $columns = array();
+        foreach ($this->columns as $column) {
+            if ($column->isActive()) {
+                $columns[] = $column;
+            }
+        }
 
-        $facetClass = new \Elastica_Facet_Terms('class');
-        $facetClass->setField('class');
+        return $columns;
+    }
 
-        $facetUser = new \Elastica_Facet_Terms('user');
-        $facetUser->setField('user');
-
-        $facetFamily = new \Elastica_Facet_Terms('family');
-        $facetFamily->setField('family');
-        $facetFamily->setSize(900);
-
-        $facetGenus = new \Elastica_Facet_Terms('genus');
-        $facetGenus->setField('genus');
-        $facetGenus->setSize(900);
+    public function getFilter() {
 
         // facets filter
         $filter = new \Elastica_Filter_And();
-        $f = false;
 
         // add class filter
-        if (count($this->class) > 0) {
-            $term = new \Elastica_Filter_Terms('class', $this->class);
+        $class = $this->parameters->getClass();
+        if (count($class) > 0) {
+            $term = new \Elastica_Filter_Terms('class', $class);
             $filter->addFilter($term);
-            $facetUser->setFilter($term);
-            $facetGenus->setFilter($term);
-            $facetFamily->setFilter($term);
-            $f = true;
         }
 
         // add user filter
-        if (count($this->user) > 0) {
-            $term = new \Elastica_Filter_Terms('user', $this->user);
+        $user = $this->parameters->getUser();
+        if (count($user) > 0) {
+            $term = new \Elastica_Filter_Terms('user', $user);
             $filter->addFilter($term);
-            $facetClass->setFilter($term);
-            $facetGenus->setFilter($term);
-            $facetFamily->setFilter($term);
-            $f = true;
-        }
-
-        // add family filter
-        if (count($this->family) > 0) {
-            $term = new \Elastica_Filter_Terms('family', $this->family);
-            $filter->addFilter($term);
-            $facetClass->setFilter($term);
-            $facetUser->setFilter($term);
-            $facetGenus->setFilter($term);
-            $f = true;
-        }
-
-        // add genus filter
-        if (count($this->genus) > 0) {
-            $term = new \Elastica_Filter_Terms('genus', $this->genus);
-            $filter->addFilter($term);
-            $facetClass->setFilter($term);
-            $facetUser->setFilter($term);
-            $facetFamily->setFilter($term);
-            $f = true;
         }
 
         // filter date
-        if (count($this->date) > 0) {
+        $date = $this->parameters->getDate();
+        if (count($date) > 0) {
             $range = $this->getDateFilter();
             $filter->addFilter($range);
-            $f = true;
         }
 
+        return $filter;
+    }
+
+    /**
+     * @return \Elastica_Query_Abstract
+     */
+    public function getQuery() {
+
         // main query
-        if ($this->search) {
-            $main = new \Elastica_Query_FuzzyLikeThis($this->search);
+        $search = $this->parameters->getSearch();
+        if ($search) {
+            $main = new \Elastica_Query_FuzzyLikeThis();
+            $main->setLikeText($search);
         } else {
             $main = new \Elastica_Query_MatchAll();
         }
         $main = $this->geo($main);
         $main = $this->access($main);
 
-        // build search query
-        $query = new \Elastica_Query();
-        $query->setQuery($main);
-        $query->addFacet($facetClass);
-        $query->addFacet($facetFamily);
-        $query->addFacet($facetGenus);
-        $query->addFacet($facetUser);
-        $query->setSize(100);
-
-        // sorting
-        $sort = $this->parameters->getSort();
-        if (count($sort) > 0) {
-            $query->setSort($sort);
-        }
-
-        // add filter to query
-        if ($f) {
-            $query->setFilter($filter);
-        }
-
-        return $query;
+        return $main;
     }
-    
+
     /**
      * @return Parameters
      */
@@ -259,7 +196,41 @@ class Finder {
      */
     public function search() {
 
-        $result = $this->getType()->search($this->getQuery());
+        $index = $this->index;
+
+        $facetClass = new \Elastica_Facet_Terms('class');
+        $facetClass->setField('class');
+
+        $facetUser = new \Elastica_Facet_Terms('user');
+        $facetUser->setField('user');
+
+        // add class filter
+        $class = $this->parameters->getClass();
+        if (count($class) > 0) {
+            $term = new \Elastica_Filter_Terms('class', $class);
+            $facetUser->setFilter($term);
+        }
+
+        // build search query
+        $query = new \Elastica_Query();
+        $query->setQuery($this->getQuery());
+        $query->addFacet($facetClass);
+        $query->addFacet($facetUser);
+        $query->setSize(100);
+
+        // sorting
+        $sort = $this->parameters->getSort();
+        if (count($sort) > 0) {
+            $query->setSort($sort);
+        }
+
+        // add filter to query
+        $filter = $this->getFilter();
+        if (count($filter->getParams()) > 0) {
+            $query->setFilter($filter);
+        }
+
+        $result = $this->getType()->search($query);
 
         return $result;
     }
@@ -270,6 +241,14 @@ class Finder {
      * @return int
      */
     public function count() {
-        return $this->getType()->count($this->getQuery());
+
+        $query = $this->getQuery();
+
+        $filter = $this->getFilter();
+        if (count($filter->getParams()) > 0) {
+            $query = new \Elastica_Query_Filtered($query, $filter);
+        }
+
+        return $this->getType()->count($query);
     }
 }

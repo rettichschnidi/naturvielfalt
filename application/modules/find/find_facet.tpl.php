@@ -1,5 +1,5 @@
 <?php
-$reset = array_merge($filters, array($field => array()));
+$reset = $parameters->filter(array($field => array()));
 ?>
 <h6 class="filter"><?php echo $title; ?>: <?php if (count($value) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
@@ -11,7 +11,7 @@ $reset = array_merge($filters, array($field => array()));
     } else {
         $params = array_merge($value, (array) $term['term']);
     }
-    $filters = array_merge($filters, array($field => $params));
+    $filters = $parameters->filter(array($field => $params));
     ?>
     <li class="<?php echo $active ? 'active' : ''; ?>"><a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>"><?php echo $term['term'] . ' (' . $term['count'] . ')'; ?></a></li>
 <?php endforeach; ?>

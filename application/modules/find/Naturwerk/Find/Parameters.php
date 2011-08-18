@@ -8,9 +8,9 @@ namespace Naturwerk\Find;
  * @author fabian.vogler
  */
 class Parameters {
-    
+
     /**
-    * @var int
+     * @var int
      */
     protected $uid;
 
@@ -55,6 +55,11 @@ class Parameters {
     protected $sort;
 
     /**
+     * @var array
+     */
+    protected $columns;
+
+    /**
      * @param int $uid
      * @param string $search
      * @param array $geo
@@ -63,8 +68,9 @@ class Parameters {
      * @param array $family
      * @param array $genus
      * @param array $sort
+     * @param array $columns
      */
-    public function __construct($uid = 0, $search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array()) {
+    public function __construct($uid = 0, $search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $sort = array(), $columns = array()) {
 
         $this->uid = $uid;
         $this->search = $search;
@@ -90,7 +96,9 @@ class Parameters {
         $this->user = $user;
         $this->family = $family;
         $this->genus = $genus;
+
         $this->sort = $sort;
+        $this->columns = $columns;
     }
 
     /**
@@ -154,5 +162,32 @@ class Parameters {
      */
     public function getSort() {
         return $this->sort;
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumns() {
+        return $this->columns;
+    }
+
+    /**
+     * @param array $override
+     */
+    public function filter($override = array()) {
+
+        $filter = array(
+        	'search' => $this->getSearch(),
+        	'class' => $this->getClass(),
+        	'user' => $this->getUser(),
+        	'family' => $this->getFamily(),
+        	'genus' => $this->getGenus(),
+        	'geo' => $this->getGeo(),
+        	'date' => $this->getDate(),
+        	'sort' => $this->getSort(),
+        	'columns' => $this->getColumns(),
+        );
+
+        return array_merge($filter, $override);
     }
 }
