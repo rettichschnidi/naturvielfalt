@@ -86,11 +86,14 @@ $parameters = $current->getParameters();
 </div>
 </div>
 
+<div class="table">
 <table>
+<thead>
 <tr>
     <?php foreach ($current->getActiveColumns() as $column): ?>
         <th>
-        <?php $dir = isset($sort[$column->getName()]); ?>
+            <?php $sort = $parameters->getSort(); ?>
+            <?php $dir = isset($sort[$column->getName()]); ?>
             <?php $asc = $dir ? ('asc' == $sort[$column->getName()]) : false; ?>
             <?php $reset = $parameters->filter(array('sort' => array($column->getName() => $asc ? 'desc' : 'asc'))); ?>
             <a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>">
@@ -100,6 +103,7 @@ $parameters = $current->getParameters();
         </th>
     <?php endforeach; ?>
 </tr>
+</thead>
 <?php $i = 0; foreach ($result as $object): ?>
 <tr class="<?php echo $i++ % 2 ? 'even' : 'odd'; ?>">
     <?php foreach ($current->getActiveColumns() as $column): ?>
@@ -112,6 +116,7 @@ $parameters = $current->getParameters();
 </tr>
 <?php endforeach; ?>
 </table>
+</div>
 
 </div>
 </form>
