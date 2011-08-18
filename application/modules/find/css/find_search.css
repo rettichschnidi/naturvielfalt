@@ -156,6 +156,29 @@ body.page-find .columns-overlay label {
     cursor: move;
 }
 
+body.page-find .results .table {
+    width: 100%;
+    height: 450px;
+    overflow: auto;
+    border: 1px solid #ddd;
+}
+
+body.page-find .results table {
+    white-space: nowrap;
+    margin: 0;
+}
+
+body.page-find .results table th {
+    background-color: #eee;
+    padding: 0.6em 0.5em 0.5em;
+    border-bottom: 1px solid #ddd;
+}
+
+body.page-find .results table td {
+    padding: 0.6em 0.5em 0.5em;
+    border-bottom: 1px solid #eee;
+}
+
 body.page-find .map-select {
     cursor: pointer;
 }

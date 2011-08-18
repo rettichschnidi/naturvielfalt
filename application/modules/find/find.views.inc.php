@@ -18,7 +18,8 @@ function find_show_search() {
 
 function find_search($key) {
     
-    drupal_add_css(drupal_get_path('module', 'find') . '/css/search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
+    drupal_add_css(drupal_get_path('module', 'find') . '/css/find_search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
+    drupal_add_css(drupal_get_path('module', 'find') . '/css/find_print.css', array('group' => CSS_DEFAULT, 'every_page' => true, 'media' => 'print'));
     drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry', array('group' => JS_LIBRARY));
     drupal_add_library('system', 'ui.sortable');
     drupal_add_js(drupal_get_path('module', 'area') . '/css/overlay-style.js');
