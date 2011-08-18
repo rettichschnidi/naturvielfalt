@@ -993,7 +993,6 @@ function inventory_column_description($inventory_id, $type_id=false, $custom_fie
   $type_id = $inventory->id;
   $invColDesc["name"] = $inventory->name;
   $invColDesc["id"] = $inventory->id;
-  
   $inventory = 'a.head_inventory_id IS NULL';
   if($head_inventory_id && $custom_fields)
     $inventory = '('.$inventory.' OR a.head_inventory_id = '.intval($head_inventory_id).')';
@@ -1250,7 +1249,92 @@ function _inventory_single_get_id($user) {
   }
   return $head_inventory_id;
 }
+function inventory_data_gallery_list($head_inventory_id,$sort){
+	  
+  	  $protected = inventory_redlisted_entries($head_inventory_id);
+  	  
+	  $result = db_query('select i.inventory_type_id,
+	  							 e.id as inventory_entry_id,
+	  							 it.name as inventory_type_name,
+	  							 ito.organism_id,
+								 flora."Familie" flora_familie,
+								 flora."Gattung" as flora_gattung,
+								 flora."Art" as flora_art,
+								 flora.name_de as flora_name_de,
+								 fauna.family,
+								 fauna.genus,
+								 fauna.species,
+								 fauna.name_de as fauna_name_de,
+								 ita.name as field_name,
+								 itaie.value as field_value,
+								 itaie.inventory_type_attribute_dropdown_value_id,
+								 itadv.value as dropdown_value
+	  					  from inventory i left join inventory_entry e on e.inventory_id = i.id 
+			  			  left join inventory_type it on it.id = i.inventory_type_id 
+						  left join inventory_type_attribute ita on ita.inventory_type_id = i.inventory_type_id
+			  			  left join inventory_type_attribute_inventory_entry itaie on itaie.inventory_type_attribute_id = ita.id AND e.id = itaie.inventory_entry_id
+			  			  left join inventory_type_attribute_dropdown_value itadv on itadv.id = itaie.inventory_type_attribute_dropdown_value_id
+						  left join inventory_type_organism ito on ito.organism_id = e.organism_id
+						  left join organism o on e.organism_id = o.id
+						  left join fauna_organism fauna ON o.organism_id = fauna.id
+					      left join flora_organism flora ON o.organism_id = flora.id
+	  					  WHERE i.head_inventory_id =:hid ORDER BY '.$sort.',ita.id',array(':hid' => $head_inventory_id));
+	$data = array();
+	$fields = array();
+	$field_values = array();
+	
+	$fields_fauna="";
+	$fields_flora="";
+	foreach($result as $record){
+		
+		//check if flora or fauna
+		if($record->inventory_type_id != 16){
+			$fields[$record->organism_id][] = $record->field_name;
+			if($record->inventory_type_attribute_dropdown_value_id > 0)
+				$field_values[$record->organism_id][$record->field_name] = $record->dropdown_value;
+			else
+				$field_values[$record->organism_id][$record->field_name] = $record->field_value;
+			
+			$data[$record->inventory_type_name][$record->organism_id] =
+		    array('basic_infos' => array( 'inventory_type_name' => $record->inventory_type_name,
+		    							  'inventory_entry_id' => $record->inventory_entry_id,
+										  'organism_id'  => $record->organism_id,
+		    							  'organism_type' => $record->inventory_type_id,
+				  						  'family' => $record->family,
+				  					      'genus' => $record->genus, 
+				  						  'species' => $record->species,
+				  						  'name_de' => $record->fauna_name_de));
+		    $data[$record->inventory_type_name][$record->organism_id]['fields'] = $fields[$record->organism_id];
+		    $data[$record->inventory_type_name][$record->organism_id]['field_values'] = $field_values[$record->organism_id];
 
+		}
+		else{
+			$fields[$record->organism_id][] = $record->field_name;
+			if($record->inventory_type_attribute_dropdown_value_id > 0)
+				$field_values[$record->organism_id][$record->field_name] = $record->dropdown_value;
+			else
+				$field_values[$record->organism_id][$record->field_name] = $record->field_value;
+				
+			$data[$record->inventory_type_name][$record->organism_id] =
+			array('basic_infos' => array( 'inventory_type_name' => $record->inventory_type_name,
+					    				  'inventory_entry_id' => $record->inventory_entry_id,
+										  'organism_id'  => $record->organism_id,
+										  'organism_type' => $record->inventory_type_id,
+				  						  'family' => $record->flora_familie,
+				  						  'genus' => $record->flora_gattung, 
+				  						  'species' => $record->flora_art,
+				  						  'name_de' => $record->flora_name_de));
+			$data[$record->inventory_type_name][$record->organism_id]['fields'] = $fields[$record->organism_id];
+			$data[$record->inventory_type_name][$record->organism_id]['field_values'] = $field_values[$record->organism_id];
+			
+		}
+			
+		
+	}
+		
+						  
+	return $data;
+}
 function _include_js_and_css() {
   drupal_add_library('system', 'ui.dialog');
   drupal_add_library('system', 'ui.datepicker');
