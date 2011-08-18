@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8" />
-<title>Naturwerk</title>
+<title>Naturvielfalt</title>
 <link rel="stylesheet" href="baseline/uncompressed/baseline.reset.css">
 <link rel="stylesheet" href="baseline/uncompressed/baseline.base.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
@@ -66,8 +66,8 @@ header h2 {
 }
 
 #content header {
-    padding: 12px 10px 0 10px;
-    height: 40px; // 52 - 12
+    padding: 14px 10px 0 10px;
+    height: 38px; // 52 - 14
 }
 
 header a {
@@ -188,7 +188,7 @@ function updateLocation(position) {
 
 function updateMap() {
     if (lat && lon) {
-        $('#map').html('<img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;markers=size:small|'+lat+','+lon+'&amp;sensor=true" width="320" height="150" />');
+        $('#map').html('<img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;markers='+lat+','+lon+'&amp;sensor=true" width="320" height="150" />');
     }
 }
 
@@ -632,7 +632,7 @@ var db = {
 <div class="container">
     <section class="content" id="content">
         <header>
-            <img src="images/logo.png" alt="Naturwerk" width="106" height="26" />
+            <img src="images/logo.png" alt="Naturvielfalt" width="112" height="16" />
             <h2>Einzelbeobachtung</h2>
         </header>
         <div class="inner">
@@ -658,7 +658,7 @@ var db = {
             <h2 id="organism">Insekten</h2>
         </header>
         <div class="inner">
-        <div id="map"><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;markers=size:small|47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
+        <div id="map"><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;markers=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
         <p class="input"><label for="date">Datum: </label><input id="date" type="date" value="2011-07-28" /></p>
         <p class="input"><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" /></p>
         <p><input id="location" type="hidden" value="" /><input type="submit" value="Speichern" /></p>
