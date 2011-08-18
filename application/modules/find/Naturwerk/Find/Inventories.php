@@ -29,8 +29,8 @@ class Inventories extends Finder {
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
         parent::__construct($index, 'inventory', $parameters);
 
-        $this->addColumn('name', 'Name', 'link', array($this, 'permission'));
-        $this->addColumn('area', 'Gebiet');
+        $this->addColumn('name', 'Inventarname', 'link', array($this, 'permission'));
+        $this->addColumn('area', 'Gebiet / Flurname');
         $this->addColumn('user', 'Benutzer');
     }
 }
