@@ -55,12 +55,12 @@ $parameters = $current->getParameters();
 <div class="fieldset">
 <?php $date = $parameters->getDate(); ?>
 <p>
-    <label for="date_from"><?php echo t('From'); ?>:</label>
+    <label for="date_from"><?php echo t('Date from'); ?>:</label>
     <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" />
 </p>
 
 <p>
-    <label for="date_to"><?php echo t('To'); ?>:</label>
+    <label for="date_to"><?php echo t('Date to'); ?>:</label>
     <input name="date[to]" id="date_to" value="<?php echo check_plain(@$date['to']); ?>" />
 </p>
 </div>
@@ -93,7 +93,7 @@ $parameters = $current->getParameters();
 </ul>
 
 <div class="toolbar">
-<p class="left"><a href="javascript:window.print();"><?php echo t('Print'); ?></a>, <?php echo l('Export as CSV', 'find/' . $key . '/export', array('query' => $parameters->filter())); ?></p>
+<p class="left"><a href="javascript:window.print();"><?php echo t('Print'); ?></a>, <?php echo l(t('Export as CSV'), 'find/' . $key . '/export', array('query' => $parameters->filter())); ?></p>
 <p class="right"><a href="#" class="columns-select"><?php echo t('Select columns'); ?></a></p>
 <div class="columns-overlay">
     <ul>
