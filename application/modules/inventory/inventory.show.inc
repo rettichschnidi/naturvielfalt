@@ -546,7 +546,7 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
   
   $gallery_available = $gallery && function_exists('gallery_view_link');
   
-  $weight = 0;
+  $weight = 4;
   foreach($invArr as $key => $inventory_group) {
     $rows = array();
     $header = array();
