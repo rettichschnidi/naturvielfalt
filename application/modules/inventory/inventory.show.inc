@@ -34,8 +34,8 @@ function inventory_show($head_inventory_id, $redirect=true) {
   
   if(function_exists('gallery_list_renderer')){
     $render_array['GalleryImages'] = gallery_list_renderer('images','head_inventory', $head_inventory_id, false, 100);
-    $render_array['GallerySounds'] = gallery_list_renderer('sounds','head_inventory', $head_inventory_id, false, 100,true);
-    $render_array['GalleryVideos'] = gallery_list_renderer('videos','head_inventory', $head_inventory_id, false, 100,true);
+    $render_array['GallerySounds'] = gallery_list_renderer('sounds','head_inventory', $head_inventory_id, false, 101,true);
+    $render_array['GalleryVideos'] = gallery_list_renderer('videos','head_inventory', $head_inventory_id, false, 102,true);
     
   }
   
