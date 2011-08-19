@@ -358,15 +358,15 @@ function gallery_permission() {
   return array(
     'administer rating types' => array(
       'title' => t('Administer rating types'),
-      'description' => t('Create and modify rating types for gallery images.'),
+      'description' => t('Create and modify rating types for gallery medias.'),
     ),
     'administer categories' => array(
       'title' => t('Administer categories'),
-      'description' => t('Create and modify categories for gallery images.'),
+      'description' => t('Create and modify categories for gallery medias.'),
     ),
     'add gallery images' => array(
-      'title' => t('Add gallery images'),
-      'description' => t('Create and modify gallery images of objects owned.'),
+      'title' => t('Add gallery medias'),
+      'description' => t('Create and modify gallery medias of objects owned.'),
     ),
     'manage gallery medias' => array(
       'title' => t('Manage gallery medias'),
@@ -377,12 +377,12 @@ function gallery_permission() {
       'description' => t('Place ratings for gallery medias.')
     ),
     'view gallery images' => array(
-      'title' => t('View gallery images'),
-      'description' => t('View gallery images.')
+      'title' => t('View gallery medias'),
+      'description' => t('View gallery medias.')
     ),
     'view hidden gallery images' => array(
-      'title' => t('View hidden gallery images'),
-      'description' => t('View gallery images with rating lower than the boundry set in the gallery settings.')
+      'title' => t('View hidden gallery medias'),
+      'description' => t('View gallery medias with rating lower than the boundry set in the gallery settings.')
     )
   );
 }

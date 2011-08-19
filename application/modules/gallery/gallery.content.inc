@@ -900,7 +900,7 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
   if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
       return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
         '!name' => $element['#title'],
-        '!size' => format_size(parse_size(variable_get('gallery_image_size', 2048)))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
+        '!size' => format_size(parse_size(variable_get('gallery_image_size', 2048)*1024))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
    
   if(!in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
     	return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
@@ -918,7 +918,7 @@ function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
   if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
       return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
         '!name' => $element['#title'],
-        '!size' => format_size(parse_size(variable_get('gallery_sound_size', 2048))))));//'!size' => format_size(parse_size(file_upload_max_size())))));
+        '!size' => format_size(parse_size(variable_get('gallery_sound_size', 2048)*1024)))));//'!size' => format_size(parse_size(file_upload_max_size())))));
     	  	
   if(!in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
     	return form_error($element, t('!name requires a file of type mp3. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
@@ -936,7 +936,7 @@ function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
   if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
       return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
         '!name' => $element['#title'],
-        '!size' => format_size(parse_size(variable_get('gallery_video_size', 8192)))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
+        '!size' => format_size(parse_size(variable_get('gallery_video_size', 8192)*1024))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
     	
   if(!in_array($_FILES['files']['type'][$name], array('video/mp4')))
     	return form_error($element, t('!name requires a file of type mp4. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
@@ -950,14 +950,15 @@ function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
       return;
       
   if(in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
-  	$file_size = variable_get('gallery_image_size', 2048)*1024;
+  	$file_size = variable_get('gallery_image_size', 2048);
   	
   if(in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
-  	$file_size = variable_get('gallery_sound_size', 2048)*1024;
+  	$file_size = variable_get('gallery_sound_size', 2048);
   
   if(in_array($_FILES['files']['type'][$name], array('video/mp4')))
-  	$file_size = variable_get('gallery_video_size', 8192)*1024;	
+  	$file_size = variable_get('gallery_video_size', 8192);	
   
+  $file_size = $file_size*1024;
   if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
       return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
         '!name' => $element['#title'],
@@ -992,17 +993,17 @@ function gallery_images_form_upload_submit($form, &$form_state) {
   
   if($mediatype == "images"){
   	$extensions = 'jpg jpeg gif png';
-  	$file_size = variable_get('gallery_image_size', 2048)*1024;
+  	$file_size = variable_get('gallery_image_size', 2048);
   }
   elseif($mediatype == "sounds"){
   	$extensions = 'mp3';
-  	$file_size = variable_get('gallery_sound_size', 2048)*1024;
+  	$file_size = variable_get('gallery_sound_size', 2048);
   }
   elseif($mediatype == "videos"){
   	$extensions = 'mp4';
-  	$file_size = variable_get('gallery_video_size',8192)*1024;
+  	$file_size = variable_get('gallery_video_size',8192);
   }
-  	
+  $file_size = $file_size*1024;	
   $validators = array(
     'file_validate_extensions' => array($extensions),
     'file_validate_size' => array(parse_size($file_size), 0),
