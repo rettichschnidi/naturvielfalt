@@ -2,7 +2,7 @@
  * @author Roger Wolfer, Roman Schaller
  */
 
-function AreaSelect(map_id, search_id, search_button_id) {
+function AreaSelect(map_id) {
   //////////////////////// Method declarations ///////////////////////
   /**
    * This function will be called if the user clicks on the plus or minus symbol at the beginning
@@ -142,10 +142,6 @@ function AreaSelect(map_id, search_id, search_button_id) {
         parser.parse(layers[i]);
       }
     }
-    if(me.search_id && document.getElementById(me.search_id))
-      util.geocode(me.search_id, me.search_button_id, map);
-    if(me.search_button_id && document.getElementById(me.search_button_id))
-      jQuery('#'+me.search_button_id).hide();
     return map;
   }
 
@@ -213,7 +209,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
           maxHeight : 200,
           maxWidth : 300
       });
-      var html = '<div><div style="width: 275px; padding: 10px 0;"><label>Gebietsname: <span class="form-required" title="Diese Angabe ist erforderlich">*</span></label><input class="areaname" size="39" /></div><div style="padding: 10px 0;"><input class="submit" type="submit" value="Gebiet erstellen" style="font-weight: bold;" /></div></div>';
+      var html = '<div><div style="width: 275px; padding: 10px 0;"><label>Gebiet / Flurname: <span class="form-required" title="Diese Angabe ist erforderlich">*</span></label><input class="areaname" size="39" /></div><div style="padding: 10px 0;"><input class="submit" type="submit" value="Gebiet erstellen" style="font-weight: bold;" /></div></div>';
       var tab = jQuery(html);
       jQuery('.submit', tab).click(function (e) {
           var name = jQuery.trim(jQuery('.areaname', tab).val());
@@ -238,7 +234,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
               alert('Bitte Gebietsnamen eingeben, um das Gebiet zu erstellen!')
           }
       });
-      bubble.addTab('Neues Gebiet', tab.get(0));
+      bubble.addTab('Gebiet erstellen', tab.get(0));
 
       google.maps.event.addListener(bubble, 'closeclick', function() {
           control.overlay.clear();
@@ -257,7 +253,21 @@ function AreaSelect(map_id, search_id, search_button_id) {
       control.addMarker(display);
       control.addPath(display);
       control.addPolygon(display);
+      
+      var search = jQuery('<input type="text" id="map_search" name="map_search" value="" size="25" style="vertical-align: top; margin: 6px 8px;" maxlength="128" placeholder="Suchen…" />');
+      control.controls.append(search);
 
+      search.geo_autocomplete({
+          geocoder_region: 'Schweiz',
+          geocoder_types:  'natural_feature,street_address,route,intersection,locality,political,sublocality,neighborhood,country',
+          maptype: 'roadmap',
+          mapwidth: 200,
+          select: function(_event, _ui) {
+              if (_ui.item.viewport)
+                  map.fitBounds(_ui.item.viewport);
+          }
+      });
+      
       return control;
   }
   
@@ -390,7 +400,7 @@ function AreaSelect(map_id, search_id, search_button_id) {
       details += data.altitude + '<br>';
       details += data.surface_area + '<br>';
       details += '</div>';
-      me.areaInfo.updateTab(0, 'Details', details);
+      me.areaInfo.updateTab(0, 'Gebiet', details);
 
       // inventories
       inventories = '';
@@ -452,8 +462,6 @@ function AreaSelect(map_id, search_id, search_button_id) {
   // Member variable initialisation
   var me = this; // references to the instance of AreaSelect
   me.map_id = map_id;
-  me.search_id = search_id;
-  me.search_button_id = search_button_id;
   me.map = this.createGoogleMaps();
   if(!me.map)
     return false;
@@ -522,7 +530,7 @@ function refresh_map_info(){
 var areaselect = null;
 jQuery(document).ready(function() {
   if(jQuery('#map_canvas').size())
-    areaselect = new AreaSelect('map_canvas', 'map_search', 'map_search_button');
+    areaselect = new AreaSelect('map_canvas');
   /* clear edit-id-area field. Solves the problem that if a user navigates back problem that
    * he can continue to new inv without actually having selected an area */
   jQuery('#edit-id-area').val('');
