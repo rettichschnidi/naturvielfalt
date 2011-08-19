@@ -326,8 +326,10 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
     $eid = db_select($entry_table, 'e')->orderBy('e.id', 'DESC')->range(0, 1)->fields('e', array('id'))->execute()->fetchColumn(0)+1;
     foreach($input['entries'] as $inventory_id => $entries) {
       $inventory_type_id = $input['inventories'][$inventory_id];
-      if($additional)
-        $desc = inventory_column_description($inventory_id, $inventory_type_id, true, $head_inventory_id);      		
+      if($additional){
+      	$head_inventory_id = $id;
+        $desc = inventory_column_description($inventory_id, $inventory_type_id, true, $head_inventory_id); 
+      }     		
       $new_inventory_id = $inventory_id;
       if(substr($inventory_id, 0, 4) == 'new_') {
         $new_inventory_id = $iid++;
@@ -686,6 +688,7 @@ function _inventory_save_entry_attributes($entry_id, $columns, $data) {
       $value = array(
         'value' => $data['col_'.$column['id']]
       );
+      
     $existing = db_select('inventory_type_attribute_inventory_entry', 'i')
       ->condition('i.inventory_entry_id', $entry_id)
       ->condition('i.inventory_type_attribute_id', $column['id'])
@@ -1714,8 +1717,8 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
         <img src="'.url(drupal_get_path('module', 'inventory').'/images/location'.($data['location'] ? '' : '_unset').'.gif').'" alt="'.t('Location').'" />
       </a>';
     $row[] = 
-      '<a class="images" href="'.url('gallery/inventory_entry/'.$data['id'].'/edit').'" title="'.t('Images').'">
-        <img src="'.url(drupal_get_path('module', 'inventory').'/images/images.gif').'" alt="'.t('Images').'" />
+      '<a class="images" href="'.url('gallery/inventory_entry/'.$data['id'].'/medias/edit').'" title="'.t('Medias').'">
+        <img src="'.url(drupal_get_path('module', 'inventory').'/images/images.gif').'" alt="'.t('Medias').'" />
       </a>';
   }
   $row[] = array(
