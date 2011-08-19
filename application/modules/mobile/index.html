@@ -236,6 +236,10 @@ $(function () {
         touch.down = false;
     });
 
+    $('#save').bind('click', function () {
+        $.post('ajax.php');
+    });
+
     $('#content a').bind('click', function (e) {
 
         // clear organisms
@@ -270,6 +274,7 @@ $(function () {
     $('#third header a').bind('click', function (e) {
         scroll('#third', '#second', 1);
     });
+    
     if (navigator.geolocation) {
         // Register for location changes and pass the returned position to the updateLocation method
         watchId = navigator.geolocation.watchPosition(updateLocation, handleError);
@@ -661,7 +666,7 @@ var db = {
         <div id="map"><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;markers=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
         <p class="input"><label for="date">Datum: </label><input id="date" type="date" value="2011-07-28" /></p>
         <p class="input"><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" /></p>
-        <p><input id="location" type="hidden" value="" /><input type="submit" value="Speichern" /></p>
+        <p><input id="location" type="hidden" value="" /><input id="save" type="submit" value="Speichern" /></p>
         </div>
     </section>
 </div>
