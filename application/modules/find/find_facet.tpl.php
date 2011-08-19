@@ -1,5 +1,6 @@
 <?php
 $reset = $parameters->filter(array($field => array()));
+if ($facets[$field]['total'] > 0):
 ?>
 <h6 class="filter"><?php echo $title; ?>: <?php if (count($value) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
@@ -16,3 +17,4 @@ $reset = $parameters->filter(array($field => array()));
     <li class="<?php echo $active ? 'active' : ''; ?>"><a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>"><?php echo $term['term'] . ' (' . $term['count'] . ')'; ?></a></li>
 <?php endforeach; ?>
 </ul>
+<?php endif; ?>

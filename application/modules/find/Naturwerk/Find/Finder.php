@@ -139,6 +139,13 @@ class Finder {
             $filter->addFilter($term);
         }
 
+        // add town filter
+        $town = $this->parameters->getTown();
+        if (count($town) > 0) {
+            $term = new \Elastica_Filter_Terms('town', $town);
+            $filter->addFilter($term);
+        }
+
         // add user filter
         $user = $this->parameters->getUser();
         if (count($user) > 0) {
@@ -201,6 +208,9 @@ class Finder {
         $facetClass = new \Elastica_Facet_Terms('class');
         $facetClass->setField('class');
 
+        $facetTown = new \Elastica_Facet_Terms('town');
+        $facetTown->setField('town');
+
         $facetUser = new \Elastica_Facet_Terms('user');
         $facetUser->setField('user');
 
@@ -215,6 +225,7 @@ class Finder {
         $query = new \Elastica_Query();
         $query->setQuery($this->getQuery());
         $query->addFacet($facetClass);
+        $query->addFacet($facetTown);
         $query->addFacet($facetUser);
         $query->setSize(100);
 

@@ -22,11 +22,11 @@ $parameters = $current->getParameters();
 <?php $reset = $parameters->filter(array('geo' => array())); ?>
 <h6>Gebiet: <?php if (count($parameters->getGeo()) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
-<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($parameters->getGeo()) > 1): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $geo); else: ?>center=CH&amp;maptype=terrain&amp;zoom=5<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
+<p><img class="map-select" width="200" height="130" src="http://maps.google.com/maps/api/staticmap?<?php if (count($parameters->getGeo()) > 1): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $parameters->getGeo()); else: ?>center=CH&amp;maptype=terrain&amp;zoom=5<?php endif; ?>&amp;size=200x130&amp;sensor=false" alt="" /></p>
 <div class="map-overlay"><div id="map-canvas"></div><img src="<?php echo base_path() . drupal_get_path('module', 'find') . '/images/close.png'; ?>" width="30" height="30" class="map-close" /></div>
 
 <?php $reset = $parameters->filter(array('date' => array())); ?>
-<h6 class="filter">Datum: <?php if (count($parameters->getDate()) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
+<h6 class="filter">Beobachtungsdatum: <?php if (count($parameters->getDate()) > 0): ?><a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a><?php endif; ?></h6>
 
 <div class="fieldset">
 <p><label for="date_from">Von:</label> <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" /></p>
@@ -36,7 +36,9 @@ $parameters = $current->getParameters();
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => 'Klasse', 'field' => 'class', 'value' => $parameters->getClass())); ?>
 
-<?php if ($_GET['q'] != 'find/organisms') { echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => 'Benutzer', 'field' => 'user', 'value' => $parameters->getUser())); } ?>
+<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => 'Ortschaft', 'field' => 'town', 'value' => $parameters->getTown())); ?>
+
+<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => 'Benutzer', 'field' => 'user', 'value' => $parameters->getUser())); ?>
 
 <input class="element-hidden" type="submit" />
 
@@ -51,11 +53,11 @@ $parameters = $current->getParameters();
     <li class="<?php echo 'find/inventories' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l('Inventare (' . $inventories->count() . ')', 'find/inventories', array('query' => $parameters->filter())); ?>
     </li>
-    <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>">
-        <?php echo l('Tiere und Pflanzen (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
-    </li>
     <li class="<?php echo 'find/areas' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l('Gebiete (' . $areas->count() . ')', 'find/areas', array('query' => $parameters->filter())); ?>
+    </li>
+    <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>">
+        <?php echo l('Organismen (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
     </li>
 </ul>
 

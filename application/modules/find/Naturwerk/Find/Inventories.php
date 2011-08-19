@@ -17,6 +17,7 @@ class Inventories extends Finder {
 
         $this->addColumn('name', 'Inventarname', true, 'link', array($this, 'permission'));
         $this->addColumn('area', 'Gebiet / Flurname');
+        $this->addColumn('town', 'Ortschaft');
         $this->addColumn('user', 'Benutzer');
 
         parent::__construct($index, 'inventory', $parameters);

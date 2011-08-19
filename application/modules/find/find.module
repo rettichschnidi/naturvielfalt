@@ -70,20 +70,20 @@ function find_menu() {
         'weight' => 20,
     );
 
-    $items['find/organisms'] = array(
-        'title' => t('Tiere und Pflanzen'),
+    $items['find/areas'] = array(
+        'title' => t('Gebiete'),
         'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_organisms',
+        'page callback' => 'find_show_search_areas',
         'access arguments' => array('access content'),
         'type' => MENU_NORMAL_ITEM,
         'file' => 'find.views.inc.php',
         'weight' => 30,
     );
 
-    $items['find/areas'] = array(
-        'title' => t('Gebiete'),
+    $items['find/organisms'] = array(
+        'title' => t('Organismen'),
         'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_areas',
+        'page callback' => 'find_show_search_organisms',
         'access arguments' => array('access content'),
         'type' => MENU_NORMAL_ITEM,
         'file' => 'find.views.inc.php',
