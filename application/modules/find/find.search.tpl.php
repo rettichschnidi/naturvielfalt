@@ -97,7 +97,7 @@ $parameters = $current->getParameters();
 <tr>
     <?php foreach ($current->getActiveColumns() as $column): ?>
         <th>
-            <?php $sort = $parameters->getSort(); ?>
+            <?php $sort = $current->getSort(); ?>
             <?php $dir = isset($sort[$column->getName()]); ?>
             <?php $asc = $dir ? ('asc' == $sort[$column->getName()]) : false; ?>
             <?php $reset = $parameters->filter(array('sort' => array($column->getName() => $asc ? 'desc' : 'asc'))); ?>

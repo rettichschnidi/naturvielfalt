@@ -30,6 +30,11 @@ class Finder {
     protected $parameters;
 
     /**
+     * @var array
+     */
+    protected $sort;
+
+    /**
      * @param \Elastica_Index $index
      * @param string $type
      * @param Naturwerk\Find\Parameters $parameter
@@ -40,7 +45,7 @@ class Finder {
         $this->type = $type;
         $this->parameters = $parameters;
 
-        // resort and active columns
+        // resort and activate columns
         if (count($parameters->getColumns()) > 0) {
 
             $columns = array();
@@ -58,6 +63,19 @@ class Finder {
             
             ksort($columns);
             $this->columns = $columns;
+        }
+        
+        // set default sort
+        $this->sort = $this->parameters->getSort();
+        $active = array();
+        foreach ($this->columns as $column) {
+            if ($column->isActive()) {
+                $active[] = $column->getName();
+            }
+        }
+        if (count($this->sort) == 0 || !in_array(key($this->sort), $active)) {
+            $column = reset($this->columns);
+            $this->sort = array($column->getName() => 'asc');
         }
     }
 
@@ -230,9 +248,8 @@ class Finder {
         $query->setSize(100);
 
         // sorting
-        $sort = $this->parameters->getSort();
-        if (count($sort) > 0) {
-            $query->setSort($sort);
+        if (count($this->sort) > 0) {
+            $query->setSort($this->sort);
         }
 
         // add filter to query
@@ -261,5 +278,12 @@ class Finder {
         }
 
         return $this->getType()->count($query);
+    }
+    
+    /**
+     * @return array $sort
+     */
+    public function getSort() {
+        return $this->sort;
     }
 }

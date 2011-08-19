@@ -201,6 +201,7 @@ class Indexer {
 
         $mapping = \Elastica_Type_Mapping::create(array(
             'name' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'area' => array('type' => 'string', 'analyzer' => 'sortable'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
             'position' => array('type' => 'geo_point'),
             'class' => array('type' => 'string', 'index' => 'not_analyzed'),
