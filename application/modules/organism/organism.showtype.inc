@@ -62,8 +62,8 @@ function organism_showtype($typeId) {
       $row[] = ($record->red_list_ch == '0' || $record->red_list_ch == '') ? t('No') : t('Yes');
     }
     if($gallery_available) {
-      if ($record->image_count) {
-        $row[] = gallery_view_link('organism', $record->id, 'organism/'.$record->id, false);
+      if (($link = gallery_view_link('organism', $record->id, 'organism/'.$record->id, true)) != "") {
+        $row[] = $link;
         $has_gallery = true;
       } else {
         $row[] = false;
@@ -81,8 +81,12 @@ function organism_showtype($typeId) {
     '#rows' => $rows,
     '#id_table' => 'organisms',
   );
-  if(function_exists('gallery_list_renderer'))
-    $render_array['Gallery'] = gallery_list_renderer('inventory_type', $typeId);
+  if(function_exists('gallery_list_renderer')){
+    
+    $render_array['GallerySounds'] = gallery_list_renderer('sounds','inventory_type', $typeId);
+    $render_array['GalleryVideos'] = gallery_list_renderer('videos','inventory_type', $typeId);
+    $render_array['GalleryImages'] = gallery_list_renderer('images','inventory_type', $typeId);
+  }
   return $render_array;
 }
 ?>

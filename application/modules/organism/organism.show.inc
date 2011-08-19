@@ -1,8 +1,11 @@
 <?php
 function organism_show($organismId) {
-  if(function_exists('gallery_list_renderer'))
-    $forms['Gallery'] = gallery_list_renderer('organism', $organismId, false, -1);
-    $forms = array_merge($forms, getOrganismDetails($organismId));
+  if(function_exists('gallery_list_renderer')){
+    $forms['ImageGallery'] = gallery_list_renderer('images','organism', $organismId, false, -1,false);
+    $forms['VideoGallery'] = gallery_list_renderer('videos','organism', $organismId, false, -1,true);
+    $forms['SoundGallery'] = gallery_list_renderer('sounds','organism', $organismId, false, -1,true);
+  }
+  $forms = array_merge($forms, getOrganismDetails($organismId));
 	$forms = array_merge($forms, getOrganismInventories($organismId));
 	$forms = array_merge($forms, organism_files($organismId));
 	return $forms;
