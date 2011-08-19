@@ -15,9 +15,9 @@ class Areas extends Finder {
      */
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
 
-        $this->addColumn('name', 'Gebiet / Flurname', true, 'link');
-        $this->addColumn('town', 'Ortschaft');
-        $this->addColumn('user', 'Benutzer');
+        $this->addColumn('name', t('Area name'), true, 'link');
+        $this->addColumn('town', t('Town name'));
+        $this->addColumn('user', t('User'));
 
         parent::__construct($index, 'area', $parameters);
     }

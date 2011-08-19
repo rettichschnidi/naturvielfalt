@@ -22,8 +22,8 @@ class Organisms extends Finder {
      */
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
 
-        $this->addColumn('name_la', 'Lat. Name', true, 'link');
-        $this->addColumn('name', 'Deutscher Name', true, 'link');
+        $this->addColumn('name_la', t('Latin name'), true, 'link');
+        $this->addColumn('name', t('German name'), true, 'link');
 
         parent::__construct($index, 'organism', $parameters);
     }
