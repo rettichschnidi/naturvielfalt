@@ -78,7 +78,7 @@ function habitat_show($habitatGroupId) {
     );
   }
   if(function_exists('gallery_list_renderer'))
-    $render_array['Gallery'] = gallery_list_renderer('habitat', $habitatGroupId);
+    $render_array['Gallery'] = gallery_list_renderer('images','habitat', $habitatGroupId);
   return $render_array;  
 }
 
