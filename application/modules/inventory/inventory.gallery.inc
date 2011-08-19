@@ -17,7 +17,7 @@ function inventory_gallery_types() {
       'manage_title' => 'inventory_gallery_manage_title',
       'manage_description' => 'inventory_gallery_manage_description',
       'subtypes' => array(
-        'presentation' => t('Presentational images')
+        'presentation' => t('Presentational objects')
       ),
       'condition' => 'inventory_gallery_condition',
       'location_provider' => 'inventory_gallery_location_provider'
@@ -28,7 +28,7 @@ function inventory_gallery_types() {
       'manage_title' => 'inventory_head_gallery_manage_title',
       'manage_description' => 'inventory_head_gallery_manage_description',
       'subtypes' => array(
-        'presentation' => t('Presentational images')
+        'presentation' => t('Presentational objects')
       ),
       'location_provider' => 'inventory_head_gallery_location_provider',
       'item_provider' => 'inventory_head_gallery_item_provider'
@@ -101,14 +101,14 @@ function inventory_gallery_image_caption($id) {
  *   The ID of the inventory entry
  * @return string
  */
-function inventory_gallery_manage_title($id) {
+function inventory_gallery_manage_title($id,$mediatype) {
   $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
   $query->join('inventory', 'i', 'i.id = ie.inventory_id');
   $query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
   $query->fields('ie', array('organism_id'));
   $query->fields('h', array('id', 'area_id'));
   $result = $query->execute()->fetch();
-  return t('Images of the organism !title<br>observed in the inventory !context', array(
+  return t(''.$mediatype.' of the organism !title<br>observed in the inventory !context', array(
     '!title' => '<em>'.organism_gallery_image_caption($result->organism_id).'</em>',
     '!context' => '<em>'.inventory_head_gallery_caption($result->id).'</em>'
   ));
@@ -122,8 +122,8 @@ function inventory_gallery_manage_title($id) {
  *   The ID of the inventory entry
  * @return string
  */
-function inventory_gallery_manage_description($id) {
-  return t('Add and edit images of the specified organism taken in the area of this inventory.');
+function inventory_gallery_manage_description($id,$mediatype) {
+  return t('Add and edit '.$mediatype.' of the specified organism taken in the area of this inventory.');
 }
 
 /**
@@ -196,8 +196,8 @@ function inventory_head_gallery_image_caption($id) {
  *   The ID of the head inventory
  * @return string
  */
-function inventory_head_gallery_manage_title($id) {
-  return t('Images of the inventory !title', array('!title' => '<em>'.inventory_head_gallery_caption($id).'</em>'));
+function inventory_head_gallery_manage_title($id,$mediatype) {
+  return t(''.$mediatype.' of the inventory !title', array('!title' => '<em>'.inventory_head_gallery_caption($id).'</em>'));
 }
 
 /**
@@ -224,8 +224,8 @@ function inventory_head_gallery_caption($id) {
  *   The ID of the head inventory
  * @return string
  */
-function inventory_head_gallery_manage_description($id) {
-  return t('Add and edit images of this inventory\'s area and optionally link them to an observed organism.');
+function inventory_head_gallery_manage_description($id,$mediatype) {
+  return t('Add and edit '.$mediatype.' of this inventory\'s area and optionally link them to an observed organism.');
 }
 
 /**
