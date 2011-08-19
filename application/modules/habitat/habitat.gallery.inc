@@ -37,8 +37,8 @@ function habitat_gallery_image_caption($id) {
  *   The id of object
  * @return string
  */
-function habitat_gallery_manage_title($id) {
-  return t('Images of the habitat !title', array('!title' => '<em>'.habitat_gallery_caption($id).'</em>'));
+function habitat_gallery_manage_title($id,$mediatype) {
+  return t(''.$mediatype.' of the habitat !title', array('!title' => '<em>'.habitat_gallery_caption($id).'</em>'));
 }
 
 /**
@@ -65,8 +65,8 @@ function habitat_gallery_caption($id) {
  *   The id of object
  * @return string
  */
-function habitat_gallery_manage_description($id) {
-  return t('Add and edit generic images of this habitat.');
+function habitat_gallery_manage_description($id,$mediatype) {
+  return t('Add and edit generic '.$mediatype.' of this habitat.');
 }
 
 /**
