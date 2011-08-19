@@ -157,8 +157,8 @@ function organism_gallery_manage_title($id) {
  *   The id of object
  * @return string
  */
-function organism_gallery_manage_description($id) {
-  return t('Add and edit images of the specified organism.');
+function organism_gallery_manage_description($id,$mediatype) {
+  return t('Add and edit '.$mediatype.' of the specified organism.');
 }
 
 /**
