@@ -182,19 +182,19 @@ function gallery_menu() {
   );
   
   // Generic gallery menu
-  $items['gallery/%/%'] = array(
+  $items['gallery/%/%/%'] = array(
     'title' => t('Gallery'),
     'page callback' => 'gallery_list',
-    'page arguments' => array(1, 2),
+    'page arguments' => array(1,2,true,true,3),
     'type' => MENU_NORMAL_ITEM,
     'access callback' => 'gallery_access_callback',
     'access arguments' => array(1),
     'file' => 'gallery.content.inc',
   );
-  $items['gallery/%/%/list'] = array(
+  $items['gallery/%/%/%/list'] = array(
     'title' => t('Gallery'),
     'page callback' => 'gallery_list',
-    'page arguments' => array(1, 2),
+    'page arguments' => array(1, 2,true,true,'images'),
     'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'access callback' => 'gallery_access_callback',
@@ -217,7 +217,7 @@ function gallery_menu() {
     'file' => 'gallery.content.inc',
     'type' => MENU_CALLBACK,
   );
-  $items['gallery/%/%/edit'] = array(
+  /*$items['gallery/%/%/edit'] = array(
     'title' => t('Manage images'),
     'description' => t('Add and edit gallery images.'),
     'page callback' => 'gallery_images_edit',
@@ -227,6 +227,18 @@ function gallery_menu() {
     'weight' => 2,
     'access callback' => 'gallery_edit_access_callback',
     'access arguments' => array(1, 2),
+    'file' => 'gallery.content.inc',
+  );*/
+    $items['gallery/%/%/%/edit'] = array(
+    'title' => t('Manage medias'),
+    'description' => t('Add and edit gallery medias.'),
+    'page callback' => 'gallery_images_edit',
+    'page arguments' => array(1, 2,3),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'weight' => 2,
+    'access callback' => 'gallery_edit_access_callback',
+    'access arguments' => array(1, 2,3),
     'file' => 'gallery.content.inc',
   );
   $items['gallery/%/%/edit_categories'] = array(
@@ -252,7 +264,7 @@ function gallery_menu() {
     'page callback' => 'gallery_image_rate',
     'page arguments' => array(4),
     'access callback' => 'gallery_access_callback',
-    'access arguments' => array(1, 'rate gallery images'),
+    'access arguments' => array(1, 'rate gallery medias'),
     'file' => 'gallery.content.inc',
   );
   $items['gallery/%/%/hide/%gallery_image'] = array(
@@ -260,7 +272,7 @@ function gallery_menu() {
     'description' => t('Hide a gallery image.'),
     'page callback' => 'gallery_image_hide',
     'page arguments' => array(4),
-    'access arguments' => array('manage gallery images'),
+    'access arguments' => array('manage gallery medias'),
     'file' => 'gallery.content.inc',
   );
   $items['gallery/%/%/show/%gallery_image'] = array(
@@ -268,15 +280,15 @@ function gallery_menu() {
     'description' => t('Show a gallery image.'),
     'page callback' => 'gallery_image_show',
     'page arguments' => array(4),
-    'access arguments' => array('manage gallery images'),
+    'access arguments' => array('manage gallery medias'),
     'file' => 'gallery.content.inc',
   );
   
   $items['user/%user/gallery'] = array(
-    'title' => t('Images'),
+    'title' => t('Medien'),
     'description' => t('Images added by a given user.'),
     'page callback' => 'gallery_own_list',
-    'page arguments' => array(1),
+    'page arguments' => array(1,"medias"),
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'weight' => 2,
@@ -286,17 +298,17 @@ function gallery_menu() {
   $items['user/%user/gallery/list'] = array(
     'title' => t('Gallery'),
     'page callback' => 'gallery_own_list',
-    'page arguments' => array(1),
+    'page arguments' => array(1,"medias"),
     'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'access arguments' => array('add gallery images'),
     'file' => 'gallery.content.inc',
   );
   $items['user/%user/gallery/edit'] = array(
-    'title' => t('Manage images'),
-    'description' => t('Add and edit own gallery images.'),
+    'title' => t('Manage medias'),
+    'description' => t('Add and edit own gallery medias.'),
     'page callback' => 'gallery_own_edit',
-    'page arguments' => array(1),
+    'page arguments' => array(1,"medias"),
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'weight' => 2,
@@ -356,13 +368,13 @@ function gallery_permission() {
       'title' => t('Add gallery images'),
       'description' => t('Create and modify gallery images of objects owned.'),
     ),
-    'manage gallery images' => array(
-      'title' => t('Manage gallery images'),
-      'description' => t('Create and modify gallery images everywhere.'),
+    'manage gallery medias' => array(
+      'title' => t('Manage gallery medias'),
+      'description' => t('Create and modify gallery medias everywhere.'),
     ),
-    'rate gallery images' => array(
-      'title' => t('Rate gallery images'),
-      'description' => t('Place ratings for gallery images.')
+    'rate gallery medias' => array(
+      'title' => t('Rate gallery medias'),
+      'description' => t('Place ratings for gallery medias.')
     ),
     'view gallery images' => array(
       'title' => t('View gallery images'),
@@ -435,26 +447,26 @@ function gallery_image_default_styles() {
 
 
 /**
- * Get an array of all gallery images by type and id.
+ * Get an array of all gallery medias by type and id.
  *
  * @param $type
  *   The type of the object.
  * @param $id
  *   The ID (or an array of IDs) of the object.
  * @param $crosslinked
- *   Whether to return cross linked images
+ *   Whether to return cross linked medias
  * @param $rating
- *   Whether to include the ratings of the images
+ *   Whether to include the ratings of the medias
  * @param $limit
- *   How many images to return
+ *   How many medias to return
  * @param $subtype
- *   Images of which subtype to return
+ *   medias of which subtype to return
  * @return
  *   An associative array having the following entries:
- *   - "images": Array of gallery images
- *   - "count": Number of images found
+ *   - "medias": Array of gallery medias
+ *   - "count": Number of medias found
  */
-function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false, $limit=false, $subtype=false, $conditions=array(), $required_conditions=array(), $joins=array()) {
+function gallery_images($mediatype,$type=false, $id=false, $crosslinked=true, $rating=false, $limit=false, $subtype=false, $conditions=array(), $required_conditions=array(), $joins=array()) {
   global $user;
   if($type && !_gallery_check_type_validity($type))
     return array();
@@ -546,7 +558,18 @@ function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false
   $sql .= implode(' ', $joins);
   if($required_conditions)
     $sql .= ' WHERE '.implode(' AND ', $required_conditions);
+
+  if($mediatype=="images")
+     $sql .= 'AND (fm.filemime = \'image/jpeg\' OR fm.filemime = \'image/png\' OR fm.filemime = \'image/gif\')';
+  elseif($mediatype == "sounds")
+     $sql .= 'AND fm.filemime = \'audio/mpeg\'';
+  elseif($mediatype == "videos")
+     $sql .= 'AND (fm.filemime = \'video/mp4\')';
+  elseif($mediatype == "medias")
+  	 $sql .= '';
+
   $sql .= ' ORDER BY overallrating DESC';
+  //print $sql;
   $images = array();
   $seen = array();
   $count = 0;
@@ -580,7 +603,11 @@ function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false
         'description' => $record['gc_description'],
         'value' => $record['gco_name'],
         'option_id' => $record['gco_id'],
-        'value_id' => $record['gic_id']
+        'value_id' => $record['gic_id'],
+		'uri' => $record['fm.uri'],
+		'filename' => $record['fm.filename'],
+      	'filemime' => $record['fm.filemime'],
+      	'timestamp' => $record['fm.timestamp']
       ));
     if($rating && $record['rating'])
       $image['ratings'][$record['grt_id']] = array(
@@ -590,7 +617,15 @@ function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false
       );
     $images[$seen[$record['id']]] = $image;
   }
-  return array('images' => $images, 'count' => $count);
+
+  if($mediatype == "sounds")
+    return array('mediatype' => $mediatype, 'sounds' => $images, 'count' => $count);
+  elseif($mediatype == "videos")
+    return array('mediatype' => $mediatype, 'videos' => $images, 'count' => $count);
+  elseif($mediatype == "medias")
+  	return array('mediatype' => $mediatype, 'medias' => $images, 'count' => $count);
+
+  return array('mediatype' => $mediatype, 'images' => $images, 'count' => $count);
 }
 
 /**
@@ -604,6 +639,94 @@ function gallery_images($type=false, $id=false, $crosslinked=true, $rating=false
  *   Number of images
  */
 function gallery_images_count($type=false, $id=false) {
+    $sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid  ';
+    $id_conditions = array();
+    if ($id) {
+        $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
+        array_push($id_conditions, 'gi.item_id ' . $id_condition);
+    }
+    if ($type) {
+        array_push($id_conditions, 'gi.item_type = \''.$type.'\'');
+    }
+    $sql .= ' WHERE (fm.filemime = \'image/jpeg\' OR fm.filemime = \'image/png\' OR fm.filemime = \'image/jpg\' OR fm.filemime = \'image/gif\')';
+    if ($id_conditions) {
+       $sql .= ' AND ';
+       $sql .= implode(' AND ', $id_conditions);
+    }
+    $sql .= ' LIMIT 1';
+
+    $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+    return $result;
+}
+/**
+ * Get count of all gallery sounds by type and id.
+ *
+ * @param $type
+ *   The type of the object.
+ * @param $id
+ *   The ID (or an array of IDs) of the object.
+ * @return
+ *   Number of sounds
+ */
+function gallery_sounds_count($type=false, $id=false) {
+    $sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid  ';
+    $id_conditions = array();
+    if ($id) {
+        $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
+        array_push($id_conditions, 'gi.item_id ' . $id_condition);
+    }
+    if ($type) {
+        array_push($id_conditions, 'gi.item_type = \''.$type.'\'');
+    }
+    $sql .= ' WHERE (fm.filemime = \'audio/mpeg\')';
+    if ($id_conditions) {
+    	$sql .= ' AND ';
+        $sql .= implode(' AND ', $id_conditions);
+    }
+    $sql .= ' LIMIT 1';
+    $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+    return $result;
+}
+/**
+ * Get count of all gallery videos by type and id.
+ *
+ * @param $type
+ *   The type of the object.
+ * @param $id
+ *   The ID (or an array of IDs) of the object.
+ * @return
+ *   Number of videos
+ */
+function gallery_videos_count($type=false, $id=false) {
+    $sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid ';
+    $id_conditions = array();
+    if ($id) {
+        $id_condition = is_array($id) ? 'IN (\''.implode('\', \'', $id).'\')' : '= \''.$id.'\'';
+        array_push($id_conditions, 'gi.item_id ' . $id_condition);
+    }
+    if ($type) {
+        array_push($id_conditions, 'gi.item_type = \''.$type.'\'');
+    }
+    $sql .= ' WHERE (fm.filemime = \'video/mp4\')';
+    if ($id_conditions) {
+       $sql .= ' AND ';
+       $sql .= implode(' AND ', $id_conditions);
+    }
+    $sql .= ' LIMIT 1';
+    $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+    return $result;
+}
+/**
+ * Get count of all gallery medias by type and id.
+ *
+ * @param $type
+ *   The type of the object.
+ * @param $id
+ *   The ID (or an array of IDs) of the object.
+ * @return
+ *   Number of medias
+ */
+function gallery_medias_count($type=false, $id=false) {
     $sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi ';
     $id_conditions = array();
     if ($id) {
@@ -620,7 +743,6 @@ function gallery_images_count($type=false, $id=false) {
     $result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
     return $result;
 }
-
 /**
  * Load a gallery image by it's ID. May be used as a loader for menu items.
  *
@@ -821,7 +943,7 @@ function gallery_image_visibility_save($image, $visible) {
  * @param $id
  *   The ID of the object.
  * @return
- *   An array of gallery images
+ *   An array of gallery medias
  */
 function gallery_available_categories($type, $id) {
   $available = array();
@@ -1246,7 +1368,7 @@ function gallery_access_callback($type, $permission='view gallery images') {
 function gallery_edit_access_callback($type, $id, $image=false) {
   if (!_gallery_check_type_validity($type))
     return false;
-  if(user_access('manage gallery images'))
+  if(user_access('manage gallery medias'))
     return true;
   if(!user_access('add gallery images'))
     return false;

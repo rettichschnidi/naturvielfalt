@@ -11,7 +11,7 @@ define('GALLERY_IMAGE_COUNT', 15);
 /**
  * Menu callback; Listing of all images for a given context.
  */
-function gallery_list($type, $id, $backlink=true, $title=true) {
+function gallery_list($type, $id, $backlink=true, $title=true,$mediatype) {
   $types = _gallery_types();
   $type_info = $types[$type];
   if($title && array_key_exists($type, $types) && array_key_exists('image_caption', $types[$type]))
@@ -20,27 +20,27 @@ function gallery_list($type, $id, $backlink=true, $title=true) {
   $page = array();
   $editable = gallery_edit_access_callback($type, $id);
   $params = _gallery_list_parameters($type, $id);
-  $images = gallery_images($type, $id, $params['crosslinked'], true, $params['show_all'] ? false : GALLERY_IMAGE_COUNT, $params['subtype']);
-  $links = _gallery_list_links($params, $images['count']);
+  $images = gallery_images($mediatype,$type, $id, $params['crosslinked'], true, $params['show_all'] ? false : GALLERY_IMAGE_COUNT, $params['subtype']);
+  $links = _gallery_list_links($params, $images['count'],$mediatype);
   if($images['count']) {
     $page['anchor'] = array(
       '#markup' => '<a name="'.$params['key'].'"></a>'
     );
     $page['gallery_list'] = array(
       '#theme' => 'gallery_list',
-      '#images' => $images['images'],
+      '#images' => $images,
       '#rating_types' => gallery_available_rating_types()
     );
   }
   else if($editable) {
     $page['gallery_list'] = array(
-      '#markup' => '<p>'.t('There are no images available yet.').'</p>',
+      '#markup' => '<p>'.t('There are no '.$mediatype.' available yet.').'</p>',
     );
   }
   if($editable)
     array_push($links, array(
-      'title' => t('Manage images'),
-      'href' => 'gallery/'.$type.'/'.$id.'/edit'
+      'title' => t('Manage '.$mediatype.''),
+      'href' => 'gallery/'.$type.'/'.$id.'/'.$mediatype.'/edit'  //'href' => 'gallery/'.$type.'/'.$id.'/edit'
     ));
   if($backlink) {
     $back = _gallery_back_link($type, $id);
@@ -59,7 +59,7 @@ function gallery_list($type, $id, $backlink=true, $title=true) {
 }
 
 /**
- * Renders the images of a given object type and id
+ * Renders the medias of a given object type and id
  * 
  * @return 
  * @param object $type
@@ -68,17 +68,17 @@ function gallery_list($type, $id, $backlink=true, $title=true) {
  * @param object $weight[optional]
  * @param object $collapsed[optional]
  */
-function gallery_list_renderer($type, $id, $title=false, $weight=10, $collapsed=false) {
+function gallery_list_renderer($mediatype,$type, $id, $title=false, $weight=10, $collapsed=false) {
   if(!gallery_access_callback($type))
     return '';
-  $gallery = gallery_list($type, $id, false, false);
+  $gallery = gallery_list($type, $id, false, false,$mediatype);
   if(!$gallery['gallery_list'])
     return '';
-  return _gallery_list_fieldset($gallery, $title, $weight, $collapsed && !array_key_exists(md5($type.$id).'_show_all', $_GET) && !array_key_exists(md5($type.$id).'_crosslinked', $_GET));
+  return _gallery_list_fieldset($gallery, $title, $weight, $collapsed && !array_key_exists(md5($type.$id).'_show_all', $_GET) && !array_key_exists(md5($type.$id).'_crosslinked', $_GET),$mediatype);
 }
 
 /**
- * Renders the images of a given object type and multiple ids
+ * Renders the medias of a given object type and multiple ids
  * 
  * @return 
  * @param object $type
@@ -87,12 +87,12 @@ function gallery_list_renderer($type, $id, $title=false, $weight=10, $collapsed=
  * @param object $weight[optional]
  * @param object $collapsed[optional]
  */
-function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $collapsed=false) {
+function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $collapsed=false,$mediatype) {
   if(!gallery_access_callback($type))
     return '';
   $params = _gallery_list_parameters($type, $id);
-  $images = gallery_images($type, $ids, $params['crosslinked'], true, $params['show_all'] ? false : GALLERY_IMAGE_COUNT, $params['subtype']);
-  $links = _gallery_list_links($params, $images['count']);
+  $images = gallery_images($mediatype,$type, $ids, $params['crosslinked'], true, $params['show_all'] ? false : GALLERY_IMAGE_COUNT, $params['subtype']);
+  $links = _gallery_list_links($params, $images['count'],$mediatype);
   if($images['count']) {
     $page = _gallery_list_fieldset(array(
       'anchor' => array(
@@ -100,7 +100,7 @@ function gallery_multiple_list_renderer($type, $ids, $title=false, $weight=10, $
       ),
       'list' => array(
         '#theme' => 'gallery_list',
-        '#images' => $images['images'],
+        '#images' => $images,
         '#rating_types' => gallery_available_rating_types()
       )
     ), $title, $weight, $collapsed && !array_key_exists($params['key'].'_show_all', $_GET) && 
@@ -139,7 +139,7 @@ function _gallery_list_parameters($type, $id) {
   return $params;
 }
 
-function _gallery_list_links($params, $count) {
+function _gallery_list_links($params, $count,$mediatype) {
   $url = drupal_get_destination();
   $url = drupal_parse_url($url['destination']);
   $url = $url['path'];
@@ -147,11 +147,11 @@ function _gallery_list_links($params, $count) {
   if($count > GALLERY_IMAGE_COUNT) {
     if(!$params['show_all']) {
       $info = array(
-        '#markup' => '<p class="info">'.t('Showing first !showing images of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $count)),
+        '#markup' => '<p class="info">'.t('Showing first !showing '.$mediatype.' of !total', array('!showing' => GALLERY_IMAGE_COUNT, '!total' => $count)),
         '#weight' => 10
       );
       array_push($links, array(
-        'title' => t('Show all images'),
+        'title' => t('Show all '.$mediatype.''),
         'href' => $url,
         'query' => array($params['key'] => '1'),
         'fragment' => $params['key']
@@ -167,14 +167,14 @@ function _gallery_list_links($params, $count) {
   if($params['crosslinking']) {
     if($params['crosslinked'])
       array_push($links, array(
-        'title' => t('Hide linked images'),
+        'title' => t('Hide linked '.$mediatype.''),
         'href' => $url,
         'query' => array($params['key'].'_crosslinked' => ''),
         'fragment' => $params['key']
       ));
     else
       array_push($links, array(
-        'title' => t('Show linked images'),
+        'title' => t('Show linked '.$mediatype.''),
         'href' => $url,
         'query' => array($params['key'].'_crosslinked' => '1'),
         'fragment' => $params['key']
@@ -182,7 +182,7 @@ function _gallery_list_links($params, $count) {
   }
   if($params['subtypes']) {
     $links[(!$params['subtype'] ? 'selected' : count($links))] = array(
-      'title' => t('Show all image types'),
+      'title' => t('Show all '.$mediatype.' types'),
       'href' => $url,
       'query' => array($params['key'].'_subtype' => ''),
         'fragment' => $params['key']
@@ -198,10 +198,18 @@ function _gallery_list_links($params, $count) {
   return $links;
 }
 
-function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=false) {
-  $output = array(
+function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=false,$mediatype) {
+  
+	if($mediatype == "images")
+		$media_title = "Images";
+	elseif($mediatype == "sounds")
+		$media_title = "Sounds";
+	elseif($mediatype == "videos")
+		$media_title = "Videos";
+	
+	$output = array(
     '#type' => 'fieldset', 
-    '#title' => $title ? $title : t('Images'), 
+    '#title' => $title ? $title : t($media_title), 
     '#weight' => $weight, 
     '#collapsible' => TRUE,
     '#collapsed' => $collapsed,
@@ -220,16 +228,16 @@ function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=fals
 }
 
 /**
- * Renders the highest rated image of the given items 
+ * Renders the highest rated media of the given items 
  * 
  * @return 
  * @param array $items
  *   Array of arrays having the following keys:
  *   - "type": The type of object to display
  *   - "id": The id of the object to display
- *   - "subtype": [Optional] The subtype of the image to display
+ *   - "subtype": [Optional] The subtype of the media to display
  *   - "content": [Optional] drupal render array of the content to be displayed for the given item
- *   - "alternatives": [Optional] List of arrays with the following keys defining an alternative way of getting the image
+ *   - "alternatives": [Optional] List of arrays with the following keys defining an alternative way of getting the media
  *     - "type": The type of object to display
  *     - "id": The id of the object to display
  * @param string $imgsize
@@ -239,11 +247,11 @@ function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=fals
  * @param int $columns
  *   The number of columns to show the items in
  * @param string $msgPrimary
- *   Additional message to be displayed if an image is found by using the primary source
+ *   Additional message to be displayed if an media is found by using the primary source
  * @param string $msgAlternative
- *   Additional message to be displayed if an image is found by using the alternative source
+ *   Additional message to be displayed if an media is found by using the alternative source
  */
-function gallery_presentation_renderer($items, $imgsize='gallery_presentation', $cssClass='', $columns=GALLERY_COLUMNS, $msgPrimary=false, $msgAlternative=false) {
+function gallery_presentation_renderer($mediatype,$items, $imgsize='gallery_presentation', $cssClass='', $columns=GALLERY_COLUMNS, $msgPrimary=false, $msgAlternative=false) {
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 100));
@@ -253,12 +261,12 @@ function gallery_presentation_renderer($items, $imgsize='gallery_presentation', 
   $i = 1;
   $images = array();
   foreach($items as $weight => $item) {
-    $image = gallery_images($item['type'], $item['id'], true, false, 1, $item['subtype']);
+    $image = gallery_images($mediatype,$item['type'], $item['id'], true, false, 1, $item['subtype']);
     $msg = $msgPrimary;
     if(!$image['images'] && $item['alternatives']) {
       $msg = $msgAlternative;
       foreach($item['alternatives'] as $alternative) {
-        $image = gallery_images($alternative['type'], $alternative['id'], true, false, 1);
+        $image = gallery_images($mediatype,$alternative['type'], $alternative['id'], true, false, 1);
         if($image['images'])
           break;
       }
@@ -277,13 +285,13 @@ function gallery_presentation_renderer($items, $imgsize='gallery_presentation', 
           '</a>'
       );
     } else {
-      $content = t('No image available');
+      $content = t('No media available');
       $ids = $item['id'];
       if(!is_array($ids))
         $ids = array($ids);
       foreach($ids as $id) {
         if(gallery_edit_access_callback($item['type'], $id)) {
-          $content .= '<br>'.l(t('Add one'), 'gallery/'.$item['type'].'/'.$id.'/edit');
+          $content .= '<br>'.l(t('Add one'), 'gallery/'.$item['type'].'/'.$id.'/'.$mediatype.'/edit');
           break;
         }
       }
@@ -321,8 +329,8 @@ function gallery_presentation_renderer($items, $imgsize='gallery_presentation', 
 }
 
 /**
- * Renders a link to view the images of a given object type and id
- * if the user has view permissions and there are images available
+ * Renders a link to view the medias of a given object type and id
+ * if the user has view permissions and there are medias available
  * 
  * @return 
  * @param object $type
@@ -334,21 +342,47 @@ function gallery_view_link($type, $id, $url=false, $check=true) {
     return false;
   $params = _gallery_list_parameters($type, $id);
   if ($check) {
-    $count = gallery_images_count($type, $id);
-    if (!$count) {
+    $count_images  = gallery_images_count($type, $id);
+    $count_sounds  = gallery_sounds_count($type, $id);
+    $count_videos  = gallery_videos_count($type, $id);
+
+    if (!$count_images && !$count_sounds && !$count_videos) {
       return false;
     }
+
   }
   $gallery_img_localize = theme('image', array(
     'path' => drupal_get_path('module', 'gallery').'/images/image.png',
     'alt' => t('View images'),
     'title' => t('View images'),
   ));
-  return l($gallery_img_localize, $url ? $url : 'gallery/'.$type.'/'.$id, array('html'=>true));
+  $gallery_sound_localize = theme('image', array(
+    'path' => drupal_get_path('module', 'gallery').'/images/music_super_mini_icon.png',
+    'alt' => t('View sounds'),
+    'title' => t('View sounds'),
+  ));
+  $gallery_video_localize = theme('image', array(
+    'path' => drupal_get_path('module', 'gallery').'/images/video_super_mini_icon.png',
+    'alt' => t('View videos'),
+    'title' => t('View videos'),
+  ));
+  $return_link = "";
+  if($count_images > 0){
+    $return_link .= ''.l($gallery_img_localize, $url ? $url : 'gallery/'.$type.'/'.$id.'/images', array('html'=>true));
+  }
+  if($count_sounds > 0){
+    $return_link .= ''.l($gallery_sound_localize, $url ? $url : 'gallery/'.$type.'/'.$id.'/sounds', array('html'=>true));
+  }
+  if($count_videos > 0){
+    $return_link .= ''.l($gallery_video_localize, $url ? $url : 'gallery/'.$type.'/'.$id.'/videos', array('html'=>true));
+  }
+ 
+  return $return_link;
+  //return (l($gallery_img_localize, $url ? $url : 'gallery/'.$type.'/'.$id.'/images', array('html'=>true)).''.l($gallery_sound_localize, $url ? $url : 'gallery/'.$type.'/'.$id.'/videos', array('html'=>true)).''.l($gallery_video_localize, $url ? $url : 'gallery/'.$type.'/'.$id.'/images', array('html'=>true)));
 }
 
 /**
- * Menu callback; Serving a gallery image
+ * Menu callback; Serving a gallery media
  */
 function gallery_image($type, $id, $image) {
   $uri = explode('://', $image['uri']);
@@ -357,7 +391,7 @@ function gallery_image($type, $id, $image) {
 
 
 /**
- * Menu callback; Serving a gallery image thumb
+ * Menu callback; Serving a gallery media thumb
  */
 function gallery_thumb($type, $id, $image, $size) {
   $uri = explode('://', $image['uri']);
@@ -367,7 +401,7 @@ function gallery_thumb($type, $id, $image, $size) {
 /**
  * Menu callback; Gallery edit view
  */
-function gallery_images_edit($type, $id) {
+function gallery_images_edit($type, $id, $mediatype) {
   
   $back = _gallery_back_link($type, $id);
   if($back)
@@ -376,10 +410,10 @@ function gallery_images_edit($type, $id) {
       '#links' => array($back),
       '#attributes' => array('class' => 'action-links')
     );
-  
+
   $page['upload'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Upload new images'),
+    '#title' => t('Upload new '.$mediatype.''),
     '#weight' => 1,
     '#collapsible' => true,
     '#attached' => array (
@@ -392,11 +426,11 @@ function gallery_images_edit($type, $id) {
       'class' => array('collapsible'),
     ),
   );
-  $page['upload']['edit'] = drupal_get_form('gallery_image_form', $type, $id, array(), 1);
+  $page['upload']['edit'] = drupal_get_form('gallery_image_form', $type, $id,$mediatype, array(), 1);
   
   $page['edit'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Edit existing images'),
+    '#title' => t('Edit existing '.$mediatype.''),
     '#weight' => 2,
     '#collapsible' => true,
     '#attached' => array (
@@ -409,9 +443,9 @@ function gallery_images_edit($type, $id) {
       'class' => array('collapsible'.($_GET['saved'] ? '' : ' collapsed')),
     ),
   );
-  $page['edit']['edit'] = drupal_get_form('gallery_images_form', $type, $id, false, 'gallery/'.$type.'/'.$id.'/edit');
+  $page['edit']['edit'] = drupal_get_form('gallery_images_form',$mediatype, $type, $id, false, 'gallery/'.$type.'/'.$id.'/'.$mediatype.'');
   
-  $title = t('Manage images');
+  $title = t('Manage '.$mediatype.'');
   drupal_set_title($title, PASS_THROUGH);
   
   $info = _gallery_get_title_description($type, $id);
@@ -422,7 +456,6 @@ function gallery_images_edit($type, $id) {
       '#markup' => '<p>'.$info['description'].'</p>',
       '#weight' => -1
     );
-  
   return $page;
 }
 
@@ -441,25 +474,28 @@ function _gallery_get_title_description($type, $id) {
 }
 
 /**
- * Form builder; Edit gallery images
+ * Form builder; Edit gallery medias
  *
  * @param $form_state
  *   An associative array containing the current state of the form.
  * @param $type
- *   The type of the object the images are to be edited.
+ *   The type of the object the medias are to be edited.
  * @param $id
- *   The id of the object the images are to be edited
+ *   The id of the object the medias are to be edited
  * @ingroup forms
- * @see gallery_images_form_submit()
+ * @see gallery_medias_form_submit()
  */
-function gallery_images_form($form, &$form_state, $type=false, $id=false, $images=false, $camefrom=false) {
+function gallery_images_form($form, &$form_state,$mediatype, $type=false, $id=false, $images=false, $camefrom=false) {
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
+  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/divbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/divbox.js');
+  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js');
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
   $types = _gallery_types();
-  
+
   $subtypes = $type ? _gallery_get_subtypes($type, false) : false;
   
   $header = array('', t('Filename'), t('Title'));
@@ -472,35 +508,61 @@ function gallery_images_form($form, &$form_state, $type=false, $id=false, $image
   $header[] = t('Delete');
   
   if(!$images)
-    $images = gallery_images($type, $id, 'edit');
-  
-  $rows = array();
-  foreach($images['images'] as $image) {
-    $caption = '';
-    if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
-      $caption = call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id']));
-    $editable = gallery_edit_access_callback($image['item_type'], $image['item_id'], $image);
-    $row = array();
-    $row[] = '<a rel="lightbox" href="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>';
-    $row[] = $image['filename'];
-    $row[] = $image['title'];
-    if($subtypes) {
-      $stypes = array();
-      foreach($image['subtypes'] as $subtype)
-        $stypes[] = $subtypes[$subtype];
-      $row[] = implode(', ', $stypes);
-    }
-    $row[] = $image['author'];
-    $row[] = $image['location'];
-    $row[] = $caption;
-    $row[] = $editable ? l(t('edit'), 'gallery/'.$image['item_type'].'/'.$image['item_id'].'/edit/'.$image['id'], $camefrom ? array('query' => array('camefrom' => $camefrom)) : array()) : '&nbsp;';
-    $row[] = $editable ? '<input type="checkbox" name="delete['.$image['id'].']" value="1" />' : '&nbsp;';
-    $rows[] = $row;
-  }
+    $images = gallery_images($mediatype,$type, $id, 'edit');
+    
+
+	  $rows = array();
+	  foreach($images[$mediatype] as $image) {
+	  	
+	  	if($mediatype == "images" || ($mediatype == "medias" && ($image['filemime'] == "image/png" ||
+	  															 $image['filemime'] == "image/jpg" ||
+	  															 $image['filemime'] == "image/jpeg"||
+	  															 $image['filemime'] == "image/gif"))){
+  	
+	  		$url_href  = url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large');
+	  		$url_image = url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_mini');
+	  		$extras    = 'rel="lightbox"';
+  		}
+  		elseif($mediatype == "sounds" || ($mediatype == "medias" && ($image['filemime'] == "audio/mpeg"))){
+  			
+	  		$url_href  = file_uri_target($image['uri']);
+	  		$url_href  = url('sites/default/files/'.$url_href);
+	  		$url_image = url(drupal_get_path('module', 'gallery').'/images/music_icon_mini.png');
+	  		$extras    = 'class="divbox_sound"';
+  		}
+  		elseif($mediatype == "videos" || ($mediatype == "medias" && ($image['filemime'] == "video/mp4"))){
+  			
+	  		$url_href  = file_uri_target($image['uri']);
+	  		$url_href  = url('sites/default/files/'.$url_href);
+	  		$url_image = url(drupal_get_path('module', 'gallery').'/images/video_icon_mini.png');
+	  		$extras    = 'class="divbox_video"';	
+  		}
+  		
+	    $caption = '';
+	    if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
+	      $caption = call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id']));
+	    $editable = gallery_edit_access_callback($image['item_type'], $image['item_id'], $image);
+	    $row = array();
+	    $row[] = '<a '.$extras.' href="'.$url_href.'"><img src="'.$url_image.'" alt="'.$image['title'].'" /></a>';
+	    $row[] = $image['filename'];
+	    $row[] = $image['title'];
+	    if($subtypes) {
+	      $stypes = array();
+	      foreach($image['subtypes'] as $subtype)
+	        $stypes[] = $subtypes[$subtype];
+	      $row[] = implode(', ', $stypes);
+	    }
+	    $row[] = $image['author'];
+	    $row[] = $image['location'];
+	    $row[] = $caption;
+	    $row[] = $editable ? l(t('edit'), 'gallery/'.$image['item_type'].'/'.$image['item_id'].'/'.$mediatype.'/edit/'.$image['id'], $camefrom ? array('query' => array('camefrom' => $camefrom)) : array()) : '&nbsp;';
+	    $row[] = $editable ? '<input type="checkbox" name="delete['.$image['id'].']" value="1" />' : '&nbsp;';
+	    $rows[] = $row;
+	  }
   
   if(!$rows)
     $form['empty'] = array(
-      '#markup' => '<p>'.t('There are no images available yet.').'</p>',
+      '#markup' => '<p>'.t('There are no '.$mediatype.' available yet.').'</p>',
     );
   else
     $form['overview'] = array(
@@ -515,7 +577,7 @@ function gallery_images_form($form, &$form_state, $type=false, $id=false, $image
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['delete_submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Delete selected images'),
+      '#value' => t('Delete selected '.$mediatype.''),
       '#submit' => array('gallery_images_form_delete_submit'),
     );
   }
@@ -524,33 +586,56 @@ function gallery_images_form($form, &$form_state, $type=false, $id=false, $image
 }
 
 /**
- * Form builder; Edit image
+ * Form builder; Edit media
  *
  * @param $form_state
  *   An associative array containing the current state of the form.
  * @param $type
- *   The type of the object the images are to be edited.
+ *   The type of the object the medias are to be edited.
  * @param $id
- *   The id of the object the images are to be edited
- * @param $image
- *   An image array.
+ *   The id of the object the medias are to be edited
+ * @param $media
+ *   An media array.
  * @param $i
  *   Integer to mark the fields with
  * @ingroup forms
- * @see gallery_image_form_submit()
+ * @see gallery_media_form_submit()
  */
-function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
+function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image, $i=1) {
   global $user;
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.upload.js');
+  
+  if($mediatype == "images"){
+  	$label 			   = 'image';
+  	$label_caps 	   = 'Image';
+  	$validate_function = '_gallery_images_form_upload_validate';
+  }
+  elseif($mediatype == "sounds"){
+  	$label 			   = 'sound';
+  	$label_caps 	   = 'Sound';
+  	$validate_function = '_gallery_sounds_form_upload_validate';
+  }
+  elseif($mediatype == "videos"){
+  	$label 			   = 'video';
+  	$label_caps 	   = 'Video';
+  	$validate_function = '_gallery_videos_form_upload_validate';
+  }
+  elseif($mediatype == "medias"){
+  	$label 			   = 'media';
+  	$label_caps 	   = 'Medias';
+  	$validate_function = '_gallery_medias_form_upload_validate';
+  	
+  }
+  
   if($image['id']) {
     $title = t('Edit %name', array('%name' => ($image['title'] ? $image['title'] : $image['filename'])));
     $form_state['gallery_image_id'] = $image['id'];
   } else
-    $title = t('Add new image');
+    $title = t('Add new '.$label.'');
   drupal_set_title($title, PASS_THROUGH);
   
   $types = _gallery_types();
@@ -567,11 +652,13 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
   $form_state['gallery_type'] = $type;
   $form_state['gallery_id'] = $id;
   $form_state['gallery_image'] = $image;
+  $form_state['mediatype']  = $mediatype;
   $url = drupal_get_destination();
   $url = drupal_parse_url($url['destination']);
   $form_state['camefrom'] = $url['path'];
   $form['#tree'] = TRUE;
-  
+   
+  	
   if($image['fid'])
     $form['thumb'] = array(
       '#markup' => '<a class="user-picture" rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>'
@@ -591,9 +678,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
     
     $form[$prefix.'_file'] = array(
       '#type' => 'file',
-      '#title' => t('Image'),
+      '#title' => t($label_caps),
       '#size' => 48,
-      '#element_validate' => array('_gallery_images_form_upload_validate'),
+      '#element_validate' => array($validate_function),
       '#file_required' => false,//!$image['id'],
     );
     
@@ -662,14 +749,14 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#size' => 100,
       '#maxlength' => 128,
       '#default_value' => $image['title'],
-      '#description' => t('The title of the image.'),
+      '#description' => t('The title of the '.$label.'.'),
       '#required' => FALSE,
     );
     $form[$prefix]['metadata']['description'] = array(
       '#type' => 'textarea',
       '#title' => t('Description'),
       '#default_value' => $image['description'],
-      '#description' => t('The description of the image.'),
+      '#description' => t('The description of the '.$label.'.'),
       '#required' => FALSE,
     );
     $form[$prefix]['metadata']['author'] = array(
@@ -678,7 +765,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#size' => 100,
       '#maxlength' => 255,
       '#default_value' => $image['author'] ? $image['author'] : $user->name,
-      '#description' => t('The author of the image.'),
+      '#description' => t('The author of the '.$label.'.'),
       '#required' => FALSE,
     );
     $form[$prefix]['metadata']['location'] = array(
@@ -687,15 +774,15 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
       '#size' => 100,
       '#maxlength' => 255,
       '#default_value' => $image['location'] ? $image['location'] : $default_location,
-      '#description' => t('The location the image was taken at.'),
+      '#description' => t('The location the '.$label.' was taken at.'),
       '#required' => FALSE,
     );
     
     if($form_state['input'][$prefix]['item']) {
       $item = explode(':', $form_state['input'][$prefix]['item']);
-      $categories = _gallery_image_form_categories($item[0], $item[1], $image);
+      $categories = _gallery_image_form_categories($mediatype, $item[0], $item[1], $image);
     } else
-      $categories = _gallery_image_form_categories($image['item_type'], $image['item_id'], $image);
+      $categories = _gallery_image_form_categories($mediatype, $image['item_type'], $image['item_id'], $image);
     $form[$prefix]['categories'] = array(
       '#type' => 'fieldset',
       '#title' => t('Categories'),
@@ -722,15 +809,15 @@ function gallery_image_form($form, &$form_state, $type, $id, $image, $i=1) {
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['upload_submit'] = array(
     '#type' => 'submit',
-    '#value' => $image['id'] ? t('Change image') : t('Upload images'),
+    '#value' => $image['id'] ? t('Change '.$label.'') : t('Upload '.$label.''),
     '#submit' => array('gallery_images_form_upload_submit'),
-    '#attributes' => $image['id'] ? array() : array('data-add' => t('Add another image'), 'data-remove' => t('Remove image'))
+    '#attributes' => $image['id'] ? array() : array('data-add' => t('Add another '.$label.''), 'data-remove' => t('Remove '.$label.''))
   );
 
   return $form;
 }
 
-function gallery_image_form_categories($type, $id) {
+function gallery_image_form_categories($mediatype, $type, $id) {
   $prefix = $_REQUEST['prefix'];
   $data = array(
     'categories' => array(),
@@ -746,8 +833,8 @@ function gallery_image_form_categories($type, $id) {
       } else
         $data['categories'][substr($cat, 4)] = substr($cat, 4);
     }
-  $base_form = drupal_get_form('gallery_image_form', $type, $id, $data, intval(substr($prefix, 7)));
-  $form = drupal_render(drupal_get_form('gallery_image_form_categories_form', $_REQUEST['item_type'], $_REQUEST['item_id'], $data, $prefix));
+  $base_form = drupal_get_form('gallery_image_form', $type, $id, $mediatype, $data, intval(substr($prefix, 7)));
+  $form = drupal_render(drupal_get_form('gallery_image_form_categories_form',$mediatype, $_REQUEST['item_type'], $_REQUEST['item_id'], $data, $prefix));
   $form = preg_replace('/<form[^>]*>\s*<div>(.*)(<input[^>]*type="hidden"[^>]*>\s*){3}<\/div>\s*<\/form>/', '$1', str_replace("\n", '', $form));
   return drupal_json_output(array(
     'request' => $_REQUEST[$prefix]['categories'],
@@ -758,13 +845,13 @@ function gallery_image_form_categories($type, $id) {
   ));
 }
 
-function gallery_image_form_categories_form($form, &$form_state, $type, $id, $image, $prefix) {
+function gallery_image_form_categories_form($form, &$form_state, $mediatype, $type, $id, $image, $prefix) {
   $form['#tree'] = true;
-  $form[$prefix]['categories'] = _gallery_image_form_categories($type, $id, $image);
+  $form[$prefix]['categories'] = _gallery_image_form_categories($mediatype, $type, $id, $image);
   return $form;
 }
 
-function _gallery_image_form_categories($type, $id, $image) {
+function _gallery_image_form_categories($mediatype, $type, $id, $image) {
   $available = gallery_available_categories($type, $id);
   $categories = array();
   foreach($available as $category) {
@@ -813,11 +900,72 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
   if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
       return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
         '!name' => $element['#title'],
-        '!size' => format_size(parse_size(file_upload_max_size())))));
+        '!size' => format_size(parse_size(variable_get('gallery_image_size', 2048)))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
+   
   if(!in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
-    return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
+    	return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
 }
-
+/**
+ * Validator for gallery sound files
+ */
+function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
+  $name = substr($element['#name'], 6, strlen($element['#name'])-7);
+  if(!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
+    if($element['#file_required'])
+      return form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
+    else
+      return;
+  if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
+      return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
+        '!name' => $element['#title'],
+        '!size' => format_size(parse_size(variable_get('gallery_sound_size', 2048))))));//'!size' => format_size(parse_size(file_upload_max_size())))));
+    	  	
+  if(!in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
+    	return form_error($element, t('!name requires a file of type mp3. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
+}
+/**
+ * Validator for gallery video files
+ */
+function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
+  $name = substr($element['#name'], 6, strlen($element['#name'])-7);
+  if(!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
+    if($element['#file_required'])
+      return form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
+    else
+      return;
+  if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
+      return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
+        '!name' => $element['#title'],
+        '!size' => format_size(parse_size(variable_get('gallery_video_size', 8192)))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
+    	
+  if(!in_array($_FILES['files']['type'][$name], array('video/mp4')))
+    	return form_error($element, t('!name requires a file of type mp4. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
+}
+function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
+  $name = substr($element['#name'], 6, strlen($element['#name'])-7);
+  if(!array_key_exists($name, $_FILES['files']['name']) || !$_FILES['files']['name'][$name])
+    if($element['#file_required'])
+      return form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
+    else
+      return;
+      
+  if(in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
+  	$file_size = variable_get('gallery_image_size', 2048)*1024;
+  	
+  if(in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
+  	$file_size = variable_get('gallery_sound_size', 2048)*1024;
+  
+  if(in_array($_FILES['files']['type'][$name], array('video/mp4')))
+  	$file_size = variable_get('gallery_video_size', 8192)*1024;	
+  
+  if(array_key_exists($name, $_FILES['files']['name']) && $_FILES['files']['name'][$name] && !$_FILES['files']['type'][$name])
+      return form_error($element, t('The file in !name is exceeding the maximum allowed size of !size.', array(
+        '!name' => $element['#title'],
+        '!size' => format_size(parse_size($file_size)))));
+    	
+  if(!in_array($_FILES['files']['type'][$name], array('video/mp4','audio/mpeg','image/jpeg', 'image/gif', 'image/png')))
+    	return form_error($element, t('!name requires a file of type mp4, jpg/jpeg, gif, png, mpeg . (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
+}
 function _gallery_images_form_upload_category_validate($element, &$form_state, $form) {
   $value = $element['#value'];
   $image = $form_state['gallery_image'];
@@ -832,7 +980,7 @@ function _gallery_images_form_upload_category_validate($element, &$form_state, $
 }
 
 /**
- * Submit handler for saving multiple gallery images.
+ * Submit handler for saving multiple gallery medias.
  */
 function gallery_images_form_upload_submit($form, &$form_state) {
   global $GALLERY_MAX_SIZE;
@@ -840,10 +988,24 @@ function gallery_images_form_upload_submit($form, &$form_state) {
   $id = $form_state['gallery_id'];
   $orig_image = $form_state['gallery_image'];
   $item_provider = $form_state['item_provider'];
+  $mediatype = $form_state['mediatype'];
   
+  if($mediatype == "images"){
+  	$extensions = 'jpg jpeg gif png';
+  	$file_size = variable_get('gallery_image_size', 2048)*1024;
+  }
+  elseif($mediatype == "sounds"){
+  	$extensions = 'mp3';
+  	$file_size = variable_get('gallery_sound_size', 2048)*1024;
+  }
+  elseif($mediatype == "videos"){
+  	$extensions = 'mp4';
+  	$file_size = variable_get('gallery_video_size',8192)*1024;
+  }
+  	
   $validators = array(
-    'file_validate_extensions' => array('jpg jpeg gif png'),
-    'file_validate_size' => array(parse_size(file_upload_max_size()), 0),
+    'file_validate_extensions' => array($extensions),
+    'file_validate_size' => array(parse_size($file_size), 0),
   );
   
   $destination = array();
@@ -907,7 +1069,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
     $saved = true;
     $orig_image = array();
   }
-  $camefrom = 'gallery/'.$type.'/'.$id.'/edit';
+  $camefrom = 'gallery/'.$type.'/'.$id.'/'.$mediatype.'/edit';
   if($_SESSION[md5('camefrom_'.$type.'_'.$id)]) {
     $camefrom = $_SESSION[md5('camefrom_'.$type.'_'.$id)];
     unset($_SESSION[md5('camefrom_'.$type.'_'.$id)]);
@@ -916,7 +1078,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 }
 
 /**
- * Submit handler for deleting multiple gallery images.
+ * Submit handler for deleting multiple gallery medias.
  */
 function gallery_images_form_delete_submit($form, &$form_state) {
   $type = $form_state['gallery_type'];
@@ -944,7 +1106,7 @@ function gallery_images_form_delete_submit($form, &$form_state) {
 }
 
 /**
- * Menu callback; Show a gallery image
+ * Menu callback; Show a gallery media
  */
 function gallery_image_show($image) {
   gallery_image_visibility_save($image, '1');
@@ -958,7 +1120,7 @@ function gallery_image_show($image) {
 }
 
 /**
- * Menu callback; Hide a gallery image
+ * Menu callback; Hide a gallery media
  */
 function gallery_image_hide($image) {
   gallery_image_visibility_save($image, '0');
@@ -972,7 +1134,7 @@ function gallery_image_hide($image) {
 }
 
 /**
- * Menu callback; Rate a gallery image
+ * Menu callback; Rate a gallery media
  */
 function gallery_image_rate($image) {
   $type_id = $_POST['type'];
@@ -1015,29 +1177,60 @@ function gallery_image_rate($image) {
 }
 
 /**
- * Menu callback; Listing of all images added by a given user.
+ * Menu callback; Listing of all medias added by a given user.
  */
-function gallery_own_list($user) {
+function gallery_own_list($user,$mediatype="images") {
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   $page = array();
-  $images = gallery_images(false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  
+  if($mediatype == "images" || $mediatype =="medias")
+  	$images = gallery_images("images",false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  if($mediatype == "sounds" || $mediatype =="medias")
+  	$sounds = gallery_images("sounds",false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  if($mediatype == "videos" || $mediatype =="medias")
+  	$videos = gallery_images("videos",false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  	
   $links = array();
-  if($images['count']) {
-    $page['anchor'] = array(
-      '#markup' => '<a name="'.$params['key'].'"></a>'
-    );
-    $page['gallery_list'] = array(
-      '#theme' => 'gallery_list',
-      '#images' => $images['images'],
-      '#rating_types' => gallery_available_rating_types()
-    );
+  if($images['count'] || $sounds['count'] || $videos['count']) {
+
+
+    if($videos['count']){
+	    $page['anchor_videos'] = array(
+	      '#markup' => '<a name="'.$params['key'].'"></a>'
+	    );
+	    $page['gallery_list_videos'] = array(
+	      '#theme' => 'gallery_list',
+	      '#images' => $videos,
+	      '#rating_types' => gallery_available_rating_types()
+	    );
+  	}    
+  	if($sounds['count']){
+	    $page['anchor_sounds'] = array(
+	      '#markup' => '<a name="'.$params['key'].'"></a>'
+	    );
+	    $page['gallery_list_sounds'] = array(
+	      '#theme' => 'gallery_list',
+	      '#images' => $sounds,
+	      '#rating_types' => gallery_available_rating_types()
+	    );
+  	}  	
+  	if($images['count']){
+	    $page['anchor_images'] = array(
+	      '#markup' => '<a name="'.$params['key'].'"></a>'
+	    );
+	    $page['gallery_list_images'] = array(
+	      '#theme' => 'gallery_list',
+	      '#images' => $images,
+	      '#rating_types' => gallery_available_rating_types()
+	    );
+  	}
   }
   else
     $page['gallery_list'] = array(
-      '#markup' => '<p>'.t('You have not added any images yet.').'</p>',
+      '#markup' => '<p>'.t('You have not added any '.$mediatype.'').'</p>',
     );
   array_push($links, array(
-    'title' => t('Manage images'),
+    'title' => t('Manage '.$mediatype.''),
     'href' => 'user/'.$user->uid.'/gallery/edit'
   ));
   if($backlink) {
@@ -1052,35 +1245,47 @@ function gallery_own_list($user) {
       '#attributes' => array('class' => 'gallery-action-links'),
       '#weight' => 9
     );
-  drupal_set_title(t('Images added by %user', array('%user' => $user->name)), PASS_THROUGH);
+  drupal_set_title(t($mediatype.' added by %user', array('%user' => $user->name)), PASS_THROUGH);
   return $page;
 }
 
-function gallery_own_edit($user) {
-  $images = gallery_images(false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
-  $form = drupal_get_form('gallery_images_form', false, false, $images, 'user/'.$user->uid.'/gallery/edit');
-  drupal_set_title(t('Images added by %user', array('%user' => $user->name)), PASS_THROUGH);
+function gallery_own_edit($user,$mediatype="images") {
+  $images = gallery_images($mediatype,false, false, false, true, false, false, array(), array('gi.owner_id = '.$user->uid));
+  $form = drupal_get_form('gallery_images_form',$mediatype, false, false, $images, 'user/'.$user->uid.'/gallery/edit');
+  drupal_set_title(t($mediatype.' added by %user', array('%user' => $user->name)), PASS_THROUGH);
   return $form;
 }
 
 /**
- * Returns HTML for the page containing the list of gallery images
+ * Returns HTML for the page containing the list of gallery medias
  *
  * @param $variables
  *   An associative array containing:
- *   - images: An array of the images to display
+ *   - medias: An array of the medias to display
  *   - rating_types: An array of rating types
  *
  * @ingroup themeable
  */
 function theme_gallery_list($variables) {
-  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 100));
-  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js', array('weight' => 110));
-  $images = $variables['images'];
+  $mediatype = $variables['images']['mediatype'];	
+  if($mediatype == "images" || $mediatype == "medias"){
+  	
+	  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 100));
+	  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js', array('weight' => 110));
+  }
+  if($mediatype == "videos" || $mediatype =="sounds" || $mediatype == "medias"){
+  	
+	  drupal_add_css(drupal_get_path('module', 'gallery') . '/css/divbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/divbox.js', array('weight' => 101));
+	  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js', array('weight' => 111));
+  }
+ 
+  $images = $variables['images'][$mediatype];
   $rating_types = $variables['rating_types'];
   $types = _gallery_types();
+  
   
   if(!$images)
     return;
@@ -1102,28 +1307,67 @@ function theme_gallery_list($variables) {
       $caption = '<span class="title">'.$caption.'</span>';
     if($image['location'] || $image['author'])
       $caption .= '<span class="author">&copy; '.$image['author'].($image['location'] ? ', '.$image['location'] : '').'</span>';
-    if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
-      $caption .= ' <em>'.call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id'])).'</em>';
-    array_push($items, 
-      '<li class="'.join(' ', _gallery_get_class($i-1)).'">'.
-        '<a href="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large').'">'.
-          '<img src="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_thumbnail').'" alt="'.$image['title'].'" />'.
-        '</a>'.
-        (user_access('manage gallery images') ? 
-          '<form class="show_hide" method="post" action="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/'.($image['visible'] ? 'hide' : 'show').'/'.$image['id']).'">'.
-            '<input type="hidden" name="camefrom" value="'.$url.'" />'.
-            '<input type="submit" name="submit" value="'.($image['visible'] ? t('Hide') : t('Show')).'" />'.
-          '</form>' : '').
-        '<div class="caption">'.
-          ($caption ? '<p class="captionText">'.$caption.'</p>' : '').
-          ($rating_types ? theme('gallery_image_rating', array(
-                'image' => $image,
-                'rating_types' => $rating_types
-              )
-            ) : ''
-          ).
-        '</div>'.
-      '</li>');
+
+
+      $image['mediatype'] = $mediatype;
+      
+      if($mediatype =="images" 
+      		||($mediatype == "medias" &&  $image['filemime'] == 'image/png'
+      		|| $image['filemime'] == 'image/jpg'
+      		|| $image['filemime'] == 'image/jpeg'
+      		|| $image['filemime'] == 'image/gif')){
+      			
+    	if(array_key_exists($image['item_type'], $types) && array_key_exists('image_caption', $types[$image['item_type']]))
+      		$caption .= ' <em>'.call_user_func_array($types[$image['item_type']]['image_caption'], array($image['item_id'])).'</em>';
+      		     	
+      	$url_href  = url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_large');
+      	$url_image = url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_thumbnail');
+      	$extras    = '';
+      	$captionclass = "caption";
+      }
+      elseif($mediatype == "sounds" || ($mediatype == "medias" && $image['filemime'] == 'audio/mpeg')){
+      	
+    	if($image['filename'] || $image['timestamp'])
+      		$caption .= ' <em>'.$image['filename'].' / '.date("d.m.y",$image['timestamp']).'</em>';
+      		
+      	$url_href  = file_uri_target($image['uri']);
+	    $url_href  = url('sites/default/files/'.$url_href);
+	    $url_image = url(drupal_get_path('module', 'gallery').'/images/music_icon.png');
+	    $extras    = 'class="divbox_sound"';
+	    $captionclass = "caption";
+      }
+      elseif($mediatype == "videos" || ($mediatype == "medias" && $image['filemime'] == 'video/mp4')){
+      	
+      	if($image['filename'] || $image['timestamp'])
+      		$caption .= ' <em>'.$image['filename'].' / '.date("d.m.y",$image['timestamp']).'</em>';
+      	
+      	$url_href  = file_uri_target($image['uri']);
+	    $url_href  = url('sites/default/files/'.$url_href);
+	    $url_image = url(drupal_get_path('module', 'gallery').'/images/video_icon.png');
+      	$extras    = 'class="divbox_video"';
+      	$captionclass = "caption";
+      }
+      	
+		 array_push($items, 
+		      '<li class="'.join(' ', _gallery_get_class($i-1)).'">'.
+		        '<a '.$extras.' href="'.$url_href.'">'.
+		          '<img src="'.$url_image.'" alt="'.$image['title'].'" />'.
+		        '</a>'.
+		        (user_access('manage gallery medias') ? 
+		          '<form class="show_hide" method="post" action="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/'.($image['visible'] ? 'hide' : 'show').'/'.$image['id']).'">'.
+		            '<input type="hidden" name="camefrom" value="'.$url.'" />'.
+		            '<input type="submit" name="submit" value="'.($image['visible'] ? t('Hide') : t('Show')).'" />'.
+		          '</form>' : '').
+		        '<div class="'.$captionclass.'">'.
+		          ($caption ? '<p class="captionText">'.$caption.'</p>' : '').
+		          ($rating_types ? theme('gallery_image_rating', array(
+		                'image' => $image,
+		                'rating_types' => $rating_types
+		              )
+		            ) : ''
+		          ).
+		        '</div>'.
+		      '</li>');
   }
   return '<ul class="gallery clearfix">'.join('', $items).'</ul>';
 }
@@ -1143,23 +1387,26 @@ function _gallery_get_class($i, $columns=GALLERY_COLUMNS) {
 }
 
 /**
- * Returns HTML for an images rating types
+ * Returns HTML for an medias rating types
  *
  * @param $variables
  *   An associative array containing:
- *   - image: A gallery image array
+ *   - media: A gallery media array
  *   - rating_types: An array of rating types
  *
  * @ingroup themeable
  */
 function theme_gallery_image_rating($variables) {
   global $base_url;
+  $mediatype = $variables['image']['mediatype'];
   drupal_add_library('system', 'ui.widget');
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.ui.stars.min.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.ui.stars.min.js', array('weight' => 101));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 110));
   drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.rating.js', array('weight' => 111));
+  //drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js', array('weight' => 112));
+  drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js', array('weight' => 100));
   $image = $variables['image'];
   $rating_types = $variables['rating_types'];
   if(!$rating_types)
@@ -1167,7 +1414,7 @@ function theme_gallery_image_rating($variables) {
   $url = drupal_get_destination();
   $url = drupal_parse_url($url['destination']);
   $url = $url['path'];
-  $allowed = user_access('rate gallery images');
+  $allowed = user_access('rate gallery medias');
   $ratings = '';
   foreach($rating_types as $rating_type) {
     $rating = is_array($image['ratings']) && array_key_exists($rating_type['id'], $image['ratings']) ? $image['ratings'][$rating_type['id']] : array('count' => 0, 'average' => 0);
