@@ -239,7 +239,7 @@ function show_area($areaId) {
   $output = array_merge($output, area_files($areaId));
   
   if(function_exists('gallery_list_renderer'))
-    $output['gallery'] = gallery_list_renderer('area', $areaId);
+    $output['gallery'] = gallery_list_renderer('images','area', $areaId);
   return $output;
   
 }
@@ -424,7 +424,7 @@ function _area_presentation($areaId, $size='gallery_presentation', $cssClass=fal
     if($items) {
       $page[$group] = array('#weight' => $weight++);
       $page[$group]['title'] = array('#markup' => '<h2>'.$group.'</h2>');
-      $page[$group]['gallery'] = gallery_presentation_renderer($items, $size, $cssClass, $columns);
+      $page[$group]['gallery'] = gallery_presentation_renderer('images',$items, $size, $cssClass, $columns);
     }
   }
   
