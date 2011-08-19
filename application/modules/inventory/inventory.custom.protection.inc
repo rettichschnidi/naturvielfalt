@@ -364,7 +364,7 @@ function inventory_protection_edit_entries($form, &$form_state, $protection) {
   
   if($weight == 2)
     $form['empty'] = array(
-      '#markup' => '<p class="empty">'.t('There are no inventory groups available yet. Add a new one by using the select box in the lower left.</p>')
+      '#markup' => '<p class="empty">'.t('There are no inventory groups available yet. Add a new one by using the select box below.</p>')
     );
   
   $form['inventory_protection_id'] = array(
