@@ -99,8 +99,8 @@ function area_gallery_caption($id) {
  *   The ID of the area
  * @return string
  */
-function area_gallery_manage_description($id) {
-  return t('Add and edit images of this area and optionally link them to an available habitat.');
+function area_gallery_manage_description($id,$mediatype) {
+  return t('Add and edit '.$mediatype.' of this area and optionally link them to an available habitat.');
 }
 
 /**
@@ -168,8 +168,8 @@ function area_habitat_gallery_manage_title($id) {
  *   The ID of the area_habitat
  * @return string
  */
-function area_habitat_gallery_manage_description($id) {
-  return t('Add and edit images of the specified habitat located in the mentioned area.');
+function area_habitat_gallery_manage_description($id,$mediatype) {
+  return t('Add and edit '.$mediatype.' of the specified habitat located in the mentioned area.');
 }
 
 /**

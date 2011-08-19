@@ -238,8 +238,10 @@ function show_area($areaId) {
   $output = array_merge($output, area_habitats($areaId));
   $output = array_merge($output, area_files($areaId));
   
-  if(function_exists('gallery_list_renderer'))
-    $output['gallery'] = gallery_list_renderer('images','area', $areaId);
+  if(function_exists('gallery_list_renderer')){
+    $output['galleryImages'] = gallery_list_renderer('images','area', $areaId);
+    $output['galleryVideos'] = gallery_list_renderer('videos','area', $areaId);
+  }
   return $output;
   
 }
