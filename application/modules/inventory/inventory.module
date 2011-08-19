@@ -1249,10 +1249,14 @@ function _inventory_single_get_id($user) {
   }
   return $head_inventory_id;
 }
-function inventory_data_gallery_list($head_inventory_id,$sort){
+function inventory_data_gallery_list($id,$sort){
 	  
-  	  $protected = inventory_redlisted_entries($head_inventory_id);
-  	  
+  	  $protected = inventory_redlisted_entries($id);
+	  if(is_array($id)) {
+	  	$prot_level = $id['protection_level'];
+	  	$id = $id['inv_id'];
+	  }
+  	
 	  $result = db_query('select i.inventory_type_id,
 	  							 e.id as inventory_entry_id,
 	  							 it.name as inventory_type_name,
@@ -1278,7 +1282,10 @@ function inventory_data_gallery_list($head_inventory_id,$sort){
 						  left join organism o on e.organism_id = o.id
 						  left join fauna_organism fauna ON o.organism_id = fauna.id
 					      left join flora_organism flora ON o.organism_id = flora.id
-	  					  WHERE i.head_inventory_id =:hid ORDER BY '.$sort.',ita.id',array(':hid' => $head_inventory_id));
+	  					  WHERE i.head_inventory_id =:hid'.
+	  				     ($prot_level ? ' AND protection_level = '.$prot_level.' ':'').
+    					 ($protected ?' AND NOT e.id IN ('.implode(', ', $protected).') ':'')
+    					 .' ORDER BY '.$sort.',ita.id',array(':hid' => $id));
 	$data = array();
 	$fields = array();
 	$field_values = array();
