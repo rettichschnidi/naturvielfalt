@@ -32,8 +32,12 @@ function inventory_show($head_inventory_id, $redirect=true) {
   if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE)
     $render_array = array_merge($render_array, inventory_redlist_count($head_inventory_id));
   
-  if(function_exists('gallery_list_renderer'))
-    $render_array['Gallery'] = gallery_list_renderer('head_inventory', $head_inventory_id, false, 100);
+  if(function_exists('gallery_list_renderer')){
+    $render_array['GalleryImages'] = gallery_list_renderer('images','head_inventory', $head_inventory_id, false, 100);
+    $render_array['GallerySounds'] = gallery_list_renderer('sounds','head_inventory', $head_inventory_id, false, 100,true);
+    $render_array['GalleryVideos'] = gallery_list_renderer('videos','head_inventory', $head_inventory_id, false, 100,true);
+    
+  }
   
   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
 
@@ -269,9 +273,8 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
       //print_r($items);
       $render_array[$invGroupName] = array('#weight' => $weight++);
       $render_array[$invGroupName]['title'] = array('#markup' => '<h2>'.$invGroupName.'</h2>');
-      $render_array[$invGroupName]['galleryImages'] = gallery_presentation_renderer($items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
-  
-    }
+      $render_array[$invGroupName]['galleryImages'] = gallery_presentation_renderer('images',$items, $size, $cssClass, $columns, (!$source || $source == 'default' ? t('Evidence image') : false));
+      }
   }
   
   if(!$render_array)
@@ -594,7 +597,7 @@ function inventory_inventories($head_inventory_id, $invArr=false, $gallery=true)
         }
         
       if($gallery_available) {
-        $row['gallery'] = gallery_view_link('inventory_entry', $invDetails['id']);
+        $row['gallery'] = gallery_view_link('inventory_entry', $invDetails['id'],true);
         if($row['gallery'])
           $has_gallery = true;
       }
