@@ -154,7 +154,7 @@ body.page-find .columns-overlay ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    min-width: 140px;
+    width: 180px;
 }
 
 body.page-find .columns-overlay label {
