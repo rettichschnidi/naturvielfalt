@@ -33,7 +33,7 @@ function hook_gallery_types() {
        * If not provided access is granted if the current user is the owner of
        * the image
        */
-      'edit_image' => 'YOURMODULE_gallery_media_access_callback',
+      'edit_image' => 'YOURMODULE_gallery_image_access_callback',
       
       /* A function receiving the type and id of the gallery to be edited and
        * returns true if access should be granted
@@ -46,7 +46,7 @@ function hook_gallery_types() {
       /* A function receiving the id of the item and returning a string used
        * as caption for images of this type and id
        */
-      'image_caption' => 'YOURMODULE_gallery_media_caption',
+      'image_caption' => 'YOURMODULE_gallery_image_caption',
       
       /* A function receiving the id of the item and returning a string used as
        * title for the "manage images" page of this type and id
@@ -98,7 +98,7 @@ function hook_gallery_types() {
        * type may afterwards be filter by the sub types.
        */
       'subtypes' => array(
-        'presentation' => t('Presentational images')
+        'presentation' => t('Presentational objects')
         // ...
       )
     )

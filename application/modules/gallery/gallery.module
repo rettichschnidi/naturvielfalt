@@ -230,7 +230,8 @@ function gallery_menu() {
     'file' => 'gallery.content.inc',
   );*/
     $items['gallery/%/%/%/edit'] = array(
-    'title' => t('Manage medias'),
+    'title' => t('Manage @mediatype'),
+    'title arguments' =>  array('@mediatype' => 3),
     'description' => t('Add and edit gallery medias.'),
     'page callback' => 'gallery_images_edit',
     'page arguments' => array(1, 2,3),

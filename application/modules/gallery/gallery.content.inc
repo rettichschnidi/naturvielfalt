@@ -448,7 +448,7 @@ function gallery_images_edit($type, $id, $mediatype) {
   $title = t('Manage '.$mediatype.'');
   drupal_set_title($title, PASS_THROUGH);
   
-  $info = _gallery_get_title_description($type, $id);
+  $info = _gallery_get_title_description($type, $id,$mediatype);
   if($info['title'])
     drupal_set_title($info['title'], PASS_THROUGH);
   if($info['description'])
@@ -459,7 +459,7 @@ function gallery_images_edit($type, $id, $mediatype) {
   return $page;
 }
 
-function _gallery_get_title_description($type, $id) {
+function _gallery_get_title_description($type, $id,$mediatype) {
   $types = _gallery_types();
   $type = $types[$type];
   $info = array(
@@ -467,9 +467,9 @@ function _gallery_get_title_description($type, $id) {
     'description' => false
   );
   if($type['manage_title'] && function_exists($type['manage_title']))
-    $info['title'] = call_user_func_array($type['manage_title'], array($id));
+    $info['title'] = call_user_func_array($type['manage_title'], array($id,$mediatype));
   if($type['manage_description'] && function_exists($type['manage_description']))
-    $info['description'] = call_user_func_array($type['manage_description'], array($id));
+    $info['description'] = call_user_func_array($type['manage_description'], array($id,$mediatype));
   return $info;
 }
 
