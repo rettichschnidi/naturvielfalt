@@ -880,7 +880,7 @@ var inventory = {
     inventory.locationform = $('#inventory-edit-entry-location-form');
     if(!inventory.locationform.size())
       inventory.locationform = $('body');
-    inventory.map = new AreaSelect('map_location', 'map_search', 'map_search_button');
+    inventory.map = new AreaSelect('map_location');
     var position = false;
     if(inventory.locationform.find('input[name="lat"]').val() !== '' || inventory.locationform.find('input[name="lng"]').val() !== '')
       position = new google.maps.LatLng(parseFloat(inventory.locationform.find('input[name="lat"]').val()), parseFloat(inventory.locationform.find('input[name="lng"]').val()));
@@ -937,11 +937,9 @@ var inventory = {
     inventory.listeners.push(google.maps.event.addDomListener(inventory.map.map, 'click', inventory.clickHandler, true));
     inventory.listeners.push(google.maps.event.addDomListener(inventory.tmp_location, 'mousemove', inventory.moveHandler, true));
     inventory.listeners.push(google.maps.event.addDomListener(inventory.tmp_location, 'click', inventory.clickHandler, true));
-    for(var overlay in inventory.map.mapOverlays.overlays) {
-      if(typeof inventory.map.mapOverlays.overlays[overlay].getOverlay == "undefined")
-        continue;
-      inventory.listeners.push(google.maps.event.addDomListener(inventory.map.mapOverlays.overlays[overlay].getOverlay(), 'mousemove', inventory.moveHandler, true));
-      inventory.listeners.push(google.maps.event.addDomListener(inventory.map.mapOverlays.overlays[overlay].getOverlay(), 'click', inventory.clickHandler, true));
+    for(var i in inventory.map.mapOverlays.overlays) {
+      var overlay = inventory.map.mapOverlays.overlays[i];
+      overlay.overlay.setOptions({clickable: false});
     }
   }
   
