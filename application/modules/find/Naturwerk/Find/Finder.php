@@ -60,11 +60,11 @@ class Finder {
                     $columns[$index] = $column;
                 }
             }
-            
+
             ksort($columns);
             $this->columns = $columns;
         }
-        
+
         // set default sort
         $this->sort = $this->parameters->getSort();
         $active = array();
@@ -157,10 +157,24 @@ class Finder {
             $filter->addFilter($term);
         }
 
+        // add family filter
+        $family = $this->parameters->getFamily();
+        if (count($family) > 0) {
+            $term = new \Elastica_Filter_Terms('family', $family);
+            $filter->addFilter($term);
+        }
+
         // add town filter
         $town = $this->parameters->getTown();
         if (count($town) > 0) {
             $term = new \Elastica_Filter_Terms('town', $town);
+            $filter->addFilter($term);
+        }
+
+        // add canton filter
+        $canton = $this->parameters->getCanton();
+        if (count($canton) > 0) {
+            $term = new \Elastica_Filter_Terms('canton', $canton);
             $filter->addFilter($term);
         }
 
@@ -226,8 +240,14 @@ class Finder {
         $facetClass = new \Elastica_Facet_Terms('class');
         $facetClass->setField('class');
 
+        $facetFamily = new \Elastica_Facet_Terms('family');
+        $facetFamily->setField('family');
+
         $facetTown = new \Elastica_Facet_Terms('town');
         $facetTown->setField('town');
+
+        $facetCanton = new \Elastica_Facet_Terms('canton');
+        $facetCanton->setField('canton');
 
         $facetUser = new \Elastica_Facet_Terms('user');
         $facetUser->setField('user');
@@ -243,7 +263,9 @@ class Finder {
         $query = new \Elastica_Query();
         $query->setQuery($this->getQuery());
         $query->addFacet($facetClass);
+        $query->addFacet($facetFamily);
         $query->addFacet($facetTown);
+        $query->addFacet($facetCanton);
         $query->addFacet($facetUser);
         $query->setSize(100);
 
@@ -279,7 +301,7 @@ class Finder {
 
         return $this->getType()->count($query);
     }
-    
+
     /**
      * @return array $sort
      */

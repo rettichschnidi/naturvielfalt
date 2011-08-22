@@ -111,6 +111,8 @@ class Indexer {
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'inventory' => array('type' => 'string', 'analyzer' => 'sortable'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'town' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
@@ -121,6 +123,8 @@ class Indexer {
                 inventory_entry.id AS id,
                 head_inventory.shared AS shared,
                 ST_AsGeoJSON(area.geom) AS geom,
+                area.locality AS town,
+                area.canton AS canton,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
                 organism.organism_type,
@@ -149,6 +153,8 @@ class Indexer {
                 inventory_entry.id AS id,
                 head_inventory.shared AS shared,
                 ST_AsGeoJSON(area.geom) AS geom,
+                area.locality AS town,
+                area.canton AS canton,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
                 organism.organism_type,
@@ -209,6 +215,7 @@ class Indexer {
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'town' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
 
@@ -219,6 +226,7 @@ class Indexer {
                 head_inventory.name AS name,
                 area.field_name AS area,
                 area.locality AS town,
+                area.canton AS canton,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
@@ -326,6 +334,7 @@ class Indexer {
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'town' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
 
@@ -334,6 +343,7 @@ class Indexer {
                 area.id AS id,
                 area.field_name AS name,
                 area.locality AS town,
+                area.canton AS canton,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,

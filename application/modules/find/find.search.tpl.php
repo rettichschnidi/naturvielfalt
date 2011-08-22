@@ -67,7 +67,11 @@ $parameters = $current->getParameters();
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Class'), 'field' => 'class', 'value' => $parameters->getClass())); ?>
 
+<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Family'), 'field' => 'family', 'value' => $parameters->getFamily())); ?>
+
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Town'), 'field' => 'town', 'value' => $parameters->getTown())); ?>
+
+<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Canton'), 'field' => 'canton', 'value' => $parameters->getCanton())); ?>
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('User'), 'field' => 'user', 'value' => $parameters->getUser())); ?>
 
@@ -79,7 +83,7 @@ $parameters = $current->getParameters();
 
 <ul class="tabs">
     <li class="<?php echo 'find/sightings' == $_GET['q'] ? 'active' : ''; ?>">
-        <?php echo l(t('Observations') . '(' . $sightings->count() . ')', 'find/sightings', array('query' => $parameters->filter())); ?>
+        <?php echo l(t('Observations') . ' (' . $sightings->count() . ')', 'find/sightings', array('query' => $parameters->filter())); ?>
     </li>
     <li class="<?php echo 'find/inventories' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l(t('Inventories') . ' (' . $inventories->count() . ')', 'find/inventories', array('query' => $parameters->filter())); ?>

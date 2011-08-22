@@ -57,6 +57,11 @@ class Parameters {
     /**
      * @var array
      */
+    protected $canton;
+
+    /**
+     * @var array
+     */
     protected $sort;
 
     /**
@@ -75,7 +80,7 @@ class Parameters {
      * @param array $sort
      * @param array $columns
      */
-    public function __construct($uid = 0, $search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $town = array(), $sort = array(), $columns = array()) {
+    public function __construct($uid = 0, $search = '', $geo = array(), $date = array(), $class = array(), $user = array(), $family = array(), $genus = array(), $town = array(), $canton = array(), $sort = array(), $columns = array()) {
 
         $this->uid = $uid;
         $this->search = $search;
@@ -102,6 +107,7 @@ class Parameters {
         $this->family = $family;
         $this->genus = $genus;
         $this->town = $town;
+        $this->canton = $canton;
 
         $this->sort = $sort;
         $this->columns = $columns;
@@ -173,6 +179,13 @@ class Parameters {
     /**
      * @return array
      */
+    public function getCanton() {
+        return $this->canton;
+    }
+
+    /**
+     * @return array
+     */
     public function getSort() {
         return $this->sort;
     }
@@ -196,6 +209,7 @@ class Parameters {
         	'family' => $this->getFamily(),
         	'genus' => $this->getGenus(),
         	'town' => $this->getTown(),
+        	'canton' => $this->getCanton(),
         	'geo' => $this->getGeo(),
         	'date' => $this->getDate(),
         	'sort' => $this->getSort(),

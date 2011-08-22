@@ -17,6 +17,7 @@ class Areas extends Finder {
 
         $this->addColumn('name', t('Area name'), true, 'link');
         $this->addColumn('town', t('Town name'));
+        $this->addColumn('canton', t('Canton'));
         $this->addColumn('user', t('User'));
 
         parent::__construct($index, 'area', $parameters);
