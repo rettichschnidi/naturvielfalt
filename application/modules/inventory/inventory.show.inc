@@ -226,12 +226,12 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
       	foreach($infos['fields'] as $fieldname){
       		
       	    $html .= '<div class="image_attributes">';
-      	  	$html .= '<div class="attributes_name">'.$fieldname.'</div>';
+      	  	$html .= '<div class="attributes_name">'.t($fieldname).'</div>';
       	  	if($infos['field_values'][$fieldname]=="")
-      	  		$value =t("no data");
+      	  		$value ="no data";
       	  	else
       	  		$value = $infos['field_values'][$fieldname];
-      	  	$html .= '<div class="attributes_value">'.$value.'</div><div>&nbsp;</div>';
+      	  	$html .= '<div class="attributes_value">'.t($value).'</div><div>&nbsp;</div>';
       	  	$html .= '</div>';
       	}
  
