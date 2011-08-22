@@ -29,7 +29,7 @@ function devel_function_reference() {
 function devel_cache_clear() {
   drupal_flush_all_caches();
 
-  drupal_set_message('Cache cleared.');
+  drupal_set_message(t('Cache cleared'));
 
   drupal_goto();
 }

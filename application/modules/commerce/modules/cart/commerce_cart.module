@@ -33,7 +33,7 @@ function commerce_cart_menu() {
   );
 
   $items['checkout'] = array(
-    'title' => 'Checkout',
+    'title' => t('Checkout'),
     'page callback' => 'commerce_cart_checkout_router',
     'access arguments' => array('access checkout'),
     'type' => MENU_CALLBACK,

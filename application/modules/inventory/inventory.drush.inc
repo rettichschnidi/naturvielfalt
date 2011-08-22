@@ -5,7 +5,7 @@
  */
 function inventory_drush_command() {
     $items['inventory-migrate-postgis'] = array(
-        'description' => 'Migrate location into PostGIS column geom.',
+        'description' => t('Migrate location into PostGIS column geom.'),
         'callback' => 'inventory_drush_migrate_postgis',
         'drupal dependencies' => array('area'),
     );

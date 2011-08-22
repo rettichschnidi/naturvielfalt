@@ -183,7 +183,7 @@ function commerce_paypal_wps_paypal_ipn_process($order, $payment_method, &$ipn) 
   switch ($ipn['payment_status']) {
     case 'Failed':
       $transaction->status = COMMERCE_PAYMENT_STATUS_FAILURE;
-      $transaction->message = t("The payment has failed. This happens only if the payment was made from your customer’s bank account.");
+      $transaction->message = t('The payment has failed. This happens only if the payment was made from your customer’s bank account');
       break;
 
     case 'Voided':

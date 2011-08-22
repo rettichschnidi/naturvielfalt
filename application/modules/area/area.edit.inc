@@ -105,7 +105,7 @@ function area_edit_files_form($form, &$form_state, $area_id) {
 
   $form['upload_submit'] = array(
     '#type' => 'submit', 
-    '#value' => t("Upload"),
+    '#value' => t('Upload'),
     '#submit' => array('area_update_file'),
   	'#weight' => 2,
   );
@@ -250,7 +250,7 @@ function area_edit_form_submit($form, &$form_state) {
 
 	// redirect to create a new inventory assigned to the area just created
 	$form_state['redirect'] = 'area/'.$area_id.'/edit';
-	drupal_set_message('Area successfully updated');
+	drupal_set_message(t('Area successfully updated'));
 }
 
 function area_delete_file($form, &$form_state, $area_id, $file_id) {

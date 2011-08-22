@@ -79,7 +79,7 @@ function inventory_menu() {
     'weight' => 3,
   );
   $items['inventory/%/entry_locations'] = array(
-    'title' => 'Entry locations',
+    'title' => t('Entry locations'),
     'page callback' => 'inventory_entry_locations',
     'page arguments' => array(1),
     'access callback' => 'inventory_access',
@@ -212,8 +212,8 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/template_autocomplete'] = array(
-    'title' => 'Template Autocomplete',
-    'description' => 'JSON Template Autocomplete',
+    'title' => t('Template Autocomplete'),
+    'description' => t('JSON Template Autocomplete'),
     'page callback' => 'inventory_template_autocomplete',
     'page arguments' => array(1),
     'access callback' => 'inventory_edit_access',
@@ -222,8 +222,8 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/inventory_autocomplete'] = array(
-    'title' => 'Inventory Autocomplete',
-    'description' => 'JSON Inventory Autocomplete',
+    'title' => t('Inventory Autocomplete'),
+    'description' => t('JSON Inventory Autocomplete'),
     'page callback' => 'inventory_inventory_autocomplete',
     'page arguments' => array(1),
     'access callback' => 'inventory_edit_access',
@@ -232,8 +232,8 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/public_inventory_autocomplete'] = array(
-    'title' => 'Public Inventory Autocomplete',
-    'description' => 'JSON Public Inventory Autocomplete',
+    'title' => t('Public Inventory Autocomplete'),
+    'description' => t('JSON Public Inventory Autocomplete'),
     'page callback' => 'inventory_public_inventory_autocomplete',
     'page arguments' => array(1),
     'access callback' => 'inventory_edit_access',
@@ -242,8 +242,8 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/habitat_autocomplete'] = array(
-    'title' => 'Habitat Autocomplete',
-    'description' => 'JSON Habitat Autocomplete',
+    'title' => t('Habitat Autocomplete'),
+    'description' => t('JSON Habitat Autocomplete'),
     'page callback' => 'inventory_habitat_autocomplete',
     'page arguments' => array(1),
     'access callback' => 'inventory_edit_access',
@@ -252,8 +252,8 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/organism_autocomplete'] = array(
-    'title' => 'Organism Autocomplete',
-    'description' => 'JSON Organism Autocomplete',
+    'title' => t('Organism Autocomplete'),
+    'description' => t('JSON Organism Autocomplete'),
     'page callback' => 'inventory_organism_autocomplete',
     'access arguments' => array('access inventories'),
     'type' => MENU_CALLBACK,
@@ -269,7 +269,7 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/sgroup_autocomplete'] = array(
-    'title' => 'sgroup autocomplete',
+    'title' => t('sgroup autocomplete'),
     'page callback' => 'inventory_sgroup_autocomplete',
     'access callback' => 'inventory_edit_access',
     'access arguments' => array(1),
@@ -277,7 +277,7 @@ function inventory_menu() {
     'file' => 'inventory.edit.inc',
   );
   $items['inventory/%/delete_sgroup/%'] = array(
-    'title' => 'JSON request to delete a group from permission list',
+    'title' => t('JSON request to delete a group from permission list'),
     'page callback' => 'inventory_delete_sgroup',
     'page arguments' => array(1, 3),
     'access callback' => 'inventory_edit_access',

@@ -119,7 +119,7 @@ function commerce_cart_views_default_views() {
   $handler->display->display_options['fields']['line_item_title']['table'] = 'commerce_line_item';
   $handler->display->display_options['fields']['line_item_title']['field'] = 'line_item_title';
   $handler->display->display_options['fields']['line_item_title']['relationship'] = 'commerce_line_items_line_item_id';
-  $handler->display->display_options['fields']['line_item_title']['label'] = 'Product';
+  $handler->display->display_options['fields']['line_item_title']['label'] = t('Product');
   $handler->display->display_options['fields']['line_item_title']['alter']['alter_text'] = 0;
   $handler->display->display_options['fields']['line_item_title']['alter']['make_link'] = 1;
   $handler->display->display_options['fields']['line_item_title']['alter']['path'] = '[commerce_display_path]';

@@ -198,7 +198,7 @@ function getOrganismInventories($organismId) {
 	}
 	else{
 		$form['linked_inventories']['organism_inventory'] = array(
-	  		'#markup' => t("The organism is not part of any inventory so far"),
+	  		'#markup' => t('Not yet associated with an inventory'),
 		);			
 	}		
 	return $form; 

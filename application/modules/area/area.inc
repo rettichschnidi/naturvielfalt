@@ -680,7 +680,7 @@ function showAreaOrganisms($areaId) {
   
   if($containsProtected == TRUE) {
     $output['linked_organisms']['protected'] = array(
-      '#markup' => 'Note: Without the necessary permissions, protected organisms are hidden', 
+      '#markup' => t('Note: Without the necessary permissions, protected organisms are hidden'), 
     );
   }
   
@@ -695,7 +695,7 @@ function showAreaOrganisms($areaId) {
   }
   else{
     $output['linked_organisms']['area_organisms'] = array(
-      '#markup' => t("There are no organisms listed in this area"),
+      '#markup' => t('There are no organisms listed in this area'),
     );
   }
   return $output;

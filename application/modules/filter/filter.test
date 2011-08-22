@@ -275,7 +275,7 @@ class FilterAdminTestCase extends DrupalWebTestCase {
     $this->assertFieldByName('filters[filter_html][settings][allowed_html]', $edit['filters[filter_html][settings][allowed_html]'], t('Allowed HTML tag added.'));
 
     $result = db_query('SELECT * FROM {cache_filter}')->fetchObject();
-    $this->assertFalse($result, t('Cache cleared.'));
+    $this->assertFalse($result, t('Cache cleared'));
 
     $elements = $this->xpath('//select[@name=:first]/following::select[@name=:second]', array(
       ':first' => 'filters[' . $first_filter . '][weight]',

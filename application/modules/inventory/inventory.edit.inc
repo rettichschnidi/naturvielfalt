@@ -216,7 +216,7 @@ function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
   
   if($weight == 2)
     $form['empty'] = array(
-      '#markup' => '<p class="empty">'.t('There are no inventory groups available yet. Add a new one by using the select box below.</p>'),
+      '#markup' => '<p class="empty">'.t('There are no inventory groups available yet. Add a new one by using the select box in the lower left.</p>'),
       '#weight' => $weight++
     );
   
@@ -1790,7 +1790,7 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 
   $form['upload_submit'] = array(
     '#type' => 'submit', 
-    '#value' => t("Upload"),
+    '#value' => t('Upload'),
     '#submit' => array('inventory_update_file'),
   );
   
@@ -1940,7 +1940,7 @@ function inventory_edit_rights($form, &$form_state, $head_inventory_id) {
   
   $form['upload_submit'] = array(
     '#type' => 'submit', 
-    '#value' => t("Save"),
+    '#value' => t('Save'),
     '#submit' => array('inventory_update_rights'),
   );
   

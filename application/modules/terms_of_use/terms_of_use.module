@@ -15,7 +15,7 @@ function terms_of_use_menu() {
 
 //  $items['admin/config/people/terms_of_use'] = array(
   $items['admin/config/people/terms_of_use'] = array(
-    'description' => 'Add Terms of Use to the registration page.',
+    'description' => t('Add Terms of Use to the registration page.'),
     'title' => 'Terms of Use',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('terms_of_use_admin_settings'),
@@ -24,7 +24,7 @@ function terms_of_use_menu() {
   );
 
   $items['node/autocomplete'] = array(
-    'title' => 'Autocomplete node title',
+    'title' => t('Autocomplete node title'),
     'page callback' => 'terms_of_use_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
