@@ -71,7 +71,7 @@ $parameters = $current->getParameters();
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('User'), 'field' => 'user', 'value' => $parameters->getUser())); ?>
 
-<input class="element-hidden" type="submit" />
+<input class="submit" type="submit" />
 
 </div>
 
