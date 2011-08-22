@@ -228,7 +228,7 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
       	    $html .= '<div class="image_attributes">';
       	  	$html .= '<div class="attributes_name">'.$fieldname.'</div>';
       	  	if($infos['field_values'][$fieldname]=="")
-      	  		$value ="no data";
+      	  		$value =t("no data");
       	  	else
       	  		$value = $infos['field_values'][$fieldname];
       	  	$html .= '<div class="attributes_value">'.$value.'</div><div>&nbsp;</div>';
