@@ -82,6 +82,10 @@ body.page-find .filters .clear {
     padding: 0 3px;
 }
 
+body.page-find .filters .submit {
+    visibility: hidden;
+}
+
 body.page-find .results {
     width: 760px;
     float: left;
