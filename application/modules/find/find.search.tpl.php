@@ -77,7 +77,7 @@ $parameters = $current->getParameters();
 
 <p>
     <select class="filter-selector">
-        <option value="">-- Filter hinzufügen --</option>
+        <option value=""><?php echo t('Add filter...'); ?></option>
         <option value="area"><?php echo t('Area'); ?></option>
         <option value="date"><?php echo t('Observation date'); ?></option>
         <option value="class"><?php echo t('Class'); ?></option>
