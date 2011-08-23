@@ -58,7 +58,7 @@ body.page-find .filters .filter-user {
     display: none;
 }
 
-body.page-find .filters .filter-user.area,
+body.page-find .filters .filter-area.active,
 body.page-find .filters .filter-date.active,
 body.page-find .filters .filter-class.active,
 body.page-find .filters .filter-family.active,

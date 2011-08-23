@@ -232,6 +232,7 @@ class Finder {
 
         $facet = new \Elastica_Facet_Terms($field);
         $facet->setField($field);
+        $facet->setSize(500);
 
         $filter = $this->getFilter($field);
         if (count($filter->getParams()) > 0) {
@@ -255,7 +256,6 @@ class Finder {
         $facetTown = $this->getFacet('town');
         $facetCanton = $this->getFacet('canton');
         $facetUser = $this->getFacet('user');
-        $facetProtection = $this->getFacet('protection');
 
         // add class filter
         $class = $this->parameters->getClass();
@@ -272,7 +272,6 @@ class Finder {
         $query->addFacet($facetTown);
         $query->addFacet($facetCanton);
         $query->addFacet($facetUser);
-        $query->addFacet($facetProtection);
         $query->setSize(100);
 
         // sorting

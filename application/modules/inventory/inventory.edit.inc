@@ -351,7 +351,12 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
         $data = array(
           'id' => $entry['id'],
           'organism_id' => $entry['organism_id'],
-          'position' => $position
+          'position' => $position,
+          'zip' => isset($entry['zip']) ? $entry['zip'] : '',
+          'locality' => isset($entry['locality']) ? $entry['locality'] : '',
+          'township' => isset($entry['township']) ? $entry['township'] : '',
+          'canton' => isset($entry['canton']) ? $entry['canton'] : '',
+          'country' => isset($entry['country']) ? $entry['country'] : '',
         );
         $data[$entry_relation] = $new_inventory_id;
         if(substr($entry['id'], 0, 4) == 'new_') {
@@ -755,14 +760,6 @@ function inventory_edit_entry_location_form($form, &$form_state, $head_inventory
   $form_state['ajax'] = $ajax;
   
   drupal_set_title(t('Set observation location'));
-  
-  $form['search'] = array(
-    '#markup' => '<div id="inventory-location-search">
-      '.t('Search with Google Maps').'
-      <input type="text" id="map_search" name="map_search" value="" size="60" maxlength="128"/>
-      <button id="map_search_button">'.t('Search map').'</button>
-    </div>'
-  );
   
   $form = inventory_entry_map($form, $form_state, $head_inventory_id, $entry_id);
   

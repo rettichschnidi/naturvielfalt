@@ -61,7 +61,6 @@ class Indexer {
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'protection' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         // Flora, Fauna
@@ -95,15 +94,7 @@ class Indexer {
             LEFT JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
             WHERE organism.organism_type = 1';
 
-        $this->sql('organism', $sql, $mapping, array(
-            'protection' => '
-            	SELECT
-            		p.name AS protection
-    			FROM inventory_custom_protection p
-            	INNER JOIN inventory_custom_protection_inventory i ON i.inventory_custom_protection_id = p.id
-            	INNER JOIN inventory_custom_protection_inventory_entry e ON e.inventory_custom_protection_inventory_id = i.id
-    			WHERE e.organism_id = :id',
-        ));
+        $this->sql('organism', $sql, $mapping);
     }
 
     /**
@@ -132,8 +123,8 @@ class Indexer {
                 inventory_entry.id AS id,
                 head_inventory.shared AS shared,
                 ST_AsGeoJSON(area.geom) AS geom,
-                area.locality AS town,
-                area.canton AS canton,
+                CASE WHEN inventory_entry.locality = \'\' THEN (CASE WHEN area.locality != \'locality\' THEN area.locality ELSE NULL END) ELSE inventory_entry.locality END AS town,
+                CASE WHEN inventory_entry.canton = \'\' THEN (CASE WHEN area.canton != \'canton\' THEN area.canton ELSE NULL END) ELSE inventory_entry.canton END AS canton,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
                 organism.organism_type,
@@ -162,8 +153,8 @@ class Indexer {
                 inventory_entry.id AS id,
                 head_inventory.shared AS shared,
                 ST_AsGeoJSON(area.geom) AS geom,
-                area.locality AS town,
-                area.canton AS canton,
+                CASE WHEN inventory_entry.locality = \'\' THEN (CASE WHEN area.locality != \'locality\' THEN area.locality ELSE NULL END) ELSE inventory_entry.locality END AS town,
+                CASE WHEN inventory_entry.canton = \'\' THEN (CASE WHEN area.canton != \'canton\' THEN area.canton ELSE NULL END) ELSE inventory_entry.canton END AS canton,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 inventory_entry.organism_id AS parent,
                 organism.organism_type,
@@ -234,8 +225,8 @@ class Indexer {
                 head_inventory.shared AS shared,
                 head_inventory.name AS name,
                 area.field_name AS area,
-                area.locality AS town,
-                area.canton AS canton,
+                CASE WHEN area.locality != \'locality\' THEN area.locality ELSE NULL END AS town,
+                CASE WHEN area.canton != \'canton\' THEN area.canton ELSE NULL END AS canton,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
@@ -351,8 +342,8 @@ class Indexer {
             SELECT
                 area.id AS id,
                 area.field_name AS name,
-                area.locality AS town,
-                area.canton AS canton,
+                CASE WHEN area.locality != \'locality\' THEN area.locality ELSE NULL END AS town,
+                CASE WHEN area.canton != \'canton\' THEN area.canton ELSE NULL END AS canton,
                 ST_AsGeoJSON(area.geom) AS geom,
                 ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
                 ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,

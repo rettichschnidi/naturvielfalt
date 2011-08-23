@@ -471,6 +471,16 @@ var inventory = {
     });
   }
   
+  inventory.addInput = function (row, base_name, element, field) {
+      var iname = base_name.replace('[id]', '[' + field + ']');
+      var input = row.find('input[name="'+iname+'"]');
+      if(!input.size()) { // create the hidden field if it is not yet present
+        input = $('<input type="hidden" class="' + field + '" name="'+iname+'" value="" />');
+        row.find('td:last').append(input);
+      }
+      input.val(element.find('input[name="' + field + '"]').val());
+  };
+  
   inventory.locationDialog = function(e) {
     e.preventDefault();
     inventory.showLoading();
@@ -506,22 +516,14 @@ var inventory = {
             var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
             var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').closest('tr');
             var base_name = row.find('input.entry_id').attr('name');
-            
-            var iname = base_name.replace('[id]', '[lat]');
-            var input = row.find('input[name="'+iname+'"]');
-            if(!input.size()) { // create the hidden field if it is not yet present
-              input = $('<input type="hidden" class="lat" name="'+iname+'" value="" />');
-              row.find('td:last').append(input);
-            }
-            input.val($(this).find('input[name="lat"]').val());
-            
-            iname = base_name.replace('[id]', '[lng]');
-            input = row.find('input[name="'+iname+'"]');
-            if(!input.size()) { // create the hidden field if it is not yet present
-              input = $('<input type="hidden" class="lng" name="'+iname+'" value="" />');
-              row.find('td:last').append(input);
-            }
-            input.val($(this).find('input[name="lng"]').val());
+
+            inventory.addInput(row, base_name, $(this), 'lat');
+            inventory.addInput(row, base_name, $(this), 'lng');
+            inventory.addInput(row, base_name, $(this), 'zip');
+            inventory.addInput(row, base_name, $(this), 'locality');
+            inventory.addInput(row, base_name, $(this), 'township');
+            inventory.addInput(row, base_name, $(this), 'canton');
+            inventory.addInput(row, base_name, $(this), 'country');
             
             row.find('a.location img').attr('src', row.find('a.location img').attr('src').replace('_unset', ''));
             
@@ -960,11 +962,44 @@ var inventory = {
         animation: google.maps.Animation.DROP,
         position: position
       });
+      var geocoder = new google.maps.Geocoder();
       google.maps.event.addListener(inventory.location, 'position_changed', function() {
         var pos = inventory.location.getPosition();
         inventory.locationform.find('input[name="lat"]').val(pos.lat());
         inventory.locationform.find('input[name="lng"]').val(pos.lng());
       });
+      google.maps.event.addListener(inventory.location, 'dragend', function() {
+          var pos = inventory.location.getPosition();
+          geocoder.geocode({'latLng': pos, language: 'de'}, function (results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+
+                  var address = {};
+                  jQuery.each(results, function(index, result) {
+
+                      if (result.types == 'postal_code') {
+                          var length = result.address_components.length;
+                          address.locality = result.address_components[1].long_name;
+                          address.zip = result.address_components[0].long_name;
+                          address.canton = result.address_components[length-2].short_name;
+                          address.country = result.address_components[length-1].long_name;
+                      }
+                      if (result.types == 'locality,political') {
+                          address.township = result.address_components[0].long_name;
+                      }
+                  });
+                  inventory.locationform.find('input[name="locality"]').val(address.locality);
+                  inventory.locationform.find('input[name="zip"]').val(address.zip);
+                  inventory.locationform.find('input[name="canton"]').val(address.canton);
+                  inventory.locationform.find('input[name="country"]').val(address.country);
+                  inventory.locationform.find('input[name="township"]').val(address.township);
+
+                  console.log(address);
+              } else {
+                  console.error("Geocoder failed due to: " + status);
+              }
+          });
+      });
+      
     }
     inventory.location.setPosition(position);
   }

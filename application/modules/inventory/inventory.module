@@ -1173,11 +1173,22 @@ function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id)
   
   $lat = '';
   $lng = '';
+  $locality = '';
+  $zip = '';
+  $township = '';
+  $canton = '';
+  $country = '';
   if($entry_id) {
     $select = db_select('inventory_entry', 'e')->condition('e.id', $entry_id);
+    $select->fields('e', array('locality', 'zip', 'township', 'canton', 'country'));
     $select->addExpression('ST_AsGeoJSON(e.geom)', 'geom');
-    $location = $select->execute()->fetchField(0);
-    $json = json_decode($location);
+    $row = $select->execute()->fetch();
+    $locality = $row->locality;
+    $zip = $row->zip;
+    $township = $row->township;
+    $canton = $row->canton;
+    $country = $row->country;
+    $json = json_decode($row->geom);
     if ($json) {
       if ('Point' == $json->type) {
         $lat = $json->coordinates[1];
@@ -1195,7 +1206,7 @@ function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id)
     ->fields('hi', array('area_id'))
     ->execute()
     ->fetchField(0), 'map_location', '', $lat || $lng ? $lat.','.$lng : false);
-  
+
   $form['lat'] = array(
     '#type' => 'hidden',
     '#default_value' => $lat
@@ -1205,6 +1216,27 @@ function inventory_entry_map($form, &$form_state, $head_inventory_id, $entry_id)
     '#default_value' => $lng
   );
   
+  $form['locality'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $locality
+  );
+  $form['zip'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $zip
+  );
+  $form['township'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $township
+  );
+  $form['canton'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $canton
+  );
+  $form['country'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $country
+  );
+
   return $form;
 }
 

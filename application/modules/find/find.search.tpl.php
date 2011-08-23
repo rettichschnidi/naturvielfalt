@@ -75,8 +75,6 @@ $parameters = $current->getParameters();
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('User'), 'field' => 'user', 'value' => $parameters->getUser())); ?>
 
-<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Protection list'), 'field' => 'protection', 'value' => $parameters->getUser())); ?>
-
 <p>
     <select class="filter-selector">
         <option value="">-- Filter hinzufügen --</option>
