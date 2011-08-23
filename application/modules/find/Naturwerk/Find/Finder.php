@@ -145,49 +145,49 @@ class Finder {
         return $columns;
     }
 
-    public function getFilter() {
+    public function getFilter($exclude = false) {
 
         // facets filter
         $filter = new \Elastica_Filter_And();
 
         // add class filter
         $class = $this->parameters->getClass();
-        if (count($class) > 0) {
+        if (count($class) > 0 && $exclude != 'class') {
             $term = new \Elastica_Filter_Terms('class', $class);
             $filter->addFilter($term);
         }
 
         // add family filter
         $family = $this->parameters->getFamily();
-        if (count($family) > 0) {
+        if (count($family) > 0 && $exclude != 'family') {
             $term = new \Elastica_Filter_Terms('family', $family);
             $filter->addFilter($term);
         }
 
         // add town filter
         $town = $this->parameters->getTown();
-        if (count($town) > 0) {
+        if (count($town) > 0 && $exclude != 'town') {
             $term = new \Elastica_Filter_Terms('town', $town);
             $filter->addFilter($term);
         }
 
         // add canton filter
         $canton = $this->parameters->getCanton();
-        if (count($canton) > 0) {
+        if (count($canton) > 0 && $exclude != 'canton') {
             $term = new \Elastica_Filter_Terms('canton', $canton);
             $filter->addFilter($term);
         }
 
         // add user filter
         $user = $this->parameters->getUser();
-        if (count($user) > 0) {
+        if (count($user) > 0 && $exclude != 'user') {
             $term = new \Elastica_Filter_Terms('user', $user);
             $filter->addFilter($term);
         }
 
         // filter date
         $date = $this->parameters->getDate();
-        if (count($date) > 0) {
+        if (count($date) > 0 && $exclude != 'date') {
             $range = $this->getDateFilter();
             $filter->addFilter($range);
         }
@@ -228,6 +228,19 @@ class Finder {
         return $this->index->getType($this->type);
     }
 
+    public function getFacet($field) {
+
+        $facet = new \Elastica_Facet_Terms($field);
+        $facet->setField($field);
+
+        $filter = $this->getFilter($field);
+        if (count($filter->getParams()) > 0) {
+            $facet->setFilter($filter);
+        }
+
+        return $facet;
+    }
+
     /**
      * Search method.
      *
@@ -237,20 +250,12 @@ class Finder {
 
         $index = $this->index;
 
-        $facetClass = new \Elastica_Facet_Terms('class');
-        $facetClass->setField('class');
-
-        $facetFamily = new \Elastica_Facet_Terms('family');
-        $facetFamily->setField('family');
-
-        $facetTown = new \Elastica_Facet_Terms('town');
-        $facetTown->setField('town');
-
-        $facetCanton = new \Elastica_Facet_Terms('canton');
-        $facetCanton->setField('canton');
-
-        $facetUser = new \Elastica_Facet_Terms('user');
-        $facetUser->setField('user');
+        $facetClass = $this->getFacet('class');
+        $facetFamily = $this->getFacet('family');
+        $facetTown = $this->getFacet('town');
+        $facetCanton = $this->getFacet('canton');
+        $facetUser = $this->getFacet('user');
+        $facetProtection = $this->getFacet('protection');
 
         // add class filter
         $class = $this->parameters->getClass();
@@ -267,6 +272,7 @@ class Finder {
         $query->addFacet($facetTown);
         $query->addFacet($facetCanton);
         $query->addFacet($facetUser);
+        $query->addFacet($facetProtection);
         $query->setSize(100);
 
         // sorting

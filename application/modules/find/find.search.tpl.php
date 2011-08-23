@@ -22,47 +22,47 @@ $parameters = $current->getParameters();
 
 <p><input class="search" name="search" id="search" value="<?php echo check_plain($parameters->getSearch()); ?>" /></p>
 
-<?php $reset = $parameters->filter(array('geo' => array())); ?>
-<h6>
-    <?php echo t('Area'); ?>:
-    <?php if (count($parameters->getGeo()) > 0): ?>
+<div class="filter-area">
+    <?php $reset = $parameters->filter(array('geo' => array())); ?>
+    <h6>
+        <?php echo t('Area'); ?>:
         <a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a>
-    <?php endif; ?>
-</h6>
+    </h6>
 
-<p>
-    <img
-        class="map-select"
-        width="200"
-        height="130"
-        src="http://maps.google.com/maps/api/staticmap?<?php if (count($parameters->getGeo()) > 1): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $parameters->getGeo()); else: ?>center=CH&amp;maptype=terrain&amp;zoom=5<?php endif; ?>&amp;size=200x130&amp;sensor=false"
-        alt=""
-    />
-</p>
-<div class="map-overlay">
-    <div id="map-canvas"></div>
-    <img src="<?php echo base_path() . drupal_get_path('module', 'find') . '/images/close.png'; ?>" width="30" height="30" class="map-close" />
+    <p>
+        <img
+            class="map-select"
+            width="200"
+            height="130"
+            src="http://maps.google.com/maps/api/staticmap?<?php if (count($parameters->getGeo()) > 1): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $parameters->getGeo()); else: ?>center=CH&amp;maptype=terrain&amp;zoom=5<?php endif; ?>&amp;size=200x130&amp;sensor=false"
+            alt=""
+        />
+    </p>
+    <div class="map-overlay">
+        <div id="map-canvas"></div>
+        <img src="<?php echo base_path() . drupal_get_path('module', 'find') . '/images/close.png'; ?>" width="30" height="30" class="map-close" />
+    </div>
 </div>
 
-<?php $reset = $parameters->filter(array('date' => array())); ?>
-<h6 class="filter">
-    <?php echo t('Observation date'); ?>:
-    <?php if (count($parameters->getDate()) > 0): ?>
+<div class="filter-date">
+    <?php $reset = $parameters->filter(array('date' => array())); ?>
+    <h6 class="filter">
+        <?php echo t('Observation date'); ?>:
         <a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a>
-    <?php endif; ?>
-</h6>
-
-<div class="fieldset">
-<?php $date = $parameters->getDate(); ?>
-<p>
-    <label for="date_from"><?php echo t('Date from'); ?>:</label>
-    <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" />
-</p>
-
-<p>
-    <label for="date_to"><?php echo t('Date to'); ?>:</label>
-    <input name="date[to]" id="date_to" value="<?php echo check_plain(@$date['to']); ?>" />
-</p>
+    </h6>
+    
+    <div class="fieldset">
+        <?php $date = $parameters->getDate(); ?>
+        <p>
+            <label for="date_from"><?php echo t('Date from'); ?>:</label>
+            <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" />
+        </p>
+        
+        <p>
+            <label for="date_to"><?php echo t('Date to'); ?>:</label>
+            <input name="date[to]" id="date_to" value="<?php echo check_plain(@$date['to']); ?>" />
+        </p>
+    </div>
 </div>
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Class'), 'field' => 'class', 'value' => $parameters->getClass())); ?>
@@ -74,6 +74,21 @@ $parameters = $current->getParameters();
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Canton'), 'field' => 'canton', 'value' => $parameters->getCanton())); ?>
 
 <?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('User'), 'field' => 'user', 'value' => $parameters->getUser())); ?>
+
+<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Protection list'), 'field' => 'protection', 'value' => $parameters->getUser())); ?>
+
+<p>
+    <select class="filter-selector">
+        <option value="">-- Filter hinzufügen --</option>
+        <option value="area"><?php echo t('Area'); ?></option>
+        <option value="date"><?php echo t('Observation date'); ?></option>
+        <option value="class"><?php echo t('Class'); ?></option>
+        <option value="family"><?php echo t('Family'); ?></option>
+        <option value="town"><?php echo t('Town'); ?></option>
+        <option value="canton"><?php echo t('Canton'); ?></option>
+        <option value="user"><?php echo t('User'); ?></option>
+    </select>
+</p>
 
 <input class="submit" type="submit" />
 

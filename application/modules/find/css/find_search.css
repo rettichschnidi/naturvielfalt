@@ -44,6 +44,30 @@ body.page-find .filters label.search {
     width: 80px;
 }
 
+body.page-find .filters .filter-selector {
+    /*width: 100%;*/
+}
+
+body.page-find .filters .filter-area,
+body.page-find .filters .filter-date,
+body.page-find .filters .filter-class,
+body.page-find .filters .filter-family,
+body.page-find .filters .filter-town,
+body.page-find .filters .filter-canton,
+body.page-find .filters .filter-user {
+    display: none;
+}
+
+body.page-find .filters .filter-user.area,
+body.page-find .filters .filter-date.active,
+body.page-find .filters .filter-class.active,
+body.page-find .filters .filter-family.active,
+body.page-find .filters .filter-town.active,
+body.page-find .filters .filter-canton.active,
+body.page-find .filters .filter-user.active {
+    display: block;
+}
+
 body.page-find ul li.active {
     list-style-image: url(../images/menu-leaf-active.gif);
 }

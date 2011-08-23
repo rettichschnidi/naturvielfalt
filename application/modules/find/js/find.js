@@ -6,6 +6,18 @@ jQuery(function ($) {
         $('body.page-find .columns-overlay').toggle();
         return false;
     });
+    
+
+    $('body.page-find .filter-selector').change(function () {
+        $('body.page-find .filter-' + $(this).val()).slideDown();
+        $(this).val('');
+     });
+    $('body.page-find .clear').click(function () {
+        $(this).closest('div').slideUp();
+        window.location = $(this).attr('href');
+        return false;
+     });
+
 
     $('body.page-find .map-select').click(function () {
         $('body.page-find .map-overlay').css('left', '50%');

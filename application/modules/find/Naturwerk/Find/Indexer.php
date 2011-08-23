@@ -61,6 +61,7 @@ class Indexer {
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'protection' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         // Flora, Fauna
@@ -94,7 +95,15 @@ class Indexer {
             LEFT JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
             WHERE organism.organism_type = 1';
 
-        $this->sql('organism', $sql, $mapping);
+        $this->sql('organism', $sql, $mapping, array(
+            'protection' => '
+            	SELECT
+            		p.name AS protection
+    			FROM inventory_custom_protection p
+            	INNER JOIN inventory_custom_protection_inventory i ON i.inventory_custom_protection_id = p.id
+            	INNER JOIN inventory_custom_protection_inventory_entry e ON e.inventory_custom_protection_inventory_id = i.id
+    			WHERE e.organism_id = :id',
+        ));
     }
 
     /**
