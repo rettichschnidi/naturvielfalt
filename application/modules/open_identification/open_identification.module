@@ -1,0 +1,116 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+module_load_include('inc', 'open_identification');
+
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function open_identification_menu() {
+	
+  // ADMIN MENU
+ /* $items['admin/config/open_identification'] = array(
+    'title' => t('Configure Open Identification'),
+    'description' => t('Configuration for Open Identification module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_form'),
+    'access arguments' => array('administer rating types'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'open_identification.admin.inc',
+  );
+  $items['admin/config/open_identification/settings'] = array(
+    'title' => t('Global settings'),
+    'description' => t('Global configuration for the Open Identification module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_form'),
+    'access arguments' => array('administer rating types'),
+    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.admin.inc',
+  );*/
+  
+  $items['open_identification'] = array(
+    'title' => t('Open Identifications'),
+    'description' => t('Show all open identifications'),
+    'page callback' => 'open_identification_show',
+    'page arguments' => array('gallery'),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'open_identification.inc',
+  );
+  $items['open_identification/gallery'] = array(
+    'title' => t('gallery view'),
+    'description' => t('Show all open identifications'),
+    'page callback' => 'open_identification_show',
+    'page arguments' => array('gallery'),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.inc',
+  );
+  $items['open_identification/list'] = array(
+    'title' => t('List'),
+    'description' => t('Show all open identifications'),
+    'page callback' => 'open_identification_show',
+    'page arguments' => array('list view'),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.inc',
+  );
+  $items['open_identification/%'] = array(
+    'title' => t('Show open identification'),
+    'description' => t('View an existing open identification'),
+    'page callback' => 'open_identification_show',
+    'page arguments' => array(1),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'open_identification.inc',
+  );
+  $items['open_identification/%/edit'] = array(
+    'title' => t('Edit'),
+    'description' => t('Edit open identification'),
+    'page callback' => 'open_identification_edit',
+    'page arguments' => array(1),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.edit.inc',
+  );
+  $items['open_identification/new'] = array(
+    'title' => t('New'),
+    'description' => t('Create new open identification'),
+    'page callback' => 'open_identification_new',
+    'access arguments' => array('access open identification'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.new.inc',
+  );
+
+  return $items;
+}
+function open_identification_theme(){
+	
+	return array(
+    'open_identification_list' => array(
+ 		'template' => 'open_identification_list',
+      	'variables' => array('text' => NULL)
+	),
+	'open_identification_gallery' => array(
+ 		'template' => 'open_identification_gallery',
+      	'variables' => array('text' => NULL)
+	),
+	'open_identification_details' => array(
+ 		'template' => 'open_identification_details',
+      	'variables' => array('text' => NULL)
+	)
+	);
+	
+	
+}
+?>
