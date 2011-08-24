@@ -7,9 +7,9 @@ function organism_drush_command() {
     $items['organism-import-redlist'] = array(
         'description' => t('Import red list.'),
         'callback' => 'organism_drush_import_redlist',
-	    'arguments' => array(
-	    	'file' => 'CSV file to import.',
-	    ),
+        'arguments' => array(
+            'file' => 'CSV file to import.',
+    ),
     );
     return $items;
 }
@@ -36,12 +36,18 @@ function organism_drush_import_redlist($file) {
                 $where = array();
                 $args = array(':redlist' => $redlist);
                 foreach ($data as $column => $value) {
-                    $where[] = '"' . $column . '" = :' . $column;
+                    $where[$column] = '"' . $column . '" = :' . $column;
                     $args[':' . $column] = $value;
                 }
 
                 // update redlist column
                 $statement = db_query('UPDATE fauna_organism SET redlist = :redlist WHERE ' . implode(' AND ', $where), $args);
+
+                // try again without family if not found
+                if ($statement->rowCount() == 0) {
+                    unset($where['family']);
+                    $statement = db_query('UPDATE fauna_organism SET redlist = :redlist WHERE ' . implode(' AND ', $where), $args);
+                }
 
                 // log if not imported
                 if ($statement->rowCount() == 0) {
