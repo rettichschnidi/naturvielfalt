@@ -86,7 +86,7 @@ $parameters = $current->getParameters();
 	            ?>
 	            <li class="<?php echo $active ? 'active' : ''; ?>">
 	            	<a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>">
-	            		<?php echo t($term['term']) . ' (' . $term['count'] . ')'; ?>
+	            		<?php echo t($term['term']) . '&nbsp;(' . $term['count'] . ')'; ?>
 	            	</a>
 	            </li>
 	        <?php endforeach; ?>
