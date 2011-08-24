@@ -185,6 +185,13 @@ class Finder {
             $filter->addFilter($term);
         }
 
+        // add redlist filter
+        $redlist = $this->parameters->getRedlist();
+        if (count($redlist) > 0 && $exclude != 'redlist') {
+            $term = new \Elastica_Filter_Terms('redlist', $redlist);
+            $filter->addFilter($term);
+        }
+
         // filter date
         $date = $this->parameters->getDate();
         if (count($date) > 0 && $exclude != 'date') {
