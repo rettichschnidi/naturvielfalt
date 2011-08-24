@@ -15,7 +15,7 @@
       foreach ($alltables as $table) {
         cache_clear_all('*', $table, TRUE);
       }
-      drush_print(dt('Cache cleared.'));
+      drush_print(t('Cache cleared.'));
       break;
     case 6:
     case 7:

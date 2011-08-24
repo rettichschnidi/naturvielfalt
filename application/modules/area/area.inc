@@ -17,13 +17,13 @@ function show_area($areaId) {
   $protection_target = $area->protection_target;
   $safety_precautions = $area->safety_precautions;
   if($tending_strategies == '') {
-  	$tending_strategies = 'not defined';
+  	$tending_strategies = t('not defined');
   }
   if($protection_target == '') {
-  	$protection_target = 'not defined';
+  	$protection_target = t('not defined');
   }
   if($safety_precautions == '') {
-  	$safety_precautions = 'not defined';
+  	$safety_precautions = t('not defined');
   }
   
   $rows = array();

@@ -490,7 +490,7 @@ function profile_user_form_validate($form, &$form_state) {
       }
     }
     elseif ($field->required && !user_access('administer users')) {
-      form_set_error($field->name, t('The field %field is required.', array('%field' => $field->title)));
+       form_set_error($field->name, t('The field %field is required.', array('%field' => $field->title)));  
     }
   }
 }
