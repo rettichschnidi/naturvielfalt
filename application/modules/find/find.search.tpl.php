@@ -102,12 +102,9 @@ $parameters = $current->getParameters();
         <option value=""><?php echo t('Add filter...'); ?></option>
         <option value="area"><?php echo t('Area'); ?></option>
         <option value="date"><?php echo t('Observation date'); ?></option>
-        <option value="class"><?php echo t('Class'); ?></option>
-        <option value="family"><?php echo t('Family'); ?></option>
-        <option value="town"><?php echo t('Town'); ?></option>
-        <option value="canton"><?php echo t('Canton'); ?></option>
-        <option value="user"><?php echo t('User'); ?></option>
-        <option value="redlist"><?php echo t('Red list'); ?></option>
+    <?php foreach($facets as $field => $facet): ?>
+        <option value="<?php echo $field; ?>"><?php echo t(ucwords($field)); ?></option>
+    <?php endforeach; ?>
     </select>
 </p>
 
