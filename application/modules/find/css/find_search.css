@@ -72,23 +72,6 @@ body.page-find ul li.active {
     list-style-image: url(../images/menu-leaf-active.gif);
 }
 
-body.page-find .filters ::-webkit-scrollbar {
-    background:transparent;
-    overflow:visible;
-    width:15px;
-}
-
-body.page-find .filters ::-webkit-scrollbar-thumb {
-    background-color:#ddd;
-    border: 4px solid #fff;
-    min-width:40px;
-    -webkit-border-radius:10px;
-}
-
-body.page-find .filters ::-webkit-scrollbar-thumb:hover {
-    background:#bbb;
-}
-
 body.page-find .filters ul.choices,
 body.page-find .filters .fieldset {
     margin: 0.5em 0 1em;
