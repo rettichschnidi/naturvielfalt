@@ -569,7 +569,7 @@ function _inventory_protection_column_description () {
   $i = 0;
   $i++;
   $invColDesc["cols"][$i] = array(
-    "name" => 'Protection level',
+    "name" => t('Protection level'),
     "id" => '0',
   	"format" => 'dropdown',
     "visible" => TRUE,
