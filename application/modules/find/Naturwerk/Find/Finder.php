@@ -251,12 +251,6 @@ class Finder {
 
         $index = $this->index;
 
-        $facetClass = $this->getFacet('class');
-        $facetFamily = $this->getFacet('family');
-        $facetTown = $this->getFacet('town');
-        $facetCanton = $this->getFacet('canton');
-        $facetUser = $this->getFacet('user');
-
         // add class filter
         $class = $this->parameters->getClass();
         if (count($class) > 0) {
@@ -267,11 +261,12 @@ class Finder {
         // build search query
         $query = new \Elastica_Query();
         $query->setQuery($this->getQuery());
-        $query->addFacet($facetClass);
-        $query->addFacet($facetFamily);
-        $query->addFacet($facetTown);
-        $query->addFacet($facetCanton);
-        $query->addFacet($facetUser);
+        $query->addFacet($this->getFacet('class'));
+        $query->addFacet($this->getFacet('family'));
+        $query->addFacet($this->getFacet('town'));
+        $query->addFacet($this->getFacet('canton'));
+        $query->addFacet($this->getFacet('user'));
+        $query->addFacet($this->getFacet('redlist'));
         $query->setSize(100);
 
         // sorting

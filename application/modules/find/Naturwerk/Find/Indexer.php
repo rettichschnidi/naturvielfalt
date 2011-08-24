@@ -61,6 +61,7 @@ class Indexer {
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         // Flora, Fauna
@@ -73,6 +74,7 @@ class Indexer {
                 ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
+                \'\' AS redlist,
                 \'organism/\' || organism.id AS url
             FROM organism
             LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
@@ -88,6 +90,7 @@ class Indexer {
                 ARRAY_TO_STRING(ARRAY[fauna_organism.genus, fauna_organism.species], \' \') AS name_la,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
+                fauna_organism.redlist AS redlist,
                 \'organism/\' || organism.id AS url
             FROM organism
             LEFT JOIN fauna_organism ON fauna_organism.id = organism.organism_id
@@ -114,6 +117,7 @@ class Indexer {
             'town' => array('type' => 'string', 'index' => 'not_analyzed'),
             'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
+            'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
 
@@ -133,6 +137,7 @@ class Indexer {
                 ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
+                \'\' AS redlist,
                 head_inventory.name AS inventory,
                 ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url,
@@ -163,6 +168,7 @@ class Indexer {
                 ARRAY_TO_STRING(ARRAY[fauna_organism.genus, fauna_organism.species], \' \') AS name_la,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
+                fauna_organism.redlist AS redlist,
                 head_inventory.name AS inventory,
                 ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url,
@@ -429,8 +435,8 @@ class Indexer {
     }
 
     /**
-     * Convert geo, centroid and date for a single data row for ElasticSearch. 
-     * 
+     * Convert geo, centroid and date for a single data row for ElasticSearch.
+     *
      * @param array $data
      */
     protected static function convert($data) {
@@ -474,6 +480,23 @@ class Indexer {
         if (isset($data['date'])) {
 
             $data['date'] = date('Y-m-d', strtotime($data['date']));
+        }
+
+        foreach ($data as $key => $value) {
+            
+            // remove whitespaces
+            if (is_array($value)) {
+                $value = array_map('trim', $value);
+            } else {
+                $value = trim($value);
+            }
+
+            // avoid empty facets
+            if ($value == '') {
+                $data[$key] = null;
+            } else {
+                $data[$key] = $value;
+            }
         }
 
         return $data;

@@ -9,8 +9,14 @@ use Naturwerk\Find\Areas;
 use Naturwerk\Find\Parameters;
 use Naturwerk\Find\Finder;
 
-function find_query_param($key, $default = array()) {
-    return isset($_GET[$key]) ? $_GET[$key] : $default;
+function find_query_params($fields) {
+
+    $params = array();
+    foreach ($fields as $key => $default) {
+        $params[$key] = isset($_GET[$key]) ? $_GET[$key] : $default;
+    }
+
+    return $params;
 }
 
 function find_show_search() {
@@ -18,7 +24,7 @@ function find_show_search() {
 }
 
 function find_search($key) {
-    
+
     drupal_add_css(drupal_get_path('module', 'find') . '/css/find_search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
     drupal_add_css(drupal_get_path('module', 'find') . '/css/find_print.css', array('group' => CSS_DEFAULT, 'every_page' => true, 'media' => 'print'));
     drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry', array('group' => JS_LIBRARY));
@@ -29,25 +35,26 @@ function find_search($key) {
 
     $variables = array('#theme' => 'find.search');
 
-    $uid = $GLOBALS['user']->uid;
-    $search = find_query_param('search', '');
-    $geo = find_query_param('geo');
-    $date = find_query_param('date');
-    $class = find_query_param('class');
-    $user = find_query_param('user');
-    $family = find_query_param('family');
-    $genus = find_query_param('genus');
-    $town = find_query_param('town');
-    $canton = find_query_param('canton');
-    
-    $columns = find_query_param('columns', array());
-    $sort = find_query_param('sort');
+    $params = find_query_params(array(
+    	'search' => '',
+        'geo' => array(),
+    	'date' => array(),
+    	'class' => array(),
+    	'user' => array(),
+    	'family' => array(),
+    	'genus' => array(),
+    	'town' => array(),
+    	'canton' => array(),
+    	'redlist' => array(),
+    	'columns' => array(),
+    	'sort' => array(),
+    ));
+    $params['uid'] = $GLOBALS['user']->uid;
 
     $client = new Elastica_Client();
     $index = $client->getIndex('naturwerk');
 
-    $parameters = new Parameters($uid, $search, $geo, $date, $class, $user, $family, $genus, $town, $canton, $sort, $columns);
-
+    $parameters = new Parameters($params);
     $variables['#organisms'] = new Organisms($index, $parameters);
     $variables['#sightings'] = new Sightings($index, $parameters);
     $variables['#inventories'] = new Inventories($index, $parameters);
@@ -57,7 +64,7 @@ function find_search($key) {
     if (count($parameters) == 0) {
         $parameters = new stdClass(); // force empty JSON object
     }
-    drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $geo)), 'setting');
+    drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $params['geo'])), 'setting');
 
     $variables['#key'] = $key;
     $variables['#current'] = $variables['#' . $key];

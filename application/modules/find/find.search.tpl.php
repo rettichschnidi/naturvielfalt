@@ -22,7 +22,7 @@ $parameters = $current->getParameters();
 
 <p><input class="search" name="search" id="search" value="<?php echo check_plain($parameters->getSearch()); ?>" /></p>
 
-<div class="filter-area">
+<div class="filter-container filter-area">
     <?php $reset = $parameters->filter(array('geo' => array())); ?>
     <h6>
         <?php echo t('Area'); ?>:
@@ -44,7 +44,7 @@ $parameters = $current->getParameters();
     </div>
 </div>
 
-<div class="filter-date">
+<div class="filter-container filter-date">
     <?php $reset = $parameters->filter(array('date' => array())); ?>
     <h6 class="filter">
         <?php echo t('Observation date'); ?>:
@@ -65,15 +65,37 @@ $parameters = $current->getParameters();
     </div>
 </div>
 
-<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Class'), 'field' => 'class', 'value' => $parameters->getClass())); ?>
-
-<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Family'), 'field' => 'family', 'value' => $parameters->getFamily())); ?>
-
-<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Town'), 'field' => 'town', 'value' => $parameters->getTown())); ?>
-
-<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('Canton'), 'field' => 'canton', 'value' => $parameters->getCanton())); ?>
-
-<?php echo theme('find_facet', array('facets' => $facets, 'parameters' => $parameters, 'title' => t('User'), 'field' => 'user', 'value' => $parameters->getUser())); ?>
+<?php foreach($facets as $field => $facet): ?>
+	<?php $value = $parameters->get($field); ?>
+	<div class="filter-container filter-<?php echo $field; ?><?php if (count($value) > 0): ?> active<?php endif; ?>">
+	    <?php $reset = $parameters->filter(array($field => array())); ?>
+	    <h6 class="filter">
+	        <?php echo t(ucwords($field)); ?>: 
+	        <a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a>
+	    </h6>
+	    <?php if ($facets[$field]['total'] > 0): ?>
+	        <ul class="choices">
+	        <?php foreach ($facets[$field]['terms'] as $term): ?>
+	            <?php
+	            if ($active = in_array($term['term'], $value)) {
+	                $params = array_diff($value, (array) $term['term']); // remove current term for active
+	            } else {
+	                $params = array_merge($value, (array) $term['term']);
+	            }
+	            $filters = $parameters->filter(array($field => $params));
+	            ?>
+	            <li class="<?php echo $active ? 'active' : ''; ?>">
+	            	<a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>">
+	            		<?php echo t($term['term']) . ' (' . $term['count'] . ')'; ?>
+	            	</a>
+	            </li>
+	        <?php endforeach; ?>
+	        </ul>
+	    <?php else: ?>
+	        <ul class="choices"><li>Keine Werte vorhanden.</li></ul>
+	    <?php endif; ?>
+	</div>
+<?php endforeach; ?>
 
 <p>
     <select class="filter-selector">
@@ -85,6 +107,7 @@ $parameters = $current->getParameters();
         <option value="town"><?php echo t('Town'); ?></option>
         <option value="canton"><?php echo t('Canton'); ?></option>
         <option value="user"><?php echo t('User'); ?></option>
+        <option value="redlist"><?php echo t('Red list'); ?></option>
     </select>
 </p>
 
