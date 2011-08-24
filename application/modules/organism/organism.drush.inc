@@ -46,6 +46,7 @@ function organism_drush_import_redlist($file) {
                 // try again without family if not found
                 if ($statement->rowCount() == 0) {
                     unset($where['family']);
+                    unset($args[':family']);
                     $statement = db_query('UPDATE fauna_organism SET redlist = :redlist WHERE ' . implode(' AND ', $where), $args);
                 }
 
