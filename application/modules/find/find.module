@@ -149,6 +149,10 @@ function find_theme() {
             'template' => 'find_render_date',
             'variables' => array('object' => null, 'name' => null)
         ),
+        'find_render_translate' => array(
+            'template' => 'find_render_translate',
+            'variables' => array('object' => null, 'name' => null)
+        ),
     );
 }
 

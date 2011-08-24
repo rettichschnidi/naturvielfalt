@@ -22,6 +22,7 @@ class Sightings extends Inventories {
         $this->addColumn('town', t('Town name'));
         $this->addColumn('canton', t('Canton'));
         $this->addColumn('date', t('Observation date'), true, 'date');
+        $this->addColumn('redlist', t('Red list'), false, 'translate');
 
         Finder::__construct($index, 'sighting', $parameters);
     }

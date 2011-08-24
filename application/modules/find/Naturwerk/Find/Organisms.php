@@ -24,6 +24,7 @@ class Organisms extends Finder {
 
         $this->addColumn('name_la', t('Latin name'), true, 'link');
         $this->addColumn('name', t('German name'), true, 'link');
+        $this->addColumn('redlist', t('Red list'), true, 'translate');
 
         parent::__construct($index, 'organism', $parameters);
     }
