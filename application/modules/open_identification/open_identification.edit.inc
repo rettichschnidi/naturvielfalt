@@ -13,7 +13,7 @@ function open_identification_edit($id) {
 	drupal_set_title(t('Open Identification '));
 	$render_array['open_identification_details'] = array(
 	    '#theme' => 'open_identification_details',  // The theme function to apply to the #items
-	    '#text' => 'This is the edit page', // The list itself.
+	    '#text' => 'This is the edit page'.'id:'.$id, // The list itself.
 		);
 	return $render_array;
 }

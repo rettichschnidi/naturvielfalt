@@ -43,16 +43,6 @@ function open_identification_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.inc',
   );
-  $items['open_identification/gallery'] = array(
-    'title' => t('gallery view'),
-    'description' => t('Show all open identifications'),
-    'page callback' => 'open_identification_show',
-    'page arguments' => array('gallery'),
-    'access arguments' => array('access open identification'),
-    'type' => MENU_LOCAL_TASK,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'file' => 'open_identification.inc',
-  );
   $items['open_identification/list'] = array(
     'title' => t('List'),
     'description' => t('Show all open identifications'),
@@ -85,13 +75,13 @@ function open_identification_menu() {
   $items['open_identification/new'] = array(
     'title' => t('New'),
     'description' => t('Create new open identification'),
-    'page callback' => 'open_identification_new',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_image_form','open_identification',false, 'medias',false),
     'access arguments' => array('access open identification'),
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'open_identification.new.inc',
   );
-
   return $items;
 }
 function open_identification_theme(){
@@ -99,7 +89,7 @@ function open_identification_theme(){
 	return array(
     'open_identification_list' => array(
  		'template' => 'open_identification_list',
-      	'variables' => array('text' => NULL)
+      	'variables' => array('list' => NULL)
 	),
 	'open_identification_gallery' => array(
  		'template' => 'open_identification_gallery',
@@ -112,5 +102,65 @@ function open_identification_theme(){
 	);
 	
 	
+}
+function open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup){
+	global $user;
+	
+	$string = 'user: '.$user->uid.' - '.'desc: '.$open_identification_description.' - '.'type: '.$open_identification_type.' - '.'group:'.$open_identification_organismgroup;
+	drupal_set_message($string,'error');
+	$entry = array(
+			'open_identification_id' => 1,
+			'user_id' => $user->uid,
+			'open_identification_create_date' => 'now()',
+			'open_identification_modified_date' => 'now()',
+			'open_identification_comment' => $open_identification_description,
+			'open_identification_type' => $open_identification_type,
+			'open_identification_organismgroup' => $open_identification_organismgroup,
+			'open_identification_area' => 1);
+	drupal_write_record('open_identification',$entry);
+}
+function open_identification_get_all_entries($userid=false){
+	
+	  $result = db_query('select 
+	  					  oi.open_identification_id as open_identification_id,
+	  					  oi.open_identification_comment as open_identification_comment,
+	  					  oi.open_identification_create_date as open_identification_create_date,
+	  					  oi.open_identification_modified_date as open_identification_modified_date,
+	  					  oi.open_identification_type as open_identification_type,
+	  					  oi.open_identification_organismgroup as open_identification_organismgroup,
+	  					  fm.filemime as filemime,
+	  					  fm.filename as filename,
+	  					  fm.uri as uri,
+	  					  gi.created_date as created_date,
+	  					  gi.modified_date as modified_date,
+	  					  gi.author as author,
+	  					  oi.user_id as user_id
+	  					  from open_identification oi
+	  					  left join open_identification_gallery oig on oig.open_identification_id = oi.open_identification_id
+			  			  left join gallery_image gi on gi.id = oig.gallery_image_id
+						  left join file_managed fm on fm.fid = gi.fid');
+	  $open_identifications = array();
+	  foreach($result as $record){
+	  	
+	  	$media			        			  = array();
+	  	$media['filemime']      			  = $record->filemime;
+	  	$media['filename']      			  = $record->filename;
+	  	$media['url']           			  = $record->uri;
+	  	$media['create_date']   			  = $record->created_date;
+	  	$media['modified_date'] 			  = $record->modified_date;
+	  	$media['author']					  = $record->author;
+	  	$medias[]                             = $media;
+	  	$open_identification['user_id']       = $record->user_id;
+	  	$open_identification['username']      = $record->username;
+	  	$open_identification['create_date']   = $record->open_identification_create_date;
+	  	$open_identification['modified_date'] = $record->open_identification_modified_date;
+	  	$open_identification['comment']       = $record->open_identification_comment;
+	  	$open_identification['type']		  = $record->open_identification_type;
+	  	$open_identification['organismgroup'] = $record->open_identification_organismgroup;
+	  	$open_identifications[$record->open_identification_id]['medias'] = $medias;
+	  	$open_identifications[$record->open_identification_id]['info']   = $open_identification;
+	  }
+	  
+	  return $open_identifications;
 }
 ?>

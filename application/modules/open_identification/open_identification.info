@@ -5,4 +5,3 @@ core = 7.x
 version = "7.0"
 dependencies[] = gallery
 dependencies[] = user
-configure = admin/config/open_identification
