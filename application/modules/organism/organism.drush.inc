@@ -36,8 +36,11 @@ function organism_drush_import_redlist($file) {
                 $where = array();
                 $args = array(':redlist' => $redlist);
                 foreach ($data as $column => $value) {
-                    $where[$column] = '"' . $column . '" = :' . $column;
-                    $args[':' . $column] = $value;
+                    $value = trim($value);
+                    if ($value) {
+                        $where[$column] = '"' . $column . '" = :' . $column;
+                        $args[':' . $column] = $value;
+                    }
                 }
 
                 // update redlist column
