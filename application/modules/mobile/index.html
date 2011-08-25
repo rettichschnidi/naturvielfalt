@@ -264,9 +264,11 @@ $(function () {
         data.location = $('#location').val();
 
     	$.ajax({type: 'POST', url: 'ajax.php', data: data, success: function (data) {
-            alert(data);
-            scroll('#third', '#content', 0);
-            $('.active').removeClass('active');
+    		if (data) { // needed for iOS
+	            alert(data);
+	            scroll('#third', '#content', 0);
+	            $('.active').removeClass('active');
+    		}
         }, error: function (xhr, type) {
         	alert(xhr.responseText);
         }});
