@@ -377,6 +377,7 @@ function init() {
 
         // display current organisms
         current = $(e.target).attr('data');
+        $('#second .inner').get(0).scrollTop = 0;
         $('#second .organisms_' + current).show();
         $('#class').text(db.classes[current]);
 
