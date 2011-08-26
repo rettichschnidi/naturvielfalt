@@ -161,9 +161,15 @@ function find_theme() {
  */
 function find_cron() {
 
-    $client = new Elastica_Client();
-    $index = $client->getIndex('naturwerk');
+    try {
 
-    $indexer = new Naturwerk\Find\Indexer($index);
-    $indexer->all();
+        $client = new Elastica_Client();
+        $index = $client->getIndex('naturwerk');
+
+        $indexer = new Naturwerk\Find\Indexer($index);
+        $indexer->all();
+
+    } catch (Elastica_Exception_Client $e) {
+        watchdog('find', $e->getMessage(), array(), WATCHDOG_ERROR);
+    }
 }

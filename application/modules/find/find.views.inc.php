@@ -51,28 +51,39 @@ function find_search($key) {
     ));
     $params['uid'] = $GLOBALS['user']->uid;
 
-    $client = new Elastica_Client();
-    $index = $client->getIndex('naturwerk');
+    try {
+        $client = new Elastica_Client();
+        $status = $client->getStatus(); // ping to make sure elasticsearch is running
+        $index = $client->getIndex('naturwerk');
 
-    $parameters = new Parameters($params);
-    $variables['#organisms'] = new Organisms($index, $parameters);
-    $variables['#sightings'] = new Sightings($index, $parameters);
-    $variables['#inventories'] = new Inventories($index, $parameters);
-    $variables['#areas'] = new Areas($index, $parameters);
+        $parameters = new Parameters($params);
+        $variables['#organisms'] = new Organisms($index, $parameters);
+        $variables['#sightings'] = new Sightings($index, $parameters);
+        $variables['#inventories'] = new Inventories($index, $parameters);
+        $variables['#areas'] = new Areas($index, $parameters);
 
-    $parameters = drupal_get_query_parameters();
-    if (count($parameters) == 0) {
-        $parameters = new stdClass(); // force empty JSON object
+        $parameters = drupal_get_query_parameters();
+        if (count($parameters) == 0) {
+            $parameters = new stdClass(); // force empty JSON object
+        }
+        drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $params['geo'])), 'setting');
+
+        $variables['#key'] = $key;
+        $variables['#current'] = $variables['#' . $key];
+
+        $output = array();
+        $output['search'] = $variables;
+
+        return $output;
+
+    } catch (Elastica_Exception_Client $e) {
+
+        watchdog('find', $e->getMessage(), array(), WATCHDOG_ERROR);
+        
+        drupal_set_message(t('Search error. Elasticsearch running?'), 'error');
+        
+        return array();
     }
-    drupal_add_js(array('find' => array('url' => url($_GET['q']), 'parameters' => $parameters, 'geo' => $params['geo'])), 'setting');
-
-    $variables['#key'] = $key;
-    $variables['#current'] = $variables['#' . $key];
-
-    $output = array();
-    $output['search'] = $variables;
-
-    return $output;
 }
 
 function find_show_search_organisms() {
