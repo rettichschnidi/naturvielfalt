@@ -403,10 +403,10 @@ function init() {
 
 
 var db;
-$.getJSON('data.php', function (data) {
+$.post('data.php', {}, function (data) {
     db = data;
     init();
-});
+}, 'json');
 
 </script>
 </head>
