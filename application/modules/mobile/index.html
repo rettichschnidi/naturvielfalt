@@ -374,26 +374,28 @@ function init() {
 
     $('#content a').bind('click', function (e) {
 
-        // display current organisms
-        current = $(e.target).attr('data');
-        $('#second .inner').html(db.rendered[current]);
-        $('#class').text(db.classes[current]);
+        // display current organisms (delay to show active first)
+        setTimeout(function () {
+	        current = $(e.target).attr('data');
+	        $('#second .inner').html(db.rendered[current]);
+	        $('#class').text(db.classes[current]);
 
-        $('#second .inner ul a').bind('click', function (e) {
-            $(e.target).addClass('active');
+	        $('#second .inner ul a').bind('click', function (e) {
+	            $(e.target).addClass('active');
 
-            // update organism name
-            var id = $(e.target).attr('data');
-            $('#id').val(id);
-            $('#organism').text(db.organisms[current][id].de);
+	            // update organism name
+	            var id = $(e.target).attr('data');
+	            $('#id').val(id);
+	            $('#organism').text(db.organisms[current][id].de);
 
-            // update map with fresh coordinates
-            updateMap();
+	            // update map with fresh coordinates
+	            updateMap();
 
-            scroll('#second', '#third', 2);
-        });
-
-        scroll('#content', '#second', 1);
+	            scroll('#second', '#third', 2);
+	        });
+	
+	        scroll('#content', '#second', 1);
+        }, 100);
     });
 }
 
