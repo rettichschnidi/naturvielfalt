@@ -44,7 +44,8 @@ $parameters = $current->getParameters();
     </div>
 </div>
 
-<div class="filter-container filter-date">
+<?php $date = $parameters->getDate(); ?>
+<div class="filter-container filter-date<?php if (count($date) > 0): ?> active<?php endif; ?>">
     <?php $reset = $parameters->filter(array('date' => array())); ?>
     <h6 class="filter">
         <?php echo t('Observation date'); ?>:
@@ -52,7 +53,6 @@ $parameters = $current->getParameters();
     </h6>
     
     <div class="fieldset">
-        <?php $date = $parameters->getDate(); ?>
         <p>
             <label for="date_from"><?php echo t('Date from'); ?>:</label>
             <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" />
