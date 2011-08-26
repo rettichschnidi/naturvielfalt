@@ -360,42 +360,38 @@ $(function () {
 
 function init() {
 
+	db.rendered = {};
     for (var i in db.classes) {
         $('#classes').append('<li><a data="' + i + '">' + db.classes[i] + '</a></li>');
 
-        var rendered = '<ul class="organisms_' + i + '" style="display: none;">';
+        db.rendered[i] = '<ul class="organisms_' + i + '">';
         for (var j in db.organisms[i]) {
             var organism = db.organisms[i][j];
-            rendered += '<li><a data="' + j + '">' + (organism.de) + '</a></li>';
+            db.rendered[i] += '<li><a data="' + j + '">' + (organism.de) + '</a></li>';
         }
-        rendered += '</ul>';
-        $('#second .inner').append(rendered);
+        db.rendered[i] += '</ul>';
     }
-
-    $('#second .inner ul a').bind('click', function (e) {
-        $(e.target).addClass('active');
-
-        // update organism name
-        var id = $(e.target).attr('data');
-        $('#id').val(id);
-        $('#organism').text(db.organisms[current][id].de);
-
-        // update map with fresh coordinates
-        updateMap();
-
-        scroll('#second', '#third', 2);
-    });
 
     $('#content a').bind('click', function (e) {
 
-    	// hide all organisms
-        $('#second .inner ul').hide();
-
         // display current organisms
         current = $(e.target).attr('data');
-        $('#second .inner').get(0).scrollTop = 0;
-        $('#second .organisms_' + current).show();
+        $('#second .inner').html(db.rendered[current]);
         $('#class').text(db.classes[current]);
+
+        $('#second .inner ul a').bind('click', function (e) {
+            $(e.target).addClass('active');
+
+            // update organism name
+            var id = $(e.target).attr('data');
+            $('#id').val(id);
+            $('#organism').text(db.organisms[current][id].de);
+
+            // update map with fresh coordinates
+            updateMap();
+
+            scroll('#second', '#third', 2);
+        });
 
         scroll('#content', '#second', 1);
     });
