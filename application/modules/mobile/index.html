@@ -190,6 +190,20 @@ body header .icon {
     background-position: center;
     background-size: 16px 16px;
     line-height: 1;
+    position: relative;
+}
+
+#accuracy {
+    background-color: rgba(255, 0, 0, 0.3);
+    border: 1px solid #f00;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -20px;
+    margin-top: -20px;
+    border-radius: 20px;
 }
 
 #organism {
@@ -204,18 +218,22 @@ body header .icon {
 <script src="zepto/zepto.min.js"></script>
 <script>
 
-var lat, lon;
+var lat, lon, acc;
 function updateLocation(position) {
     if (lat != position.coords.latitude || lon != position.coords.longitude) {
+        console.log(position.coords.accuracy);
         lat = position.coords.latitude;
         lon = position.coords.longitude;
+        acc = Math.min(Math.max(position.coords.accuracy, 10), 130); // not smaller than 10px and not larger than 130px
         $('#location').val(lat + ', ' + lon);
+        updateMap();
     }
 }
 
 function updateMap() {
     if (lat && lon) {
-        $('#map img').attr('src', 'http://maps.google.com/maps/api/staticmap?style=feature:road|element:labels|visibility:off&zoom=13&size=320x150&scale=2&markers='+lat+','+lon+'&sensor=true');
+        $('#map img').attr('src', 'http://maps.google.com/maps/api/staticmap?style=feature:road|element:labels|visibility:off&zoom=13&size=320x150&scale=2&center='+lat+','+lon+'&sensor=true');
+        $('#accuracy').css({'width': acc + 'px', 'height': acc + 'px', 'margin-left': -(acc/2) + 'px', 'margin-top': -(acc/2) + 'px', 'border-radius': (acc/2) + 'px'});
     }
 }
 
@@ -242,7 +260,7 @@ $(function () {
 
     // set current date
     var now = new Date();
-    $('#date').val(now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())); 
+    $('#date').val(now.getUTCFullYear() + '-' + pad(now.getUTCMonth() + 1) + '-' + pad(now.getUTCDate()) + 'T' + pad(now.getUTCHours()) + ':' + pad(now.getUTCMinutes()) + 'Z');
 
     var touch = {target: false, moved: false, down: false};
     $(document.body).bind('touchstart', function(e) {
@@ -393,9 +411,9 @@ $.getJSON('data.php', function (data) {
             <a id="save">Speichern</a>
         </header>
         <div class="inner">
-	        <div id="map"><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;markers=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
+	        <div id="map"><div id="accuracy"></div><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;center=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
 	        <p class="input"><label for="date">Name: </label><span id="organism"></span></p>
-	        <p class="input"><label for="date">Datum: </label><input id="date" type="date" value="2011-07-28" /></p>
+	        <p class="input"><label for="date">Datum: </label><input id="date" type="datetime" value="2011-07-28T14:00" /></p>
 	        <p><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" /></p>
             <input id="location" type="hidden" value="" /><input id="id" type="hidden" value="" />
         </div>
