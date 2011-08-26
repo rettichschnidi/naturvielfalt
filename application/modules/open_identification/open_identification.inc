@@ -18,5 +18,67 @@ function open_identification_show($mode) {
 	);
 	return $render_array;
 }
+function open_identification_show_detail($open_identification_id) {
 
+	
+	$render_array['open_identification_medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false, -1,false);
+	$open_identification= open_identification_get_entry($open_identification_id);
+	/*$render_array['open_identification_details'] = array(
+	    '#theme' => 'open_identification_details',  // The theme function to apply to the #items
+	    '#open_identification' => $open_identification, // The list itself.
+	);*/
+	drupal_set_title(t('Open Identification of: '.$open_identification['fullname']));
+  $rows = array();
+  $rows[] = array(
+    array('data' => t('User'), 'header' => true), 
+    $open_identification['fullname']
+  );
+  $rows[] = array(
+    array('data' => t('Created on'), 'header' => true), 
+    date("j.m.Y H:i:s", strtotime($open_identification['create_date']))
+  );
+  $rows[] = array(
+    array('data' => t('Modified on'), 'header' => true), 
+    date("j.m.Y H:i:s", strtotime($open_identification['modified_date']))
+  );
+  $rows[] = array(
+    array('data' => t('Type'), 'header' => true), 
+    t($open_identification['type'])
+  );
+  if($open_identification['organismgroup'])
+	  $rows[] = array(
+	    array('data' => t('Organismgroup'), 'header' => true), 
+	    t($open_identification['organismgroup'])
+	  );
+  $rows[] = array(
+    array('data' => t('Comment'), 'header' => true), 
+    t($open_identification['comment'])
+  );
+  
+  $render_array['details'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Open Identification details'), 
+    '#weight' => 2, 
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#attached' => array (
+      'js' => array (
+        'misc/form.js',
+        'misc/collapse.js',
+      ),
+    ),
+    '#attributes' => array(
+      'class' => array('collapsible'),
+      'id' => 'open_identification-details'
+    ),
+  );
+  $render_array['details']['table'] = array(
+    '#theme' => 'table',
+    '#rows' => $rows,
+    '#attributes' => array(
+        'class' => array('open_identification_show_type'),
+      ),
+  );
+	return $render_array;
+}
 ?>

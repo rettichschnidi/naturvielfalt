@@ -2,60 +2,76 @@
 <?php 
 
 $string = "";
-foreach($list as $record){
-
-	$medias = $record['medias'];
-	$media  = $medias[0];
+if($list){
 	
-	if($media['filemime'] == 'audio/mpeg')
-		$url = '';
-	elseif($media['filemime'] == 'video/mp4')
-		$url = '';
-	else
-		$url = url('gallery/open_identification/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_mini');
+		foreach($list as $record){
 		
-	$link   = 'open_identification/'.key($list).'/edit';
-	$string .= '<a href="'.$link.'">';
-	$string .= 	'<div class="open_identification" style=" padding-bottom: 20px;">';
-	$string .= 		'<div class="open_identification_image">';
-	$string .= 			'<img src="'.$url.'">';
-	$string .= 		'</div>';
-	$string .= 		'<div class="open_identification_info" >';
-	$string .= 			'<div class="info" style="float:left; padding-right:40px;">';	
-	$string .= 				'<div class="title">UserId</div>';	
-	$string .= 				'<div class="value">';					
-	$string .= 					$record['info']['user_id'];
-	$string .= 				'</div>';
-	$string .= 			'</div>';
-	$string .= 			'<div class="info" style="float:left; padding-right:40px;">';
-	$string .= 				'<div class="title">create date</div>';	
-	$string .= 				'<div class="value">';					
-	$string .= 					date("d.m.y H:i:s",strtotime($record['info']['create_date']));
-	$string .= 				'</div>';	
-	$string .= 			'</div>';
-	$string .= 			'<div class="info" style="float:left; padding-right:40px;">';
-	$string .= 				'<div class="title">Typ</div>';	
-	$string .= 				'<div class="value">';					
-	$string .= 					t($record['info']['type']);
-	$string .= 				'</div>';	
-	$string .= 			'</div>';
-
-	if(isset($record['info']['organismgroup'])){
-	
-		$string .= 			'<div class="info">';
-		$string .= 				'<div class="title">Organismengruppe</div>';	
-		$string .= 				'<div class="value">';					
-		$string .= 					t($record['info']['organismgroup']);
-		$string .= 				'</div>';	
-		$string .= 			'</div>';
-	}
-
-	$test = "";
-	$string .= 		'</div>';
-	$string .= 	'</div>';
-	$string .= '</a>';
+			$medias = $record['medias'];
+			$media  = $medias[0];
+			$url="";
+			if($media['filemime'] == 'audio/mpeg'){
+				$url = url(drupal_get_path('module', 'gallery').'/images/music_icon.png');
+			}
+			elseif($media['filemime'] == 'video/mp4'){
+				$url = url(drupal_get_path('module', 'gallery').'/images/video_icon.png');
+			}
+			else{
+				$url = url('gallery/open_identification/'.$record['info']['open_identification_id'].'/thumb/'.$media['media_id'].'/gallery_mini');
+			}
+				
+			$link   = 'open_identification/'.$record['info']['open_identification_id'].'';
+			$string .= '<a href="'.$link.'">';
+			$string .= 	'<div class="open_identification" style="float:left;padding-bottom: 40px;">';
+			$string .= 		'<div class="open_identification_image" style="float:left;">';
+			$string .= 			''.$media['filemime'].'<img src="'.$url.'" widht="188" height="150" />';
+			$string .= 		'</div>';
+			$string .= 		'<div class="open_identification_info" style="float:left;">';
+			$string .= 			'<div class="info" style="padding-right:40px;">';	
+			$string .= 				'<span class="title">'.t('User').': </span>';	
+			$string .= 				'<span class="value">';					
+			$string .= 					$record['info']['fullname'];
+			$string .= 				'</span>';
+			$string .= 			'</div>';
+			$string .= 			'<div class="info" style="padding-right:40px;">';
+			$string .= 				'<span class="title">'.t('Created on').': </span>';	
+			$string .= 				'<span class="value">';					
+			$string .= 					date("d.m.y H:i:s",strtotime($record['info']['create_date']));
+			$string .= 				'</span>';	
+			$string .= 			'</div>';
+			$string .= 			'<div class="info" style="padding-right:40px;">';
+			$string .= 				'<span class="title">'.t('Type').': </span>';	
+			$string .= 				'<span class="value">';					
+			$string .= 					t($record['info']['type']);
+			$string .= 				'</span>';	
+			$string .= 			'</div>';
+		
+			if(isset($record['info']['organismgroup'])){
+			
+				$string .= 			'<div class="info">';
+				$string .= 				'<span class="title">'.t('Organismengroup').': </span>';	
+				$string .= 				'<span class="value">';					
+				$string .= 					t($record['info']['organismgroup']);
+				$string .= 				'</span>';	
+				$string .= 			'</div>';
+			}
+			else
+			{	$string .= 			'<div class="info">';
+				$string .= 				'<div class="title">&nbsp;</div>';	
+				$string .= 				'<div class="value">&nbsp;</div>';	
+				$string .= 			'</div>';
+			}
+			
+		
+			$test = "";
+			$string .= 		'</div>';
+			$string .= 	'</div>';
+			$string .= '</a>';
+		}
 }
+else{
 
+	$string = "No open identifications available";
+}
 ?>
 
 <? echo $string; ?>
