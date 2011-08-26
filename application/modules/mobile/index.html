@@ -219,6 +219,22 @@ body header .icon {
     width: 220px;
 }
 
+#alphabet {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    font-size: 10px;
+    display: none;
+}
+
+#alphabet li {
+    padding: 0 10px 0 20px;
+    border: 0;
+    color: #555;
+    line-height: 11px;
+    text-align: center;
+}
+
 </style>
 <script src="zepto/zepto.min.js"></script>
 <script>
@@ -356,7 +372,7 @@ function init() {
         $('#second .inner').append(rendered);
     }
 
-    $('#second ul a').bind('click', function (e) {
+    $('#second .inner ul a').bind('click', function (e) {
         $(e.target).addClass('active');
 
         // update organism name
@@ -373,7 +389,7 @@ function init() {
     $('#content a').bind('click', function (e) {
 
     	// hide all organisms
-        $('#second ul').hide();
+        $('#second .inner ul').hide();
 
         // display current organisms
         current = $(e.target).attr('data');
@@ -417,6 +433,34 @@ $.getJSON('data.php', function (data) {
 	        <ul id="organisms">
 	        </ul>
         </div>
+        <ul id="alphabet">
+            <li>A</li>
+            <li>B</li>
+            <li>C</li>
+            <li>D</li>
+            <li>E</li>
+            <li>F</li>
+            <li>G</li>
+            <li>H</li>
+            <li>I</li>
+            <li>J</li>
+            <li>K</li>
+            <li>L</li>
+            <li>M</li>
+            <li>N</li>
+            <li>O</li>
+            <li>P</li>
+            <li>Q</li>
+            <li>R</li>
+            <li>S</li>
+            <li>T</li>
+            <li>U</li>
+            <li>V</li>
+            <li>W</li>
+            <li>X</li>
+            <li>Y</li>
+            <li>Z</li>
+        </ul>
     </section>
 
     <section class="content" id="third">

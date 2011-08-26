@@ -22,7 +22,7 @@ foreach ($classes as $id => $class) {
     $select->condition('fauna_class_id', $id);
     $select->addExpression('CASE WHEN name_de IS NULL THEN genus || \' \' || species ELSE name_de END', 'de');
     $select->addExpression('genus || \' \' || species', 'la');
-    $select->innerJoin('organism', 'o', 'o.organism_type = 2 AND o.organism_id = f.id');
+    $select->innerJoin('organism', 'o', 'o.organism_type = 1 AND o.organism_id = f.id');
     $select->fields('o', array('id'));
     $select->orderBy('de');
     $result = $select->execute();
@@ -51,8 +51,8 @@ foreach ($result->fetchAll() as $organism) {
 
 $data['organisms']['0'] = $organsims;
 
-
 // complete $data
+asort($classes);
 $data['classes'] = $classes;
 
 header('Content-type: application/json');
