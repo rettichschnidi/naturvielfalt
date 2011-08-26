@@ -169,6 +169,7 @@ function open_identification_get_all_entries($userid=false){
 						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
 						  where oi.open_identification_solved = 0');
 	  $open_identifications = array();
+	  $medias = array();
 	  foreach($result as $record){
 	  	
 	  	$media			        			  = array();

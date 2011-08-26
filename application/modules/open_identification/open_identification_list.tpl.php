@@ -16,14 +16,15 @@ if($list){
 				$url = url(drupal_get_path('module', 'gallery').'/images/video_icon.png');
 			}
 			else{
-				$url = url('gallery/open_identification/'.$record['info']['open_identification_id'].'/thumb/'.$media['media_id'].'/gallery_mini');
+				$url_href  = file_uri_target($media['url']);
+				$url 	 = url('sites/default/files/'.$url_href);
 			}
-				
-			$link   = 'open_identification/'.$record['info']['open_identification_id'].'';
+
+			$link    = 'open_identification/'.$record['info']['open_identification_id'].'';
 			$string .= '<a href="'.$link.'">';
-			$string .= 	'<div class="open_identification" style="float:left;padding-bottom: 40px;">';
+			$string .= 	'<div class="open_identification" style="float:left;padding-bottom: 40px;padding-right:40px;">';
 			$string .= 		'<div class="open_identification_image" style="float:left;">';
-			$string .= 			''.$media['filemime'].'<img src="'.$url.'" widht="188" height="150" />';
+			$string .= 			'<img src="'.$url.'" widht="130" height="100" />';
 			$string .= 		'</div>';
 			$string .= 		'<div class="open_identification_info" style="float:left;">';
 			$string .= 			'<div class="info" style="padding-right:40px;">';	
