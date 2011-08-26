@@ -7,7 +7,7 @@
  * @author Nicolas Ruflin <spam@ruflin.com>
  * @author Jasper van Wanrooy <jasper@vanwanrooy.net>
  */
-abstract class Elastica_Facet_Abstract
+abstract class Elastica_Facet_Abstract extends Elastica_Param
 {
 	/**
 	 * Holds the name of the facet.
@@ -75,16 +75,6 @@ abstract class Elastica_Facet_Abstract
 	 */
 	public function setGlobal($global = true) {
 		return $this->_setFacetParam('global', (bool) $global);
-	}
-
-	/**
-	* Sets the path to the nested document (can be a multi level nested docs).
-	*
-	* @param string $field Nested field name.
-	* @return Elastica_Facet_Abstract
-	*/
-	public function setNested($field) {
-		return $this->_setFacetParam('nested', $field);
 	}
 
 	/**

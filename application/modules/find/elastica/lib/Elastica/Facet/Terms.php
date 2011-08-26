@@ -11,19 +11,12 @@
 class Elastica_Facet_Terms extends Elastica_Facet_Abstract
 {
 	/**
-	 * Holds the parameters of the terms facet.
-	 *
-	 * @var array
-	 */
-	protected $_params = array();
-
-	/**
 	 * Holds the types of ordering which are allowed
 	 * by ElasticSearch.
 	 *
 	 * @var array
 	 */
-	protected $_order_types = array('count', 'term', 'reverse_count', 'reverse_term');
+	protected $_orderTypes = array('count', 'term', 'reverse_count', 'reverse_term');
 
 	/**
 	 * Sets the field for the terms.
@@ -53,8 +46,7 @@ class Elastica_Facet_Terms extends Elastica_Facet_Abstract
 	 * @return Elastica_Facet_Terms
 	 */
 	public function setAllTerms($allTerms) {
-		$allTerms = (bool) $allTerms;
-		return $this->setParam('all_terms', $allTerms);
+		return $this->setParam('all_terms', (bool) $allTerms);
 	}
 
 	/**
@@ -66,11 +58,10 @@ class Elastica_Facet_Terms extends Elastica_Facet_Abstract
 	 * @return Elastica_Facet_Terms
 	 */
 	public function setOrder($type) {
-		if (in_array($type, $this->_order_types)) {
-			return $this->setParam('order', $type);
+		if (!in_array($type, $this->_orderTypes)) {
+			throw new Elastica_Exception_Invalid('Invalid order type: ' . $type);
 		}
-
-		throw new Elastica_Exception_Invalid('Invalid order type: ' . $type);
+		return $this->setParam('order', $type);
 	}
 
 	/**
@@ -84,26 +75,13 @@ class Elastica_Facet_Terms extends Elastica_Facet_Abstract
 	}
 
 	/**
-	 * Sets a general parameter for this facet by key and value.
-	 *
-	 * @param string $key Key to set
-	 * @param mixed $value Value
-	 * @return Elastica_Facet_Terms
-	 */
-	public function setParam($key, $value) {
-		$this->_params[$key] = $value;
-		return $this;
-	}
-
-	/**
 	 * Sets the amount of terms to be returned.
 	 *
 	 * @param int $size The amount of terms to be returned.
 	 * @return Elastica_Facet_Terms
 	 */
 	public function setSize($size) {
-		$size = (int) $size;
-		return $this->setParam('size', $size);
+		return $this->setParam('size', (int) $size);
 	}
 
 	/**

@@ -37,4 +37,28 @@ class Elastica_Query_TermsTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals(3, $resultSet->count());
 	}
+
+	public function testSetMinimum() {
+		$key = 'name';
+		$terms = array('nicolas', 'ruflin');
+		$minimum = 2;
+
+		$query = new Elastica_Query_Terms($key, $terms);
+		$query->setMinimumMatch($minimum);
+
+		$data = $query->toArray();
+		$this->assertEquals($minimum, $data['terms']['minimum_match']);
+	}
+
+	public function testInvalidParams() {
+		$query = new Elastica_Query_Terms();
+
+		try {
+			$query->toArray();
+			$this->fail('Should throw exception because no key');
+		} catch (Elastica_Exception_Invalid $e) {
+			$this->assertTrue(true);
+		}
+
+	}
 }

@@ -6,14 +6,13 @@
  * @category Xodoa
  * @package Elastica
  * @author Nicolas Ruflin <spam@ruflin.com>
- * @link http://www.elasticsearch.com/docs/elasticsearch/rest_api/query_dsl/range_query/
+ * @link http://www.elasticsearch.org/guide/reference/query-dsl/range-filter.html
  */
 class Elastica_Filter_Range extends Elastica_Filter_Abstract
 {
 	protected $_fields = array();
 
 	/**
-	 * 
 	 * @param string $fieldName Field name
 	 * @param array $args Field arguments
 	 * @return Elastica_Filter_Range
@@ -44,7 +43,7 @@ class Elastica_Filter_Range extends Elastica_Filter_Abstract
 	 * @return array Filter array
 	 */
 	public function toArray() {
-		$args = $this->_fields;
-		return array('range' => $args);
+		$this->setParams($this->_fields);
+		return parent::toArray();
 	}
 }

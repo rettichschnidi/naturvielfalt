@@ -9,20 +9,30 @@
 class Elastica_Transport_Http extends Elastica_Transport_Abstract {
 
 	/**
+	 * @var string Http scheme
+	 */
+	protected $_scheme = 'http';
+
+	/**
+	 * @var resource Curl resource to reuse
+	 */
+	protected static $_connection = null;
+
+	/**
 	 * Makes calls to the elasticsearch server
 	 *
 	 * All calls that are made to the server are done through this function
 	 *
-	 *@param string $host Host name
+	 * @param string $host Host name
 	 * @param int $port Port number
 	 * @return Elastica_Response Response object
 	 */
 	public function exec($host, $port) {
-		$conn = curl_init();
+		$conn = $this->_getConnection();
 
 		$request = $this->getRequest();
 
-		$baseUri = 'http://' . $host . ':' . $port . '/';
+		$baseUri = $this->_scheme . '://' . $host . ':' . $port . '/';
 
 		$baseUri .= $request->getPath();
 
@@ -31,6 +41,9 @@ class Elastica_Transport_Http extends Elastica_Transport_Abstract {
 		curl_setopt($conn, CURLOPT_PORT, $port);
 		curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1) ;
 		curl_setopt($conn, CURLOPT_CUSTOMREQUEST, $request->getMethod());
+		curl_setopt($conn, CURLOPT_FORBID_REUSE, 0);
+		
+		$this->_setupCurl($conn);
 
 		$headersConfig = $request->getConfig('headers');
 		if (!empty($headersConfig)) {
@@ -80,5 +93,24 @@ class Elastica_Transport_Http extends Elastica_Transport_Abstract {
 		}
 
 		return $response;
+	}
+	
+	/**
+	 * Called to add additional curl params
+	 * 
+	 * @param resource $connection Curl connection
+	 */
+	protected function _setupCurl($connection) {
+	}
+
+	/**
+	 * @return resource Connection resource
+	 */
+	protected function _getConnection() {
+		if (!self::$_connection) {
+			self::$_connection = curl_init();
+		}
+
+		return self::$_connection;
 	}
 }
