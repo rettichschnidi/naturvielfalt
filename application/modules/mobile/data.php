@@ -9,11 +9,11 @@ $data = array();
 
 // fauna
 
-$select = db_select('fauna_class', 'c')->fields('c', array('id', 'name_de'))->execute();
+$select = db_select('inventory_type', 't')->fields('t', array('id', 'name'))->execute();
 
-$classes = array('0' => 'Pflanzen');
+$classes = array();
 foreach ($select->fetchAll() as $class) {
-    $classes[$class->id] = $class->name_de;
+    $classes[$class->id] = $class->name;
 }
 
 foreach ($classes as $id => $class) {
@@ -49,7 +49,7 @@ foreach ($result->fetchAll() as $organism) {
     $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la);
 }
 
-$data['organisms']['0'] = $organsims;
+$data['organisms']['16'] = $organsims; // 16 = flora
 
 // complete $data
 asort($classes);

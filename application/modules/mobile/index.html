@@ -224,7 +224,6 @@ body header .icon {
     right: 0;
     top: 60px;
     font-size: 10px;
-    display: none;
 }
 
 #alphabet li {
@@ -245,7 +244,7 @@ function updateLocation(position) {
         lat = position.coords.latitude;
         lon = position.coords.longitude;
         acc = Math.min(Math.max(position.coords.accuracy, 10), 130); // not smaller than 10px and not larger than 130px
-        $('#location').val(lat + ', ' + lon);
+        $('#location').val(lon + ' ' + lat);
         updateMap();
     }
 }
@@ -329,6 +328,7 @@ $(function () {
 	        data.count = $('#count').val();
 	        data.date = $('#date').val();
 	        data.location = $('#location').val();
+	        data.type = current;
 
 	        request = $.ajax({type: 'POST', url: 'ajax.php', data: data, success: function (data) {
 	    		if (data) { // needed for iOS
