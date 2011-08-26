@@ -332,14 +332,12 @@ function _inventory_save_entries($id, $input, $inventory_table='inventory', $inv
       }     		
       $new_inventory_id = $inventory_id;
       if(substr($inventory_id, 0, 4) == 'new_') {
-        $new_inventory_id = $iid++;
         $data = array(
-          'id' => $new_inventory_id,
           'inventory_type_id' => $inventory_type_id
         );
         $data[$inventory_relation] = $id;
         $group_count = max($group_count, intval(substr($inventory_id, 4))+1);
-        db_insert($inventory_table)->fields($data)->execute();
+        $new_inventory_id = db_insert($inventory_table)->fields($data)->execute();
       }
       $count = 0;
       foreach($entries as $position => $entry) {
