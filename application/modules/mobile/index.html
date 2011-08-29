@@ -402,25 +402,14 @@ function init() {
         setTimeout(function () {
 	        current = $(e.target).attr('data');
 
-
-	        var progress = 65;
 	        var html = '<ul class="organisms_' + current + '">';
 	        for (var j in db.organisms[current]) {
 
 	            var organism = db.organisms[current][j];
-
-	            var alpha = organism.de.substring(0, 1);
-	            var classes = '';
-	            while (progress < alpha.charCodeAt() + 1) {
-	                classes += 'alpha-' + String.fromCharCode(progress++) + ' ';
-	            }
-
-	            if (organism.de) {
-	                html += '<li><a data="' + j + '" class="' + classes + '">' + (organism.de) + '</a></li>';
-	            }
+	            html += '<li><a data="' + j + '" class="' + organism.css + '">' + (organism.de) + '</a></li>';
 	        }
 	        html += '</ul>';
-	        $('#second .inner').html(html);
+	        $('#second .inner').get(0).innerHTML = html;
 
 	        $('#second .inner').get(0).scrollTop = 0;
 	        $('#class').text(db.classes[current]);

@@ -28,8 +28,19 @@ foreach ($classes as $id => $class) {
     $result = $select->execute();
 
     $organsims = array();
+    $progress = 65;
     foreach ($result->fetchAll() as $organism) {
-        $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la);
+
+        if ($organism->de) {
+
+            $alpha = substr($organism->de, 0, 1);
+            $css = array();
+            while ($progress < ord($alpha) + 1) {
+                $css[] = 'alpha-' . chr($progress++);
+            }
+
+            $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la, 'css' => implode(' ', $css));
+        }
     }
 
     $data['organisms'][$id] = $organsims;
@@ -45,8 +56,19 @@ $select->orderBy('de');
 $result = $select->execute();
 
 $organsims = array();
+$progress = 65;
 foreach ($result->fetchAll() as $organism) {
-    $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la);
+
+    if ($organism->de) {
+
+        $alpha = substr($organism->de, 0, 1);
+        $css = array();
+        while ($progress < ord($alpha) + 1) {
+            $css[] = 'alpha-' . chr($progress++);
+        }
+
+        $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la, 'css' => implode(' ', $css));
+    }
 }
 
 $data['organisms']['16'] = $organsims; // 16 = flora
