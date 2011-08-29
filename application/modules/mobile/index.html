@@ -222,12 +222,13 @@ body header .icon {
 #alphabet {
     position: absolute;
     right: 0;
-    top: 60px;
+    top: 55px;
+    padding: 5px 0;
     font-size: 10px;
 }
 
 #alphabet li {
-    padding: 0 10px 0 20px;
+    padding: 0 10px 0 10px;
     border: 0;
     color: #555;
     line-height: 11px;
@@ -376,7 +377,9 @@ function init() {
             	classes += 'alpha-' + String.fromCharCode(progress++) + ' ';
             }
 
-            db.rendered[i] += '<li><a data="' + j + '" class="' + classes + '">' + (organism.de) + '</a></li>';
+            if (organism.de) {
+                db.rendered[i] += '<li><a data="' + j + '" class="' + classes + '">' + (organism.de) + '</a></li>';
+            }
         }
         db.rendered[i] += '</ul>';
     }
@@ -385,6 +388,17 @@ function init() {
     	var alpha = $(e.target).text();
         $('#second .inner').get(0).scrollTop = $('#second .inner ul li a.alpha-' + alpha).get(0).offsetTop - 52;
     });
+    $('#alphabet').bind('mousemove touchmove', function(e) {
+        e.preventDefault();
+
+        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.round((e.pageY - 55) / 11 + 64))));
+        var scroll = $('#second .inner ul li a.alpha-' + alpha).get(0);
+        if (scroll) {
+            $('#second .inner').get(0).scrollTop = scroll.offsetTop - 52;
+        } else {
+            $('#second .inner').get(0).scrollTop = $('#second .inner').height();
+        }
+    });
 
     $('#content a').bind('click', function (e) {
 
@@ -392,6 +406,7 @@ function init() {
         setTimeout(function () {
 	        current = $(e.target).attr('data');
 	        $('#second .inner').html(db.rendered[current]);
+	        $('#second .inner').get(0).scrollTop = 0;
 	        $('#class').text(db.classes[current]);
 
 	        $('#second .inner ul a').bind('click', function (e) {
