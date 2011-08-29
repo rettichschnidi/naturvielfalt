@@ -384,14 +384,16 @@ function init() {
         db.rendered[i] += '</ul>';
     }
 
-    $('#alphabet').bind('click', function(e) {
+    $('#alphabet').bind('mousedown touchstart', function(e) {
+        e.preventDefault();
+
     	var alpha = $(e.target).text();
         $('#second .inner').get(0).scrollTop = $('#second .inner ul li a.alpha-' + alpha).get(0).offsetTop - 52;
     });
     $('#alphabet').bind('mousemove touchmove', function(e) {
         e.preventDefault();
 
-        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.round((e.pageY - 55) / 11 + 64))));
+        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.round((e.targetTouches[0].pageY - 55) / 11 + 64))));
         var scroll = $('#second .inner ul li a.alpha-' + alpha).get(0);
         if (scroll) {
             $('#second .inner').get(0).scrollTop = scroll.offsetTop - 52;
