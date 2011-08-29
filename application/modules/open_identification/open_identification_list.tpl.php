@@ -3,7 +3,7 @@
 
 $string = "";
 if($list){
-	
+
 		foreach($list as $record){
 		
 			$medias = $record['medias'];

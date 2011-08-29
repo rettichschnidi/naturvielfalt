@@ -173,23 +173,23 @@ function open_identification_get_all_entries($userid=false){
 	  foreach($result as $record){
 	  	
 	  	$media			        			  = array();
-	  	$media['media_id']						  = $record->media_id;
+	  	$media['media_id']					  = $record->media_id;
 	  	$media['filemime']      			  = $record->filemime;
 	  	$media['filename']      			  = $record->filename;
 	  	$media['url']           			  = $record->uri;
 	  	$media['create_date']   			  = $record->created_date;
 	  	$media['modified_date'] 			  = $record->modified_date;
 	  	$media['author']					  = $record->author;
-	  	$medias[]                             = $media;
-	  	$open_identification['open_identification_id'] = $record->open_identification_id;
-	  	$open_identification['user_id']       = $record->user_id;
-	  	$open_identification['fullname']      = $record->fname.' '.$record->lname;
-	  	$open_identification['create_date']   = $record->open_identification_create_date;
-	  	$open_identification['modified_date'] = $record->open_identification_modified_date;
-	  	$open_identification['comment']       = $record->open_identification_comment;
-	  	$open_identification['type']		  = $record->open_identification_type;
-	  	$open_identification['organismgroup'] = $record->open_identification_organismgroup;
-	  	$open_identifications[$record->open_identification_id]['medias'] = $medias;
+	  		
+		$open_identification['open_identification_id'] = $record->open_identification_id;
+		$open_identification['user_id']       = $record->user_id;
+		$open_identification['fullname']      = $record->fname.' '.$record->lname;
+		$open_identification['create_date']   = $record->open_identification_create_date;
+		$open_identification['modified_date'] = $record->open_identification_modified_date;
+		$open_identification['comment']       = $record->open_identification_comment;
+		$open_identification['type']		  = $record->open_identification_type;
+		$open_identification['organismgroup'] = $record->open_identification_organismgroup;
+	  	$open_identifications[$record->open_identification_id]['medias'][] = $media;
 	  	$open_identifications[$record->open_identification_id]['info']   = $open_identification;
 	  }
 	  
@@ -233,5 +233,11 @@ function open_identification_get_entry($open_identification_id){
 	  	  $open_identification['organismgroup'] 		 = $record->open_identification_organismgroup;
 	  }
 	  return $open_identification;
+}
+function open_identification_gallery_delete($media){
+	
+  db_delete('open_identification_gallery')->condition('gallery_image_id', $media['id'])->execute();
+  return true;
+	
 }
 ?>
