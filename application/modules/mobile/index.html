@@ -364,13 +364,27 @@ function init() {
     for (var i in db.classes) {
         $('#classes').append('<li><a data="' + i + '">' + db.classes[i] + '</a></li>');
 
+        var progress = 65;
         db.rendered[i] = '<ul class="organisms_' + i + '">';
         for (var j in db.organisms[i]) {
-            var organism = db.organisms[i][j];
-            db.rendered[i] += '<li><a data="' + j + '">' + (organism.de) + '</a></li>';
+
+        	var organism = db.organisms[i][j];
+
+            var alpha = organism.de.substring(0, 1);
+            var classes = '';
+            while (progress < alpha.charCodeAt() + 1) {
+            	classes += 'alpha-' + String.fromCharCode(progress++) + ' ';
+            }
+
+            db.rendered[i] += '<li><a data="' + j + '" class="' + classes + '">' + (organism.de) + '</a></li>';
         }
         db.rendered[i] += '</ul>';
     }
+
+    $('#alphabet').bind('click', function(e) {
+    	var alpha = $(e.target).text();
+        $('#second .inner').get(0).scrollTop = $('#second .inner ul li a.alpha-' + alpha).get(0).offsetTop - 52;
+    });
 
     $('#content a').bind('click', function (e) {
 
