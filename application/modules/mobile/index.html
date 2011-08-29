@@ -221,9 +221,9 @@ body header .icon {
 
 #alphabet {
     position: absolute;
-    right: 0;
-    top: 55px;
-    padding: 5px 0;
+    right: 4px;
+    top: 54px;
+    padding: 6px 0;
     font-size: 10px;
 }
 
@@ -233,6 +233,11 @@ body header .icon {
     color: #555;
     line-height: 11px;
     text-align: center;
+}
+
+#alphabet.inuse {
+    background-color: rgba(100, 120, 120, 0.3);
+    border-radius: 15px;
 }
 
 </style>
@@ -369,19 +374,26 @@ function init() {
     $('#alphabet').bind('mousedown touchstart', function(e) {
         e.preventDefault();
 
+        $('#alphabet').addClass('inuse');
+
     	var alpha = $(e.target).text();
         $('#second .inner').get(0).scrollTop = $('#second .inner ul li a.alpha-' + alpha).get(0).offsetTop - 52;
     });
     $('#alphabet').bind('mousemove touchmove', function(e) {
         e.preventDefault();
 
-        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.floor((e.targetTouches ? e.targetTouches[0].pageY : e.pageY - 55) / 11 + 64))));
+        var position = e.targetTouches ? e.targetTouches[0].pageY : e.pageY;
+        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.floor((position - 55) / 11 + 64))));
         var scroll = $('#second .inner ul li a.alpha-' + alpha).get(0);
         if (scroll) {
             $('#second .inner').get(0).scrollTop = scroll.offsetTop - 52;
         } else {
             $('#second .inner').get(0).scrollTop = $('#second .inner').height();
         }
+    });
+    $('#alphabet').bind('mouseup touchend touchcancel', function(e) {
+
+        $('#alphabet').removeClass('inuse');
     });
 
     $('#content a').bind('click', function (e) {
