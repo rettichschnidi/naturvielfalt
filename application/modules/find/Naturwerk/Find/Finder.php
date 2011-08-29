@@ -258,13 +258,6 @@ class Finder {
 
         $index = $this->index;
 
-        // add class filter
-        $class = $this->parameters->getClass();
-        if (count($class) > 0) {
-            $term = new \Elastica_Filter_Terms('class', $class);
-            $facetUser->setFilter($term);
-        }
-
         // build search query
         $query = new \Elastica_Query();
         $query->setQuery($this->getQuery());
