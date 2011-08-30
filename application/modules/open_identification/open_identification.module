@@ -204,8 +204,16 @@ function open_identification_get_all_entries($userid=false,$sort){
 		$open_identification['comment']       		   = $record->open_identification_comment;
 		$open_identification['type']		  		   = $record->open_identification_type;
 		$open_identification['organismgroup']		   = $record->open_identification_organismgroup;
-	  	$open_identifications/*[$record->open_identification_type][$record->open_identification_organismgroup]*/[$record->open_identification_id]['medias'][] = $media;
-	  	$open_identifications/*[$record->open_identification_type][$record->open_identification_organismgroup]*/[$record->open_identification_id]['info']   = $open_identification;
+
+		if($open_identification['type'] == 'habitat')
+			$group = 'none';
+		else
+			$group = $open_identification['organismgroup'];
+			
+		//$open_identifications[$open_identification['type']]['name'] = $open_identification['type'];
+		//$open_identifications[$open_identification['type']][$group]['name'] = $group;
+	  	$open_identifications[$open_identification['type']][$group][$record->open_identification_id]['medias'][] = $media;
+	  	$open_identifications[$open_identification['type']][$group][$record->open_identification_id]['info']     = $open_identification;
 	  }
 	  
 	  return $open_identifications;

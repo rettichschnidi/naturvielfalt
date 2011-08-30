@@ -9,7 +9,7 @@
  *  Drupal render array
  */
 function open_identification_show($mode) {
-
+drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 	global $user;
 	
 	drupal_set_title(t('Open Identification '));
