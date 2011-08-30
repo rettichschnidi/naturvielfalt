@@ -37,8 +37,8 @@ function open_identification_menu() {
   $items['open_identification'] = array(
     'title' => t('Open Identifications'),
     'description' => t('Show all open identifications'),
-    'page callback' => 'open_identification_show',
-    'page arguments' => array('list view'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_show','list view'),
     'access arguments' => array('access open identification'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.inc',
@@ -46,8 +46,8 @@ function open_identification_menu() {
   $items['open_identification/list'] = array(
     'title' => t('All open identifications'),
     'description' => t('Show all open identifications'),
-    'page callback' => 'open_identification_show',
-    'page arguments' => array('list view'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_show','list view'),
     'access arguments' => array('access open identification'),
     'type' => MENU_DEFAULT_LOCAL_TASK ,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -56,8 +56,8 @@ function open_identification_menu() {
   $items['open_identification/mylist'] = array(
     'title' => t('My open identifications'),
     'description' => t('Show my open identifications'),
-    'page callback' => 'open_identification_show',
-    'page arguments' => array('mylist'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_show','mylist'),
     'access arguments' => array('access open identification'),
     'type' => MENU_LOCAL_TASK ,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -157,8 +157,15 @@ function open_identification_link_media_with_open_identification($open_identific
 	db_insert('open_identification_gallery')->fields($entry)->execute();
 	
 }
-function open_identification_get_all_entries($userid=false,$sort){
+function open_identification_get_all_entries($userid=false,$criteria=false){
 	
+	  if($criteria){
+	  	
+		  $types = 'open_identification_type IN (\''.implode('\', \'',$criteria['type']).'\')';
+		  $filter = false;
+		  if($criteria['type']['organismgroup'])
+		  	$filter = $criteria['organismgroup'] ? 'open_identification_organismgroup IN (\''.implode('\', \'',$criteria['organismgroup']).'\')':false;
+	  }
 	  $result = db_query('select 
 	  					  oi.open_identification_id as open_identification_id,
 	  					  oi.open_identification_comment as open_identification_comment,
@@ -182,7 +189,8 @@ function open_identification_get_all_entries($userid=false,$sort){
 						  left join file_managed fm on fm.fid = gi.fid
 						  left join users u on oi.user_id = u.uid
 						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
-						  where oi.open_identification_solved = 0'.($userid ? ' AND oi.user_id ='.$userid : ''));
+						  where oi.open_identification_solved = 0'.($userid ? ' AND oi.user_id ='.$userid : '')
+	  					  .($criteria ? ' AND '.$types.($filter ? ' AND '.$filter : ''):''));
 	  $open_identifications = array();
 	  $medias = array();
 	  foreach($result as $record){
@@ -210,8 +218,6 @@ function open_identification_get_all_entries($userid=false,$sort){
 		else
 			$group = $open_identification['organismgroup'];
 			
-		//$open_identifications[$open_identification['type']]['name'] = $open_identification['type'];
-		//$open_identifications[$open_identification['type']][$group]['name'] = $group;
 	  	$open_identifications[$open_identification['type']][$group][$record->open_identification_id]['medias'][] = $media;
 	  	$open_identifications[$open_identification['type']][$group][$record->open_identification_id]['info']     = $open_identification;
 	  }

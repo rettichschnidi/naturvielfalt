@@ -1,4 +1,4 @@
-<div class="sort_criteria" ><input type="button" onclick="show_prompt()" value="sortieren/filtern" /></div>
+<div class="sort_criteria" ><!--  <input type="button" onclick="show_prompt()" value="sortieren/filtern" />--> </div>
 <div class="open_identifications">
 <?php 
 
