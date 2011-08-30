@@ -9,7 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <link rel="apple-touch-icon-precomposed" href="images/icon.png" />
-<link rel="apple-touch-startup-image" href="images/spash.png" />
+<link rel="apple-touch-startup-image" media="(max-device-width: 480px) and not (-webkit-min-device-pixel-ratio: 2)"  href="images/spash.png" />
+<link rel="apple-touch-startup-image" media="(max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" href="images/spash-large.png" />
 <style>
 body {
     margin: 0;
@@ -132,6 +133,34 @@ body header .icon {
 
 #third .inner {
     padding-top: 3px; 
+}
+
+#search {
+    border: 0;
+    background-image: url("images/search.png");
+    background-size: 320px 44px;
+    border-bottom: 1px dotted #ccc;
+    width: 275px;
+    height: 40px;
+    padding: 3px 10px 1px 35px;
+}
+
+#search input {
+    border: 0;
+    background-color: transparent;
+    width: 275px;
+    height: 40px;
+    padding: 0;
+    font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+    font-size: 0.9em;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#clear {
+    position: absolute;
+    top: 64px;
+    left: 288px;
+    display: none;
 }
 
 .content ul {
@@ -266,8 +295,8 @@ function handleError(error) {
     console.log(error);
 }
 
-function scroll(from, to, i) {
-    $('.container').anim({translate: (-i * 320) + 'px, 0'}, 0.5, '', function () {
+function scroll(from, to) {
+    $('.container').anim({translate: '-' + parseInt($(to).css('left')) + 'px, 0'}, 0.5, '', function () {
         $('.active').removeClass('active');
     });
     $(from + ' header').anim({opacity: 0}, 0.3);
@@ -278,12 +307,69 @@ function pad(n){
     return n < 10 ? '0' + n : n;
 }
 
-var current;
+var current, back;
 $(function () {
 
-    $('.inner').css('height', (document.height - 52) + 'px');
+	var height = document.height;
+    $('.inner').css('height', (height - 52) + 'px');
+    $('#content .inner').css('height', (height - 52 - 45) + 'px');
     $('input').bind('focus',function() {
         window.scrollTo(0, 0);
+    });
+
+    $('#alphabet').bind('mousedown touchstart', function(e) {
+        e.preventDefault();
+
+        $('#alphabet').addClass('inuse');
+
+        var alpha = $(e.target).text();
+        $('#second .inner').get(0).scrollTop = $('#second .inner ul li a.alpha-' + alpha).get(0).offsetTop - 52;
+    });
+    $('#alphabet').bind('mousemove touchmove', function(e) {
+        e.preventDefault();
+
+        var position = e.targetTouches ? e.targetTouches[0].pageY : e.pageY;
+        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.floor((position - 55) / 11 + 64))));
+        var scroll = $('#second .inner ul li a.alpha-' + alpha).get(0);
+        if (scroll) {
+            $('#second .inner').get(0).scrollTop = scroll.offsetTop - 52;
+        } else {
+            $('#second .inner').get(0).scrollTop = $('#second .inner').height();
+        }
+    });
+    $('#alphabet').bind('mouseup touchend touchcancel', function(e) {
+
+        $('#alphabet').removeClass('inuse');
+    });
+
+    $("#search input").bind('keyup', function () {
+        $('#clear').show();
+
+        var value = $("#search input").val();
+        var html = '<ul>';
+        var count = 0;
+
+        for (var j in db.organisms) {
+            for (var i in db.organisms[j]) {
+
+	        	var element = db.organisms[j][i];
+	        	if (element.de.indexOf(value) > -1) {
+	                html += '<li><a data="' + i + '" data-class="' + j + '">' + (element.de) + '</a></li>';
+	                if (count++ > 100) {
+	                	break;
+	                }
+	        	}
+	        }
+        }
+        html += '</ul>';
+        $('#content .inner').get(0).innerHTML = html;
+        bindOrganisms('#content');
+    });
+    $("#clear").bind('click', function () {
+        $('#search input').val('');
+        $('#content .inner').get(0).innerHTML = '<ul id="classes"></ul>';
+        init();
+        $('#clear').hide();
     });
 
     // set current date
@@ -339,7 +425,7 @@ $(function () {
 	        request = $.ajax({type: 'POST', url: 'ajax.php', data: data, success: function (data) {
 	    		if (data) { // needed for iOS
 		            alert(data);
-		            scroll('#third', '#content', 0);
+		            scroll('#third', '#content');
 	    		}
 	            $('.active').removeClass('active');
 	        }, error: function (xhr, type) {
@@ -350,11 +436,11 @@ $(function () {
     });
 
     $('#second header a.back').bind('click', function (e) {
-        scroll('#second', '#content', 0);
+        scroll('#second', '#content');
         $('.active').removeClass('active');
     });
     $('#third header a.back').bind('click', function (e) {
-        scroll('#third', '#second', 1);
+        scroll('#third', back);
     });
     
     if (navigator.geolocation) {
@@ -364,37 +450,30 @@ $(function () {
     }
 });
 
+function bindOrganisms(path) {
+
+    $(path + ' .inner ul a').bind('click', function (e) {
+        $(e.target).addClass('active');
+
+        // update organism name
+        var id = $(e.target).attr('data');
+        var c = $(e.target).attr('data-class');
+        $('#id').val(id);
+        $('#organism').text(db.organisms[c][id].de);
+
+        // update map with fresh coordinates
+        updateMap();
+
+        back = path;
+        scroll(path, '#third');
+    });
+}
+
 function init() {
 
-	db.rendered = {};
-    for (var i in db.classes) {
+	for (var i in db.classes) {
         $('#classes').append('<li><a data="' + i + '">' + db.classes[i] + '</a></li>');
     }
-
-    $('#alphabet').bind('mousedown touchstart', function(e) {
-        e.preventDefault();
-
-        $('#alphabet').addClass('inuse');
-
-    	var alpha = $(e.target).text();
-        $('#second .inner').get(0).scrollTop = $('#second .inner ul li a.alpha-' + alpha).get(0).offsetTop - 52;
-    });
-    $('#alphabet').bind('mousemove touchmove', function(e) {
-        e.preventDefault();
-
-        var position = e.targetTouches ? e.targetTouches[0].pageY : e.pageY;
-        var alpha = String.fromCharCode(Math.max(65, Math.min(90, Math.floor((position - 55) / 11 + 64))));
-        var scroll = $('#second .inner ul li a.alpha-' + alpha).get(0);
-        if (scroll) {
-            $('#second .inner').get(0).scrollTop = scroll.offsetTop - 52;
-        } else {
-            $('#second .inner').get(0).scrollTop = $('#second .inner').height();
-        }
-    });
-    $('#alphabet').bind('mouseup touchend touchcancel', function(e) {
-
-        $('#alphabet').removeClass('inuse');
-    });
 
     $('#content a').bind('click', function (e) {
 
@@ -406,7 +485,7 @@ function init() {
 	        for (var j in db.organisms[current]) {
 
 	            var organism = db.organisms[current][j];
-	            html += '<li><a data="' + j + '" class="' + organism.css + '">' + (organism.de) + '</a></li>';
+	            html += '<li><a data="' + j + '" data-class="' + current + '" class="' + organism.css + '">' + (organism.de) + '</a></li>';
 	        }
 	        html += '</ul>';
 	        $('#second .inner').get(0).innerHTML = html;
@@ -414,21 +493,9 @@ function init() {
 	        $('#second .inner').get(0).scrollTop = 0;
 	        $('#class').text(db.classes[current]);
 
-	        $('#second .inner ul a').bind('click', function (e) {
-	            $(e.target).addClass('active');
+	        bindOrganisms('#second');
 
-	            // update organism name
-	            var id = $(e.target).attr('data');
-	            $('#id').val(id);
-	            $('#organism').text(db.organisms[current][id].de);
-
-	            // update map with fresh coordinates
-	            updateMap();
-
-	            scroll('#second', '#third', 2);
-	        });
-	
-	        scroll('#content', '#second', 1);
+	        scroll('#content', '#second');
         }, 100);
     });
 }
@@ -450,6 +517,10 @@ $.post('data.php', {}, function (data) {
             <img src="images/logo.png" alt="Naturvielfalt" width="112" height="16" />
             <h2>Einzelbeobachtung</h2>
         </header>
+        <div id="search">
+	        <input placeholder="Suchen" />
+	        <img src="images/clear.png" width="20" height="20" id="clear" />
+        </div>
         <div class="inner">
 	        <ul id="classes">
 	        </ul>
@@ -503,8 +574,8 @@ $.post('data.php', {}, function (data) {
         </header>
         <div class="inner">
 	        <p class="input"><label for="date">Name: </label><span id="organism"></span></p>
-	        <p class="input"><label for="date">Zeit: </label><input id="date" type="datetime" value="2011-07-28T14:00" /></p>
-	        <p><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" /></p>
+	        <p class="input"><label for="date">Zeit: </label><input id="date" type="datetime" value="2011-07-28T14:00" disabled="disabled" /></p>
+	        <p><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" disabled="disabled" /></p>
             <div id="map"><div id="accuracy"></div><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;center=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
             <input id="location" type="hidden" value="" /><input id="id" type="hidden" value="" />
         </div>
