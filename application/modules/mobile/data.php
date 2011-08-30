@@ -20,7 +20,7 @@ foreach ($classes as $id => $class) {
 
     $select = db_select('fauna_organism', 'f');
     $select->condition('fauna_class_id', $id);
-    $select->addExpression('CASE WHEN name_de IS NULL THEN ARRAY_TO_STRING(ARRAY[genus, species], \' \') ELSE name_de END', 'de');
+    $select->addExpression('name_de', 'de');
     $select->addExpression('ARRAY_TO_STRING(ARRAY[genus, species], \' \')', 'la');
     $select->innerJoin('organism', 'o', 'o.organism_type = 1 AND o.organism_id = f.id');
     $select->fields('o', array('id'));
@@ -31,7 +31,7 @@ foreach ($classes as $id => $class) {
     $progress = 65;
     foreach ($result->fetchAll() as $organism) {
 
-        if ($organism->de) {
+        if ($organism->de || $organism->la) {
 
             $alpha = substr($organism->de, 0, 1);
             $css = array();
@@ -48,7 +48,7 @@ foreach ($classes as $id => $class) {
 
 // add flora
 $select = db_select('flora_organism', 'f');
-$select->addExpression('CASE WHEN name_de IS NULL THEN ARRAY_TO_STRING(ARRAY["Gattung", "Art"], \' \') ELSE name_de END', 'de');
+$select->addExpression('name_de', 'de');
 $select->addExpression('ARRAY_TO_STRING(ARRAY["Gattung", "Art"], \' \')', 'la');
 $select->innerJoin('organism', 'o', 'o.organism_type = 2 AND o.organism_id = f.id');
 $select->fields('o', array('id'));

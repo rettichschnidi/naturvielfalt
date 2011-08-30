@@ -353,12 +353,18 @@ $(function () {
             for (var i in db.organisms[j]) {
 
 	        	var element = db.organisms[j][i];
-	        	if (element.de.indexOf(value) > -1) {
-	                html += '<li><a data="' + i + '" data-class="' + j + '">' + (element.de) + '</a></li>';
-	                if (count++ > 100) {
-	                	break;
-	                }
-	        	}
+                if (element.de && element.de.indexOf(value) > -1) {
+                    html += '<li><a data="' + i + '" data-class="' + j + '">' + element.de + '</a></li>';
+                    if (count++ > 100) {
+                        break;
+                    }
+                }
+                if (element.la && element.la.indexOf(value) > -1) {
+                    html += '<li><a data="' + i + '" data-class="' + j + '">' + element.la + '</a></li>';
+                    if (count++ > 100) {
+                        break;
+                    }
+                }
 	        }
         }
         html += '</ul>';
@@ -461,7 +467,7 @@ function bindOrganisms(path) {
         var id = $(e.target).attr('data');
         var c = $(e.target).attr('data-class');
         $('#id').val(id);
-        $('#organism').text(db.organisms[c][id].de);
+        $('#organism').text(db.organisms[c][id].de ? db.organisms[c][id].de : db.organisms[c][id].la);
 
         // update map with fresh coordinates
         updateMap();
@@ -500,7 +506,9 @@ function init() {
 	        for (var j in db.organisms[current]) {
 
 	            var organism = db.organisms[current][j];
-	            html += '<li><a data="' + j + '" data-class="' + current + '" class="' + organism.css + '">' + (organism.de) + '</a></li>';
+	            if (organism.de) {
+	                html += '<li><a data="' + j + '" data-class="' + current + '" class="' + organism.css + '">' + organism.de + '</a></li>';
+	            }
 	        }
 	        html += '</ul>';
 	        $('#second .inner').get(0).innerHTML = html;
