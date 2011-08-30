@@ -10,8 +10,15 @@
  */
 function open_identification_show($mode) {
 
+	global $user;
+	
 	drupal_set_title(t('Open Identification '));
-	$list = open_identification_get_all_entries($userid=false);
+	if($mode == 'mylist')
+		$userid = $user->uid;
+	else
+		$userid = false;
+		
+	$list = open_identification_get_all_entries($userid);
 	$render_array['open_identification_list'] = array(
 	    '#theme' => 'open_identification_list',  // The theme function to apply to the #items
 	    '#list' => $list, // The list itself.
@@ -27,7 +34,7 @@ function open_identification_show_detail($open_identification_id) {
 	    '#theme' => 'open_identification_details',  // The theme function to apply to the #items
 	    '#open_identification' => $open_identification, // The list itself.
 	);*/
-	drupal_set_title(t('Open Identification of: '.$open_identification['fullname']));
+	drupal_set_title(t('Open Identification of ').$open_identification['fullname']);
   $rows = array();
   $rows[] = array(
     array('data' => t('User'), 'header' => true), 
@@ -79,6 +86,10 @@ function open_identification_show_detail($open_identification_id) {
         'class' => array('open_identification_show_type'),
       ),
   );
+ $render_array['details']['link'] = array(
+      '#markup' => '<div style="float:right;background-color:#F7F6EF;margin:0 0 0 0;padding:0.2em 1em;">'.l(t('Edit details'),'open_identification/'.$open_identification_id.'/edit').'</div>',
+      '#weight' => 9,
+    );
 	return $render_array;
 }
 ?>

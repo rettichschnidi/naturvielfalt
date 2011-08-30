@@ -1,3 +1,4 @@
+<div class="sort_criteria" ></div>
 <div class="open_identifications">
 <?php 
 
@@ -21,10 +22,10 @@ if($list){
 			}
 
 			$link    = 'open_identification/'.$record['info']['open_identification_id'].'';
-			$string .= '<a href="'.$link.'">';
+			$string .= '<a href="'.url($link).'">';
 			$string .= 	'<div class="open_identification" style="float:left;padding-bottom: 40px;padding-right:40px;">';
 			$string .= 		'<div class="open_identification_image" style="float:left;">';
-			$string .= 			'<img src="'.$url.'" widht="130" height="100" />';
+			$string .= 			'<img src="'.$url.'" widht="180" height="100" />';
 			$string .= 		'</div>';
 			$string .= 		'<div class="open_identification_info" style="float:left;">';
 			$string .= 			'<div class="info" style="padding-right:40px;">';	
@@ -34,9 +35,9 @@ if($list){
 			$string .= 				'</span>';
 			$string .= 			'</div>';
 			$string .= 			'<div class="info" style="padding-right:40px;">';
-			$string .= 				'<span class="title">'.t('Created on').': </span>';	
+			$string .= 				'<span class="title">'.t('Modified on').': </span>';	
 			$string .= 				'<span class="value">';					
-			$string .= 					date("d.m.y H:i:s",strtotime($record['info']['create_date']));
+			$string .= 					date("d.m.y H:i:s",strtotime($record['info']['modified_date']));
 			$string .= 				'</span>';	
 			$string .= 			'</div>';
 			$string .= 			'<div class="info" style="padding-right:40px;">';
@@ -49,7 +50,7 @@ if($list){
 			if(isset($record['info']['organismgroup'])){
 			
 				$string .= 			'<div class="info">';
-				$string .= 				'<span class="title">'.t('Organismengroup').': </span>';	
+				$string .= 				'<span class="title">'.t('Organismgroup').': </span>';	
 				$string .= 				'<span class="value">';					
 				$string .= 					t($record['info']['organismgroup']);
 				$string .= 				'</span>';	
