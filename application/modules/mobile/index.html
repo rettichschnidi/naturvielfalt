@@ -425,6 +425,7 @@ $(function () {
 	        request = $.ajax({type: 'POST', url: 'ajax.php', data: data, success: function (data) {
 	    		if (data) { // needed for iOS
 		            alert(data);
+		            resetForm();
 		            scroll('#third', '#content');
 	    		}
 	            $('.active').removeClass('active');
@@ -440,9 +441,10 @@ $(function () {
         $('.active').removeClass('active');
     });
     $('#third header a.back').bind('click', function (e) {
+    	resetForm();
         scroll('#third', back);
     });
-    
+
     if (navigator.geolocation) {
         // Register for location changes and pass the returned position to the updateLocation method
         watchId = navigator.geolocation.watchPosition(updateLocation, handleError);
@@ -464,9 +466,22 @@ function bindOrganisms(path) {
         // update map with fresh coordinates
         updateMap();
 
+        // remove disabled
+        $('#search input').get(0).blur();
+        $('#search input').attr('disabled', 'disabled');
+        $('#date').removeAttr('disabled');
+        $('#count').removeAttr('disabled');
+
         back = path;
         scroll(path, '#third');
     });
+}
+
+function resetForm() {
+
+    $('#search input').removeAttr('disabled');
+    $('#date').attr('disabled', 'disabled');
+    $('#count').attr('disabled', 'disabled');
 }
 
 function init() {
