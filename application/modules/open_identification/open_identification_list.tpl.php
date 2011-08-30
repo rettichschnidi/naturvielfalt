@@ -36,15 +36,15 @@ if($list){
 					$string .= 		'</div>';
 					$string .= 		'<div class="open_identification_info">';
 					$string .= 			'<div class="info">';	
-					$string .= 				'<span class="title">'.t('User').': </span>';	
-					$string .= 				'<span class="value">';					
-					$string .= 					$record['info']['fullname'];
-					$string .= 				'</span>';
+					$string .= 				'<div class="title">'.$record['info']['fullname'].' / '.date("d.m.y",strtotime($record['info']['modified_date'])).'</div>';	
+					$string .= 				'<div class="value">';					
+					$string .= 				'';
+					$string .= 				'</div>';
 					$string .= 			'</div>';
-					$string .= 			'<div class="info">';
+					/*$string .= 			'<div class="info">';
 					$string .= 				'<span class="title">'.t('Modified on').': </span>';	
 					$string .= 				'<span class="value">';					
-					$string .= 					date("d.m.y H:i:s",strtotime($record['info']['modified_date']));
+					$string .= 					date("d.m.y",strtotime($record['info']['modified_date'])); // H:i:s
 					$string .= 				'</span>';	
 					$string .= 			'</div>';
 					$string .= 			'<div class="info">';
@@ -71,7 +71,7 @@ if($list){
 					}
 					
 				
-					$test = "";
+					$test = "";*/
 					$string .= 		'</div>';
 					$string .= 		'</a>';
 					$string .= 	'</div>';
