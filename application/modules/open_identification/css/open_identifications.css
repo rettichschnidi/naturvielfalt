@@ -1,0 +1,47 @@
+.open_identifications{
+	display:block;
+}
+.sort_criteria{
+
+	float:right;	
+}
+.open_identifications .type .typetitle{
+	
+	font-size:2em;
+	padding-bottom:20px;
+}
+.open_identifications .type{
+	
+	display:inline-block;
+}
+.open_identifications .type .typerecords .grouptitle{
+	
+	font-size:1.5em;
+	padding-bottom:10px;
+}
+.open_identifications .open_identification{
+	
+	float:left;
+	padding-bottom: 20px;
+	padding-right:30px; 
+	//width:410px;	
+}
+.open_identification_info{
+	
+	//float:left;
+	padding-right:30px;
+}
+
+.open_identification_image{
+	
+	//float:left;
+}
+.open_identification_image img{
+	
+	height:100px;
+	width:150px;
+}
+.open_identification_info .info{
+	
+	padding-right:30px;
+}
