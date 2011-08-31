@@ -117,6 +117,7 @@ body header .icon {
     -webkit-overflow-scrolling: touch;
     overflow: auto;
     background-color: #fff;
+    line-height: 1.2em;
 }
 
 #second {
@@ -175,7 +176,7 @@ body header .icon {
 
 .content li a {
     display: block;
-    padding: 10px 10px 11px;
+    padding: 13px 10px;
     text-decoration: none;
     color: #000;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -183,6 +184,16 @@ body header .icon {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+#second li a {
+    padding-top: 9px;
+    padding-bottom: 5px;
+}
+
+.content .lat {
+    color: #aaa;
+    font-size: 0.8em;
 }
 
 .content li a.active {
@@ -200,7 +211,7 @@ body header .icon {
 }
 
 .inner p {
-    padding: 10px;
+    padding: 8px 10px;
 }
 
 .inner p.input {
@@ -213,6 +224,10 @@ body header .icon {
     padding-right: 10px;
 }
 
+.inner p.name label {
+    vertical-align: top;
+}
+
 .inner p input[type=submit] {
     margin-left: 90px;
 }
@@ -222,7 +237,7 @@ body header .icon {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 16px 16px;
-    height: 150px;
+    height: 146px;
     position: relative;
     margin-top: 5px;
 }
@@ -286,8 +301,8 @@ function updateLocation(position) {
 
 function updateMap() {
     if (lat && lon) {
-        $('#map img').attr('src', 'http://maps.google.com/maps/api/staticmap?style=feature:road|element:labels|visibility:off&zoom=13&size=320x150&scale=2&center='+lat+','+lon+'&sensor=true');
-        $('#accuracy').css({'width': acc + 'px', 'height': acc + 'px', 'margin-left': -(acc/2) + 'px', 'margin-top': -(acc/2) + 'px', 'border-radius': (acc/2) + 'px'});
+        $('#map img').attr('src', 'http://maps.google.com/maps/api/staticmap?style=feature:road|element:labels|visibility:off&zoom=13&size=320x146&scale=2&center='+lat+','+lon+'&sensor=true');
+        $('#accuracy').css({'width': acc + 'px', 'height': acc + 'px', 'margin-left': -(acc/2+1) + 'px', 'margin-top': -(acc/2+1) + 'px', 'border-radius': (acc/2) + 'px'});
     }
 }
 
@@ -467,7 +482,7 @@ function bindOrganisms(path) {
         var id = $(e.target).attr('data');
         var c = $(e.target).attr('data-class');
         $('#id').val(id);
-        $('#organism').text(db.organisms[c][id].de ? db.organisms[c][id].de : db.organisms[c][id].la);
+        $('#organism').html(db.organisms[c][id].de ? db.organisms[c][id].de + '<br/><span class="lat">' + db.organisms[c][id].la + '</span>' : db.organisms[c][id].la);
 
         // update map with fresh coordinates
         updateMap();
@@ -507,7 +522,7 @@ function init() {
 
 	            var organism = db.organisms[current][j];
 	            if (organism.de) {
-	                html += '<li><a data="' + j + '" data-class="' + current + '" class="' + organism.css + '">' + organism.de + '</a></li>';
+	                html += '<li><a data="' + j + '" data-class="' + current + '" class="' + organism.css + '">' + organism.de + '<br/><span class="lat">' + organism.la + '</span></a></li>';
 	            }
 	        }
 	        html += '</ul>';
@@ -596,10 +611,10 @@ $.post('data.php', {}, function (data) {
             <a id="save">Speichern</a>
         </header>
         <div class="inner">
-	        <p class="input"><label for="date">Name: </label><span id="organism"></span></p>
+	        <p class="input name"><label for="date">Name: </label><span id="organism"></span></p>
 	        <p class="input"><label for="date">Zeit: </label><input id="date" type="datetime" value="2011-07-28T14:00" disabled="disabled" /></p>
 	        <p><label for="count">Anzahl: </label><input id="count" type="number" min="1" step="1" value="1" size="4" disabled="disabled" /></p>
-            <div id="map"><div id="accuracy"></div><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x150&amp;scale=2&amp;center=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="150" /></div>
+            <div id="map"><div id="accuracy"></div><img src="http://maps.google.com/maps/api/staticmap?zoom=13&amp;size=320x146&amp;scale=2&amp;center=47.48123591999999,8.20960172764706&amp;sensor=false" width="320" height="146" /></div>
             <input id="location" type="hidden" value="" /><input id="id" type="hidden" value="" />
         </div>
     </section>
