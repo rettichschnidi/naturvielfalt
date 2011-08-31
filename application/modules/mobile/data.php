@@ -7,12 +7,6 @@ drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
 $data = array();
 
-function first($name) {
-    
-    $plain = strtr(utf8_decode(name), utf8_decode('ÄÖÜäöü'), 'AOUaou');
-    return strtoupper(substr($plain, 0, 1));
-}
-
 // fauna
 
 $select = db_select('inventory_type', 't')->fields('t', array('id', 'name'))->execute();
@@ -39,7 +33,8 @@ foreach ($classes as $id => $class) {
 
         if ($organism->de || $organism->la) {
 
-            $alpha = first($organism->de);
+            $plain = strtr(utf8_decode(name), utf8_decode('ÄÖÜäöü'), 'AOUaou');
+            $alpha = strtoupper(substr($plain, 0, 1));
             $css = array();
             while ($progress < ord($alpha) + 1) {
                 $css[] = 'alpha-' . chr($progress++);
@@ -66,8 +61,9 @@ $progress = 65;
 foreach ($result->fetchAll() as $organism) {
 
     if ($organism->de) {
-        
-        $alpha = first($organism->de);
+
+        $plain = strtr(utf8_decode(name), utf8_decode('ÄÖÜäöü'), 'AOUaou');
+        $alpha = strtoupper(substr($plain, 0, 1));
         $css = array();
         while ($progress < ord($alpha) + 1) {
             $css[] = 'alpha-' . chr($progress++);
