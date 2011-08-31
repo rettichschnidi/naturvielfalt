@@ -6,7 +6,11 @@ function area_delete($area_id) {
 
 function area_delete_form($form, &$form_state, $area_id) {
   $form_state['area_id'] = $area_id;
-  
+
+  if (!area_check_delete($area_id)) {
+    return array();
+  }
+
   $name = area_title($area_id);
   return confirm_form(
     $form,
@@ -26,6 +30,24 @@ function area_title($area_id) {
 	$title = $result->field_name;
 	return $title;
 }
+
+function area_check_delete($area_id) {
+
+	$result = db_query('
+		SELECT COUNT(hi.id)
+		FROM area a
+		JOIN head_inventory hi ON a.id = hi.area_id
+		WHERE hi.area_id = :aid',
+		array(':aid' => $area_id)
+	);
+
+	if ($result->fetch()->count >= '1') {
+		drupal_set_message(t('The area can not be deleted. There are still inventories assigned'), 'error');
+		return false;
+	}
+	return true;
+}
+
 /**
  * 
  * Deletes area record from DB and assigned files. Only deletes if no inventories are assigned.
@@ -34,16 +56,8 @@ function area_title($area_id) {
  */
 function area_delete_form_submit($form, &$form_state) {
 	$area_id = $form_state['area_id'];
-	$result = db_query('
-		SELECT COUNT (hi.id)
-		FROM area a
-		JOIN head_inventory hi ON a.id = hi.area_id
-		WHERE hi.area_id = :aid',
-		array(':aid' => $area_id)
-	);	
-	if($result->fetch()->count >= '1') {
-		$form_state['redirect'] = 'area/'.$area_id.'/delete';
-		drupal_set_message(t('The area can not be deleted. There are still inventories assigned'), 'error');		
+	if (!area_check_delete($area_id)) {
+		$form_state['redirect'] = 'area/'.$area_id;		
 	}
 	else {
 		//delete assigned files
