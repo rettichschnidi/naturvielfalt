@@ -33,7 +33,8 @@ foreach ($classes as $id => $class) {
 
         if ($organism->de || $organism->la) {
 
-            $alpha = substr($organism->de, 0, 1);
+            $plain = strtr(utf8_decode($organism->de), utf8_decode('ÄÖÜäöü'), 'AOUaou');
+            $alpha = substr($plain, 0, 1);
             $css = array();
             while ($progress < ord($alpha) + 1) {
                 $css[] = 'alpha-' . chr($progress++);
