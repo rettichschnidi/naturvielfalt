@@ -29,6 +29,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         $count = @$_POST['count'];
         $date = @$_POST['date'];
         $location = @$_POST['location'];
+        $accuracy = @$_POST['accuracy'];
         $type = @$_POST['type'];
 
         // get head_inventory_id
@@ -44,7 +45,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         }
 
         // insert
-        $entry = db_insert('inventory_entry')->fields(array('organism_id' => $organism, 'inventory_id' => $inventory, 'position' => 0))->execute();
+        $entry = db_insert('inventory_entry')->fields(array('organism_id' => $organism, 'inventory_id' => $inventory, 'position' => 0, 'accuracy' => $accuracy))->execute();
 
         // update location
         $geom = 'ST_GeomFromText(\'POINT(' . $location . ')\', 4326)';
