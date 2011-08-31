@@ -159,13 +159,59 @@ function open_identification_link_media_with_open_identification($open_identific
 }
 function open_identification_get_all_entries($userid=false,$criteria=false){
 	
+	  $sort = ' ORDER BY open_identification_type ,open_identification_organismgroup';
 	  if($criteria){
 	  	
-		  $types = 'open_identification_type IN (\''.implode('\', \'',$criteria['type']).'\')';
+	  	  if($criteria['type']['organism'])
+		  	$organism = '(open_identification_type =\''.$criteria['type']['organism'].'\'';
+		  else
+		  	$organism = false;
+		  	
+	  	  if($criteria['type']['habitat'])
+		  	$habitat = 'open_identification_type =\''.$criteria['type']['habitat'].'\'';
+		  else
+		  	$habitat = false;
+		  	
 		  $filter = false;
-		  if($criteria['type']['organismgroup'])
-		  	$filter = $criteria['organismgroup'] ? 'open_identification_organismgroup IN (\''.implode('\', \'',$criteria['organismgroup']).'\')':false;
+		  if($criteria['organismgroup'] && $organism)
+		  	$filter = $criteria['organismgroup'] ? $organism.' AND open_identification_organismgroup IN (\''.implode('\', \'',$criteria['organismgroup']).'\'))':false;
+	  
+		  if($criteria['sortby'] == 'bydateold')
+		  	$sort = ' ORDER BY open_identification_modified_date ASC';
+		  elseif($criteria['sortby'] == 'bydatenew')
+		  	$sort = ' ORDER BY open_identification_modified_date DESC';
+		  elseif($criteria['sortby'] == 'byuser')
+		  	$sort = ' ORDER BY lname';
+		  else
+		  	$sort = ' ORDER BY open_identification_type ,open_identification_organismgroup';
 	  }
+	  $sql = 'select 
+	  					  oi.open_identification_id as open_identification_id,
+	  					  oi.open_identification_comment as open_identification_comment,
+	  					  oi.open_identification_create_date as open_identification_create_date,
+	  					  oi.open_identification_modified_date as open_identification_modified_date,
+	  					  oi.open_identification_type as open_identification_type,
+	  					  oi.open_identification_organismgroup as open_identification_organismgroup,
+	  					  fm.filemime as filemime,
+	  					  fm.filename as filename,
+	  					  fm.uri as uri,
+	  					  gi.id as media_id,
+	  					  gi.created_date as created_date,
+	  					  gi.modified_date as modified_date,
+	  					  gi.author as author,
+	  					  oi.user_id as user_id,
+	  					  fdaf.field_address_first_name fname, 
+	  					  fdaf.field_address_last_name lname  
+	  					  from open_identification oi
+	  					  left join open_identification_gallery oig on oig.open_identification_id = oi.open_identification_id
+			  			  left join gallery_image gi on gi.id = oig.gallery_image_id
+						  left join file_managed fm on fm.fid = gi.fid
+						  left join users u on oi.user_id = u.uid
+						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
+						  where oi.open_identification_solved = 0'.($userid ? ' AND oi.user_id ='.$userid : '')
+	  					  .($filter ? ' AND '.$filter : '').($habitat ? ($filter ? ' OR '.$habitat:' AND '.$habitat):'').$sort;
+	  debug($types.' - '.$filter,'Filter:');
+	   debug($sql,'SQL:');
 	  $result = db_query('select 
 	  					  oi.open_identification_id as open_identification_id,
 	  					  oi.open_identification_comment as open_identification_comment,
@@ -190,7 +236,7 @@ function open_identification_get_all_entries($userid=false,$criteria=false){
 						  left join users u on oi.user_id = u.uid
 						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
 						  where oi.open_identification_solved = 0'.($userid ? ' AND oi.user_id ='.$userid : '')
-	  					  .($criteria ? ' AND '.$types.($filter ? ' AND '.$filter : ''):''));
+	  					  .($filter ? ' AND '.$filter : '').($habitat ? ($filter ? ' OR '.$habitat:' AND '.$habitat):'').$sort);
 	  $open_identifications = array();
 	  $medias = array();
 	  foreach($result as $record){

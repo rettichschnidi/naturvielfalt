@@ -41,43 +41,12 @@ if($list){
 					$string .= 				'';
 					$string .= 				'</div>';
 					$string .= 			'</div>';
-					/*$string .= 			'<div class="info">';
-					$string .= 				'<span class="title">'.t('Modified on').': </span>';	
-					$string .= 				'<span class="value">';					
-					$string .= 					date("d.m.y",strtotime($record['info']['modified_date'])); // H:i:s
-					$string .= 				'</span>';	
-					$string .= 			'</div>';
-					$string .= 			'<div class="info">';
-					$string .= 				'<span class="title">'.t('Type').': </span>';	
-					$string .= 				'<span class="value">';					
-					$string .= 					t($record['info']['type']);
-					$string .= 				'</span>';	
-					$string .= 			'</div>';
-				
-					if(isset($record['info']['organismgroup'])){
-					
-						$string .= 			'<div class="info">';
-						$string .= 				'<span class="title">'.t('Organismgroup').': </span>';	
-						$string .= 				'<span class="value">';					
-						$string .= 					t($record['info']['organismgroup']);
-						$string .= 				'</span>';	
-						$string .= 			'</div>';
-					}
-					else
-					{	$string .= 			'<div class="info">';
-						$string .= 				'<div class="title">&nbsp;</div>';	
-						$string .= 				'<div class="value">&nbsp;</div>';	
-						$string .= 			'</div>';
-					}
-					
-				
-					$test = "";*/
 					$string .= 		'</div>';
 					$string .= 		'</a>';
 					$string .= 	'</div>';
 					
 				}
-				$string .= '</div></div>';
+				$string .= '</div></div><br>';
 			}
 			$string .= '</div></div>';
 		}

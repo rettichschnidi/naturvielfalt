@@ -11,7 +11,7 @@
 function open_identification_show($form, &$form_state,$mode) {
 	
 	drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js', array('weight' => 100));	
+	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js', array('weight' => 120));	
 	global $user;
 	
 	$url = drupal_get_destination();
@@ -27,7 +27,11 @@ function open_identification_show($form, &$form_state,$mode) {
    		if($type['organism'] != null){
    			
 	   		$result = db_select('inventory_type', 'it')->fields('it', array('id', 'name'))->orderBy('it.id', 'DESC')->execute();
-	  	
+	  		
+	   		$filter[] = " ";
+	   		if($_POST['unknown'])
+	  			$filter[] = $_POST['unknown'];
+	  		
 	  		foreach($result as $record){
 	  			
 	  			if($_POST[$record->name])
@@ -45,7 +49,7 @@ function open_identification_show($form, &$form_state,$mode) {
 	    '#title' => t('sort/filter'), 
 	    '#weight' => 1, 
 	    '#collapsible' => TRUE,
-	    '#collapsed' => false,
+	    '#collapsed' => true,
 	    '#attached' => array (
 	      'js' => array (
 	        'misc/form.js',
@@ -57,20 +61,57 @@ function open_identification_show($form, &$form_state,$mode) {
     ->fields('it', array('id', 'name'))
     ->orderBy('it.id', 'DESC')
     ->execute();
-  	$organismgroupoptions = '<input type="checkbox" checked="yes" name="typ" value="unknown">'.t('unknown').'<br>';
-  	
+      	  	
+   	if(!empty($_POST)){
+    	if($_POST['habitat'] == "habitat")
+    		$checked_habitat  ='checked="yes"';
+    	else 
+    		$checked_habitat = "";
+
+    	if($_POST['organism'] == "organism")
+    		$checked_organism  ='checked="yes"';
+    	else 
+    		$checked_organism = "";
+    		
+    	if($_POST['unknown'] == "unknown")
+    		$checked ='checked="yes"';
+    	else 
+    		$checked = "";
+   	}	
+    else{
+    	$checked_habitat   = 'checked="yes"';
+    	$checked_organism  = 'checked="yes"';
+    	$checked           = 'checked="yes"';
+    }
+
+    $organismgroupoptions = '<input type="checkbox" '.$checked.' name="unknown" value="unknown">'.t('unknown').'<br>';	
   	foreach($result as $record){
     	
   		$options[$record->name] = $record->name;
-    	$organismgroupoptions .='<input type="checkbox" checked="yes" name="'.$record->name.'" value="'.$record->name.'">'.t($record->name).'<br>';
+  		
+  		if(!empty($_POST)){
+  			
+    		if(($_POST[$record->name] == $record->name) && $checked_organism == 'checked="yes"')
+    			$checked = 'checked="yes"';
+    		else 
+  				$checked = "";
+  		}
+    	else
+    		$checked = 'checked="yes"';
+    		
+    	$organismgroupoptions .='<input type="checkbox" '.$checked.' name="'.$record->name.'" value="'.$record->name.'">'.t($record->name).'<br>';
   	}
+	debug($organismgroupoptions,'organismgroup');
+    	
     $render_array['filter']['sort'] = array(
       '#markup' => 
-        '<form class="presentation-settings" method="post" action="'.url($url).'">'.
-    	  '<div class="filtertype" style="float:left; padding-right:100px;"><input type="checkbox" checked="yes" name="habitat" value="habitat">'.t('Habitat').'<br>'.
-    		'<input type="checkbox" checked="yes" name="organism" value="organism">'.t('Organism').'</div><div class="grouptype" style="display:block;float:left;padding-right:100px;">'.
+        '<form id="sort_filter"  method="post" action="'.url($url).'">'.
+    	  '<div class="filtertype" style="float:left; padding-right:100px;"><input type="checkbox" '.$checked_habitat.' name="habitat" value="habitat">'.t('Habitat').'<br>'.
+    		'<input type="checkbox" '.$checked_organism.' name="organism" value="organism" >'.t('Organism').'</div><div class="grouptype" style="display:block;float:left;padding-right:100px;">'.
     		$organismgroupoptions.
-    		'</div><div class="sort" style="float:left;padding-right:20px;"><input type="radio" checked="no" name="sort" value="bydate">'.t('sort by date').'<br>'.
+    		'</div><div class="sort" style="float:left;padding-right:20px;">'.
+    		'<input type="radio" checked="no" name="sort" value="bydateold">'.t('sort by oldest date').'<br>'.
+    		'<input type="radio" checked="no" name="sort" value="bydatenew">'.t('sort by newest date').'<br>'.
     		'<input type="radio" checked="no" name="sort" value="byuser">'.t('sort by user').'<br>'.
     		'<input type="radio" checked="no" name="sort" value="byorganism">'.t('sort by organismgroup').'</div>'.
           '<div><input type="submit" name="submit" style="float:right" value="'.t('sort/filter').'" /></div>'.  
@@ -160,8 +201,5 @@ function open_identification_show_detail($open_identification_id) {
     );
 	return $render_array;
 }
-function ajax_example_simplest_callback($form, $form_state) {
-  
-  return $render_array['testajax'];
-}
+
 ?>
