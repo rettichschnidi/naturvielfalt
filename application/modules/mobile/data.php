@@ -33,11 +33,13 @@ foreach ($classes as $id => $class) {
 
         if ($organism->de || $organism->la) {
 
-            $plain = strtr(utf8_decode(name), utf8_decode('ÄÖÜäöü'), 'AOUaou');
-            $alpha = strtoupper(substr($plain, 0, 1));
             $css = array();
-            while ($progress < ord($alpha) + 1) {
-                $css[] = 'alpha-' . chr($progress++);
+            if ($organism->de) {
+                $plain = strtr(utf8_decode($organism->de), utf8_decode('ÄÖÜäöü'), 'AOUaou');
+                $alpha = strtoupper(substr($plain, 0, 1));
+                while ($progress < ord($alpha) + 1) {
+                    $css[] = 'alpha-' . chr($progress++);
+                }
             }
 
             $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la, 'css' => implode(' ', $css));
@@ -60,13 +62,15 @@ $organsims = array();
 $progress = 65;
 foreach ($result->fetchAll() as $organism) {
 
-    if ($organism->de) {
+    if ($organism->de || $organism->la) {
 
-        $plain = strtr(utf8_decode(name), utf8_decode('ÄÖÜäöü'), 'AOUaou');
-        $alpha = strtoupper(substr($plain, 0, 1));
         $css = array();
-        while ($progress < ord($alpha) + 1) {
-            $css[] = 'alpha-' . chr($progress++);
+        if ($organism->de) {
+            $plain = strtr(utf8_decode($organism->de), utf8_decode('ÄÖÜäöü'), 'AOUaou');
+            $alpha = strtoupper(substr($plain, 0, 1));
+            while ($progress < ord($alpha) + 1) {
+                $css[] = 'alpha-' . chr($progress++);
+            }
         }
 
         $organsims[$organism->id] = array('de' => $organism->de, 'la' => $organism->la, 'css' => implode(' ', $css));
