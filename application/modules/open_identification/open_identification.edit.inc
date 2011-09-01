@@ -34,7 +34,7 @@ function open_identification_edit_form($form, &$form_state,$id) {
 		    '#options' => array('habitat' => t('habitat'),'organism' => t('organism')),
 		    '#weight' =>2,
 		    '#required' => false,
-	    	'#value' => $open_identification['type'],
+	    	'#value' => trim($open_identification['type']),
 	  		/*'#ajax' => array(
 		      'callback' => 'open_identification_new_add_organismgroup',
 		      'wrapper' => 'organismgroup',
@@ -57,7 +57,7 @@ function open_identification_edit_form($form, &$form_state,$id) {
 			    '#options' => $options,
 		  		'#weight' =>3,
 		  		'#required' => false,
-		  		'#value' => $open_identification['organismgroup'],
+		  		'#value' => trim($open_identification['organismgroup']),
 		  	);
 	  	}
 
@@ -71,7 +71,7 @@ function open_identification_edit_form($form, &$form_state,$id) {
 	return $render_array;
 }
 function open_identification_edit_submit($form,&$form_state){
-	//dpm($form_state);
+	debug($form_state,'formstate',true);
 	$open_identification['open_identification_id'] = $form_state['input']['open_identification_id'];
 	$open_identification['comment'] =$form_state['input']['comment'];
 	$open_identification['type'] =$form_state['input']['type'];

@@ -66,8 +66,8 @@ function open_identification_menu() {
   $items['open_identification/%'] = array(
     'title' => t('Show open identification'),
     'description' => t('View an existing open identification'),
-    'page callback' => 'open_identification_show_detail',
-    'page arguments' => array(1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_show_detail',1),
     'access arguments' => array('access open identification'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.inc',
@@ -316,19 +316,19 @@ function open_identification_gallery_delete($media){
 	
 }
 function open_identification_details_update($open_identification){
-	
+
 	$values = array();
 	$values['open_identification_modified_date'] = 'now()';
 	$values['open_identification_comment']       = $open_identification['comment'];
 	$values['open_identification_type']			 = $open_identification['type'];
 	
 	if($open_identification['type'] == 'organism'){
-		if($values['open_identification_organismgroup'] != "")
+		if($open_identification['organismgroup'] != "")
 			$values['open_identification_organismgroup'] = $open_identification['organismgroup'];
 		else
 			$values['open_identification_organismgroup'] = 'unknown';
 	}
-	
+
 	 db_update('open_identification')
     ->condition('open_identification_id', $open_identification['open_identification_id'])
     ->fields($values)

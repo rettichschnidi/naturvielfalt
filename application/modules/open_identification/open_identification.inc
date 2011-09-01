@@ -134,15 +134,14 @@ function open_identification_show($form, &$form_state,$mode) {
 	);
 	return $render_array;
 }
-function open_identification_show_detail($open_identification_id) {
-
+function open_identification_show_detail($form, &$form_state,$open_identification_id) {
+	global $user;
+	
+	drupal_add_library('system', 'ui.autocomplete');
 	
 	$render_array['open_identification_medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false, -1,false);
 	$open_identification= open_identification_get_entry($open_identification_id);
-	/*$render_array['open_identification_details'] = array(
-	    '#theme' => 'open_identification_details',  // The theme function to apply to the #items
-	    '#open_identification' => $open_identification, // The list itself.
-	);*/
+
 	drupal_set_title(t('Open Identification of ').$open_identification['fullname']);
   $rows = array();
   $rows[] = array(
@@ -199,6 +198,102 @@ function open_identification_show_detail($open_identification_id) {
       '#markup' => '<div style="float:right;background-color:#F7F6EF;margin:0 0 0 0;padding:0.2em 1em;">'.l(t('Edit details'),'open_identification/'.$open_identification_id.'/edit').'</div>',
       '#weight' => 9,
     );
+  
+  if($open_identification['user_id'] != $user->uid){
+
+  	 $render_array['suggest'] = array(
+	    '#type' => 'fieldset', 
+	    '#title' => t('Suggest'), 
+	    '#weight' => 3, 
+	    '#collapsible' => TRUE,
+	    '#collapsed' => FALSE,
+	    '#attached' => array (
+	      'js' => array (
+	        'misc/form.js',
+	        'misc/collapse.js',
+	      ),
+	    ),
+	    '#attributes' => array(
+	      'class' => array('collapsible'),
+	      'id' => 'open_identification-details'
+	    ),
+	  );
+
+	  if(trim($open_identification['type']) != 'habitat'){
+	  	
+	  		if(trim($open_identification['organismgroup']) == 'unknown'){
+					
+	  			  $result = db_select('inventory_type', 'it')
+				    ->fields('it', array('id', 'name'))
+				    ->orderBy('it.id', 'DESC')
+				    ->execute();
+				  
+				  	$options = array('' => t('- Please choose -'));
+				  	foreach($result as $record)
+				    	$options[$record->name] = $record->name;
+				    	
+				    	
+				  $render_array['suggest']['organismgroup'] = array(
+				    '#name' => 'organismgroup',
+				    '#type' => 'select',
+				    '#title' => t('Organismgroup'),
+				    '#options' => $options,
+				  	'#weight' =>3,
+				  	'#required' => false,
+				  );
+	  		}
+	  		else{
+	  			  $render_array['suggest']['organismgroup'] = array(
+			      '#markup' => ''.t('Organismgroup').'<br> '.trim($open_identification['organismgroup']),
+			      '#weight' => 3,
+	    		   );
+	  		}
+	  }
+	  $render_array['suggest']['item_search'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Organism'),
+          '#required' => true,
+	  	  '#weight' => 4,
+          '#attributes' => array(
+            'class' => array('search'),
+            'rel' => url('gallery/organism_type_gallery_autocomplete/inventory_type/10')
+          )
+        );
+  }
+  if($open_identification['user_id'] == $user->uid){
+	  $render_array['suggestions'] = array(
+	    '#type' => 'fieldset', 
+	    '#title' => t('Suggestions'), 
+	    '#weight' => 3, 
+	    '#collapsible' => TRUE,
+	    '#collapsed' => FALSE,
+	    '#attached' => array (
+	      'js' => array (
+	        'misc/form.js',
+	        'misc/collapse.js',
+	      ),
+	    ),
+	    '#attributes' => array(
+	      'class' => array('collapsible'),
+	      'id' => 'open_identification-details'
+	    ),
+	  );
+	  $col = array();
+	  $cols[] = array(array('data' => ' ', 'header' => true),array('data' => t('Organismgroup'), 'header' => true),
+	  				  array('data' => t('Organismus/Lebensraum'), 'header' => true),
+	  				  array('data' => t('Number of Users'), 'header' => true));
+	  $cols[] = array('<input type="radio" name="test"/>','Reptilien','Giftnatter','19 of 33 (57.6%)');
+	  $cols[] = array('<input type="radio" name="test"/>','Reptilien','Kapkorallenschlange','13 of 33 (39.4%)');
+	  $cols[] = array('<input type="radio" name="test"/>','Reptilien','Rotnatter','1 of 33 (3%)');
+	   $render_array['suggestions']['table'] = array(
+		    '#theme' => 'table',
+		    '#rows' => $cols,
+	    );
+	   $render_array['suggestions']['submit'] = array(
+	      '#markup' => '<div style="float:right;margin:0 0 0 0;padding:0.2em 1em;"><input type="submit" name="submittip" style="float:right" value="Vorschlag annehmen" /></div>',
+	      '#weight' => 9,
+	    );
+  }
 	return $render_array;
 }
 
