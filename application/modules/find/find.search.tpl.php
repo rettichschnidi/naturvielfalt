@@ -22,7 +22,8 @@ $parameters = $current->getParameters();
 
 <p><input class="search" name="search" id="search" value="<?php echo check_plain($parameters->getSearch()); ?>" /></p>
 
-<div class="filter-container filter-area">
+<?php $geo = $parameters->getGeo(); ?>
+<div class="filter-container filter-area<?php if (count($geo) > 0): ?> active<?php endif; ?>">
     <?php $reset = $parameters->filter(array('geo' => array())); ?>
     <h6>
         <?php echo t('Area'); ?>:
@@ -55,12 +56,12 @@ $parameters = $current->getParameters();
     <div class="fieldset">
         <p>
             <label for="date_from"><?php echo t('Date from'); ?>:</label>
-            <input name="date[from]" id="date_from" value="<?php echo check_plain(@$date['from']); ?>" />
+            <input name="date[from]" id="date_from" value="<?php echo isset($date['from']) ? date('d.m.Y', strtotime($date['from'])) : ''; ?>" />
         </p>
         
         <p>
             <label for="date_to"><?php echo t('Date to'); ?>:</label>
-            <input name="date[to]" id="date_to" value="<?php echo check_plain(@$date['to']); ?>" />
+            <input name="date[to]" id="date_to" value="<?php echo isset($date['to']) ? date('d.m.Y', strtotime($date['to'])) : ''; ?>" />
         </p>
     </div>
 </div>
@@ -100,10 +101,11 @@ $parameters = $current->getParameters();
 <p>
     <select class="filter-selector">
         <option value=""><?php echo t('Add filter...'); ?></option>
-        <option value="area"><?php echo t('Area'); ?></option>
-        <option value="date"><?php echo t('Observation date'); ?></option>
+        <option value="area"<?php if (count($parameters->getGeo()) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo t('Area'); ?></option>
+        <option value="date"<?php if (count($parameters->getDate()) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo t('Observation date'); ?></option>
     <?php foreach($facets as $field => $facet): ?>
-        <option value="<?php echo $field; ?>"><?php echo t(ucwords($field)); ?></option>
+    	<?php $value = $parameters->get($field); ?>
+        <option value="<?php echo $field; ?>"<?php if (count($value) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo t(ucwords($field)); ?></option>
     <?php endforeach; ?>
     </select>
 </p>
@@ -127,8 +129,16 @@ $parameters = $current->getParameters();
     <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l(t('Organisms') . ' (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
     </li>
+    <li class="<?php echo 'find/images' == $_GET['q'] ? 'active' : ''; ?>">
+        <?php echo l(t('Images') . ' (' . $organisms->count() . ')', 'find/images', array('query' => $parameters->filter())); ?>
+    </li>
 </ul>
 
+<?php if ('find/images' == $_GET['q']): ?>
+
+
+
+<?php else: ?>
 <div class="toolbar">
 <p class="left"><a href="javascript:window.print();"><?php echo t('Print'); ?></a>, <?php echo l(t('Export as CSV'), 'find/' . $key . '/export', array('query' => $parameters->filter())); ?></p>
 <p class="right"><a href="#" class="columns-select"><?php echo t('Select columns'); ?></a></p>
@@ -190,6 +200,7 @@ $parameters = $current->getParameters();
 <?php endforeach; ?>
 </table>
 </div>
+<?php endif; ?>
 
 </div>
 </form>
