@@ -206,6 +206,8 @@ function _gallery_list_fieldset($list, $title=false, $weight=10, $collapsed=fals
 		$media_title = "Sounds";
 	elseif($mediatype == "videos")
 		$media_title = "Videos";
+	elseif($mediatype == "medias")
+		$media_title = "Medias";
 	
 	$output = array(
     '#type' => 'fieldset', 
@@ -337,7 +339,7 @@ function gallery_presentation_renderer($mediatype,$items, $imgsize='gallery_pres
  * @param object $id
  * @param object $url[Optional]
  */
-function gallery_view_link($type, $id, $url=false, $check=true) {
+function gallery_view_link($type, $id, $url=false, $check=true,$count_images=0,$count_sounds=0,$count_videos=0) {
   if(!gallery_access_callback($type))
     return false;
   $params = _gallery_list_parameters($type, $id);
@@ -426,7 +428,7 @@ function gallery_images_edit($type, $id, $mediatype) {
       'class' => array('collapsible'),
     ),
   );
-  $page['upload']['edit'] = drupal_get_form('gallery_image_form', $type, $id,$mediatype, array(), 1);
+  $page['upload']['edit'] = drupal_get_form('gallery_image_form', $type, $id,$mediatype, array(), false,1);
   
   $page['edit'] = array(
     '#type' => 'fieldset',
@@ -601,7 +603,7 @@ function gallery_images_form($form, &$form_state,$mediatype, $type=false, $id=fa
  * @ingroup forms
  * @see gallery_media_form_submit()
  */
-function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image, $i=1) {
+function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image, $new_open_identification=false,$i=1) {
   global $user;
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
@@ -630,7 +632,6 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
   	$validate_function = '_gallery_medias_form_upload_validate';
   	
   }
-  
   if($image['id']) {
     $title = t('Edit %name', array('%name' => ($image['title'] ? $image['title'] : $image['filename'])));
     $form_state['gallery_image_id'] = $image['id'];
@@ -659,10 +660,15 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
   $form['#tree'] = TRUE;
    
   	
-  if($image['fid'])
+  if($image['fid']){
     $form['thumb'] = array(
       '#markup' => '<a class="user-picture" rel="lightbox" href="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_large').'"><img src="'.url('gallery/'.$type.'/'.$id.'/thumb/'.$image['id'].'/gallery_mini').'" alt="'.$image['title'].'" /></a>'
     );
+    
+  }
+  if(!$new_open_identification)
+  	$form_state['mode']  = 'edit';
+  
   if(!$image['item_type'])
     $image['item_type'] = $type;
   if(!$image['item_id'])
@@ -726,57 +732,106 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
         );
       }
     }
+        if($image['id'])
+    		$collapsed = false;
+    	elseif($type =="open_identification")
+    		$collapsed = true;
+    	else 
+    		$collapsed = true;
+    		
+		    $form[$prefix]['metadata'] = array(
+		      '#type' => 'fieldset',
+		      '#title' => t('Metadata'),
+		      '#weight' => 1,
+		      '#collapsible' => true,
+		      '#collapsed' => $collapsed,
+		      '#attached' => array (
+		        'js' => array (
+		          'misc/form.js',
+		          'misc/collapse.js',
+		        ),
+		      ),
+		      '#attributes' => array(
+		        'class' => array('metadata collapsible'),
+		      ),
+		    );  
+		    $form[$prefix]['metadata']['title'] = array(
+		      '#type' => 'textfield',
+		      '#title' => t('Title'),
+		      '#size' => 100,
+		      '#maxlength' => 128,
+		      '#default_value' => $image['title'],
+		      '#description' => t('The title of the '.$label.'.'),
+		      '#required' => FALSE,
+		    );
+		    $form[$prefix]['metadata']['description'] = array(
+		      '#type' => 'textarea',
+		      '#title' => t('Description'),
+		      '#default_value' => $image['description'],
+		      '#description' => t('The description of the '.$label.'.'),
+		      '#required' => FALSE,
+		    );	    
+		    $form[$prefix]['metadata']['location'] = array(
+		      '#type' => 'textfield',
+		      '#title' => t('Location'),
+		      '#size' => 100,
+		      '#maxlength' => 255,
+		      '#default_value' => $image['location'] ? $image['location'] : $default_location,
+		      '#description' => t('The location the '.$label.' was taken at.'),
+		      '#required' => FALSE,
+		    );
+		    $form[$prefix]['metadata']['author'] = array(
+		      '#type' => 'textfield',
+		      '#title' => t('Author'),
+		      '#size' => 100,
+		      '#maxlength' => 255,
+		      '#default_value' => $image['author'] ? $image['author'] : $user->name,
+		      '#description' => t('The author of the '.$label.'.'),
+		      '#required' => FALSE,
+		    );
+			if($new_open_identification){
+				
+			    $form['description'] = array(
+			      '#type' => 'textarea',
+			      '#title' => t('Comment'),
+			      '#default_value' => t('no comment'),
+			      '#description' => t('Comment to the open identification'),
+			      '#required' => false,
+			      '#weight' =>1,
+			    );
+			   $form['type'] = array(
+				    '#name' => 'type',
+				    '#type' => 'select',
+				    '#title' => t('Type'),
+				    '#options' => array('habitat' => t('habitat'),'organism' => t('organism')),
+				    '#weight' =>2,
+				    '#required' => false,
+			  		/*'#ajax' => array(
+				      'callback' => 'open_identification_new_add_organismgroup',
+				      'wrapper' => 'organismgroup',
+				    )*/
+			  	);
+				$result = db_select('inventory_type', 'it')
+			    ->fields('it', array('id', 'name'))
+			    ->orderBy('it.id', 'DESC')
+			    ->execute();
+			  
+			  	$options = array('' => t('- Please choose -'));
+			  	$options['unknown'] = t('unknown');
+			  	foreach($result as $record)
+			    	$options[$record->name] = $record->name;
+			  	$form['organismgroup'] = array(
+				    '#name' => 'organismgroup',
+				    '#type' => 'select',
+				    '#title' => t('Organismgroup'),
+				    '#options' => $options,
+			  		'#weight' =>3,
+			  		'#required' => false,
+			  	);
+			}
+
     
-    $form[$prefix]['metadata'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Metadata'),
-      '#weight' => 1,
-      '#collapsible' => true,
-      '#collapsed' => $image['id'] ? false : true,
-      '#attached' => array (
-        'js' => array (
-          'misc/form.js',
-          'misc/collapse.js',
-        ),
-      ),
-      '#attributes' => array(
-        'class' => array('metadata collapsible'),
-      ),
-    );
-    $form[$prefix]['metadata']['title'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Title'),
-      '#size' => 100,
-      '#maxlength' => 128,
-      '#default_value' => $image['title'],
-      '#description' => t('The title of the '.$label.'.'),
-      '#required' => FALSE,
-    );
-    $form[$prefix]['metadata']['description'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Description'),
-      '#default_value' => $image['description'],
-      '#description' => t('The description of the '.$label.'.'),
-      '#required' => FALSE,
-    );
-    $form[$prefix]['metadata']['author'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Author'),
-      '#size' => 100,
-      '#maxlength' => 255,
-      '#default_value' => $image['author'] ? $image['author'] : $user->name,
-      '#description' => t('The author of the '.$label.'.'),
-      '#required' => FALSE,
-    );
-    $form[$prefix]['metadata']['location'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Location'),
-      '#size' => 100,
-      '#maxlength' => 255,
-      '#default_value' => $image['location'] ? $image['location'] : $default_location,
-      '#description' => t('The location the '.$label.' was taken at.'),
-      '#required' => FALSE,
-    );
+   
     
     if($form_state['input'][$prefix]['item']) {
       $item = explode(':', $form_state['input'][$prefix]['item']);
@@ -833,7 +888,7 @@ function gallery_image_form_categories($mediatype, $type, $id) {
       } else
         $data['categories'][substr($cat, 4)] = substr($cat, 4);
     }
-  $base_form = drupal_get_form('gallery_image_form', $type, $id, $mediatype, $data, intval(substr($prefix, 7)));
+  $base_form = drupal_get_form('gallery_image_form', $type, $id, $mediatype, $data, false,intval(substr($prefix, 7)));
   $form = drupal_render(drupal_get_form('gallery_image_form_categories_form',$mediatype, $_REQUEST['item_type'], $_REQUEST['item_id'], $data, $prefix));
   $form = preg_replace('/<form[^>]*>\s*<div>(.*)(<input[^>]*type="hidden"[^>]*>\s*){3}<\/div>\s*<\/form>/', '$1', str_replace("\n", '', $form));
   return drupal_json_output(array(
@@ -990,6 +1045,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
   $orig_image = $form_state['gallery_image'];
   $item_provider = $form_state['item_provider'];
   $mediatype = $form_state['mediatype'];
+  $mode     =  $form_state['mode'];
   
   if($mediatype == "images"){
   	$extensions = 'jpg jpeg gif png';
@@ -1013,7 +1069,16 @@ function gallery_images_form_upload_submit($form, &$form_state) {
   $categories = array();
 
   $saved = false;
+  if($type == "open_identification" && ($mode != 'edit')){
+  	
+  	$open_identification_description   = $form_state['values']['description'];
+  	$open_identification_type          = $form_state['values']['type'];
+  	$open_identification_organismgroup = $form_state['values']['organismgroup'];
+
+  	$id = open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup);
+  }
   foreach($form_state['values'] as $prefix => $values) {
+
     if(!is_array($values['metadata']))
       continue;
     $name = $prefix.'_file';
@@ -1067,13 +1132,27 @@ function gallery_images_form_upload_submit($form, &$form_state) {
       return drupal_set_message(t('Image %file could not be saved!', array('%file' => $file->filename)), 'error');
     $image = gallery_image_save($image);
     drupal_set_message(t('Image %file saved', array('%file' => $file->filename)));
+    
+    if($type == "open_identification" && ($mode != 'edit'))
+    	open_identification_link_media_with_open_identification($id,$image);
+    
     $saved = true;
     $orig_image = array();
   }
-  $camefrom = 'gallery/'.$type.'/'.$id.'/'.$mediatype.'/edit';
-  if($_SESSION[md5('camefrom_'.$type.'_'.$id)]) {
-    $camefrom = $_SESSION[md5('camefrom_'.$type.'_'.$id)];
-    unset($_SESSION[md5('camefrom_'.$type.'_'.$id)]);
+  if($type == "open_identification" ){
+  	
+  	$camefrom = 'open_identification';
+	  if($_SESSION[md5('camefrom_'.$type.'_'.'new')]) {
+	    $camefrom = $_SESSION[md5('camefrom_'.$type.'_'.'new')];
+	    unset($_SESSION[md5('camefrom_'.$type.'_'.'new')]);
+	  }
+  }
+  else{
+	  $camefrom = 'gallery/'.$type.'/'.$id.'/'.$mediatype.'/edit';
+	  if($_SESSION[md5('camefrom_'.$type.'_'.$id)]) {
+	    $camefrom = $_SESSION[md5('camefrom_'.$type.'_'.$id)];
+	    unset($_SESSION[md5('camefrom_'.$type.'_'.$id)]);
+	  }
   }
   drupal_goto($camefrom, ($saved ? array('query' => array('saved' => '1')) : array()));
 }
@@ -1096,6 +1175,8 @@ function gallery_images_form_delete_submit($form, &$form_state) {
         drupal_set_message(t('You do not have the permission to delete the image %file', array('%file' => $image['filename']), 'error'));
         continue;
       }
+      open_identification_gallery_delete($image);
+      
       gallery_image_delete($image);
       drupal_set_message(t('File %file deleted', array('%file' => $image['filename'])));
     }
