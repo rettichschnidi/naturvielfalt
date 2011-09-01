@@ -441,7 +441,9 @@ class Indexer {
     public function images() {
 
         $mapping = \Elastica_Type_Mapping::create(array(
-            'title' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'title' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'name' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
             'class' => array('type' => 'string', 'index' => 'not_analyzed'),
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
@@ -455,6 +457,8 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+                fauna_organism.name_de AS name,
+                ARRAY_TO_STRING(ARRAY[fauna_organism.genus, fauna_organism.species], \' \') AS name_la,
         		fauna_class.name_de AS class,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
@@ -473,6 +477,8 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+                flora_organism.name_de AS name,
+                ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
         		\'Pflanzen\' AS class,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
@@ -486,17 +492,19 @@ class Indexer {
 			UNION
 			
         	SELECT
-        		i.id,
-        		i.title,
-        		i.item_type AS image_type,
-        		i.item_id AS image_type_id,
+        		gallery_image.id,
+        		gallery_image.title,
+        		gallery_image.item_type AS image_type,
+        		gallery_image.item_id AS image_type_id,
+        		NULL AS name,
+                NULL AS name_la,
         		NULL AS class,
                 NULL AS family,
                 NULL AS genus,
                 NULL AS redlist
-			FROM gallery_image i
-			INNER JOIN file_managed f ON f.fid = i.fid
-			WHERE f.filemime = \'image/jpeg\' AND i.item_type != \'organism\'';
+			FROM gallery_image
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
+			WHERE filemime = \'image/jpeg\' AND gallery_image.item_type != \'organism\'';
 
         $this->sql('image', $sql, $mapping);
     }
