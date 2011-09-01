@@ -142,7 +142,7 @@ $parameters = $current->getParameters();
 		<a href="<?php echo url('gallery/' . $object->image_type . '/' . $object->image_type_id . '/thumb/' . $object->id . '/gallery_large'); ?>" rel="lightbox" title="<?php echo $object->title; ?>">
 			<img src="<?php echo url('gallery/' . $object->image_type . '/' . $object->image_type_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" width="188" height="150" />
 		</a>
-		<p><?php echo $object->title; ?></p>
+		<p><?php echo $object->title ? check_plain($object->title) . ', ' : ''; ?><?php echo t($object->image_type); ?></p>
 	</li>
 <?php endforeach; ?>
 </ul>
