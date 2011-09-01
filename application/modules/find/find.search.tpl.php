@@ -143,12 +143,13 @@ $parameters = $current->getParameters();
 			<img src="<?php echo url('gallery/' . $object->image_type . '/' . $object->image_type_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" width="188" height="150" />
 		</a>
 		<p>
-		<?php if ($object->title): ?>
-			<?php echo check_plain($object->title); ?>
-		    (<?php echo t($object->image_type); ?>)
-		<?php else: ?>
-			<?php echo t($object->image_type); ?>
-		<?php endif; ?>
+			<a href="<?php echo url($object->url); ?>">
+				<?php if ($object->name): ?>
+					<?php echo check_plain($object->name); ?>
+				<?php else: ?>
+					<?php echo check_plain($object->name_la); ?>
+				<?php endif; ?>
+			</a>
 		</p>
 	</li>
 <?php endforeach; ?>

@@ -462,7 +462,8 @@ class Indexer {
         		fauna_class.name_de AS class,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
-                fauna_organism.redlist AS redlist
+                fauna_organism.redlist AS redlist,
+                \'organism/\' || gallery_image.item_id AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN organism ON gallery_image.item_id = organism.id
@@ -482,7 +483,8 @@ class Indexer {
         		\'Pflanzen\' AS class,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
-                NULL AS redlist
+                NULL AS redlist,
+                \'organism/\' || gallery_image.item_id AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN organism ON gallery_image.item_id = organism.id
@@ -496,15 +498,76 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
-        		NULL AS name,
+                habitat.name_de AS name,
+                habitat.name_lt AS name_la,
+        		NULL AS class,
+                NULL AS family,
+                NULL AS genus,
+                NULL AS redlist,
+                \'habitat/\' || gallery_image.item_id AS url
+			FROM gallery_image
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
+			LEFT JOIN habitat ON habitat.id = gallery_image.item_id
+			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'habitat\'
+			
+			UNION
+			
+        	SELECT
+        		gallery_image.id,
+        		gallery_image.title,
+        		gallery_image.item_type AS image_type,
+        		gallery_image.item_id AS image_type_id,
+                head_inventory.name AS name,
                 NULL AS name_la,
         		NULL AS class,
                 NULL AS family,
                 NULL AS genus,
-                NULL AS redlist
+                NULL AS redlist,
+                \'inventory/\' || gallery_image.item_id || \'/gallery\' AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
-			WHERE filemime = \'image/jpeg\' AND gallery_image.item_type != \'organism\'';
+			LEFT JOIN head_inventory ON head_inventory.id = gallery_image.item_id
+			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'head_inventory\'
+			
+			UNION
+			
+        	SELECT
+        		gallery_image.id,
+        		gallery_image.title,
+        		gallery_image.item_type AS image_type,
+        		gallery_image.item_id AS image_type_id,
+                head_inventory.name AS name,
+                NULL AS name_la,
+        		NULL AS class,
+                NULL AS family,
+                NULL AS genus,
+                NULL AS redlist,
+                \'inventory/\' || head_inventory.id || \'/gallery\' AS url
+			FROM gallery_image
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
+            LEFT JOIN inventory_entry ON inventory_entry.id = gallery_image.item_id
+            INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
+			INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'inventory_entry\'
+			
+			UNION
+			
+        	SELECT
+        		gallery_image.id,
+        		gallery_image.title,
+        		gallery_image.item_type AS image_type,
+        		gallery_image.item_id AS image_type_id,
+                area.field_name AS name,
+                NULL AS name_la,
+        		NULL AS class,
+                NULL AS family,
+                NULL AS genus,
+                NULL AS redlist,
+                \'area/\' || area.id AS url
+			FROM gallery_image
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
+            LEFT JOIN area ON area.id = gallery_image.item_id
+			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'area\'';
 
         $this->sql('image', $sql, $mapping);
     }
