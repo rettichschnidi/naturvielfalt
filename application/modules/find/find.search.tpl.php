@@ -138,7 +138,7 @@ $parameters = $current->getParameters();
 
 <p>
 <?php $i = 0; foreach ($result as $object): ?>
-<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_mini'); ?>" />
+<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" />
 <?php endforeach; ?>
 </p>
 
