@@ -10,6 +10,7 @@ jQuery(function ($) {
 
     $('body.page-find .filter-selector').change(function () {
         $('body.page-find .filter-' + $(this).val()).slideDown();
+        $('body.page-find .filter-selector option[value="'+$(this).val()+'"]').attr('disabled', 'disabled');
         $(this).val('');
      });
     $('body.page-find .clear').click(function () {
@@ -18,15 +19,17 @@ jQuery(function ($) {
         return false;
      });
 
-
+    var map;
+    var latlng = new google.maps.LatLng(46.8, 8.233333); // CH
     $('body.page-find .map-select').click(function () {
         $('body.page-find .map-overlay').css('left', '50%');
+        google.maps.event.trigger(map, 'resize');
+        map.setCenter(latlng);
     });
     $('body.page-find .map-overlay .map-close').click(function () {
         $('.map-overlay').css('left', '-9000px');
     });
 
-    var latlng = new google.maps.LatLng(46.8, 8.233333); // CH
     var myOptions = {
         center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -35,7 +38,7 @@ jQuery(function ($) {
         mapTypeControl: false,
         zoom: 8
     };
-    var map = new google.maps.Map(document.getElementById('map-canvas'), myOptions);
+    map = new google.maps.Map(document.getElementById('map-canvas'), myOptions);
 
     var overlay;
     
