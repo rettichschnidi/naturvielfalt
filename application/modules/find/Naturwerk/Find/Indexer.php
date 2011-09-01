@@ -504,12 +504,6 @@ class Indexer {
 
             $data['date'] = date('Y-m-d', strtotime($data['date']));
         }
-        
-        // convert image
-        if (isset($data['item_type'])) {
-
-            $data['image'] = url('gallery/' . $data['item_type'] . '/' . $data['item_id'] . '/thumb/' . $data['id'] . '/gallery_mini');
-        }
 
         foreach ($data as $key => $value) {
             

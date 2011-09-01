@@ -137,7 +137,7 @@ $parameters = $current->getParameters();
 <?php if ('find/images' == $_GET['q']): ?>
 
 <?php $i = 0; foreach ($result as $object): ?>
-<p><img src="<?php echo $object->image; ?>" /></p>
+<p><img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_mini'); ?>" /></p>
 <?php endforeach; ?>
 
 
