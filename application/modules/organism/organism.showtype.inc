@@ -15,8 +15,20 @@ function organism_showtype($typeId) {
   
   if($typeId <> 16){
     $result = db_query(
-      "select organism.id, organism.organism_type, fauna_organism.genus, fauna_organism.species, fauna_organism.name_de, fauna_organism.family, fauna_organism.protection_ch, COUNT(ie.inventory_id) as count, COUNT(gi.id) as image_count
-        from organism
+      "select organism.id, organism.organism_type, fauna_organism.genus, fauna_organism.species, fauna_organism.name_de, fauna_organism.family, fauna_organism.protection_ch, COUNT(ie.inventory_id) as count,
+        (SELECT COUNT(*) FROM gallery_image 
+        	INNER JOIN file_managed ON file_managed.fid = gallery_image.fid AND gallery_image.item_id = organism.id  
+			WHERE (file_managed.filemime = 'image/jpeg' OR 
+			file_managed.filemime = 'image/png' OR 
+			file_managed.filemime = 'image/jpg' OR 
+			file_managed.filemime = 'image/gif') LIMIT 1) as count_image,
+		(SELECT COUNT(*) FROM gallery_image 
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid AND gallery_image.item_id = organism.id  
+			WHERE (file_managed.filemime = 'audio/mpeg') LIMIT 1) as count_sound,
+		(SELECT COUNT(*) FROM gallery_image 
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid AND gallery_image.item_id = organism.id  
+			WHERE (file_managed.filemime = 'video/mp4') LIMIT 1) as count_video 
+      from organism
         left join fauna_organism ON organism.organism_id = fauna_organism.id
         left join inventory_type ON organism.inventory_type_id = inventory_type.id
         LEFT JOIN inventory_entry ie ON ie.organism_id = organism.id
@@ -28,8 +40,20 @@ function organism_showtype($typeId) {
     );
   } else {
     $result = db_query(
-      'SELECT organism.id, organism.organism_type, flora_organism.name, flora_organism."Familie", flora_organism."Gattung", flora_organism."Art", flora_organism."Autor", flora_organism.name_de, frl.red_list_ch, COUNT(ie.inventory_id) as count, COUNT(gi.id) as image_count
-        FROM organism
+      'SELECT organism.id, organism.organism_type, flora_organism.name, flora_organism."Familie", flora_organism."Gattung", flora_organism."Art", flora_organism."Autor", flora_organism.name_de, frl.red_list_ch, COUNT(ie.inventory_id) as count,
+        (SELECT COUNT(*) FROM gallery_image 
+        	INNER JOIN file_managed ON file_managed.fid = gallery_image.fid AND gallery_image.item_id = organism.id  
+			WHERE (file_managed.filemime = \'image/jpeg\' OR 
+			file_managed.filemime = \'image/png\' OR 
+			file_managed.filemime = \'image/jpg\' OR 
+			file_managed.filemime = \'image/gif\') LIMIT 1) as count_image,
+		(SELECT COUNT(*) FROM gallery_image 
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid AND gallery_image.item_id = organism.id  
+			WHERE (file_managed.filemime = \'audio/mpeg\') LIMIT 1) as count_sound,
+		(SELECT COUNT(*) FROM gallery_image 
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid AND gallery_image.item_id = organism.id  
+			WHERE (file_managed.filemime = \'video/mp4\') LIMIT 1) as count_video  
+      FROM organism
         LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
         LEFT JOIN inventory_type ON organism.inventory_type_id = inventory_type.id
         LEFT JOIN flora_red_list frl ON flora_organism.id = frl.flora_organism_id
@@ -62,8 +86,10 @@ function organism_showtype($typeId) {
       $row[] = ($record->red_list_ch == '0' || $record->red_list_ch == '') ? t('No') : t('Yes');
     }
     if($gallery_available) {
-      if (($link = gallery_view_link('organism', $record->id, 'organism/'.$record->id, true)) != "") {
-        $row[] = $link;
+      if($record->count_image > 0 || $record->count_sound > 0 || $record->count_video > 0) {
+        $row[] = gallery_view_link('organism', $record->id, 'organism/'.$record->id, false,$record->count_image,$record->count_sound,$record->count_video);
+       //if ($record->image_count) {
+        //$row[] = gallery_view_link('organism', $record->id, 'organism/'.$record->id, false);
         $has_gallery = true;
       } else {
         $row[] = false;
