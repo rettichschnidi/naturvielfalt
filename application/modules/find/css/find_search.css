@@ -187,6 +187,18 @@ body.page-find .results table td {
     border-bottom: 1px solid #eee;
 }
 
+body.page-find .images {
+    list-style: none;
+}
+
+body.page-find .images li {
+	padding: 20px 40px 20px 0;
+	margin: 0;
+	float: left;
+	width: 188px;
+	height: 180px;
+}
+
 body.page-find .map-select {
     cursor: pointer;
 }

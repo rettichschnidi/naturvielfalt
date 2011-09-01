@@ -136,13 +136,16 @@ $parameters = $current->getParameters();
 
 <?php if ('find/images' == $_GET['q']): ?>
 
-<p>
+<ul class="images">
 <?php $i = 0; foreach ($result as $object): ?>
-<a href="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_large'); ?>" rel="lightbox">
-	<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" style="padding: 20px 40px 20px 20px;" />
-</a>
+	<li>
+		<a href="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_large'); ?>" rel="lightbox" title="<?php echo $object->title; ?>">
+			<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" width="188" height="150" />
+		</a>
+		<p><?php echo $object->title; ?></p>
+	</li>
 <?php endforeach; ?>
-</p>
+</ul>
 
 <?php else: ?>
 <div class="toolbar">
