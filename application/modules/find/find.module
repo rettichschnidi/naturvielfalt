@@ -80,6 +80,16 @@ function find_menu() {
         'weight' => 30,
     );
 
+    $items['find/images'] = array(
+    	'title' => t('Images'),
+    	'description' => t('Search Natuwerk'),
+        'page callback' => 'find_show_search_images',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+    	'file' => 'find.views.inc.php',
+        'weight' => 40,
+    );
+
     $items['find/organisms'] = array(
         'title' => t('Organismen'),
         'description' => t('Search Natuwerk'),
@@ -131,7 +141,7 @@ function find_theme() {
     return array(
         'find.search' => array(
             'template' => 'find.search',
-            'variables' => array('current' => null, 'key' => '', 'parameters' => null, 'organisms' => null, 'sightings' => null, 'inventories' => null, 'areas' => null)
+            'variables' => array('current' => null, 'key' => '', 'parameters' => null, 'organisms' => null, 'sightings' => null, 'inventories' => null, 'areas' => null, 'images' => null)
         ),
         'find_facet' => array(
             'template' => 'find_facet',

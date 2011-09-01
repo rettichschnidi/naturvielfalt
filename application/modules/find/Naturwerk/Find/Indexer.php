@@ -43,6 +43,7 @@ class Indexer {
      */
     public function all() {
         $this->clear();
+        $this->images();
         $this->organisms();
         $this->sightings();
         $this->inventories();
@@ -435,6 +436,28 @@ class Indexer {
     }
 
     /**
+     * Index all images.
+     */
+    public function images() {
+
+        $mapping = \Elastica_Type_Mapping::create(array(
+            'title' => array('type' => 'string', 'analyzer' => 'sortable'),
+        ));
+
+        $sql = '
+        	SELECT
+        		i.id,
+        		i.title,
+        		i.item_type,
+        		i.item_id
+			FROM gallery_image i
+			INNER JOIN file_managed f ON f.fid = i.fid
+			WHERE f.filemime = \'image/jpeg\'';
+
+        $this->sql('image', $sql, $mapping);
+    }
+
+    /**
      * Convert geo, centroid and date for a single data row for ElasticSearch.
      *
      * @param array $data
@@ -480,6 +503,12 @@ class Indexer {
         if (isset($data['date'])) {
 
             $data['date'] = date('Y-m-d', strtotime($data['date']));
+        }
+        
+        // convert image
+        if (isset($data['item_type'])) {
+
+            $data['image'] = url('gallery/' . $data['item_type'] . '/' . $data['item_id'] . '/thumb/' . $data['id'] . '/gallery_mini');
         }
 
         foreach ($data as $key => $value) {

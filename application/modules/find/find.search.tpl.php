@@ -130,12 +130,15 @@ $parameters = $current->getParameters();
         <?php echo l(t('Organisms') . ' (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
     </li>
     <li class="<?php echo 'find/images' == $_GET['q'] ? 'active' : ''; ?>">
-        <?php echo l(t('Images') . ' (' . $organisms->count() . ')', 'find/images', array('query' => $parameters->filter())); ?>
+        <?php echo l(t('Images') . ' (' . $images->count() . ')', 'find/images', array('query' => $parameters->filter())); ?>
     </li>
 </ul>
 
 <?php if ('find/images' == $_GET['q']): ?>
 
+<?php $i = 0; foreach ($result as $object): ?>
+<p><img src="<?php echo $object->image; ?>" /></p>
+<?php endforeach; ?>
 
 
 <?php else: ?>
