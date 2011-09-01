@@ -75,7 +75,7 @@ class Indexer {
                 ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
-                \'\' AS redlist,
+                NULL AS redlist,
                 \'organism/\' || organism.id AS url
             FROM organism
             LEFT JOIN flora_organism ON organism.organism_id = flora_organism.id
@@ -138,7 +138,7 @@ class Indexer {
                 ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
-                \'\' AS redlist,
+                NULL AS redlist,
                 head_inventory.name AS inventory,
                 ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url,
@@ -451,7 +451,10 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
-        		fauna_class.name_de AS class
+        		fauna_class.name_de AS class,
+                fauna_organism.family AS family,
+                fauna_organism.genus AS genus,
+                fauna_organism.redlist AS redlist
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN organism ON gallery_image.item_id = organism.id
@@ -466,10 +469,14 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
-        		\'Pflanzen\' AS class
+        		\'Pflanzen\' AS class,
+                flora_organism."Familie" AS family,
+                flora_organism."Gattung" AS genus,
+                NULL AS redlist
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN organism ON gallery_image.item_id = organism.id
+            INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'organism\' AND organism.organism_type = 2
 			
 			UNION
@@ -479,7 +486,10 @@ class Indexer {
         		i.title,
         		i.item_type AS image_type,
         		i.item_id AS image_type_id,
-        		NULL AS class
+        		NULL AS class,
+                NULL AS family,
+                NULL AS genus,
+                NULL AS redlist
 			FROM gallery_image i
 			INNER JOIN file_managed f ON f.fid = i.fid
 			WHERE f.filemime = \'image/jpeg\' AND i.item_type != \'organism\'';
