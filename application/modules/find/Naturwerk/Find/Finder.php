@@ -267,6 +267,7 @@ class Finder {
         $query->addFacet($this->getFacet('canton'));
         $query->addFacet($this->getFacet('user'));
         $query->addFacet($this->getFacet('redlist'));
+        $query->addFacet($this->getFacet('image_type'));
         $query->setSize(100);
 
         // sorting

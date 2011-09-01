@@ -15,7 +15,7 @@ class Images extends Finder {
      */
     public function __construct(\Elastica_Index $index, Parameters $parameters) {
 
-        $this->addColumn('title', t('Title'));
+        $this->addColumn('id', 'Default');
 
         parent::__construct($index, 'image', $parameters);
     }

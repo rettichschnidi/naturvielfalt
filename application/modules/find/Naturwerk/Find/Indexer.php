@@ -446,13 +446,42 @@ class Indexer {
 
         $sql = '
         	SELECT
+        		gallery_image.id,
+        		gallery_image.title,
+        		gallery_image.item_type AS image_type,
+        		gallery_image.item_id AS image_type_id,
+        		fauna_class.name_de AS class
+			FROM gallery_image
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
+            LEFT JOIN organism ON gallery_image.item_id = organism.id
+            INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
+            INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
+			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'organism\' AND organism.organism_type = 1
+			
+			UNION
+			
+        	SELECT
+        		gallery_image.id,
+        		gallery_image.title,
+        		gallery_image.item_type AS image_type,
+        		gallery_image.item_id AS image_type_id,
+        		\'Pflanzen\' AS class
+			FROM gallery_image
+			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
+            LEFT JOIN organism ON gallery_image.item_id = organism.id
+			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'organism\' AND organism.organism_type = 2
+			
+			UNION
+			
+        	SELECT
         		i.id,
         		i.title,
-        		i.item_type,
-        		i.item_id
+        		i.item_type AS image_type,
+        		i.item_id AS image_type_id,
+        		NULL AS class
 			FROM gallery_image i
 			INNER JOIN file_managed f ON f.fid = i.fid
-			WHERE f.filemime = \'image/jpeg\'';
+			WHERE f.filemime = \'image/jpeg\' AND i.item_type != \'organism\'';
 
         $this->sql('image', $sql, $mapping);
     }
