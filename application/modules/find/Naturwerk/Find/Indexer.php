@@ -442,6 +442,7 @@ class Indexer {
 
         $mapping = \Elastica_Type_Mapping::create(array(
             'title' => array('type' => 'string', 'analyzer' => 'sortable'),
+            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         $sql = '
