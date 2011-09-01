@@ -191,6 +191,13 @@ class Finder {
             $term = new \Elastica_Filter_Terms('redlist', $redlist);
             $filter->addFilter($term);
         }
+        
+        // add image_type filter
+        $image_type = $this->parameters->getImage_type();
+        if (count($image_type) > 0 && $exclude != 'image_type') {
+            $term = new \Elastica_Filter_Terms('image_type', $image_type);
+            $filter->addFilter($term);
+        }
 
         // filter date
         $date = $this->parameters->getDate();
