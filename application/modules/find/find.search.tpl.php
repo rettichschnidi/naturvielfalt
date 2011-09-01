@@ -136,10 +136,11 @@ $parameters = $current->getParameters();
 
 <?php if ('find/images' == $_GET['q']): ?>
 
+<p>
 <?php $i = 0; foreach ($result as $object): ?>
-<p><img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_mini'); ?>" /></p>
+<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_mini'); ?>" />
 <?php endforeach; ?>
-
+</p>
 
 <?php else: ?>
 <div class="toolbar">
