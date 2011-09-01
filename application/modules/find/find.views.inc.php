@@ -34,6 +34,10 @@ function find_search($key) {
     drupal_add_js(drupal_get_path('module', 'area') . '/js/geometry.js');
     drupal_add_js(drupal_get_path('module', 'find') . '/js/find.js');
 
+    drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+    drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js', array('weight' => 100));
+    drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
+
     $variables = array('#theme' => 'find.search');
 
     $params = find_query_params(array(

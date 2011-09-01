@@ -138,7 +138,9 @@ $parameters = $current->getParameters();
 
 <p>
 <?php $i = 0; foreach ($result as $object): ?>
-<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" />
+<a href="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_large'); ?>" rel="lightbox">
+	<img src="<?php echo url('gallery/' . $object->item_type . '/' . $object->item_id . '/thumb/' . $object->id . '/gallery_thumbnail'); ?>" style="padding: 20px 40px 20px 20px;" />
+</a>
 <?php endforeach; ?>
 </p>
 
