@@ -239,7 +239,7 @@ function gallery_menu() {
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'weight' => 2,
     'access callback' => 'gallery_edit_access_callback',
-    'access arguments' => array(1, 2,3),
+    'access arguments' => array(1, 2),
     'file' => 'gallery.content.inc',
   );
   $items['gallery/%/%/edit_categories'] = array(
