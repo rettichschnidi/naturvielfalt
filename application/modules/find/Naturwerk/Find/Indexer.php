@@ -140,7 +140,7 @@ class Indexer {
                 flora_organism."Gattung" AS genus,
                 NULL AS redlist,
                 head_inventory.name AS inventory,
-                ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url,
                 (SELECT e.value FROM inventory_type_attribute_inventory_entry e INNER JOIN inventory_type_attribute a ON a.id = e.inventory_type_attribute_id WHERE a.name = \'Funddatum\' AND e.inventory_entry_id = inventory_entry.id) as date
             FROM area
@@ -171,7 +171,7 @@ class Indexer {
                 fauna_organism.genus AS genus,
                 fauna_organism.redlist AS redlist,
                 head_inventory.name AS inventory,
-                ua.field_address_first_name || \' \' || ua.field_address_last_name AS user,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'inventory/\' || inventory.head_inventory_id AS url,
                 (SELECT e.value FROM inventory_type_attribute_inventory_entry e INNER JOIN inventory_type_attribute a ON a.id = e.inventory_type_attribute_id WHERE a.name = \'Funddatum\' AND e.inventory_entry_id = inventory_entry.id) as date
             FROM area
@@ -444,11 +444,14 @@ class Indexer {
             'title' => array('type' => 'string', 'index' => 'not_analyzed'),
             'name' => array('type' => 'string', 'index' => 'not_analyzed'),
             'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'position' => array('type' => 'geo_point'),
             'class' => array('type' => 'string', 'index' => 'not_analyzed'),
             'family' => array('type' => 'string', 'index' => 'not_analyzed'),
             'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
             'user' => array('type' => 'string', 'index' => 'not_analyzed'),
             'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
         ));
 
         $sql = '
@@ -457,18 +460,23 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+        		gallery_image.created_date AS date,
                 fauna_organism.name_de AS name,
                 ARRAY_TO_STRING(ARRAY[fauna_organism.genus, fauna_organism.species], \' \') AS name_la,
+                NULL AS centroid,
         		fauna_class.name_de AS class,
                 fauna_organism.family AS family,
                 fauna_organism.genus AS genus,
                 fauna_organism.redlist AS redlist,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'organism/\' || gallery_image.item_id AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN organism ON gallery_image.item_id = organism.id
             INNER JOIN fauna_organism ON fauna_organism.id = organism.organism_id
             INNER JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
+            INNER JOIN users ON users.uid = gallery_image.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'organism\' AND organism.organism_type = 1
 			
 			UNION
@@ -478,17 +486,22 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+        		gallery_image.created_date AS date,
                 flora_organism.name_de AS name,
                 ARRAY_TO_STRING(ARRAY[flora_organism."Gattung", flora_organism."Art"], \' \') AS name_la,
+                NULL AS centroid,
         		\'Pflanzen\' AS class,
                 flora_organism."Familie" AS family,
                 flora_organism."Gattung" AS genus,
                 NULL AS redlist,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'organism/\' || gallery_image.item_id AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN organism ON gallery_image.item_id = organism.id
             INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
+            INNER JOIN users ON users.uid = gallery_image.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'organism\' AND organism.organism_type = 2
 			
 			UNION
@@ -498,16 +511,21 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+        		gallery_image.created_date AS date,
                 habitat.name_de AS name,
                 habitat.name_lt AS name_la,
+                NULL AS centroid,
         		NULL AS class,
                 NULL AS family,
                 NULL AS genus,
                 NULL AS redlist,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'habitat/\' || gallery_image.item_id AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
 			LEFT JOIN habitat ON habitat.id = gallery_image.item_id
+            INNER JOIN users ON users.uid = gallery_image.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'habitat\'
 			
 			UNION
@@ -517,16 +535,22 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+        		gallery_image.created_date AS date,
                 head_inventory.name AS name,
                 NULL AS name_la,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
         		NULL AS class,
                 NULL AS family,
                 NULL AS genus,
                 NULL AS redlist,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'inventory/\' || gallery_image.item_id || \'/gallery\' AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
 			LEFT JOIN head_inventory ON head_inventory.id = gallery_image.item_id
+            INNER JOIN area ON area.id = head_inventory.area_id
+            INNER JOIN users ON users.uid = gallery_image.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'head_inventory\'
 			
 			UNION
@@ -536,18 +560,24 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+        		gallery_image.created_date AS date,
                 head_inventory.name AS name,
                 NULL AS name_la,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
         		NULL AS class,
                 NULL AS family,
                 NULL AS genus,
                 NULL AS redlist,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'inventory/\' || head_inventory.id || \'/gallery\' AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN inventory_entry ON inventory_entry.id = gallery_image.item_id
             INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
 			INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
+            INNER JOIN area ON area.id = head_inventory.area_id
+            INNER JOIN users ON users.uid = gallery_image.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'inventory_entry\'
 			
 			UNION
@@ -557,16 +587,21 @@ class Indexer {
         		gallery_image.title,
         		gallery_image.item_type AS image_type,
         		gallery_image.item_id AS image_type_id,
+        		gallery_image.created_date AS date,
                 area.field_name AS name,
                 NULL AS name_la,
+                ST_AsGeoJSON(ST_Centroid(area.geom)) AS centroid,
         		NULL AS class,
                 NULL AS family,
                 NULL AS genus,
                 NULL AS redlist,
+                ARRAY_TO_STRING(ARRAY[ua.field_address_first_name, ua.field_address_last_name], \' \') AS user,
                 \'area/\' || area.id AS url
 			FROM gallery_image
 			INNER JOIN file_managed ON file_managed.fid = gallery_image.fid
             LEFT JOIN area ON area.id = gallery_image.item_id
+            INNER JOIN users ON users.uid = gallery_image.owner_id
+            LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'area\'';
 
         $this->sql('image', $sql, $mapping);
