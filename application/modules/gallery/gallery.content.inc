@@ -1368,7 +1368,6 @@ function theme_gallery_list($variables) {
   $rating_types = $variables['rating_types'];
   $types = _gallery_types();
   
-  
   if(!$images)
     return;
   
@@ -1406,6 +1405,11 @@ function theme_gallery_list($variables) {
       	$url_image = url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/thumb/'.$image['id'].'/gallery_thumbnail');
       	$extras    = '';
       	$captionclass = "caption";
+      	
+      	if($image['item_type'] == 'inventory_entry' || $image['item_type'] == 'head_inventory')
+      		$media_label = '<div id="media_label"><span>Belegbild</span></div>';
+      	else
+      		$media_label = "";
       }
       elseif($mediatype == "sounds" || ($mediatype == "medias" && $image['filemime'] == 'audio/mpeg')){
       	
@@ -1417,6 +1421,11 @@ function theme_gallery_list($variables) {
 	    $url_image = url(drupal_get_path('module', 'gallery').'/images/music_icon.png');
 	    $extras    = 'class="divbox_sound"';
 	    $captionclass = "caption";
+	    
+	    if($image['item_type'] == 'inventory_entry' || $image['item_type'] == 'head_inventory')
+	    	$media_label = '<div id="media_label"><span>Hörbeleg</span></div>';
+	    else
+      		$media_label = "";
       }
       elseif($mediatype == "videos" || ($mediatype == "medias" && $image['filemime'] == 'video/mp4')){
       	
@@ -1428,12 +1437,18 @@ function theme_gallery_list($variables) {
 	    $url_image = url(drupal_get_path('module', 'gallery').'/images/video_icon.png');
       	$extras    = 'class="divbox_video"';
       	$captionclass = "caption";
+      	
+      	if($image['item_type'] == 'inventory_entry' || $image['item_type'] == 'head_inventory')
+      		$media_label = '<div id="media_label"><span>Belegvideo</span></div>';
+		else
+      		$media_label = "";
       }
       	
 		 array_push($items, 
 		      '<li class="'.join(' ', _gallery_get_class($i-1)).'">'.
 		        '<a '.$extras.' href="'.$url_href.'">'.
 		          '<img src="'.$url_image.'" alt="'.$image['title'].'" />'.
+					$media_label.
 		        '</a>'.
 		        (user_access('manage gallery medias') ? 
 		          '<form class="show_hide" method="post" action="'.url('gallery/'.$image['item_type'].'/'.$image['item_id'].'/'.($image['visible'] ? 'hide' : 'show').'/'.$image['id']).'">'.

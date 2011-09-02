@@ -21,7 +21,18 @@
   -webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
   
 }
-
+#media_label{
+	
+	position: absolute; 
+	left:0; 
+	top: 133px;
+}
+#media_label span{
+	
+	font-weight: bold; 
+	color: #fff;
+	background-color:#659560;
+}
 ul.gallery {
   width:1000px;
 }
