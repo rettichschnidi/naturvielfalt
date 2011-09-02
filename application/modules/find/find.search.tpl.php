@@ -1,4 +1,4 @@
-<form action="<?php echo check_url(url($_GET['q'])); ?>" method="get">
+<form action="<?php echo check_url(url($_GET['q'])); ?>" method="get" id="search-form">
 
 <div class="filters">
 
@@ -8,22 +8,18 @@ $facets = $result->getFacets();
 $parameters = $current->getParameters();
 ?>
 
-<?php // build input fields for hidden form ?>
-<?php foreach ($parameters->filter(array('columns' => array())) as $field => $filter): ?>
-    <?php if (is_array($filter)): ?>
-        <?php foreach ($filter as $i => $v): ?>
-            <input type="hidden" name="<?php echo $field . '[' . $i . ']'; ?>" value="<?php echo check_plain($v); ?>" />
-        <?php endforeach; ?>
-    <?php endif; ?>
-<?php endforeach; ?>
+<?php // submit button ?>
+<p class="submit">
+	<input class="submit" type="submit" value=" Suchen " />
+	<a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch"><?php echo t('New search'); ?></a>
+</p>
 
 <?php // search query ?>
-<h6>
+<h6 class="filter">
     <label for="search" class="search"><?php echo t('Search term'); ?>:</label>
-    <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch"><?php echo t('New search'); ?></a>
 </h6>
 
-<p><input class="search" name="search" id="search" value="<?php echo check_plain($parameters->getSearch()); ?>" /></p>
+<p class="query"><input class="text search" name="search" id="search" value="<?php echo check_plain($parameters->getSearch()); ?>" /></p>
 
 <?php // geo filter with map ?>
 <?php $geo = $parameters->getGeo(); ?>
@@ -42,6 +38,11 @@ $parameters = $current->getParameters();
             src="http://maps.google.com/maps/api/staticmap?<?php if (count($parameters->getGeo()) > 1): ?>path=color:red|weight:1|fillcolor:red|<?php echo implode('|', $parameters->getGeo()); else: ?>center=CH&amp;maptype=terrain&amp;zoom=5<?php endif; ?>&amp;size=200x130&amp;sensor=false"
             alt=""
         />
+        <?php if (is_array($geo)): ?>
+	        <?php foreach ($geo as $value):  ?>
+		        <input type="hidden" name="geo[]" value="<?php echo check_plain($value); ?>" />
+	        <?php endforeach; ?>
+        <?php endif; ?>
     </p>
     <div class="map-overlay">
         <div id="map-canvas"></div>
@@ -61,12 +62,12 @@ $parameters = $current->getParameters();
     <div class="fieldset">
         <p>
             <label for="date_from"><?php echo t('Date from'); ?>:</label>
-            <input name="date[from]" id="date_from" value="<?php echo isset($date['from']) ? date('d.m.Y', strtotime($date['from'])) : ''; ?>" />
+            <input name="date[from]" id="date_from" value="<?php echo isset($date['from']) ? date('d.m.Y', strtotime($date['from'])) : ''; ?>" class="text" />
         </p>
         
         <p>
             <label for="date_to"><?php echo t('Date to'); ?>:</label>
-            <input name="date[to]" id="date_to" value="<?php echo isset($date['to']) ? date('d.m.Y', strtotime($date['to'])) : ''; ?>" />
+            <input name="date[to]" id="date_to" value="<?php echo isset($date['to']) ? date('d.m.Y', strtotime($date['to'])) : ''; ?>" class="text" />
         </p>
     </div>
 </div>
@@ -92,9 +93,14 @@ $parameters = $current->getParameters();
 	            $filters = $parameters->filter(array($field => $params));
 	            ?>
 	            <li class="<?php echo $active ? 'active' : ''; ?>">
-	            	<a href="<?php echo check_url(url($_GET['q'], array('query' => $filters))); ?>" class="<?php echo $active ? 'active' : ''; ?>">
-	            		<?php echo t($term['term']) . '&nbsp;(' . $term['count'] . ')'; ?>
-	            	</a>
+                    <input
+                        type="checkbox"
+                        class="checkbox"
+                        name="<?php echo $field; ?>[]"
+                        value="<?php echo $term['term']; ?>"
+                        <?php if ($active): ?> checked="checked"<?php endif; ?>
+                    >
+                    <span><?php echo t($term['term']) . '&nbsp;(' . $term['count'] . ')'; ?></span>
 	            </li>
 	        <?php endforeach; ?>
 	        </ul>
@@ -116,9 +122,6 @@ $parameters = $current->getParameters();
     <?php endforeach; ?>
     </select>
 </p>
-
-<?php // (hidden) submit button ?>
-<input class="submit" type="submit" />
 
 </div>
 
