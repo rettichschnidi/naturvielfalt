@@ -65,6 +65,7 @@ function find_search($key) {
     	'town' => array(),
     	'canton' => array(),
     	'redlist' => array(),
+    	'habitat' => array(),
     	'image_type' => array(),
     	'columns' => array(),
     	'sort' => array(),

@@ -185,13 +185,20 @@ class Finder {
             $filter->addFilter($term);
         }
 
+        // add habitat filter
+        $habitat = $this->parameters->getHabitat();
+        if (count($habitat) > 0 && $exclude != 'habitat') {
+            $term = new \Elastica_Filter_Terms('habitat', $habitat);
+            $filter->addFilter($term);
+        }
+
         // add redlist filter
         $redlist = $this->parameters->getRedlist();
         if (count($redlist) > 0 && $exclude != 'redlist') {
             $term = new \Elastica_Filter_Terms('redlist', $redlist);
             $filter->addFilter($term);
         }
-        
+
         // add image_type filter
         $image_type = $this->parameters->getImage_type();
         if (count($image_type) > 0 && $exclude != 'image_type') {
@@ -276,6 +283,7 @@ class Finder {
         $query->addFacet($this->getFacet('town'));
         $query->addFacet($this->getFacet('canton'));
         $query->addFacet($this->getFacet('user'));
+        $query->addFacet($this->getFacet('habitat'));
         $query->addFacet($this->getFacet('redlist'));
         $query->addFacet($this->getFacet('image_type'));
         $query->setSize(100);

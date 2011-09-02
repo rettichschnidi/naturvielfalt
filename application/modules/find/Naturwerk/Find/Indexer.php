@@ -43,11 +43,11 @@ class Indexer {
      */
     public function all() {
         $this->clear();
-        $this->images();
         $this->organisms();
         $this->sightings();
         $this->inventories();
         $this->areas();
+        $this->images();
     }
 
     /**
@@ -119,6 +119,7 @@ class Indexer {
             'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
             'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
+            'habitat' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
         $mapping->setParam('_parent', array('type' => 'organism'));
 
@@ -204,6 +205,16 @@ class Indexer {
     			INNER JOIN sgroup_inventory g ON g.hiid = h.id
     			INNER JOIN sgroup_users u ON u.sgid = g.sgid
     			WHERE (read = 1 OR admin = 1) AND e.id = :id',
+
+        	'habitat' => '
+                SELECT
+                    DISTINCT habitat.name_de AS habitat
+                FROM habitat
+                INNER JOIN area_habitat ON area_habitat.habitat_id = habitat.id
+                INNER JOIN head_inventory ON head_inventory.area_id = area_habitat.area_id
+            	INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
+            	INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id 
+                WHERE inventory_entry.id = :id',
         ));
     }
 
@@ -224,6 +235,7 @@ class Indexer {
             'town' => array('type' => 'string', 'index' => 'not_analyzed'),
             'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
+            'habitat' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         $sql = '
@@ -324,6 +336,14 @@ class Indexer {
                 INNER JOIN inventory_entry ie ON ie.id = e.inventory_entry_id
                 INNER JOIN inventory i ON ie.inventory_id = i.id
                 WHERE a.name = \'Funddatum\' AND i.head_inventory_id = :id',
+
+        	'habitat' => '
+                SELECT
+                    DISTINCT h.name_de AS habitat
+                FROM habitat h
+                INNER JOIN area_habitat a ON a.habitat_id = h.id
+                INNER JOIN head_inventory i ON i.area_id = a.area_id 
+                WHERE i.id = :id',
         ));
     }
 
@@ -343,6 +363,7 @@ class Indexer {
             'town' => array('type' => 'string', 'index' => 'not_analyzed'),
             'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
             'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
+            'habitat' => array('type' => 'string', 'index' => 'not_analyzed'),
         ));
 
         $sql = '
@@ -431,7 +452,14 @@ class Indexer {
                 INNER JOIN inventory_entry ie ON ie.id = e.inventory_entry_id
                 INNER JOIN inventory i ON ie.inventory_id = i.id
                 INNER JOIN head_inventory h ON h.id = i.head_inventory_id
-                WHERE a.name = \'Funddatum\' AND h.area_id = :id'
+                WHERE a.name = \'Funddatum\' AND h.area_id = :id',
+
+        	'habitat' => '
+                SELECT
+                    DISTINCT h.name_de AS habitat
+                FROM habitat h
+                INNER JOIN area_habitat a ON a.habitat_id = h.id
+                WHERE a.area_id = :id'
         ));
     }
 
