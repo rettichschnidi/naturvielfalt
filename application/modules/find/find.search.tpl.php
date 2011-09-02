@@ -1,4 +1,5 @@
 <form action="<?php echo check_url(url($_GET['q'])); ?>" method="get">
+
 <div class="filters">
 
 <?php
@@ -7,6 +8,7 @@ $facets = $result->getFacets();
 $parameters = $current->getParameters();
 ?>
 
+<?php // build input fields for hidden form ?>
 <?php foreach ($parameters->filter(array('columns' => array())) as $field => $filter): ?>
     <?php if (is_array($filter)): ?>
         <?php foreach ($filter as $i => $v): ?>
@@ -15,6 +17,7 @@ $parameters = $current->getParameters();
     <?php endif; ?>
 <?php endforeach; ?>
 
+<?php // search query ?>
 <h6>
     <label for="search" class="search"><?php echo t('Search term'); ?>:</label>
     <a href="<?php echo check_url(url($_GET['q'])); ?>" class="newsearch"><?php echo t('New search'); ?></a>
@@ -22,6 +25,7 @@ $parameters = $current->getParameters();
 
 <p><input class="search" name="search" id="search" value="<?php echo check_plain($parameters->getSearch()); ?>" /></p>
 
+<?php // geo filter with map ?>
 <?php $geo = $parameters->getGeo(); ?>
 <div class="filter-container filter-area<?php if (count($geo) > 0): ?> active<?php endif; ?>">
     <?php $reset = $parameters->filter(array('geo' => array())); ?>
@@ -45,6 +49,7 @@ $parameters = $current->getParameters();
     </div>
 </div>
 
+<?php // date filter ?>
 <?php $date = $parameters->getDate(); ?>
 <div class="filter-container filter-date<?php if (count($date) > 0): ?> active<?php endif; ?>">
     <?php $reset = $parameters->filter(array('date' => array())); ?>
@@ -66,6 +71,7 @@ $parameters = $current->getParameters();
     </div>
 </div>
 
+<?php // all facet filterss ?>
 <?php foreach($facets as $field => $facet): ?>
 	<?php $value = $parameters->get($field); ?>
 	<div class="filter-container filter-<?php echo $field; ?><?php if (count($value) > 0): ?> active<?php endif; ?>">
@@ -98,6 +104,7 @@ $parameters = $current->getParameters();
 	</div>
 <?php endforeach; ?>
 
+<?php // add filter dropdown ?>
 <p>
     <select class="filter-selector">
         <option value=""><?php echo t('Add filter...'); ?></option>
@@ -110,12 +117,14 @@ $parameters = $current->getParameters();
     </select>
 </p>
 
+<?php // (hidden) submit button ?>
 <input class="submit" type="submit" />
 
 </div>
 
 <div class="results">
 
+<?php // top (gun) tabs ?>
 <ul class="tabs">
     <li class="<?php echo 'find/sightings' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l(t('Observations') . ' (' . $sightings->count() . ')', 'find/sightings', array('query' => $parameters->filter())); ?>
@@ -134,6 +143,7 @@ $parameters = $current->getParameters();
     </li>
 </ul>
 
+<?php // images results ?>
 <?php if ('find/images' == $_GET['q']): ?>
 
 <ul class="images">
@@ -155,7 +165,9 @@ $parameters = $current->getParameters();
 <?php endforeach; ?>
 </ul>
 
+<?php // table results ?>
 <?php else: ?>
+
 <div class="toolbar">
 <p class="left"><a href="javascript:window.print();"><?php echo t('Print'); ?></a>, <?php echo l(t('Export as CSV'), 'find/' . $key . '/export', array('query' => $parameters->filter())); ?></p>
 <p class="right"><a href="#" class="columns-select"><?php echo t('Select columns'); ?></a></p>
