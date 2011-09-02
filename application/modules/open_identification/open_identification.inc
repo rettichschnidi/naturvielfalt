@@ -11,13 +11,13 @@
 function open_identification_show($form, &$form_state,$mode) {
 	
 	drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js', array('weight' => 120));	
+	
 	global $user;
 	
 	$url = drupal_get_destination();
     $url = drupal_parse_url($url['destination']);
     $url = $url['path'];
-    //dpm($_POST);
+
    $criteria = false;
    if(!empty($_POST)){
    	
@@ -42,7 +42,6 @@ function open_identification_show($form, &$form_state,$mode) {
   		$sortby = $_POST['sort'];
   		$criteria['type']   = $type;
   		$criteria['sortby'] = $sortby;
-  		//dpm($criteria);
    }	
    $render_array['filter'] = array(
 	    '#type' => 'fieldset', 
@@ -101,7 +100,6 @@ function open_identification_show($form, &$form_state,$mode) {
     		
     	$organismgroupoptions .='<input type="checkbox" '.$checked.' name="'.$record->name.'" value="'.$record->name.'">'.t($record->name).'<br>';
   	}
-	debug($organismgroupoptions,'organismgroup');
     	
     $render_array['filter']['sort'] = array(
       '#markup' => 
@@ -138,6 +136,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	global $user;
 	
 	drupal_add_library('system', 'ui.autocomplete');
+	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js');
 	
 	$render_array['open_identification_medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false, -1,false);
 	$open_identification= open_identification_get_entry($open_identification_id);
@@ -230,7 +229,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 				  
 				  	$options = array('' => t('- Please choose -'));
 				  	foreach($result as $record)
-				    	$options[$record->name] = $record->name;
+				    	$options[$record->id] = $record->name;
 				    	
 				    	
 				  $render_array['suggest']['organismgroup'] = array(
@@ -244,21 +243,40 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	  		}
 	  		else{
 	  			  $render_array['suggest']['organismgroup'] = array(
-			      '#markup' => ''.t('Organismgroup').'<br> '.trim($open_identification['organismgroup']),
+			      '#markup' => '<b>'.t('Organismgroup').'</b>: '.trim($open_identification['organismgroup']),
 			      '#weight' => 3,
 	    		   );
 	  		}
 	  }
-	  $render_array['suggest']['item_search'] = array(
-          '#type' => 'textfield',
-          '#title' => t('Organism'),
-          '#required' => true,
-	  	  '#weight' => 4,
-          '#attributes' => array(
-            'class' => array('search'),
-            'rel' => url('gallery/organism_type_gallery_autocomplete/inventory_type/10')
-          )
-        );
+	  if(trim($open_identification['organismgroup']) != 'unknown'){
+
+	  	   $render_array['suggest']['item_search'] = array(
+	          '#type' => 'textfield',
+	          '#title' => t('Organism'),
+	          '#required' => true,
+		  	  '#weight' => 4,
+	          '#attributes' => array(
+	            'class' => array('search'),
+	            'rel' => url('gallery/organism_type_gallery_autocomplete/inventory_type/10'),
+		  		//'style' => array('display:none;')
+	          )
+	        );
+	  }
+	  else{
+	  	   $render_array['suggest']['item_search'] = array(
+	          '#type' => 'textfield',
+	          '#title' => t('Organism'),
+	          '#required' => true,
+		  	  '#weight' => 4,
+	          '#attributes' => array(
+	            'class' => array('search')
+	          )
+	        );
+	  }
+      $render_array['suggest']['submit'] = array(
+	      '#markup' => '<div style="float:right;margin:0 0 0 0;padding:0.2em 1em;"><input type="submit" name="tip" style="float:right" value="suggest" /></div>',
+	      '#weight' => 9,
+	    );
   }
   if($open_identification['user_id'] == $user->uid){
 	  $render_array['suggestions'] = array(

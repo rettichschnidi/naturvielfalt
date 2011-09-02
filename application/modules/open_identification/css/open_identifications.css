@@ -50,3 +50,10 @@
 	
 	padding-right:30px;
 }
+.search .searching {
+  background-image:url('../images/searching.gif');
+}
+
+.search .notfound {
+  background-image:url('../images/notfound.gif');
+}

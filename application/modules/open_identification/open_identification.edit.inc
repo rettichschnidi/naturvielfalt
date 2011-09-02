@@ -10,12 +10,9 @@
  */
 function open_identification_edit_form($form, &$form_state,$id) {
 
-	drupal_set_title(t('Open Identification '));
-	$open_identification= open_identification_get_entry($id);
-	/*$render_array['open_identification_details'] = array(
-	    '#theme' => 'open_identification_details',  // The theme function to apply to the #items
-	    '#text' => 'This is the edit page'.'id:'.$id, // The list itself.
-		);*/
+		drupal_set_title(t('Open Identification '));
+		$open_identification= open_identification_get_entry($id);
+
 		$render_array['open_identification_id'] = array('#type' => 'hidden', '#value' => $id);
 		
 	    $render_array['comment'] = array(
@@ -71,11 +68,11 @@ function open_identification_edit_form($form, &$form_state,$id) {
 	return $render_array;
 }
 function open_identification_edit_submit($form,&$form_state){
-	debug($form_state,'formstate',true);
+
 	$open_identification['open_identification_id'] = $form_state['input']['open_identification_id'];
-	$open_identification['comment'] =$form_state['input']['comment'];
-	$open_identification['type'] =$form_state['input']['type'];
-	$open_identification['organismgroup'] =$form_state['input']['organismgroup'];
+	$open_identification['comment'] 			   = $form_state['input']['comment'];
+	$open_identification['type'] 				   = $form_state['input']['type'];
+	$open_identification['organismgroup'] 		   = $form_state['input']['organismgroup'];
 	open_identification_details_update($open_identification);
 	
 	return $form_state['redirect'] = 'open_identification/'.$open_identification['open_identification_id'];
