@@ -958,7 +958,7 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
         '!size' => format_size(parse_size(variable_get('gallery_image_size', 2048)*1024))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
    
   if(!in_array($_FILES['files']['type'][$name], array('image/jpeg', 'image/gif', 'image/png')))
-    	return form_error($element, t('!name requires a file of type jpg, png or gif. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
+    	return form_error($element, t('!name requires a file of type jpg, png or gif. You uploaded a file of typ !type', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));
 }
 /**
  * Validator for gallery sound files
@@ -976,7 +976,7 @@ function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
         '!size' => format_size(parse_size(variable_get('gallery_sound_size', 2048)*1024)))));//'!size' => format_size(parse_size(file_upload_max_size())))));
     	  	
   if(!in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
-    	return form_error($element, t('!name requires a file of type mp3. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
+    	return form_error($element, t('!name requires a file of type mp3. You uploaded a file of typ !type', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
 }
 /**
  * Validator for gallery video files
@@ -994,7 +994,7 @@ function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
         '!size' => format_size(parse_size(variable_get('gallery_video_size', 8192)*1024))))); //'!size' => format_size(parse_size(file_upload_max_size())))));
     	
   if(!in_array($_FILES['files']['type'][$name], array('video/mp4')))
-    	return form_error($element, t('!name requires a file of type mp4. (!type)', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
+    	return form_error($element, t('!name requires a file of type mp4. You uploaded a file of typ !type', array('!name' => $element['#title'], '!type' => $_FILES['files']['type'][$name])));	
 }
 function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
   $name = substr($element['#name'], 6, strlen($element['#name'])-7);
