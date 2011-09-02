@@ -49,7 +49,7 @@ $parameters = $current->getParameters();
 <div class="filter-container filter-date<?php if (count($date) > 0): ?> active<?php endif; ?>">
     <?php $reset = $parameters->filter(array('date' => array())); ?>
     <h6 class="filter">
-        <?php echo t('Observation date'); ?>:
+        <?php echo 'find/images' == $_GET['q'] ? t('Date') : t('Observation date'); ?>:
         <a href="<?php echo check_url(url($_GET['q'], array('query' => $reset))); ?>" class="clear">×</a>
     </h6>
     
@@ -102,7 +102,7 @@ $parameters = $current->getParameters();
     <select class="filter-selector">
         <option value=""><?php echo t('Add filter...'); ?></option>
         <option value="area"<?php if (count($parameters->getGeo()) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo t('Area'); ?></option>
-        <option value="date"<?php if (count($parameters->getDate()) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo t('Observation date'); ?></option>
+        <option value="date"<?php if (count($parameters->getDate()) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo 'find/images' == $_GET['q'] ? t('Date') : t('Observation date'); ?></option>
     <?php foreach($facets as $field => $facet): ?>
     	<?php $value = $parameters->get($field); ?>
         <option value="<?php echo $field; ?>"<?php if (count($value) > 0): ?> disabled="disabled"<?php endif; ?>><?php echo t(ucwords($field)); ?></option>
