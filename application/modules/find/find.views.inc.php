@@ -10,6 +10,11 @@ use Naturwerk\Find\Images;
 use Naturwerk\Find\Parameters;
 use Naturwerk\Find\Finder;
 
+/**
+ * Extract $_GET values for passed $fields.
+ *
+ * @param array $fields
+ */
 function find_query_params($fields) {
 
     $params = array();
@@ -20,10 +25,18 @@ function find_query_params($fields) {
     return $params;
 }
 
+/**
+ * Redirect to sightings.
+ */
 function find_show_search() {
     return drupal_goto('find/sightings');
 }
 
+/**
+ * Main search controller.
+ * 
+ * @param string $key
+ */
 function find_search($key) {
 
     drupal_add_css(drupal_get_path('module', 'find') . '/css/find_search.css', array('group' => CSS_DEFAULT, 'every_page' => true));
@@ -40,6 +53,7 @@ function find_search($key) {
 
     $variables = array('#theme' => 'find.search');
 
+    // fetch $_GET parameters
     $params = find_query_params(array(
     	'search' => '',
         'geo' => array(),
@@ -69,6 +83,7 @@ function find_search($key) {
         $variables['#areas'] = new Areas($index, $parameters);
         $variables['#images'] = new Images($index, $parameters);
 
+        // make parameters available to JavaScript
         $parameters = drupal_get_query_parameters();
         if (count($parameters) == 0) {
             $parameters = new stdClass(); // force empty JSON object
@@ -86,9 +101,9 @@ function find_search($key) {
     } catch (Elastica_Exception_Client $e) {
 
         watchdog('find', $e->getMessage(), array(), WATCHDOG_ERROR);
-        
+
         drupal_set_message(t('Search error. Elasticsearch running?'), 'error');
-        
+
         return array();
     }
 }
@@ -113,6 +128,11 @@ function find_show_search_images() {
     return find_search('images');
 }
 
+/**
+ * Export controller, generates CSV.
+ * 
+ * @param string $key
+ */
 function find_export_csv($key) {
 
     $output = find_search($key);
@@ -126,6 +146,7 @@ function find_export_csv($key) {
     $current = $output['search']['#current'];
     $result = $current->search();
 
+    // build header row
     $data = array();
     foreach ($current->getActiveColumns() as $column) {
         $data[] = $column->getTitle();

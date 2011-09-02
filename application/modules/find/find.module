@@ -167,7 +167,9 @@ function find_theme() {
 }
 
 /**
- * Implements hook_cron()
+ * Reindex elasticearch.
+ * 
+ * Implements hook_cron() 
  */
 function find_cron() {
 
