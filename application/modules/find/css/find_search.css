@@ -83,6 +83,10 @@ body.page-find .filters ul.choices {
     padding: 0;
 }
 
+body.page-find .filters ul.choices li.active {
+    font-weight: bold;
+}
+
 body.page-find .filters ul.choices span {
     cursor: pointer;
     width: 80%;
