@@ -217,8 +217,11 @@ class Finder {
         // main query
         $search = $this->parameters->getSearch();
         if ($search) {
-            $main = new \Elastica_Query_FuzzyLikeThis();
-            $main->setLikeText($search);
+
+            $main = new \Elastica_Query_QueryString();
+            $main->setQueryString($search);
+            $main->setParam('analyze_wildcard', true);
+            
         } else {
             $main = new \Elastica_Query_MatchAll();
         }
