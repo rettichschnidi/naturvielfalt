@@ -819,8 +819,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 			  	$options = array('' => t('- Please choose -'));
 			  	$options['unknown'] = t('unknown');
 			  	foreach($result as $record)
-			    	$options[$record->name] = $record->name;
-			  	$form['organismgroup'] = array(
+			    	$options[$record->id] = $record->name;
+			  	$form['organismgroupid'] = array(
 				    '#name' => 'organismgroup',
 				    '#type' => 'select',
 				    '#title' => t('Organismgroup'),
@@ -1070,12 +1070,13 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 
   $saved = false;
   if($type == "open_identification" && ($mode != 'edit')){
-  	
+  	debug($form_state,'FROM_STATE',true);
   	$open_identification_description   = $form_state['values']['description'];
   	$open_identification_type          = $form_state['values']['type'];
   	$open_identification_organismgroup = $form_state['values']['organismgroup'];
+  	$open_identification_organismgroupid = $form_state['values']['organismgroupid'];
 
-  	$id = open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup);
+  	$id = open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup,$open_identification_organismgroupid);
   }
   foreach($form_state['values'] as $prefix => $values) {
 
