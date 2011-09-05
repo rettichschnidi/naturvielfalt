@@ -102,6 +102,21 @@ function open_identification_menu() {
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'open_identification.new.inc',
   );
+  $items['open_identification/autocomplete/organisms/%'] = array(
+    'title' => 'Organisms autocomplete',
+    'page callback' => 'organism_type_autocomplete',
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access open identification'),
+    'file' => 'open_identification.autocomplete.inc',
+  );
+  $items['open_identification/autocomplete/habitats'] = array(
+    'title' => 'Habitats autocomplete',
+    'page callback' => 'habitats_autocomplete',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access open identification'),
+    'file' => 'open_identification.autocomplete.inc',
+  );
   return $items;
 }
 function open_identification_theme(){
@@ -123,15 +138,17 @@ function open_identification_theme(){
 	
 	
 }
-function open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup){
+function open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup,$open_identification_organismgroupid){
 	global $user;
 	
-	if($open_identification_type == "habitat")
-	   $open_identification_organismgroup = null;
+	if($open_identification_type == "habitat"){
+	   $open_identification_organismgroupid = 0;
+	}
 	else{
 		
-		if(!$open_identification_organismgroup)
-			$open_identification_organismgroup = 'unknown';
+		if(!$open_identification_organismgroupid){
+			$open_identification_organismgroupid = 0;
+		}
 	}
 	
 	$id   =  db_select('open_identification', 'oi')->orderBy('oi.open_identification_id', 'DESC')->range(0, 1)->fields('oi', array('open_identification_id'))->execute()->fetchColumn(0)+1;
@@ -142,7 +159,7 @@ function open_identification_save($open_identification_description,$open_identif
 			'open_identification_modified_date' => 'now()',
 			'open_identification_comment' => $open_identification_description,
 			'open_identification_type' => $open_identification_type,
-			'open_identification_organismgroup' => $open_identification_organismgroup,
+			'open_identification_organismgroupid' => $open_identification_organismgroupid,
 			'open_identification_area' => 1,
 			'open_identification_solved' => 0);
 	db_insert('open_identification')->fields($entry)->execute();
@@ -185,40 +202,15 @@ function open_identification_get_all_entries($userid=false,$criteria=false){
 		  else
 		  	$sort = ' ORDER BY open_identification_type ,open_identification_organismgroup';
 	  }
-	  $sql = 'select 
-	  					  oi.open_identification_id as open_identification_id,
-	  					  oi.open_identification_comment as open_identification_comment,
-	  					  oi.open_identification_create_date as open_identification_create_date,
-	  					  oi.open_identification_modified_date as open_identification_modified_date,
-	  					  oi.open_identification_type as open_identification_type,
-	  					  oi.open_identification_organismgroup as open_identification_organismgroup,
-	  					  fm.filemime as filemime,
-	  					  fm.filename as filename,
-	  					  fm.uri as uri,
-	  					  gi.id as media_id,
-	  					  gi.created_date as created_date,
-	  					  gi.modified_date as modified_date,
-	  					  gi.author as author,
-	  					  oi.user_id as user_id,
-	  					  fdaf.field_address_first_name fname, 
-	  					  fdaf.field_address_last_name lname  
-	  					  from open_identification oi
-	  					  left join open_identification_gallery oig on oig.open_identification_id = oi.open_identification_id
-			  			  left join gallery_image gi on gi.id = oig.gallery_image_id
-						  left join file_managed fm on fm.fid = gi.fid
-						  left join users u on oi.user_id = u.uid
-						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
-						  where oi.open_identification_solved = 0'.($userid ? ' AND oi.user_id ='.$userid : '')
-	  					  .($filter ? ' AND '.$filter : '').($habitat ? ($filter ? ' OR '.$habitat:' AND '.$habitat):'').$sort;
-	  debug($types.' - '.$filter,'Filter:');
-	   debug($sql,'SQL:');
+
 	  $result = db_query('select 
 	  					  oi.open_identification_id as open_identification_id,
 	  					  oi.open_identification_comment as open_identification_comment,
 	  					  oi.open_identification_create_date as open_identification_create_date,
 	  					  oi.open_identification_modified_date as open_identification_modified_date,
 	  					  oi.open_identification_type as open_identification_type,
-	  					  oi.open_identification_organismgroup as open_identification_organismgroup,
+	  					  oi.open_identification_organismgroupid as open_identification_organismgroupid,
+	  					  it.name as open_identification_organismgroup,
 	  					  fm.filemime as filemime,
 	  					  fm.filename as filename,
 	  					  fm.uri as uri,
@@ -235,6 +227,7 @@ function open_identification_get_all_entries($userid=false,$criteria=false){
 						  left join file_managed fm on fm.fid = gi.fid
 						  left join users u on oi.user_id = u.uid
 						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
+						  LEFT JOIN inventory_type it ON it.id = oi.open_identification_organismgroupid
 						  where oi.open_identification_solved = 0'.($userid ? ' AND oi.user_id ='.$userid : '')
 	  					  .($filter ? ' AND '.$filter : '').($habitat ? ($filter ? ' OR '.$habitat:' AND '.$habitat):'').$sort);
 	  $open_identifications = array();
@@ -255,14 +248,22 @@ function open_identification_get_all_entries($userid=false,$criteria=false){
 		$open_identification['fullname']      		   = $record->fname.' '.$record->lname;
 		$open_identification['create_date']   		   = $record->open_identification_create_date;
 		$open_identification['modified_date'] 		   = $record->open_identification_modified_date;
-		$open_identification['comment']       		   = $record->open_identification_comment;
-		$open_identification['type']		  		   = $record->open_identification_type;
-		$open_identification['organismgroup']		   = $record->open_identification_organismgroup;
+		$open_identification['comment']       		   = trim($record->open_identification_comment);
+		$open_identification['type']		  		   = trim($record->open_identification_type);
+		$open_identification['organismgroupid']		   = $record->open_identification_organismgroupid;
+  	  	if($record->open_identification_organismgroupid)
+  	  		$open_identification['organismgroup'] 		 = trim($record->open_identification_organismgroup);
+  	  	else{
+  	  	
+  	  		if($open_identification['type']	== 'organism')
+  	  			$open_identification['organismgroup'] 		 = 'unknown';
+  	  	}
+		
 
 		if($open_identification['type'] == 'habitat')
 			$group = 'none';
 		else
-			$group = $open_identification['organismgroup'];
+			$group = trim($open_identification['organismgroup']);
 			
 	  	$open_identifications[$open_identification['type']][$group][$record->open_identification_id]['medias'][] = $media;
 	  	$open_identifications[$open_identification['type']][$group][$record->open_identification_id]['info']     = $open_identification;
@@ -278,7 +279,8 @@ function open_identification_get_entry($open_identification_id){
 	  					  oi.open_identification_create_date as open_identification_create_date,
 	  					  oi.open_identification_modified_date as open_identification_modified_date,
 	  					  oi.open_identification_type as open_identification_type,
-	  					  oi.open_identification_organismgroup as open_identification_organismgroup,
+	  					  oi.open_identification_organismgroupid as open_identification_organismgroupid,
+	  					  it.name as open_identification_organismgroup,
 	  					  fm.filemime as filemime,
 	  					  fm.filename as filename,
 	  					  fm.uri as uri,
@@ -294,18 +296,27 @@ function open_identification_get_entry($open_identification_id){
 						  left join file_managed fm on fm.fid = gi.fid
 						  left join users u on oi.user_id = u.uid
 						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
+						  LEFT JOIN inventory_type it ON it.id = oi.open_identification_organismgroupid
 						  where oi.open_identification_solved = 0 AND oi.open_identification_id = :oid' ,array(':oid' => $open_identification_id));
 	  foreach($result as $record){
+		  
 		  $open_identification = array();
-	
 	  	  $open_identification['open_identification_id'] = $record->open_identification_id;
 	  	  $open_identification['user_id']       		 = $record->user_id;
 	  	  $open_identification['fullname']      		 = $record->fname.' '.$record->lname;
 	  	  $open_identification['create_date']   		 = $record->open_identification_create_date;
 	  	  $open_identification['modified_date'] 		 = $record->open_identification_modified_date;
-	  	  $open_identification['comment']      			 = $record->open_identification_comment;
-	  	  $open_identification['type']		  		     = $record->open_identification_type;
-	  	  $open_identification['organismgroup'] 		 = $record->open_identification_organismgroup;
+		  $open_identification['comment']       		 = trim($record->open_identification_comment);
+		  $open_identification['type']		  		     = trim($record->open_identification_type);
+	  	  $open_identification['organismgroupid']		 = $record->open_identification_organismgroupid;
+	      if($record->open_identification_organismgroupid)
+  	  			$open_identification['organismgroup'] 		 = trim($record->open_identification_organismgroup);
+  	  	  else{
+  	  	
+  	  		if($open_identification['type']	== 'organism')
+  	  			$open_identification['organismgroup'] 		 = 'unknown';
+  	  	  }	
+	  	  
 	  }
 	  return $open_identification;
 }

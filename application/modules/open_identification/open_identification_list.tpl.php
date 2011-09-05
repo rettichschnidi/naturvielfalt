@@ -10,7 +10,11 @@ if($list){
 			$string .= '<div class="type"><div class="typetitle">'.t($typerecordkey).'</div><div class="typerecords">';
 			foreach($typerecord as $grouprecordkey => $grouprecord){
 				
-				$string .= '<div class="group"><div class="grouptitle">'.t($grouprecordkey).'</div><div class="grouprecords">';
+				if($grouprecordkey == 'none')
+					$grouptitle = "";
+				else
+					$grouptitle = $grouprecordkey;
+				$string .= '<div class="group"><div class="grouptitle">'.t($grouptitle).'</div><div class="grouprecords">';
 				foreach($grouprecord as $record){
 		
 					$medias = $record['medias'];

@@ -43,7 +43,7 @@ function open_identification_edit_form($form, &$form_state,$id) {
 		    ->orderBy('it.id', 'DESC')
 		    ->execute();
 		  
-		  	$options = array('' => t('- Please choose -'));
+		  	$options = array('0' => t('- Please choose -'));
 		  	$options['unknown'] = t('unknown');
 		  	foreach($result as $record)
 		    	$options[$record->name] = $record->name;

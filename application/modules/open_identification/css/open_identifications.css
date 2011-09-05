@@ -50,10 +50,18 @@
 	
 	padding-right:30px;
 }
-.search .searching {
+.search {
+  background-image:url('../images/search.gif');
+  background-repeat:no-repeat;
+  background-position:right;
+  border-width:1px;
+  padding:0.5em;
+}
+
+.searching {
   background-image:url('../images/searching.gif');
 }
 
-.search .notfound {
+.notfound {
   background-image:url('../images/notfound.gif');
 }

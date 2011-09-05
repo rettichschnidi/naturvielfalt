@@ -8,7 +8,9 @@ jQuery(function ($) {
 			    dropdown.change(function(){
 			    	  var optionSelectedValue = $('#edit-organismgroup option:selected').val();
 			    	  if(optionSelectedValue>0){
-			    		  $('.search').attr('rel', 'http://localhost/swissmon/application/gallery/organism_type_gallery_autocomplete/inventory_type/'+optionSelectedValue);
+			    		  //$('.search').attr('rel', 'http://localhost/swissmon/application/gallery/organism_type_gallery_autocomplete/inventory_type/'+optionSelectedValue);
+			    		  $('.search').attr('rel', 'http://localhost/swissmon/application/open_identification/autocomplete/organisms/'+optionSelectedValue);
+			    		  $('.search').removeAttr('style');
 			    		  form = $('#open-identification-show-detail');
 			    		    if(form) {
 			    		    	initializeAutocomplete(form);
@@ -16,6 +18,7 @@ jQuery(function ($) {
 			    	  }
 			    	  else{
 			    		  $('.search').removeAttr('rel'); 
+			    		  $('.search').attr('style','display:none;');
 			    	  }
 			    	  $('.search').val("");
 			    	  // alert(optionSelectedValue);
