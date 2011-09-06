@@ -46,7 +46,7 @@ function open_identification_edit_form($form, &$form_state,$id) {
 		  	$options = array('0' => t('- Please choose -'));
 		  	$options['unknown'] = t('unknown');
 		  	foreach($result as $record)
-		    	$options[$record->name] = $record->name;
+		    	$options[$record->id] = $record->name;
 		  	$render_array['organismgroup'] = array(
 			    '#name' => 'organismgroup',
 			    '#type' => 'select',

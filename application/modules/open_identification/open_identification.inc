@@ -221,7 +221,8 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	      'id' => 'open_identification-details'
 	    ),
 	  );
-
+	  $render_array['suggest']['open_identification_id'] = array('#type' => 'hidden', '#value' => $open_identification_id);
+	  $render_array['suggest']['type'] = array('#type' => 'hidden', '#value' => $open_identification['type']);
 	  if(trim($open_identification['type']) != 'habitat'){
 	  	
 	  		if(trim($open_identification['organismgroup']) == 'unknown'){
@@ -236,8 +237,8 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 				    	$options[$record->id] = $record->name;
 				    	
 				    	
-				  $render_array['suggest']['organismgroup'] = array(
-				    '#name' => 'organismgroup',
+				  $render_array['suggest']['organismgroupid'] = array(
+				    '#name' => 'organismgroupid',
 				    '#type' => 'select',
 				    '#title' => t('Organismgroup'),
 				    '#options' => $options,
@@ -320,29 +321,84 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	      'id' => 'open_identification-details'
 	    ),
 	  );
-	  $col = array();
-	  $cols[] = array(array('data' => ' ', 'header' => true),array('data' => t('Organismgroup'), 'header' => true),
-	  				  array('data' => t('Organismus/Lebensraum'), 'header' => true),
-	  				  array('data' => t('Number of Users'), 'header' => true));
-	  $cols[] = array('<input type="radio" name="test"/>','Reptilien','Giftnatter','19 of 33 (57.6%)');
-	  $cols[] = array('<input type="radio" name="test"/>','Reptilien','Kapkorallenschlange','13 of 33 (39.4%)');
-	  $cols[] = array('<input type="radio" name="test"/>','Reptilien','Rotnatter','1 of 33 (3%)');
-	   $render_array['suggestions']['table'] = array(
-		    '#theme' => 'table',
-		    '#rows' => $cols,
-	    );
-	   $render_array['suggestions']['submit'] = array(
-	      '#markup' => '<div style="float:right;margin:0 0 0 0;padding:0.2em 1em;"><input type="submit" name="submittip" style="float:right" value="Vorschlag annehmen" /></div>',
-	      '#weight' => 9,
-	    );
+
+	  $tips = open_identification_get_tips($open_identification_id,$open_identification['organismgroupid'],$open_identification['type']);
+	  
+	  if(!empty($tips)){
+		  $cols = array();
+		  if($open_identification['type'] == 'organism')
+			  $cols[] = array(array('data' => ' ', 'header' => true),array('data' => t('Organismgroup'), 'header' => true),
+			  				  array('data' => t($open_identification['type']), 'header' => true),
+			  				  array('data' => t('Number of Users'), 'header' => true),
+			  				  array('data' => t('Show Users'), 'header' => true));
+		  else
+		  	  $cols[] = array(array('data' => ' ', 'header' => true),
+			  				  array('data' => t($open_identification['type']), 'header' => true),
+			  				  array('data' => t('Number of Users'), 'header' => true),
+			  				  array('data' => t('Show Users'), 'header' => true));
+		  
+		  foreach($tips as $tip){
+		  	
+		  	 if($open_identification['type'] == 'organism'){
+		  	 	$cols[] = array('<input type="radio" name="'.$tip['id'].'"/>',''.$tip['organismgroup'].'',''.$tip['item_name'].'',''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)','show');
+		  	 	$options[$tip['item_id']] = ''.$tip['organismgroup'].': '.''.$tip['item_name'].''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)';
+		  	 }
+		  	 else{
+		  	 	$cols[] = array('<input type="radio" name="'.$tip['id'].'"/>',''.$tip['item_name'].'',''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)','show');
+		  	 	$options[$tip['item_id']] = ''.$tip['item_name'].''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)';
+		  	 }
+		  }
+		  
+		  $render_array['suggestions']['table'] = array(
+			    '#theme' => 'table',
+			    '#rows' => $cols,
+		  );	  
+		  $render_array['suggestions']['submit'] = array(
+			      '#type' => 'submit',
+		      	  '#value' => t('accept suggestion'),
+		      	  '#submit' => array('open_identification_suggestions_submit'),
+			      '#weight' => 9,
+	      );
+	  }
+	  else{
+	  	
+	  	$render_array['suggestions']['nodata'] = array('#markup' => 'no tips available');
+	  }
+
+	  $render_array['suggestions']['table1'] = array(
+		    '#type' => 'radios',
+		    '#title' => t('Suggestions'),
+		    '#default_value' => 1,
+		    '#options' => $options
+	  );
+     /* debug($tips,'TIPS:',true);*/
+
   }
 	return $render_array;
 }
 function open_identification_suggest_submit($form, &$form_state){
 	
-	debug($form_state,'form_state',true);
+	//debug($form_state,'form_state',true);
+	$open_identification_tip['open_identification_id']  = $form_state['values']['open_identification_id'];
+	$open_identification_tip['open_identificatin_type'] = $form_state['values']['type'];
+	$open_identification_tip['organismgroupid']			= $form_state['values']['organismgroupid'];
+	$item_id											= open_identification_get_item_id($open_identification_tip['open_identificatin_type'],
+																						  $open_identification_tip['organismgroupid'],
+																						  $form_state['values']['item_search']);
+	if($item_id > 0){
+		$open_identification_tip['item_id'] = $item_id;
+		open_identification_insert_tip($open_identification_tip);
+		$form_state['redirect'] = 'open_identification/'.$open_identification_tip['open_identification_id'];
+	}
+	else
+		form_set_error('suggest_submit','Invalid data');
+							
 	
-	//return $form_state['redirect'] = '/'
 }
-
+function open_identification_suggestions_submit($form, &$form_state){
+	
+	$open_identification_tip['open_identification_id']  = $form_state['values']['open_identification_id'];
+	debug($form_state,'FORM_STATE:',true);
+	$form_state['redirect'] = 'open_identification/'.$open_identification_tip['open_identification_id'];
+}
 ?>

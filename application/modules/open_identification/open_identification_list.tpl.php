@@ -31,7 +31,7 @@ if($list){
 						$url 	   = url('sites/default/files/'.$url_href);
 					}
 		
-					$link    = 'open_identification/'.$record['info']['open_identification_id'].'';
+					$link    = 'open_identification/'.$record['info']['open_identification_id'].'/view';
 					
 					$string .= 	'<div class="open_identification">';
 					$string .= '<a href="'.url($link).'">';

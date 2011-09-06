@@ -3,10 +3,10 @@ jQuery(function ($) {
 	$(document).ready(function() {
 
 	    var form = $('#open-identification-show-detail');
-	    var dropdown = $('#edit-organismgroup');
+	    var dropdown = $('#edit-organismgroupid');
 	    if(dropdown){
 			    dropdown.change(function(){
-			    	  var optionSelectedValue = $('#edit-organismgroup option:selected').val();
+			    	  var optionSelectedValue = $('#edit-organismgroupid option:selected').val();
 			    	  if(optionSelectedValue>0){
 			    		  //$('.search').attr('rel', 'http://localhost/swissmon/application/gallery/organism_type_gallery_autocomplete/inventory_type/'+optionSelectedValue);
 			    		  $('.search').attr('rel', 'http://localhost/swissmon/application/open_identification/autocomplete/organisms/'+optionSelectedValue);

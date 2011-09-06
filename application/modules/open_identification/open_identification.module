@@ -91,6 +91,26 @@ function open_identification_menu() {
 	'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.edit.inc',
   );
+  $items['open_identification/%/view/delete'] = array(
+    'title' => t('Delete'),
+    'description' => t('Delete open identification'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_delete_form',1),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.edit.inc',
+  );
+  $items['open_identification/%/view'] = array(
+    'title' => t('Show open identification'),
+    'description' => t('View an existing open identification'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_show_detail',1),
+    'access arguments' => array('access open identification'),
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.inc',
+  );
   $items['open_identification/new'] = array(
     'title' => t('New'),
     'description' => t('Create new open identification'),
@@ -335,9 +355,9 @@ function open_identification_details_update($open_identification){
 	
 	if($open_identification['type'] == 'organism'){
 		if($open_identification['organismgroup'] != "")
-			$values['open_identification_organismgroup'] = $open_identification['organismgroup'];
+			$values['open_identification_organismgroupid'] = $open_identification['organismgroup'];
 		else
-			$values['open_identification_organismgroup'] = 'unknown';
+			$values['open_identification_organismgroupid'] = 0;
 	}
 
 	 db_update('open_identification')
@@ -348,5 +368,147 @@ function open_identification_details_update($open_identification){
 function open_identification_delete($open_identification_id){
 	//db_query()
 	db_delete('gallery_image_subtype')->condition('image_id', $image['id'])->execute();
+}
+function open_identification_insert_tip($open_identification_tip){
+	
+	global $user;
+	
+	$entry = array(
+			'user_id' => $user->uid,
+			'open_identification_id' => $open_identification_tip['open_identification_id'],
+			'open_identification_type' => $open_identification_tip['open_identificatin_type'],
+			'open_identification_tip_organismgroupid' => $open_identification_tip['organismgroupid'],
+			'open_identification_tip_date' => 'now()',
+			'open_identification_tip_item_id' => $open_identification_tip['item_id']);
+	db_insert('open_identification_tip')->fields($entry)->execute();
+	
+}
+function open_identification_get_item_id($type,$organismgroupid,$name){
+	
+	  if($type == 'habitat'){
+	  
+	  	$result = db_query('SELECT id FROM habitat where name_de = :name LIMIT 1',array(':name' => $name));
+		
+	  	foreach($result as $row)
+			$id = $row->id;
+
+		return $id;
+	  }
+	  else{
+	  	
+	  	if($organismgroupid == 16)
+	  		$sql = "SELECT o.id as id FROM organism o 
+	  						 LEFT JOIN flora_organism flo ON o.organism_id = flo.id
+	  						 WHERE o.organism_type = 2 AND flo.name_de = :name LIMIT 1";
+	  	else
+			$sql = "SELECT o.id as id FROM organism o 
+	  						 LEFT JOIN fauna_organism fo ON o.organism_id = fo.id
+	  						 WHERE o.organism_type = 1 AND fo.name_de = :name LIMIT 1";
+	  
+	  	$result = db_query($sql,array(':name' => $name));
+	  	
+	  	foreach($result as $row)
+			$id = $row->id;
+
+		return $id;
+	  }
+	
+}
+function open_identification_get_tips($open_identification_id,$organismgroupid,$type){
+	
+	if($type == 'habitat'){
+		
+		$sql = 'SELECT ha.name_de as name_de,
+       				   oit.open_identification_id as open_identification_id,
+       				   oit.open_identification_tip_item_id as item_id,
+       				   COUNT(oit.open_identification_tip_item_id) as count_item_id, 
+       				   (SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id) as count_all,
+					   ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = 1))),2) as percentage    
+				FROM open_identification_tip oit
+				LEFT JOIN habitat ha on ha.id = oit.open_identification_tip_item_id
+				WHERE oit.open_identification_type = \'habitat\' AND oit.open_identification_id = :id
+				GROUP BY item_id, ha.name_de,open_identification_id
+				ORDER BY percentage desc';
+	}
+	else{
+		
+		if($organismgroupid == 16)
+			
+			$sql = 'SELECT oit.open_identification_id as open_identification_id,
+       					   oit.open_identification_tip_item_id as item_id,
+       					   oit.open_identification_tip_organismgroupid as organismgroupid,
+       					   it.name as organismgroup,
+       					   flo.name_de as name_de,
+       					   flo."Familie" as family,
+                           flo."Gattung" as genus,
+       					   flo."Art" as species,
+       					   COUNT(oit.open_identification_tip_item_id) as count_item_id, 
+       					   (SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id) as count_all,
+       					   ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id))),2) as percentage
+						   FROM open_identification_tip oit
+						   LEFT JOIN organism o on o.id = oit.open_identification_tip_item_id
+						   LEFT JOIN flora_organism flo on flo.id = o.organism_id
+						   LEFT JOIN inventory_type it on it.id = oit.open_identification_tip_organismgroupid
+						   WHERE oit.open_identification_type = \'organism\' AND oit.open_identification_tip_organismgroupid = 16
+						   AND oit.open_identification_id = :id 
+						   GROUP BY oit.open_identification_id,
+						   			oit.open_identification_tip_item_id,
+						   			flo.name_de,
+						   			flo."Familie",
+						   			flo."Gattung",
+						   			flo."Art",
+						   			oit.open_identification_tip_organismgroupid,
+						   			it.name
+						   ORDER BY percentage desc';
+		else
+			$sql = 'SELECT oit.open_identification_id as open_identification_id,
+					       oit.open_identification_tip_item_id as item_id,
+					       oit.open_identification_tip_organismgroupid as organismgroupid,
+					       it.name as organismgroup,
+					       fo.name_de as name_de,
+					       fo.order as order,
+					       fo.family as family,
+					       fo.genus as genus,
+					       fo.species as species,
+					       COUNT(oit.open_identification_tip_item_id) as count_item_id, 
+					       (SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id) as count_all,
+					       ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id))),2) as percentage
+						   FROM open_identification_tip oit
+						   LEFT JOIN organism o on o.id = oit.open_identification_tip_item_id
+						   LEFT JOIN fauna_organism fo on fo.id = o.organism_id
+						   LEFT JOIN inventory_type it on it.id = oit.open_identification_tip_organismgroupid
+						   WHERE oit.open_identification_type = \'organism\' AND oit.open_identification_tip_organismgroupid <> 16
+						   AND oit.open_identification_id = :id
+						   GROUP BY oit.open_identification_id,oit.open_identification_tip_item_id,
+						   			fo.name_de,fo.order,
+						   			fo.family,
+							 		fo.genus,fo.species,
+							 		oit.open_identification_tip_organismgroupid,
+							 		it.name
+						   ORDER BY percentage desc';
+		
+	}
+	$result = db_query($sql,array(':id' => $open_identification_id));
+	$open_identification_tips = array();
+	
+	foreach($result as $row){
+		
+		$open_identification_tip['id']      		= $row->open_identification_tip_id;
+		$open_identification_tip['item_id'] 		= $row->item_id;
+		$open_identification_tip['type']    		= $type;
+		$open_identification_tip['organismgroupid'] = $row->organismgroupid;
+		$open_identification_tip['organismgroup']   = $row->organismgroup;
+		$open_identification_tip['usernum']			= $row->count_item_id;
+		$open_identification_tip['overallnum']		= $row->count_all;
+		$open_identification_tip['item_name']		= $row->name_de;
+		$open_identification_tip['family']			= $row->family;
+		$open_identification_tip['genus']			= $row->genus;
+		$open_identification_tip['species']			= $row->species;
+		$open_identification_tip['percentage']		= $row->percentage;
+		
+		$open_identification_tips[]					= $open_identification_tip;
+		
+	}
+	return $open_identification_tips;
 }
 ?>
