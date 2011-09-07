@@ -616,7 +616,8 @@ var inventory = {
       if(!element.size())
         return;
       var href = element.attr('href').split('/');
-      href[href.length-1-links[link]] = id;
+      href[href.length-2-links[link]] = id;
+      href[href.length-1-links[link]] = 'medias';
       element.attr('href', href.join('/'));
     }
   }
