@@ -29,8 +29,11 @@ function inventory_show($head_inventory_id, $redirect=true) {
   
   $render_array = inventory_basics($head_inventory_id);
   
-  if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE)
-    $render_array = array_merge($render_array, inventory_redlist_count($head_inventory_id));
+  if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE){
+  	$redlist_array = inventory_redlist_count($head_inventory_id);
+  	if($redlist_array != 0)
+    	$render_array = array_merge($render_array, $redlist_array);
+  }
   
   if(function_exists('gallery_list_renderer')){
     $render_array['GalleryImages'] = gallery_list_renderer('images','head_inventory', $head_inventory_id, false, 100);
@@ -522,6 +525,9 @@ function inventory_redlist_count($head_inventory_id) {
       '#markup' => $markup,
     );
     return $render_array;
+  }
+  else{
+    return 0;
   }
 }
 
