@@ -72,16 +72,6 @@ function open_identification_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.inc',
   );
-  /*$items['open_identification/%/view'] = array(
-    'title' => t('View'),
-    'description' => t('View an existing open identification'),
-    'page callback' => 'open_identification_show_detail',
-    'page arguments' => array(1),
-    'access arguments' => array('access open identification'),
-    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'file' => 'open_identification.inc',
-  );*/
   $items['open_identification/%/edit'] = array(
     'title' => t('Edit'),
     'description' => t('Edit open identification'),
@@ -90,26 +80,30 @@ function open_identification_menu() {
     'access arguments' => array('access open identification'),
 	'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.edit.inc',
-  );
-  $items['open_identification/%/view/delete'] = array(
-    'title' => t('Delete'),
-    'description' => t('Delete open identification'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('open_identification_delete_form',1),
-    'access arguments' => array('access open identification'),
-    'type' => MENU_LOCAL_TASK,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'file' => 'open_identification.edit.inc',
-  );
+  );  
   $items['open_identification/%/view'] = array(
-    'title' => t('Show open identification'),
+    'title' => t('View'),
     'description' => t('View an existing open identification'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('open_identification_show_detail',1),
     'access arguments' => array('access open identification'),
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'open_identification.inc',
+  	'weight' => 1,
+  );
+  $items['open_identification/%/delete'] = array(
+    'title' => t('Delete'),
+    'description' => t('Delete open identification'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('open_identification_delete_form',1),
+  	'access arguments' => array(1),
+    //'access arguments' => array('access open identification'),
+	'access callback' => 'open_identification_delete_access',
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'open_identification.edit.inc',
+  	'weight' => 2,
   );
   $items['open_identification/new'] = array(
     'title' => t('New'),
@@ -158,6 +152,14 @@ function open_identification_theme(){
 	
 	
 }
+function open_identification_delete_access($open_identification_id) {
+	global $user;
+
+	if(array_key_exists(3, $user->roles))
+		return true;
+	else
+		return false;
+}
 function open_identification_save($open_identification_description,$open_identification_type,$open_identification_organismgroup,$open_identification_organismgroupid){
 	global $user;
 	
@@ -166,7 +168,7 @@ function open_identification_save($open_identification_description,$open_identif
 	}
 	else{
 		
-		if(!$open_identification_organismgroupid){
+		if(!($open_identification_organismgroupid>0)){
 			$open_identification_organismgroupid = 0;
 		}
 	}
@@ -210,8 +212,8 @@ function open_identification_get_all_entries($userid=false,$criteria=false){
 		  	$habitat = false;
 		  	
 		  $filter = false;
-		  if($criteria['organismgroup'] && $organism)
-		  	$filter = $criteria['organismgroup'] ? $organism.' AND open_identification_organismgroup IN (\''.implode('\', \'',$criteria['organismgroup']).'\'))':false;
+		  if($criteria['organismgroupid'] && $organism)
+		  	$filter = $criteria['organismgroupid'] ? $organism.' AND open_identification_organismgroupid IN ('.implode(',',$criteria['organismgroupid']).'))':false;
 	  
 		  if($criteria['sortby'] == 'bydateold')
 		  	$sort = ' ORDER BY open_identification_modified_date ASC';
@@ -366,8 +368,37 @@ function open_identification_details_update($open_identification){
     ->execute();
 }
 function open_identification_delete($open_identification_id){
-	//db_query()
-	db_delete('gallery_image_subtype')->condition('image_id', $image['id'])->execute();
+	  
+	 $files = db_select('gallery_image', 'gi')
+	    ->condition('item_id', $open_identification_id)
+	    ->condition('item_type','open_identification')
+	    ->fields('gi', array('fid'))
+	    ->execute()
+	    ->fetchCol(0);
+	  foreach($files as $fid)
+	    file_delete(file_load($fid));
+	    
+	  $images = db_query('SELECT gi.id as id,gi.fid as fid FROM gallery_image gi
+	  								   INNER JOIN file_managed fm on fm.fid = gi.fid
+	  								   WHERE gi.item_type = \'open_identification\' AND gi.item_id = :id',
+	  								   array(':id' =>$open_identification_id));
+	  foreach($images as $image){
+	  	$delete_image['id'] = $image->id;
+	  	$delete_image['fid'] = $image->fid;
+	    gallery_image_delete($delete_image);
+	  }
+	    
+	  db_delete('open_identification_tip')
+	    ->condition('open_identification_id', $open_identification_id)
+	    ->execute();
+	  db_delete('open_identification_gallery')
+	    ->condition('open_identification_id', $open_identification_id)
+	    ->execute();
+	  db_delete('open_identification')
+	    ->condition('open_identification_id', $open_identification_id)
+	    ->execute();
+	  
+	  drupal_set_message(t('The open identification was successfully deleted'));
 }
 function open_identification_insert_tip($open_identification_tip){
 	
@@ -376,7 +407,7 @@ function open_identification_insert_tip($open_identification_tip){
 	$entry = array(
 			'user_id' => $user->uid,
 			'open_identification_id' => $open_identification_tip['open_identification_id'],
-			'open_identification_type' => $open_identification_tip['open_identificatin_type'],
+			'open_identification_type' => $open_identification_tip['open_identification_type'],
 			'open_identification_tip_organismgroupid' => $open_identification_tip['organismgroupid'],
 			'open_identification_tip_date' => 'now()',
 			'open_identification_tip_item_id' => $open_identification_tip['item_id']);
@@ -510,5 +541,27 @@ function open_identification_get_tips($open_identification_id,$organismgroupid,$
 		
 	}
 	return $open_identification_tips;
+}
+function open_identification_save_suggestion($open_identification_id,$item_id,$item_type){
+	
+	$num = db_update('gallery_image')->fields(array('item_type' => $item_type,
+    												'item_id' => $item_id,))
+									 ->condition('item_type','open_identification' , '=')
+									 ->condition('item_id',$open_identification_id, '=')
+ 									 ->execute();
+ 	
+ 	if($num>0){
+ 		$num2 = db_update('open_identification')->fields(array('open_identification_solved' => 1,))
+									 		   ->condition('open_identification_id',$open_identification_id, '=')
+ 									 		   ->execute();
+ 		if(!($num2 > 0))
+ 			form_set_error('save_suggestion','DB Error: open identification could not be set as solved');
+ 	}
+	else{
+		
+		form_set_error('save_suggestion','DB Error: Suggestion could not be saved');
+	}
+		
+	
 }
 ?>

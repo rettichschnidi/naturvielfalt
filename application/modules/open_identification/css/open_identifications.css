@@ -12,7 +12,7 @@
 }
 .open_identifications .type{
 	
-	display:inline-block;
+	display:block;
 }
 .open_identifications .type .typerecords .group {
 	

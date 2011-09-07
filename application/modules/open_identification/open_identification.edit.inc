@@ -77,4 +77,23 @@ function open_identification_edit_submit($form,&$form_state){
 	
 	return $form_state['redirect'] = 'open_identification/'.$open_identification['open_identification_id'];
 }
+function open_identification_delete_form($form,&$form_state,$open_identification_id){
+  
+  $form_state['open_identification_id'] = $open_identification_id;
+  
+  return confirm_form(
+    $form,
+    t('Delete open identification ?'),
+    'open_identification/'.$open_identification_id,
+    t('Are you sure you want to delete the open identification?'),
+    t('Delete'),  t('Cancel')
+  );
+}
+function open_identification_delete_form_submit($form,&$form_state){
+	
+	debug($form_state,'open_identification_delete',true);
+	open_identification_delete($form_state['open_identification_id']);
+	
+	$form_state['redirect'] = 'open_identification/';
+}
 ?>

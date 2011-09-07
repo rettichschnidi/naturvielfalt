@@ -34,11 +34,11 @@ function open_identification_new($form, &$form_state) {
     ->execute();
   
   	$options = array('' => t('- Please choose1 -'));
-  	$options['unknown'] = t('unknown');
+  	$options['0'] = t('unknown');
   	foreach($result as $record)
     	$options[$record->id] = $record->name;
     
-  	$render_array['organismgroup'] = array(
+  	$render_array['organismgroupid'] = array(
 	    '#name' => 'organismgroup',
 	    '#type' => 'select',
 	    '#title' => t('Organismgroup'),
@@ -49,20 +49,7 @@ function open_identification_new($form, &$form_state) {
     $render_array['media_upload'] = drupal_get_form('gallery_image_form','open_identification',false, 'medias',false);
 	return $render_array;
 }
-function open_identification_new_upload_submit($form,&$form_state){
-	
-	unset($_SESSION['rows']);
-	return $form_state['redirect'] = 'open_identification/gallery';
-	
-}
-function open_identification_new_delete_file($form, &$form_state){
-	
-	$rows = $_SESSION['rows'];
-	
-	foreach($rows as $row){
-		
-		$check = $row[2];
-		print($check);
-	}
-}
+
+
+
 ?>

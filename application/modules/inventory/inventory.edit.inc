@@ -534,6 +534,8 @@ function inventory_organism_autocomplete($type_id=false, $term=false, $plain=fal
   }
   if(!$plain)
     $organisms = drupal_json_output($organisms);
+    
+    debug($organisms,'JSON_OUTPUT',true);
   return $organisms;
 }
 
