@@ -854,6 +854,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
         'class' => array('categories collapsible'),
       ),
     );
+    debug($categories,'Kategorien',true);
     if($categories)
       $form[$prefix]['categories'] = array_merge($form[$prefix]['categories'], $categories);
     else
@@ -1176,7 +1177,8 @@ function gallery_images_form_delete_submit($form, &$form_state) {
         drupal_set_message(t('You do not have the permission to delete the image %file', array('%file' => $image['filename']), 'error'));
         continue;
       }
-      open_identification_gallery_delete($image);
+      if(function_exists('open_identification_gallery_delete'))
+      	open_identification_gallery_delete($image);
       
       gallery_image_delete($image);
       drupal_set_message(t('File %file deleted', array('%file' => $image['filename'])));
