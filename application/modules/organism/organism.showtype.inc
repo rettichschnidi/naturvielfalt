@@ -88,8 +88,6 @@ function organism_showtype($typeId) {
     if($gallery_available) {
       if($record->count_image > 0 || $record->count_sound > 0 || $record->count_video > 0) {
         $row[] = gallery_view_link('organism', $record->id, 'organism/'.$record->id, false,$record->count_image,$record->count_sound,$record->count_video);
-       //if ($record->image_count) {
-        //$row[] = gallery_view_link('organism', $record->id, 'organism/'.$record->id, false);
         $has_gallery = true;
       } else {
         $row[] = false;

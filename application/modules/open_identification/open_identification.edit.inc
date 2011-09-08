@@ -54,7 +54,7 @@ function open_identification_edit_form($form, &$form_state,$id) {
 			    '#options' => $options,
 		  		'#weight' =>3,
 		  		'#required' => false,
-		  		'#value' => trim($open_identification['organismgroup']),
+		  		'#value' => $open_identification['organismgroupid'],
 		  	);
 	  	}
 

@@ -43,6 +43,7 @@ function open_identification_show($form, &$form_state,$mode) {
   		$criteria['type']   = $type;
   		$criteria['sortby'] = $sortby;
    }	
+      
    $render_array['filter'] = array(
 	    '#type' => 'fieldset', 
 	    '#title' => t('sort/filter'), 
@@ -134,26 +135,24 @@ function open_identification_show($form, &$form_state,$mode) {
 	return $render_array;
 }
 function open_identification_show_detail($form, &$form_state,$open_identification_id) {
+
 	global $user;
 	
 	drupal_add_library('system', 'ui.autocomplete');
-	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js');
-    drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
-    drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
-    drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.upload.js');
-    drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-	$open_identification= open_identification_get_entry($open_identification_id);
+	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js', array('weight' => 100));
+ 	
+    $open_identification= open_identification_get_entry($open_identification_id);
 	
   if(!($open_identification['open_identification_id'] > 0)){
-	  	//$form_state['redirect'] = 'open_identification/';debug($open_identification,'GET_ENTRY',true);
 
 	  	$render_array['details']['notfound'] = array('#markup' => 'Open identification not found');
 	  	return $render_array;
   }
   else{
-	  $render_array['open_identification_medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false, -1,false);
-		
-	  drupal_set_title(t('Open Identification of ').$open_identification['fullname']);
+  	  
+  	  drupal_set_title(t('Open Identification of ').$open_identification['fullname']);  
+ 
+	  $render_array['medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false,-1,false);  
 	  $rows = array();
 	  $rows[] = array(
 	    array('data' => t('User'), 'header' => true), 
@@ -180,6 +179,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	    array('data' => t('Comment'), 'header' => true), 
 	    t($open_identification['comment'])
 	  );
+
 	  
 	  $render_array['details'] = array(
 	    '#type' => 'fieldset', 
@@ -209,8 +209,8 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	      '#markup' => '<div style="float:right;background-color:#F7F6EF;margin:0 0 0 0;padding:0.2em 1em;">'.l(t('Edit details'),'open_identification/'.$open_identification_id.'/edit').'</div>',
 	      '#weight' => 9,
 	    );
-	  
-	  if($open_identification['user_id'] != $user->uid){
+	  $count = open_identification_check_user_tip($open_identification_id);
+	  if(($open_identification['user_id'] != $user->uid) && !($count > 0)){
 	
 	  	 $render_array['suggest'] = array(
 		    '#type' => 'fieldset', 
@@ -251,7 +251,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 					    '#title' => t('Organismgroup'),
 					    '#options' => $options,
 					  	'#weight' =>3,
-					  	'#required' => false,
+					  	'#required' => true,
 					  );
 		  		}
 		  		else{
@@ -272,7 +272,6 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 		          '#attributes' => array(
 		            'class' => array('search'),
 		  	   		'rel' => url('open_identification/autocomplete/organisms/'.$open_identification['organismgroupid'])
-		            //'rel' => url('gallery/organism_type_gallery_autocomplete/inventory_type/'.$open_identification['organismgroupid']),
 		          )
 		        );
 		  }
@@ -286,7 +285,8 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 				  	  '#weight' => 4,
 			          '#attributes' => array(
 			            'class' => array('search'),
-			  	   		'style' => array('display:none;')
+			  	   		'style' => array('display:none;'),
+			  	   
 			          )
 			        );
 		  	   }
@@ -299,7 +299,8 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 				  	  '#weight' => 4,
 			          '#attributes' => array(
 			            'class' => array('search'),
-		  	   	    	'rel' => url('open_identification/autocomplete/habitats')
+		  	   	    	'rel' => url('open_identification/autocomplete/habitats'),
+		  	   	    	'style' => 'diplay:inline;'
 			          )
 			        );
 		  	   }
@@ -311,7 +312,9 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 		      '#weight' => 9,
 		    );
 	  }
-	  if($open_identification['user_id'] == $user->uid){
+	  
+	  
+	  if(($open_identification['user_id'] == $user->uid) || $count > 0){
 		  $render_array['suggestions'] = array(
 		    '#type' => 'fieldset', 
 		    '#title' => t('Suggestions'), 
@@ -336,26 +339,45 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 			  
 			  foreach($tips as $tip){
 			  	
-			  	 if($open_identification['type'] == 'organism')
-			  	 	$options[$tip['item_id']] = ''.$tip['organismgroup'].': '.''.$tip['item_name'].''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)';
-			  	 else
-			  	  	$options[$tip['item_id']] = ''.$tip['item_name'].''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)';
+			  	 if($open_identification['type'] == 'organism'){
+			  	 	$options[$tip['item_id']] = array('organismgroup' => $tip['organismgroup'], 
+			  	 									  'organism' => $tip['item_name'],
+			  	 									  'users' => ''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)');
+			  	 	$header = array('organismgroup' => t('Organismgroup'),'organism' => t('Organism'),'users' => t('Number of Suggestions'));
+			  	 }
+			  	 else{
+			  	 	$options[$tip['item_id']] = array('habitat' => $tip['item_name'],
+			  	 									  'users' => ''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)');
+			  	 	$header = array('habitat' => t('Habitat'),'users' => t('Number of Suggestions'));
+			  	 }
 			  }
-			    
-			  $render_array['suggest']['open_identification_id'] = array('#type' => 'hidden', '#value' => $open_identification_id);
-			  $render_array['suggest']['type'] = array('#type' => 'hidden', '#value' => $open_identification['type']);	  
-			  $render_array['suggestions']['suggestion'] = array(
-			    '#type' => 'radios',
-			    '#title' => t(''),
-			    '#default_value' => 1,
-			    '#options' => $options
-		  	  );
-			  $render_array['suggestions']['submit'] = array(
-				      '#type' => 'submit',
-			      	  '#value' => t('accept suggestion'),
-			      	  '#submit' => array('open_identification_suggestions_submit'),
-				      '#weight' => 9,
-		      );
+			  if($open_identification['user_id'] == $user->uid){
+			  	 
+				  $render_array['suggest']['open_identification_id'] = array('#type' => 'hidden', '#value' => $open_identification_id);
+				  $render_array['suggest']['type'] = array('#type' => 'hidden', '#value' => $open_identification['type']);	  
+				  $render_array['suggestions']['suggestion'] = array(
+				    '#type' => 'tableselect',
+				    '#title' => t('Suggestions'),
+				    '#options' => $options,
+				  	'#multiple' => false,
+				  	'#header' => $header
+			  	  );
+				  $render_array['suggestions']['submit'] = array(
+					      '#type' => 'submit',
+				      	  '#value' => t('accept suggestion'),
+				      	  '#submit' => array('open_identification_suggestions_submit'),
+					      '#weight' => 9,
+			      );
+			  }
+			  else{
+			  	   $render_array['suggestions']['suggestion'] = array(
+				    '#theme' => 'table',
+				    '#title' => t('Suggestions'),
+				    '#rows' => $options,
+				  	'#header' => $header
+			  	  );
+			  	
+			  }
 		  }
 		  else
 		  	$render_array['suggestions']['nodata'] = array('#markup' => 'No suggestions made yet');
@@ -384,11 +406,12 @@ function open_identification_suggest_submit($form, &$form_state){
 }
 function open_identification_suggestions_submit($form, &$form_state){
 	
+	debug($form_state,'Suggestions_submit',true);
 	$open_identification_tip['open_identification_id']  = $form_state['values']['open_identification_id'];
 	$open_identification_tip['item_id']					= $form_state['values']['suggestion'];
 	$open_identification_tip['open_identification_type']= $form_state['values']['type'];
 
 	open_identification_save_suggestion($open_identification_tip['open_identification_id'],$open_identification_tip['item_id']	,$open_identification_tip['open_identification_type']);
-	$form_state['redirect'] = 'open_identification/'.$open_identification_tip['open_identification_id'].'/view';
+	$form_state['redirect'] = 'open_identification/';
 }
 ?>

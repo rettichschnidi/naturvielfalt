@@ -1135,7 +1135,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
     $image = gallery_image_save($image);
     drupal_set_message(t('Image %file saved', array('%file' => $file->filename)));
     
-    if($type == "open_identification" && ($mode != 'edit'))
+    if($type == "open_identification")
     	open_identification_link_media_with_open_identification($id,$image);
     
     $saved = true;

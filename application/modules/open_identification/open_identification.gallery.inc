@@ -43,7 +43,7 @@ function open_identification_gallery_manage_title($id) {
  */
 function open_identification_gallery_image_caption($id) {
 
-  return $id;
+  return (l(t('open identification ').$id,'open_identification/'.$id));
 }
 
 /**
@@ -57,7 +57,6 @@ function open_identification_gallery_image_caption($id) {
 function open_identification_gallery_manage_description($id,$mediatype) {
   return t('Add and edit '.$mediatype.' of the specified organism.');
 }
-
 
 
 ?>

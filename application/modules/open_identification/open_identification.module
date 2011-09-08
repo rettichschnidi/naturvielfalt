@@ -3,8 +3,10 @@
  *  Hook implementations
  *********************************/
 
-module_load_include('inc', 'open_identification');
+module_load_include('inc', 'open_identification','open_identification');
 module_load_include('inc', 'open_identification', 'open_identification.gallery');
+
+
 
 /**
  * Implements hook_menu()
@@ -12,28 +14,7 @@ module_load_include('inc', 'open_identification', 'open_identification.gallery')
  * @return array
  */
 function open_identification_menu() {
-	
-  // ADMIN MENU
- /* $items['admin/config/open_identification'] = array(
-    'title' => t('Configure Open Identification'),
-    'description' => t('Configuration for Open Identification module'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('gallery_form'),
-    'access arguments' => array('administer rating types'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'open_identification.admin.inc',
-  );
-  $items['admin/config/open_identification/settings'] = array(
-    'title' => t('Global settings'),
-    'description' => t('Global configuration for the Open Identification module'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('gallery_form'),
-    'access arguments' => array('administer rating types'),
-    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'file' => 'open_identification.admin.inc',
-  );*/
-  
+	 
   $items['open_identification'] = array(
     'title' => t('Open Identifications'),
     'description' => t('Show all open identifications'),
@@ -106,7 +87,7 @@ function open_identification_menu() {
   	'weight' => 2,
   );
   $items['open_identification/new'] = array(
-    'title' => t('New'),
+    'title' => t('New open identification'),
     'description' => t('Create new open identification'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('gallery_image_form','open_identification',false, 'medias',false,true),
@@ -190,6 +171,7 @@ function open_identification_save($open_identification_description,$open_identif
 
 }
 function open_identification_link_media_with_open_identification($open_identification_id,$media){
+	debug($media,'open_identification_link_media_with_open_identification',true);
 	$entry = array(
 			'open_identification_id' => $open_identification_id,
 			'gallery_image_id' => $media['id']);
@@ -382,12 +364,16 @@ function open_identification_delete($open_identification_id){
 	  								   INNER JOIN file_managed fm on fm.fid = gi.fid
 	  								   WHERE gi.item_type = \'open_identification\' AND gi.item_id = :id',
 	  								   array(':id' =>$open_identification_id));
+							   
 	  foreach($images as $image){
-	  	$delete_image['id'] = $image->id;
-	  	$delete_image['fid'] = $image->fid;
-	    gallery_image_delete($delete_image);
+	     
+		  db_delete('gallery_image_category')->condition('image_id', $image->id)->execute();
+		  db_delete('gallery_image_rating')->condition('image_id', $image->id)->execute();
+		  db_delete('gallery_image_subtype')->condition('image_id', $image->id)->execute();
+		  db_delete('gallery_image')->condition('id', $image->id)->execute();
+		  db_delete('file_managed')->condition('fid', $image->fid)->execute();
 	  }
-	    
+
 	  db_delete('open_identification_tip')
 	    ->condition('open_identification_id', $open_identification_id)
 	    ->execute();
@@ -399,6 +385,7 @@ function open_identification_delete($open_identification_id){
 	    ->execute();
 	  
 	  drupal_set_message(t('The open identification was successfully deleted'));
+
 }
 function open_identification_insert_tip($open_identification_tip){
 	
@@ -454,7 +441,7 @@ function open_identification_get_tips($open_identification_id,$organismgroupid,$
        				   oit.open_identification_tip_item_id as item_id,
        				   COUNT(oit.open_identification_tip_item_id) as count_item_id, 
        				   (SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id) as count_all,
-					   ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = 1))),2) as percentage    
+					   ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id AND open_identification_type = \'habitat\'))),2) as percentage    
 				FROM open_identification_tip oit
 				LEFT JOIN habitat ha on ha.id = oit.open_identification_tip_item_id
 				WHERE oit.open_identification_type = \'habitat\' AND oit.open_identification_id = :id
@@ -475,12 +462,12 @@ function open_identification_get_tips($open_identification_id,$organismgroupid,$
        					   flo."Art" as species,
        					   COUNT(oit.open_identification_tip_item_id) as count_item_id, 
        					   (SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id) as count_all,
-       					   ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id))),2) as percentage
+       					   ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id AND open_identification_type = \'organism\'))),2) as percentage
 						   FROM open_identification_tip oit
 						   LEFT JOIN organism o on o.id = oit.open_identification_tip_item_id
 						   LEFT JOIN flora_organism flo on flo.id = o.organism_id
 						   LEFT JOIN inventory_type it on it.id = oit.open_identification_tip_organismgroupid
-						   WHERE oit.open_identification_type = \'organism\' AND oit.open_identification_tip_organismgroupid = 16
+						   WHERE oit.open_identification_type = \'organism\'
 						   AND oit.open_identification_id = :id 
 						   GROUP BY oit.open_identification_id,
 						   			oit.open_identification_tip_item_id,
@@ -503,12 +490,12 @@ function open_identification_get_tips($open_identification_id,$organismgroupid,$
 					       fo.species as species,
 					       COUNT(oit.open_identification_tip_item_id) as count_item_id, 
 					       (SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id) as count_all,
-					       ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id))),2) as percentage
+					       ROUND(((COUNT(oit.open_identification_tip_item_id)*100.00/(SELECT COUNT(*) FROM open_identification_tip where open_identification_id = :id AND open_identification_type = \'organism\'))),2) as percentage
 						   FROM open_identification_tip oit
 						   LEFT JOIN organism o on o.id = oit.open_identification_tip_item_id
 						   LEFT JOIN fauna_organism fo on fo.id = o.organism_id
 						   LEFT JOIN inventory_type it on it.id = oit.open_identification_tip_organismgroupid
-						   WHERE oit.open_identification_type = \'organism\' AND oit.open_identification_tip_organismgroupid <> 16
+						   WHERE oit.open_identification_type = \'organism\'
 						   AND oit.open_identification_id = :id
 						   GROUP BY oit.open_identification_id,oit.open_identification_tip_item_id,
 						   			fo.name_de,fo.order,
@@ -563,5 +550,21 @@ function open_identification_save_suggestion($open_identification_id,$item_id,$i
 	}
 		
 	
+}
+function open_identification_check_user_tip($open_identification_id){
+	
+	global $user;
+	
+		$sql = 'SELECT COUNT(open_identification_tip_id) as count 
+				FROM open_identification_tip
+				WHERE user_id = :uid AND open_identification_id = :oid';
+
+	$result = db_query($sql,array(':uid' => $user->uid,':oid' => $open_identification_id));
+	
+	foreach($result as $record)
+		$count = $record->count;
+	
+	
+	return $count;
 }
 ?>
