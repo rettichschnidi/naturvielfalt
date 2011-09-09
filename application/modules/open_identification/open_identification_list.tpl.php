@@ -40,7 +40,7 @@ if($list){
 					$string .= 		'</div>';
 					$string .= 		'<div class="open_identification_info">';
 					$string .= 			'<div class="info">';	
-					$string .= 				'<div class="title">'.($record['info']['solved'] ? 'Identified as '.open_identification_get_item_name($record['info']['type'],$record['info']['solved_item_id'],$record['info']['solved_organismgroupid']).' on '.date("d.m.y",strtotime($record['info']['solved_date'])):$record['info']['fullname'].' / '.(''.date("d.m.y",strtotime($record['info']['modified_date'])))).'</div>';	
+					$string .= 				'<div class="title">'.($record['info']['solved'] ? 'Identified as '.open_identification_get_item_name($record['info']['type'],$record['info']['solved_item_id'],$record['info']['solved_organismgroupid']).' on '.date("d.m.y",strtotime($record['info']['solved_date'])):'Uploaded from '.$record['info']['fullname'].' on '.(''.date("d.m.y",strtotime($record['info']['modified_date'])))).'</div>';	
 					$string .= 				'<div class="value">';					
 					$string .= 				'';
 					$string .= 				'</div>';
