@@ -211,7 +211,11 @@ function open_identification_get_all_entries($userid=false,$criteria=false,$solv
 		  else
 		  	$sort = ' ORDER BY open_identification_type ,open_identification_organismgroup';
 	  }
-
+	  
+	  /*$where_user ="";
+	  if($user_id)
+	  	$where_user = 'oi.user_id ='.$userid;*/
+	  
 	  $result = db_query('select 
 	  					  oi.open_identification_id as open_identification_id,
 	  					  oi.open_identification_comment as open_identification_comment,
@@ -396,6 +400,9 @@ function open_identification_delete($open_identification_id){
 	  db_delete('open_identification_gallery')
 	    ->condition('open_identification_id', $open_identification_id)
 	    ->execute();
+	  db_delete('open_identification_solved')
+	    ->condition('open_identification_id', $open_identification_id)
+	    ->execute(); 
 	  db_delete('open_identification')
 	    ->condition('open_identification_id', $open_identification_id)
 	    ->execute(); 
@@ -607,11 +614,37 @@ function open_identification_get_item_name($type,$item_id,$organismgroupid){
 	else{
 		
 		if($organismgroupid == 16)
-			$result = db_query('SELECT ');
+			$result = db_query('SELECT
+	       					    it.name as organismgroup,
+	       					    flo.name_de as name_de,
+	       					    flo."Familie" as family,
+	                            flo."Gattung" as genus,
+	       					    flo."Art" as species
+   							    FROM organism o
+							    LEFT JOIN flora_organism flo on flo.id = o.organism_id
+							    LEFT JOIN inventory_type it on it.id = o.inventory_type_id
+							    WHERE o.id = :id',array(':id' => $item_id));
 		else
-			$result = db_query('SELECT ');
+			$result = db_query('SELECT
+					       		it.name as organismgroup,
+					       		fo.name_de as name_de,
+					       		fo.order as order,
+					       		fo.family as family,
+						        fo.genus as genus,
+						        fo.species as species
+   							    FROM organism o
+							    LEFT JOIN fauna_organism fo on fo.id = o.organism_id
+							    LEFT JOIN inventory_type it on it.id = o.inventory_type_id
+							    WHERE o.id = :id',array(':id' => $item_id));
 	}
 	
-	return 'content';
+	foreach($result as $row){
+		
+		if($type == 'organism')
+			$string = $row->name_de.' ('.$row->organismgroup.')';
+		else
+		  $string   = $row->name_de;
+	}
+	return $string;
 }
 ?>
