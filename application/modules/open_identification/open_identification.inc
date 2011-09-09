@@ -8,12 +8,10 @@
  * @return array
  *  Drupal render array
  */
-function open_identification_show($form, &$form_state,$mode) {
-	
-	drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
-	
+function open_identification_show($form,&$form_state,$mode) {
 	global $user;
-	
+	drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+
 	$url = drupal_get_destination();
     $url = drupal_parse_url($url['destination']);
     $url = $url['path'];
@@ -43,7 +41,7 @@ function open_identification_show($form, &$form_state,$mode) {
   		$criteria['type']   = $type;
   		$criteria['sortby'] = $sortby;
    }	
-      
+   
    $render_array['filter'] = array(
 	    '#type' => 'fieldset', 
 	    '#title' => t('sort/filter'), 
@@ -134,13 +132,13 @@ function open_identification_show($form, &$form_state,$mode) {
 	);
 	return $render_array;
 }
-function open_identification_show_detail($form, &$form_state,$open_identification_id) {
+function open_identification_show_detail($open_identification_id) {
 
 	global $user;
 	
-	drupal_add_library('system', 'ui.autocomplete');
-	drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js', array('weight' => 100));
- 	
+
+ 	drupal_add_css(drupal_get_path('module', 'open_identification') . '/css/open_identifications.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	
     $open_identification= open_identification_get_entry($open_identification_id);
 	
   if(!($open_identification['open_identification_id'] > 0)){
@@ -152,7 +150,20 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
   	  
   	  drupal_set_title(t('Open Identification of ').$open_identification['fullname']);  
  
-	  $render_array['medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false,-1,false);  
+	  $render_array['medias'] = gallery_list_renderer('medias','open_identification',$open_identification_id, false,-1,false); 
+	  $render_array['details'] = drupal_get_form('open_identification_details',$open_identification);
+	  
+	  return $render_array;
+  }
+}
+function open_identification_details($form, &$form_state,$open_identification){
+	  
+	  drupal_add_library('system', 'ui.autocomplete');
+	  drupal_add_js(drupal_get_path('module', 'open_identification') . '/js/open_identification.js', array('weight' => 100));
+	  
+	  global $user;
+	  
+	  $open_identification_id  = $open_identification['open_identification_id'];
 	  $rows = array();
 	  $rows[] = array(
 	    array('data' => t('User'), 'header' => true), 
@@ -240,16 +251,16 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 					    ->orderBy('it.id', 'DESC')
 					    ->execute();
 					  
-					  	$options = array('' => t('- Please choose -'));
+					  	$groupoptions = array('' => t('- Please choose -'));
 					  	foreach($result as $record)
-					    	$options[$record->id] = $record->name;
+					    	$groupoptions[$record->id] = $record->name;
 					    	
 					    	
 					  $render_array['suggest']['organismgroupid'] = array(
 					    '#name' => 'organismgroupid',
 					    '#type' => 'select',
 					    '#title' => t('Organismgroup'),
-					    '#options' => $options,
+					    '#options' => $groupoptions,
 					  	'#weight' =>3,
 					  	'#required' => true,
 					  );
@@ -334,7 +345,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 		  );
 	
 		  $tips = open_identification_get_tips($open_identification_id,$open_identification['organismgroupid'],$open_identification['type']);
-		  
+		  debug($tips,'TIPS:',true);
 		  if(!empty($tips)){
 			  
 			  foreach($tips as $tip){
@@ -343,16 +354,16 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 			  	 	$options[$tip['item_id']] = array('organismgroup' => $tip['organismgroup'], 
 			  	 									  'organism' => $tip['item_name'],
 			  	 									  'users' => ''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)');
-			  	 	$header = array('organismgroup' => t('Organismgroup'),'organism' => t('Organism'),'users' => t('Number of Suggestions'));
+			  	 	$header = array('organismgroup' => t('Organismgroup'),'organism' => t('Organism'),'users' => t('Number of Users'));
 			  	 }
 			  	 else{
 			  	 	$options[$tip['item_id']] = array('habitat' => $tip['item_name'],
 			  	 									  'users' => ''.$tip['usernum'].' '.t('of').' '.$tip['overallnum'].' ('.$tip['percentage'].'%)');
-			  	 	$header = array('habitat' => t('Habitat'),'users' => t('Number of Suggestions'));
+			  	 	$header = array('habitat' => t('Habitat'),'users' => t('Number of Users'));
 			  	 }
 			  }
 			  if($open_identification['user_id'] == $user->uid){
-			  	 
+			  	debug($options,'options:',true);
 				  $render_array['suggest']['open_identification_id'] = array('#type' => 'hidden', '#value' => $open_identification_id);
 				  $render_array['suggest']['type'] = array('#type' => 'hidden', '#value' => $open_identification['type']);	  
 				  $render_array['suggestions']['suggestion'] = array(
@@ -362,6 +373,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 				  	'#multiple' => false,
 				  	'#header' => $header
 			  	  );
+			  	  
 				  $render_array['suggestions']['submit'] = array(
 					      '#type' => 'submit',
 				      	  '#value' => t('accept suggestion'),
@@ -384,7 +396,7 @@ function open_identification_show_detail($form, &$form_state,$open_identificatio
 	
 	  }
 		return $render_array;
-  }
+	
 }
 function open_identification_suggest_submit($form, &$form_state){
 	
@@ -412,6 +424,7 @@ function open_identification_suggestions_submit($form, &$form_state){
 	$open_identification_tip['open_identification_type']= $form_state['values']['type'];
 
 	open_identification_save_suggestion($open_identification_tip['open_identification_id'],$open_identification_tip['item_id']	,$open_identification_tip['open_identification_type']);
-	$form_state['redirect'] = 'open_identification/';
+	
+	$form_state['redirect'] = $open_identification_tip['open_identification_type'].'/'.$open_identification_tip['item_id'];
 }
 ?>

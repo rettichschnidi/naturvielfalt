@@ -4,7 +4,7 @@
  *********************************/
 
 module_load_include('inc', 'open_identification','open_identification');
-module_load_include('inc', 'open_identification', 'open_identification.gallery');
+module_load_include('inc', 'open_identification','open_identification.gallery');
 
 
 
@@ -47,8 +47,8 @@ function open_identification_menu() {
   $items['open_identification/%'] = array(
     'title' => t('Show open identification'),
     'description' => t('View an existing open identification'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('open_identification_show_detail',1),
+    'page callback' => 'open_identification_show_detail',
+    'page arguments' => array(1),
     'access arguments' => array('access open identification'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'open_identification.inc',
@@ -65,8 +65,8 @@ function open_identification_menu() {
   $items['open_identification/%/view'] = array(
     'title' => t('View'),
     'description' => t('View an existing open identification'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('open_identification_show_detail',1),
+    'page callback' => 'open_identification_show_detail',
+    'page arguments' => array(1),
     'access arguments' => array('access open identification'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,

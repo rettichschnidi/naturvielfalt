@@ -1,8 +1,8 @@
-(function($) {
+(jQuery)(function($) {
 
 	$(document).ready(function() {
 
-	    var form = $('#open-identification-show-detail');
+	    var form = $('#open-identification-details');
 	    var dropdown = $('#edit-organismgroupid');
 	    if(dropdown){
 			    dropdown.change(function(){
@@ -11,7 +11,7 @@
 			    		  //$('.search').attr('rel', 'http://localhost/swissmon/application/gallery/organism_type_gallery_autocomplete/inventory_type/'+optionSelectedValue);
 			    		  $('.search').attr('rel', 'http://localhost/swissmon/application/open_identification/autocomplete/organisms/'+optionSelectedValue);
 			    		  $('.search').removeAttr('style');
-			    		  form = $('#open-identification-show-detail');
+			    		  form = $('#open-identification-details');
 			    		    if(form) {
 			    		    	initializeAutocomplete(form);
 			    		    }
@@ -112,4 +112,4 @@
 		      };
 		    });
 		  }
-})(jQuery);
+});

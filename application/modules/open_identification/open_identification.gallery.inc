@@ -5,16 +5,16 @@
 
 /**
  * Implements hook of gallery module to activate the gallery
- * functionality for organism
+ * functionality for open_identification
  * 
  * @return array
  */
 function open_identification_gallery_types() {
   return array(
     'open_identification' => array(
-      'image_caption' => 'open_identification_gallery_image_caption',
-      'manage_title' => 'open_identification_gallery_manage_title',
-      'manage_description' => 'open_identification_gallery_manage_description'
+     'image_caption' => 'open_identification_gallery_image_caption',
+       'manage_title' => 'open_identification_gallery_manage_title',
+      'manage_description' => 'open_identification_gallery_manage_description',
     )
   );
 }
@@ -55,8 +55,7 @@ function open_identification_gallery_image_caption($id) {
  * @return string
  */
 function open_identification_gallery_manage_description($id,$mediatype) {
-  return t('Add and edit '.$mediatype.' of the specified organism.');
+  return t('Add and edit '.$mediatype.' of the specified open identification.');
 }
-
 
 ?>
