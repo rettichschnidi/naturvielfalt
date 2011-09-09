@@ -91,7 +91,6 @@ function open_identification_delete_form($form,&$form_state,$open_identification
 }
 function open_identification_delete_form_submit($form,&$form_state){
 	
-	debug($form_state,'open_identification_delete',true);
 	open_identification_delete($form_state['open_identification_id']);
 	
 	$form_state['redirect'] = 'open_identification/';

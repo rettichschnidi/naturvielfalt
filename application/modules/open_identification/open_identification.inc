@@ -118,16 +118,18 @@ function open_identification_show($form,&$form_state,$mode) {
    	'#prefix' => '<div>',
     '#suffix' => '</div>',
     );
-    
+    $solved = false;
 	if($mode == 'mylist')
 		$userid = $user->uid;
+	elseif($mode == 'solvedlist')
+		$solved = true;
 	else
 		$userid = false;
 		
-
+		
 	$render_array['open_identification_list'] = array(
 	    '#theme' => 'open_identification_list',  // The theme function to apply to the #items
-	    '#list' => open_identification_get_all_entries($userid,$criteria), // The list itself.
+	    '#list' => open_identification_get_all_entries($userid,$criteria,$solved), // The list itself.
 		'#weight' => 2,
 	);
 	return $render_array;
@@ -143,7 +145,12 @@ function open_identification_show_detail($open_identification_id) {
 	
   if(!($open_identification['open_identification_id'] > 0)){
 
-	  	$render_array['details']['notfound'] = array('#markup' => 'Open identification not found');
+	  	$render_array['details']['notfound'] = array('#markup' => 'Open Identification doesn\'t exist');
+	  	return $render_array;
+  }
+  elseif($open_identification['solved'] == 1){
+  		
+  		$render_array['details']['solved'] = array('#markup' => 'Open Identification has been solved');
 	  	return $render_array;
   }
   else{
@@ -363,9 +370,9 @@ function open_identification_details($form, &$form_state,$open_identification){
 			  	 }
 			  }
 			  if($open_identification['user_id'] == $user->uid){
-			  	debug($options,'options:',true);
-				  $render_array['suggest']['open_identification_id'] = array('#type' => 'hidden', '#value' => $open_identification_id);
-				  $render_array['suggest']['type'] = array('#type' => 'hidden', '#value' => $open_identification['type']);	  
+				  $render_array['suggestions']['open_identification_id'] = array('#type' => 'hidden', '#value' => $open_identification_id);
+				  $render_array['suggestions']['type'] = array('#type' => 'hidden', '#value' => $open_identification['type']);	  
+				  $render_array['suggestions']['organismgroupid'] = array('#type' => 'hidden', '#value' => $open_identification['organismgroupid']);	
 				  $render_array['suggestions']['suggestion'] = array(
 				    '#type' => 'tableselect',
 				    '#title' => t('Suggestions'),
@@ -422,8 +429,9 @@ function open_identification_suggestions_submit($form, &$form_state){
 	$open_identification_tip['open_identification_id']  = $form_state['values']['open_identification_id'];
 	$open_identification_tip['item_id']					= $form_state['values']['suggestion'];
 	$open_identification_tip['open_identification_type']= $form_state['values']['type'];
+	$open_identification_tip['open_identification_organismgroupid']= $form_state['values']['organismgroupid'];
 
-	open_identification_save_suggestion($open_identification_tip['open_identification_id'],$open_identification_tip['item_id']	,$open_identification_tip['open_identification_type']);
+	open_identification_save_suggestion($open_identification_tip['open_identification_id'],$open_identification_tip['item_id']	,$open_identification_tip['open_identification_type'],$open_identification_tip['open_identification_organismgroupid']);
 	
 	$form_state['redirect'] = $open_identification_tip['open_identification_type'].'/'.$open_identification_tip['item_id'];
 }

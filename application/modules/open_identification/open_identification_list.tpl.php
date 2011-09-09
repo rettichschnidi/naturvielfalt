@@ -34,13 +34,13 @@ if($list){
 					$link    = 'open_identification/'.$record['info']['open_identification_id'].'/view';
 					
 					$string .= 	'<div class="open_identification">';
-					$string .= '<a href="'.url($link).'">';
+					$string .= '<a href="'.($record['info']['solved'] ? url($record['info']['type'].'/'.$record['info']['solved_item_id']):url($link)).'">';
 					$string .= 		'<div class="open_identification_image">';
 					$string .= 			'<img src="'.$url.'"/>';
 					$string .= 		'</div>';
 					$string .= 		'<div class="open_identification_info">';
 					$string .= 			'<div class="info">';	
-					$string .= 				'<div class="title">'.$record['info']['fullname'].' / '.date("d.m.y",strtotime($record['info']['modified_date'])).'</div>';	
+					$string .= 				'<div class="title">'.($record['info']['solved'] ? 'Identified as '.open_identification_get_item_name($record['info']['type'],$record['info']['solved_item_id'],$record['info']['solved_organismgroupid']).' on '.date("d.m.y",strtotime($record['info']['solved_date'])):$record['info']['fullname'].' / '.(''.date("d.m.y",strtotime($record['info']['modified_date'])))).'</div>';	
 					$string .= 				'<div class="value">';					
 					$string .= 				'';
 					$string .= 				'</div>';
