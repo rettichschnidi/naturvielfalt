@@ -61,5 +61,5 @@ else{
 }
 ?>
 
-<? print $string; ?>
+<?php print $string; ?>
 </div>
