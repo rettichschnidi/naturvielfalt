@@ -17,7 +17,7 @@ function open_identification_show($form,&$form_state,$mode) {
     $url = $url['path'];
 
    $criteria = false;
-   if(!empty($_POST)){
+   /*if(!empty($_POST)){
    	
    		$filter = array();
    		$type['habitat'] = $_POST['habitat'];
@@ -117,7 +117,7 @@ function open_identification_show($form,&$form_state,$mode) {
       '#weight' => -1,
    	'#prefix' => '<div>',
     '#suffix' => '</div>',
-    );
+    );*/
     $solved = false;
 	if($mode == 'mylist')
 		$userid = $user->uid;
