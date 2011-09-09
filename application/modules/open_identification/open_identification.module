@@ -253,9 +253,9 @@ function open_identification_get_all_entries($userid=false,$criteria=false,$solv
 						  left join users u on oi.user_id = u.uid
 						  LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = u.uid
 						  LEFT JOIN inventory_type it ON it.id = oi.open_identification_organismgroupid
-						  LEFT JOIN open_identification_solved ois on ois.open_identification_id = oi.open_identification_id '
-	  					  .($userid ? ' where oi.user_id ='.$userid : '')
-	  					  .($filter ? ' AND '.$filter : '').($habitat ? ($filter ? ' OR '.$habitat:' AND '.$habitat):'').$sort);
+						  LEFT JOIN open_identification_solved ois on ois.open_identification_id = oi.open_identification_id ');
+	  					  /*.($userid ? ' where oi.user_id ='.$userid : '')
+	  					  .($filter ? ' AND '.$filter : '').($habitat ? ($filter ? ' OR '.$habitat:' AND '.$habitat):'').$sort);*/
 	  $open_identifications = array();
 	  $medias = array();
 	  foreach($result as $record){
