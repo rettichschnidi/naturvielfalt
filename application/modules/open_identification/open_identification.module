@@ -139,6 +139,14 @@ function open_identification_theme(){
 	
 	
 }
+function open_identification_permission() {
+  return array(
+    'access open identification' => array(
+      'title' => t('Access open identificaiton'),
+      'description' => t('Access open identificaiton'),
+    )
+  );
+}
 function open_identification_delete_access($open_identification_id) {
 	global $user;
 
