@@ -70,25 +70,13 @@ ul.menu,
 
 #main-menu a.active div#main-menu-active-bg,
 #main-menu a.active-trail div#main-menu-active-bg {
-  /*display:none;*/
-  /*margin-left:1em;*/
-  /*position:fixed;*/
-  /*left:10px;*/
   width:29px;
   height:14px;
   margin: 42px auto auto;
-  /*background-color:#598b74;*/
-  /*background-color:black;*/
   background-image:url("../images/main-menu_active.png");
   background-repeat:no-repeat;
-  /*margin: 10px auto;*/
 }
 
-/*#main-menu a.active div#main-menu-active-wrapper {
-  background-color:black;
-  
-  height:30px;
-}*/
 
 
 /* 
@@ -132,8 +120,16 @@ ul.menu,
  * Menu blocks
  */
 .block-menu {
+  padding-left: 7px;
+  margin-bottom: 2em;
 }
 
+.region-footer .block-menu{
+  margin-bottom: 0;
+}}
+.region-footer .block-menu{
+  color: #8f8f8d;
+}
 /*
  * "Menu block" blocks
  *

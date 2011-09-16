@@ -20,6 +20,7 @@ body {
 }
 
 #page {
+  border: 1px solid #D1D0CD;
 }
 
 /*
@@ -234,6 +235,7 @@ ul.links li {
  */
  
 .region-sidebar-first {
+  background-color:#f3f3f3;
 }
 
 .region-sidebar-first .section {
@@ -289,6 +291,32 @@ ul.links li {
  * Footer
  */
 .region-footer {
+  text-align:center;
+  color: #787878; 
+  background-color: #F2F1ED;
+  border-top: 1px solid #D1D0CD;
+}
+.region-footer p {
+  margin: 0;
+  padding: 5px 0 0 0;
+ }
+
+.region-footer li.leaf a, 
+.region-footer li.expanded a, 
+.region-footer li.collapsed a {
+  display: inline;
+  padding: 0 10px;
+}
+
+.region-footer li.first {
+  border-left: none;
+  }
+
+.region-footer li {
+  border-left: 1px solid #787878;
+}
+.region-footer ul, .region-footer li {
+	display: inline;
 }
 
 /*

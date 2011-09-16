@@ -4,7 +4,6 @@
  */
 
 .block /* Block wrapper */ {
-  margin-bottom: 2em;
 }
 
 .block.first /* The first block in the region */ {
@@ -81,6 +80,9 @@ h2.block-title /* Block title */ {
 }
 
 #block-system-management /* "Management" block for Drupal management menu */ {
+  border: 1px solid red;
+  background-color:white;
+  color: #dc3806;
 }
 #block-system-management a:link,
 #block-system-management a:visited {
@@ -88,6 +90,9 @@ h2.block-title /* Block title */ {
 }
 
 #block-menu-devel /* "Development" block for devel menu */ {
+  border: 1px solid red;
+  background-color:white;
+  color: #dc3806;
 }
 #block-menu-devel a:link,
 #block-menu-devel a:visited {
@@ -137,6 +142,7 @@ h2.block-title /* Block title */ {
 #block-commerce-cart-cart h2 {
   margin-top: 1em;
 }
+/*.region-footer div#block-block-3 /*footer block*/
 
 /**
  * Aggregator.module
@@ -458,5 +464,3 @@ html.js fieldset.collapsed .fieldset-legend {
 .fieldset-legend span.summary {
   color: #767676;
 }
-
-

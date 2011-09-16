@@ -113,19 +113,7 @@
         'class' => array('element-invisible'),
       ),
     ));
-
-     /*print theme('links__system_secondary_menu', array(
-      'links' => $secondary_menu,
-      'attributes' => array(
-        'id' => 'secondary-menu',
-        'class' => array('links', 'inline', 'clearfix'),
-      ),
-      'heading' => array(
-        'text' => $secondary_menu_heading,
-        'level' => 'h2',
-        'class' => array('element-invisible'),
-      ),
-    ));*/?>
+    ?>
 
     <?php if ($page['navigation'] || $main_menu): ?>
       <div id="navigation"><div class="section clearfix">
@@ -151,7 +139,9 @@
     <?php print render($page['header']); ?>
 
   </div>
-  <?php print $breadcrumb; ?>
+  <?php if (in_array('Administratoren', array_values($user->roles))) { // Check to see if $user has the administrator role. 
+    print $breadcrumb; 
+  }?>
   </div><!-- /.section, /#header -->
 
   <div id="main-wrapper"><div id="main" class="clearfix<?php if ($main_menu || $page['navigation']) { print ' with-navigation'; } ?>">
@@ -180,19 +170,6 @@
 
     <div id="space"><div class="section clearfix">
       </div></div><!-- /.section, /#space -->
-      
-      <?php /*print theme('links__system_secondary_menu', array(
-      'links' => $secondary_menu,
-      'attributes' => array(
-        'id' => 'secondary-menu',
-        'class' => array('links', 'inline', 'clearfix'),
-      ),
-      'heading' => array(
-        'text' => $secondary_menu_heading,
-        'level' => 'h2',
-        'class' => array('element-invisible'),
-      ),
-    ));*/?>
     
     <?php print render($page['sidebar_first']); ?>
 
