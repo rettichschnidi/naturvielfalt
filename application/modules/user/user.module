@@ -1953,7 +1953,8 @@ function user_uid_optional_to_arg($arg) {
  * expected to see "My account".
  */
 function user_menu_title() {
-  return user_is_logged_in() ? t('My account') : t('User account');
+  // return user_is_logged_in() ? t('My account') : t('User account');
+  return user_is_logged_in() ? $GLOBALS['user']->name . "'s " . t('account') : t('User account');
 }
 
 /**

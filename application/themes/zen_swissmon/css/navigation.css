@@ -1,0 +1,144 @@
+/**
+ * @file
+ * Navigation Styling
+ */
+
+
+/*
+ * The active item in a Drupal menu
+ */
+ul,
+.block ul,
+ol {
+  padding: 0 0 0 1.5em; /* LTR */
+}
+
+/* Default to menu leaf bullet for unordered list items. "ul" used here so it can cascade to list items and "li.leaf" to override the system leaf image. */
+ul,
+ul li.leaf {
+  list-style-image: url(../images/menu-leaf.gif);
+}
+
+/* This is used to cancel the list style image when an ordered list is embedded in an unordered list. */
+ol {
+  list-style-image: none;
+}
+
+ul.menu,
+.item-list ul {
+  margin: 0.35em 0 0 -0.5em; /* LTR */
+}
+ * Navigation bar
+ */
+#navigation {
+  /* overflow: hidden; /* Sometimes you want to prevent overlapping with main div. */
+}
+
+#navigation ul.links, /* Main menu and secondary menu links */
+#navigation .content ul /* Menu block links */ {
+  margin: 0;
+  padding: 0;
+  text-align: left; /* LTR */
+}
+
+#navigation ul.links li, /* A simple method to get navigation links to appear in one line. */
+#navigation .content li {
+  float: left; /* LTR */
+  padding: 0 50px 0 0; /* LTR */
+}
+
+.region-navigation {
+}
+
+/* 
+ *  Main Menu
+ */
+#main-menu{}
+#main-menu a:link, #main-menu a:visited{ 
+  color:white;
+  text-decoration: none;
+}
+#main-menu li{}
+#main-menu a:hover{
+  text-decoration: underline;
+}
+#main-menu .last{}
+#main-menu a.active,
+#main-menu a.active-trail {
+  font-weight: bold;
+}
+
+#main-menu a.active div#main-menu-active-bg,
+#main-menu a.active-trail div#main-menu-active-bg {
+  /*display:none;*/
+  /*margin-left:1em;*/
+  /*position:fixed;*/
+  /*left:10px;*/
+  width:29px;
+  height:14px;
+  margin: 42px auto auto;
+  /*background-color:#598b74;*/
+  /*background-color:black;*/
+  background-image:url("../images/main-menu_active.png");
+  background-repeat:no-repeat;
+  /*margin: 10px auto;*/
+}
+
+/*#main-menu a.active div#main-menu-active-wrapper {
+  background-color:black;
+  
+  height:30px;
+}*/
+
+
+/* 
+ *  Secondary Menu
+ */
+
+.with-secondary-menu .region-header {
+  margin-top: 3em;
+}
+.without-secondary-menu .region-header {
+  margin-top: 15px;
+}
+
+#user-menu {
+  float:right;
+  margin: 87px 10px 0 0;
+}
+ 
+#user-menu a:link, 
+#user-menu a:visited {
+   color:white;
+   text-decoration: none;  
+}
+#user-menu a:hover{
+   text-decoration: underline;
+}
+
+
+#secondary-menu {
+}
+ 
+#secondary-menu a:link, 
+#secondary-menu a:visited {
+ 
+}
+#secondary-menu a:hover{
+  
+}
+
+/*
+ * Menu blocks
+ */
+.block-menu {
+}
+
+/*
+ * "Menu block" blocks
+ *
+ * Drupal core has limited ways in which it can display its menus. To get around
+ * these limitations, see http://drupal.org/project/menu_block
+ */
+.block-menu-block {
+}
