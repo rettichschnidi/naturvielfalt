@@ -83,6 +83,8 @@ h2.block-title /* Block title */ {
   border: 1px solid red;
   background-color:white;
   color: #dc3806;
+  position: relative;
+  right: 250px;
 }
 #block-system-management a:link,
 #block-system-management a:visited {
@@ -93,6 +95,8 @@ h2.block-title /* Block title */ {
   border: 1px solid red;
   background-color:white;
   color: #dc3806;
+  position: relative;
+  right: 250px;
 }
 #block-menu-devel a:link,
 #block-menu-devel a:visited {
