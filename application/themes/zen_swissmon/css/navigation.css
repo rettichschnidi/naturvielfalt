@@ -76,6 +76,10 @@ ul.menu,
   background-image:url("../images/main-menu_active.png");
   background-repeat:no-repeat;
 }
+#main-menu li.active, 
+#main-menu li.active-trails {
+ /*position: relative;*/
+}
 
 
 
@@ -126,7 +130,7 @@ ul.menu,
 
 .region-footer .block-menu{
   margin-bottom: 0;
-}}
+}
 .region-footer .block-menu{
   color: #8f8f8d;
 }
