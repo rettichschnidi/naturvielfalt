@@ -70,7 +70,7 @@ body {
  */
  
 #content .right-corner .left-corner {
-  min-height: 400px;
+  /*min-height: 400px;*/
   margin-top: 0px; /*margin-top should be the same as margin-top for .region-sidebar-first .section*/
   padding: 0px 10px 5em 20px; 
 }

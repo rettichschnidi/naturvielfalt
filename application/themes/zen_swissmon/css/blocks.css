@@ -84,7 +84,7 @@ h2.block-title /* Block title */ {
   background-color:white;
   color: #dc3806;
   position: relative;
-  right: 250px;
+  right: 220px;
 }
 #block-system-management a:link,
 #block-system-management a:visited {
@@ -96,7 +96,7 @@ h2.block-title /* Block title */ {
   background-color:white;
   color: #dc3806;
   position: relative;
-  right: 250px;
+  right: 220px;
 }
 #block-menu-devel a:link,
 #block-menu-devel a:visited {
@@ -422,9 +422,12 @@ fieldset {
   background: #fff url(../images/gradient-inner.png) repeat-x 0 0;
 }
 
+.fieldset-legend {
+}
 .fieldset-legend a.fieldset-title {
-	color: #35681A;
-	}
+  background-color: white;
+  color: #35681A;
+}
 
 /* Targets IE 7. Fixes background image in field sets. */
 *:first-child+html fieldset {

@@ -19,6 +19,7 @@ body {
 }
 
 #page {
+  border: 1px solid #D1D0CD;
 }
 
 #header {
@@ -44,11 +45,18 @@ body {
 #content {
   /*background: #fff url(../images/bg-content.png) repeat-x 50% 0;*/
   position: relative;
+  /*border-left: 1px solid #D1D0CD;*/
 }
 #content .right-corner .left-corner {
   /*background: transparent url(../images/bg-content-left.png) no-repeat 0 0;*/
   /*background: #fff url(../images/bg-content-left_2.png) repeat-y 0 0;*/
 }
+
+.region-sidebar-first {
+  /*background: #fff url(../images/bg-content-left_2.png) repeat-y 100% 0;*/
+  border-right: 1px solid #D1D0CD;
+}
+
 #content .right-corner {
   /*background: transparent url(../images/bg-content-right.png) no-repeat 100% 0;*/
 }

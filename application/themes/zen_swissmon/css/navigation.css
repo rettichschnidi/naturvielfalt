@@ -125,7 +125,7 @@ ul.menu,
  */
 .block-menu {
   padding-left: 7px;
-  margin-bottom: 2em;
+  margin: 1em 0 2em 0;
 }
 
 .region-footer .block-menu{
