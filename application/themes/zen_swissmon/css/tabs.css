@@ -10,9 +10,13 @@
 
 
 div.tabs {
-  margin: 0 0 5px 0;
+  position:relative;
+  margin: 5px 0 5px 0;
 }
 
+ul.primary {
+  margin: 0;
+}
 
 ul.primary li a,
 ul.primary li.active a,
@@ -22,7 +26,6 @@ ul.secondary li a,
 ul.secondary li.active a,
 ul.secondary li a:hover,
 ul.secondary li a:visited {
-  /*border: 0;*/
   background: transparent;
   height: auto;
   text-decoration: none;

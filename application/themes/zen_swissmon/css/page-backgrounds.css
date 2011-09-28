@@ -9,58 +9,89 @@
  *   http://www.alistapart.com/articles/fauxcolumns/
  */
 
-
 body {
   background-color:#f2f1ed;
 }
 
 #page-wrapper {
-  background-color:#ffffff;
 }
 
 #page {
-  border: 1px solid #D1D0CD;
 }
 
 #header {
   background-color:#598b74;
   background-repeat:no-repeat;
-  background-image:url('../images/banner_white-bottom.jpg');
-  height:170px;
+  background-image:url('../images/banner_topnav_big.jpg');
+  height:133px;
 }
 
 #header .section {
 }
 
 #navigation {
-  /*background-color:#598b74;*/
+}
+
+.menu-name-main-menu {
+}
+
+.menu-name-main-menu li {
+  border-bottom: 1px solid #446b63;
+ }
+ 
+ .menu-name-main-menu a {
+ background: transparent url(../images/secondary_a.png) repeat 0 0;/*#125A56;*/
+ }
+ 
+.menu-name-main-menu a.active,
+.menu-name-main-menu a:hover,
+.menu-name-main-menu li.leaf a.active,
+.menu-name-main-menu li.leaf a:hover {
+  background: transparent url(../images/secondary_a_hover.png) repeat 0 0; /*#125A56;*/
+}
+
+
+.menu-name-main-menu li.leaf a {
+  background: transparent url(../images/secondary_a_leaf.png) repeat 0 0; /*#1d6763*/
+  /*background-color: #397f7b;*/
+}
+.menu-name-main-menu li.leaf a.active, .menu-name-main-menu li.leaf a:hover {
+  /*background-color: #4d918d;*/
 }
 
 #main-wrapper {
+  background: #ffffff url(../images/main-content-wrapper-shadows_lighter.jpg) repeat-y 0 0;
 }
 
 #main {
 }
 
 #content {
-  /*background: #fff url(../images/bg-content.png) repeat-x 50% 0;*/
-  position: relative;
-  /*border-left: 1px solid #D1D0CD;*/
-}
-#content .right-corner .left-corner {
-  /*background: transparent url(../images/bg-content-left.png) no-repeat 0 0;*/
-  /*background: #fff url(../images/bg-content-left_2.png) repeat-y 0 0;*/
 }
 
 .region-sidebar-first {
-  /*background: #fff url(../images/bg-content-left_2.png) repeat-y 100% 0;*/
-  border-right: 1px solid #D1D0CD;
-}
-
-#content .right-corner {
-  /*background: transparent url(../images/bg-content-right.png) no-repeat 100% 0;*/
+  background: transparent url(../images/sidebar_main-bg2.jpg) no-repeat 7px 0;
 }
 
 .region-footer {
+  position: relative;
+  background: transparent url(../images/footer-shadows_lighter.jpg) repeat-x 0 0;
+  background-color: #F2F1ED;
 }
 
+.region-footer div#footer-left {
+  position:absolute;
+  left: 0;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  background: transparent url(../images/footer-shadows_left.jpg) no-repeat 0 0;
+}
+.region-footer div#footer-right {
+  position:absolute;
+  right: 0;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  background: transparent url(../images/footer-shadows_right.jpg) no-repeat 0 0;
+}

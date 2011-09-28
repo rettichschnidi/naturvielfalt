@@ -31,9 +31,25 @@
 (function ($) {
 	 Drupal.behaviors.whatever = {
 	 attach: function(context, settings) {
-				
-			$(".column").equalHeights(400);
-
-	 }
-	 };
-	 })(jQuery);
+		 
+		// equalize sidebar and content height
+		//$(".column").equalHeights(487);
+		
+		// set page title width to content witdh
+		contentwidth = $("#content").width();
+		if($(".region-sidebar-first").length == 0) {
+			$("#title-wrapper").css("margin-left","7px");
+			$("#title-wrapper").width(contentwidth-14);
+		} else {
+			$("#title-wrapper").width(contentwidth-7)
+		}
+		
+		/*
+		// set page title height
+		if($(".tabs").length == 0 && $(".messages").length == 0) {
+			$("#title-wrapper").height(33);
+			$(".region-content .block.first .content").css("margin-top", "35px;");
+		}*/
+     }
+     };
+})(jQuery);

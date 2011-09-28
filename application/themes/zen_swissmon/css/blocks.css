@@ -22,7 +22,9 @@ h2.block-title /* Block title */ {
 }
 
 .block .content /* Block's content wrapper */ {
+}
 
+.region-content .block.first .content /* changed with jquery */{
 }
 
 #block-aggregator-category-1 /* Block for the latest news items in the first category */ {
@@ -83,8 +85,10 @@ h2.block-title /* Block title */ {
   border: 1px solid red;
   background-color:white;
   color: #dc3806;
-  position: relative;
-  right: 220px;
+  margin-left: 5px;
+  margin-right: 5px;
+  /*position: relative;
+  right: 10px;*/
 }
 #block-system-management a:link,
 #block-system-management a:visited {
@@ -95,8 +99,10 @@ h2.block-title /* Block title */ {
   border: 1px solid red;
   background-color:white;
   color: #dc3806;
-  position: relative;
-  right: 220px;
+  margin-left: 5px;
+  margin-right: 5px;
+  /*position: relative;
+  right: 10px;*/
 }
 #block-menu-devel a:link,
 #block-menu-devel a:visited {
@@ -129,7 +135,17 @@ h2.block-title /* Block title */ {
 #block-system-powered-by /* "Powered by Drupal" block */ {
 }
 
-#block-user-login /* "User login form" block */ {
+#block-user-login /* "User login form" block */ { 
+  color:white;
+  padding: 10px 0 0 10px;
+}
+
+#block-user-login a {
+  color:white;  
+}
+
+#block-user-login ul {
+  list-style: none;  
 }
 
 #block-user-new /* "Who's new" block for a list of the newest users */ {

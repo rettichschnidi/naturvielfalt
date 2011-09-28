@@ -146,7 +146,6 @@
 
   <div id="main-wrapper"><div id="main" class="clearfix<?php if ($main_menu || $page['navigation']) { print ' with-navigation'; } ?>">
     <div id="content" class="column"><div class="section">
-    <div class="right-corner"><div class="left-corner">
       <div id="title-wrapper">
 	      <?php print render($page['highlighted']); ?>
 	      <a id="main-content"></a>
@@ -166,7 +165,7 @@
       <?php endif; ?>
       <?php print render($page['content']); ?>
       <?php print $feed_icons; ?>
-    </div></div></div></div><!-- /.section, /#content -->
+    </div></div><!-- /.section, /#content -->
 
     <div id="space"><div class="section clearfix">
       </div></div><!-- /.section, /#space -->

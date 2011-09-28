@@ -263,7 +263,7 @@ function zen_swissmon_links__system_main_menu($variables) {
       if (isset($link['href'])) {
         // Pass in $link as $options, they share the same keys.
         $link['html'] = true;
-        $text = $link['title'] . '<div id="main-menu-active-bg"></div>';
+        $text = $link['title'] . '<div class="main-menu-active-bg"></div>';
         $output .= l($text, $link['href'], $link);
       }
       elseif (!empty($link['title'])) {
@@ -357,4 +357,33 @@ function zen_swissmon_breadcrumb($variables) {
   }
   // Otherwise, return an empty string.
   return '';
+}
+
+/**
+ * 
+ * Alter page variable
+ * 
+ */
+function zen_swissmon_page_alter(&$page) {   
+  
+  $page['footer']['left-bg'] = array(
+    '#weight' => -10, 
+    '#markup' => '<div id="footer-left"></div>',
+  );
+  $page['footer']['right-bg'] = array(
+    '#weight' => -10, 
+    '#markup' => '<div id="footer-right"></div>',
+  );
+}
+
+// $user_menu = menu_navigation_links('user-menu');
+/*function zen_swissmon_menu_link_alter(&$user_menu) {
+  dpm($user_menu, "user-menu");
+}*/
+
+
+function zen_swissmon_menu_item_link($item, $link_item) {
+  //if ($item['title'] == t('View')) $item['title']=t('Business Profile');
+  //return theme_menu_item_link($item, $link_item);
+  dpm("hello world");
 }

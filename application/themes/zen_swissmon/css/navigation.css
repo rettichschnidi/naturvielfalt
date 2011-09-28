@@ -28,6 +28,8 @@ ul.menu,
 .item-list ul {
   margin: 0.35em 0 0 -0.5em; /* LTR */
 }
+
+/*
  * Navigation bar
  */
 #navigation {
@@ -68,13 +70,13 @@ ul.menu,
   font-weight: bold;
 }
 
-#main-menu a.active div#main-menu-active-bg,
-#main-menu a.active-trail div#main-menu-active-bg {
+#main-menu a.active .main-menu-active-bg,
+#main-menu a.active-trail .main-menu-active-bg {
   width:29px;
-  height:14px;
+  height:30px;
   margin: 42px auto auto;
-  background-image:url("../images/main-menu_active.png");
-  background-repeat:no-repeat;
+  background-image:url("../images/main-menu_active_shadow3.png");
+  background-repeat:no-repeat;  
 }
 #main-menu li.active, 
 #main-menu li.active-trails {
@@ -95,8 +97,7 @@ ul.menu,
 }
 
 #user-menu {
-  float:right;
-  margin: 87px 10px 0 0;
+  font-size: 0.8em;
 }
  
 #user-menu a:link, 
@@ -134,6 +135,7 @@ ul.menu,
 .region-footer .block-menu{
   color: #8f8f8d;
 }
+
 /*
  * "Menu block" blocks
  *
@@ -142,3 +144,51 @@ ul.menu,
  */
 .block-menu-block {
 }
+
+.menu-name-main-menu {
+}
+
+.menu-name-main-menu ul,
+.menu-name-main-menu li.leaf,
+.menu-name-main-menu li.expanded,
+.menu-name-main-menu li.collapsed {
+  list-style-type: none; 
+  list-style-image: none;
+}
+ 
+
+.menu-name-main-menu li.leaf {
+  border-bottom: none;
+ }
+
+.menu-name-main-menu a, .menu-name-main-menu a.active {
+ text-decoration:none;
+ color: white;
+ padding: 0.35em 0.35em 0.35em 0.9em;
+}
+
+.menu-name-main-menu li.leaf a {
+  padding: 0.35em 0.35em 0.35em 1.8em;
+  font-size: 0.9em; /* actual font size seems to be: (this fontsize) * (page fontsize) => (0.875*0.9)em*/
+  border-bottom: none;
+}
+
+.menu-name-main-menu ol li,
+.menu-name-main-menu ul.menu li,
+.menu-name-main-menu li.leaf ,
+.menu-name-main-menu .item-list ul li, 
+.menu-name-main-menu ul li {
+ padding: 0 0 0 0;
+ margin-top: 0;
+ margin-bottom:0;
+}
+.menu-name-main-menu ul.menu, 
+.menu-name-main-menu .item-list ul {
+ margin-top: 0;
+}
+
+.menu-name-main-menu ul, 
+.menu-name-main-menu .block ul, 
+.menu-name-main-menu ol {
+  padding: 0;
+ }
