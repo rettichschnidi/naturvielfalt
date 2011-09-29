@@ -262,7 +262,6 @@ function zen_swissmon_links__system_main_menu($variables) {
 
       if (isset($link['href'])) {
         // Pass in $link as $options, they share the same keys.
-        dpm("link",$link);
         $link['html'] = true;
         $text = $link['title'];
         $output .= l($text, $link['href'], $link);
@@ -386,5 +385,4 @@ function zen_swissmon_page_alter(&$page) {
 function zen_swissmon_menu_item_link($item, $link_item) {
   //if ($item['title'] == t('View')) $item['title']=t('Business Profile');
   //return theme_menu_item_link($item, $link_item);
-  dpm("hello world");
 }
