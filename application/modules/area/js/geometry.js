@@ -6,7 +6,8 @@ function GeometryControl(map, changed) {
     this.element = false; // active element
 
     // add edit buttons
-     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.controls.get(0));
+    this.controls = jQuery('<div style="margin: 5px;"></div>');
+    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.controls.get(0));
     
 }
 
