@@ -70,8 +70,8 @@ ul.menu,
   font-weight: bold;
 }
 
-#main-menu a.active .main-menu-active-bg,
-#main-menu a.active-trail .main-menu-active-bg {
+#main-menu li.active .main-menu-active-bg,
+#main-menu li.active-trail .main-menu-active-bg {
   width:29px;
   height:30px;
   margin: 42px auto auto;

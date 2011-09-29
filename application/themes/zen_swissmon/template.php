@@ -262,8 +262,9 @@ function zen_swissmon_links__system_main_menu($variables) {
 
       if (isset($link['href'])) {
         // Pass in $link as $options, they share the same keys.
+        dpm("link",$link);
         $link['html'] = true;
-        $text = $link['title'] . '<div class="main-menu-active-bg"></div>';
+        $text = $link['title'];
         $output .= l($text, $link['href'], $link);
       }
       elseif (!empty($link['title'])) {
@@ -279,7 +280,7 @@ function zen_swissmon_links__system_main_menu($variables) {
       }
 
       $i++;
-      $output .= "</li>\n";
+      $output .= '<div class="main-menu-active-bg"></div></li>';
     }
 
     $output .= '</ul>';
