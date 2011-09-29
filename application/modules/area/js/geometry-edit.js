@@ -43,10 +43,11 @@ PathEdit.prototype = new EditGeometry();
 
 PathEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
-	this.points = geometry.overlay.getPath();
 }
 
+
 PathEdit.prototype.start = function() {
+	this.points = this.geometry.overlay.getPath();
 	this.markers = new google.maps.MVCArray();
 	//create a marker for each edge point
 	var createMarker = jQuery.proxy(this.createControlMarker, this);
@@ -82,6 +83,32 @@ PathEdit.prototype.addControlMarker = function (index, latLng) {
 		line.index = index;
 	});	
 };
+
+
+PathEdit.prototype.stop = function() {
+	var points = new google.maps.MVCArray();
+	this.markers.forEach(function(marker, index) {
+		points.push(marker.position);
+	});
+	this.geometry.overlay.setPath(points);
+	this.unload();
+}
+
+PathEdit.prototype.cancel = function() {
+	this.unload();
+}
+
+PathEdit.prototype.unload = function() {
+	this.markers.forEach(function(marker,index){
+		marker.setMap(null);
+	});
+	this.markers.clear();
+	this.tempOverlayLine.forEach(function(line,index){
+		line.setMap(null);
+	});	
+	this.tempOverlayLine.clear();
+	this.geometry.overlay.setMap(this.map);
+}
 
 
 PathEdit.prototype.createLineSegment = function(index) {
