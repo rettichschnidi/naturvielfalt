@@ -6,8 +6,7 @@ function GeometryControl(map, changed) {
     this.element = false; // active element
 
     // add edit buttons
-    this.controls = jQuery('<div style="margin: 5px;"></div>');
-    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.controls.get(0));
+     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.controls.get(0));
     
 }
 
@@ -135,6 +134,7 @@ GeometryOverlays.prototype.addOverlaysJson = function(json){
         for (var k in json[i].area_points) {
             latLngs[k] = new google.maps.LatLng(json[i].area_points[k].lat, json[i].area_points[k].lng);
         }
+        
         if (json[i].type == 'polygon' || json[i].type == 'polyline') {
             overlay.overlay.setPath(latLngs);
         } else if (json[i].type == 'marker') {

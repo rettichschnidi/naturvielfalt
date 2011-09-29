@@ -481,6 +481,9 @@ function AreaSelect(map_id) {
   jQuery('.show_static_image').bind('mouseover mouseout', this.showStaticImage);
   jQuery('#area_table tbody td img').bind( 'click', this.onTableExpanderClicked);
   
+  if (typeof enable_map_editing != "undefined") {
+	  enable_map_editing(me.map, me.mapOverlays);
+  }
 };
 
 function refresh_map_info(){

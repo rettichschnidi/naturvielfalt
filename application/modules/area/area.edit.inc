@@ -7,12 +7,13 @@ function area_edit($area_id) {
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/area-edit.js');
+	drupal_add_js(drupal_get_path('module', 'area') . '/js/geometry-edit.js');
 	//$render_array['area']['details'] = drupal_get_form('area_edit_form', $area_id);
 	//$render_array['area']['parcels'] = drupal_get_form('area_parcels_form', $area_id);
 	//$render_array['area']['map'] = area_map($area_id);
 	$output['area'] = drupal_get_form('area_edit_form', $area_id);
 	$output['file']['upload'] = drupal_get_form('area_edit_files_form', $area_id);
-	
 	
 	return $output;
 }

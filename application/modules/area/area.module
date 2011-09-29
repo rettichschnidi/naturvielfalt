@@ -904,22 +904,47 @@ function area_add_gmap_resources($bubble=true) {
 
 function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) {
   area_add_gmap_resources(false);
-  if(!$center) {
-    $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) FROM area WHERE id = :id', array(":id" => $areaId));
-    $json = json_decode($areas->fetchColumn(0));
-    if ($json) {
+  
+  $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) as center, ST_AsGeoJSON(geom) as geometry FROM area WHERE id = :id', array(":id" => $areaId));
+  $values = $areas->fetchAssoc();
+  $json = json_decode($values["center"]);
+  
+  if (!$center && $json) {
         $center = $json->coordinates[1] . ','. $json->coordinates[0];
-    }
   }
+  
   if(!$center)
     $zoom = false;
   else
     $zoom = 15;
+  
   $zoom = $zoom?' data-zoom="'.$zoom.'"' : '';
   $center = $center?' data-center="'.$center.'"' : '';
   
+  $inventories = db_query('select Count(*) from head_inventory where area_id = ' . intval($areaId)); 
+  $inventoryCount = $inventories->fetchColumn(0); 
+    
+  if (intval($inventoryCount) == 0) {
+    $area_json = json_decode($values["geometry"]);
+  	$t = '';
+	if ('Polygon' == $area_json->type) {
+ 	    $t = 'polygon';
+    } else if ('LineString' == $area_json->type) {
+        $t = 'polyline';
+    } else if ('Point' == $area_json->type) {
+    	$t = 'marker';
+  	}
+  	
+    //DAVECODE
+  	$edit =   '<span id="edit-area-caption">' . t('edit area') . '</span>';
+  	$apply =  '<span id="apply-area-caption">' . t('apply area') . '</span>';
+  	$cancel = '<span id="cancel-area-caption">' . t('cancel') . '</span>';
+  	$type =   '<span id="area-type">' . $t . '</span>';
+  	$editButton = '<div id="edit-map-button" style="display:none;">'. $edit . $apply . $cancel . $type .' </div>';
+  }
+    
   return array(
-    '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div></div>'
+    '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div>'. $editButton .'</div>'
   );
 }
 
