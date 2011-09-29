@@ -1,32 +1,39 @@
-function EditGeometry () {
-	
-};
-
+function EditGeometry () {};
 EditGeometry.prototype.setMap = function (map) {
 	this.map = map;
 };
 
-function MarkerEdit() {
-};
+function MarkerEdit() {};
 MarkerEdit.prototype = new EditGeometry();
-MarkerEdit.prototype.click = function(event){
-	this.geometry.overlay.setCenter(event.latLng);
-	this.stop();
-};
 
 MarkerEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
 }
 
 MarkerEdit.prototype.start = function(latLngs) {
+	this.originalPos = this.geometry.overlay.getCenter();
 	this.clickListener = google.maps.event.addListener(this.map, 'click', jQuery.proxy(this.click, this));
     this.map.setOptions({disableDoubleClickZoom: true, draggableCursor: 'crosshair'});
 };
 
 MarkerEdit.prototype.stop = function(latLngs) {
-	//DOESNT work yet!!! find solution
-	google.maps.event.clearListeners(this.clickListener);
+	this.disable();
 };
+
+MarkerEdit.prototype.cancel = function() {
+	this.geometry.overlay.setCenter(this.originalPos);
+	this.disable();
+}
+
+MarkerEdit.prototype.click = function(event){
+	this.geometry.overlay.setCenter(event.latLng);
+};
+
+MarkerEdit.prototype.disable = function() {
+	this.clickListener.remove();
+	this.map.setOptions({draggableCursor: 'hand'});
+}
+
 
 function PathEdit() {
 	
@@ -67,17 +74,13 @@ PathEdit.prototype.start = function() {
 };
 
 
-PathEdit.prototype.addControlMarker = function (index, latLng) {
-	console.debug(index);
-	
+PathEdit.prototype.addControlMarker = function (index, latLng) {	
 	this.createControlMarker(latLng, index+1);
 	this.tempOverlayLine.getAt(index).getPath().setAt(1, latLng);
 	this.createLineSegment(index+1);
 	this.tempOverlayLine.forEach(function(line, index) {
 		line.index = index;
-	});
-	console.debug("Test");
-	
+	});	
 };
 
 
@@ -164,10 +167,10 @@ PolygonEdit.prototype = new EditGeometry();
 
 PolygonEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
-	this.points = geometry.overlay.getPath();
 }
 
 PolygonEdit.prototype.start = function() {
+	this.points = this.geometry.overlay.getPath();
 	this.markers = new google.maps.MVCArray();
 	//create a marker for each edge point
 	var createMarker = jQuery.proxy(function(latLng, index) {
@@ -198,10 +201,34 @@ PolygonEdit.prototype.start = function() {
 	this.markers.forEach(createLineSegment);
 };
 
+PolygonEdit.prototype.stop = function() {
+	var points = new google.maps.MVCArray();
+	this.markers.forEach(function(marker, index) {
+		points.push(marker.position);
+	});
+	points.push(this.markers.getAt(0).position);
+	this.geometry.overlay.setPath(points);
+	this.unload();
+}
+
+PolygonEdit.prototype.cancel = function() {
+	this.unload();
+}
+
+PolygonEdit.prototype.unload = function() {
+	this.markers.forEach(function(marker,index){
+		marker.setMap(null);
+	});
+	this.markers.clear();
+	this.tempOverlayLine.forEach(function(line,index){
+		line.setMap(null);
+	});	
+	this.tempOverlayLine.clear();
+	this.geometry.overlay.setMap(this.map);
+}
+
 
 PolygonEdit.prototype.addControlMarker = function (index, latLng) {
-	console.debug(index);
-	
 	this.createControlMarker(latLng, index+1);
 	this.tempOverlayLine.getAt(index).getPath().setAt(1, latLng);
 	this.createLineSegment(index+1);
@@ -234,7 +261,6 @@ PolygonEdit.prototype.createLineSegment = function(index) {
 		});
 	//}
 }
-
 
 PolygonEdit.prototype.createControlMarker = function(latLng, index) {
 	var imageNormal = new google.maps.MarkerImage(Drupal.settings.basePath
@@ -274,10 +300,9 @@ PolygonEdit.prototype.createControlMarker = function(latLng, index) {
             	//adjust endpoint of previous line
             	var prevLineIndex = m-1 >= 0 ? m-1 : that.markers.getLength()-1;
             	that.tempOverlayLine.getAt(prevLineIndex).getPath().setAt(1, marker.getPosition());
-            	
+            	//adjust startpoint of next line
             	var nextLineIndex = m < that.markers.getLength() - 1 ? m : 0;
             	that.tempOverlayLine.getAt(m).getPath().setAt(0, marker.getPosition());
-
                 marker.setIcon(imageHover);
                 break;
             }
