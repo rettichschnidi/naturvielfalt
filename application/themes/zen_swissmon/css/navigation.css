@@ -192,3 +192,9 @@ ul.menu,
 .menu-name-main-menu ol {
   padding: 0;
  }
+ 
+ #searchform-wrapper {
+ position: absolute;
+ top:0px;
+ left:24px;
+ }

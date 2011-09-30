@@ -121,8 +121,7 @@ a.naturvielfalt-button /* Lets the header logo become a button */ {
   color: #3B7066;
   position: relative;
   left: -20px; /*compensate padding of "#content .section" in layout-fixed.css*/
-  /*top: -30px;*/
-  /*height: 33px;*/   
+  padding-top: 10px;
 }
 
 h2#page-title {

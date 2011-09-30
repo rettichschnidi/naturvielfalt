@@ -53,7 +53,6 @@ body {
 
 .menu-name-main-menu li.leaf a {
   background: transparent url(../images/secondary_a_leaf.png) repeat 0 0; /*#1d6763*/
-  /*background-color: #397f7b;*/
 }
 .menu-name-main-menu li.leaf a.active, .menu-name-main-menu li.leaf a:hover {
   /*background-color: #4d918d;*/

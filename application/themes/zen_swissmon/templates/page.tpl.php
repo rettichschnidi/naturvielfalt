@@ -129,13 +129,22 @@
             'level' => 'h2',
             'class' => array('element-invisible'),
           ),
-        )); ?>
-
-        <?php print render($page['navigation']); ?>
-    
+        )); 
+        ?>
+        <?php print render($page['navigation']); ?>    
       </div></div><!-- /.section, /#navigation -->
     <?php endif; ?>
-
+    
+    <div id="searchform-wrapper">
+      <form name="searchform" class="searchform" method="get" action="/find/organisms">
+        <input class="searchfield" name="search" type="text" value="Suchen..." onfocus="if (this.value == 'Suchen...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Suchen...';}" />
+        <?php /*<input class="searchbutton" type="button" value="Go" />*/?>
+        <a class="searchlink" href="javascript: void(0);" onclick="document.searchform.submit();return
+false;">Go</a>
+        
+     </form>
+    </div>
+    
     <?php print render($page['header']); ?>
 
   </div>

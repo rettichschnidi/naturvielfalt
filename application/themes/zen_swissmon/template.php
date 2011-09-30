@@ -284,7 +284,7 @@ function zen_swissmon_links__system_main_menu($variables) {
 
     $output .= '</ul>';
   }
-
+  
   return $output;
 }
 
