@@ -44,7 +44,7 @@ function enable_map_editing(map, overlays) {
 		.click(apply_edit);
 		cancelButton = jQuery('<div id="cancelAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
 		.text(jQuery('div#edit-map-button #cancel-area-caption').text())
-		.click(abort_edit);		
+		.click(abort_edit);
 		
 		controls.append(editIcon).append(applyButton).append(cancelButton);
 	    map.controls[google.maps.ControlPosition.TOP_LEFT].push(controls.get(0));
@@ -67,9 +67,16 @@ function edit_click() {
 };
 
 function apply_edit() {
-	console.debug("test");
 	activeEditingTool.stop();
 	toggle_editing(false);
+		
+	var area_coords = new Array();
+	activeEditingTool.geometry.getLatLngs().forEach(function (position) {
+		area_coords.push([position.lat(), position.lng()]);
+	});
+	area_coords = JSON.stringify(area_coords); 
+	jQuery("#area-coords-input").val(area_coords);
+	jQuery("#area-type-input").val(activeEditingTool.geometry.type);
 };
 
 function abort_edit() {

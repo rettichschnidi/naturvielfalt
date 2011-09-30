@@ -171,9 +171,6 @@ function area_edit_form($form, &$form_state, $area_id) {
 		'#value' => t('Save')
 	);
 	
-	
-	
-	
 
 	return $output;
 }
@@ -197,15 +194,52 @@ function area_edit_form_submit($form, &$form_state) {
 	$tending_strategies = $form_state['input']['tending_strategies'];
 //	global $user;
 	
-	// update area
-	$area_update = db_update('area')->fields(array(
+	$areaValuesArray = array(
     	'field_name' => $field_name,
 		'comment' => $comment,
 		'modify_time' => 'now()',
 		'protection_target' => $protection_target,
 		'safety_precautions' => $safety_precautions,
 		'tending_strategies' => $tending_strategies,
-	))
+	);
+	
+	//check if the area is set in the formular
+	//TODO maybe change if-statement to something more secure
+	if ($form_state['input']['area_coords'] != "") {
+		// field coordinates
+		$coords = json_decode($form_state['input']['area_coords'], true);
+		$points = array();
+		foreach ($coords as $coord) {
+	    	$lat = $coord[0];
+	    	$lng = $coord[1];
+	    	$points[] = $lng . ' ' . $lat;
+		}
+		$areaType = $form_state['input']['area_type'];
+		switch ($areaType) {
+		    case 'polyline':
+		        $linestring = implode(', ', $points);
+		        $geom = 'ST_GeomFromText(\'LINESTRING(' . $linestring . ')\', 4326)'; // SRID 4326 = WGS 84
+		        break;
+	
+		    case 'polygon':
+	    	    // make sure line is closed
+	    	    if (end($points) != reset($points)) {
+	    	        $points[] = reset($points);
+	    	    }
+	
+	    	    $linestring = implode(', ', $points);
+	    	    $geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+	    	    break;
+	
+		    case 'marker':
+	    	    $geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
+	    	    break;
+		}
+		db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
+	}
+	
+	// update area
+	$area_update = db_update('area')->fields($areaValuesArray)
 	->condition('id',$area_id)
 	->execute();
 

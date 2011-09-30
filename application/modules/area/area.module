@@ -822,7 +822,17 @@ function area_edit_map_form($form, &$form_state, $area_id=false) {
         '#markup' => theme('image', $variables_map)
     );
   } else
-    $form['map']['map'] = area_map($area_id);
+    $form['map']['map'] = area_map($area_id);    
+    $form['map']['area_coords'] = array(
+  	'#type' => 'hidden',
+	'#value' => '',
+	'#attributes' => array('id' => 'area-coords-input')
+	);
+	$form['map']['area_type'] = array(
+  	'#type' => 'hidden',
+	'#value' => '',
+	'#attributes' => array('id' => 'area-type-input')
+	);
   return $form;
 }
 
