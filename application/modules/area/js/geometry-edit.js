@@ -26,10 +26,7 @@ MarkerEdit.prototype.click = function(event){
 
 
 
-function PathEdit() {
-	
-}
-
+function PathEdit() {}
 PathEdit.prototype = new EditGeometry();
 
 PathEdit.prototype.init = function(geometry) {
@@ -45,22 +42,13 @@ PathEdit.prototype.init = function(geometry) {
 	
 	// crate single line elements that connect the markers
 	this.tempOverlayLine = new google.maps.MVCArray();
-	var createLineSegment = function(marker, index) {
+	var createLineSegment = jQuery.proxy(function(line, index) {
 		if (index < this.markers.getLength()-1) {
-			var line = new google.maps.Polyline();
-			line.getPath().push(marker.position);
-			line.getPath().push(this.markers.getAt(index+1).position);
-			line.setMap(this.map);
-			line.index = index;
-			this.tempOverlayLine.push(line);
+			this.createLineSegment(index);	
 		}
-	};
-	createLineSegment = jQuery.proxy(function(line, index) {
-		this.createLineSegment(index);
 	}, this);
 	this.markers.forEach(createLineSegment);
 }
-
 
 PathEdit.prototype.apply = function() {
 	var points = new google.maps.MVCArray();
@@ -93,7 +81,6 @@ PathEdit.prototype.addControlMarker = function (index, latLng) {
 	});	
 };
 
-
 PathEdit.prototype.createLineSegment = function(index) {
 	if (index < this.markers.getLength()-1) {
 		var line = new google.maps.Polyline();
@@ -110,14 +97,12 @@ PathEdit.prototype.createLineSegment = function(index) {
 	}
 }
 
-
-PathEdit.prototype.createControlMarker = function(latLng, index) {
+PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
     var imageNormal = new google.maps.MarkerImage(Drupal.settings.basePath
 			+ "modules/area/js/lib/rwo_gmaps/images/square.png",
 			new google.maps.Size(11, 11), new google.maps.Point(0, 0),
 			new google.maps.Point(6, 6));
-
-	var imageHover = new google.maps.MarkerImage(Drupal.settings.basePath
+    var imageHover = new google.maps.MarkerImage(Drupal.settings.basePath
 			+ "modules/area/js/lib/rwo_gmaps/images/square_over.png",
 			new google.maps.Size(11, 11), new google.maps.Point(0, 0),
 			new google.maps.Point(6, 6));
@@ -129,8 +114,11 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
 		draggable : true
 	});
 	
+	marker.imgNormal = imageNormal;
+	marker.imgHover = imageHover;
+	marker.index = index;
+	
 	this.markers.insertAt(index, marker);
-	var that = this;
 	
     // hover icon
     google.maps.event.addListener(marker, "mouseover", function () {
@@ -140,23 +128,23 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
     google.maps.event.addListener(marker, "mouseout", function () {
         marker.setIcon(imageNormal);
     });
-	
+    
+    return marker;
+}
+
+PathEdit.prototype.createControlMarker = function(latLng, index) {
+    var marker = this.createGoogleMapsMarker(latLng, index);
+	var that = this;
     // enable dragging the markers
     google.maps.event.addListener(marker, "drag", function () {
-    	//TODO get rid of the for loop
-        for (var m = 0, l = that.markers.getLength(); m < l; m++) {
-            if (that.markers.getAt(m) == marker) {
-            	if (m-1 >= 0) {
-            		that.tempOverlayLine.getAt(m-1).getPath().setAt(1, marker.getPosition());
-            	}
-            	if (m < that.markers.length-1) {
-            		that.tempOverlayLine.getAt(m).getPath().setAt(0, marker.getPosition());
-            	}
-                marker.setIcon(imageHover);
-                break;
-            }
-        }
-    });    
+    	if (marker.index >= 0) {
+    		that.tempOverlayLine.getAt(marker.index-1).getPath().setAt(1, marker.getPosition());
+    	}
+    	if (marker.index < that.markers.length-1) {
+    		that.tempOverlayLine.getAt(marker.index).getPath().setAt(0, marker.getPosition());
+    	}
+        marker.setIcon(marker.imgHover);
+    });
 };
 
 
@@ -166,11 +154,8 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
 /*POLYGON EDIT TOOL*/
 
 
-function PolygonEdit() {
-	
-}
-
-PolygonEdit.prototype = new EditGeometry();
+function PolygonEdit() {}
+PolygonEdit.prototype = new PathEdit();
 
 PolygonEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
@@ -189,22 +174,11 @@ PolygonEdit.prototype.init = function(geometry) {
 	
 	// crate single line elements that connect the markers
 	this.tempOverlayLine = new google.maps.MVCArray();
-	var createLineSegment = function(marker, index) {
-		if (index < this.markers.getLength()-1) {
-			var line = new google.maps.Polyline();
-			line.getPath().push(marker.position);
-			line.getPath().push(this.markers.getAt(index+1).position);
-			line.setMap(this.map);
-			line.index = index;
-			this.tempOverlayLine.push(line);
-		}
-	};
-	createLineSegment = jQuery.proxy(function(line, index) {
+	var createLineSegment = jQuery.proxy(function(line, index) {
 		this.createLineSegment(index);
 	}, this);
 	this.markers.forEach(createLineSegment);
 }
-
 
 PolygonEdit.prototype.apply = function() {
 	var points = new google.maps.MVCArray();
@@ -215,98 +189,37 @@ PolygonEdit.prototype.apply = function() {
 	this.geometry.overlay.setPath(points);
 }
 
-PolygonEdit.prototype.reset = function() {
-	//clear markers and line segments
-	this.markers.forEach(function(marker,index){
-		marker.setMap(null);
-	});
-	this.markers.clear();
-	this.tempOverlayLine.forEach(function(line,index){
-		line.setMap(null);
-	});	
-	this.tempOverlayLine.clear();
-	//init again
-	this.init(this.geometry);
-}
-
-
-PolygonEdit.prototype.addControlMarker = function (index, latLng) {
-	this.createControlMarker(latLng, index+1);
-	this.tempOverlayLine.getAt(index).getPath().setAt(1, latLng);
-	this.createLineSegment(index+1);
-	this.tempOverlayLine.forEach(function(line, index) {
-		line.index = index;
-	});
-	
-};
-
 PolygonEdit.prototype.createLineSegment = function(index) {
-	//if (index < this.markers.getLength()-1) {
-		var line = new google.maps.Polyline();
-		line.getPath().push(this.markers.getAt(index).position);
+	var line = new google.maps.Polyline();
+	line.getPath().push(this.markers.getAt(index).position);
 
-		if (index < this.markers.getLength()-1) {
-			line.getPath().push(this.markers.getAt(index+1).position);	
-		}
-		else {
-			line.getPath().push(this.markers.getAt(0).position);	
-		}
+	if (index < this.markers.getLength() - 1) {
+		line.getPath().push(this.markers.getAt(index + 1).position);
+	} else {
+		line.getPath().push(this.markers.getAt(0).position);
+	}
 
-		line.setMap(this.map);
-		line.index = index;
-		this.tempOverlayLine.insertAt(index, line);
-		
-		var that = this;
-		google.maps.event.addListener(line, "click", function(event) {
-			that.addControlMarker(line.index, event.latLng);
-		});
-	//}
+	line.setMap(this.map);
+	line.index = index;
+	this.tempOverlayLine.insertAt(index, line);
+
+	var that = this;
+	google.maps.event.addListener(line, "click", function(event) {
+		that.addControlMarker(line.index, event.latLng);
+	});
 }
 
 PolygonEdit.prototype.createControlMarker = function(latLng, index) {
-	var imageNormal = new google.maps.MarkerImage(Drupal.settings.basePath
-			+ "modules/area/js/lib/rwo_gmaps/images/square.png",
-			new google.maps.Size(11, 11), new google.maps.Point(0, 0),
-			new google.maps.Point(6, 6));
-
-	var imageHover = new google.maps.MarkerImage(Drupal.settings.basePath
-			+ "modules/area/js/lib/rwo_gmaps/images/square_over.png",
-			new google.maps.Size(11, 11), new google.maps.Point(0, 0),
-			new google.maps.Point(6, 6));
-
-	var marker = new google.maps.Marker( {
-		position : latLng,
-		map : this.map,
-		icon : imageNormal,
-		draggable : true
-	});
-	
-	this.markers.insertAt(index, marker);
+    var m = this.createGoogleMapsMarker(latLng, index);
 	var that = this;
-	
-    // hover icon
-    google.maps.event.addListener(marker, "mouseover", function () {
-        marker.setIcon(imageHover);
-    });
-    
-    google.maps.event.addListener(marker, "mouseout", function () {
-        marker.setIcon(imageNormal);
-    });
-	
     // enable dragging the markers
-    google.maps.event.addListener(marker, "drag", function () {
-    	//TODO get rid of the for loop
-        for (var m = 0, l = that.markers.getLength(); m < l; m++) {
-            if (that.markers.getAt(m) == marker) {
-            	//adjust endpoint of previous line
-            	var prevLineIndex = m-1 >= 0 ? m-1 : that.markers.getLength()-1;
-            	that.tempOverlayLine.getAt(prevLineIndex).getPath().setAt(1, marker.getPosition());
-            	//adjust startpoint of next line
-            	var nextLineIndex = m < that.markers.getLength() - 1 ? m : 0;
-            	that.tempOverlayLine.getAt(m).getPath().setAt(0, marker.getPosition());
-                marker.setIcon(imageHover);
-                break;
-            }
-        }
-    });    
+    google.maps.event.addListener(m, "drag", function () {
+    	console.debug(m.index);
+    	var prevLineIndex = m.index-1 >= 0 ? m.index-1 : that.markers.getLength()-1;
+    	that.tempOverlayLine.getAt(prevLineIndex).getPath().setAt(1, m.getPosition());
+    	//adjust startpoint of next line
+    	var nextLineIndex = m.index < that.markers.getLength() ? m.index : 0;
+    	that.tempOverlayLine.getAt(nextLineIndex).getPath().setAt(0, m.getPosition());
+        m.setIcon(m.imgHover);
+    });
 };
