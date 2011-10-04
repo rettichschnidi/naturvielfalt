@@ -4,9 +4,8 @@ var editTool;
 var currentGeometry;
 var init = false;
 var activeEditingTool;
-var editIcon;
 var applyButton;
-var cancelButton;
+var resetButton;
 
 function enable_map_editing() {
 	if (jQuery("#area-coords-input").length) {
@@ -29,40 +28,36 @@ function enable_map_editing() {
 		if (jQuery("#edit-map-button").length) {	
 			//init controls
 			controls = jQuery('<div style="margin: 5px;"></div>');
-			editIcon = jQuery('<img />')
+			
 			switch (jQuery("div#edit-map-button #area-type").text()) {
 			case "marker":
-				editIcon.data('active', 'markerCtl.png');
-				editIcon.data('inactive', 'markerCtl-selected.png');
 				activeEditingTool = new MarkerEdit();
 				break;
 			case "polyline":
-				editIcon.data('active', 'path.png');
-				editIcon.data('inactive', 'path-selected.png');
 				activeEditingTool = new PathEdit();
 				break;
 			case "polygon":
-				editIcon.data('active', 'polygon.png');
-				editIcon.data('inactive', 'polygon-selected.png');
 				activeEditingTool = new PolygonEdit();
 				break;
 			}
-			editIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + editIcon.data('active'))
-			.attr('alt', jQuery("div#edit-map-button #edit-area-caption").text())
-			.attr('title', jQuery("div#edit-map-button #edit-area-caption").text())
-			.click(edit_click);
+			
+		    activeEditingTool.setMap(map);
 
-			//apply and cancel button
-			applyButton = jQuery('<div id="applyAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
-			.text(jQuery('div#edit-map-button #apply-area-caption').text())
-			.click(apply_edit);
-			cancelButton = jQuery('<div id="cancelAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
+			
+			for (var o in currentOverlays.overlays) {
+				currentGeometry = currentOverlays.overlays[o];
+				activeEditingTool.init(currentGeometry);
+				init = true;
+			    break;
+			}
+			
+			resetButton = jQuery('<div id="cancelAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>')
 			.text(jQuery('div#edit-map-button #cancel-area-caption').text())
 			.click(abort_edit);
-			
-			controls.append(editIcon).append(applyButton).append(cancelButton);
+			controls.append(resetButton);
 		    map.controls[google.maps.ControlPosition.TOP_LEFT].push(controls.get(0));
-		    activeEditingTool.setMap(map);
+		    //submit event handler
+		    jQuery("#area-edit-form").submit(apply_edit);
 		}
 	}
 };
@@ -94,25 +89,10 @@ function createGoogleMaps (map_id) {
   return map;
 };
 
-function edit_click() {
-	if (!init) {
-		for (var o in currentOverlays.overlays) {
-			var currentGeometry = currentOverlays.overlays[o];
-			activeEditingTool.init(currentGeometry);
-			init = true;
-		    break;
-		}
-	}
-	toggle_editing(true);
-	activeEditingTool.start();
-	
-};
 
-function apply_edit() {
-	activeEditingTool.stop();
-	toggle_editing(false);
-		
+function apply_edit() {		
 	var area_coords = new Array();
+	activeEditingTool.apply();
 	activeEditingTool.geometry.getLatLngs().forEach(function (position) {
 		area_coords.push([position.lat(), position.lng()]);
 	});
@@ -122,34 +102,9 @@ function apply_edit() {
 };
 
 function abort_edit() {
-	activeEditingTool.cancel();
-	toggle_editing(false);
+	activeEditingTool.reset();
 };
 
-function toggle_editing(enabled) {
-	if (enabled) {
-		editIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + editIcon.data('inactive'));
-		applyButton.show();
-		cancelButton.show();
-		editIcon.unbind('click');	
-	}
-	else {
-		editIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + editIcon.data('active'));
-		applyButton.hide();
-		cancelButton.hide();
-		editIcon.click(edit_click);
-	}
-}
-
-
-function dump(obj) {
-    var out = '';
-    for (var i in obj) {
-        out += i + ": " + obj[i] + "\n";
-    }
-
-    console.debug(out);
-};
 
 /*load the area*/
 var areaselect = null;
@@ -158,3 +113,7 @@ jQuery(document).ready(function() {
 	  enable_map_editing();
   }
 });
+
+
+/**
+*/

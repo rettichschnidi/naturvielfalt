@@ -8,31 +8,22 @@ MarkerEdit.prototype = new EditGeometry();
 
 MarkerEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
-}
-
-MarkerEdit.prototype.start = function(latLngs) {
 	this.originalPos = this.geometry.overlay.getCenter();
 	this.clickListener = google.maps.event.addListener(this.map, 'click', jQuery.proxy(this.click, this));
     this.map.setOptions({disableDoubleClickZoom: true, draggableCursor: 'crosshair'});
+}
+
+MarkerEdit.prototype.apply = function(latLngs) {
 };
 
-MarkerEdit.prototype.stop = function(latLngs) {
-	this.disable();
-};
-
-MarkerEdit.prototype.cancel = function() {
+MarkerEdit.prototype.reset = function() {
 	this.geometry.overlay.setCenter(this.originalPos);
-	this.disable();
 }
 
 MarkerEdit.prototype.click = function(event){
 	this.geometry.overlay.setCenter(event.latLng);
 };
 
-MarkerEdit.prototype.disable = function() {
-	this.clickListener.remove();
-	this.map.setOptions({draggableCursor: 'hand'});
-}
 
 
 function PathEdit() {
@@ -43,10 +34,6 @@ PathEdit.prototype = new EditGeometry();
 
 PathEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
-}
-
-
-PathEdit.prototype.start = function() {
 	this.points = this.geometry.overlay.getPath();
 	this.markers = new google.maps.MVCArray();
 	//create a marker for each edge point
@@ -72,8 +59,30 @@ PathEdit.prototype.start = function() {
 		this.createLineSegment(index);
 	}, this);
 	this.markers.forEach(createLineSegment);
-};
+}
 
+
+PathEdit.prototype.apply = function() {
+	var points = new google.maps.MVCArray();
+	this.markers.forEach(function(marker, index) {
+		points.push(marker.position);
+	});
+	this.geometry.overlay.setPath(points);
+}
+
+PathEdit.prototype.reset = function() {
+	//clear lines and marker
+	this.markers.forEach(function(marker,index){
+		marker.setMap(null);
+	});
+	this.markers.clear();
+	this.tempOverlayLine.forEach(function(line,index){
+		line.setMap(null);
+	});	
+	this.tempOverlayLine.clear();
+	//init again
+	this.init(this.geometry);
+}
 
 PathEdit.prototype.addControlMarker = function (index, latLng) {	
 	this.createControlMarker(latLng, index+1);
@@ -83,32 +92,6 @@ PathEdit.prototype.addControlMarker = function (index, latLng) {
 		line.index = index;
 	});	
 };
-
-
-PathEdit.prototype.stop = function() {
-	var points = new google.maps.MVCArray();
-	this.markers.forEach(function(marker, index) {
-		points.push(marker.position);
-	});
-	this.geometry.overlay.setPath(points);
-	this.unload();
-}
-
-PathEdit.prototype.cancel = function() {
-	this.unload();
-}
-
-PathEdit.prototype.unload = function() {
-	this.markers.forEach(function(marker,index){
-		marker.setMap(null);
-	});
-	this.markers.clear();
-	this.tempOverlayLine.forEach(function(line,index){
-		line.setMap(null);
-	});	
-	this.tempOverlayLine.clear();
-	this.geometry.overlay.setMap(this.map);
-}
 
 
 PathEdit.prototype.createLineSegment = function(index) {
@@ -180,9 +163,6 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
 
 
 
-
-
-
 /*POLYGON EDIT TOOL*/
 
 
@@ -194,9 +174,6 @@ PolygonEdit.prototype = new EditGeometry();
 
 PolygonEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
-}
-
-PolygonEdit.prototype.start = function() {
 	this.points = this.geometry.overlay.getPath();
 	this.markers = new google.maps.MVCArray();
 	//create a marker for each edge point
@@ -226,23 +203,20 @@ PolygonEdit.prototype.start = function() {
 		this.createLineSegment(index);
 	}, this);
 	this.markers.forEach(createLineSegment);
-};
+}
 
-PolygonEdit.prototype.stop = function() {
+
+PolygonEdit.prototype.apply = function() {
 	var points = new google.maps.MVCArray();
 	this.markers.forEach(function(marker, index) {
 		points.push(marker.position);
 	});
 	points.push(this.markers.getAt(0).position);
 	this.geometry.overlay.setPath(points);
-	this.unload();
 }
 
-PolygonEdit.prototype.cancel = function() {
-	this.unload();
-}
-
-PolygonEdit.prototype.unload = function() {
+PolygonEdit.prototype.reset = function() {
+	//clear markers and line segments
 	this.markers.forEach(function(marker,index){
 		marker.setMap(null);
 	});
@@ -251,7 +225,8 @@ PolygonEdit.prototype.unload = function() {
 		line.setMap(null);
 	});	
 	this.tempOverlayLine.clear();
-	this.geometry.overlay.setMap(this.map);
+	//init again
+	this.init(this.geometry);
 }
 
 
@@ -264,7 +239,6 @@ PolygonEdit.prototype.addControlMarker = function (index, latLng) {
 	});
 	
 };
-
 
 PolygonEdit.prototype.createLineSegment = function(index) {
 	//if (index < this.markers.getLength()-1) {
