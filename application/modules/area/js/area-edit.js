@@ -9,10 +9,9 @@ var applyButton;
 var cancelButton;
 
 function enable_map_editing() {
-	if (jQuery("#edit-map-button").length) {
-		
+	if (jQuery("#area-coords-input").length) {
 		map = createGoogleMaps("map_canvas");
-		
+
 		//editable overlay
 		currentOverlays = new GeometryOverlays(map);
 		
@@ -27,42 +26,44 @@ function enable_map_editing() {
 		a[0] = area;
 		currentOverlays.addOverlaysJson(a);
 		
-		//init controls
-		controls = jQuery('<div style="margin: 5px;"></div>');
-		editIcon = jQuery('<img />')
-		switch (jQuery("div#edit-map-button #area-type").text()) {
-		case "marker":
-			editIcon.data('active', 'markerCtl.png');
-			editIcon.data('inactive', 'markerCtl-selected.png');
-			activeEditingTool = new MarkerEdit();
-			break;
-		case "polyline":
-			editIcon.data('active', 'path.png');
-			editIcon.data('inactive', 'path-selected.png');
-			activeEditingTool = new PathEdit();
-			break;
-		case "polygon":
-			editIcon.data('active', 'polygon.png');
-			editIcon.data('inactive', 'polygon-selected.png');
-			activeEditingTool = new PolygonEdit();
-			break;
-		}
-		editIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + editIcon.data('active'))
-		.attr('alt', jQuery("div#edit-map-button #edit-area-caption").text())
-		.attr('title', jQuery("div#edit-map-button #edit-area-caption").text())
-		.click(edit_click);
+		if (jQuery("#edit-map-button").length) {	
+			//init controls
+			controls = jQuery('<div style="margin: 5px;"></div>');
+			editIcon = jQuery('<img />')
+			switch (jQuery("div#edit-map-button #area-type").text()) {
+			case "marker":
+				editIcon.data('active', 'markerCtl.png');
+				editIcon.data('inactive', 'markerCtl-selected.png');
+				activeEditingTool = new MarkerEdit();
+				break;
+			case "polyline":
+				editIcon.data('active', 'path.png');
+				editIcon.data('inactive', 'path-selected.png');
+				activeEditingTool = new PathEdit();
+				break;
+			case "polygon":
+				editIcon.data('active', 'polygon.png');
+				editIcon.data('inactive', 'polygon-selected.png');
+				activeEditingTool = new PolygonEdit();
+				break;
+			}
+			editIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + editIcon.data('active'))
+			.attr('alt', jQuery("div#edit-map-button #edit-area-caption").text())
+			.attr('title', jQuery("div#edit-map-button #edit-area-caption").text())
+			.click(edit_click);
 
-		//apply and cancel button
-		applyButton = jQuery('<div id="applyAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
-		.text(jQuery('div#edit-map-button #apply-area-caption').text())
-		.click(apply_edit);
-		cancelButton = jQuery('<div id="cancelAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
-		.text(jQuery('div#edit-map-button #cancel-area-caption').text())
-		.click(abort_edit);
-		
-		controls.append(editIcon).append(applyButton).append(cancelButton);
-	    map.controls[google.maps.ControlPosition.TOP_LEFT].push(controls.get(0));
-	    activeEditingTool.setMap(map);
+			//apply and cancel button
+			applyButton = jQuery('<div id="applyAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
+			.text(jQuery('div#edit-map-button #apply-area-caption').text())
+			.click(apply_edit);
+			cancelButton = jQuery('<div id="cancelAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>').hide()
+			.text(jQuery('div#edit-map-button #cancel-area-caption').text())
+			.click(abort_edit);
+			
+			controls.append(editIcon).append(applyButton).append(cancelButton);
+		    map.controls[google.maps.ControlPosition.TOP_LEFT].push(controls.get(0));
+		    activeEditingTool.setMap(map);
+		}
 	}
 };
 
