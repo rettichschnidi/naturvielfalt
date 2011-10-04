@@ -821,18 +821,42 @@ function area_edit_map_form($form, &$form_state, $area_id=false) {
     $form['map']['map'] = array(
         '#markup' => theme('image', $variables_map)
     );
-  } else
-    $form['map']['map'] = area_map($area_id);    
+  } else {
+    $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) as center, ST_AsGeoJSON(geom) as geometry FROM area WHERE id = :id', array(":id" => $area_id));
+  	$values = $areas->fetchAssoc();
+  	$jsonCenter = json_decode($values["center"]);
+  	$jsonGeometry = json_decode($values["geometry"]);
+  	$type;
+  	$areaPoints = array();
+  	if ($jsonGeometry) {
+      if ('Polygon' == $jsonGeometry->type) {
+          $type = 'polygon';
+          foreach ($jsonGeometry->coordinates[0] as $coordinate) {
+              $areaPoints[] = array('lat' => $coordinate[1], 'lng' => $coordinate[0]);
+          }
+      } else if ('LineString' == $jsonGeometry->type) {
+          $type = 'polyline';
+          foreach ($jsonGeometry->coordinates as $coordinate) {
+              $areaPoints[] = array('lat' => $coordinate[1], 'lng' => $coordinate[0]);
+          }
+      } else if ('Point' == $jsonGeometry->type) {
+          $type = 'marker';
+          $areaPoints[] = array('lat' => $jsonGeometry->coordinates[1], 'lng' => $jsonGeometry->coordinates[0]);
+      }
+    }
+  	
+  	$form['map']['map'] = area_edit_map($area_id, $jsonCenter, $jsonGeometry);
     $form['map']['area_coords'] = array(
   	'#type' => 'hidden',
-	'#value' => '',
+	'#value' => json_encode($areaPoints),
 	'#attributes' => array('id' => 'area-coords-input')
 	);
 	$form['map']['area_type'] = array(
   	'#type' => 'hidden',
-	'#value' => '',
+	'#value' => $type,
 	'#attributes' => array('id' => 'area-type-input')
 	);
+  }
   return $form;
 }
 
@@ -891,7 +915,7 @@ function area_new_inventory($area_id) {
 	drupal_goto('inventory/new/area/'.$area_id);
 }
 
-function area_add_gmap_resources($bubble=true) {
+function area_add_gmap_resources($bubble=true, $areaselect=true) {
   drupal_add_library('system', 'ui.autocomplete');
   
   $areaJsPath = drupal_get_path('module', 'area') . '/js/';
@@ -909,7 +933,8 @@ function area_add_gmap_resources($bubble=true) {
     drupal_add_js($areaJsPath . 'lib/infobubble.js');
   drupal_add_js($areaCSSPath . 'overlay-style.js');
   drupal_add_js($inventoryJsPath . 'util.js');
-  drupal_add_js($areaJsPath . 'area-select.js');
+  if ($areaselect)
+  	drupal_add_js($areaJsPath . 'area-select.js');
 }
 
 function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) {
@@ -957,6 +982,51 @@ function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) 
     '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div>'. $editButton .'</div>'
   );
 }
+
+
+
+function area_edit_map($areaId, $centerArray, $geometryJSON) {
+  $map_id='map_canvas';
+  area_add_gmap_resources(false, false);
+  
+  $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) as center, ST_AsGeoJSON(geom) as geometry FROM area WHERE id = :id', array(":id" => $areaId));
+  $values = $areas->fetchAssoc();
+  $json = json_decode($values["center"]);
+  
+  $center="";
+  $center = $json->coordinates[1] . ','. $json->coordinates[0];
+  $center = ' data-center="'.$center.'"';
+
+  
+  $zoom = ' data-zoom="15" ';
+  
+  $inventories = db_query('select Count(*) from head_inventory where area_id = ' . intval($areaId)); 
+  $inventoryCount = $inventories->fetchColumn(0); 
+    
+  if (intval($inventoryCount) == 0) {
+    $area_json = json_decode($values["geometry"]);
+  	$t = '';
+	if ('Polygon' == $area_json->type) {
+ 	    $t = 'polygon';
+    } else if ('LineString' == $area_json->type) {
+        $t = 'polyline';
+    } else if ('Point' == $area_json->type) {
+    	$t = 'marker';
+  	}
+  	
+    //DAVECODE
+  	$edit =   '<span id="edit-area-caption">' . t('edit area') . '</span>';
+  	$apply =  '<span id="apply-area-caption">' . t('apply area') . '</span>';
+  	$cancel = '<span id="cancel-area-caption">' . t('cancel') . '</span>';
+  	$type =   '<span id="area-type">' . $t . '</span>';
+  	$editButton = '<div id="edit-map-button" style="display:none;">'. $edit . $apply . $cancel . $type .' </div>';
+  }
+    
+  return array(
+    '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div>'. $editButton .'</div>'
+  );
+}
+
 
 /**
  * 
