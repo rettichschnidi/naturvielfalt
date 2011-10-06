@@ -2,7 +2,6 @@ var currentOverlays;
 var currentMap;
 var editTool;
 var currentGeometry;
-var init = false;
 var activeEditingTool;
 var applyButton;
 var resetButton;
@@ -28,6 +27,7 @@ function enable_map_editing() {
 		if (jQuery("#edit-map-button").length) {	
 			//init controls
 			controls = jQuery('<div style="margin: 5px;"></div>');
+			controlsTool = jQuery('<div style="margin: 5px;"></div>');
 			
 			switch (jQuery("div#edit-map-button #area-type").text()) {
 			case "marker":
@@ -43,11 +43,9 @@ function enable_map_editing() {
 			
 		    activeEditingTool.setMap(map);
 
-			
 			for (var o in currentOverlays.overlays) {
 				currentGeometry = currentOverlays.overlays[o];
-				activeEditingTool.init(currentGeometry);
-				init = true;
+				activeEditingTool.init(currentGeometry, controlsTool);
 			    break;
 			}
 			
@@ -56,6 +54,10 @@ function enable_map_editing() {
 			.click(abort_edit);
 			controls.append(resetButton);
 		    map.controls[google.maps.ControlPosition.TOP_LEFT].push(controls.get(0));
+		    if (controlsTool.children().length) {
+		    	map.controls[google.maps.ControlPosition.TOP_LEFT].push(controlsTool.get(0));
+		    	//controls.append(controlsTool);
+		    }
 		    //submit event handler
 		    jQuery("#area-edit-form").submit(apply_edit);
 		}
@@ -64,8 +66,8 @@ function enable_map_editing() {
 
 
 /**
- * Creates the google maps object and attaches it to the element with the id
- * 'map_canvas'. Returns a google.maps.Map
+ * Creates the google maps object and attaches it to the element with the given id.
+ * The google map object is returned
  */
 function createGoogleMaps (map_id) {
   var mapcenter = [46.77373, 8.25073];
