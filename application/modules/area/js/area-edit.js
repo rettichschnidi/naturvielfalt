@@ -6,16 +6,16 @@ var activeEditingTool;
 var applyButton;
 var resetButton;
 
+
+
 function enable_map_editing() {
 	if (jQuery("#area-coords-input").length) {
 		map = createGoogleMaps("map_canvas");
-
-		//editable overlay
+		//editable GeometryOverlays
 		currentOverlays = new GeometryOverlays(map);
-		
+		//retrieve coords from hidden input
 		var coords = jQuery("#area-coords-input").val().replace("&quot;", '"');
 		var coordsArray = JSON.parse(jQuery("#area-coords-input").val());
-		    
 		area = new Object();
 		area.type = jQuery("#area-type-input").val();
 		var coords = jQuery("#area-coords-input").val().replace("&quot;", '"');
@@ -23,12 +23,29 @@ function enable_map_editing() {
 		a = new Array();
 		a[0] = area;
 		currentOverlays.addOverlaysJson(a);
-		
 		if (jQuery("#edit-map-button").length) {	
-			//init controls
 			controls = jQuery('<div style="margin: 5px;"></div>');
-			controlsTool = jQuery('<div style="margin: 5px;"></div>');
-			
+			//create undo button
+			var undo = jQuery('<img style="display:inline;"/>');
+			undo.data('inactive', 'undo.png');
+			undo.data('selected', 'undo-selected.png');
+			var confirmMessage = jQuery("div#edit-map-button #reset-area-confirmation").text();
+			var handler = function() {
+				undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('selected'));
+				if (confirm(jQuery("div#edit-map-button #reset-area-confirmation").text())) {
+					activeEditingTool.reset();
+				}
+				undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'));
+			};
+			var toolTip = jQuery("div#edit-map-button #add-marker-caption").text();
+			undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'))
+			.attr('alt', toolTip)
+			.attr('title', toolTip)
+			.click(handler).mouseout(function(){
+				undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'));
+			});
+			controls.append(undo);
+			//init tool for editing area
 			switch (jQuery("div#edit-map-button #area-type").text()) {
 			case "marker":
 				activeEditingTool = new MarkerEdit();
@@ -40,24 +57,13 @@ function enable_map_editing() {
 				activeEditingTool = new PolygonEdit();
 				break;
 			}
-			
 		    activeEditingTool.setMap(map);
-
 			for (var o in currentOverlays.overlays) {
 				currentGeometry = currentOverlays.overlays[o];
-				activeEditingTool.init(currentGeometry, controlsTool);
+				activeEditingTool.init(currentGeometry, controls);
 			    break;
 			}
-			
-			resetButton = jQuery('<div id="cancelAreaButton" style="background-color:white; border: 1px solid black; padding:2px;"></div>')
-			.text(jQuery('div#edit-map-button #cancel-area-caption').text())
-			.click(abort_edit);
-			controls.append(resetButton);
 		    map.controls[google.maps.ControlPosition.TOP_LEFT].push(controls.get(0));
-		    if (controlsTool.children().length) {
-		    	map.controls[google.maps.ControlPosition.TOP_LEFT].push(controlsTool.get(0));
-		    	//controls.append(controlsTool);
-		    }
 		    //submit event handler
 		    jQuery("#area-edit-form").submit(apply_edit);
 		}
@@ -65,10 +71,8 @@ function enable_map_editing() {
 };
 
 
-/**
- * Creates the google maps object and attaches it to the element with the given id.
- * The google map object is returned
- */
+/*Creates the google maps object and attaches it to the element with the given id.
+  The google map object is returned*/
 function createGoogleMaps (map_id) {
   var mapcenter = [46.77373, 8.25073];
   var canvas = jQuery('#'+ map_id);
@@ -91,7 +95,7 @@ function createGoogleMaps (map_id) {
   return map;
 };
 
-
+/*Pull changes from active editing tool. store them to hidden field*/
 function apply_edit() {		
 	var area_coords = new Array();
 	activeEditingTool.apply();
@@ -103,11 +107,6 @@ function apply_edit() {
 	jQuery("#area-type-input").val(activeEditingTool.geometry.type);
 };
 
-function abort_edit() {
-	activeEditingTool.reset();
-};
-
-
 /*load the area*/
 var areaselect = null;
 jQuery(document).ready(function() {
@@ -115,8 +114,3 @@ jQuery(document).ready(function() {
 	  enable_map_editing();
   }
 });
-
-
-/**
- * 
- */

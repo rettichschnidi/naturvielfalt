@@ -969,17 +969,10 @@ function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) 
     } else if ('Point' == $area_json->type) {
     	$t = 'marker';
   	}
-  	
-    //DAVECODE
-  	$edit =   '<span id="edit-area-caption">' . t('edit area') . '</span>';
-  	$apply =  '<span id="apply-area-caption">' . t('apply area') . '</span>';
-  	$cancel = '<span id="cancel-area-caption">' . t('cancel') . '</span>';
-  	$type =   '<span id="area-type">' . $t . '</span>';
-  	$editButton = '<div id="edit-map-button" style="display:none;">'. $edit . $apply . $cancel . $type .' </div>';
   }
     
   return array(
-    '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div>'. $editButton .'</div>'
+    '#markup' => '<div id="map"><div id="'.$map_id.'" data-areaid="'.strval($areaId).'"'.$center.$zoom.$additional.' style="height: 100%"></div></div>'
   );
 }
 
@@ -1016,6 +1009,7 @@ function area_edit_map($areaId, $centerArray, $geometryJSON) {
   	
     //DAVECODE
   	$edit =   '<span id="remove-marker-caption">' . t('remove marker') . '</span>';
+	$edit =  $edit. '<span id="reset-area-confirmation">' . t('Are you sure?') . '</span>';
   	$apply =  '<span id="add-marker-caption">' . t('add marker') . '</span>';
   	$cancel = '<span id="cancel-area-caption">' . t('cancel') . '</span>';
   	$type =   '<span id="area-type">' . $t . '</span>';
