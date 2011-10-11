@@ -6,8 +6,6 @@ var activeEditingTool;
 var applyButton;
 var resetButton;
 
-
-
 function enable_map_editing() {
 	if (jQuery("#area-coords-input").length) {
 		map = createGoogleMaps("map_canvas");

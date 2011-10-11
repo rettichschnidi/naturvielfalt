@@ -13,7 +13,7 @@ MarkerEdit.prototype.init = function(geometry) {
 	this.clickListener = google.maps.event.addListener(this.map, 'click', jQuery.proxy(this.click, this));
     this.map.setOptions({disableDoubleClickZoom: true, draggableCursor: 'crosshair'});
 }
-MarkerEdit.prototype.apply = function(latLngs) {
+MarkerEdit.prototype.apply = function() {
 };
 /*set back to old position*/
 MarkerEdit.prototype.reset = function() {
@@ -166,7 +166,7 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
 	var that = this;
     // enable dragging the markers
     google.maps.event.addListener(marker, "drag", function () {
-    	if (marker.index >= 0) {
+    	if (marker.index > 0) {
     		that.lines.getAt(marker.index-1).getPath().setAt(1, marker.getPosition());
     	}
     	if (marker.index < that.markers.length-1) {
