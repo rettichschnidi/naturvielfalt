@@ -533,8 +533,6 @@ Polyline.prototype.closestPoint = function(latLng) {
 	var currentClosestPoint;
 	var p3 = latLng;
 	var path = this.getLatLngs();
-	var lat;
-	var lng;
 	
 	for (var i = 0; i < path.getLength()-1; i++) {
 		var p1 = path.getAt(i);
@@ -557,11 +555,13 @@ Polyline.prototype.closestPoint = function(latLng) {
 		var distance = google.maps.geometry.spherical.computeDistanceBetween(latLng, closest); 
 
 		if ( distance < minDist) {
+			// point is within 100m of path
 			return latLng;	
 		} else if (distance < currentMinDist){
+			// migth be the closest to the path..
 			var multiplier = minDist / distance;
-			lat = closest.lat() + (latLng.lat() - closest.lat()) * multiplier;
-			lng = closest.lng() + (latLng.lng() - closest.lng()) * multiplier;
+			var lat = closest.lat() + (latLng.lat() - closest.lat()) * multiplier;
+			var lng = closest.lng() + (latLng.lng() - closest.lng()) * multiplier;
 			currentClosestPoint = new google.maps.LatLng(lat, lng);
 			currentMinDist = distance;
 		}
@@ -917,12 +917,11 @@ Polygon.prototype.removeMarkers = function(){
  * Otherwise it returns the closest position next to the polygon.
  */
 Polygon.prototype.closestPoint = function(latLng){
-	// Exclude points outside of bounds as there is no way they are in the poly
 	var inPoly = false;
 	var bounds = this.getBounds();
 
 	if (bounds.contains(latLng)) {
-		// Raycast point in polygon method
+		// Raycast point in polygon method, if point is in bounds
 		var path = this.getLatLngs();
 		var numPoints = path.getLength();
 		var j = numPoints - 1;
@@ -946,6 +945,8 @@ Polygon.prototype.closestPoint = function(latLng){
 	if (inPoly) {
 		return latLng;
 	} else {
+		// latLng is not inside the polygon.
+		// calculate the closest point to the boundaries of the polygon
 		return Polyline.prototype.closestPoint.call(this, latLng); 
 	}
 }
@@ -1002,8 +1003,10 @@ Marker.prototype.closestPoint = function(latLng) {
 	var distance = google.maps.geometry.spherical.computeDistanceBetween(latLng, center); 
 
 	if (distance < minDist) {
+		// point is within boundaries
 		return latLng;
-	} else { 
+	} else {
+		// calculate closest point
 		var multiplier = minDist / distance;
 		var lat = center.lat() + (latLng.lat() - center.lat()) * multiplier;
 		var lng = center.lng() + (latLng.lng() - center.lng()) * multiplier;
