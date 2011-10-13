@@ -172,7 +172,7 @@ GeometryOverlays.prototype.highlightOverlay = function(id) {
 
 
 /**
- * Abstract Geometry, implementation should provide this.overlay, this.type, addLatLng(), ?removeMarkers() and getCenter()
+ * Abstract Geometry, implementation should provide this.overlay, this.type, addLatLng(), ?removeMarkers(), contains(latLng) and getCenter()
  */
 function Geometry() {
      
@@ -522,6 +522,53 @@ Polyline.prototype.getCenter = function() {
     return bounds.getCenter();
 };
 
+/**
+ * Calculates the closest Point from the pathline based on the given location.
+ * If the point is 100m from the path, the same position is returned.
+ * Otherwise it calculates the closest point from the given location (100m from path)
+ */
+Polyline.prototype.closestPoint = function(latLng) {
+	var minDist = 100;
+	var currentMinDist = Number.MAX_VALUE;
+	var currentClosestPoint;
+	var p3 = latLng;
+	var path = this.getLatLngs();
+	var lat;
+	var lng;
+	
+	for (var i = 0; i < path.getLength()-1; i++) {
+		var p1 = path.getAt(i);
+		var p2 = path.getAt(i+1);	
+		
+		var xDelta = p2.lng() - p1.lng();
+		var yDelta = p2.lat() - p1.lat();
+
+		var u = ((p3.lng() - p1.lng()) * xDelta + (p3.lat() - p1.lat()) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+
+		var closest;
+		if (u < 0) {
+			closest = p1;
+		} else if (u > 1) {
+			closest = p2;
+		} else {
+			closest = new google.maps.LatLng(p1.lat() + u * yDelta, p1.lng() + u * xDelta);
+		}
+
+		var distance = google.maps.geometry.spherical.computeDistanceBetween(latLng, closest); 
+
+		if ( distance < minDist) {
+			return latLng;	
+		} else if (distance < currentMinDist){
+			var multiplier = minDist / distance;
+			lat = closest.lat() + (latLng.lat() - closest.lat()) * multiplier;
+			lng = closest.lng() + (latLng.lng() - closest.lng()) * multiplier;
+			currentClosestPoint = new google.maps.LatLng(lat, lng);
+			currentMinDist = distance;
+		}
+	}
+	return currentClosestPoint;
+}
+
 
 /**
  * Polygon extends Geometry
@@ -864,6 +911,45 @@ Polygon.prototype.removeMarkers = function(){
     me.vmarkers.length = 0;
 };
 
+/**
+ * Returns a position that is inside the polygon or at least 100m close to the border.
+ * If the specified position is inside or 100m next to the polygon, the same position is returned.
+ * Otherwise it returns the closest position next to the polygon.
+ */
+Polygon.prototype.closestPoint = function(latLng){
+	// Exclude points outside of bounds as there is no way they are in the poly
+	var inPoly = false;
+	var bounds = this.getBounds();
+
+	if (bounds.contains(latLng)) {
+		// Raycast point in polygon method
+		var path = this.getLatLngs();
+		var numPoints = path.getLength();
+		var j = numPoints - 1;
+
+		for ( var i = 0; i < numPoints; i++) {
+			var vertex1 = path.getAt(i);
+			var vertex2 = path.getAt(j);
+			if (vertex1.lng() < latLng.lng() && vertex2.lng() >= latLng.lng()
+					|| vertex2.lng() < latLng.lng()
+					&& vertex1.lng() >= latLng.lng()) {
+				if (vertex1.lat() + (latLng.lng() - vertex1.lng())
+						/ (vertex2.lng() - vertex1.lng())
+						* (vertex2.lat() - vertex1.lat()) < latLng.lat()) {
+					inPoly = !inPoly;
+				}
+			}
+			j = i;
+		}
+	}
+	
+	if (inPoly) {
+		return latLng;
+	} else {
+		return Polyline.prototype.closestPoint.call(this, latLng); 
+	}
+}
+
 
 /**
  * Marker extends Geometry
@@ -909,4 +995,19 @@ Marker.prototype.getArea = function() {
 Marker.prototype.getLatLngs = function() {
     return new google.maps.MVCArray([this.overlay.getCenter()]);
 };
+
+Marker.prototype.closestPoint = function(latLng) {
+	var minDist = 100;
+	var center = this.getCenter();
+	var distance = google.maps.geometry.spherical.computeDistanceBetween(latLng, center); 
+
+	if (distance < minDist) {
+		return latLng;
+	} else { 
+		var multiplier = minDist / distance;
+		var lat = center.lat() + (latLng.lat() - center.lat()) * multiplier;
+		var lng = center.lng() + (latLng.lng() - center.lng()) * multiplier;
+		return new google.maps.LatLng(lat, lng);
+	}
+}
 

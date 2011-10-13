@@ -956,146 +956,74 @@ var inventory = {
   }
   
   inventory.placeMarker = function(position) {
-	  var gOverlay;
-	  for (var o in inventory.map.mapOverlays.overlays) {
-		  gOverlay = inventory.map.mapOverlays.overlays[o];
-		  break;
-	  }
-	if (isPointInGeometry(position, gOverlay)) {
-		if(!inventory.location) {
-		      inventory.location = new google.maps.Marker({
-		        map: inventory.map.map,
-		        draggable: inventory.locationform.is('form'),
-		        animation: google.maps.Animation.DROP,
-		        position: position
-		      });
-		      var geocoder = new google.maps.Geocoder();
-		      google.maps.event.addListener(inventory.location, 'position_changed', function() {
-		        var pos = inventory.location.getPosition();
-		        inventory.locationform.find('input[name="lat"]').val(pos.lat());
-		        inventory.locationform.find('input[name="lng"]').val(pos.lng());
-		      });
-		      google.maps.event.addListener(inventory.location, 'dragstart', function(){
-		    	  inventory.map.map.setOptions({draggable:false});
-		      })
-		      google.maps.event.addListener(inventory.location, 'drag', function(event){
-		    	  var gOverlay;
-		    	  for (var o in inventory.map.mapOverlays.overlays) {
-		    		  gOverlay = inventory.map.mapOverlays.overlays[o];
-		    		  break;
-				  }
-		    	  if (!isPointInGeometry(event.latLng, gOverlay)) {
-		    		  //console.debug("out the shizzle!");
-		    		  //inventory.location.setOptions({draggable: false});
-		    		  inventory.location.setPosition(inventory.location.lastValidPos);
-		    		  //inventory.location.setAnimation(google.maps.Animation.DROP);
-		    		  ///google.maps.event.trigger(inventory.location, 'dragend');
-		    	  } else {
-		    		  inventory.location.lastValidPos = event.latLng;
-		    	  }
-		      })
-		      google.maps.event.addListener(inventory.location, 'dragend', function() {
-		          var pos = inventory.location.getPosition();
-				  inventory.location.setOptions({draggable: true});
-		          geocoder.geocode({'latLng': pos, language: 'de'}, function (results, status) {
-		              if (status == google.maps.GeocoderStatus.OK) {
-		                  var address = {};
-		                  jQuery.each(results, function(index, result) {
-
-		                      if (result.types == 'postal_code') {
-		                          var length = result.address_components.length;
-		                          address.locality = result.address_components[1].long_name;
-		                          address.zip = result.address_components[0].long_name;
-		                          address.canton = result.address_components[length-2].short_name;
-		                          address.country = result.address_components[length-1].long_name;
-		                      }
-		                      if (result.types == 'locality,political') {
-		                          address.township = result.address_components[0].long_name;
-		                      }
-		                  });
-		                  inventory.locationform.find('input[name="locality"]').val(address.locality);
-		                  inventory.locationform.find('input[name="zip"]').val(address.zip);
-		                  inventory.locationform.find('input[name="canton"]').val(address.canton);
-		                  inventory.locationform.find('input[name="country"]').val(address.country);
-		                  inventory.locationform.find('input[name="township"]').val(address.township);
-
-		                  //console.log(address);
-		              } else {
-		                  console.error("Geocoder failed due to: " + status);
-		              }
-		              inventory.map.map.setOptions({draggable:true});
-		          });
-		      });
-		      
-		    }
-		    inventory.location.setPosition(position);	
+	var gOverlay = null;
+	for ( var o in inventory.map.mapOverlays.overlays) {
+		gOverlay = inventory.map.mapOverlays.overlays[o];
+		break;
 	}
+	if (gOverlay != null) {
+		position = gOverlay.closestPoint(position);	
+	}
+	if(!inventory.location) {
+      inventory.location = new google.maps.Marker({
+        map: inventory.map.map,
+        draggable: inventory.locationform.is('form'),
+        animation: google.maps.Animation.DROP,
+        position: position
+      });
+      var geocoder = new google.maps.Geocoder();
+      google.maps.event.addListener(inventory.location, 'position_changed', function() {
+        var pos = inventory.location.getPosition();
+        inventory.locationform.find('input[name="lat"]').val(pos.lat());
+        inventory.locationform.find('input[name="lng"]').val(pos.lng());
+      });
+      google.maps.event.addListener(inventory.location, 'dragstart', function(){
+    	  inventory.map.map.setOptions({draggable:false});
+      })
+      google.maps.event.addListener(inventory.location, 'drag', function(event){
+    	  if (gOverlay == null) {
+    		  for ( var o in inventory.map.mapOverlays.overlays) {
+    				gOverlay = inventory.map.mapOverlays.overlays[o];
+    				break;
+    		  }
+    	  }
+    	  var pos = gOverlay.closestPoint(inventory.location.getPosition());
+    	  inventory.location.setPosition(pos);
+      })
+      google.maps.event.addListener(inventory.location, 'dragend', function() {
+          var pos = inventory.location.getPosition();
+          geocoder.geocode({'latLng': pos, language: 'de'}, function (results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                  var address = {};
+                  jQuery.each(results, function(index, result) {
+
+                      if (result.types == 'postal_code') {
+                          var length = result.address_components.length;
+                          address.locality = result.address_components[1].long_name;
+                          address.zip = result.address_components[0].long_name;
+                          address.canton = result.address_components[length-2].short_name;
+                          address.country = result.address_components[length-1].long_name;
+                      }
+                      if (result.types == 'locality,political') {
+                          address.township = result.address_components[0].long_name;
+                      }
+                  });
+                  inventory.locationform.find('input[name="locality"]').val(address.locality);
+                  inventory.locationform.find('input[name="zip"]').val(address.zip);
+                  inventory.locationform.find('input[name="canton"]').val(address.canton);
+                  inventory.locationform.find('input[name="country"]').val(address.country);
+                  inventory.locationform.find('input[name="township"]').val(address.township);
+
+                  console.log(address);
+              } else {
+                  console.error("Geocoder failed due to: " + status);
+              }
+          });
+          inventory.map.map.setOptions({draggable:true});
+      });
+	}
+	inventory.location.setPosition(position);	
   }
   
   $(document).ready(inventory.init);
 })(jQuery);
-
-function isPointInGeometry(latLng, geometry) {
-	var inPoly = false;
-	switch (geometry.type) {
-		case 'polygon':
-		  // Exclude points outside of bounds as there is no way they are in the poly
-		  var bounds = geometry.getBounds();
-
-		  if(bounds != null && !bounds.contains(latLng)) {
-		    return false;
-		  }
-
-		  // Raycast point in polygon method
-		  var path = geometry.getLatLngs();
-		  var numPoints = path.getLength();
-		  var j = numPoints-1;
-
-		  for(var i=0; i < numPoints; i++) { 
-		      var vertex1 = path.getAt(i);
-		      var vertex2 = path.getAt(j);
-		      if (vertex1.lng() < latLng.lng() && vertex2.lng() >= latLng.lng() || vertex2.lng() < latLng.lng() && vertex1.lng() >= latLng.lng())  {
-		        if (vertex1.lat() + (latLng.lng() - vertex1.lng()) / (vertex2.lng() - vertex1.lng()) * (vertex2.lat() - vertex1.lat()) < latLng.lat()) {
-		          inPoly = !inPoly;
-		        }
-		      }
-		      j = i;
-		  }
-		  break;
-		case 'polyline':
-			var minDist = 0.02;
-			var p3 = latLng;
-			var path = geometry.getLatLngs();
-
-			for (var i = 0; i < path.getLength()-1; i++) {
-				//console.debug("inside");
-				var p1 = path.getAt(i);
-				var p2 = path.getAt(i+1);	
-				
-				var xDelta = p2.lng() - p1.lng();
-				var yDelta = p2.lat() - p1.lat();
-
-				var u = ((p3.lng() - p1.lng()) * xDelta + (p3.lat() - p1.lat()) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
-
-				var closest;
-				if (u < 0) {
-					closest = p1;
-				} else if (u > 1) {
-					closest = p2;
-				} else {
-					closest = new google.maps.LatLng(p1.lat() + u * yDelta, p1.lng() + u * xDelta);
-				}
-
-				var diffx = closest.lng() - p3.lng();
-				var diffy = closest.lat() - p3.lat();
-				
-				if (Math.sqrt(diffx*diffx + diffy*diffy) < minDist)
-					return true;	
-			}
-			return false;
-		case 'marker':
-			inPoly = true;
-			break;
-	}
-	return inPoly;
-}
