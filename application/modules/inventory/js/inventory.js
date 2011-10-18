@@ -17,11 +17,11 @@ var inventory = {
   templates: false,
   base: false,
   map: false,
-  entry_links: {
-    '.additional': 0,
-    '.images': 1,
-    '.location': 0
-  },
+  entry_links: new Array(
+    '.additional',
+    '.images',
+    '.location')
+	,
   last_date: false
   
 };
@@ -612,12 +612,21 @@ var inventory = {
   
   inventory.rewriteLinks = function(context, links, id) {
     for(var link in links) {
-      var element = context.find(link);
+      var c = links[link]; //css class
+      var element = context.find(c);
       if(!element.size())
         return;
       var href = element.attr('href').split('/');
-      href[href.length-2-links[link]] = id;
-      href[href.length-1-links[link]] = 'medias';
+      
+      switch (c) {
+      case '.location', '.additional':
+    	  href[href.length-1] = id;
+    	  break;
+      case '.images':
+    	  href[href.length-3] = id;
+    	  break;
+      }
+      
       element.attr('href', href.join('/'));
     }
   }
