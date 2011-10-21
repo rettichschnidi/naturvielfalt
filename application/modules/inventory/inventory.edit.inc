@@ -598,10 +598,13 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
   $count = 0;
   $form[null] = array(
     '#type' => 'fieldset',
+    '#title' => t('Standard Attributes')
   );
   $form[$head_inventory_id] = array(
     '#type' => 'fieldset',
+    '#title' => t('Additional Attributes')
   );
+
   foreach($columns as $column) {
     if($column['visible'])
       continue; // We do not want to edit fields which are visible in the edit entries form
@@ -627,15 +630,18 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
   }
   
   $form['actions'] = array('#type' => 'actions');
-  if($count)
+  if($count) {
     $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save')
     );
-  else
+  }
+  else {
     $form['message'] = array(
       '#markup' => '<div class="messages status">'.t('There are no additional fields available for this inventory group.').'</div>'
     );
+    unset($form['head_inventory_id']);
+  }
   $form['actions']['close'] = array(
     '#markup' => l(t('Cancel'), 'inventory/'.$head_inventory_id.'/edit')
   );
@@ -1705,21 +1711,26 @@ function _inventory_row_factory($id, $data, $i, $key, $inventory_type_id, $colum
   }
   array_push($row[count($row)-1]['class'], 'last');
   if($additional) {
-    $row[] = 
-      '<a class="additional" href="'.url('inventory/'.$id.'/edit_entry/'.$inventory_type_id.'/'.$data['id']).'" title="'.t('Additional fields').'">
-        <img src="'.url(drupal_get_path('module', 'inventory').'/images/additional_fields.gif').'" alt="'.t('Additional fields').'" />
-      </a>';
-    $row[] = 
-      '<a class="location" href="'.url('inventory/'.$id.'/edit_entry_location/'.$data['id']).'" title="'.t('Location').'">
-        <img src="'.url(drupal_get_path('module', 'inventory').'/images/location'.($data['location'] ? '' : '_unset').'.gif').'" alt="'.t('Location').'" />
-      </a>';
-    $row[] = 
-      '<a class="images" href="'.url('gallery/inventory_entry/'.$data['id'].'/medias/edit').'" title="'.t('Medias').'">
-        <img src="'.url(drupal_get_path('module', 'inventory').'/images/images.gif').'" alt="'.t('Medias').'" />
-      </a>';
+    $row[] = array(
+    	'data' =>'<a class="additional" href="'.url('inventory/'.$id.'/edit_entry/'.$inventory_type_id.'/'.$data['id']).'" title="'.t('Additional fields').'">
+                 <img src="'.url(drupal_get_path('module', 'inventory').'/images/additional_fields.gif').'" alt="'.t('Additional fields').'" />
+                 </a>',
+         'class' => 'icon');
+    $row[] = array(
+      'data' => '<a class="location" href="'.url('inventory/'.$id.'/edit_entry_location/'.$data['id']).'" title="'.t('Location').'">
+                 <img src="'.url(drupal_get_path('module', 'inventory').'/images/location'.($data['location'] ? '' : '_unset').'.gif').'" alt="'.t('Location').'" />
+                 </a>',
+       'class' => 'icon');
+    $row[] = array(
+    	'data' =>'<a class="images" href="'.url('gallery/inventory_entry/'.$data['id'].'/medias/edit').'" title="'.t('Medias').'">
+                 <img src="'.url(drupal_get_path('module', 'inventory').'/images/images.gif').'" alt="'.t('Medias').'" />
+                 </a>',
+        'class' => 'icon');
+      
   }
   $row[] = array(
-    'data' => '<input type="checkbox" class="delete" name="entries['.$key.']['.$i.'][delete]" value="1" />'.$hidden
+    'data' => '<input type="checkbox" class="delete" name="entries['.$key.']['.$i.'][delete]" value="1" />'.$hidden,
+  	'class' => 'icon'
   );
   return $row;
 }

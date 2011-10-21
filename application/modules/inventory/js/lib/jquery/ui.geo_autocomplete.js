@@ -83,8 +83,7 @@ jQuery.widget( "ui.geo_autocomplete", {
 		},
 		// returns the HTML used for each autocomplete list item
 		getItemHTML: function(_item) {		
-			var _src = 'http://maps.google.com/maps/api/staticmap?visible=' + _item.viewport.getSouthWest().toUrlValue() + '|' + _item.viewport.getNorthEast().toUrlValue() + '&size=' + this.mapwidth + 'x' + this.mapheight + '&maptype=' + this.maptype + '&sensor=' + (this.mapsensor ? 'true' : 'false');
-			return '<a><img style="float:left;margin-right:5px;" src="' + _src + '" width="' + this.mapwidth + '" height="' + this.mapheight + '" /> ' + _item.label.replace(/,/gi, ',<br/>') + '<br clear="both" /></a>'
+			return '<a>' + _item.label.replace(/,/gi, ',<br/>') + '<br clear="both" /></a>'
 		}
 	}
 });

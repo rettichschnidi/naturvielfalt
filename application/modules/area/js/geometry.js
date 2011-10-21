@@ -104,6 +104,7 @@ function GeometryOverlays(map){
     this.map = map;
     this.bounds = new google.maps.LatLngBounds();
     this.overlays = []; //contains all the overlays currently shown on the map; key = overlay.id
+    this.fitBoundsOnLoad = true;
 }
 
 GeometryOverlays.prototype.addOverlaysJson = function(json){
@@ -147,7 +148,8 @@ GeometryOverlays.prototype.addOverlaysJson = function(json){
             this.bounds.extend(points[n]);
         }
     }
-    this.map.fitBounds(this.bounds);
+    if (this.fitBoundsOnLoad)
+    	this.map.fitBounds(this.bounds);
 };
 
 /**

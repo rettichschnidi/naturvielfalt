@@ -433,14 +433,22 @@ var inventory = {
             closeText: '',
             close: function(event, ui) {
               $(this).remove();
-            },
-            width: 500
+            }
           });
           inventory.initAdditionalFields();
           dialog.find('#edit-actions a').click(function(e) {
             e.preventDefault();
             $(this).closest('.ui-dialog-content').dialog('close');
           });
+          dialog.find('legend').css('background-color', 'white');
+          dialog.find('fieldset').each(function(){
+        	  if ($(this).find('div.fieldset-wrapper').children().length == 0) {
+        	  	  $(this).detach();
+        	  }
+          });
+          var width = dialog.find('fieldset').width();
+          dialog.dialog("option", "width", width + 130);
+          dialog.dialog("option", "position", "center");
           dialog.find('form').submit(function(e) {
             var values = $(this).serializeArray();
             var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
@@ -516,6 +524,8 @@ var inventory = {
             var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
             var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').closest('tr');
             var base_name = row.find('input.entry_id').attr('name');
+            
+            $.data(document.body, 'prev_pos', inventory.location.position);
 
             inventory.addInput(row, base_name, $(this), 'lat');
             inventory.addInput(row, base_name, $(this), 'lng');
@@ -619,7 +629,8 @@ var inventory = {
       var href = element.attr('href').split('/');
       
       switch (c) {
-      case '.location', '.additional':
+      case '.location':
+      case '.additional':
     	  href[href.length-1] = id;
     	  break;
       case '.images':
@@ -889,17 +900,25 @@ var inventory = {
   inventory.initLocation = function() {
     if(!$('#map_location').size())
       return;
+    inventory.map = new AreaSelect('map_location');
     inventory.locationform = $('#inventory-edit-entry-location-form');
     if(!inventory.locationform.size())
       inventory.locationform = $('body');
-    inventory.map = new AreaSelect('map_location');
     var position = false;
     if(inventory.locationform.find('input[name="lat"]').val() !== '' || inventory.locationform.find('input[name="lng"]').val() !== '')
       position = new google.maps.LatLng(parseFloat(inventory.locationform.find('input[name="lat"]').val()), parseFloat(inventory.locationform.find('input[name="lng"]').val()));
     if(position) {
       inventory.placeMarker(position);
       inventory.map.map.panTo(position);
+      // prevent map from adjusting viewport
+      inventory.map.mapOverlays.fitBoundsOnLoad = false;
+      if ($.data(document.body, 'prev_pos') == null)
+    	  $.data(document.body, 'prev_pos', position);  
+    } else if ($.data(document.body, 'prev_pos') != null) {
+      inventory.map.map.panTo($.data(document.body, 'prev_pos'));
+      inventory.map.mapOverlays.fitBoundsOnLoad = false;
     }
+    
     if(!inventory.locationform.is('form'))
       return;
     inventory.map_pan = document.createElement('div');

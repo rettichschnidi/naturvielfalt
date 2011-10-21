@@ -22,3 +22,8 @@ td.delete div {
   background-color:#fff;
   border-bottom-width:2px;
 }
+
+td.icon {
+  padding-left:5px;
+  padding-right:5px;	
+}

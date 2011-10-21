@@ -259,7 +259,7 @@ function AreaSelect(map_id) {
 
       search.geo_autocomplete({
           geocoder_region: 'Schweiz',
-          geocoder_types:  'natural_feature,street_address,route,intersection,locality,political,sublocality,neighborhood,country',
+          geocoder_types:  'locality', //,locality,political,sublocality,neighborhood,country',
           maptype: 'roadmap',
           mapwidth: 200,
           select: function(_event, _ui) {
