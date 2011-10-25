@@ -368,10 +368,15 @@ var inventory = {
     inventory.hideLoading();
   }
   
-  inventory.customFieldsDialog = function(e) {
+  inventory.customFieldsDialog = function(e, url, callback) {
     e.preventDefault();
     inventory.showLoading();
-    $.getJSON($(this).attr('href'), {ajax: 1}, function(data) {
+    
+    if (url == null) {
+    	url = $(this).attr('href');	
+    }
+    
+    $.getJSON(url, {ajax: 1}, function(data) {
       if(data && data.form) {
         var dialog = $('<div title="' + inventory.form.find('.custom').attr('title') + '" />');
         dialog.append($(data.form));
@@ -400,11 +405,15 @@ var inventory = {
                 return;
               if(data.message)
                 inventory.setMessage(data.message, data.result == 1 ? 'status' : 'error', 15000);
+              if (callback != null && data.result == 1) {
+               	  callback();
+              }
             },
             'json'
           );
           inventory.showLoading();
           $(this).closest('.ui-dialog-content').dialog('close');
+
           return false;
         });
       }
@@ -416,11 +425,13 @@ var inventory = {
     e.preventDefault();
     inventory.showLoading();
     var data = {ajax: 1};
+    var url = $(this).attr('href');
+    var customFieldLink = $(this).parents(".invTable").prev().find("a.custom");
     $(this).closest('tr').find('td:last input[type="hidden"]').each(function() {
       var name = $(this).attr('name');
       data[name.substring(name.indexOf('col_'), name.length-1)] = $(this).val();
     });
-    $.getJSON($(this).attr('href'),
+    $.getJSON(url,
       data,
       function(data) {
         if(data && data.form) {
@@ -443,12 +454,37 @@ var inventory = {
           dialog.find('legend').css('background-color', 'white');
           dialog.find('fieldset').each(function(){
         	  if ($(this).find('div.fieldset-wrapper').children().length == 0) {
-        	  	  $(this).detach();
+        	  	  $(this).hide();
         	  }
           });
           var width = dialog.find('fieldset').width();
           dialog.dialog("option", "width", width + 130);
           dialog.dialog("option", "position", "center");
+          
+          var additionalFields = jQuery("<a>" + Drupal.t('Add additional Fields') +" </a>");
+          additionalFields.attr('href',customFieldLink.attr('href'));
+          additionalFields.click(function(e){
+        	  e.preventDefault();
+        	  var dat = {ajax: 1};
+        	  inventory.customFieldsDialog(e, $(this).attr('href'), function(){
+        		  $.getJSON(url,
+        		      dat,
+        			  function(dat) {
+        			  	if (dat && dat.form) {
+        			  		var newForm = jQuery(dat.form);
+        			  		var fieldsets = newForm.find("div.fieldset-wrapper");
+        			  		if (newForm.find("div.fieldset-wrapper").length > 1) {
+        			  			alert("test");
+        			  			//fieldsets.show();
+        			  		}
+        			  		dialog.html(dat.form);	
+        			  	}
+        		  });
+        	  });
+          });
+          dialog.append(additionalFields);
+          
+          
           dialog.find('form').submit(function(e) {
             var values = $(this).serializeArray();
             var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
@@ -478,6 +514,7 @@ var inventory = {
       inventory.hideLoading();
     });
   }
+
   
   inventory.addInput = function (row, base_name, element, field) {
       var iname = base_name.replace('[id]', '[' + field + ']');

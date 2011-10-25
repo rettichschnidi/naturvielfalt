@@ -5,6 +5,8 @@
  */
 function area_new_form() {
 	drupal_set_title(t('Create New Area'));
+	
+	drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=places', array('group' => JS_LIBRARY));
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');

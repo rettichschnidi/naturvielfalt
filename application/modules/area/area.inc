@@ -1,11 +1,12 @@
 <?php
 function show_area($areaId) {
   $areaResult = db_query("
-    SELECT * 
+    SELECT * , substring(ST_AsText(geom) from 1 for 4) as g
     FROM {area}
     LEFT JOIN field_data_field_address fdfa ON fdfa.entity_id = area.owner_id 
     WHERE id = :id", array(':id' => $areaId));
   $area = $areaResult->fetch();
+  $isLine = $area->g == "LINE";
   drupal_set_title($area->field_name);
   drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
@@ -43,10 +44,10 @@ function show_area($areaId) {
   );
   $rows[] = array(
     array(
-      'data' => t('Surface area'),
+      'data' => $isLine ? t('Path Length') : t('Surface Area'),
       'header' => true
     ),
-    number_format($area->surface_area, '0', '', "'").' m2'
+    number_format($area->surface_area, '0', '', "'").($isLine ? ' m' : ' m2')
   );
   $rows[] = array(
     array(

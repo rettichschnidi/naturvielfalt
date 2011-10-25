@@ -652,25 +652,26 @@ function area_edit_basics_form($form, &$form_state, $area_id) {
 		$surface_area = number_format($_POST['surface-area'], '0', '', "'").' m2';
 		$field_name = '';
 		$area_id = '';
+		$line = false;
 	} else {
 		$area = db_query('
-			SELECT *
+			SELECT *, substring(ST_AsText(geom) from 1 for 4) as g
 			FROM area
 			WHERE id = :id',
 		array(':id' => $area_id)
 		);
 		$area = $area->fetch();
+		$line = $area->g == "LINE";
 		$coords = area_convert_coordinates($area_id);
 		$locality = $area->locality;
 		$zip = $area->zip;
 		$canton = $area->canton;
 		$country = $area->country;
 		$altitude = $area->altitude.' m.ü.M.';
-		$surface_area = number_format($area->surface_area, '0', '', "'").' m2';
-		$field_name = $area->field_name;		
+		$surface_area = number_format($area->surface_area, '0', '', "'").($line ? ' m' : ' m2');
+		$field_name = $area->field_name;
 	}
 
-	
 	$rows = array();
 	$rows[] = array(
 		array(
@@ -709,7 +710,7 @@ function area_edit_basics_form($form, &$form_state, $area_id) {
 	  );
 	$rows[] = array(
 		array(
-	      'data' => t('Surface Area'),
+	      'data' => $line ? t('Path Length') : t('Surface Area'),
 	      'header' => true
 	    ),
 	    $surface_area,
@@ -923,14 +924,14 @@ function area_add_gmap_resources($bubble=true, $areaselect=true) {
   $inventoryJsPath = drupal_get_path('module', 'inventory') . '/js/';
   
   drupal_add_css($areaCSSPath . 'area-select.css');
-  
+  drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=places', array('group' => JS_LIBRARY));
   drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry', array('group' => JS_LIBRARY));
   drupal_add_js($inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js', array('group' => JS_LIBRARY));
   drupal_add_js($areaJsPath . 'geometry.js', array('group' => JS_LIBRARY));
   drupal_add_js($areaJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js');
   drupal_add_js($areaJsPath . 'lib/geoxml3/geoxml3.js', array('group' => JS_LIBRARY));
   if($bubble)
-    drupal_add_js($areaJsPath . 'lib/infobubble.js');
+  drupal_add_js($areaJsPath . 'lib/infobubble.js');
   drupal_add_js($areaCSSPath . 'overlay-style.js');
   drupal_add_js($inventoryJsPath . 'util.js');
   if ($areaselect)
@@ -1007,7 +1008,6 @@ function area_edit_map($areaId, $centerArray, $geometryJSON) {
     	$t = 'marker';
   	}
   	
-    //DAVECODE
   	$edit =   '<span id="remove-marker-caption">' . t('remove marker') . '</span>';
 	$edit =  $edit. '<span id="reset-area-confirmation">' . t('Are you sure?') . '</span>';
   	$apply =  '<span id="add-marker-caption">' . t('add marker') . '</span>';

@@ -254,10 +254,24 @@ function AreaSelect(map_id) {
       control.addPath(display);
       control.addPolygon(display);
       
-      var search = jQuery('<input type="text" id="map_search" name="map_search" value="" size="25" style="vertical-align: top; margin: 6px 8px;" maxlength="128" placeholder="Suchen…" />');
-      control.controls.append(search);
+      var search = jQuery('<input type="text" id="map_search" name="map_search" value="" size="25" style="vertical-align: top; margin: 6px 8px;" maxlength="128" placeholder="Suchen ..." />');
+      jQuery('.form-wrapper').first().append(search);
+      //control.controls.append(search);
+      var defaultBounds = new google.maps.LatLngBounds(
+    		  new google.maps.LatLng(-33.8902, 151.1759),
+    		  new google.maps.LatLng(-33.8474, 151.2631));
+      
+      var input = document.getElementById('map_search');
+      //var input = search.get(0);
+      var options = {
+        bounds: defaultBounds,
+        types: ['establishment']
+      };
 
-      search.geo_autocomplete({
+      autocomplete = new google.maps.places.Autocomplete(input, options);
+      autocomplete.bindTo('bounds', map);
+      
+      /*search.geo_autocomplete({
           geocoder_region: 'Schweiz',
           geocoder_types:  'locality', //,locality,political,sublocality,neighborhood,country',
           maptype: 'roadmap',
@@ -266,7 +280,7 @@ function AreaSelect(map_id) {
               if (_ui.item.viewport)
                   map.fitBounds(_ui.item.viewport);
           }
-      });
+      });*/
       
       return control;
   }
