@@ -65,7 +65,7 @@ jQuery(function ($) {
         //create searchbar
         var searchBar = document.createElement('div');
 	    var inputSearch = document.createElement('input');
-	    searchBar.appendChild(input);
+	    searchBar.appendChild(inputSearch);
 	    searchBar.setAttribute('id', 'search_container');
 	    inputSearch.setAttribute('id', 'search_input');
 		map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBar);
