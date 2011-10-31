@@ -452,17 +452,14 @@ var inventory = {
             $(this).closest('.ui-dialog-content').dialog('close');
           });
           dialog.find('legend').css('background-color', 'white');
-          dialog.find('fieldset').each(function(){
-        	  if ($(this).find('div.fieldset-wrapper').children().length == 0) {
-        	  	  $(this).hide();
-        	  }
-          });
+          
           var width = dialog.find('fieldset').width();
           dialog.dialog("option", "width", width + 130);
           dialog.dialog("option", "position", "center");
           
-          var additionalFields = jQuery("<a>" + Drupal.t('Add additional Fields') +" </a>");
-          additionalFields.attr('href',customFieldLink.attr('href'));
+          var additionalFields = jQuery("<a>" + Drupal.t('edit') +" </a>");
+          additionalFields.attr('href',customFieldLink.attr('href')).css('margin-left', '10px');
+          dialog.find('legend span').last().append(additionalFields);
           additionalFields.click(function(e){
         	  e.preventDefault();
         	  var dat = {ajax: 1};
@@ -472,17 +469,26 @@ var inventory = {
         			  function(dat) {
         			  	if (dat && dat.form) {
         			  		var newForm = jQuery(dat.form);
-        			  		var fieldsets = newForm.find("div.fieldset-wrapper");
-        			  		if (newForm.find("div.fieldset-wrapper").length > 1) {
-        			  			alert("test");
-        			  			//fieldsets.show();
-        			  		}
-        			  		dialog.html(dat.form);	
+        			  		var newFields = newForm.find("div.fieldset-wrapper").last();
+        			  		if (newFields.children().length > 0) {
+        			  			var oldFields = dialog.find("div.fieldset-wrapper").last();
+        			  			if (newFields.children().length > 0 && oldFields.children().length > 0) {
+        			  				//Copy values
+        			  				newFields.find('input').each(function(){
+        			  					var oldField = oldFields.find('input#' + $(this).attr('id')); 
+        			  					if (oldField.length == 1) {
+        			  						$(this).val(oldField.val());	
+        			  					} 
+        			  				});
+        			  			}
+        			  			dialog.find("div.fieldset-wrapper").last().replaceWith(newFields).show();
+        			  		} else {
+        			  			dialog.find("div.fieldset-wrapper").last().html("");
+        			  		}	
         			  	}
         		  });
         	  });
           });
-          dialog.append(additionalFields);
           
           
           dialog.find('form').submit(function(e) {
@@ -553,6 +559,7 @@ var inventory = {
             width: 700
           });
           inventory.initLocation();
+          console.debug(dialog.html());
           dialog.find('#edit-actions a').click(function(e) {
             e.preventDefault();
             $(this).closest('.ui-dialog-content').dialog('close');
@@ -975,6 +982,8 @@ var inventory = {
     
     google.maps.event.addDomListener(inventory.map_pan, 'click', inventory.activatePan);
     google.maps.event.addDomListener(inventory.map_place, 'click', inventory.activatePlace);
+    
+    inventory.map.createSearchbar();
   }
   
   inventory.activatePan = function(e) {
@@ -1052,8 +1061,10 @@ var inventory = {
     				break;
     		  }
     	  }
-    	  var pos = gOverlay.closestPoint(inventory.location.getPosition());
-    	  inventory.location.setPosition(pos);
+    	  if (gOverlay != null) {
+    		  var pos = gOverlay.closestPoint(inventory.location.getPosition());
+        	  inventory.location.setPosition(pos);  
+    	  }
       })
       google.maps.event.addListener(inventory.location, 'dragend', function() {
           var pos = inventory.location.getPosition();

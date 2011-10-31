@@ -602,9 +602,9 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
   );
   $form[$head_inventory_id] = array(
     '#type' => 'fieldset',
-    '#title' => t('Additional Attributes')
+    '#title' => t('Custom Attributes')
   );
-
+  $customAttrCount = 0;
   foreach($columns as $column) {
     if($column['visible'])
       continue; // We do not want to edit fields which are visible in the edit entries form
@@ -626,6 +626,9 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
       $form[$column['head_inventory_id']][$name]['#type'] = 'select';
       $form[$column['head_inventory_id']][$name]['#options'] = $options;
     }
+    if ($column['head_inventory_id'] != null) {
+    	$customAttrCount++;
+    }
     $count++;
   }
   
@@ -634,14 +637,18 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
     $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save')
-    );
+    );    
   }
   else {
     $form['message'] = array(
       '#markup' => '<div class="messages status">'.t('There are no additional fields available for this inventory group.').'</div>'
     );
-    unset($form['head_inventory_id']);
   }
+  if ($customAttrCount == 0) {
+  	$form[$head_inventory_id]['#description'] = t ('There are no custom fields available for this inventory group.');
+  }
+  
+  
   $form['actions']['close'] = array(
     '#markup' => l(t('Cancel'), 'inventory/'.$head_inventory_id.'/edit')
   );

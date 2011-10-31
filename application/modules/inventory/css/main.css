@@ -225,7 +225,7 @@ body.page-inventory-edit {
 
 #map_location .map-control {
   cursor:pointer;
-  padding:2.5em 0.5em 0 0;
+  margin: 5px;
 }
 
 #edit-actions .inventory-location-info {
