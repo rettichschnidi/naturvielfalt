@@ -61,6 +61,31 @@ jQuery(function ($) {
                 overlay.overlay.setMap(null);
             }
         });
+        
+        //create searchbar
+        var searchBar = document.createElement('div');
+	    var inputSearch = document.createElement('input');
+	    searchBar.appendChild(input);
+	    searchBar.setAttribute('id', 'search_container');
+	    inputSearch.setAttribute('id', 'search_input');
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBar);
+		var ac = new google.maps.places.Autocomplete(inputSearch, {
+			types : [ 'geocode' ]
+		});
+		ac.bindTo('bounds', map);
+		google.maps.event.addListener(ac, 'place_changed', function() {
+			var place = ac.getPlace();
+			if (place.geometry.viewport) {
+				map.fitBounds(place.geometry.viewport);
+			} else {
+				map.setCenter(place.geometry.location);
+				map.setZoom(17);
+			}
+		});
+		google.maps.event.addListener(map, 'bounds_changed', function() {
+			inputSearch.blur();
+			inputSearch.value = '';
+		});
 
         control.addPolygon(function () {
 
