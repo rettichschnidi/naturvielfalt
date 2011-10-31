@@ -254,40 +254,13 @@ function AreaSelect(map_id) {
       control.addPath(display);
       control.addPolygon(display);
       
-      var search = jQuery('<input type="text" id="map_search" name="map_search" value="" size="25" style="vertical-align: top; margin: 6px 8px;" maxlength="128" placeholder="Suchen ..." />');
-      jQuery('.form-wrapper').first().append(search);
-      //control.controls.append(search);
-      var defaultBounds = new google.maps.LatLngBounds(
-    		  new google.maps.LatLng(-33.8902, 151.1759),
-    		  new google.maps.LatLng(-33.8474, 151.2631));
-      
-      var input = document.getElementById('map_search');
-      //var input = search.get(0);
-      var options = {
-        bounds: defaultBounds,
-        types: ['establishment']
-      };
-
-      autocomplete = new google.maps.places.Autocomplete(input, options);
-      autocomplete.bindTo('bounds', map);
-      
-      /*search.geo_autocomplete({
-          geocoder_region: 'Schweiz',
-          geocoder_types:  'locality', //,locality,political,sublocality,neighborhood,country',
-          maptype: 'roadmap',
-          mapwidth: 200,
-          select: function(_event, _ui) {
-              if (_ui.item.viewport)
-                  map.fitBounds(_ui.item.viewport);
-          }
-      });*/
-      
       return control;
   }
   
   /**
-   * Is called if new area data is needed. This makes a call to the server by ajax.
-   */
+	 * Is called if new area data is needed. This makes a call to the server by
+	 * ajax.
+	 */
   AreaSelect.prototype.onRequestServerData = function ( sSource, aoData, fnCallback ) {
         /* Add some data to send to the source, and send as 'POST' */
         jQuery.ajax( {
@@ -470,6 +443,33 @@ function AreaSelect(map_id) {
     sHabitats += '</table>';
     return sHabitats;
   };
+  
+  AreaSelect.prototype.createSearchbar = function() {
+	    var control = document.createElement('div');
+	    var input = document.createElement('input');
+		control.appendChild(input);
+		control.setAttribute('id', 'search_container');
+		input.setAttribute('id', 'search_input');
+		this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(control);
+		var ac = new google.maps.places.Autocomplete(input, {
+			types : [ 'geocode' ]
+		});
+		ac.bindTo('bounds', this.map);
+		var me = this;
+		google.maps.event.addListener(ac, 'place_changed', function() {
+			var place = ac.getPlace();
+			if (place.geometry.viewport) {
+				me.map.fitBounds(place.geometry.viewport);
+			} else {
+				me.map.setCenter(place.geometry.location);
+				me.map.setZoom(17);
+			}
+		});
+		google.maps.event.addListener(this.map, 'bounds_changed', function() {
+			input.blur();
+			input.value = '';
+		});
+  }
 
   //////////////////////// Class initialisation //////////////////////
   
@@ -487,6 +487,8 @@ function AreaSelect(map_id) {
   if (jQuery("#area-create-form").length) {
     me.overlayControl = this.createControl(me.map); // class to control drawing of new areas
   }
+  
+  
   getareasJSON();
 
   // register events
@@ -499,6 +501,7 @@ function AreaSelect(map_id) {
 	  enable_map_editing(me.map, me.mapOverlays);
   }
 };
+
 
 function refresh_map_info(){
   if(areaselect.overlayControl.overlay != null) {
@@ -546,8 +549,13 @@ function refresh_map_info(){
 
 var areaselect = null;
 jQuery(document).ready(function() {
-  if(jQuery('#map_canvas').size())
-    areaselect = new AreaSelect('map_canvas');
+  if(jQuery('#map_canvas').size()){
+	  areaselect = new AreaSelect('map_canvas')
+	  if (!jQuery('#map_canvas').data('areaid')) {
+		  areaselect.createSearchbar();  
+	  } 
+  }
+    
   /* clear edit-id-area field. Solves the problem that if a user navigates back problem that
    * he can continue to new inv without actually having selected an area */
   jQuery('#edit-id-area').val('');

@@ -84,3 +84,33 @@ tr.even, tr.odd {
     overflow-y: auto;
     width: 400px;
 }
+
+div#search_container {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-image: url("../images/search.png");
+    background-size: 308px 31px;
+	border: none;
+    height: 31px;
+    width: 308px;
+    margin: 5px;
+}
+
+input#search_input {
+	background-color: transparent;
+    border: 0 none;
+    font-family: "Helvetica Neue",helvetica,arial,sans-serif;
+    font-size: 0.9em;
+    height: 28px;
+    margin: 0 5px 0 5px;
+	padding: 2px 10px 0 20px;
+    width: 268px;
+}
+
+div.pac-container {
+	z-index:2000 !important;
+}
+
