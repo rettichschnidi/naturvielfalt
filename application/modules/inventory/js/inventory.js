@@ -559,7 +559,6 @@ var inventory = {
             width: 700
           });
           inventory.initLocation();
-          console.debug(dialog.html());
           dialog.find('#edit-actions a').click(function(e) {
             e.preventDefault();
             $(this).closest('.ui-dialog-content').dialog('close');
