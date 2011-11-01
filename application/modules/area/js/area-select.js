@@ -457,7 +457,6 @@ function AreaSelect(map_id) {
 		ac.bindTo('bounds', this.map);
 		var me = this;
 		google.maps.event.addListener(ac, 'place_changed', function() {
-			console.debug("place_changed");
 			var place = ac.getPlace();
 			if (place.geometry.viewport) {
 				me.map.fitBounds(place.geometry.viewport);
@@ -465,13 +464,13 @@ function AreaSelect(map_id) {
 				me.map.setCenter(place.geometry.location);
 				me.map.setZoom(17);
 			}
-			input.setAttribute('value', place.formatted_address);
 		});
 		google.maps.event.addListener(this.map, 'bounds_changed', function() {
 			input.blur();
 		});	
-		google.maps.event.addDomListener(input, 'keydown', function(e) { 
-            if (e.keyCode == 13) { 
+		google.maps.event.addDomListener(input, 'keydown', function(e) {
+			var key = e.keyCode ? e.keyCode : e.charCode;
+            if (key == 13) { 
             	if (e.preventDefault) { 
             		e.preventDefault(); 
             	} else { 

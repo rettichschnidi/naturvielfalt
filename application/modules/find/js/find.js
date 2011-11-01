@@ -89,7 +89,8 @@ jQuery(function ($) {
 		});
 		
 		google.maps.event.addDomListener(inputSearch, 'keydown', function(e) { 
-            if (e.keyCode == 13) { 
+			var key = e.keyCode ? e.keyCode : e.charCode;
+            if (key == 13) { 
             	if (e.preventDefault) { 
             		e.preventDefault(); 
             	} else { 
@@ -100,14 +101,11 @@ jQuery(function ($) {
 		}); 
 
         control.addPolygon(function () {
-
             // don't hide polygon
             control.overlay.overlay.setMap(map);
-
             control.overlay.overlay.getPath().forEach(function (position) {
             	$('#search-form').append('<input type="hidden" name="geo[]" value="' + position.toUrlValue() + '" />')
             });
-
         	$('#search-form').submit();
         });
 
