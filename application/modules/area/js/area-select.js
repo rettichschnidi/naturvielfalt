@@ -457,6 +457,7 @@ function AreaSelect(map_id) {
 		ac.bindTo('bounds', this.map);
 		var me = this;
 		google.maps.event.addListener(ac, 'place_changed', function() {
+			console.debug("place_changed");
 			var place = ac.getPlace();
 			if (place.geometry.viewport) {
 				me.map.fitBounds(place.geometry.viewport);
@@ -464,15 +465,24 @@ function AreaSelect(map_id) {
 				me.map.setCenter(place.geometry.location);
 				me.map.setZoom(17);
 			}
+			input.setAttribute('value', place.formatted_address);
 		});
 		google.maps.event.addListener(this.map, 'bounds_changed', function() {
 			input.blur();
-			input.value = '';
-		});
+		});	
+		google.maps.event.addDomListener(input, 'keydown', function(e) { 
+            if (e.keyCode == 13) { 
+            	if (e.preventDefault) { 
+            		e.preventDefault(); 
+            	} else { 
+            		e.cancelBubble = true; 
+            		e.returnValue = false; 
+            	}
+            } 
+		}); 
   }
 
   //////////////////////// Class initialisation //////////////////////
-  
   // Member variable initialisation
   var me = this; // references to the instance of AreaSelect
   me.map_id = map_id;

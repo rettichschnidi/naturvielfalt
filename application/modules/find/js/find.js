@@ -73,6 +73,7 @@ jQuery(function ($) {
 			types : [ 'geocode' ]
 		});
 		ac.bindTo('bounds', map);
+		
 		google.maps.event.addListener(ac, 'place_changed', function() {
 			var place = ac.getPlace();
 			if (place.geometry.viewport) {
@@ -82,10 +83,21 @@ jQuery(function ($) {
 				map.setZoom(17);
 			}
 		});
+		
 		google.maps.event.addListener(map, 'bounds_changed', function() {
 			inputSearch.blur();
-			inputSearch.value = '';
 		});
+		
+		google.maps.event.addDomListener(inputSearch, 'keydown', function(e) { 
+            if (e.keyCode == 13) { 
+            	if (e.preventDefault) { 
+            		e.preventDefault(); 
+            	} else { 
+            		e.cancelBubble = true; 
+            		e.returnValue = false; 
+            	}
+            } 
+		}); 
 
         control.addPolygon(function () {
 
