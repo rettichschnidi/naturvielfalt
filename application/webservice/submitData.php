@@ -46,8 +46,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
-		
-		print_r($_POST);
 
         // get head_inventory_id
         $head = _inventory_single_get_id($user);
@@ -56,7 +54,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         $inventory = db_select('inventory', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('head_inventory_id', $head)->execute()->fetchField();
 
         if (!$inventory) {
-
             // inventory doesn't exist, create it
             $inventory = db_insert('inventory')->fields(array('inventory_type_id' => $type, 'head_inventory_id' => $head))->execute();
         }
@@ -76,12 +73,21 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// 20 = Anzahl
 		if($entry) {
 			
-			echo 'ENTRY OK';
+			echo 'ENTRY OK: ' . $entry . "<br>";
+			print_r($_POST);
 			
-			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 7, 'value' => $date))->execute();
-			$attributesAnzahl = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 20, 'value' => $count))->execute();
-			$attributesBeobachter = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 44, 'value' => $author))->execute();
+			$funddatumId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Funddatum")->execute()->fetchField();
+			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $funddatumId, 'value' => $date))->execute();
+			
+			$anzahlId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Anzahl")->execute()->fetchField();
+			$attributesAnzahl = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $anzahlId, 'value' => $count))->execute();
+			
+			$beobachterId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Beobachter")->execute()->fetchField();
+			$attributesBeobachter = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $beobachterId, 'value' => $author))->execute();
+
+			// $commentId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Comment")->execute();
 			// $attributesComment = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 85, 'value' => $comment))->execute();
+
 		}	
 		
 		// Add POINT to database as geometry information
