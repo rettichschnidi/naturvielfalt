@@ -71,11 +71,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// 7 = Funddatum
 		// 44 = Beobachter
 		// 20 = Anzahl
-		if($entry) {
-			
-			echo 'ENTRY OK: ' . $entry . "<br>";
-			print_r($_POST);
-			
+		if($entry) {			
 			$funddatumId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Funddatum")->execute()->fetchField();
 			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $funddatumId, 'value' => $date))->execute();
 			
