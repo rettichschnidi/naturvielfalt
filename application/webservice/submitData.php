@@ -34,11 +34,11 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
     if ($uid) {	
         $organism = @$_POST['organism'];
+		$type = @$_POST['type'];
         $count = @$_POST['count'];
         $date = @$_POST['date'];
         $location = @$_POST['location'];
         $accuracy = @$_POST['accuracy'];
-        $type = @$_POST['type'];
 		$author = @$_POST['author'];
 		$longitude = @$_POST['longitude'];
 		$latitude = @$_POST['latitude'];
@@ -47,7 +47,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
 		
-		// print_r($_POST);
+		print_r($_POST);
 
         // get head_inventory_id
         $head = _inventory_single_get_id($user);
@@ -75,6 +75,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// 44 = Beobachter
 		// 20 = Anzahl
 		if($entry) {
+			
+			echo 'ENTRY OK';
+			
 			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 7, 'value' => $date))->execute();
 			$attributesAnzahl = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 20, 'value' => $count))->execute();
 			$attributesBeobachter = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 44, 'value' => $author))->execute();
