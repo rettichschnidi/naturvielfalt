@@ -110,6 +110,10 @@ input#search_input {
     width: 268px;
 }
 
+input#search_input:focus {
+	outline:none; 	
+}
+
 div.pac-container {
 	z-index:2000 !important;
 }

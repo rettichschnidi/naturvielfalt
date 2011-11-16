@@ -444,6 +444,9 @@ function AreaSelect(map_id) {
     return sHabitats;
   };
   
+  /**
+   * Create a Searchbar using autocomplete-feature by google places api
+   */
   AreaSelect.prototype.createSearchbar = function() {
 	    var control = document.createElement('div');
 	    var input = document.createElement('input');
@@ -468,6 +471,11 @@ function AreaSelect(map_id) {
 		google.maps.event.addListener(this.map, 'bounds_changed', function() {
 			input.blur();
 		});	
+		
+		input.onfocus = function(){
+			input.value = '';
+		}
+
 		google.maps.event.addDomListener(input, 'keydown', function(e) {
 			var key = e.keyCode ? e.keyCode : e.charCode;
             if (key == 13) { 
@@ -479,6 +487,30 @@ function AreaSelect(map_id) {
             	}
             } 
 		}); 
+  }
+  
+  AreaSelect.prototype.initLocation = function() {
+	  if (window.localStorage) {
+		  var bounds = window.localStorage.getItem('swissmon_ne_lat');
+		  if (bounds != null) {
+			  this.mapOverlays.fitBoundsOnLoad = false;
+			  var ls = window.localStorage;
+			  var ne = new google.maps.LatLng(ls.getItem('swissmon_ne_lat'), ls.getItem('swissmon_ne_lng'));
+			  var sw = new google.maps.LatLng(ls.getItem('swissmon_sw_lat'), ls.getItem('swissmon_sw_lng'));
+			  bounds = new google.maps.LatLngBounds(sw,ne);
+			  this.map.fitBounds(bounds);
+		  }
+		  var m = this.map;
+		  google.maps.event.addListener(m, 'bounds_changed', function() {
+			  var b = m.getBounds();
+			  var ne = b.getNorthEast();
+			  var sw = b.getSouthWest();
+			  window.localStorage.setItem('swissmon_ne_lat', ne.lat());
+			  window.localStorage.setItem('swissmon_ne_lng', ne.lng());
+			  window.localStorage.setItem('swissmon_sw_lat', sw.lat());
+			  window.localStorage.setItem('swissmon_sw_lng', sw.lng());
+		  });
+	  }
   }
 
   //////////////////////// Class initialisation //////////////////////
@@ -497,7 +529,6 @@ function AreaSelect(map_id) {
     me.overlayControl = this.createControl(me.map); // class to control drawing of new areas
   }
   
-  
   getareasJSON();
 
   // register events
@@ -506,9 +537,6 @@ function AreaSelect(map_id) {
   jQuery('.show_static_image').bind('mouseover mouseout', this.showStaticImage);
   jQuery('#area_table tbody td img').bind( 'click', this.onTableExpanderClicked);
   
-  if (typeof enable_map_editing != "undefined") {
-	  enable_map_editing(me.map, me.mapOverlays);
-  }
 };
 
 
@@ -561,7 +589,8 @@ jQuery(document).ready(function() {
   if(jQuery('#map_canvas').size()){
 	  areaselect = new AreaSelect('map_canvas')
 	  if (!jQuery('#map_canvas').data('areaid')) {
-		  areaselect.createSearchbar();  
+		  areaselect.createSearchbar();
+		  areaselect.initLocation();
 	  } 
   }
     

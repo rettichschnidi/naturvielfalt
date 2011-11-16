@@ -1306,9 +1306,9 @@ function inventory_data_gallery_list($id,$sort){
 								 itaie.inventory_type_attribute_dropdown_value_id,
 								 itadv.value as dropdown_value
 	  					  from inventory i left join inventory_entry e on e.inventory_id = i.id 
-			  			  left join inventory_type it on it.id = i.inventory_type_id 
+			  			  inner join inventory_type it on it.id = i.inventory_type_id 
 						  left join inventory_type_attribute ita on ita.inventory_type_id = i.inventory_type_id
-			  			  left join inventory_type_attribute_inventory_entry itaie on itaie.inventory_type_attribute_id = ita.id AND e.id = itaie.inventory_entry_id
+			  			  inner join inventory_type_attribute_inventory_entry itaie on itaie.inventory_type_attribute_id = ita.id AND e.id = itaie.inventory_entry_id
 			  			  left join inventory_type_attribute_dropdown_value itadv on itadv.id = itaie.inventory_type_attribute_dropdown_value_id
 						  left join inventory_type_organism ito on ito.organism_id = e.organism_id
 						  left join organism o on e.organism_id = o.id

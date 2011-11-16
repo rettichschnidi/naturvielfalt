@@ -556,16 +556,19 @@ Polyline.prototype.closestPoint = function(latLng) {
 
 		var distance = google.maps.geometry.spherical.computeDistanceBetween(latLng, closest); 
 
-		if ( distance < minDist) {
-			// point is within 100m of path
-			return latLng;	
-		} else if (distance < currentMinDist){
-			// migth be the closest to the path..
-			var multiplier = minDist / distance;
-			var lat = closest.lat() + (latLng.lat() - closest.lat()) * multiplier;
-			var lng = closest.lng() + (latLng.lng() - closest.lng()) * multiplier;
-			currentClosestPoint = new google.maps.LatLng(lat, lng);
-			currentMinDist = distance;
+		if ( distance < currentMinDist) {
+			if (distance < minDist) {
+				// point is within 100m of path
+				currentMinDist = distance;
+				currentClosestPoint = latLng;
+			} else {
+				// migth be the closest to the path..
+				var multiplier = minDist / distance;
+				var lat = closest.lat() + (latLng.lat() - closest.lat()) * multiplier;
+				var lng = closest.lng() + (latLng.lng() - closest.lng()) * multiplier;
+				currentClosestPoint = new google.maps.LatLng(lat, lng);
+				currentMinDist = distance;
+			}
 		}
 	}
 	return currentClosestPoint;
