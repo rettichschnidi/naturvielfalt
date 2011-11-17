@@ -14,7 +14,6 @@ function _organismresource_retrieve($id) {
 
 		if($id == 16) {
 			$res = db_query("SELECT name, \"Familie\", \"Gattung\", \"Art\", name_de, is_neophyte, status FROM flora_organism as f
-				INNER JOIN organism as o ON o.organism_type = 2 AND o.organism_id = f.id 
 				ORDER BY name_de");
 		} else {
 			$res = db_query("SELECT fa.id, i.name, family, protection_ch, cscf_nr, fa.name_de, fa.genus, fa.species, fa.fauna_class_id FROM organism AS o
