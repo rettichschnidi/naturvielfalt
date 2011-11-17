@@ -13,7 +13,7 @@ function _organismresource_retrieve($id) {
 	  $notes = array();
 
 		if($id == 16) {
-			$res = db_query("SELECT f.name, \"Familie\", \"Gattung\", \"Art\", f.name_de, f.is_neophyte, f.status FROM flora_organism AS f
+			$res = db_query("SELECT o.id, f.name, \"Familie\", \"Gattung\", \"Art\", f.name_de, f.is_neophyte, f.status FROM flora_organism AS f
 			INNER JOIN organism as o ON o.organism_type = 2 AND o.organism_id = f.id
 			ORDER BY f.name_de;");
 		} else {
