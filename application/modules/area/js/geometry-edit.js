@@ -71,6 +71,12 @@ PathEdit.prototype.reset = function() {
 		line.setMap(null);
 	});	
 	this.lines.clear();
+	
+	//remove additional overlay
+	if (this.overlay) {
+		this.overlay.setMap(null);
+	}
+	
 	//init again
 	this.init(this.geometry);
 }
@@ -113,7 +119,7 @@ PathEdit.prototype.removeControlMarker = function (index) {
 /*create a line segment that connects two markers*/
 PathEdit.prototype.createLineSegment = function(index) {
 	if (index < this.markers.getLength()-1) {
-		var line = new google.maps.Polyline();
+		var line = new google.maps.Polyline(overlayStyle.polyline);
 		line.getPath().push(this.markers.getAt(index).position);
 		line.getPath().push(this.markers.getAt(index+1).position);
 		line.setMap(this.map);
@@ -139,7 +145,8 @@ PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
 		position : latLng,
 		map : this.map,
 		icon : imageNormal,
-		draggable : true
+		draggable : true,
+		raiseOnDrag: false
 	});
 	marker.imgNormal = imageNormal;
 	marker.imgHover = imageHover;
@@ -154,9 +161,7 @@ PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
     });
     //delete marker on click
     google.maps.event.addListener(marker, "click", jQuery.proxy(function () {
-    	if (this.deleteMarkers) {
-    		this.deleteControlMarker(marker.index);
-    	}
+    	this.deleteControlMarker(marker.index);
     }, this));
     return marker;
 }
@@ -177,47 +182,15 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
 };
 /*init additional controls for adding and deleting markers*/
 PathEdit.prototype.initControls = function (controls) {
-	//init controls
-	addIcon = jQuery('<img style="display:inline;"/>');
-	removeIcon = jQuery('<img style="display:inline;"/>');
-	addIcon.data('inactive', 'addmarker.png');
-	addIcon.data('selected', 'addmarker-selected.png');
-	removeIcon.data('inactive', 'removemarker.png');
-	removeIcon.data('selected', 'removemarker-selected.png');
-	
-	var handler = jQuery.proxy(function() {
-		if (this.deleteMarkers) {
-			this.deleteMarkers = false;
-			addIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + addIcon.data('selected'));
-			removeIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + removeIcon.data('inactive'));
-		}
-	}, this);
-	var toolTip = jQuery("div#edit-map-button #add-marker-caption").text();
-	addIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + addIcon.data('selected'))
-	.attr('alt', toolTip)
-	.attr('title', toolTip)
-	.click(handler);
 
-	handler = jQuery.proxy(function() {
-		if (!this.deleteMarkers) {
-			this.deleteMarkers = true;
-			addIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + addIcon.data('inactive'));
-			removeIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + removeIcon.data('selected'));
-		}
-	}, this);
-	toolTip = jQuery("div#edit-map-button #remove-marker-caption").text();
-	removeIcon.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + removeIcon.data('inactive'))
-	.attr('alt', toolTip)
-	.attr('title', toolTip)
-	.click(handler);
-	
-	controls.append(addIcon).append(removeIcon);
 }
 /*Tool for editing polygons. Extends Path-Editing tool.
   It overrides some of the methods of PathEdit since
   it behaves slightly different.*/
 function PolygonEdit() {}
 PolygonEdit.prototype = new PathEdit();
+
+
 /*init markers and lines*/
 PolygonEdit.prototype.initMarkersLines = function(){
 	this.markers = new google.maps.MVCArray();
@@ -227,7 +200,14 @@ PolygonEdit.prototype.initMarkersLines = function(){
 			this.createControlMarker(latLng, index);
 		}
 	}, this);
-	this.points.forEach (createMarker);	
+	this.points.forEach (createMarker);
+	this.overlay = new google.maps.Polygon(overlayStyle.polygon);
+	polypath = new google.maps.MVCArray();
+	this.points.forEach(function(latlng, index) {
+		polypath.push(new google.maps.LatLng(latlng.lat(), latlng.lng()));
+	});
+	this.overlay.setPath(polypath);
+    this.overlay.setMap(this.map);
 	// crate single line elements that connect the markers
 	this.lines = new google.maps.MVCArray();
 	var createLineSegment = jQuery.proxy(function(line, index) {
@@ -246,7 +226,7 @@ PolygonEdit.prototype.apply = function() {
 }
 
 PolygonEdit.prototype.createLineSegment = function(index) {
-	var line = new google.maps.Polyline();
+	var line = new google.maps.Polyline(overlayStyle.polyline);
 	//start point of segment
 	line.getPath().push(this.markers.getAt(index).position);
 	//endpoint of segment
@@ -261,6 +241,7 @@ PolygonEdit.prototype.createLineSegment = function(index) {
 	var that = this;
 	google.maps.event.addListener(line, "click", function(event) {
 		that.addControlMarker(line.index, event.latLng);
+		that.updatePolygonOverlay();
 	});
 }
 
@@ -271,11 +252,16 @@ PolygonEdit.prototype.createControlMarker = function(latLng, index) {
     google.maps.event.addListener(m, "drag", function () {
     	var prevLineIndex = m.index-1 >= 0 ? m.index-1 : that.markers.getLength()-1;
     	that.lines.getAt(prevLineIndex).getPath().setAt(1, m.getPosition());
-    	//adjust startpoint of next line
+    	// adjust startpoint of next line
     	var nextLineIndex = m.index < that.markers.getLength() ? m.index : 0;
     	that.lines.getAt(nextLineIndex).getPath().setAt(0, m.getPosition());
         m.setIcon(m.imgHover);
-    });
+        // adjust polygon
+        that.overlay.getPath().setAt(m.index, m.getPosition());
+        if (m.index == 0) {
+        	that.overlay.getPath().setAt(that.markers.getLength(), m.getPosition());
+        }
+    });	
 };
 
 PolygonEdit.prototype.removeControlMarker = function (index) {
@@ -287,5 +273,16 @@ PolygonEdit.prototype.removeControlMarker = function (index) {
 		this.lines.getAt(prevLineIndex).getPath().setAt(1, this.markers.getAt ((index+1) % l).getPosition());
 		this.markers.removeAt(index);
 		this.lines.removeAt(index);
+		this.updatePolygonOverlay();
 	}
+}
+
+PolygonEdit.prototype.updatePolygonOverlay = function (index) {
+	// update polygon
+	var p = new google.maps.MVCArray();
+	this.markers.forEach(function(marker, index) {
+		p.push(marker.position);
+	});
+	p.push(this.markers.getAt(0).position);
+	this.overlay.setPath(p);
 }

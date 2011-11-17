@@ -500,16 +500,6 @@ function AreaSelect(map_id) {
 			  bounds = new google.maps.LatLngBounds(sw,ne);
 			  this.map.fitBounds(bounds);
 		  }
-		  var m = this.map;
-		  google.maps.event.addListener(m, 'bounds_changed', function() {
-			  var b = m.getBounds();
-			  var ne = b.getNorthEast();
-			  var sw = b.getSouthWest();
-			  window.localStorage.setItem('swissmon_ne_lat', ne.lat());
-			  window.localStorage.setItem('swissmon_ne_lng', ne.lng());
-			  window.localStorage.setItem('swissmon_sw_lat', sw.lat());
-			  window.localStorage.setItem('swissmon_sw_lng', sw.lng());
-		  });
 	  }
   }
 
@@ -537,6 +527,18 @@ function AreaSelect(map_id) {
   jQuery('.show_static_image').bind('mouseover mouseout', this.showStaticImage);
   jQuery('#area_table tbody td img').bind( 'click', this.onTableExpanderClicked);
   
+  //store location whenever bounds change
+  if (window.localStorage){
+	  google.maps.event.addListener(me.map, 'bounds_changed', function() {
+		  var b = me.map.getBounds();
+		  var ne = b.getNorthEast();
+		  var sw = b.getSouthWest();
+		  window.localStorage.setItem('swissmon_ne_lat', ne.lat());
+		  window.localStorage.setItem('swissmon_ne_lng', ne.lng());
+		  window.localStorage.setItem('swissmon_sw_lat', sw.lat());
+		  window.localStorage.setItem('swissmon_sw_lng', sw.lng());
+	  });  
+  }
 };
 
 
