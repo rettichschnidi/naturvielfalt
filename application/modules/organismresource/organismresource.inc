@@ -13,9 +13,9 @@ function _organismresource_retrieve($id) {
 	  $notes = array();
 
 		if($id == 16) {
-			$res = db_query("SELECT o.id, name, \"Familie\", \"Gattung\", \"Art\", name_de, is_neophyte, status FROM flora_organism as f
-				INNER JOIN organism as o ON o.organism_type = 2 AND o.organism_id = f.id
-				ORDER BY f.name_de");
+			$res = db_query("SELECT f.name, \"Familie\", \"Gattung\", \"Art\", f.name_de, f.is_neophyte, f.status FROM flora_organism AS f
+			INNER JOIN organism as o ON o.organism_type = 2 AND o.organism_id = f.id
+			ORDER BY f.name_de;");
 		} else {
 			$res = db_query("SELECT fa.id, i.name, family, protection_ch, cscf_nr, fa.name_de, fa.genus, fa.species, fa.fauna_class_id FROM organism AS o
 			INNER JOIN fauna_organism as fa ON fa.fauna_class_id = o.organism_id
