@@ -14,6 +14,8 @@ define('DRUPAL_ROOT', dirname(__FILE__) . '/..');
 require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
+echo 'SCRIIIPTTTT ON SERVA!!!';
+
 function auth() {
 
     header('WWW-Authenticate: Basic realm="Naturvielfalt"');
@@ -29,11 +31,34 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 } else {
 
+	echo 'IN REQUEST ON THA SERVA!';
+
     $uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
     $user = user_load($uid);
 
     if ($uid) {	
-        $organism = @$_POST['organism'];
+	
+		echo 'USER AUTHENTICATED!!';
+	
+	
+		/*
+		// Get all header information
+		$header = apache_request_headers();
+	
+        $organism = $header['organism'];
+		$type = $header['type'];
+        $count = $header['count'];
+        $date = $header['date'];
+        $accuracy = $header['accuracy'];
+		$author = $header['author'];
+		$longitude = $header['longitude'];
+		$latitude = $header['latitude'];
+		// $comment = @$header['comment'];
+		*/
+		
+		print_r(@$_POST);
+		
+		$organism = @$_POST['organism'];
 		$type = @$_POST['type'];
         $count = @$_POST['count'];
         $date = @$_POST['date'];
@@ -44,7 +69,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		$latitude = @$_POST['latitude'];
 		$comment = @$_POST['comment'];
 		
-		print_r(@$_POST);
+		print_r(apache_request_headers());
 		
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
@@ -98,11 +123,50 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         
 		db_update('inventory_entry')->expression('geom', $geom)->condition('id', $entry)->execute();
 
-        echo 'Die Beobachtung wurde erfolgreich gespeichert, vielen Dank!';
 
+		// Create image and store information in the database
+		storeImage($entry, $uid);
+
+        echo 'Die Beobachtung wurde erfolgreich gespeichert, vielen Dank! [' . $entry . ']';
+ 
     } else {
         auth();
     }
+}
+
+function storeImage($entry, $uid) {
+	echo 'Receiving Image from iPhone Application';
+	
+	$filename = "iphoneprovepicture.png";
+	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
+	$target_path = $folder . $filename;
+	
+	echo 'Folder: ' . $folder;
+	echo 'Target path: ' . $target_path;
+	
+	if (!file_exists($folder)) {
+		mkdir($folder, 0777);
+	}
+	
+	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
+		echo "uploaded an image";
+	} else {
+		echo 'Could NOT upload picture';
+	}
+	
+	$uri = 'public://swissmon/gallery/organism/' . $entry . '/' . $filename;
+	$filesize = filesize($target_path);
+	$timestamp = time();
+	
+	// CREATE file_managed entry
+	$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/png', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
+	
+	// CREATE gallery_image entry
+	if($file_managed_entry) {
+		$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $uid, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
+	} else {
+		echo 'Could not create the File managed entry!';
+	}
 }
 
 function reverseGeocode($longitude, $latitude) {
