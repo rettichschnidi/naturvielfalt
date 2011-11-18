@@ -852,6 +852,11 @@ function area_edit_map_form($form, &$form_state, $area_id=false) {
 	'#value' => json_encode($areaPoints),
 	'#attributes' => array('id' => 'area-coords-input')
 	);
+	$form['map']['area_surface'] = array(
+  	'#type' => 'hidden',
+	'#value' => $values['surface_area'],
+	'#attributes' => array('id' => 'area-surface')
+	);
 	$form['map']['area_type'] = array(
   	'#type' => 'hidden',
 	'#value' => $type,

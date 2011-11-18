@@ -192,6 +192,8 @@ function area_edit_form_submit($form, &$form_state) {
 	$protection_target = $form_state['input']['protection_target'];
 	$safety_precautions = $form_state['input']['safety_precautions'];
 	$tending_strategies = $form_state['input']['tending_strategies'];
+	$area_surface = $form_state['input']['area_surface'];
+	
 //	global $user;
 	
 	$areaValuesArray = array(
@@ -201,6 +203,7 @@ function area_edit_form_submit($form, &$form_state) {
 		'protection_target' => $protection_target,
 		'safety_precautions' => $safety_precautions,
 		'tending_strategies' => $tending_strategies,
+		'surface_area' => $area_surface
 	);
 	
 	//check if the area is set in the formular
