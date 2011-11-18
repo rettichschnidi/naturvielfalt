@@ -103,6 +103,7 @@ function apply_edit() {
 	area_coords = JSON.stringify(area_coords); 
 	jQuery("#area-coords-input").val(area_coords);
 	jQuery("#area-type-input").val(activeEditingTool.geometry.type);
+	jQuery("#area-surface").val(activeEditingTool.geometry.getArea());
 };
 
 /*load the area*/

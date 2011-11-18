@@ -131,6 +131,7 @@ PathEdit.prototype.createLineSegment = function(index) {
 		});
 	}
 }
+
 /*create the marker, that is a google markerimage*/
 PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
     var imageNormal = new google.maps.MarkerImage(Drupal.settings.basePath
@@ -165,6 +166,7 @@ PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
     }, this));
     return marker;
 }
+
 /*creates a control marker for line edge points*/
 PathEdit.prototype.createControlMarker = function(latLng, index) {
     var marker = this.createGoogleMapsMarker(latLng, index);
@@ -190,7 +192,6 @@ PathEdit.prototype.initControls = function (controls) {
 function PolygonEdit() {}
 PolygonEdit.prototype = new PathEdit();
 
-
 /*init markers and lines*/
 PolygonEdit.prototype.initMarkersLines = function(){
 	this.markers = new google.maps.MVCArray();
@@ -206,8 +207,18 @@ PolygonEdit.prototype.initMarkersLines = function(){
 	this.points.forEach(function(latlng, index) {
 		polypath.push(new google.maps.LatLng(latlng.lat(), latlng.lng()));
 	});
+	this.overlay.setOptions({strokeWeight:0, clickable:false});
 	this.overlay.setPath(polypath);
     this.overlay.setMap(this.map);
+    var m = this.map;
+	google.maps.event.addListener(this.overlay, "mouseover", function(event) {
+		m.setOptions({ draggableCursor: 'crosshair' });
+		console.debug("crosshair!!");
+	});
+	google.maps.event.addListener(this.overlay, "mouseout", function(event) {
+		m.setOptions({ draggableCursor: 'move' });
+	});
+	
 	// crate single line elements that connect the markers
 	this.lines = new google.maps.MVCArray();
 	var createLineSegment = jQuery.proxy(function(line, index) {
