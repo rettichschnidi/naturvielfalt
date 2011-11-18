@@ -84,6 +84,10 @@ jQuery(function ($) {
 			}
 		});
 		
+		inputSearch.onfocus = function(){
+			inputSearch.value = '';
+		}
+		
 		google.maps.event.addListener(map, 'bounds_changed', function() {
 			inputSearch.blur();
 		});

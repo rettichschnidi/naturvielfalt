@@ -568,7 +568,7 @@ var inventory = {
             var row = inventory.container.find('input.entry_id[value="'+entry_id+'"]').closest('tr');
             var base_name = row.find('input.entry_id').attr('name');
             
-            $.data(document.body, 'prev_pos', inventory.location.position);
+            inventory.storePrevPos(inventory.location.position);
 
             inventory.addInput(row, base_name, $(this), 'lat');
             inventory.addInput(row, base_name, $(this), 'lng');
@@ -950,17 +950,32 @@ var inventory = {
     var position = false;
     if(inventory.locationform.find('input[name="lat"]').val() !== '' || inventory.locationform.find('input[name="lng"]').val() !== '')
       position = new google.maps.LatLng(parseFloat(inventory.locationform.find('input[name="lat"]').val()), parseFloat(inventory.locationform.find('input[name="lng"]').val()));
-    if(position) {
-      inventory.placeMarker(position);
-      inventory.map.map.panTo(position);
-      // prevent map from adjusting viewport
-      inventory.map.mapOverlays.fitBoundsOnLoad = false;
-      if ($.data(document.body, 'prev_pos') == null)
-    	  $.data(document.body, 'prev_pos', position);  
-    } else if ($.data(document.body, 'prev_pos') != null) {
-      inventory.map.map.panTo($.data(document.body, 'prev_pos'));
-      inventory.map.mapOverlays.fitBoundsOnLoad = false;
+    //if we have a position and we are not in singleobservations
+    //then we only place the marker
+    if (position && window.location.href.search("singleobservations")==-1) {
+        inventory.placeMarker(position);
+        inventory.map.map.panTo(position);
+        inventory.map.map.setOptions({zoom:14});
+        inventory.map.mapOverlays.fitBoundsOnLoad = false;
+    } else if (window.location.href.search("singleobservations")!=-1) {
+    	if(position) {
+    	      // if we have
+    	      inventory.placeMarker(position);
+    	      inventory.map.map.panTo(position);
+    	      inventory.map.map.setOptions({zoom:14});
+    	      if (inventory.getPrevPos() == null) {
+    	    	  inventory.storePrevPos(position);  
+    	      }
+    	    } else if (inventory.getPrevPos() != null) {
+    	      inventory.map.map.panTo(inventory.getPrevPos());
+    	      inventory.map.map.setOptions({zoom:14});  
+    	    } else {
+    	    	inventory.map.initLocation();
+    	    	console.debug("enable de shizzle");
+    	    }	
     }
+    
+    
     
     if(!inventory.locationform.is('form'))
       return;
@@ -983,6 +998,22 @@ var inventory = {
     google.maps.event.addDomListener(inventory.map_place, 'click', inventory.activatePlace);
     
     inventory.map.createSearchbar();
+  }
+  
+  inventory.storePrevPos = function (p) {
+	  if (window.sessionStorage) {
+		  window.sessionStorage.setItem('inventory_prev_lat', p.lat());
+		  window.sessionStorage.setItem('inventory_prev_lng', p.lng());
+	  }
+  }
+  
+  inventory.getPrevPos = function () {
+	  if (window.sessionStorage && window.sessionStorage.getItem('inventory_prev_lat')!=null) {
+		  var lat = window.sessionStorage.getItem('inventory_prev_lat');
+		  var lng = window.sessionStorage.getItem('inventory_prev_lng');
+		  return new google.maps.LatLng(lat, lng);
+	  }	  
+	  return null;
   }
   
   inventory.activatePan = function(e) {

@@ -26,25 +26,20 @@ function enable_map_editing() {
 			//create undo button
 			var undo = jQuery('<img style="display:inline;"/>');
 			undo.data('inactive', 'undo.png');
-			undo.data('selected', 'undo-selected.png');
-			var confirmMessage = jQuery("div#edit-map-button #reset-area-confirmation").text();
+			var confirmMessage = Drupal.t('');
 			var handler = function() {
-				undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('selected'));
-				if (confirm(jQuery("div#edit-map-button #reset-area-confirmation").text())) {
+				if (confirm(Drupal.t('Do you really want to undo the changes made to the area?'))) {
 					activeEditingTool.reset();
 				}
-				undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'));
 			};
-			var toolTip = jQuery("div#edit-map-button #add-marker-caption").text();
+			var toolTip = Drupal.t('undo');
 			undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'))
 			.attr('alt', toolTip)
 			.attr('title', toolTip)
-			.click(handler).mouseout(function(){
-				undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'));
-			});
+			.click(handler);
 			controls.append(undo);
 			//init tool for editing area
-			switch (jQuery("div#edit-map-button #area-type").text()) {
+			switch (jQuery("input#area-type-input").val()) {
 			case "marker":
 				activeEditingTool = new MarkerEdit();
 				break;

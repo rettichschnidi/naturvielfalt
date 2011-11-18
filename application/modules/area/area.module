@@ -1002,21 +1002,6 @@ function area_edit_map($areaId, $centerArray, $geometryJSON) {
   $inventoryCount = $inventories->fetchColumn(0); 
     
   if (intval($inventoryCount) == 0) {
-    $area_json = json_decode($values["geometry"]);
-  	$t = '';
-	if ('Polygon' == $area_json->type) {
- 	    $t = 'polygon';
-    } else if ('LineString' == $area_json->type) {
-        $t = 'polyline';
-    } else if ('Point' == $area_json->type) {
-    	$t = 'marker';
-  	}
-  	
-  	$edit =   '<span id="remove-marker-caption">' . t('remove marker') . '</span>';
-	$edit =  $edit. '<span id="reset-area-confirmation">' . t('Are you sure?') . '</span>';
-  	$apply =  '<span id="add-marker-caption">' . t('add marker') . '</span>';
-  	$cancel = '<span id="cancel-area-caption">' . t('cancel') . '</span>';
-  	$type =   '<span id="area-type">' . $t . '</span>';
   	$editButton = '<div id="edit-map-button" style="display:none;">'. $edit . $apply . $cancel . $type .' </div>';
   }
     
