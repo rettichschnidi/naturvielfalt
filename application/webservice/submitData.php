@@ -137,7 +137,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 function storeImage($entry, $uid) {
 	echo 'Receiving Image from iPhone Application';
 	
-	$filename = "iphoneprovepicture.jpg";
+	$filename = "iphoneprovepicture.png";
 	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 	
@@ -159,7 +159,7 @@ function storeImage($entry, $uid) {
 	$timestamp = time();
 	
 	// CREATE file_managed entry
-	$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/jpg', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
+	$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/png', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
 	
 	// CREATE gallery_image entry
 	if($file_managed_entry) {
