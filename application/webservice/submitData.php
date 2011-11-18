@@ -154,7 +154,7 @@ function storeImage($entry, $uid) {
 		echo 'Could NOT upload picture';
 	}
 	
-	$uri = 'public://swissmon/gallery/organism/' . $entry . '/' . $filename;
+	$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
 	$filesize = filesize($target_path);
 	$timestamp = time();
 	
