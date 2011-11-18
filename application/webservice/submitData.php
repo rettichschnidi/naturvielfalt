@@ -69,7 +69,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		$latitude = @$_POST['latitude'];
 		$comment = @$_POST['comment'];
 		
-		print_r(apache_request_headers());
+		print_r($_FILES);
 		
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
@@ -125,7 +125,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 
 		// Create image and store information in the database
-		storeImage($entry, $uid);
+		if(isset($_FILES['file'])) {
+			storeImage($entry, $uid);
+		}
 
         echo 'Die Beobachtung wurde erfolgreich gespeichert, vielen Dank! [' . $entry . ']';
  
@@ -147,27 +149,25 @@ function storeImage($entry, $uid) {
 	if (!file_exists($folder)) {
 		mkdir($folder, 0777);
 	}
-	
-	if(isset($_FILES['file'])) {
-		if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
-			$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
-			$filesize = filesize($target_path);
-			$timestamp = time();
 
-			// CREATE file_managed entry
-			$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/png', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
+	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
+		$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
+		$filesize = filesize($target_path);
+		$timestamp = time();
 
-			// CREATE gallery_image entry
-			if($file_managed_entry) {
-				$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $uid, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
-			} else {
-				echo 'Could not create the File managed entry!';
-			}
-		
-			echo "Uploaded an image";
+		// CREATE file_managed entry
+		$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/png', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
+
+		// CREATE gallery_image entry
+		if($file_managed_entry) {
+			$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $uid, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
 		} else {
-			echo 'Could NOT upload picture';
+			echo 'Could not create the File managed entry!';
 		}
+	
+		echo "Uploaded an image";
+	} else {
+		echo 'Could NOT upload picture';
 	}
 }
 
