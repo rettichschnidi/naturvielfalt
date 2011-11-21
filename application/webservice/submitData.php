@@ -31,6 +31,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 } else {
 
+	// Set content-length
+	header('Content-Length: ' . ob_get_length());
+
 	echo 'IN REQUEST ON THA SERVA!';
 
     $uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
