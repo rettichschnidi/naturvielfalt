@@ -14,9 +14,9 @@ define('DRUPAL_ROOT', dirname(__FILE__) . '/..');
 require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
-echo 'SCRIIIPTTTT ON SERVA!!!';
-
 function auth() {
+
+	echo 'in auth';
 
     header('WWW-Authenticate: Basic realm="Naturvielfalt"');
     header('HTTP/1.0 401 Unauthorized');
@@ -26,54 +26,28 @@ function auth() {
 }
 
 if (!isset($_SERVER['PHP_AUTH_USER'])) {
-
     auth();
 
 } else {
 
 	// Set content-length
-	header('Content-Length: ' . ob_get_length());
-
-	echo 'IN REQUEST ON THA SERVA!';
+	// header('Content-Length: ' . ob_get_length()); <---- MADE THE APP CRASH.... Don't really understand why
 
     $uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
     $user = user_load($uid);
 
     if ($uid) {	
 	
-		echo 'USER AUTHENTICATED!!';
-	
-	
-		/*
-		// Get all header information
-		$header = apache_request_headers();
-	
-        $organism = $header['organism'];
-		$type = $header['type'];
-        $count = $header['count'];
-        $date = $header['date'];
-        $accuracy = $header['accuracy'];
-		$author = $header['author'];
-		$longitude = $header['longitude'];
-		$latitude = $header['latitude'];
-		// $comment = @$header['comment'];
-		*/
-		
-		print_r(@$_POST);
-		
 		$organism = @$_POST['organism'];
 		$type = @$_POST['type'];
         $count = @$_POST['count'];
         $date = @$_POST['date'];
-        $location = @$_POST['location'];
         $accuracy = @$_POST['accuracy'];
 		$author = @$_POST['author'];
 		$longitude = @$_POST['longitude'];
 		$latitude = @$_POST['latitude'];
-		$comment = @$_POST['comment'];
-		
-		print_r($_FILES);
-		
+		// $comment = @$_POST['comment'];
+	
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
 
@@ -89,22 +63,27 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         }
 
 		// Get location based information
-		$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
+		$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
+		if(!$zip) {
+			$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
+		}
+			
+		$city = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['Locality']['LocalityName'];
+		if(!$city) {
+			$city = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['LocalityName'];
+		}
+		
 		$country = $jsondata['Placemark'][0]['AddressDetails']['Country']['CountryName'];
-		$city = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['LocalityName'];
 		$canton = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['AdministrativeAreaName'];
+
 
         // Create the entry insert
         $entry = db_insert('inventory_entry')->fields(array('organism_id' => $organism, 'inventory_id' => $inventory, 'position' => 0, 'accuracy' => $accuracy, 'zip' => $zip, 'township' => $city, 'canton' => $canton, 'country' => $country))->execute();
 
 		// Add Funddatum, Beobachter und Amount
-		// 7 = Funddatum
-		// 44 = Beobachter
-		// 20 = Anzahl
 		if($entry) {			
 			$funddatumId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Funddatum")->execute()->fetchField();
 			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $funddatumId, 'value' => $date))->execute();
-			
 			
 			// Flowers don't have any amount..
 			if($type != 16) {
@@ -146,8 +125,8 @@ function storeImage($entry, $uid) {
 	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 	
-	echo 'Folder: ' . $folder;
-	echo 'Target path: ' . $target_path;
+	// echo 'Folder: ' . $folder;
+	// echo 'Target path: ' . $target_path;
 	
 	if (!file_exists($folder)) {
 		mkdir($folder, 0777);
@@ -167,15 +146,13 @@ function storeImage($entry, $uid) {
 		} else {
 			echo 'Could not create the File managed entry!';
 		}
-	
-		echo "Uploaded an image";
 	} else {
 		echo 'Could NOT upload picture';
 	}
 }
 
 function reverseGeocode($longitude, $latitude) {
-		
+	
 	// STATIC NATURWERK COORDINATE for testing..
 	// $latitude = '47.480988';
 	// $longitude = '8.209748';
@@ -196,6 +173,8 @@ function reverseGeocode($longitude, $latitude) {
 	if(is_array($jsondata )&& $jsondata ['Status']['code']== 200)
 	{
 	      print_r($jsondata);
+	} else {
+		echo 'Could NOT fetch Google geocode data';
 	}
 	
 	return $jsondata;
