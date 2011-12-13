@@ -43,11 +43,17 @@ body {
  background: transparent url(../images/secondary_a.png) repeat 0 0;/*#125A56;*/
  }
  
+ .menu-name-main-menu li.leaf a.active
+ {
+ background-color:black;
+ color:white;
+ }
+ 
 .menu-name-main-menu a.active,
 .menu-name-main-menu a:hover,
-.menu-name-main-menu li.leaf a.active,
 .menu-name-main-menu li.leaf a:hover {
   background: transparent url(../images/secondary_a_hover.png) repeat 0 0; /*#125A56;*/
+  color: black;
 }
 
 

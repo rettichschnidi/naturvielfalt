@@ -11,10 +11,10 @@ function inventory_edit($head_inventory_id, $redirect=true) {
   _include_js_and_css();
   area_add_gmap_resources(false);
   
-  drupal_set_title(t('Modify %name (%id)', array(
-    '%name' => inventory_title($head_inventory_id),
-    '%id' => $head_inventory_id
-  )), PASS_THROUGH);
+//   drupal_set_title(t('Modify %name (%id)', array(
+//     '%name' => inventory_title($head_inventory_id),
+//     '%id' => $head_inventory_id
+//   )), PASS_THROUGH);
   
   if($redirect) {
     $hidden = db_select('head_inventory', 'hi')
@@ -31,7 +31,7 @@ function inventory_edit($head_inventory_id, $redirect=true) {
     }
   }
   
-  //------------------
+  //------------------ 
   $render_array['basics'] = array(
     '#type' => 'fieldset', 
     '#title' => t('Basics'), 
@@ -121,6 +121,100 @@ function inventory_edit($head_inventory_id, $redirect=true) {
   $render_array['file']['upload'] = drupal_get_form('inventory_edit_files', $head_inventory_id);
   
   return $render_array;
+}
+
+function inventory_add_single()
+{
+	
+	$render_array['basics'] = array(
+	'#type' => 'fieldset',
+	'#title' => t('Basics'),
+	    '#weight' => 2, 
+	    '#collapsible' => TRUE, 
+	'#collapsed' => TRUE,
+	'#attached' => array (
+	'js' => array (
+	        'misc/form.js',
+	        'misc/collapse.js',
+	      ),
+	    ),
+	'#attributes' => array(
+	      'class' => array('collapsible', 'collapsed'),
+	    ),
+	  );
+	
+// 	  if(isset($_SESSION['inventory']['new']) && $_SESSION['inventory']['new']) {
+// 	    $render_array['suggestion'] = array(
+// 	      '#prefix' => '<p>',
+// 	      '#markup' => t('You can now edit your newly created inventory:<ul><li>add organisms by using the "Add new inventory group" select box in the lower left</li><li>edit the permissions for this inventory</li><li>attach files to this inventory</li></ul>'),
+// 	      '#suffix' => '</p>'
+// 	);
+// 	    unset($_SESSION['inventory']['new']);
+// 	}
+	
+// 	$render_array['basics']['edit'] = drupal_get_form('inventory_edit_basics', $head_inventory_id, false);
+	
+	  //------------------
+	$render_array['entries'] = array(
+	'#type' => 'fieldset',
+	'#title' => t('Organisms'),
+	    '#weight' => 6, 
+	'#collapsible' => TRUE,
+	    '#collapsed' => FALSE,
+	    '#attached' => array (
+	      'js' => array (
+	        'misc/form.js',
+	'misc/collapse.js',
+	),
+	),
+	'#attributes' => array(
+	'class' => array('collapsible'),
+	),
+	);
+	
+	$render_array['entries']['edit'] = drupal_get_form('inventory_edit_entries', $head_inventory_id);
+	
+	//------------------
+	$render_array['rights'] = array(
+	    '#type' => 'fieldset', 
+	'#title' => t('Permissions'),
+	'#weight' => 8,
+	'#collapsible' => TRUE,
+	    '#collapsed' => TRUE,
+	    '#attached' => array (
+	'js' => array (
+	'misc/form.js',
+	        'misc/collapse.js',
+	      ),
+	),
+	'#attributes' => array(
+	'class' => array('collapsible', 'collapsed'),
+	    ),
+	  );
+	
+	$render_array['rights']['edit'] = drupal_get_form('inventory_edit_rights', $head_inventory_id);
+	
+	  //------------------
+	$render_array['file'] = array(
+	    '#type' => 'fieldset', 
+	'#title' => t('Files'),
+	    '#weight' => 10, 
+	'#collapsible' => TRUE,
+	'#collapsed' => TRUE,
+	    '#attached' => array (
+	'js' => array (
+	'misc/form.js',
+	        'misc/collapse.js',
+	),
+	),
+	'#attributes' => array(
+	'class' => array('collapsible', 'collapsed'),
+	    ),
+	);
+	
+	$render_array['file']['upload'] = drupal_get_form('inventory_edit_files', $head_inventory_id);
+	
+	return $render_array;
 }
 
 function inventory_delete($form, &$form_state, $head_inventory_id) {

@@ -22,6 +22,15 @@ function inventory_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'inventory.list.inc',
   );
+  
+  $items['userinventory'] = array(
+      'title' => t('Inventories'),
+      'description' => t('Show all inventories'),
+      'page callback' => 'inventory_list_show_users_inventory',
+      'access arguments' => array('access inventories'),
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'inventory.list.inc',
+  );
   $items['inventory/%'] = array(
     'title' => t('Show Inventory'),
     'description' => t('View an existing inventory'),
@@ -334,6 +343,28 @@ function inventory_menu() {
     'file' => 'inventory.single.inc',
     'weight' => 3,
   );
+  
+  //singleobservations show all
+  $items['allusersingleobservations'] = array(
+        'title' => t('Single all ovservations'),
+        'description' => t('Show all inventories'),
+        'page callback' => 'inventory_all_user_show',
+        'access arguments' => array('access inventories'),
+        'type' => MENU_VISIBLE_IN_BREADCRUMB,
+        'file' => 'inventory.single.inc',
+  );
+  
+  //singleobservations show all
+  $items['allsingleobservations'] = array(
+      'title' => t('Single all ovservations'),
+      'description' => t('Show all inventories'),
+      'page callback' => 'inventory_all_show',
+      'access arguments' => array('access inventories'),
+      'type' => MENU_VISIBLE_IN_BREADCRUMB,
+      'file' => 'inventory.single.inc',
+  );
+  
+  //sikngleobservations show only user-related
   $items['singleobservations'] = array(
     'title' => t('Single observations'),
     'description' => t('View single observations'),
@@ -343,7 +374,7 @@ function inventory_menu() {
     'file' => 'inventory.single.inc',
   );
   $items['singleobservations/normal'] = array(
-    'title' => t('View'),
+    'title' => t('Eigene'),
     'description' => t('View single observations'),
     'page callback' => 'inventory_single_current_show',
     'access arguments' => array('create inventories'),
@@ -352,6 +383,7 @@ function inventory_menu() {
     'file' => 'inventory.single.inc',
     'weight' => 1,
   );
+  
   $items['singleobservations/gallery'] = array(
     'title' => t('Gallery'),
     'description' => t('View the inventory as gallery of organisms'),
@@ -361,6 +393,16 @@ function inventory_menu() {
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file' => 'inventory.single.inc',
     'weight' => 2,
+  );
+  $items['singleobservations/media'] = array(
+          'title' => t('Medien'),
+          'description' => t('View all the media stuff'),
+          'page callback' => 'inventory_single_show_media',
+          'access arguments' => array('create inventories'),
+          'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+          'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+          'file' => 'inventory.single.inc',
+          'weight' => 4,
   );
   $items['singleobservations/list'] = array(
     'title' => t('List'),
@@ -372,6 +414,8 @@ function inventory_menu() {
     'file' => 'inventory.single.inc',
     'weight' => 3,
   );
+  
+
   
   // Single observations edit form
   $items['user/%user/singleobservations/edit'] = array(
@@ -416,10 +460,22 @@ function inventory_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'inventory.single.inc',
   );
+  
+  
+//   $items['singleobservations/add'] = array(
+//   'title' => t('Edit'),
+//   'description' => t('Add single observations'),
+//       'page callback' => 'inventory_add_single', //Einzelbeobachtung erfassen
+//   'access arguments' => array('create inventories'),
+//       'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+//   'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+//   'file' => 'inventory.edit.inc',
+//   );
+  
   $items['singleobservations/edit'] = array(
     'title' => t('Edit'),
     'description' => t('Edit single observations'),
-    'page callback' => 'inventory_single_current_edit',
+    'page callback' => 'inventory_single_current_edit', //Einzelbeobachtung erfassen
     'access arguments' => array('create inventories'),
     'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -1374,7 +1430,7 @@ function inventory_data_gallery_list($id,$sort){
 						  
 	return $data;
 }
-function _include_js_and_css() {
+function _include_js_and_css($usemain=true) {
   drupal_add_library('system', 'ui.dialog');
   drupal_add_library('system', 'ui.datepicker');
   drupal_add_library('system', 'ui.autocomplete');
@@ -1386,7 +1442,8 @@ function _include_js_and_css() {
   drupal_add_js(drupal_get_path('module', 'inventory') .'/js/util.js');
   drupal_add_js(drupal_get_path('module', 'inventory') .'/js/inventory.js');
 
-  drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  if($usemain)
+  	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
 }
 

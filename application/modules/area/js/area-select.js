@@ -590,10 +590,11 @@ var areaselect = null;
 jQuery(document).ready(function() {
   if(jQuery('#map_canvas').size()){
 	  areaselect = new AreaSelect('map_canvas')
-	  if (!jQuery('#map_canvas').data('areaid')) {
+	  // tlevy 2011-11-30: bugfix: Suchfeld in der Map war bei einigen nicht sichtbar. if-Abfrage auskommentiert
+//	  if (!jQuery('#map_canvas').data('areaid')) {
 		  areaselect.createSearchbar();
 		  areaselect.initLocation();
-	  } 
+//	  } 
   }
     
   /* clear edit-id-area field. Solves the problem that if a user navigates back problem that

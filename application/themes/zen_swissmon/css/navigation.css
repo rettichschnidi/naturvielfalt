@@ -1,4 +1,4 @@
-/**
+	/**
  * @file
  * Navigation Styling
  */
@@ -53,7 +53,7 @@ ul.menu,
 }
 
 /* 
- *  Main Menu
+ *  Main Menu //TopNavigation
  */
 #main-menu{}
 #main-menu a:link, #main-menu a:visited{ 

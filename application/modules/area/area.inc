@@ -1,5 +1,6 @@
 <?php
 function show_area($areaId) {
+	
   $areaResult = db_query("
     SELECT * , substring(ST_AsText(geom) from 1 for 4) as g
     FROM {area}
@@ -7,7 +8,7 @@ function show_area($areaId) {
     WHERE id = :id", array(':id' => $areaId));
   $area = $areaResult->fetch();
   $isLine = $area->g == "LINE";
-  drupal_set_title($area->field_name);
+//   drupal_set_title($area->field_name);
   drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
   drupal_add_js(drupal_get_path('module', 'area') . '/js/area.datatable.select.js');
   

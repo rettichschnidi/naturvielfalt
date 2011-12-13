@@ -27,13 +27,55 @@ function inventory_show($head_inventory_id, $redirect=true) {
   area_add_gmap_resources(false);
   drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
   
-  $render_array = inventory_basics($head_inventory_id);
+  //rendert den Inhalt (Map und Einzelbeobachtungen)
+  $render_array = inventory_basics($head_inventory_id); 
   
   if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE){
   	$redlist_array = inventory_redlist_count($head_inventory_id);
   	if($redlist_array != 0)
     	$render_array = array_merge($render_array, $redlist_array);
   }
+  
+//   if(function_exists('gallery_list_renderer')){
+//     $render_array['GalleryImages'] = gallery_list_renderer('images','head_inventory', $head_inventory_id, false, 100);
+//     $render_array['GallerySounds'] = gallery_list_renderer('sounds','head_inventory', $head_inventory_id, false, 101,true);
+//     $render_array['GalleryVideos'] = gallery_list_renderer('videos','head_inventory', $head_inventory_id, false, 102,true);
+    
+//   }
+  $render_array = array_merge($render_array, inventory_inventories($head_inventory_id)); //rendert die Einzelbeobachtugen sortiert nach Art
+  $render_array = array_merge($render_array, inventory_files($head_inventory_id));
+//   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
+
+  return $render_array;
+}
+
+function inventory_show_media($head_inventory_id)
+{
+	if($redirect) {
+    $hidden = db_select('head_inventory', 'hi')
+      ->condition('hi.id', $head_inventory_id)
+      ->fields('hi', array('hidden', 'owner_id'))
+      ->execute()
+      ->fetch();
+    if($hidden->hidden) {
+      global $user;
+      if($user->uid == $hidden->owner_id)
+        return drupal_goto('singleobservations');
+      else
+        return drupal_goto('user/'.$hidden->owner_id.'/singleobservations');
+    }
+  }
+  _include_js_and_css(false);
+  area_add_gmap_resources(false);
+  drupal_set_title(inventory_title($head_inventory_id)." (".$head_inventory_id.")");
+  
+//   $render_array = inventory_basics($head_inventory_id);
+  
+//   if(inventory_user_has_redlist_permission($head_inventory_id) == FALSE){
+//   	$redlist_array = inventory_redlist_count($head_inventory_id);
+//   	if($redlist_array != 0)
+//     	$render_array = array_merge($render_array, $redlist_array);
+//   }
   
   if(function_exists('gallery_list_renderer')){
     $render_array['GalleryImages'] = gallery_list_renderer('images','head_inventory', $head_inventory_id, false, 100);
@@ -42,7 +84,7 @@ function inventory_show($head_inventory_id, $redirect=true) {
     
   }
   
-  $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
+//   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
 
   return $render_array;
 }
@@ -318,6 +360,21 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
   return $render_array;
 }
 
+function inventory_show_all_singleobservations()
+{
+// 	$query = db_select('inventory_entry', 'ie')
+// 	->condition('area_id', '155')
+// 	->fields('ie');
+// 	$query->leftJoin('inventory', 'i', 'i.id=ie.inventory_id');
+// 	$query->innerJoin('head_inventory', 'hi', 'hi.id=i.head_inventory_id');
+// 	$query->innerJoin('organism', 'o', 'o.id=ie.organism_id');
+// // 	$inventory = $query->execute()->fetch();
+// 	echo $query;
+// 	$header = array('ID', 'value');
+
+// 	return $render_array;	
+}
+
 /**
  * Basic information about an inventory
  * 
@@ -327,9 +384,12 @@ function _inventory_presentation($head_inventory_id, $size='gallery_presentation
  *  Drupal render array
  */
 function inventory_basics($head_inventory_id) {
-  //Display Inventory Basics
+// 	echo $head_inventory_id;
+//   Display Inventory Basics
+  
   $query = db_select('head_inventory', 'hi')
     ->condition('hi.id', $head_inventory_id)
+//     ->condition('area_id', 155)
     ->fields('hi');
   $query->leftJoin('users', 'u', 'u.uid = hi.owner_id');
   $query->leftJoin('area', 'a', 'a.id = hi.area_id');
@@ -341,14 +401,17 @@ function inventory_basics($head_inventory_id) {
   $query->addField('a', 'id', 'area_id');
   $query->addField('a', 'owner_id', 'area_owner_id');
   $inventory = $query->execute()->fetch();
-  
+//    echo 'query1: '.$query; echo '<br>'; echo $head_inventory_id;
   $query = db_select('area', 'a')
   ->condition('a.id', $inventory->area_id)
   ->fields('a');
   $query->leftJoin('users', 'u', 'u.uid = a.owner_id');
   $query->addField('u','name','owner');
   $area = $query->execute()->fetch();
+  
+//   echo '<br> query2: '; echo $query; echo '<br>'; echo $inventory->area_id;
   $owner = inventory_username($inventory->uid);
+//   echo '<br>owner='; echo $owner;
   $rows = array();
   $rows[] = array(
     array('data' => t('Observer'), 'header' => true), 
@@ -371,6 +434,7 @@ function inventory_basics($head_inventory_id) {
     $inventory->description
   );
   
+// 	return $render_array;
   $ownerId = $inventory->uid;
   $render_array['details'] = array(
     '#type' => 'fieldset', 
@@ -390,7 +454,7 @@ function inventory_basics($head_inventory_id) {
     ),
   );
   $render_array['details']['table'] = array(
-    '#theme' => 'table',
+    '#theme' => 'datatable',
     '#rows' => $rows,
     '#attributes' => array(
         'class' => array('inventory_show'),
@@ -457,8 +521,8 @@ function inventory_basics($head_inventory_id) {
       'id' => 'inventory-map'
     ),
   );
-  
-  $render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas', ' data-layers="'.url('inventory/'.$head_inventory_id.'/entry_locations').'"');
+  // tlevy Hier wird die Map geladen
+  $render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas', ' data-layers="'.url('inventory/'.$head_inventory_id.'/entry_locations').'"', false, false);
 
   return $render_array;
 }

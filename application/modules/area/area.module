@@ -31,6 +31,21 @@ function area_help($path, $arg) {
  * @return array
  */
 function area_menu() {
+	$items['area'] = array (
+	'title' => t('testarea'),
+	'page callback' => 'area_test_table',
+	'access arguments' => array(AREA_ACCESS),
+	);
+	$items['userarea'] = array(
+	    'title' => t('User Areas'),
+	    'description' => t('List of areas'),
+	    'page callback' => 'show_area_search_userspecified',
+	    'access arguments' => array(AREA_ACCESS),
+	    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	    'file' => 'area.search.inc',
+	    'weight' => 0
+	);
   $items['area'] = array(
     'title' => t('Areas'),
     'description' => t('List of areas'),
@@ -40,7 +55,7 @@ function area_menu() {
     'file' => 'area.search.inc',
   );
   $items['area/%'] = array(
-    'title' => t('Area'),
+    //'title' => t('Areadsdf'),
     'description' => t('View an area'),
     'page callback' => 'show_area',
     'page arguments' => array(1),
@@ -132,6 +147,16 @@ function area_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'area.new.inc',
   );
+  
+  $items['uarea'] = array(
+  	    'title' => t('User Areas'),
+  	    'description' => t('List of user areas'),
+  	    'page callback' => 'show_area_search_userspecified',
+  	    'access arguments' => array(AREA_ACCESS),
+  	    'type' => MENU_CALLBACK,
+  	    'file' => 'area.search.inc',
+  );
+  
   $items['area/habitat_autocomplete'] = array(
     'title' => t('Habitat autocomplete'),
     'page callback' => 'area_habitat_autocomplete',
@@ -187,6 +212,11 @@ function area_menu() {
   );
 
   return $items;
+}
+
+function area_test_table()
+{
+	
 }
 
 /**
@@ -942,11 +972,18 @@ function area_add_gmap_resources($bubble=true, $areaselect=true) {
   	drupal_add_js($areaJsPath . 'area-select.js');
 }
 
-function area_map($areaId, $map_id='map_canvas', $additional='', $center=false) {
+/*
+ * Map wird gerendert
+ * additional head_inventory
+ */
+function area_map($areaId, $map_id='map_canvas', $additional='', $center=false, $showAreas=true) {
   area_add_gmap_resources(false);
-  
+//   $additional='';
+if($showAreas)
+{
   $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) as center, ST_AsGeoJSON(geom) as geometry FROM area WHERE id = :id', array(":id" => $areaId));
   $values = $areas->fetchAssoc();
+}
   $json = json_decode($values["center"]);
   
   if (!$center && $json) {

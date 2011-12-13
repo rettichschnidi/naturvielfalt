@@ -9,9 +9,26 @@ function show_area_search() {
     '#theme' => 'area.search',
   );
 
-  $output['googleMaps'] = drupal_get_form('area_google_maps_form');
-  $output['FieldName'] = drupal_get_form('area_field_name_form');
+  // tlevy Hier wird die Map erstellt
+	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
+//   $output['googleMaps'] = area_google_maps_form(false);
+//   	$output['FieldName'] = drupal_get_form('area_field_name_form');
+	$output['FieldName'] = area_field_name_form(false);
   return $output;
+}
+
+function show_area_search_userspecified() {
+
+	$output['search'] = array(
+    '#theme' => 'area.search',
+	);
+
+	// tlevy Hier wird die Map erstellt
+	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
+// 	$output['FieldName'] = drupal_get_form('area_field_name_form');
+
+	$output['FieldName'] = area_field_name_form(true);
+	return $output;
 }
 
 /**
@@ -43,19 +60,36 @@ function area_google_maps_form() {
   return $form;
 }
 
+
+
 /**
  * Search by already saved areas
  * @return input search field for saved areas
  */
-function area_field_name_form() {
-  $area = db_query(
-    "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, GeometryType(area.geom) AS art_dest, fdaf.field_address_first_name fname, fdaf.field_address_last_name lname  
-    FROM area
-    LEFT JOIN users u ON u.uid = owner_id
-    LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
-    WHERE hidden IS NOT TRUE
-    ORDER BY field_name;"
-  );
+function area_field_name_form($userspecified=false) {
+	global $user;
+	if(!$userspecified)
+	{
+	  $area = db_query(
+	    "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, GeometryType(area.geom) AS art_dest, fdaf.field_address_first_name fname, fdaf.field_address_last_name lname  
+	    FROM area
+	    LEFT JOIN users u ON u.uid = owner_id
+	    LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
+	    WHERE hidden IS NOT TRUE
+	    ORDER BY field_name;"
+	  );
+	}
+	else
+	{
+		$area = db_query(
+		    "SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, GeometryType(area.geom) AS art_dest, fdaf.field_address_first_name fname, fdaf.field_address_last_name lname  
+		    FROM area
+		    LEFT JOIN users u ON u.uid = owner_id
+		    LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
+		    WHERE hidden IS NOT TRUE and u.uid = ".$user->uid."
+		    ORDER BY field_name;"
+		);
+	}
   
   //Localize Image
   $view_img_localize = theme('image', array(
