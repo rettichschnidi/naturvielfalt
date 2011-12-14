@@ -46,6 +46,16 @@ function area_menu() {
 	    'file' => 'area.search.inc',
 	    'weight' => 0
 	);
+	$items['toparea'] = array(
+	    'title' => t('User Areas'),
+	    'description' => t('List of areas'),
+	    'page callback' => 'show_area_search',
+	    'access arguments' => array(AREA_ACCESS),
+	    'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	    'file' => 'area.search.inc',
+	    'weight' => 0
+	);
   $items['area'] = array(
     'title' => t('Areas'),
     'description' => t('List of areas'),

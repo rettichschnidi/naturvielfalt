@@ -96,26 +96,26 @@ function inventory_all_show()
 		echo 'fail';
 		$render_array = render_table($inventory);
 		
-// 		$render_array['map'] = array(
-// 		    '#type' => 'fieldset',
-// 		    '#title' => t('Map'),
-// 		    '#weight' => 1,
-// 		    '#collapsible' => TRUE,
-// 		    '#collapsed' => FALSE,
-// 		    '#attached' => array (
-// 		      'js' => array (
-// 		        'misc/form.js',
-// 		        'misc/collapse.js',
-// 		),
-// 		),
-// 		    '#attributes' => array(
-// 		      'class' => array('collapsible'),//, 'collapsed'),
-// 		      'id' => 'inventory-map'
-// 		),
-// 		);
-// 		// tlevy Hier wird die Map geladen
-// // 		echo $head_inventory_id;
-// 		$render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas');
+		$render_array['map'] = array(
+		    '#type' => 'fieldset',
+		    '#title' => t('Map'),
+		    '#weight' => 1,
+		    '#collapsible' => TRUE,
+		    '#collapsed' => FALSE,
+		    '#attached' => array (
+		      'js' => array (
+		        'misc/form.js',
+		        'misc/collapse.js',
+		),
+		),
+		    '#attributes' => array(
+		      'class' => array('collapsible'),//, 'collapsed'),
+		      'id' => 'inventory-map'
+		),
+		);
+		// tlevy Hier wird die Map geladen
+// 		echo $head_inventory_id;
+		$render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas');
 		
 		
 		
