@@ -78,24 +78,34 @@ function inventory_all_show()
 	_include_js_and_css(false);
 	drupal_set_title(t('All single observations'));
 
-		$q = "SELECT ie.id, ie.organism_id, o.name_de, o.name_it, hi.create_time, hi.id as hi_id, ie.accuracy, ie.id as ie_id, i.inventory_type_id, u.name FROM inventory_entry ie
+	//…ffentlich Inventories holen
+		$qOpen = "SELECT ie.id, ie.organism_id, o.name_de, o.name_it, hi.create_time, hi.id as hi_id, ie.accuracy, ie.id as ie_id, i.inventory_type_id, u.name FROM inventory_entry ie
  		LEFT OUTER JOIN inventory i ON i.id=ie.inventory_id 
 		INNER JOIN head_inventory hi ON hi.id=i.head_inventory_id 
 		INNER JOIN organism o ON o.id=ie.organism_id 
 		inner join users u on u.uid=hi.owner_id
-		WHERE (area_id = 155)";
-// 		$inventory = $query->execute();
-		$inventory = db_query($q);
-// 		echo $query;
-// 	 	print($your_query . "<br /> Error: (" . mysql_errno() . ") " . mysql_error());
-// 	 	echo 'lengt: '.count($inventory);
-// 		_include_js_and_css(false);
+		WHERE (area_id = 155) and hi.shared = false";// and (hi.hidden = false OR hi.hidden is null)";
+		$openInventories = db_query($qOpen);
+		
+		//Gemeinsame Inventories holen
+		$qShared = "SELECT ie.id, ie.organism_id, o.name_de, o.name_it, hi.create_time, hi.id as hi_id, ie.accuracy, ie.id as ie_id, i.inventory_type_id, u.name FROM inventory_entry ie
+		 		LEFT OUTER JOIN inventory i ON i.id=ie.inventory_id 
+				INNER JOIN head_inventory hi ON hi.id=i.head_inventory_id 
+				INNER JOIN organism o ON o.id=ie.organism_id 
+				inner join users u on u.uid=hi.owner_id
+				WHERE (area_id = 155) and hi.shared = true";// and (hi.hidden = false or hi.hidden is null)";
+		$sharedInventories = db_query($qShared);
+		
+		
 		area_add_gmap_resources(false);
 		
-		if(!$inventory)
-		echo 'fail';
-		$render_array = render_table($inventory);
-		
+// 		if(!$inventory)
+// 		echo 'fail';
+		$render_array = array();
+		$render_array2 = render_table($openInventories, '&Ouml;ffentliche Einzelbeobachtungen', 'open_inventory');
+		$render_array1 = render_table($sharedInventories, 'Gemeinsame Einzelbeobachtungen', 'shared_inventory');
+		$render_array = array_merge($render_array, $render_array1);
+		$render_array = array_merge($render_array, $render_array2);
 		$render_array['map'] = array(
 		    '#type' => 'fieldset',
 		    '#title' => t('Map'),
@@ -115,19 +125,21 @@ function inventory_all_show()
 		);
 		// tlevy Hier wird die Map geladen
 // 		echo $head_inventory_id;
-		$render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas');
-		
+// 		$render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas');
+// 		$render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas');
+		$render_array['map']['map'] = area_map($inventory->area_id, 'map_canvas', ' data-layers="'.url('inventory/'.$head_inventory_id.'/entry_locations').'"', false, false);
 		
 		
 		unset($render_array['details']); //entfernt die Details (wird in inventory_show gerendert)
 		unset($render_array['area']);
+		$render_array['map']['#attributes']['id'] = 'singleobservations-map';
   		return $render_array;
 }
 
 /*
  * Rendert eine Tabelle fŸr das Anzeigen von Einzelbeobachtungen
  */
-function render_table($result)
+function render_table($result, $tabletitle, $fieldname)
 {
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	$img_localize = theme('image', array(
@@ -158,6 +170,8 @@ function render_table($result)
 // 	t('Familie')
 	);
 	$rows = array();
+	if($result)
+	{
 	foreach($result as $record) {
 		
 		if($record->inventory_type_id != 16){
@@ -194,10 +208,10 @@ function render_table($result)
 		$rows[] = array('data' => $row, 'id' => $record->id);
 // 		echo '<br>'.$record->id;
 	}
-	
-	$render_array['all_inventory'] = array(
+	}
+	$render_array[$fieldname] = array(
 	    '#type' => 'fieldset', 
-	    '#title' => 'Alle Einzelbeobachtungen', 
+	    '#title' => $tabletitle, 
 	    '#weight' => 5, 
 	    '#collapsible' => TRUE, 
 	    '#collapsed' => FALSE,
@@ -217,11 +231,11 @@ function render_table($result)
 	);
 		
 // 	if($rows)
-	$render_array['all_inventory']['inventories'] = array(
+	$render_array[$fieldname]['inventories'] = array(
 	      '#theme' => 'datatable',
 	      '#header' => $headings,
 	      '#rows' => $rows,
-	      '#id_table' => 'atable',
+	      '#id_table' => $fieldname,
 	);
 // 	elseif($msg_empty)
 // 	$render_array['all inv']['inventories'] = array(

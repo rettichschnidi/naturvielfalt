@@ -42,8 +42,19 @@ function inventory_show($head_inventory_id, $redirect=true) {
 //     $render_array['GalleryVideos'] = gallery_list_renderer('videos','head_inventory', $head_inventory_id, false, 102,true);
     
 //   }
+// 	$q2 = "select * from head_inventory";
+// 	$inventory = db_query($q);
+// 	foreach($entry as $inventory)
+// 	{
+// 		echo $entry->id;
+// 		echo 't<br>';
+// 		$render_array = array_merge($render_array, inventory_inventories($entry->id)); //rendert die Einzelbeobachtugen sortiert nach Art
+// 		$render_array = array_merge($render_array, inventory_files($enntry->id));
+// 	}
   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id)); //rendert die Einzelbeobachtugen sortiert nach Art
   $render_array = array_merge($render_array, inventory_files($head_inventory_id));
+
+	
 //   $render_array = array_merge($render_array, inventory_inventories($head_inventory_id), inventory_files($head_inventory_id));
 
   return $render_array;

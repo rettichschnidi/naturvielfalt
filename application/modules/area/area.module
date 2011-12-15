@@ -986,11 +986,14 @@ function area_add_gmap_resources($bubble=true, $areaselect=true) {
  * Map wird gerendert
  * additional head_inventory
  */
-function area_map($areaId, $map_id='map_canvas', $additional='', $center=false, $showAreas=true) {
+function area_map($areaId, $map_id='map_canvas', $additional='', $center=false, $showAreas=false) {
   area_add_gmap_resources(false);
 //   $additional='';
-if($showAreas)
+// global $UseAreaInMap;
+// $UserAreaInMap = $showAreas;
+// if($showAreas)
 {
+	
   $areas = db_query('SELECT ST_AsGeoJSON(ST_Centroid(geom)) as center, ST_AsGeoJSON(geom) as geometry FROM area WHERE id = :id', array(":id" => $areaId));
   $values = $areas->fetchAssoc();
 }

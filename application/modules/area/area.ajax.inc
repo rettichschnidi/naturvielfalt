@@ -174,7 +174,10 @@ function get_areas($area_id=false) {
 
       $item['edit'] = area_edit_access($item['id']);
 
-      $items[] = $item;
+//       global $UseAreaInMap;
+//       echo $UseAreaInMap;
+//       if($UseAreaInMap)
+      	$items[] = $item;
   }
 
   // json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and
