@@ -47,6 +47,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		$longitude = @$_POST['longitude'];
 		$latitude = @$_POST['latitude'];
 		// $comment = @$_POST['comment'];
+		
+		print_r(@$_POST);
+		
 	
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
@@ -60,7 +63,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         if (!$inventory) {
             // inventory doesn't exist, create it
             $inventory = db_insert('inventory')->fields(array('inventory_type_id' => $type, 'head_inventory_id' => $head))->execute();
-        }
+        } else {
+			echo "Use existing inventory: $inventory";
+		}
 
 		// Get location based information
 		$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
@@ -109,6 +114,8 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// Create image and store information in the database
 		if(isset($_FILES['file'])) {
 			storeImage($entry, $uid);
+			
+			echo 'File is setted!';
 		}
 
         echo 'Die Beobachtung wurde erfolgreich gespeichert, vielen Dank! [' . $entry . ']';
@@ -123,19 +130,23 @@ function storeImage($entry, $uid) {
 	
 	$filename = "iphoneprovepicture.png";
 	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
+	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 	
-	// echo 'Folder: ' . $folder;
-	// echo 'Target path: ' . $target_path;
+	echo 'Folder: ' . $folder;
+	echo 'Target path: ' . $target_path;
 	
 	if (!file_exists($folder)) {
 		mkdir($folder, 0777);
+		echo "FOLDER CREATED: $folder!";
 	}
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
 		$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
 		$filesize = filesize($target_path);
 		$timestamp = time();
+
+		echo "FILESIZE: $filesize";
 
 		// CREATE file_managed entry
 		$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/png', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
