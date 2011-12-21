@@ -15,9 +15,6 @@ require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
 function auth() {
-
-	echo 'in auth';
-
     header('WWW-Authenticate: Basic realm="Naturvielfalt"');
     header('HTTP/1.0 401 Unauthorized');
 
@@ -33,6 +30,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 	// Set content-length
 	// header('Content-Length: ' . ob_get_length()); <---- MADE THE APP CRASH.... Don't really understand why
 
+	// Authenticate the user (Drupal Authentification)
     $uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
     $user = user_load($uid);
 
@@ -46,11 +44,8 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		$author = @$_POST['author'];
 		$longitude = @$_POST['longitude'];
 		$latitude = @$_POST['latitude'];
-		// $comment = @$_POST['comment'];
-		
-		print_r(@$_POST);
-		
-	
+		// $comment = @$_POST['comment']; // noch nicht komplett implementiert
+
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
 
@@ -63,9 +58,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         if (!$inventory) {
             // inventory doesn't exist, create it
             $inventory = db_insert('inventory')->fields(array('inventory_type_id' => $type, 'head_inventory_id' => $head))->execute();
-        } else {
-			echo "Use existing inventory: $inventory";
-		}
+        }
 
 		// Get location based information
 		$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
@@ -85,7 +78,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
         // Create the entry insert
         $entry = db_insert('inventory_entry')->fields(array('organism_id' => $organism, 'inventory_id' => $inventory, 'position' => 0, 'accuracy' => $accuracy, 'zip' => $zip, 'township' => $city, 'canton' => $canton, 'country' => $country))->execute();
 
-		// Add Funddatum, Beobachter und Amount
+		// Add Funddatum, Beobachter und Amount and other dynamic attributes
 		if($entry) {			
 			$funddatumId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Funddatum")->execute()->fetchField();
 			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $funddatumId, 'value' => $date))->execute();
@@ -99,6 +92,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 			$beobachterId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Beobachter")->execute()->fetchField();
 			$attributesBeobachter = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $beobachterId, 'value' => $author))->execute();
 
+			// noch nicht komplett implementiert
 			// $commentId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Comment")->execute();
 			// $attributesComment = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 85, 'value' => $comment))->execute();
 
@@ -114,8 +108,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// Create image and store information in the database
 		if(isset($_FILES['file'])) {
 			storeImage($entry, $uid);
-			
-			echo 'File is setted!';
 		}
 
         echo 'Die Beobachtung wurde erfolgreich gespeichert, vielen Dank! [' . $entry . ']';
@@ -125,28 +117,27 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
     }
 }
 
+/**
+* Create a copy of the uploaded image at the right path and create all necesarry
+* db entries to make the image occur at the single observation of the user.
+*/
 function storeImage($entry, $uid) {
-	echo 'Receiving Image from iPhone Application';
-	
 	$filename = "iphoneprovepicture.png";
 	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 	
-	echo 'Folder: ' . $folder;
-	echo 'Target path: ' . $target_path;
+	// echo 'Folder: ' . $folder;
+	// echo 'Target path: ' . $target_path;
 	
 	if (!file_exists($folder)) {
 		mkdir($folder, 0777);
-		echo "FOLDER CREATED: $folder!";
 	}
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
 		$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
 		$filesize = filesize($target_path);
 		$timestamp = time();
-
-		echo "FILESIZE: $filesize";
 
 		// CREATE file_managed entry
 		$file_managed_entry = db_insert('file_managed')->fields(array('uid' => $uid, 'uri' => $uri, 'filename' => $filename, 'filemime' => 'image/png', 'status' => 1, 'filesize' => $filesize, 'timestamp' => $timestamp))->execute();	
@@ -162,13 +153,18 @@ function storeImage($entry, $uid) {
 	}
 }
 
+/**
+* This method is responsible for using the Google Reverse Geocode API
+* to receive the canton, city, zip, etc. to store it later on in the database
+* as additional information to the longitude, latitude values.
+*/
 function reverseGeocode($longitude, $latitude) {
 	
 	// STATIC NATURWERK COORDINATE for testing..
 	// $latitude = '47.480988';
 	// $longitude = '8.209748';
 	
-	// set your API key here
+	// Naturwerk API KEY
 	$api_key = "ABQIAAAAwcMkDr6mXdEANl2JDXxaVRQfE9mbrKsN7lT6vEoUZH5uGIZnyxQPomqpos48lV9muY5UBtJAwRzeFQ";
 	
 	// format this string with the appropriate latitude longitude
@@ -183,7 +179,8 @@ function reverseGeocode($longitude, $latitude) {
 	// if we get a placemark array and the status was good, get the addres
 	if(is_array($jsondata )&& $jsondata ['Status']['code']== 200)
 	{
-	      print_r($jsondata);
+		  // For debugging. Display all returned information from the google api
+	      // print_r($jsondata);
 	} else {
 		echo 'Could NOT fetch Google geocode data';
 	}
