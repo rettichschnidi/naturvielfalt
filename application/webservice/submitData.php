@@ -130,7 +130,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 */
 function storeImage($entry, $uid) {
 	$filename = "iphoneprovepicture.png";
-	$folder = "/srv/wwww/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
+	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 	
