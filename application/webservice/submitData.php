@@ -18,7 +18,7 @@ function auth() {
     header('WWW-Authenticate: Basic realm="Naturvielfalt"');
     header('HTTP/1.0 401 Unauthorized');
 
-    echo 'Beobachtung wurde nicht gespeichert. Bitte auf naturvielfalt.ch registrieren.';
+    echo 'FAIL';
     exit;
 }
 
@@ -110,7 +110,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 			storeImage($entry, $uid);
 		}
 
-        echo 'Die Beobachtung wurde erfolgreich gespeichert, vielen Dank! [' . $entry . ']';
+        echo 'SUCCESS';
  
     } else {
         auth();
@@ -123,7 +123,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 */
 function storeImage($entry, $uid) {
 	$filename = "iphoneprovepicture.png";
-	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
+	$folder = "/srv/wwww/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 	
@@ -146,10 +146,10 @@ function storeImage($entry, $uid) {
 		if($file_managed_entry) {
 			$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $uid, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
 		} else {
-			echo 'Could not create the File managed entry!';
+			echo 'FAIL';
 		}
 	} else {
-		echo 'Could NOT upload picture';
+		echo 'FAIL';
 	}
 }
 
