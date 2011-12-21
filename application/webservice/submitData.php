@@ -9,6 +9,8 @@
  * 
  */
 
+$successful = true;
+
 define('DRUPAL_ROOT', dirname(__FILE__) . '/..');
 
 require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
@@ -18,7 +20,8 @@ function auth() {
     header('WWW-Authenticate: Basic realm="Naturvielfalt"');
     header('HTTP/1.0 401 Unauthorized');
 
-    echo 'FAIL';
+	echo 'FAIL: Please authorize';
+
     exit;
 }
 
@@ -110,7 +113,11 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 			storeImage($entry, $uid);
 		}
 
-        echo 'SUCCESS';
+        if($successful) {
+			echo 'SUCESS';
+		} else {
+			echo 'Some went wrong.. Please check the submitData.php file on the Swissmon Webserver.';
+		}
  
     } else {
         auth();
@@ -146,10 +153,10 @@ function storeImage($entry, $uid) {
 		if($file_managed_entry) {
 			$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $uid, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
 		} else {
-			echo 'FAIL';
+			$successful = false;
 		}
 	} else {
-		echo 'FAIL';
+		$sucessful = false;
 	}
 }
 
@@ -182,7 +189,7 @@ function reverseGeocode($longitude, $latitude) {
 		  // For debugging. Display all returned information from the google api
 	      // print_r($jsondata);
 	} else {
-		echo 'Could NOT fetch Google geocode data';
+		$successful = false;
 	}
 	
 	return $jsondata;
