@@ -114,7 +114,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		}
 
         if($successful) {
-			echo 'SUCESS';
+			echo 'SUCCESS';
 		} else {
 			echo 'Some went wrong.. Please check the submitData.php file on the Swissmon Webserver.';
 		}
@@ -156,7 +156,7 @@ function storeImage($entry, $uid) {
 			$successful = false;
 		}
 	} else {
-		$sucessful = false;
+		$successful = false;
 	}
 }
 
