@@ -110,7 +110,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 		// Create image and store information in the database
 		if(isset($_FILES['file'])) {
-			storeImage($entry, $uid);
+			storeImage($entry, $uid, $author);
 		}
 
         if($successful) {
@@ -128,7 +128,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 * Create a copy of the uploaded image at the right path and create all necesarry
 * db entries to make the image occur at the single observation of the user.
 */
-function storeImage($entry, $uid) {
+function storeImage($entry, $uid, $author) {
 	$filename = "iphoneprovepicture.png";
 	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
