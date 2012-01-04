@@ -1,0 +1,13 @@
+Index: modules/wps/commerce_paypal_wps.module
+===================================================================
+--- modules/wps/commerce_paypal_wps.module	(revision 646)
++++ modules/wps/commerce_paypal_wps.module	(revision 647)
+@@ -183,7 +183,7 @@
+   switch ($ipn['payment_status']) {
+     case 'Failed':
+       $transaction->status = COMMERCE_PAYMENT_STATUS_FAILURE;
+-      $transaction->message = t("The payment has failed. This happens only if the payment was made from your customer’s bank account.");
++      $transaction->message = t('The payment has failed. This happens only if the payment was made from your customer’s bank account');
+       break;
+ 
+     case 'Voided':
