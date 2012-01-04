@@ -183,10 +183,10 @@ $databases = array (
   array (
     'default' => 
     array (
-      'database' => 'swissmon',
-      'username' => 'postgres',
-      'password' => 'postgres',
-      'host' => 'localhost',
+      'database' => 'swissmon_dev',
+      'username' => 'swissmon_dev',
+      'password' => 'wesi;br78DEVELOPER',
+      'host' => 'www.openqlarm.org',
       'port' => '',
       'driver' => 'pgsql',
     ),
