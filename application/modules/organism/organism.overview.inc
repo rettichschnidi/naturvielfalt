@@ -9,10 +9,10 @@ function organism_overview() {
 	$header = array(t('Organism Groups'),t('Organism count'));
 	
 	$result = db_query('
-		SELECT name, inventory_type_id, count (inventory_type_id) FROM organism
+		SELECT it.name, o.inventory_type_id, count (o.inventory_type_id) FROM organism o
 			LEFT JOIN inventory_type it ON it.id = organism.inventory_type_id
-		GROUP BY inventory_type_id, name
-		ORDER BY name
+		GROUP BY o.inventory_type_id, it.name
+		ORDER BY it.name
 	');
 	
 	foreach($result as $record){
