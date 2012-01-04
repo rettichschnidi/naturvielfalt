@@ -6,6 +6,9 @@ var activeEditingTool;
 var applyButton;
 var resetButton;
 
+/**
+ * Adds editing buttons to the google maps and handles the clicks on it, only on edit area§
+ */
 function enable_map_editing() {
 	if (jQuery("#area-coords-input").length) {
 		map = createGoogleMaps("map_canvas");
@@ -64,8 +67,10 @@ function enable_map_editing() {
 };
 
 
-/*Creates the google maps object and attaches it to the element with the given id.
-  The google map object is returned*/
+/**
+ * Creates the google maps object and attaches it to the element with the given id.
+ * The google map object is returned
+ */
 function createGoogleMaps (map_id) {
   var mapcenter = [46.77373, 8.25073];
   var canvas = jQuery('#'+ map_id);
@@ -88,7 +93,9 @@ function createGoogleMaps (map_id) {
   return map;
 };
 
-/*Pull changes from active editing tool. store them to hidden field*/
+/**
+ * Pull changes from active editing tool. store them to hidden field
+ */
 function apply_edit() {		
 	var area_coords = new Array();
 	activeEditingTool.apply();
