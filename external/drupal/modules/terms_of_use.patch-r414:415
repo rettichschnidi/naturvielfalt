@@ -1,0 +1,559 @@
+Index: translations/es.po
+===================================================================
+--- translations/es.po	(revision 0)
++++ translations/es.po	(revision 415)
+@@ -0,0 +1,112 @@
++# $Id: es.po,v 1.1.2.1 2010/04/12 13:49:46 karst Exp $
++#
++# LANGUAGE translation of Drupal (general)
++# Copyright YEAR NAME <EMAIL@ADDRESS>
++# Generated from files:
++#  terms_of_use.pages.inc,v 1.1.2.3 2008/06/06 21:19:28 chill35
++#  terms_of_use.module,v 1.1.2.8 2009/03/23 21:20:27 chill35
++#  terms_of_use.info,v 1.1.2.3 2008/06/03 17:31:15 chill35
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: 1.1.2.8\n"
++"POT-Creation-Date: 2009-03-26 08:34+0100\n"
++"PO-Revision-Date: 2009-03-26 09:45+0100\n"
++"Last-Translator: afernandez <afernandez@ingenia.es>\n"
++"Language-Team: IngeniaTeam <david.moreno@gmail.com>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=utf-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++"Plural-Forms: nplurals=2; plural=(n!=1);\n"
++
++#: terms_of_use.pages.inc:41
++msgid "Node id where your Terms of Use are published"
++msgstr "Identificador de nodo cuando sus terminos de uso son publicados"
++
++#: terms_of_use.pages.inc:43
++msgid "Node <em>id</em> of the page or story (or blog entry or book page) where your Terms of Use are published."
++msgstr "Nodo <em>id</em> de la pagina o historia (o blog or pagina de libro) cuando sus terminos de uso son publicados."
++
++#: terms_of_use.pages.inc:46
++msgid "I prefer to provide the title of the post"
++msgstr "Prefiero proporcionar el título del articulo"
++
++#: terms_of_use.pages.inc:52
++#: terms_of_use.module:59
++msgid "Title of the post where your Terms of Use are published"
++msgstr "El título del articulo donde sus Términos de uso son publicados"
++
++#: terms_of_use.pages.inc:54
++#: terms_of_use.module:61
++msgid "Node <em>title</em> of the page or story (or blog entry or book page) where your Terms of Use are published."
++msgstr "Nodo <em>título</em> de la pagina o historia (o blog o pagina de libro) cuando sus terminos de uso son publicados."
++
++#: terms_of_use.pages.inc:58
++#: terms_of_use.module:66
++msgid "I prefer to specify the node id"
++msgstr "Prefiero especificar el id del nodo"
++
++#: terms_of_use.module:79
++msgid "Label for the fieldset"
++msgstr "Etiqueta para el conjunto de campos"
++
++#: terms_of_use.module:80;135;184;19
++#: terms_of_use.info:0
++msgid "Terms of Use"
++msgstr "Términos de uso"
++
++#: terms_of_use.module:81
++msgid "The text for the Terms of Use and the [x] checkbox are contained in a fieldset. Type here the title for that fieldset."
++msgstr "El texto para los terminos de uso y la caja de chequeo [x] estan contenidos en un conjunto de campos. Introduzca aquí el título para este conjunto de campos."
++
++#: terms_of_use.module:85
++msgid "Label for the ckeckbox"
++msgstr "Etiqueta para la caja de chequeo"
++
++#: terms_of_use.module:86;153
++msgid "I agree with these terms."
++msgstr "Estoy de acuerdo con estas condiciones."
++
++#: terms_of_use.module:87
++msgid "Type here something like \"I agree with these terms.\" or \"I CERTIFY THAT I AM OVER THE AGE OF 18 YEARS OLD.\", without quotes. You can use the token @link to insert a link to the Terms in this label. For example, the label can be: \"I agree with the @link.\", without quotes. You may want to link to the Terms if you prefer not to show the full text of the Terms in the registration form. If you use the token, the Terms will not be shown."
++msgstr "Introduzca aqui algo como \" Acepto estas condiciones de uso.\" o \"CERTIFICO QUE SOY MAYOR DE 18 AÑOS.\", sin comillas. Puede usar la señal @link para insertar un enlace a los términos de uso en esta etiqueta. Por ejemplo, la etiqueta puede ser: \" Estoy de acuerdo con @link.\", sin comillas. Puede querer enlazar a los términos si prefiere no mostrar el texto completo de los las términos de uso  en el formulario de registro. Si usa la señal los términos no serán mostrados."
++
++#: terms_of_use.module:102
++msgid "You must specify a node <em>nid</em>."
++msgstr "Usted debe especificar un nodo <em>nid</em>."
++
++#: terms_of_use.module:107
++msgid "No post was published with <em>nid</em> !nid."
++msgstr "Ningún articulo fue publicado con <em>nid</em> !nid."
++
++#: terms_of_use.module:117
++msgid "No post was published with this title."
++msgstr "Ningún articulo fue publicado con este título."
++
++#: terms_of_use.module:124
++msgid "You must specify a node title."
++msgstr "Debe especificar un título al nodo."
++
++#: terms_of_use.module:170
++msgid "This field is required"
++msgstr "Este campo es obligatorio"
++
++#: terms_of_use.module:184
++msgid "You must agree with the !terms to get an account."
++msgstr "Usted debe estar de acuerdo con los !terms para obtener una cuenta."
++
++#: terms_of_use.module:18
++msgid "Add Terms of Use to the registration page."
++msgstr "Añadir terminos de uso a la pagina de registro."
++
++#: terms_of_use.module:26
++msgid "Autocomplete node title"
++msgstr "Autocompletar titulo del nodo"
++
++#: terms_of_use.module:0
++msgid "terms_of_use"
++msgstr "terms_of_use"
++
++#: terms_of_use.info:0
++msgid "Adds terms of Use to the registration page."
++msgstr "Añadir terminos de uso a la pagina de registro."
+Index: translations/fr.po
+===================================================================
+--- translations/fr.po	(revision 0)
++++ translations/fr.po	(revision 415)
+@@ -0,0 +1,115 @@
++# $Id: fr.po,v 1.1.2.1 2009/03/25 18:27:58 slybud Exp $
++#
++# French translation of Drupal (general)
++# Copyright YEAR NAME <EMAIL@ADDRESS>
++# Generated from files:
++#  terms_of_use.pages.inc,v 1.1.2.3 2008/06/06 21:19:28 chill35
++#  terms_of_use.module,v 1.1.2.8 2009/03/23 21:20:27 chill35
++#  terms_of_use.info,v 1.1.2.3 2008/06/03 17:31:15 chill35
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: French Translation for drupal terms_of_use_module\n"
++"POT-Creation-Date: 2009-03-25 19:01+0100\n"
++"PO-Revision-Date: 2009-03-25 19:15+0100\n"
++"Last-Translator: Sylvain Moreau <sylvain.moreau@ows.fr>\n"
++"Language-Team: Sylvain Moreau, OWS <sylvain.moreau@ows.fr>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=utf-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++"Plural-Forms: nplurals=2; plural=(n>1);\n"
++"X-Poedit-Language: French\n"
++"X-Poedit-Country: FRANCE\n"
++
++#: terms_of_use.pages.inc:41
++msgid "Node id where your Terms of Use are published"
++msgstr "Id du noeud où vos Conditions Générales d'Utilisation sont publiées"
++
++#: terms_of_use.pages.inc:43
++msgid "Node <em>id</em> of the page or story (or blog entry or book page) where your Terms of Use are published."
++msgstr "<em>id</em> du noeud de la page ou histoire (ou entrée de blog ou page de livre) où sont publiées vos Conditions Générales d'Utilisation."
++
++#: terms_of_use.pages.inc:46
++msgid "I prefer to provide the title of the post"
++msgstr "Je préfère fournir le titre du contenu"
++
++#: terms_of_use.pages.inc:52
++#: terms_of_use.module:59
++msgid "Title of the post where your Terms of Use are published"
++msgstr "Titre du contenu où sont publiées vos Conditions Générales d'Utilisation"
++
++#: terms_of_use.pages.inc:54
++#: terms_of_use.module:61
++msgid "Node <em>title</em> of the page or story (or blog entry or book page) where your Terms of Use are published."
++msgstr "<em>Title</em> du noeud de la page ou histoire (ou entrée de blog ou page de livre) où sont publiées vos Conditions Générales d'Utilisation."
++
++#: terms_of_use.pages.inc:58
++#: terms_of_use.module:66
++msgid "I prefer to specify the node id"
++msgstr "Je préfère spécifier d'id du noeud"
++
++#: terms_of_use.module:79
++msgid "Label for the fieldset"
++msgstr "Etiquette du groupe de champ"
++
++#: terms_of_use.module:80;135;184;19
++#: terms_of_use.info:0
++msgid "Terms of Use"
++msgstr "Conditions Générales d'Utilisation"
++
++#: terms_of_use.module:81
++msgid "The text for the Terms of Use and the [x] checkbox are contained in a fieldset. Type here the title for that fieldset."
++msgstr "Le texte des Conditions Générales d'Utilisation et la case à cocher [x] sont incluses dans un groupe de champ. Saisissez ici le titre de ce groupe de champ."
++
++#: terms_of_use.module:85
++msgid "Label for the ckeckbox"
++msgstr "Etiquette de la case à cocher"
++
++#: terms_of_use.module:86;153
++msgid "I agree with these terms."
++msgstr "J'acceptes ces conditions."
++
++#: terms_of_use.module:87
++msgid "Type here something like \"I agree with these terms.\" or \"I CERTIFY THAT I AM OVER THE AGE OF 18 YEARS OLD.\", without quotes. You can use the token @link to insert a link to the Terms in this label. For example, the label can be: \"I agree with the @link.\", without quotes. You may want to link to the Terms if you prefer not to show the full text of the Terms in the registration form. If you use the token, the Terms will not be shown."
++msgstr "Saisissez ici un texte tel que \"J'accepte ces conditions.\" ou \"JE CERTIFIE ETRE AGE DE PLUS DE 18 ANS.\", sans les guillemets. Vous pouvez utiliser le jeton @link pour insérer un lien vers les CGU dans cette étiquette. Par exemple, l'étiquette peut être \"\"J'accepete les @link.\", sans guillemets. Vous ne souhaiterez peut-être pas faire un lien vers les CGU si vous ne souhaitez pas afficher le texte intégral des CGU dans le formulaire d'inscription. Si vous utilisez le jeton, les CGU ne seront pas affichées."
++
++#: terms_of_use.module:102
++msgid "You must specify a node <em>nid</em>."
++msgstr "Vous devez spécifier un <em>nid</em> de noeud."
++
++#: terms_of_use.module:107
++msgid "No post was published with <em>nid</em> !nid."
++msgstr "Aucun contenu n'a été publié avec le <em>nid</em> !nid."
++
++#: terms_of_use.module:117
++msgid "No post was published with this title."
++msgstr "Aucun contenu n'a été publié avec ce titre."
++
++#: terms_of_use.module:124
++msgid "You must specify a node title."
++msgstr "Vous devez spécifier un titre de noeud."
++
++#: terms_of_use.module:170
++msgid "This field is required"
++msgstr "Ce champ est obligatoire"
++
++#: terms_of_use.module:184
++msgid "You must agree with the !terms to get an account."
++msgstr "Vous devez accepter les !terms pour ouvrir un compte."
++
++#: terms_of_use.module:18
++msgid "Add Terms of Use to the registration page."
++msgstr "Ajouter des Conditions Générales d'Utilisation à la page d'inscription."
++
++#: terms_of_use.module:26
++msgid "Autocomplete node title"
++msgstr "Autocomplétion du titre du noeud"
++
++#: terms_of_use.module:0
++msgid "terms_of_use"
++msgstr "terms_of_use"
++
++#: terms_of_use.info:0
++msgid "Adds terms of Use to the registration page."
++msgstr "Ajoute des Conditions Générales d'Utilisation à la page d'inscription."
++
+Index: translations/de.po
+===================================================================
+--- translations/de.po	(revision 0)
++++ translations/de.po	(revision 415)
+@@ -0,0 +1,107 @@
++# $Id: de.po,v 1.1.2.1 2010/04/12 13:44:18 karst Exp $
++#
++# German translation of Terms of Use
++# Copyright 2008 Fleshgrinder <admin@nervenhammer.com>
++# Generated from files:
++#  terms_of_use.pages.inc,v 1.1.2.3 2008/06/06 21:19:28 chill35
++#  terms_of_use.module,v 1.1.2.8 2008/08/06 12:11:34 chill35
++#  terms_of_use.info,v 1.1.2.3 2008/06/03 17:31:15 chill35
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: German translation of Terms of Use\n"
++"POT-Creation-Date: 2008-12-02 00:42+0100\n"
++"PO-Revision-Date: 2008-12-02 00:42+0100\n"
++"Last-Translator: Fleshgrinder <admin@nervenhammer.com>\n"
++"Language-Team: \n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=utf-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++"Plural-Forms: nplurals=2; plural=(n!=1);\n"
++"X-Poedit-Language: German\n"
++"X-Poedit-Country: GERMANY\n"
++"X-Poedit-SourceCharset: utf-8\n"
++
++#: terms_of_use.pages.inc:41
++msgid "Node id where your Terms of Use are published"
++msgstr "Node ID unter welcher die Nutzungsbedingungen veröffentlicht wurden"
++
++#: terms_of_use.pages.inc:43
++msgid "Node <em>id</em> of the page or story (or blog entry or book page) where your Terms of Use are published."
++msgstr "Node <em>ID</em> der Seite oder des Artikels (oder Blogeintrag oder Buchseite) unter welcher die Nutzungsbedingungen veröffentlicht wurden."
++
++#: terms_of_use.pages.inc:46
++msgid "I prefer to provide the title of the post"
++msgstr "Ich bevorzuge den Titel der Seite anzugeben"
++
++#: terms_of_use.pages.inc:52 terms_of_use.module:59
++msgid "Title of the post where your Terms of Use are published"
++msgstr "Titel der Seite unter welcher die Nutzungsbedingungen veröffentlicht wurden"
++
++#: terms_of_use.pages.inc:54 terms_of_use.module:61
++msgid "Node <em>title</em> of the page or story (or blog entry or book page) where your Terms of Use are published."
++msgstr "Node <em>ID</em> der Seite oder des Artikels (oder Blogeintrag oder Buchseite) unter welcher die Nutzungsbedingungen veröffentlicht wurden."
++
++#: terms_of_use.pages.inc:58 terms_of_use.module:66
++msgid "I prefer to specify the node id"
++msgstr "Ich bevorzuge die Node ID anzugeben"
++
++#: terms_of_use.module:80
++msgid "Label for the fieldset"
++msgstr "Label Beschriftung des fieldsets auf der Registrierungsseite"
++
++#: terms_of_use.module:81;136;167;19 terms_of_use.info:0
++msgid "Terms of Use"
++msgstr "Nutzungsbedingungen"
++
++#: terms_of_use.module:82
++msgid "The text for the Terms of Use and the [x] checkbox are contained in a fieldset. Type here the title for that fieldset."
++msgstr "Der Text der Nutzungsbedingungen und die [x] Checkbox sind innerhalb eines HTML fieldsets. Hier wird der Titel für das fieldset angegeben."
++
++#: terms_of_use.module:86
++msgid "Label for the ckeckbox"
++msgstr "Label Beschriftung für die Checkbox"
++
++#: terms_of_use.module:87;153
++msgid "I agree with these terms."
++msgstr "Ich akzeptiere die Nutzungsbedingungen."
++
++#: terms_of_use.module:88
++msgid "Type here something like \"I agree with these terms.\" or \"I CERTIFY THAT I AM OVER THE AGE OF 18 YEARS OLD.\", without quotes."
++msgstr "Hier wird der Text der rechts neben der Ceckbox steht angegeben, zum Beispiel \"Ich akzeptiere die Nutzungsbedingungen\" oder \"Ich bestätige, dass ich 18 Jahre oder älter bin.\" (Angaben ohne Anführungszeichen)."
++
++#: terms_of_use.module:103
++msgid "You must specify a node <em>nid</em>."
++msgstr "Eine Node <em>ID</em> muss angegeben werden."
++
++#: terms_of_use.module:108
++msgid "No post was published with <em>nid</em> !nid."
++msgstr "Es konnte kein Beitrag mit dieser Node <em>ID<em> !nid gefunden werden."
++
++#: terms_of_use.module:118
++msgid "No post was published with this title."
++msgstr "Es konnte kein Beitrag mit diesem Titel gefunden werden."
++
++#: terms_of_use.module:125
++msgid "You must specify a node title."
++msgstr "Ein Node Titel muss angegeben werden."
++
++#: terms_of_use.module:167
++msgid "You must agree with the !terms to get an account."
++msgstr "Die Nutzungsbedingungen !terms müssen akzeptiert werden um sich registrieren zu können."
++
++#: terms_of_use.module:18
++msgid "Add Terms of Use to the registration page."
++msgstr "Nutzungsbedingungen der Registrierungsseite hinzufügen."
++
++#: terms_of_use.module:26
++msgid "Autocomplete node title"
++msgstr "Autovervollständigung des Node Titels"
++
++#: terms_of_use.module:0
++msgid "terms_of_use"
++msgstr "terms_of_use"
++
++#: terms_of_use.info:0
++msgid "Adds terms of Use to the registration page."
++msgstr "Ergänzt Nutzungsbedingungen zur Registrierungsseite."
+Index: translations/hu.po
+===================================================================
+--- translations/hu.po	(revision 0)
++++ translations/hu.po	(revision 415)
+@@ -0,0 +1,92 @@
++# Hungarian translation of Terms of Use (6.x-1.10)
++# Copyright (c) 2010 by the Hungarian translation team
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: Terms of Use (6.x-1.10)\n"
++"POT-Creation-Date: 2010-01-27 17:32+0000\n"
++"PO-Revision-Date: 2010-01-27 12:22+0000\n"
++"Language-Team: Hungarian\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=utf-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++"Plural-Forms: nplurals=2; plural=(n!=1);\n"
++
++msgid "Node id where your Terms of Use are published"
++msgstr ""
++"A tartalom azonosítója, melyben a Felhasználási feltételek "
++"közzé vannak téve."
++msgid ""
++"Node <em>id</em> of the page or story (or blog entry or book page) "
++"where your Terms of Use are published."
++msgstr ""
++"Annak az oldalnak, vagy írásnak (akár blogbejegyzésnek illetve "
++"könyvlapnak) az <em>azonosítója</em>, melyben a Felhasználási "
++"feltételek közzé vannak téve."
++msgid "I prefer to provide the title of the post"
++msgstr "A tartalom címének megadása"
++msgid "Title of the post where your Terms of Use are published"
++msgstr ""
++"A tartalom címe, melyben a Felhasználási feltételek közzé vannak "
++"téve."
++msgid ""
++"Node <em>title</em> of the page or story (or blog entry or book page) "
++"where your Terms of Use are published."
++msgstr ""
++"Annak az oldalnak, vagy írásnak (akár blogbejegyzésnek illetve "
++"könyvlapnak) a <em>címe</em>, melyben a Felhasználási feltételek "
++"közzé vannak téve."
++msgid "I prefer to specify the node id"
++msgstr "A tartalom azonosítójának megadása"
++msgid "Label for the fieldset"
++msgstr "A mezőcsoport címkéje"
++msgid "Terms of Use"
++msgstr "Felhasználási feltételek"
++msgid ""
++"The text for the Terms of Use and the [x] checkbox are contained in a "
++"fieldset. Type here the title for that fieldset."
++msgstr ""
++"A Felhasználási feltételek szövegét és az [x] jelölőnégyzetet "
++"egy mezőcsoport tartalmazza. Itt kell megadni ennek a mezőcsoportnak "
++"a címét."
++msgid "Label for the ckeckbox"
++msgstr "A jelölőnégyzet címkéje"
++msgid "I agree with these terms."
++msgstr "Egyetértek ezekkel a feltételekkel."
++msgid ""
++"Type here something like \"I agree with these terms.\" or \"I CERTIFY "
++"THAT I AM OVER THE AGE OF 18 YEARS OLD.\", without quotes. You can use "
++"the token @link to insert a link to the Terms in this label. For "
++"example, the label can be: \"I agree with the @link.\", without "
++"quotes. You may want to link to the Terms if you prefer not to show "
++"the full text of the Terms in the registration form. If you use the "
++"token, the Terms will not be shown."
++msgstr ""
++"Ide kell írni (idézőjelek nélkül) valami hasonlót: "
++"„Egyetértek ezekkel a feltételekkel.”, vagy  „IGAZOLOM, HOGY "
++"18 ÉVNÉL IDŐSEBB VAGYOK.”. Ebbe a cimkébe a @link vezérjel "
++"segítségével be lehet illeszteni egy hivatkozást a feltételekhez. "
++"Például: „Egyetértek ezekkel a @link.”, idézőjelek nélkül. "
++"Érdemes lehet csak hivatkozni a feltételekre, mert nem célszerű a "
++"teljes Felhasználási feltételeket megmutatni a regisztrációs "
++"űrlapon. A vezérjel használatával a feltételek nem jelennek meg."
++msgid "You must specify a node <em>nid</em>."
++msgstr "Meg kell adni egy tartalom <em>azonosítóját</em>."
++msgid "No post was published with <em>nid</em> !nid."
++msgstr ""
++"Nincs közzétett tartalom evvel a <em>tartalom azonosítóval</em>: "
++"!nid."
++msgid "No post was published with this title."
++msgstr "Nincs közzétett tartalom evvel a címmel."
++msgid "You must specify a node title."
++msgstr "Meg kell adni egy tartalom címét."
++msgid "This field is required"
++msgstr "Ez a mező szükséges"
++msgid "You must agree with the !terms to get an account."
++msgstr "!terms elfogadása szükséges a fiók létrehozásához."
++msgid "Add Terms of Use to the registration page."
++msgstr "Felhasználási feltételek hozzáadása a regisztrációs oldalhoz."
++msgid "Autocomplete node title"
++msgstr "Automatikusan kiegészülő tartalomcím"
++msgid "Adds terms of Use to the registration page."
++msgstr "Felhasználási feltételeket ad a regisztrációs oldalhoz."
+Index: tests/terms_of_use.test
+===================================================================
+--- tests/terms_of_use.test	(revision 0)
++++ tests/terms_of_use.test	(revision 415)
+@@ -0,0 +1,108 @@
++<?php
++// $Id: terms_of_use.test,v 1.1.2.5.2.1 2011/01/16 22:34:09 karst Exp $
++
++/**
++ * @file
++ * Terms of use module functionality tests.
++ */
++
++/**
++ * Base class for all terms od use web test cases.
++ */
++class TOUWebTestCase extends DrupalWebTestCase {
++
++  protected $admin_user;
++  protected $node;
++  protected $lable;
++  protected $lable_link;
++  protected $fieldset;
++  protected $body;
++  protected $xss;
++
++  public function setUp() {
++    // String for XSS Test.
++    $this->lable = $this->testString();
++    $this->lable_link = $this->testString() . ' @link ';
++    $this->fieldset = $this->testString();
++    $this->body = $this->randomName();
++
++// Enable the terms of use module.
++    parent::setUp('terms_of_use');
++
++    $this->admin_user = $this->drupalCreateUser(array('administer site configuration'));
++    $this->drupalLogin($this->admin_user);
++
++    // Default terms of use node.
++    $this->node = $this->drupalCreateNode(
++      array(
++        'type' => 'page',
++        'body' => array(LANGUAGE_NONE => array(array('value' => $this->body))),
++      )
++    );
++  }
++
++  private function testString() {
++    return '<a href="/' . $this->randomString() . '">' . $this->randomString() . '</a><script>alert("' . $this->randomString() . '");</script>';
++  }
++}
++
++/**
++ * Test for all simple settings.
++ */
++class TOUSettingsTestCase extends TOUWebTestCase {
++
++  public static function getInfo() {
++    return array(
++    'name' => 'TOU Basic',
++    'description' => 'Basic functionality tests.',
++    'group' => 'Terms of use',
++    );
++  }
++
++  public function testTOUBasic() {
++    $edit = array(
++      'terms_of_use_node_title' => $this->node->title,
++      'terms_of_use_checkbox_label' => $this->lable,
++      'terms_of_use_fieldset_name' => $this->fieldset,
++    );
++    $this->drupalPost('admin/config/people/terms_of_use', $edit, t('Save configuration'));
++    $this->assertFieldByName('terms_of_use_node_title', $this->node->title, 'Node set.');
++    $this->assertFieldByName('terms_of_use_checkbox_label', $this->lable, 'Lable name set.');
++    $this->assertFieldByName('terms_of_use_fieldset_name', $this->fieldset, 'Fieldset name set.');
++
++    $this->drupalLogout();
++    $this->drupalGet('user/register');
++    $this->assertRaw(filter_xss_admin($this->lable), 'Checkbox lable found.');
++    $this->assertRaw(filter_xss($this->fieldset), 'Fieldset name found.');
++    debug("aaa");
++    debug($this->body);
++    $this->assertText($this->body, 'Terms node body text found.');
++
++
++    $this->drupalPost('user/register', array(), t('Create new account'));
++    $this->assertRaw(t('!name field is required.', array('!name' => filter_xss($this->lable))), 'Checkbox lable found.');
++
++    $edit = array(
++      'name' => $this->randomName(),
++      'mail' => $this->randomName() . '@example.com',
++      'terms_of_use' => TRUE,
++    );
++    $this->drupalPost('user/register', $edit, t('Create new account'));
++    $this->assertText('Thank you for applying for an account.', 'Account creation successfull.');
++
++    $this->drupalLogin($this->admin_user);
++
++    $edit = array(
++      'terms_of_use_checkbox_label' => $this->lable_link,
++    );
++    $this->drupalPost('admin/config/people/terms_of_use', $edit, t('Save configuration'));
++    $this->assertFieldByName('terms_of_use_checkbox_label', $this->lable_link, 'Lable name with @link set.');
++
++    $this->drupalLogout();
++    $this->drupalGet('user/register');
++
++    $replaced_lable = str_replace('@link', l($this->node->title, 'node/' . $this->node->nid), filter_xss_admin($this->lable_link));
++    $this->assertRaw($replaced_lable, 'Checkbox lable found.');
++    $this->assertNoText($this->body, 'Terms node body text not found.');
++  }
++}
