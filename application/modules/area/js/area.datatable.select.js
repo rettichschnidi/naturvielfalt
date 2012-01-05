@@ -1,5 +1,7 @@
 
-// @author Damian Conrad
+/**
+ * @author Damian Conrad
+ */
 
 function inventoryRowSelect() {
 	/**
