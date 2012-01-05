@@ -1,0 +1,128 @@
+<?php
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_help()
+ *
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function showcase_help($path, $arg) {
+	switch ($path) {
+		case "admin/help#showcase":
+			return '<p>'.  t("Showcase module") .'</p>';
+			break;
+	}
+}
+
+/**
+ * Implements hook_block_info()
+ *
+ * Provides information about available blocks.
+ *
+ * @return array
+ */
+function showcase_block_info() {
+	$blocks['showcase'] = array( // The unique name of the block.
+    'info' => t('Swissmon showcase'), // The name that will appear in the block list.
+    'cache' => DRUPAL_CACHE_PER_ROLE, // Default
+	);
+	return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ *
+ * Callback for to displaying a block.
+ *
+ * @param  $delta which block to display. see showcase_block_info()
+ * @return String
+ */
+function showcase_block_view($delta = '') {
+	$item = array('data' => l("Link to showcase page", 'showcase'));
+	$block['content'] = theme('showcase_block', array('item' => $item));
+	return $block;
+}
+
+/**
+ * Implements hook_theme()
+ *
+ * publishes our template
+ * @return an array with theme template information
+ */
+function showcase_theme() {
+	return array(
+    'showcase_block' => array(
+ 		'template' => 'showcase_block',
+      	'variables' => array('item' => NULL)
+	),
+	'showcase_page' => array (
+		'template' => 'showcase_page',
+		'variables' => array('text' => NULL)
+	)
+	);
+}
+
+
+/**
+ * Implements hook_menu()
+ *
+ * This makes it possible to visit the link drupal/showcase.
+ * It is also possible to create an URL like drupal/showcase/42. This would show probably the element with the ID 42.
+ *
+ * @return array
+ */
+function showcase_menu() {
+	$items['showcase/autocomplete'] = array(
+	'title' => 'showcase autocomplete',
+    'page callback' => 'showcase_autocomplete',   
+    'access arguments' => array('access content'),
+	'type' => MENU_CALLBACK,
+	);
+	$items['showcase/form'] = array(
+	'title' => t('My form'),
+    'page callback' => 'showcase_form',
+    'access arguments' => array('access content'),
+    'description' => t('My form'),
+    'type' => MENU_CALLBACK,
+	);
+	$items['showcase'] = array(
+    'title' => 'No template',
+    'description' => 'Shows a page with our own template showcase_page.tpl.php.',
+    'page callback' => 'showcase_page',
+    'access arguments' => array('access showcase'),
+    'type' => MENU_CALLBACK,
+	'file' => 'showcase.pages.inc',
+	);
+	return $items;
+}
+
+function showcase_form(){
+	return drupal_get_form('showcase_my_form');
+}
+
+// This function is called the "form builder". It builds the form.
+// Notice, it takes one argument, the $form_state
+function showcase_my_form($form_state) {
+	// This is the first form element. It's a textfield with a label, "Name"
+	$form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+	'#autocomplete_path' => 'showcase/autocomplete',
+	);
+	return $form;
+}
+
+function showcase_autocomplete($string = ''){
+	$items = array();
+	$fieldNames = db_query("SELECT field_name, locality FROM area WHERE field_name LIKE :field", array(':field' => $string . '%'));
+	foreach ($fieldNames as $fieldName) {
+		$items[$fieldName->field_name] = check_plain($fieldName->locality);
+	}
+	drupal_json_output($items);
+}
+?>

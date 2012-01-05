@@ -1,0 +1,4 @@
+name = showcase
+description = Shows the basic functionality of a drupal module. Use this to get an idea of the concept.
+package = Swissmon
+core = 7.x

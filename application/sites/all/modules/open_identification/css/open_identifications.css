@@ -1,0 +1,67 @@
+.open_identifications{
+	display:block;
+}
+.sort_criteria{
+
+	float:right;	
+}
+.open_identifications .type .typetitle{
+	
+	font-size:1.7em;
+	padding-bottom:20px;
+}
+.open_identifications .type{
+	
+	display:block;
+}
+.open_identifications .type .typerecords .group {
+	
+	display:inline-block;
+}
+.open_identifications .type .typerecords .group .grouptitle{
+	
+	font-size:1.5em;
+	padding-bottom:10px;
+}
+
+.open_identifications .open_identification{
+	
+	float:left;
+	padding-bottom: 20px;
+	padding-right:30px; 
+	//width:410px;	
+}
+.open_identification_info{
+	
+	//float:left;
+	padding-right:30px;
+}
+
+.open_identification_image{
+	
+	//float:left;
+}
+.open_identification_image img{
+	
+	height:100px;
+	width:150px;
+}
+.open_identification_info .info{
+	
+	padding-right:30px;
+}
+.search {
+  background-image:url('../images/search.gif');
+  background-repeat:no-repeat;
+  background-position:right;
+  border-width:1px;
+  padding:0.5em;
+}
+
+.searching {
+  background-image:url('../images/searching.gif');
+}
+
+.notfound {
+  background-image:url('../images/notfound.gif');
+}

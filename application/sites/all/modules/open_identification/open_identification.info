@@ -1,0 +1,7 @@
+name = open_identification
+description = User can identify habitats or organisms
+package = Swissmon
+core = 7.x
+version = "7.0"
+dependencies[] = gallery
+dependencies[] = user

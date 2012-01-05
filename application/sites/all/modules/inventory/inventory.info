@@ -1,0 +1,7 @@
+name = Inventory
+description = Manage inventories
+package = Swissmon
+core = 7.x
+version = "7.0"
+
+dependencies[] = wysiwyg

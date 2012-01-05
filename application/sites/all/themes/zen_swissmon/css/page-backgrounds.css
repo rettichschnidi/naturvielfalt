@@ -1,0 +1,102 @@
+/**
+ * @file
+ * Page Background Styling
+ *
+ * The default layout method of Zen doesn't give themers equal-height columns.
+ * However, equal-height columns are difficult to achieve and totally
+ * unnecessary. Instead, use the Faux Columns method described in the following
+ * ALA article:
+ *   http://www.alistapart.com/articles/fauxcolumns/
+ */
+
+body {
+  background-color:#f2f1ed;
+}
+
+#page-wrapper {
+}
+
+#page {
+}
+
+#header {
+  background-color:#598b74;
+  background-repeat:no-repeat;
+  background-image:url('../images/banner_topnav_big.jpg');
+  height:133px;
+}
+
+#header .section {
+}
+
+#navigation {
+}
+
+.menu-name-main-menu {
+}
+
+.menu-name-main-menu li {
+  border-bottom: 1px solid #446b63;
+ }
+ 
+ .menu-name-main-menu a {
+ background: transparent url(../images/secondary_a.png) repeat 0 0;/*#125A56;*/
+ }
+ 
+ .menu-name-main-menu li.leaf a.active
+ {
+ background-color:black;
+ color:white;
+ }
+ 
+.menu-name-main-menu a.active,
+.menu-name-main-menu a:hover,
+.menu-name-main-menu li.leaf a:hover {
+  background: transparent url(../images/secondary_a_hover.png) repeat 0 0; /*#125A56;*/
+  color: black;
+}
+
+
+.menu-name-main-menu li.leaf a {
+  background: transparent url(../images/secondary_a_leaf.png) repeat 0 0; /*#1d6763*/
+}
+.menu-name-main-menu li.leaf a.active, .menu-name-main-menu li.leaf a:hover {
+  /*background-color: #4d918d;*/
+}
+
+#main-wrapper {
+  background: #ffffff url(../images/main-content-wrapper-shadows_lighter.jpg) repeat-y 0 0;
+}
+
+#main {
+}
+
+#content {
+}
+
+.region-sidebar-first {
+  background: transparent url(../images/sidebar_main-bg2.jpg) no-repeat 7px 0;
+}
+
+.region-footer {
+  position: relative;
+  background: transparent url(../images/footer-shadows_lighter.jpg) repeat-x 0 0;
+  background-color: #F2F1ED;
+}
+
+.region-footer div#footer-left {
+  position:absolute;
+  left: 0;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  background: transparent url(../images/footer-shadows_left.jpg) no-repeat 0 0;
+}
+.region-footer div#footer-right {
+  position:absolute;
+  right: 0;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  background: transparent url(../images/footer-shadows_right.jpg) no-repeat 0 0;
+}

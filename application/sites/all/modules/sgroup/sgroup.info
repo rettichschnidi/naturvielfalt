@@ -1,0 +1,5 @@
+name = Groups
+description = Swissmon Group capability
+package = Swissmon
+core = 7.x
+version = "7.0"

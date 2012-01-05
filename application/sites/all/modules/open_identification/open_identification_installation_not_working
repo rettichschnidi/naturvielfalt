@@ -1,0 +1,177 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for open identification module.
+ */
+
+/**
+ * Implements hook_schema().
+ * 
+ * Defining different DB schemas required for the open identification module
+ * 
+ */
+function open_identification_schema() {
+  $schema['open_identification'] = array(
+  'description' => 'Open Identification',
+    'fields' => array(
+      'open_identification_id' => array(
+        'description' => 'The primary identifier for a open identification.',
+        'type' => 'bigserial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      /*'user_id' => array(
+        'description' => 'User who created open identification',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'open_identification_create_date' => array(
+        'description' => 'Create date',
+        'type' => 'timestamp with time zone',
+        'not null' => FALSE
+      ),
+      'open_identification_modified_date' => array(
+        'description' => 'Modified date',
+        'type' => 'timestamp with time zone',
+        'not null' => FALSE
+      ),
+      'open_identification_comment' => array(
+        'description' => 'Comment for open identification',
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'open_identification_area' => array(
+        'description' => 'Id of area',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'open_identification_type' => array(
+        'description' => 'The author of the image',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'open_identification_organismgroupid' => array(
+        'description' => 'Id of organismgroup',
+        'type' => 'bigint',
+        'not null' => FALSE
+      ),*/
+    ),
+    'primary key' => array('open_identification_id'),
+  );
+  /*$schema['open_identification_gallery'] = array(
+  'description' => 'Link medias with open identifications',
+    'fields' => array(
+      'open_identification_id' => array(
+        'description' => 'id of open identification',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'gallery_image_id' => array(
+        'description' => 'Id of media.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      )
+    ),
+    'foreign keys' => array(
+      'gallery_image_id' => array(
+        'table' => 'gallery_image',
+        'columns' => array('gallery_image_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('open_identification_id','gallery_image_id'),
+  );
+  $schema['open_identification_solved'] = array(
+  'description' => 'Solved open identifications',
+    'fields' => array(
+      'open_identification_solved_id' => array(
+        'description' => 'Id',
+        'type' => 'bigserial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'open_identification_solved_organismgroupid' => array(
+        'description' => 'The {gallery_category}.id this option belongs to.',
+        'type' => 'bigint',
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+      ),
+      'open_identification_id' => array(
+        'description' => 'Id of open identification',
+        'type' => 'bigint',
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+      ),
+      'open_identification_solved_item_id' => array(
+        'description' => 'item id of solution',
+        'type' => 'bigint',
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+      ),
+      'open_identification_solved_date' => array(
+        'description' => 'date',
+        'type' => 'timestamp with time zone',
+        'not null' => FALSE
+      ),
+    ),
+    'foreign keys' => array(
+      'open_identification_id' => array(
+        'table' => 'open_identification',
+        'columns' => array('open_identification_id' => 'open_identification_id'),
+      ),
+    ),
+    'primary key' => array('open_identification_solved_id'),
+  );
+  $schema['open_identification_tip'] = array(
+  'description' => 'open identification tip',
+    'fields' => array(
+      'user_id' => array(
+        'description' => 'User who made the tip',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'open_identification_id' => array(
+        'description' => 'Id of open identification',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'open_identification_tip_id' => array(
+        'description' => 'Id of tip.',
+        'type' => 'bigserial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'open_identification_tip_item_id' => array(
+        'description' => 'item id',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'open_identification_type' => array(
+        'description' => 'The name of the column the value is checked against.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'open_identification_tip_organismgroupid' => array(
+        'description' => 'The value the required by the condition.',
+        'type' => 'bigint',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'open_identification_tip_date' => array(
+        'description' => 'date',
+        'type' => 'timestamp with time zone',
+        'not null' => FALSE
+      ),
+    ),
+    'primary key' => array('open_identification_tip_id'),
+  );*/
+  return $schema;
+}

@@ -1,0 +1,138 @@
+/**
+ * @file
+ * Form Styling
+ */
+
+
+.form-item /* Wrapper for a form element (or group of form elements) and its label */ {
+  margin: 1.5em 0;
+}
+
+.form-item input.error,
+.form-item textarea.error,
+.form-item select.error /* Highlight the form elements that caused a form submission error */ {
+  border: 1px solid #c00;
+}
+
+.form-item label /* The label for a form element */ {
+  display: block;
+  font-weight: bold;
+}
+
+.form-item label.option /* The label for a radio button or checkbox */ {
+  display: inline;
+  font-weight: normal;
+}
+
+.form-required /* The part of the label that indicates a required field */ {
+  color: #B77C5C;
+}
+
+.form-item .description /* The descriptive help text (separate from the label) */ {
+  font-size: 0.85em;
+}
+
+.form-checkboxes .form-item,
+.form-radios .form-item /* Pack groups of checkboxes and radio buttons closer together */ {
+  margin: 0; /* Drupal core uses "0.4em 0" */
+}
+
+.form-submit /* The submit button */ {
+}
+
+.container-inline div,
+.container-inline label /* Inline labels and form divs */ {
+  display: inline;
+}
+
+.tips /* Tips for Drupal's input formats */ {
+}
+
+
+/*
+ * Password confirmation
+ */
+.password-parent,
+.confirm-parent {
+  margin: 0;
+}
+
+
+/*
+ * Search (search-block-form.tpl.php)
+ */
+#block-search-form /* Wrapper for the search form */ {
+}
+
+/*  
+ * search form
+ */
+.searchform {
+	display: inline-block;
+	zoom: 1; /* ie7 hack for display:inline-block */
+	*display: inline;
+	/*border: solid 1px #d2d2d2;*/
+	padding: 3px 5px;
+	
+	-webkit-border-radius: 2em;
+	-moz-border-radius: 2em;
+	
+	/*ox-shadow: 0 1px 0px rgba(0,0,0,.1);
+	/*border-radius: 2em;
+
+	-webkit-box-shadow: 0 1px 0px rgba(0,0,0,.1);
+	-moz-box-shadow: 0 1px 0px rgba(0,0,0,.1);
+	box-shadow: 0 1px 0px rgba(0,0,0,.1);
+
+	/*background: #f1f1f1;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+	background: -moz-linear-gradient(top,  #fff,  #ededed);*/
+	
+	/*filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed'); /* ie7 */
+	/*-ms-filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed'); /* ie8 */
+}
+.searchform input {
+	font: normal 10px/100% Arial, Helvetica, sans-serif;
+}
+.searchform .searchfield {
+	/*background: transparent url(../images/secondary_a_leaf.png) repeat 0 0; */
+	background:white;
+	padding: 1px 6px 1px 8px;
+	width: 100px;
+	/*border: solid 1px #bcbbbb;*/
+	border:none;
+	outline: none;
+	/*color:white;*/
+	color: #787878;
+
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+
+	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+	box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+}
+.searchform .searchbutton {
+	color: #fff;
+	border: solid 1px #125A56;
+	font-size: 10px;
+	height: 24px;
+	width: 24px;
+	text-shadow: 0 1px 1px rgba(0,0,0,.6);
+
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+
+	background:#125A56;
+	background: -webkit-gradient(linear, left top, left bottom, from(#125A56), to(#125A56));
+	background: -moz-linear-gradient(top,  #125A56e,  #454545);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#125A56', endColorstr='#125A56'); /* ie7 */
+	-ms-filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#125A56', endColorstr='#125A56'); /* ie8 */
+}
+a.searchlink {
+   color: white;
+   font-size: 10px;
+   text-decoration: none;
+  }
