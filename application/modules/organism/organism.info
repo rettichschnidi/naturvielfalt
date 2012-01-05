@@ -1,4 +1,0 @@
-name = organism
-description = Shows all available organisms from DB
-package = Swissmon
-core = 7.x

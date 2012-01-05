@@ -1,5 +1,0 @@
-name = Find
-description = Find everything
-package = Swissmon
-core = 7.x
-files[] = find.inc.php
