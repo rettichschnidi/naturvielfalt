@@ -5,7 +5,7 @@
  */
 function sgroup_new() {
 	$output['introduction'] = array(
-		'#markup' => t('Please enter a name for your new group and click on "Create group".'),
+			'#markup' => t('Please enter a name for your new group and click on "Create group".'),
 	);
 	$output['form'] = drupal_get_form('sgroup_new_form');
 
@@ -18,14 +18,16 @@ function sgroup_new() {
  */
 function sgroup_new_form() {
 	$form['name'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Group name'),
-		'#required' => TRUE,
+			'#type' => 'textfield',
+			'#title' => t('Group name'),
+			'#required' => TRUE,
 	);
 	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t("Create group"),
-		'#submit' => array('sgroup_new_save'),
+			'#type' => 'submit',
+			'#value' => t("Create group"),
+			'#submit' => array(
+					'sgroup_new_save'
+			),
 	);
 	return $form;
 }
@@ -44,25 +46,26 @@ function sgroup_new_save($form, &$form_state) {
 		$name = $form_state['values']['name'];
 
 		// save group
-		$sgid = db_insert('sgroup')->fields(array(
-			'sgroup_name' => $name,
-		))->execute();
+		$sgid = db_insert('sgroup')->fields(array('sgroup_name' => $name,))->execute();
 
 		// save user as admin of this group
-		db_insert('sgroup_users')->fields(array(
-			'sgid' => $sgid,
-			'uid' => $user->uid,
-			'admin' => 1,
-		))->execute();
+		db_insert('sgroup_users')->fields(array('sgid' => $sgid,
+						'uid' => $user->uid,
+						'admin' => 1,
+				))->execute();
 
 		// show success message
-		drupal_set_message(t('Group @name was created', array('@name'=> $name)));
+		drupal_set_message(t('Group @name was created', array('@name' => $name)));
 
 	} catch (Exception $e) {
 		$tx->rollback();
-		drupal_set_message(t('Group @name could not be saved. (@exception)', array('@name' => $name, '@exception' => $e->message)), 'error');
+		drupal_set_message(
+				t('Group @name could not be saved. (@exception)',
+						array('@name' => $name,
+								'@exception' => $e->message
+						)), 'error');
 	}
-	
+
 	return $form_state['redirect'] = 'user/' . $user->uid . '/sgroup';
 }
 ?>

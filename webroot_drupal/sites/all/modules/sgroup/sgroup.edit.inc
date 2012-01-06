@@ -1,4 +1,6 @@
 <?php
+
+//FIXME document this...
 function sgroup_edit($sgid) {
 	// add javaScript
 	drupal_add_js(drupal_get_path('module', 'sgroup') . '/sgroup.edit.js');
@@ -13,24 +15,40 @@ function sgroup_edit($sgid) {
 
 	// show members
 	$output['fieldset'] = array(
-		'#type' => 'fieldset',
-		'#title' => t('Members:'),
-		'memberTable' => _sgroup_get_member_table($sgroup),
-		'addmemberform' => drupal_get_form('sgroup_add_member_form', $sgroup),
+			'#type' => 'fieldset',
+			'#title' => t('Members:'),
+			'memberTable' => _sgroup_get_member_table($sgroup),
+			'addmemberform' => drupal_get_form('sgroup_add_member_form', $sgroup),
 	);
 
 	return $output;
 }
 
+//FIXME document this...
 function _sgroup_get_member_table($sgroup) {
 	// get users from db
-	$users = db_query('SELECT u.uid, u.name, sgu.admin FROM sgroup_users sgu LEFT JOIN users u ON sgu.uid = u.uid
-		WHERE sgu.sgid = :sgid', array(':sgid' => $sgroup->sgid));
+	$users = db_query(
+			'SELECT
+				u.uid,
+				u.name,
+				sgu.admin
+			FROM
+				sgroup_users sgu 
+				LEFT JOIN users u ON sgu.uid = u.uid
+			WHERE
+				sgu.sgid = :sgid', array(':sgid' => $sgroup->sgid));
 	foreach ($users as $user) {
 		$row = array();
-		$row[] = array('data' => $user->name);
-		$row[] = array('data' => $user->admin == 1 ? t('Administrator') : t('Member'));
-		$row[] = array('data' => '<div id="' . $sgroup->sgid . '/' . $user->uid . '"></div>', 'class' => 'delete');
+		$row[] = array(
+				'data' => $user->name
+		);
+		$row[] = array(
+				'data' => $user->admin == 1 ? t('Administrator') : t('Member')
+		);
+		$row[] = array(
+				'data' => '<div id="' . $sgroup->sgid . '/' . $user->uid . '"></div>',
+				'class' => 'delete'
+		);
 		$rows[] = $row;
 	}
 	$header[] = t('User');
@@ -48,19 +66,20 @@ function _sgroup_get_member_table($sgroup) {
 /**
  * Returns the edit form for a group
  */
+//FIXME document this...
 function sgroup_edit_form($form, &$form_state, $sgroup) {
 	$form['sgroup_name'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Group name'),
-		'#value' => $sgroup->sgroup_name,
-		'#required' => TRUE,
+			'#type' => 'textfield',
+			'#title' => t('Group name'),
+			'#value' => $sgroup->sgroup_name,
+			'#required' => TRUE,
 	);
 	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t("Save group"),
+			'#type' => 'submit',
+			'#value' => t("Save group"),
 	);
 
-	// Saveing something to the form_state makes it accessible in the submit function.
+	// Saving something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
 	$form_state['storage']['sgid'] = $sgroup->sgid;
 
@@ -80,23 +99,24 @@ function sgroup_edit_form_submit($form, &$form_state) {
 		$sgroup_name = $form_state['input']['sgroup_name'];
 
 		// save group
-		$affectedRows = db_update('sgroup')
-		->fields(array(
-			'sgroup_name' => $sgroup_name,
-		))->condition('sgid', $sgid, '=')
-		->execute();
+		$affectedRows = db_update('sgroup')->fields(array('sgroup_name' => $sgroup_name,))
+				->condition('sgid', $sgid, '=')->execute();
 
 		// check success
 		if ($affectedRows == 1) {
 			// show success message
-			drupal_set_message(t('Group @sgroup_name was successfully updated', array('@sgroup_name'=> $sgroup_name)));
+			drupal_set_message(t('Group @sgroup_name was successfully updated', array('@sgroup_name' => $sgroup_name)));
 		} else {
 			drupal_set_message(t('Group could not be updated!'), 'error');
 		}
 
 	} catch (Exception $e) {
 		$tx->rollback();
-		drupal_set_message(t('Group @sgroup_name could not be updated. (@exception)', array('@sgroup_name' => $sgroup_name, '@exception' => $e->message)), 'error');
+		drupal_set_message(
+				t('Group @sgroup_name could not be updated. (@exception)',
+						array('@sgroup_name' => $sgroup_name,
+								'@exception' => $e->message
+						)), 'error');
 	}
 
 	global $user;
@@ -106,27 +126,29 @@ function sgroup_edit_form_submit($form, &$form_state) {
 /**
  * Returns the form to add a member
  */
+//FIXME document this...
 function sgroup_add_member_form($form, &$form_state, $sgroup) {
 	$form['user'] = array(
-		'#title' => t('Add user'),
-		'#type' => 'textfield',   
-    	'#autocomplete_path' => 'user/autocomplete',
+			'#title' => t('Add user'),
+			'#type' => 'textfield',
+			'#autocomplete_path' => 'user/autocomplete',
 	);
 	$form['isAdmin'] = array(
-		'#type' => 'checkbox',
-		'#title' => t('with administrator rights'),
+			'#type' => 'checkbox',
+			'#title' => t('with administrator rights'),
 	);
 	$form['sgid'] = array(
-		'#type' => 'hidden',
-		'#value' => $sgroup->sgid,
+			'#type' => 'hidden',
+			'#value' => $sgroup->sgid,
 	);
 	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Add user'),
+			'#type' => 'submit',
+			'#value' => t('Add user'),
 	);
 	return $form;
 }
 
+//FIXME document this...
 function sgroup_add_member_form_submit($form, &$form_state) {
 	// try to find the user
 	$username = $form_state['input']['user'];
@@ -138,16 +160,17 @@ function sgroup_add_member_form_submit($form, &$form_state) {
 	// yes, there is one
 	if ($user->uid > 0) {
 		// find out if there is already a sgroup_user record
-		$sgroup_users = db_query('SELECT count(*) AS count FROM {sgroup_users} WHERE uid = :uid AND sgid = :sgid', array(':uid' => $user->uid, ':sgid' => $sgid));
+		$sgroup_users = db_query('SELECT count(*) AS count FROM {sgroup_users} WHERE uid = :uid AND sgid = :sgid',
+				array(':uid' => $user->uid,
+						':sgid' => $sgid
+				));
 		$count = $sgroup_users->fetch();
 		if ($count->count == 0) {
 			db_insert('sgroup_users')
-			->fields(array(
-			'sgid' => $sgid,
-			'uid' => $user->uid,
-			'admin' => $admin,
-			))
-			->execute();
+					->fields(array('sgid' => $sgid,
+							'uid' => $user->uid,
+							'admin' => $admin,
+					))->execute();
 		} else {
 			drupal_set_message(t('This user is already a member.'), 'warning');
 		}
@@ -158,14 +181,12 @@ function sgroup_add_member_form_submit($form, &$form_state) {
 
 // ajax request to delete a member from a group.
 // security is done by drupal (hook_menu, access callback)
+//FIXME document this...
 function sgroup_delete_member($sgid, $uid) {
 	$result = 'fail';
 	global $user;
 	if ($user->uid != $uid) {
-		db_delete('sgroup_users')
-		->condition('sgid', $sgid)
-		->condition('uid', $uid)
-		->execute();
+		db_delete('sgroup_users')->condition('sgid', $sgid)->condition('uid', $uid)->execute();
 		$result = 'success';
 	}
 	return drupal_json_output($result);
