@@ -159,7 +159,7 @@ function inventory_editable() {
 
 function _inventory_own_row_factory($row, $record, &$rows) {
   $img_edit = theme('image', array(
-    'path' => 'misc/fatcow_icons/16x16/application_edit.png',
+    'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
     'alt' => t('Edit'),
     'title' => t('Edit'),
   ));
@@ -189,7 +189,7 @@ function _inventory_shared_row_factory($row, $record, &$rows) {
   if($record->write == true) {
     //Edit Image
     $img_edit = theme('image', array(
-      'path' => 'misc/fatcow_icons/16x16/application_edit.png',
+      'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
       'alt' => t('Edit'),
       'title' => t('Edit'),
     ));
@@ -246,7 +246,7 @@ function _inventory_list_factory($result, $id, $title, $msg_empty=false, $headin
   $render_array = array();
   //Localize Image
   $img_localize = theme('image', array(
-    'path' => 'misc/fatcow_icons/16x16/world.png',
+    'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
     'alt' => t('Localize'),
     'title' => t('Localize'),
   ));

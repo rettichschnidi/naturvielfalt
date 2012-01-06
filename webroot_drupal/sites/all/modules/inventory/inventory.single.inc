@@ -143,14 +143,14 @@ function render_table($result, $tabletitle, $fieldname)
 {
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	$img_localize = theme('image', array(
-	    'path' => 'misc/fatcow_icons/16x16/location_pin.png',
+	    'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/location_pin.png',
 	    'alt' => t('Observation location'),
 	    'title' => t('Observation location'),
 	));
 	$render_array = array();
 	//Localize Image
 // 	$img_localize = theme('image', array(
-// 	    'path' => 'misc/fatcow_icons/16x16/world.png',
+// 	    'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
 // 	    'alt' => t('Localize'),
 // 	    'title' => t('Localize'),
 // 	));

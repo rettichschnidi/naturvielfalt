@@ -27,7 +27,7 @@ function inventory_template_list() {
   $templates = $templates->execute();
   
   $img_edit = theme('image', array(
-    'path' => 'misc/fatcow_icons/16x16/application_edit.png',
+    'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
     'alt' => t('Edit'),
     'title' => t('Edit'),
   ));

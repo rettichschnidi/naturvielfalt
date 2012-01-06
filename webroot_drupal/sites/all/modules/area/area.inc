@@ -553,7 +553,7 @@ function area_habitats($areaId) {
   
   //Localize Image
   $view_img_localize = theme('image', array(
-    'path' => 'misc/fatcow_icons/16x16/world.png',
+    'path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
     'alt' => t('Details'),
     'title' => t('Details'),
   ));
