@@ -136,12 +136,12 @@ h2.block-title /* Block title */ {
 }
 
 #block-user-login /* "User login form" block */ { 
-  color:white;
+  color: black;
   padding: 10px 0 0 10px;
 }
 
 #block-user-login a {
-  color:white;  
+  color: black;  
 }
 
 #block-user-login ul {
