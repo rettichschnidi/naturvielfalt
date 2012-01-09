@@ -1,32 +1,58 @@
-/*basic class for all tools to edit geometry*/
+
+
+/**
+ * basic class for all tools to edit geometry
+ */
 function EditGeometry () {};
+
 EditGeometry.prototype.setMap = function (map) {
 	this.map = map;
 };
-/*edit marker in map*/
+
+/**
+ * edit marker in map
+ */
 function MarkerEdit() {};
 MarkerEdit.prototype = new EditGeometry();
-/*init this tool. geometry must be of type Geometry (see geometry.js)*/
+
+/**
+ * init this tool. geometry must be of type Geometry (see geometry.js)
+ */
 MarkerEdit.prototype.init = function(geometry) {
 	this.geometry = geometry;
 	this.originalPos = this.geometry.overlay.getCenter();
 	this.clickListener = google.maps.event.addListener(this.map, 'click', jQuery.proxy(this.click, this));
     this.map.setOptions({disableDoubleClickZoom: true, draggableCursor: 'crosshair'});
-}
-MarkerEdit.prototype.apply = function() {
 };
-/*set back to old position*/
+
+/**
+ * 
+ */
+MarkerEdit.prototype.apply = function() {};
+
+/**
+ * set back to old position
+ */
 MarkerEdit.prototype.reset = function() {
 	this.geometry.overlay.setCenter(this.originalPos);
-}
-/*change center on click*/
+};
+
+/**
+ * change center on click
+ */
 MarkerEdit.prototype.click = function(event){
 	this.geometry.overlay.setCenter(event.latLng);
 };
-/*Tool to edit Paths*/
+
+/**
+ * Tool to edit Paths
+ */
 function PathEdit() {}
 PathEdit.prototype = new EditGeometry();
-/*init path tool. geometry must be of type Geometry (see geometry.js)*/
+
+/**
+ * init path tool. geometry must be of type Geometry (see geometry.js)
+ */
 PathEdit.prototype.init = function(geometry, controls) {
 	this.geometry = geometry;
 	this.points = this.geometry.overlay.getPath();
@@ -35,9 +61,12 @@ PathEdit.prototype.init = function(geometry, controls) {
 	if (controls != undefined){
 		this.initControls(controls);
 	}
-}
-/*creates markers at the edge-points and connects them with lines.
-  called during init process*/
+};
+
+/**
+ * creates markers at the edge-points and connects them with lines.
+ * called during init process
+ */
 PathEdit.prototype.initMarkersLines = function(){
 	this.markers = new google.maps.MVCArray();
 	//create a marker for each edge point
@@ -51,16 +80,22 @@ PathEdit.prototype.initMarkersLines = function(){
 		}
 	}, this);
 	this.markers.forEach(createLineSegment);
-}
-/*applies the changes from the UI to the geometry instance*/
+};
+
+/**
+ * applies the changes from the UI to the geometry instance
+ */
 PathEdit.prototype.apply = function() {
 	var points = new google.maps.MVCArray();
 	this.markers.forEach(function(marker, index) {
 		points.push(marker.position);
 	});
 	this.geometry.overlay.setPath(points);
-}
-/*resets the path, as it was at load time*/
+};
+
+/**
+ * resets the path, as it was at load time
+ */
 PathEdit.prototype.reset = function() {
 	//clear lines and marker
 	this.markers.forEach(function(marker,index){
@@ -79,8 +114,11 @@ PathEdit.prototype.reset = function() {
 	
 	//init again
 	this.init(this.geometry);
-}
-/*eventhandler for adding a controll marker*/
+};
+
+/**
+ * eventhandler for adding a controll marker
+ */
 PathEdit.prototype.addControlMarker = function (index, latLng) {	
 	this.createControlMarker(latLng, index+1);
 	this.lines.getAt(index).getPath().setAt(1, latLng);
@@ -92,7 +130,10 @@ PathEdit.prototype.addControlMarker = function (index, latLng) {
 		marker.index = index;
 	});	
 };
-/*eventhandler for deleting a control marker */
+
+/**
+ * eventhandler for deleting a control marker
+ */
 PathEdit.prototype.deleteControlMarker = function (index) {
 	this.removeControlMarker(index);
 	this.lines.forEach(function(line, index) {
@@ -101,8 +142,11 @@ PathEdit.prototype.deleteControlMarker = function (index) {
 	this.markers.forEach(function(marker, index) {
 		marker.index = index;
 	});	
-}
-/*procedure to actually remove the control marker*/
+};
+
+/**
+ * procedure to actually remove the control marker
+ */
 PathEdit.prototype.removeControlMarker = function (index) {
 	if (this.markers.getLength() > 2) {
 		console.debug(index);
@@ -115,8 +159,11 @@ PathEdit.prototype.removeControlMarker = function (index) {
 		}	
 		this.lines.removeAt(deleteLineIndex);
 	}
-}
-/*create a line segment that connects two markers*/
+};
+
+/**
+ * create a line segment that connects two markers
+ */
 PathEdit.prototype.createLineSegment = function(index) {
 	if (index < this.markers.getLength()-1) {
 		var line = new google.maps.Polyline(overlayStyle.polyline);
@@ -130,9 +177,11 @@ PathEdit.prototype.createLineSegment = function(index) {
 			that.addControlMarker(line.index, event.latLng);
 		});
 	}
-}
+};
 
-/*create the marker, that is a google markerimage*/
+/**
+ * create the marker, that is a google markerimage
+ */
 PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
     var imageNormal = new google.maps.MarkerImage(Drupal.settings.basePath
 			+ "modules/area/js/lib/rwo_gmaps/images/square.png",
@@ -165,9 +214,11 @@ PathEdit.prototype.createGoogleMapsMarker = function (latLng, index) {
     	this.deleteControlMarker(marker.index);
     }, this));
     return marker;
-}
+};
 
-/*creates a control marker for line edge points*/
+/**
+ * creates a control marker for line edge points
+ */
 PathEdit.prototype.createControlMarker = function(latLng, index) {
     var marker = this.createGoogleMapsMarker(latLng, index);
 	var that = this;
@@ -182,17 +233,23 @@ PathEdit.prototype.createControlMarker = function(latLng, index) {
         marker.setIcon(marker.imgHover);
     });
 };
-/*init additional controls for adding and deleting markers*/
-PathEdit.prototype.initControls = function (controls) {
 
-}
-/*Tool for editing polygons. Extends Path-Editing tool.
-  It overrides some of the methods of PathEdit since
-  it behaves slightly different.*/
+/**
+ * init additional controls for adding and deleting markers
+ */
+PathEdit.prototype.initControls = function (controls) {};
+
+/**
+ * Tool for editing polygons. Extends Path-Editing tool.
+ * It overrides some of the methods of PathEdit since
+ * it behaves slightly different.
+ */
 function PolygonEdit() {}
 PolygonEdit.prototype = new PathEdit();
 
-/*init markers and lines*/
+/**
+ * init markers and lines
+ */
 PolygonEdit.prototype.initMarkersLines = function(){
 	this.markers = new google.maps.MVCArray();
 	//create a marker for each edge point
@@ -225,8 +282,11 @@ PolygonEdit.prototype.initMarkersLines = function(){
 		this.createLineSegment(index);
 	}, this);
 	this.markers.forEach(createLineSegment);
-}
+};
 
+/**
+ * 
+ */
 PolygonEdit.prototype.apply = function() {
 	var points = new google.maps.MVCArray();
 	this.markers.forEach(function(marker, index) {
@@ -234,8 +294,11 @@ PolygonEdit.prototype.apply = function() {
 	});
 	points.push(this.markers.getAt(0).position);
 	this.geometry.overlay.setPath(points);
-}
+};
 
+/**
+ * 
+ */
 PolygonEdit.prototype.createLineSegment = function(index) {
 	var line = new google.maps.Polyline(overlayStyle.polyline);
 	//start point of segment
@@ -254,8 +317,11 @@ PolygonEdit.prototype.createLineSegment = function(index) {
 		that.addControlMarker(line.index, event.latLng);
 		that.updatePolygonOverlay();
 	});
-}
+};
 
+/**
+ * 
+ */
 PolygonEdit.prototype.createControlMarker = function(latLng, index) {
     var m = this.createGoogleMapsMarker(latLng, index);
 	var that = this;
@@ -275,6 +341,9 @@ PolygonEdit.prototype.createControlMarker = function(latLng, index) {
     });	
 };
 
+/**
+ * 
+ */
 PolygonEdit.prototype.removeControlMarker = function (index) {
 	if (this.markers.getLength()>3) {
 		var l = this.markers.getLength();
@@ -286,8 +355,12 @@ PolygonEdit.prototype.removeControlMarker = function (index) {
 		this.lines.removeAt(index);
 		this.updatePolygonOverlay();
 	}
-}
+};
 
+/**
+ * 
+ * @param index
+ */
 PolygonEdit.prototype.updatePolygonOverlay = function (index) {
 	// update polygon
 	var p = new google.maps.MVCArray();
@@ -296,4 +369,4 @@ PolygonEdit.prototype.updatePolygonOverlay = function (index) {
 	});
 	p.push(this.markers.getAt(0).position);
 	this.overlay.setPath(p);
-}
+};
