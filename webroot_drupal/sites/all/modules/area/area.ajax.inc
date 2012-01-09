@@ -1,7 +1,14 @@
 <?php
 /**
- * @return a json string which describes the area
+ * 
+ * 
+ */
+
+
+/**
+ * Return JSON of the area details
  * @param string $areaId
+ * @return a json string which describes the area
  */
 function area_json($areaId) {
 	// information about area
@@ -65,14 +72,13 @@ function area_json($areaId) {
 		$countHabitats++;
 	}
 	$output['habitats']['title'] = t('Habitats (!count)', array('!count' => $countHabitats));
-
 	$output['edit'] = area_edit_access($areaId);
-
 	return drupal_json_output($output);
 }
 
 /**
- * @param unknown_type $string
+ * Return search result of habitats from DB for the autocomplete form as JSON
+ * @param String $string
  * @return a json string with fetched habitats
  */
 function area_habitat_autocomplete($string) {
@@ -95,7 +101,6 @@ function area_habitat_autocomplete($string) {
 
 /**
  * Autocomplete field for search by already saved areas
- * 
  * @param string $string
  * @return a json string whith fetched areas
  */
@@ -117,13 +122,12 @@ function area_saved_autocomplete($string) {
 		$key = $record->id;
 		$items[$key] = $value;
 	}
-
 	return drupal_json_output($items);
 }
 
 /**
- * Autocomplete field for search by already saved areas
- * 
+ * Return JSON of all areas that aren't hidden
+ * @param int area_id
  * @return a json string with all areas
  */
 function get_areas($area_id = false) {
@@ -137,9 +141,7 @@ function get_areas($area_id = false) {
   ');
 
 	$items = array();
-
 	foreach ($areas as $entry) {
-
 		$item = array();
 		$item['id'] = (int) $entry->area_id;
 		$item['field_name'] = $entry->field_name;
@@ -150,7 +152,6 @@ function get_areas($area_id = false) {
 		$item['township'] = $entry->township;
 		$item['canton'] = $entry->canton;
 		$item['comment'] = $entry->comment;
-
 		$item['habitats'] = array();
 
 		$habitats = db_query(
@@ -171,7 +172,6 @@ function get_areas($area_id = false) {
 
 		$item['type'] = '';
 		$item['area_points'] = array();
-
 		$json = json_decode($entry->geom);
 		if ($json) {
 			if ('Polygon' == $json->type) {
@@ -211,10 +211,13 @@ function get_areas($area_id = false) {
 	// json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and
 	// not as an array. However, we used area_id as $key, so we have to index them numerically
 	$items = array_values($items);
-
 	return drupal_json_output($items);
 }
 
+/**
+ * ACHTUNG: MUSS †BERARBEITET WERDEN!
+ * [[http://swissmon.origo.ethz.ch/issues/17]] --> Security; SQL Injection edit Area 
+ */
 function area_datatable() {
 	/*
 	 * Script:    DataTables server-side script for PHP and MySQL
