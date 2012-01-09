@@ -5,54 +5,66 @@
  * Implementation of hook_services_resources().
  */
 function organismresource_services_resources() {
-  return array(
-    'organismgroups' => array(
-      'retrieve' => array(
-        'help' => 'Retrieves an organism',
-        'file' => array('file' => 'inc', 'module' => 'organismresource'),
-        'callback' => '_organismresource_retrieve',
-        'access callback' => '_organismresource_access',
-        'access arguments' => array('view'),
-        'access arguments append' => TRUE,
-        'args' => array(
-          array(
-            'name' => 'id',
-            'type' => 'int',
-            'description' => 'The id of the organism to get',
-            'source' => array('path' => '0'),
-            'optional' => FALSE,
-          ),
-        ),
-      ),
-      'index' => array(
-        'help' => 'Retrieves a listing of organismgroups',
-        'file' => array('file' => 'inc', 'module' => 'organismresource'),
-        'callback' => '_organismresource_index',
-        'access callback' => 'user_access',
-        'access arguments' => array('access content'),
-        'access arguments append' => FALSE,
-        'args' => array(
-          array(
-            'name' => 'page',
-            'type' => 'int',
-            'description' => '',
-            'source' => array(
-              'params' => 'page',
-            ),
-            'optional' => TRUE,
-            'default value' => 0,
-          ),
-          array(
-           'name' => 'parameters',
-           'type' => 'array',
-           'description' => '',
-           'source' => 'param',
-           'optional' => TRUE,
-           'default value' => array(),
-          ),
-        ),
-      ),
-  	),
-  );
+	return array(
+			'organismgroups' => array(
+					'retrieve' => array(
+							'help' => 'Retrieves an organism',
+							'file' => array(
+									'file' => 'inc',
+									'module' => 'organismresource'
+							),
+							'callback' => '_organismresource_retrieve',
+							'access callback' => '_organismresource_access',
+							'access arguments' => array(
+									'view'
+							),
+							'access arguments append' => TRUE,
+							'args' => array(
+									array(
+											'name' => 'id',
+											'type' => 'int',
+											'description' => 'The id of the organism to get',
+											'source' => array(
+													'path' => '0'
+											),
+											'optional' => FALSE,
+									),
+							),
+					),
+					'index' => array(
+							'help' => 'Retrieves a listing of organismgroups',
+							'file' => array(
+									'file' => 'inc',
+									'module' => 'organismresource'
+							),
+							'callback' => '_organismresource_index',
+							'access callback' => 'user_access',
+							'access arguments' => array(
+									'access content'
+							),
+							'access arguments append' => FALSE,
+							'args' => array(
+									array(
+											'name' => 'page',
+											'type' => 'int',
+											'description' => '',
+											'source' => array(
+													'params' => 'page',
+											),
+											'optional' => TRUE,
+											'default value' => 0,
+									),
+									array(
+											'name' => 'parameters',
+											'type' => 'array',
+											'description' => '',
+											'source' => 'param',
+											'optional' => TRUE,
+											'default value' => array(),
+									),
+							),
+					),
+			),
+	);
 }
 ?>

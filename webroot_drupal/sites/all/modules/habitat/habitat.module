@@ -14,24 +14,30 @@ module_load_include('inc', 'habitat', 'habitat.gallery');
  * @return array
  */
 function habitat_menu() {
-  $items['habitat'] = array(
-    'title' => t('Habitats'),
-    'description' => t('Show all habitats'),
-    'page callback' => 'habitat_list',
-    'access arguments' => array('access content'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'habitat.list.inc',
-  );
-  $items['habitat/%'] = array(
-    'title' => 'Show Habitat Areas',
-    'description' => 'View existing Habitat Areas',
-    'page callback' => 'habitat_show',
-    'access arguments' => array('access content'),
-    'page arguments' => array(1),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'habitat.show.inc',
-  );
-  return $items;
+	$items['habitat'] = array(
+			'title' => t('Habitats'),
+			'description' => t('Show all habitats'),
+			'page callback' => 'habitat_list',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'habitat.list.inc',
+	);
+	$items['habitat/%'] = array(
+			'title' => 'Show Habitat Areas',
+			'description' => 'View existing Habitat Areas',
+			'page callback' => 'habitat_show',
+			'access arguments' => array(
+					'access content'
+			),
+			'page arguments' => array(
+					1
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'habitat.show.inc',
+	);
+	return $items;
 }
 
 ?>

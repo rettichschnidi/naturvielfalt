@@ -11,16 +11,20 @@
  */
 function datatable_theme() {
 	return array(
-    	'datatable' => array(
- 			'template' => 'datatable',
-    		'variables' => array(
-    			'id_table' => NULL,		// id of html table element
-    			'header' => NULL,		// header of table similar to table theme 
-    			'rows' => NULL,			// content of table similar to table theme
-    			'len' => NULL,			// height of displayed datatable in pixel
-    			'options' => NULL    // Array of options to be set for the jquery datatable plugin where the key is the option name and the value is the javascript value as a string
+			'datatable' => array(
+					'template' => 'datatable',
+					'variables' => array(
+							'id_table' => NULL,
+							// id of html table element
+							'header' => NULL,
+							// header of table similar to table theme 
+							'rows' => NULL,
+							// content of table similar to table theme
+							'len' => NULL,
+							// height of displayed datatable in pixel
+							'options' => NULL // Array of options to be set for the jquery datatable plugin where the key is the option name and the value is the javascript value as a string
+					),
 			),
-		),
 	);
 }
 ?>

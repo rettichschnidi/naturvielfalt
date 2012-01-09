@@ -3,13 +3,11 @@
 /**
  * Implements hook_init().
  */
-function find_init(){
-
-    set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
-    set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/elastica/lib');
-    set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/php-csv-utils');
-
-    spl_autoload_register('find_autoload');
+function find_init() {
+	set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
+	set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/elastica/lib');
+	set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/php-csv-utils');
+	spl_autoload_register('find_autoload');
 }
 
 /**
@@ -17,19 +15,14 @@ function find_init(){
  */
 function find_autoload($class) {
 
-    if (substr($class, 0, 14) == 'Naturwerk\\Find') {
+	if (substr($class, 0, 14) == 'Naturwerk\\Find') {
+		$file = str_replace('\\', '/', $class) . '.php';
+		require_once $file;
 
-        $file = str_replace('\\', '/', $class) . '.php';
-
-        require_once $file;
-
-    } else if (substr($class, 0, 9) == 'Elastica_' || substr($class, 0, 4) == 'Csv_') {
-
-        $file = str_replace('_', '/', $class) . '.php';
-
-        require_once $file;
-
-    }
+	} else if (substr($class, 0, 9) == 'Elastica_' || substr($class, 0, 4) == 'Csv_') {
+		$file = str_replace('_', '/', $class) . '.php';
+		require_once $file;
+	}
 }
 
 /**
@@ -39,98 +32,117 @@ function find_autoload($class) {
  */
 function find_menu() {
 
-    $items = array();
+	$items = array();
 
-    $items['find'] = array(
-        'title' => t('Search'),
-        'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'find.views.inc.php',
-    );
+	$items['find'] = array(
+			'title' => t('Search'),
+			'description' => t('Search Natuwerk'),
+			'page callback' => 'find_show_search',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'find.views.inc.php',
+	);
 
-    $items['find/sightings'] = array(
-        'title' => t('Beobachtungen'),
-        'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_sightings',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'find.views.inc.php',
-        'weight' => 10,
-    );
+	$items['find/sightings'] = array(
+			'title' => t('Beobachtungen'),
+			'description' => t('Search Natuwerk'),
+			'page callback' => 'find_show_search_sightings',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'find.views.inc.php',
+			'weight' => 10,
+	);
 
-    $items['find/inventories'] = array(
-        'title' => t('Inventare'),
-        'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_inventories',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'find.views.inc.php',
-        'weight' => 20,
-    );
+	$items['find/inventories'] = array(
+			'title' => t('Inventare'),
+			'description' => t('Search Natuwerk'),
+			'page callback' => 'find_show_search_inventories',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'find.views.inc.php',
+			'weight' => 20,
+	);
 
-    $items['find/areas'] = array(
-        'title' => t('Gebiete'),
-        'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_areas',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'find.views.inc.php',
-        'weight' => 30,
-    );
+	$items['find/areas'] = array(
+			'title' => t('Gebiete'),
+			'description' => t('Search Natuwerk'),
+			'page callback' => 'find_show_search_areas',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'find.views.inc.php',
+			'weight' => 30,
+	);
 
-    $items['find/images'] = array(
-    	'title' => t('Images'),
-    	'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_images',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-    	'file' => 'find.views.inc.php',
-        'weight' => 40,
-    );
+	$items['find/images'] = array(
+			'title' => t('Images'),
+			'description' => t('Search Natuwerk'),
+			'page callback' => 'find_show_search_images',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'find.views.inc.php',
+			'weight' => 40,
+	);
 
-    $items['find/organisms'] = array(
-        'title' => t('Organismen'),
-        'description' => t('Search Natuwerk'),
-        'page callback' => 'find_show_search_organisms',
-        'access arguments' => array('access content'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'find.views.inc.php',
-        'weight' => 40,
-    );
+	$items['find/organisms'] = array(
+			'title' => t('Organismen'),
+			'description' => t('Search Natuwerk'),
+			'page callback' => 'find_show_search_organisms',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'find.views.inc.php',
+			'weight' => 40,
+	);
 
-    $items['find/organisms/export'] = array(
-        'page callback' => 'find_export_csv_organisms',
-        'access arguments' => array('access content'),
-        'type' => MENU_VISIBLE_IN_BREADCRUMB,
-        'file' => 'find.views.inc.php',
-    );
+	$items['find/organisms/export'] = array(
+			'page callback' => 'find_export_csv_organisms',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_VISIBLE_IN_BREADCRUMB,
+			'file' => 'find.views.inc.php',
+	);
 
-    $items['find/sightings/export'] = array(
-        'page callback' => 'find_export_csv_sightings',
-        'access arguments' => array('access content'),
-        'type' => MENU_VISIBLE_IN_BREADCRUMB,
-        'file' => 'find.views.inc.php',
-    );
+	$items['find/sightings/export'] = array(
+			'page callback' => 'find_export_csv_sightings',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_VISIBLE_IN_BREADCRUMB,
+			'file' => 'find.views.inc.php',
+	);
 
-    $items['find/inventories/export'] = array(
-        'page callback' => 'find_export_csv_inventories',
-        'access arguments' => array('access content'),
-        'type' => MENU_VISIBLE_IN_BREADCRUMB,
-        'file' => 'find.views.inc.php',
-    );
+	$items['find/inventories/export'] = array(
+			'page callback' => 'find_export_csv_inventories',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_VISIBLE_IN_BREADCRUMB,
+			'file' => 'find.views.inc.php',
+	);
 
-    $items['find/areas/export'] = array(
-        'page callback' => 'find_export_csv_areas',
-        'access arguments' => array('access content'),
-        'type' => MENU_VISIBLE_IN_BREADCRUMB,
-        'file' => 'find.views.inc.php',
-    );
+	$items['find/areas/export'] = array(
+			'page callback' => 'find_export_csv_areas',
+			'access arguments' => array(
+					'access content'
+			),
+			'type' => MENU_VISIBLE_IN_BREADCRUMB,
+			'file' => 'find.views.inc.php',
+	);
 
-    return $items;
+	return $items;
 }
-
 
 /**
  * Implements hook_theme()
@@ -138,32 +150,59 @@ function find_menu() {
  * @return an array with theme template information
  */
 function find_theme() {
-    return array(
-        'find.search' => array(
-            'template' => 'find.search',
-            'variables' => array('current' => null, 'key' => '', 'parameters' => null, 'organisms' => null, 'sightings' => null, 'inventories' => null, 'areas' => null, 'images' => null)
-        ),
-        'find_facet' => array(
-            'template' => 'find_facet',
-            'variables' => array('facets' => array(), 'parameters' => null, 'title' => null, 'field' => null, 'value' => null)
-        ),
-        'find_render_plain' => array(
-            'template' => 'find_render_plain',
-            'variables' => array('object' => null, 'name' => null)
-        ),
-        'find_render_link' => array(
-            'template' => 'find_render_link',
-            'variables' => array('object' => null, 'name' => null)
-        ),
-        'find_render_date' => array(
-            'template' => 'find_render_date',
-            'variables' => array('object' => null, 'name' => null)
-        ),
-        'find_render_translate' => array(
-            'template' => 'find_render_translate',
-            'variables' => array('object' => null, 'name' => null)
-        ),
-    );
+	return array(
+			'find.search' => array(
+					'template' => 'find.search',
+					'variables' => array(
+							'current' => null,
+							'key' => '',
+							'parameters' => null,
+							'organisms' => null,
+							'sightings' => null,
+							'inventories' => null,
+							'areas' => null,
+							'images' => null
+					)
+			),
+			'find_facet' => array(
+					'template' => 'find_facet',
+					'variables' => array(
+							'facets' => array(),
+							'parameters' => null,
+							'title' => null,
+							'field' => null,
+							'value' => null
+					)
+			),
+			'find_render_plain' => array(
+					'template' => 'find_render_plain',
+					'variables' => array(
+							'object' => null,
+							'name' => null
+					)
+			),
+			'find_render_link' => array(
+					'template' => 'find_render_link',
+					'variables' => array(
+							'object' => null,
+							'name' => null
+					)
+			),
+			'find_render_date' => array(
+					'template' => 'find_render_date',
+					'variables' => array(
+							'object' => null,
+							'name' => null
+					)
+			),
+			'find_render_translate' => array(
+					'template' => 'find_render_translate',
+					'variables' => array(
+							'object' => null,
+							'name' => null
+					)
+			),
+	);
 }
 
 /**
@@ -173,15 +212,14 @@ function find_theme() {
  */
 function find_cron() {
 
-    try {
+	try {
 
-        $client = new Elastica_Client();
-        $index = $client->getIndex('naturwerk');
+		$client = new Elastica_Client();
+		$index = $client->getIndex('naturwerk');
+		$indexer = new Naturwerk\Find\Indexer($index);
+		$indexer->all();
 
-        $indexer = new Naturwerk\Find\Indexer($index);
-        $indexer->all();
-
-    } catch (Elastica_Exception_Client $e) {
-        watchdog('find', $e->getMessage(), array(), WATCHDOG_ERROR);
-    }
+	} catch (Elastica_Exception_Client $e) {
+		watchdog('find', $e->getMessage(), array(), WATCHDOG_ERROR);
+	}
 }

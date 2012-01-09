@@ -10,13 +10,13 @@
  * @return array
  */
 function habitat_gallery_types() {
-  return array(
-    'habitat' => array(
-      'image_caption' => 'habitat_gallery_image_caption',
-      'manage_title' => 'habitat_gallery_manage_title',
-      'manage_description' => 'habitat_gallery_manage_description'
-    )
-  );
+	return array(
+			'habitat' => array(
+					'image_caption' => 'habitat_gallery_image_caption',
+					'manage_title' => 'habitat_gallery_manage_title',
+					'manage_description' => 'habitat_gallery_manage_description'
+			)
+	);
 }
 
 /**
@@ -26,7 +26,9 @@ function habitat_gallery_types() {
  * @return string
  */
 function habitat_gallery_image_caption($id) {
-  return l(habitat_gallery_caption($id), 'habitat/'.$id, array('html' => true));
+	return l(habitat_gallery_caption($id), 'habitat/' . $id, array(
+			'html' => true
+	));
 }
 
 /**
@@ -37,8 +39,9 @@ function habitat_gallery_image_caption($id) {
  *   The id of object
  * @return string
  */
-function habitat_gallery_manage_title($id,$mediatype) {
-  return t(''.$mediatype.' of the habitat !title', array('!title' => '<em>'.habitat_gallery_caption($id).'</em>'));
+function habitat_gallery_manage_title($id, $mediatype) {
+	return t('' . $mediatype . ' of the habitat !title',
+			array('!title' => '<em>' . habitat_gallery_caption($id) . '</em>'));
 }
 
 /**
@@ -49,12 +52,8 @@ function habitat_gallery_manage_title($id,$mediatype) {
  * @return string
  */
 function habitat_gallery_caption($id) {
-  $result = db_select('habitat', 'h')
-    ->condition('id', $id)
-    ->fields('h')
-    ->execute()
-    ->fetch();
-  return $result->name_de.' <small>'.$result->name_lt.'</small>';
+	$result = db_select('habitat', 'h')->condition('id', $id)->fields('h')->execute()->fetch();
+	return $result->name_de . ' <small>' . $result->name_lt . '</small>';
 }
 
 /**
@@ -65,8 +64,8 @@ function habitat_gallery_caption($id) {
  *   The id of object
  * @return string
  */
-function habitat_gallery_manage_description($id,$mediatype) {
-  return t('Add and edit generic '.$mediatype.' of this habitat.');
+function habitat_gallery_manage_description($id, $mediatype) {
+	return t('Add and edit generic ' . $mediatype . ' of this habitat.');
 }
 
 /**
@@ -76,12 +75,12 @@ function habitat_gallery_manage_description($id,$mediatype) {
  * @return array
  */
 function habitat_gallery_category_conditions() {
-  return array(
-    'habitat' => array(
-      'name' => t('Habitats'),
-      'type' => 'habitat'
-    ),
-  );
+	return array(
+			'habitat' => array(
+					'name' => t('Habitats'),
+					'type' => 'habitat'
+			),
+	);
 }
 
 ?>

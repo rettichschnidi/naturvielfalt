@@ -4,59 +4,59 @@
  * Implements hook_drush_command().
  */
 function area_drush_command() {
-    $items['area-migrate-postgis'] = array(
-        'description' => 'Migrate area_point into PostGIS column geom.',
-        'callback' => 'area_drush_migrate_postgis',
-        'drupal dependencies' => array('area'),
-    );
-    return $items;
+	$items['area-migrate-postgis'] = array(
+			'description' => 'Migrate area_point into PostGIS column geom.',
+			'callback' => 'area_drush_migrate_postgis',
+			'drupal dependencies' => array(
+					'area'
+			),
+	);
+	return $items;
 }
 
 function area_drush_migrate_postgis() {
+	// add geom column and remove old centroid
+	try {
 
-    // add geom column and remove old centroid
-    try {
+		db_query('SELECT AddGeometryColumn(\'area\', \'geom\', 4326, \'GEOMETRY\', 2);');
+		db_query('ALTER TABLE area DROP COLUMN centroid_lat;');
+		db_query('ALTER TABLE area DROP COLUMN centroid_lng;');
 
-        db_query('SELECT AddGeometryColumn(\'area\', \'geom\', 4326, \'GEOMETRY\', 2);');
-        db_query('ALTER TABLE area DROP COLUMN centroid_lat;');
-        db_query('ALTER TABLE area DROP COLUMN centroid_lng;');
+	} catch (PDOException $e) {
+		// maybe column was already added?
+		echo $e->getMessage();
+		echo "\n";
+	}
 
-    } catch (PDOException $e) {
+	$points = db_query('SELECT * FROM area_point ORDER BY seq ASC');
 
-        // maybe column was already added?
-        echo $e->getMessage();
-        echo "\n";
-    }
+	$areas = array();
+	foreach ($points as $point) {
 
-    $points = db_query('SELECT * FROM area_point ORDER BY seq ASC');
+		if (!isset($areas[$point->area_id])) {
+			$areas[$point->area_id] = array();
+		}
+		$areas[$point->area_id][] = $point->lng . ' ' . $point->lat;
+	}
 
-    $areas = array();
-    foreach ($points as $point) {
+	foreach ($areas as $id => $points) {
 
-        if (!isset($areas[$point->area_id])) {
-            $areas[$point->area_id] = array();
-        }
-        $areas[$point->area_id][] = $point->lng . ' ' . $point->lat;
-    }
+		if (count($points) > 1) {
+			// polygon
 
-    foreach ($areas as $id => $points) {
+			// make sure line is closed
+			if (end($points) != reset($points)) {
+				$points[] = reset($points);
+			}
 
-        if (count($points) > 1) {
-            // polygon
+			$line = implode(', ', $points);
+			$geom = 'ST_GeomFromText(\'POLYGON((' . $line . '))\', 4326)';
 
-            // make sure line is closed
-            if (end($points) != reset($points)) {
-                $points[] = reset($points);
-            }
+		} else {
+			// point
+			$geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)';
+		}
 
-            $line = implode(', ', $points);
-            $geom = 'ST_GeomFromText(\'POLYGON((' . $line . '))\', 4326)';
-
-        } else {
-            // point
-            $geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)';
-        }
-
-        db_update('area')->expression('geom', $geom)->condition('id', $id)->execute();
-    }
+		db_update('area')->expression('geom', $geom)->condition('id', $id)->execute();
+	}
 }

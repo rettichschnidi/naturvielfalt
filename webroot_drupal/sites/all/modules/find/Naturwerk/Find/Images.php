@@ -1,7 +1,6 @@
 <?php
 
 namespace Naturwerk\Find;
-
 /**
  * Find images.
  *
@@ -9,14 +8,14 @@ namespace Naturwerk\Find;
  */
 class Images extends Finder {
 
-    /**
-     * @param \Elastica_Index $index
-     * @param Parameters $parameter
-     */
-    public function __construct(\Elastica_Index $index, Parameters $parameters) {
+	/**
+	 * @param \Elastica_Index $index
+	 * @param Parameters $parameter
+	 */
+	public function __construct(\Elastica_Index $index, Parameters $parameters) {
 
-        $this->addColumn('id', 'Default');
+		$this->addColumn('id', 'Default');
 
-        parent::__construct($index, 'image', $parameters);
-    }
+		parent::__construct($index, 'image', $parameters);
+	}
 }

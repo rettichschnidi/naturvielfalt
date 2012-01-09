@@ -5,21 +5,25 @@
  */
 function area_new_form() {
 	drupal_set_title(t('Create New Area'));
-	
+
 	drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=places', array('group' => JS_LIBRARY));
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css',
+			array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+			));
 
 	$output['new'] = array(
-		'#theme' => 'area.new',
+			'#theme' => 'area.new',
 	);
 	$output['googleMaps'] = area_google_maps_form('create');
 	$output['areaNew'] = drupal_get_form('area_create_form');
-  	//$output['areaNew']['#attributes']['class']='hidden';
+	//$output['areaNew']['#attributes']['class']='hidden';
 
 	return $output;
 }
@@ -30,11 +34,13 @@ function area_new_form() {
  */
 function area_back_button() {
 	$button = array(
-		'#type' => 'button',
-		'#attributes' => array('onClick' => 'location.replace("../inventory/new"); return false;'),
-		'#value' => t('Back'),
-  	);
-  	return $button;
+			'#type' => 'button',
+			'#attributes' => array(
+					'onClick' => 'location.replace("../inventory/new"); return false;'
+			),
+			'#value' => t('Back'),
+	);
+	return $button;
 }
 
 /**
@@ -42,31 +48,37 @@ function area_back_button() {
  * @return Google Maps input search field
  */
 function area_google_maps_form($task) {
-		if($task == 'create') {
-			$form['GoogleMaps'] = array(
-				'#type' => 'fieldset', 
-		  		'#weight' => 3, 
-		  		'#collapsible' => FALSE, 
-				'searchByMaps' => array('#theme' => 'area.create'), // map
-			);			
-		}
-		if($task == 'choose') {
-			$form['GoogleMaps'] = array(
-				'#type' => 'fieldset', 
-		  		'#weight' => 3, 
-		  		'#collapsible' => FALSE, 
-				'searchByMaps' => array('#theme' => 'area.choose'), // map
-			);
-		}
-		if($task == '') {
-			$form['GoogleMaps'] = array(
-				'#type' => 'fieldset', 
-		  		'#weight' => 3, 
-		  		'#collapsible' => FALSE, 
-				'searchByMaps' => array('#theme' => 'area.search.byMaps'), // map
-			);
-		}
-	
+	if ($task == 'create') {
+		$form['GoogleMaps'] = array(
+				'#type' => 'fieldset',
+				'#weight' => 3,
+				'#collapsible' => FALSE,
+				'searchByMaps' => array(
+						'#theme' => 'area.create'
+				), // map
+		);
+	}
+	if ($task == 'choose') {
+		$form['GoogleMaps'] = array(
+				'#type' => 'fieldset',
+				'#weight' => 3,
+				'#collapsible' => FALSE,
+				'searchByMaps' => array(
+						'#theme' => 'area.choose'
+				), // map
+		);
+	}
+	if ($task == '') {
+		$form['GoogleMaps'] = array(
+				'#type' => 'fieldset',
+				'#weight' => 3,
+				'#collapsible' => FALSE,
+				'searchByMaps' => array(
+						'#theme' => 'area.search.byMaps'
+				), // map
+		);
+	}
+
 	return $form;
 }
 
@@ -76,11 +88,10 @@ function area_google_maps_form($task) {
  */
 function area_field_name_form() {
 	$area = db_query(
-		"SELECT area.id a_id, field_name, zip, locality, canton, country, u.name u_name, ST_AsGeoJSON(area.geom) AS geom FROM area
+			"SELECT area.id a_id, field_name, zip, locality, canton, country, u.name u_name, ST_AsGeoJSON(area.geom) AS geom FROM area
 		LEFT JOIN users u ON u.uid = owner_id
-		ORDER BY field_name;"
-	);
-	
+		ORDER BY field_name;");
+
 	foreach ($area as $record) {
 		$row = array();
 		$row[] = $record->field_name;
@@ -89,17 +100,20 @@ function area_field_name_form() {
 		$row[] = $record->canton;
 		$row[] = $record->country;
 		$row[] = $record->u_name;
-		
+
 		$json = json_decode($record->geom);
 		if ($json) {
-		    $row[] = $json->type;
+			$row[] = $json->type;
 		} else {
-		    $row[] = '';
+			$row[] = '';
 		}
-		
-		$rows[] = array('data' => $row, 'id' => 'area_'. $record->a_id);
+
+		$rows[] = array(
+				'data' => $row,
+				'id' => 'area_' . $record->a_id
+		);
 	}
-	
+
 	$tableHeader[] = t('Area Name');
 	$tableHeader[] = t('Zip');
 	$tableHeader[] = t('Locality');
@@ -107,19 +121,19 @@ function area_field_name_form() {
 	$tableHeader[] = t('Country');
 	$tableHeader[] = t('Area Creator');
 	$tableHeader[] = t('Area Type');
-		
+
 	$form['FieldName'] = array(
-		'#type' => 'fieldset',
-  		'#title' => t('Search by field name:'),
-  		'#weight' => 5,
+			'#type' => 'fieldset',
+			'#title' => t('Search by field name:'),
+			'#weight' => 5,
 	);
 
 	$form['FieldName']['show_areas'] = array(
-		'#theme' => 'datatable',
-		'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#id_table' => 'show_areas',
-		'#len' => 220,
+			'#theme' => 'datatable',
+			'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#id_table' => 'show_areas',
+			'#len' => 220,
 	);
 
 	return $form;
@@ -131,9 +145,9 @@ function area_field_name_form() {
  */
 function area_search($form, &$form_state) {
 	$form['AreaText'] = array(
-		'#title' => t('Search through existing areas'),
-		'#type' => 'textfield',   
-		'#autocomplete_path' => 'area/area_saved_autocomplete',
+			'#title' => t('Search through existing areas'),
+			'#type' => 'textfield',
+			'#autocomplete_path' => 'area/area_saved_autocomplete',
 	);
 	return $form;
 }
@@ -151,34 +165,42 @@ function area_choose_form($form, &$form_state) {
 	drupal_set_title(t('Choose existing area'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css',
+			array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+			));
 
 	$form['new'] = array(
-	'#theme' => 'area.new',
+			'#theme' => 'area.new',
 	);
-	$form['AreaChooseForm'] = array (
-		'#type' => 'fieldset',
-		'#weight' => -1,
+	$form['AreaChooseForm'] = array(
+			'#type' => 'fieldset',
+			'#weight' => -1,
 	);
-	$form['AreaChooseForm']['help'] = array (
-		'#markup' => t('If you would like to create a new inventory, please select an existing area. If your desired area is not listed here, please create one first.')
+	$form['AreaChooseForm']['help'] = array(
+			'#markup' => t(
+					'If you would like to create a new inventory, please select an existing area. If your desired area is not listed here, please create one first.')
 	);
-	
+
 	$form['FieldName'] = area_field_name_form();
 	$form['googleMaps'] = area_google_maps_form('choose');
-	
 
 	$form['id-area'] = array(
-  		'#type' => 'hidden',
-		'#attributes' => array('id' => 'edit-id-area'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-id-area'
+			),
 	);
-	$form['actions'] = array('#type' => 'actions');
+	$form['actions'] = array(
+			'#type' => 'actions'
+	);
 	$form['actions']['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Continue')
+			'#type' => 'submit',
+			'#value' => t('Continue')
 	);
-	
-  	return $form;
+
+	return $form;
 }
 
 /**
@@ -187,7 +209,7 @@ function area_choose_form($form, &$form_state) {
  * @param *array $form_state
  */
 function area_choose_form_validate($form, &$form_state) {
-	if($form_state['values']['id-area'] == '') {
+	if ($form_state['values']['id-area'] == '') {
 		form_set_error('id', t('You must select an area to continue.'));
 	}
 }
@@ -202,7 +224,7 @@ function area_choose_form_validate($form, &$form_state) {
  */
 function area_choose_form_submit($form, &$form_state, $area_id) {
 	// redirect to create a new inventory
-	$form_state['redirect'] = 'inventory/new/area/'.$form_state['values']['id-area'];
+	$form_state['redirect'] = 'inventory/new/area/' . $form_state['values']['id-area'];
 }
 
 /**
@@ -213,65 +235,91 @@ function area_choose_form_submit($form, &$form_state, $area_id) {
  * @return form to submit area properties
  */
 function area_create_form($form, &$form_state) {
-	$form['AreaNewForm'] = array (
-		'#type' => 'fieldset',
-		'#weight' => 8,
+	$form['AreaNewForm'] = array(
+			'#type' => 'fieldset',
+			'#weight' => 8,
 	);
 	$form['AreaNewForm']['field_name'] = array(
-	'#type' => 'hidden',
-	'#required' => true,
-	'#size' => 50,
-	'#attributes' => array('id' => 'edit-field_name'),
+			'#type' => 'hidden',
+			'#required' => true,
+			'#size' => 50,
+			'#attributes' => array(
+					'id' => 'edit-field_name'
+			),
 	);
 	$form['AreaNewForm']['locality'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-locality'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-locality'
+			),
 	);
 	$form['AreaNewForm']['zip'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-zip'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-zip'
+			),
 	);
 	$form['AreaNewForm']['township'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-township'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-township'
+			),
 	);
 	$form['AreaNewForm']['canton'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-canton'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-canton'
+			),
 	);
 	$form['AreaNewForm']['altitude'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-altitude'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-altitude'
+			),
 	);
 	$form['AreaNewForm']['surface-area'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-surface-area'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-surface-area'
+			),
 	);
 	$form['AreaNewForm']['country'] = array(
-	'#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-country'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-country'
+			),
 	);
 	$form['AreaNewForm']['latitude'] = array(
-    '#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-latitude'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-latitude'
+			),
 	);
 	$form['AreaNewForm']['longitude'] = array(
-    '#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-longitude'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-longitude'
+			),
 	);
 	$form['AreaNewForm']['area-coords'] = array(
-    '#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-area-coords'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-area-coords'
+			),
 	);
 	$form['AreaNewForm']['area_type'] = array(
-    '#type' => 'hidden',
-	'#attributes' => array('id' => 'edit-area-type'),
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'edit-area-type'
+			),
 	);
-	$form['AreaNewForm']['actions-new'] = array('#type' => 'actions');
-    $form['AreaNewForm']['actions-new']['submit'] = array(
-        '#type' => 'submit',
-        '#value' => t('Continue'),
-    );
+	$form['AreaNewForm']['actions-new'] = array(
+			'#type' => 'actions'
+	);
+	$form['AreaNewForm']['actions-new']['submit'] = array(
+			'#type' => 'submit',
+			'#value' => t('Continue'),
+	);
 	return $form;
 }
 
@@ -282,7 +330,7 @@ function area_create_form($form, &$form_state) {
  * @param unknown_type $form_state
  */
 function area_create_form_submit($form, $form_state) {
-    
+
 	// get values from form
 	$field_name = $form_state['input']['field_name'];
 	$locality = $form_state['values']['locality'];
@@ -303,61 +351,59 @@ function area_create_form_submit($form, $form_state) {
 	global $user;
 
 	// insert area
-	$area_id = db_insert('area')->fields(array(
-		'field_name' => $field_name,
-		'locality' => $locality,
-		'zip' => $zip,
-		'canton' => $canton,
-		'country' => $country,
-		'comment' => '',
-		'altitude' => $altitude,
-		'surface_area' => $surface_area,
-		'township' => $township,
-		'owner_id' => $user->uid,
-		'create_time' => 'now()',
-		'modify_time' => 'now()',
-		'protection_target' => $protectiontarget,
-		'safety_precautions' => $safetyprecautions,
-		'tending_strategies' => $tendingstrategies
-	))->execute();
-	
+	$area_id = db_insert('area')
+			->fields(
+					array('field_name' => $field_name,
+							'locality' => $locality,
+							'zip' => $zip,
+							'canton' => $canton,
+							'country' => $country,
+							'comment' => '',
+							'altitude' => $altitude,
+							'surface_area' => $surface_area,
+							'township' => $township,
+							'owner_id' => $user->uid,
+							'create_time' => 'now()',
+							'modify_time' => 'now()',
+							'protection_target' => $protectiontarget,
+							'safety_precautions' => $safetyprecautions,
+							'tending_strategies' => $tendingstrategies
+					))->execute();
+
 	// field coordinates
 	$coords = json_decode($jsonCoords, true);
 	$points = array();
 	foreach ($coords as $coord) {
-    	$lat = $coord[0];
-    	$lng = $coord[1];
-    	$points[] = $lng . ' ' . $lat;
+		$lat = $coord[0];
+		$lng = $coord[1];
+		$points[] = $lng . ' ' . $lat;
 	}
-	
+
 	switch ($areaType) {
 
-	    case 'polyline':
+	case 'polyline':
+		$linestring = implode(', ', $points);
+		$geom = 'ST_GeomFromText(\'LINESTRING(' . $linestring . ')\', 4326)'; // SRID 4326 = WGS 84
+		break;
 
-	        $linestring = implode(', ', $points);
-	        $geom = 'ST_GeomFromText(\'LINESTRING(' . $linestring . ')\', 4326)'; // SRID 4326 = WGS 84
-	        break;
+	case 'polygon':
+	// make sure line is closed
+		if (end($points) != reset($points)) {
+			$points[] = reset($points);
+		}
 
-	    case 'polygon':
+		$linestring = implode(', ', $points);
+		$geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+		break;
 
-    	    // make sure line is closed
-    	    if (end($points) != reset($points)) {
-    	        $points[] = reset($points);
-    	    }
-
-    	    $linestring = implode(', ', $points);
-    	    $geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
-    	    break;
-
-	    case 'marker':
-
-    	    $geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
-    	    break;
+	case 'marker':
+		$geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
+		break;
 	}
 	db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
 
 	// redirect to JSON
-	drupal_goto('area/getareas/'.$area_id);
+	drupal_goto('area/getareas/' . $area_id);
 }
 
 /**
@@ -378,10 +424,12 @@ function area_new_details_form($form, $form_state) {
 	$output['AreaNewForm']['habitats'] = area_edit_habitat_form($form, $form_state, '');
 	$output['AreaNewForm']['concept'] = area_edit_concept_form($form, $form_state, '');
 	$output['AreaNewForm']['hidden'] = area_edit_hidden_form($form, $form_state);
-	$output['actions'] = array('#type' => 'actions');
+	$output['actions'] = array(
+			'#type' => 'actions'
+	);
 	$output['actions']['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Save')
+			'#type' => 'submit',
+			'#value' => t('Save')
 	);
 	return $output;
 }
@@ -407,74 +455,74 @@ function area_new_details_form_submit($form, $form_state) {
 	global $user;
 
 	// insert area
-	$area_id = db_insert('area')->fields(array(
-		'field_name' => $field_name,
-		'locality' => $locality,
-		'zip' => $zip,
-		'canton' => $canton,
-		'country' => $country,
-		'comment' => $comment,
-		'altitude' => $altitude,
-		'surface_area' => $surface_area,
-		'township' => $township,
-		'owner_id' => $user->uid,
-		'create_time' => 'now()',
-		'modify_time' => 'now()',
-		'protection_target' => $protectiontarget,
-		'safety_precautions' => $safetyprecautions,
-		'tending_strategies' => $tendingstrategies
-	))
-	->execute();
-	
+	$area_id = db_insert('area')
+			->fields(
+					array('field_name' => $field_name,
+							'locality' => $locality,
+							'zip' => $zip,
+							'canton' => $canton,
+							'country' => $country,
+							'comment' => $comment,
+							'altitude' => $altitude,
+							'surface_area' => $surface_area,
+							'township' => $township,
+							'owner_id' => $user->uid,
+							'create_time' => 'now()',
+							'modify_time' => 'now()',
+							'protection_target' => $protectiontarget,
+							'safety_precautions' => $safetyprecautions,
+							'tending_strategies' => $tendingstrategies
+					))->execute();
+
 	// field coordinates
 	$coords = json_decode($jsonCoords, true);
 	$points = array();
 	foreach ($coords as $coord) {
-    	$lat = $coord[0];
-    	$lng = $coord[1];
-    	$points[] = $lng . ' ' . $lat;
+		$lat = $coord[0];
+		$lng = $coord[1];
+		$points[] = $lng . ' ' . $lat;
 	}
-	
+
 	if (count($points) > 1) {
-	    // polygon
-	
-	    // make sure line is closed
-	    if (end($points) != reset($points)) {
-	        $points[] = reset($points);
-	    }
-	
-	    $linestring = implode(', ', $points);
-	    $geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
-	
+		// polygon
+
+		// make sure line is closed
+		if (end($points) != reset($points)) {
+			$points[] = reset($points);
+		}
+
+		$linestring = implode(', ', $points);
+		$geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+
 	} else {
-	    // point
-	
-	    $geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
-    }
+		// point
+
+		$geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
+	}
 	db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
 
 	// insert habitats
 	if (array_key_exists('habitat', $form_state['input'])) {
 		foreach (array_values($form_state['input']['habitat']) as $habitat) {
-			db_insert('area_habitat')->fields(array(
-				'area_id' => $area_id,
-				'habitat_id' => $habitat,
-			))
-			->execute();
+			db_insert('area_habitat')->fields(array('area_id' => $area_id,
+							'habitat_id' => $habitat,
+					))->execute();
 		}
 	}
-	
+
 	//insert parcels
 	$parcels = $form_state['input']['parcel'];
 	area_insert_parcels($area_id, $parcels);
 
 	// redirect to the new area	
-	drupal_set_message('Area successfully created. If you would like to add a new inventory in this Area please click '.l('here', 'inventory/new/area/'.$area_id));
-	drupal_goto('area/'.$area_id);
+	drupal_set_message(
+			'Area successfully created. If you would like to add a new inventory in this Area please click '
+					. l('here', 'inventory/new/area/' . $area_id));
+	drupal_goto('area/' . $area_id);
 }
 
 function area_new_details_form_validate($form, &$form_state) {
-	if($form_state['input']['field_name'] == '') {
+	if ($form_state['input']['field_name'] == '') {
 		form_set_error('id', t('An area name is required'));
 	}
 }

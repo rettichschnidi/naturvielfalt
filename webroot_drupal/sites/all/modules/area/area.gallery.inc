@@ -10,22 +10,22 @@
  * @return array
  */
 function area_gallery_types() {
-  return array(
-    'area' => array(
-      'image_caption' => 'area_gallery_image_caption',
-      'manage_title' => 'area_gallery_manage_title',
-      'manage_description' => 'area_gallery_manage_description',
-      'location_provider' => 'area_gallery_location_provider',
-      'item_provider' => 'area_gallery_item_provider'
-    ),
-    'area_habitat' => array(
-      'image_caption' => 'area_habitat_gallery_image_caption',
-      'manage_title' => 'area_habitat_gallery_manage_title',
-      'manage_description' => 'area_habitat_gallery_manage_description',
-      'location_provider' => 'area_habitat_gallery_location_provider',
-      'crosslinked' => false,
-    )
-  );
+	return array(
+			'area' => array(
+					'image_caption' => 'area_gallery_image_caption',
+					'manage_title' => 'area_gallery_manage_title',
+					'manage_description' => 'area_gallery_manage_description',
+					'location_provider' => 'area_gallery_location_provider',
+					'item_provider' => 'area_gallery_item_provider'
+			),
+			'area_habitat' => array(
+					'image_caption' => 'area_habitat_gallery_image_caption',
+					'manage_title' => 'area_habitat_gallery_manage_title',
+					'manage_description' => 'area_habitat_gallery_manage_description',
+					'location_provider' => 'area_habitat_gallery_location_provider',
+					'crosslinked' => false,
+			)
+	);
 }
 
 /**
@@ -37,18 +37,17 @@ function area_gallery_types() {
  * @return array
  */
 function area_gallery_item_provider($id) {
-  $items = array();
-  $items['area:'.$id] = t('Not related to a habitat');
-  $query = db_select('area_habitat', 'ah')
-    ->condition('area_id', $id);
-  $query->join('habitat', 'h', 'h.id = ah.habitat_id');
-  $query->fields('h');
-  $query->addField('ah', 'id', 'ah_id');
-  $habitats = $query->execute()->fetchAll();
-  $items[t('Habitats')] = array();
-  foreach($habitats as $habitat)
-    $items[t('Habitats')]['area_habitat:'.$habitat->ah_id] = $habitat->label.' '.$habitat->name_de;
-  return $items;
+	$items = array();
+	$items['area:' . $id] = t('Not related to a habitat');
+	$query = db_select('area_habitat', 'ah')->condition('area_id', $id);
+	$query->join('habitat', 'h', 'h.id = ah.habitat_id');
+	$query->fields('h');
+	$query->addField('ah', 'id', 'ah_id');
+	$habitats = $query->execute()->fetchAll();
+	$items[t('Habitats')] = array();
+	foreach ($habitats as $habitat)
+		$items[t('Habitats')]['area_habitat:' . $habitat->ah_id] = $habitat->label . ' ' . $habitat->name_de;
+	return $items;
 }
 
 /**
@@ -60,7 +59,9 @@ function area_gallery_item_provider($id) {
  * @return string
  */
 function area_gallery_image_caption($id) {
-  return l(area_gallery_caption($id), 'area/'.$id, array('html' => true));
+	return l(area_gallery_caption($id), 'area/' . $id, array(
+			'html' => true
+	));
 }
 
 /**
@@ -72,7 +73,7 @@ function area_gallery_image_caption($id) {
  * @return string
  */
 function area_gallery_manage_title($id) {
-  return t('Images of the area !title', array('!title' => '<em>'.area_gallery_caption($id).'</em>'));
+	return t('Images of the area !title', array('!title' => '<em>' . area_gallery_caption($id) . '</em>'));
 }
 
 /**
@@ -83,12 +84,9 @@ function area_gallery_manage_title($id) {
  * @return string
  */
 function area_gallery_caption($id) {
-  $result = db_select('area', 'a')
-    ->condition('id', $id)
-    ->fields('a')
-    ->execute()
-    ->fetch();
-  return $result->field_name.' <small>'.$result->locality.' '.$result->canton.', '.$result->country.'</small>';
+	$result = db_select('area', 'a')->condition('id', $id)->fields('a')->execute()->fetch();
+	return $result->field_name . ' <small>' . $result->locality . ' ' . $result->canton . ', ' . $result->country
+			. '</small>';
 }
 
 /**
@@ -99,8 +97,8 @@ function area_gallery_caption($id) {
  *   The ID of the area
  * @return string
  */
-function area_gallery_manage_description($id,$mediatype) {
-  return t('Add and edit '.$mediatype.' of this area and optionally link them to an available habitat.');
+function area_gallery_manage_description($id, $mediatype) {
+	return t('Add and edit ' . $mediatype . ' of this area and optionally link them to an available habitat.');
 }
 
 /**
@@ -112,12 +110,8 @@ function area_gallery_manage_description($id,$mediatype) {
  * @return string
  */
 function area_gallery_location_provider($id) {
-  $result = db_select('area', 'a')
-    ->condition('id', $id)
-    ->fields('a')
-    ->execute()
-    ->fetch();
-  return $result->locality.' '.$result->canton.', '.$result->country;
+	$result = db_select('area', 'a')->condition('id', $id)->fields('a')->execute()->fetch();
+	return $result->locality . ' ' . $result->canton . ', ' . $result->country;
 }
 
 /**
@@ -129,15 +123,11 @@ function area_gallery_location_provider($id) {
  * @return string
  */
 function area_habitat_gallery_image_caption($id) {
-  $result = db_select('area_habitat', 'ah')
-    ->condition('id', $id)
-    ->fields('ah')
-    ->execute()
-    ->fetch();
-  return t('!habitat in !area', array(
-    '!habitat' => habitat_gallery_image_caption($result->habitat_id),
-    '!area' => '<br>'.area_gallery_image_caption($result->area_id)
-  ));
+	$result = db_select('area_habitat', 'ah')->condition('id', $id)->fields('ah')->execute()->fetch();
+	return t('!habitat in !area',
+			array('!habitat' => habitat_gallery_image_caption($result->habitat_id),
+					'!area' => '<br>' . area_gallery_image_caption($result->area_id)
+			));
 }
 
 /**
@@ -149,15 +139,11 @@ function area_habitat_gallery_image_caption($id) {
  * @return string
  */
 function area_habitat_gallery_manage_title($id) {
-  $result = db_select('area_habitat', 'ah')
-    ->condition('id', $id)
-    ->fields('ah')
-    ->execute()
-    ->fetch();
-  return t('Images of the habitat !title<br>taken in the area !context', array(
-    '!title' => '<em>'.habitat_gallery_caption($result->habitat_id).'</em>',
-    '!context' => '<em>'.area_gallery_caption($result->area_id).'</em>'
-  ));
+	$result = db_select('area_habitat', 'ah')->condition('id', $id)->fields('ah')->execute()->fetch();
+	return t('Images of the habitat !title<br>taken in the area !context',
+			array('!title' => '<em>' . habitat_gallery_caption($result->habitat_id) . '</em>',
+					'!context' => '<em>' . area_gallery_caption($result->area_id) . '</em>'
+			));
 }
 
 /**
@@ -168,8 +154,8 @@ function area_habitat_gallery_manage_title($id) {
  *   The ID of the area_habitat
  * @return string
  */
-function area_habitat_gallery_manage_description($id,$mediatype) {
-  return t('Add and edit '.$mediatype.' of the specified habitat located in the mentioned area.');
+function area_habitat_gallery_manage_description($id, $mediatype) {
+	return t('Add and edit ' . $mediatype . ' of the specified habitat located in the mentioned area.');
 }
 
 /**
@@ -181,12 +167,8 @@ function area_habitat_gallery_manage_description($id,$mediatype) {
  * @return string
  */
 function area_habitat_gallery_location_provider($id) {
-  $result = db_select('area_habitat', 'ah')
-    ->condition('id', $id)
-    ->fields('ah')
-    ->execute()
-    ->fetch();
-  return area_gallery_location_provider($result->id);
+	$result = db_select('area_habitat', 'ah')->condition('id', $id)->fields('ah')->execute()->fetch();
+	return area_gallery_location_provider($result->id);
 }
 
 /**
@@ -196,16 +178,16 @@ function area_habitat_gallery_location_provider($id) {
  * @return array
  */
 function area_gallery_type_edit_conversions() {
-  return array(
-    array(
-      array(
-        'source' => 'area_habitat',
-        'source_key' => 'area_id',
-        'target' => 'area',
-        'target_key' => 'id',
-      )
-    )
-  );
+	return array(
+			array(
+					array(
+							'source' => 'area_habitat',
+							'source_key' => 'area_id',
+							'target' => 'area',
+							'target_key' => 'id',
+					)
+			)
+	);
 }
 
 /**
@@ -215,32 +197,32 @@ function area_gallery_type_edit_conversions() {
  * @return array
  */
 function area_gallery_type_conversions() {
-  return array(
-    array(
-      array(
-        'source' => 'area_habitat',
-        'source_key' => 'habitat_id',
-        'target' => 'habitat',
-        'target_key' => 'id',
-      )
-    ),
-    array(
-      array(
-        'source' => 'habitat',
-        'source_key' => 'id',
-        'target' => 'area_habitat',
-        'target_key' => 'habitat_id',
-      )
-    ),
-    array(
-      array(
-        'source' => 'area_habitat',
-        'source_key' => 'area_id',
-        'target' => 'area',
-        'target_key' => 'id',
-      )
-    )
-  );
+	return array(
+			array(
+					array(
+							'source' => 'area_habitat',
+							'source_key' => 'habitat_id',
+							'target' => 'habitat',
+							'target_key' => 'id',
+					)
+			),
+			array(
+					array(
+							'source' => 'habitat',
+							'source_key' => 'id',
+							'target' => 'area_habitat',
+							'target_key' => 'habitat_id',
+					)
+			),
+			array(
+					array(
+							'source' => 'area_habitat',
+							'source_key' => 'area_id',
+							'target' => 'area',
+							'target_key' => 'id',
+					)
+			)
+	);
 }
 
 /**
@@ -250,12 +232,12 @@ function area_gallery_type_conversions() {
  * @return array
  */
 function area_gallery_category_conditions() {
-  return array(
-    'area' => array(
-      'name' => t('Areas'),
-      'type' => 'area'
-    ),
-  );
+	return array(
+			'area' => array(
+					'name' => t('Areas'),
+					'type' => 'area'
+			),
+	);
 }
 
 ?>

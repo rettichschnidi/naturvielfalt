@@ -1,7 +1,6 @@
 <?php
 
 namespace Naturwerk\Find;
-
 /**
  * Naturwerk indexer to index organisms, sightings, etc.
  *
@@ -9,64 +8,76 @@ namespace Naturwerk\Find;
  */
 class Indexer {
 
-    /**
-     * @var \Elastica_Index
-     */
-    protected $index;
+	/**
+	 * @var \Elastica_Index
+	 */
+	protected $index;
 
-    public function __construct($index) {
-        $this->index = $index;
-    }
+	public function __construct($index) {
+		$this->index = $index;
+	}
 
-    /**
-     * Delete complete index.
-     */
-    public function clear() {
-        $this->index->create(array('settings' => array(
-            'analysis' => array(
-                'analyzer' => array(
-                    'sortable' => array(
-                        'tokenizer' => 'keyword',
-                        'filter' => array(
-                            'standard',
-                            'lowercase',
-                            'asciifolding',
-                        )
-                    )
-                )
-            )
-        )), true);
-    }
+	/**
+	 * Delete complete index.
+	 */
+	public function clear() {
+		$this->index
+				->create(
+						array('settings' => array('analysis' => array('analyzer' => array('sortable' => array('tokenizer' => 'keyword',
+																'filter' => array('standard',
+																		'lowercase',
+																		'asciifolding',
+																)
+														)
+												)
+										)
+								)
+						), true);
+	}
 
-    /**
-     * Index all types.
-     */
-    public function all() {
-        $this->clear();
-        $this->organisms();
-        $this->sightings();
-        $this->inventories();
-        $this->areas();
-        $this->images();
-    }
+	/**
+	 * Index all types.
+	 */
+	public function all() {
+		$this->clear();
+		$this->organisms();
+		$this->sightings();
+		$this->inventories();
+		$this->areas();
+		$this->images();
+	}
 
-    /**
-     * Index all organsims.
-     */
-    public function organisms() {
+	/**
+	 * Index all organsims.
+	 */
+	public function organisms() {
 
-        $mapping = \Elastica_Type_Mapping::create(array(
-            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'name_la' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
-        ));
+		$mapping = \Elastica_Type_Mapping::create(
+				array('name' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'name_la' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'class' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'family' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'genus' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'redlist' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+				));
 
-        // Flora, Fauna
-        $sql = '
+		// Flora, Fauna
+		$sql = '
             SELECT
                 organism.id,
                 organism.organism_type,
@@ -98,33 +109,57 @@ class Indexer {
             LEFT JOIN fauna_class ON fauna_class.id = fauna_organism.fauna_class_id
             WHERE organism.organism_type = 1';
 
-        $this->sql('organism', $sql, $mapping);
-    }
+		$this->sql('organism', $sql, $mapping);
+	}
 
-    /**
-     * Index all sightings.
-     */
-    public function sightings() {
+	/**
+	 * Index all sightings.
+	 */
+	public function sightings() {
 
-        $mapping = \Elastica_Type_Mapping::create(array(
-            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'name_la' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'position' => array('type' => 'geo_point'),
-            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'inventory' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'town' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
-            'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'habitat' => array('type' => 'string', 'index' => 'not_analyzed'),
-        ));
-        $mapping->setParam('_parent', array('type' => 'organism'));
+		$mapping = \Elastica_Type_Mapping::create(
+				array('name' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'name_la' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'position' => array('type' => 'geo_point'),
+						'class' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'family' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'genus' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'inventory' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'town' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'canton' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'date' => array('type' => 'date',
+								'format' => 'yyyy-MM-dd'
+						),
+						'redlist' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'habitat' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+				));
+		$mapping->setParam('_parent', array('type' => 'organism'));
 
-        // Flora, Fauna
-        $sql = '
+		// Flora, Fauna
+		$sql = '
             SELECT
                 inventory_entry.id AS id,
                 head_inventory.shared AS shared,
@@ -186,8 +221,9 @@ class Indexer {
             LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
             WHERE organism.organism_type = 1';
 
-        $this->sql('sighting', $sql, $mapping, array(
-            'access' => '
+		$this
+				->sql('sighting', $sql, $mapping,
+						array('access' => '
             	SELECT
             		h.owner_id AS access
     			FROM inventory_entry e
@@ -205,8 +241,7 @@ class Indexer {
     			INNER JOIN sgroup_inventory g ON g.hiid = h.id
     			INNER JOIN sgroup_users u ON u.sgid = g.sgid
     			WHERE (read = 1 OR admin = 1) AND e.id = :id',
-
-        	'habitat' => '
+								'habitat' => '
                 SELECT
                     DISTINCT habitat.name_de AS habitat
                 FROM habitat
@@ -215,30 +250,52 @@ class Indexer {
             	INNER JOIN inventory ON inventory.head_inventory_id = head_inventory.id
             	INNER JOIN inventory_entry ON inventory_entry.inventory_id = inventory.id 
                 WHERE inventory_entry.id = :id',
-        ));
-    }
+						));
+	}
 
-    /**
-     * Index all inventories.
-     */
-    public function inventories() {
+	/**
+	 * Index all inventories.
+	 */
+	public function inventories() {
 
-        $mapping = \Elastica_Type_Mapping::create(array(
-            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'area' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'position' => array('type' => 'geo_point'),
-            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'town' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
-            'habitat' => array('type' => 'string', 'index' => 'not_analyzed'),
-        ));
+		$mapping = \Elastica_Type_Mapping::create(
+				array('name' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'area' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'position' => array('type' => 'geo_point'),
+						'class' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'family' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'genus' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'town' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'canton' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'date' => array('type' => 'date',
+								'format' => 'yyyy-MM-dd'
+						),
+						'habitat' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+				));
 
-        $sql = '
+		$sql = '
             SELECT
                 head_inventory.id AS id,
                 head_inventory.shared AS shared,
@@ -255,8 +312,9 @@ class Indexer {
             INNER JOIN users ON users.uid = head_inventory.owner_id
             LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
-        $this->sql('inventory', $sql, $mapping, array(
-            'access' => '
+		$this
+				->sql('inventory', $sql, $mapping,
+						array('access' => '
             	SELECT
             		owner_id AS access
     			FROM head_inventory
@@ -270,8 +328,7 @@ class Indexer {
     			INNER JOIN sgroup_inventory g ON g.hiid = h.id
     			INNER JOIN sgroup_users u ON u.sgid = g.sgid
     			WHERE (read = 1 OR admin = 1) AND h.id = :id',
-
-            'class' => '
+								'class' => '
                 SELECT
                     DISTINCT fauna_class.name_de AS class
                 FROM inventory_entry
@@ -289,8 +346,7 @@ class Indexer {
                 INNER JOIN inventory ON inventory_entry.inventory_id = inventory.id
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
-
-            'family' => '
+								'family' => '
                 SELECT
                     DISTINCT fauna_organism.family AS family
                 FROM inventory_entry
@@ -308,8 +364,7 @@ class Indexer {
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
                 WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
-
-            'genus' => '
+								'genus' => '
                 SELECT
                     DISTINCT fauna_organism.genus AS genus
                 FROM inventory_entry
@@ -327,8 +382,7 @@ class Indexer {
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
                 WHERE organism.organism_type = 2 AND inventory.head_inventory_id = :id',
-
-            'date' => '
+								'date' => '
                 SELECT
                     DISTINCT e.value AS date
                 FROM inventory_type_attribute_inventory_entry e
@@ -336,37 +390,56 @@ class Indexer {
                 INNER JOIN inventory_entry ie ON ie.id = e.inventory_entry_id
                 INNER JOIN inventory i ON ie.inventory_id = i.id
                 WHERE a.name = \'Funddatum\' AND i.head_inventory_id = :id',
-
-        	'habitat' => '
+								'habitat' => '
                 SELECT
                     DISTINCT h.name_de AS habitat
                 FROM habitat h
                 INNER JOIN area_habitat a ON a.habitat_id = h.id
                 INNER JOIN head_inventory i ON i.area_id = a.area_id 
                 WHERE i.id = :id',
-        ));
-    }
+						));
+	}
 
-    /**
-     * Index all areas.
-     */
-    public function areas() {
+	/**
+	 * Index all areas.
+	 */
+	public function areas() {
 
-        $mapping = \Elastica_Type_Mapping::create(array(
-            'name' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'user' => array('type' => 'string', 'analyzer' => 'sortable'),
-            'position' => array('type' => 'geo_point'),
-            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'town' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'canton' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
-            'habitat' => array('type' => 'string', 'index' => 'not_analyzed'),
-        ));
+		$mapping = \Elastica_Type_Mapping::create(
+				array('name' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'user' => array('type' => 'string',
+								'analyzer' => 'sortable'
+						),
+						'position' => array('type' => 'geo_point'),
+						'class' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'family' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'genus' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'town' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'canton' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'date' => array('type' => 'date',
+								'format' => 'yyyy-MM-dd'
+						),
+						'habitat' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+				));
 
-        $sql = '
+		$sql = '
             SELECT
                 area.id AS id,
                 area.field_name AS name,
@@ -380,8 +453,9 @@ class Indexer {
             INNER JOIN users ON users.uid = area.owner_id
             LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid';
 
-        $this->sql('area', $sql, $mapping, array(
-            'class' => '
+		$this
+				->sql('area', $sql, $mapping,
+						array('class' => '
                 SELECT
                     DISTINCT fauna_class.name_de AS class
                 FROM inventory_entry
@@ -401,8 +475,7 @@ class Indexer {
                 INNER JOIN head_inventory ON head_inventory.id = inventory.head_inventory_id
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 WHERE organism.organism_type = 2 AND head_inventory.area_id = :id',
-
-            'family' => '
+								'family' => '
                 SELECT
                     DISTINCT fauna_organism.family AS family
                 FROM inventory_entry
@@ -422,8 +495,7 @@ class Indexer {
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
                 WHERE organism.organism_type = 2 AND head_inventory.area_id = :id',
-
-            'genus' => '
+								'genus' => '
                 SELECT
                     DISTINCT fauna_organism.genus AS genus
                 FROM inventory_entry
@@ -443,8 +515,7 @@ class Indexer {
                 INNER JOIN organism ON inventory_entry.organism_id = organism.id
                 INNER JOIN flora_organism ON flora_organism.id = organism.organism_id
                 WHERE organism.organism_type = 2 AND head_inventory.area_id = :id',
-
-        	'date' => '
+								'date' => '
                 SELECT
                     DISTINCT e.value AS date
                 FROM inventory_type_attribute_inventory_entry e
@@ -453,36 +524,55 @@ class Indexer {
                 INNER JOIN inventory i ON ie.inventory_id = i.id
                 INNER JOIN head_inventory h ON h.id = i.head_inventory_id
                 WHERE a.name = \'Funddatum\' AND h.area_id = :id',
-
-        	'habitat' => '
+								'habitat' => '
                 SELECT
                     DISTINCT h.name_de AS habitat
                 FROM habitat h
                 INNER JOIN area_habitat a ON a.habitat_id = h.id
                 WHERE a.area_id = :id'
-        ));
-    }
+						));
+	}
 
-    /**
-     * Index all images.
-     */
-    public function images() {
+	/**
+	 * Index all images.
+	 */
+	public function images() {
 
-        $mapping = \Elastica_Type_Mapping::create(array(
-            'title' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'name' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'name_la' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'position' => array('type' => 'geo_point'),
-            'class' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'family' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'genus' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'redlist' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'user' => array('type' => 'string', 'index' => 'not_analyzed'),
-            'date' => array('type' => 'date', 'format' => 'yyyy-MM-dd'),
-        ));
+		$mapping = \Elastica_Type_Mapping::create(
+				array('title' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'name' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'name_la' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'position' => array('type' => 'geo_point'),
+						'class' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'family' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'genus' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'redlist' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'user' => array('type' => 'string',
+								'index' => 'not_analyzed'
+						),
+						'date' => array('type' => 'date',
+								'format' => 'yyyy-MM-dd'
+						),
+				));
 
-        $sql = '
+		$sql = '
         	SELECT
         		gallery_image.id,
         		gallery_image.title,
@@ -632,149 +722,148 @@ class Indexer {
             LEFT JOIN field_data_field_address ua ON ua.entity_id = users.uid
 			WHERE file_managed.filemime = \'image/jpeg\' AND gallery_image.item_type = \'area\'';
 
-        $this->sql('image', $sql, $mapping);
-    }
+		$this->sql('image', $sql, $mapping);
+	}
 
-    /**
-     * Convert geo, centroid and date for a single data row for ElasticSearch.
-     *
-     * @param array $data
-     */
-    protected static function convert($data) {
+	/**
+	 * Convert geo, centroid and date for a single data row for ElasticSearch.
+	 *
+	 * @param array $data
+	 */
+	protected static function convert($data) {
 
+		// convert geo
+		if (isset($data['geom'])) {
 
-        // convert geo
-        if (isset($data['geom'])) {
+			$json = json_decode($data['geom']);
+			if ($json) {
 
-            $json = json_decode($data['geom']);
-            if ($json) {
+				$data['position'] = array();
+				if ('Polygon' == $json->type) {
+					foreach ($json->coordinates[0] as $coordinate) {
+						$data['position'][] = $coordinate[1] . ', ' . $coordinate[0];
+					}
+				} else if ('Point' == $json->type) {
+					$data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
+				}
+			}
 
-                $data['position'] = array();
-                if ('Polygon' == $json->type) {
-                    foreach ($json->coordinates[0] as $coordinate) {
-                        $data['position'][] = $coordinate[1] . ', ' . $coordinate[0];
-                    }
-                } else if ('Point' == $json->type) {
-                    $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
-                }
-            }
+			unset($data['geom']);
+		}
 
-            unset($data['geom']);
-        }
+		// convert centroid
+		if (isset($data['centroid'])) {
 
-        // convert centroid
-        if (isset($data['centroid'])) {
+			$json = json_decode($data['centroid']);
+			if ($json) {
 
-            $json = json_decode($data['centroid']);
-            if ($json) {
+				if (!isset($data['position'])) {
+					$data['position'] = array();
+				}
+				$data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
+			}
 
-                if (!isset($data['position'])) {
-                    $data['position'] = array();
-                }
-                $data['position'][] = $json->coordinates[1] . ', ' . $json->coordinates[0];
-            }
+			unset($data['centroid']);
+		}
 
-            unset($data['centroid']);
-        }
+		// convert date
+		if (isset($data['date'])) {
 
-        // convert date
-        if (isset($data['date'])) {
+			$data['date'] = date('Y-m-d', strtotime($data['date']));
+		}
 
-            $data['date'] = date('Y-m-d', strtotime($data['date']));
-        }
+		foreach ($data as $key => $value) {
 
-        foreach ($data as $key => $value) {
-            
-            // remove whitespaces
-            if (is_array($value)) {
-                $value = array_map('trim', $value);
-            } else {
-                $value = trim($value);
-            }
+			// remove whitespaces
+			if (is_array($value)) {
+				$value = array_map('trim', $value);
+			} else {
+				$value = trim($value);
+			}
 
-            // avoid empty facets
-            if ($value == '') {
-                $data[$key] = null;
-            } else {
-                $data[$key] = $value;
-            }
-        }
+			// avoid empty facets
+			if ($value == '') {
+				$data[$key] = null;
+			} else {
+				$data[$key] = $value;
+			}
+		}
 
-        return $data;
-    }
+		return $data;
+	}
 
-    /**
-     * Index a SQL query result.
-     *
-     * @param string $type Object type for the index
-     * @param string $sql SQL query
-     * @param function|array $callback
-     */
-    protected function sql($type, $sql, $mapping = false, $callback = false) {
+	/**
+	 * Index a SQL query result.
+	 *
+	 * @param string $type Object type for the index
+	 * @param string $sql SQL query
+	 * @param function|array $callback
+	 */
+	protected function sql($type, $sql, $mapping = false, $callback = false) {
 
-        $statement = db_query($sql);
+		$statement = db_query($sql);
 
-        // get type object from index
-        $type = $this->index->getType($type);
-        if ($mapping) {
-            $type->setMapping($mapping);
-        }
+		// get type object from index
+		$type = $this->index->getType($type);
+		if ($mapping) {
+			$type->setMapping($mapping);
+		}
 
-        // fetch as associative array
-        $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+		// fetch as associative array
+		$result = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        $i = 0;
-        $total = count($result);
-        foreach ($result as $data) {
+		$i = 0;
+		$total = count($result);
+		foreach ($result as $data) {
 
-            $data = self::convert($data);
+			$data = self::convert($data);
 
-            // array or function callback
-            if (is_array($callback)) {
+			// array or function callback
+			if (is_array($callback)) {
 
-                foreach ($callback as $key => $sql) {
+				foreach ($callback as $key => $sql) {
 
-                    $data[$key] = array();
+					$data[$key] = array();
 
-                    // fetch a single column for additional data
-                    $result = db_query($sql, array('id' => $data['id']));
-                    $result->setFetchMode(\PDO::FETCH_ASSOC);
-                    foreach ($result as $object) {
+					// fetch a single column for additional data
+					$result = db_query($sql, array('id' => $data['id']));
+					$result->setFetchMode(\PDO::FETCH_ASSOC);
+					foreach ($result as $object) {
 
-                        $object = self::convert($object);
+						$object = self::convert($object);
 
-                        $data[$key][] = $object[$key];
-                    }
-                }
+						$data[$key][] = $object[$key];
+					}
+				}
 
-            } else if ($callback) {
-                $data = $callback($data);
-            }
+			} else if ($callback) {
+				$data = $callback($data);
+			}
 
-            $this->index($type, $data['id'], $data, isset($data['parent']) ? $data['parent'] : false);
+			$this->index($type, $data['id'], $data, isset($data['parent']) ? $data['parent'] : false);
 
-            echo "  Indexing {$type->getName()}... " . ceil(++$i / $total * 100) . "%\r";
-        }
+			echo "  Indexing {$type->getName()}... " . ceil(++$i / $total * 100) . "%\r";
+		}
 
-        echo "\n";
-    }
+		echo "\n";
+	}
 
-    /**
-     * Index a associative array.
-     *
-     * @param \Elastica_Type $type
-     * @param int $id ID of document
-     * @param array $data Array with data of document
-     */
-    protected function index(\Elastica_Type $type, $id, $data, $parent = false) {
+	/**
+	 * Index a associative array.
+	 *
+	 * @param \Elastica_Type $type
+	 * @param int $id ID of document
+	 * @param array $data Array with data of document
+	 */
+	protected function index(\Elastica_Type $type, $id, $data, $parent = false) {
 
-        // create document
-        $document = new \Elastica_Document($id, $data);
-        if ($parent) {
-            $document->setParent($parent);
-        }
+		// create document
+		$document = new \Elastica_Document($id, $data);
+		if ($parent) {
+			$document->setParent($parent);
+		}
 
-        // save to index
-        $type->addDocument($document);
-    }
+		// save to index
+		$type->addDocument($document);
+	}
 }

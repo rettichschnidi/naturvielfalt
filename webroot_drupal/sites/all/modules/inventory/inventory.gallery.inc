@@ -10,30 +10,30 @@
  * @return array
  */
 function inventory_gallery_types() {
-  return array(
-    'inventory_entry' => array(
-      'edit_gallery' => 'inventory_gallery_access_callback',
-      'image_caption' => 'inventory_gallery_image_caption',
-      'manage_title' => 'inventory_gallery_manage_title',
-      'manage_description' => 'inventory_gallery_manage_description',
-      'subtypes' => array(
-        'presentation' => t('Presentational objects')
-      ),
-      'condition' => 'inventory_gallery_condition',
-      'location_provider' => 'inventory_gallery_location_provider'
-    ),
-    'head_inventory' => array(
-      'edit_gallery' => 'gallery_owner_access_callback',
-      'image_caption' => 'inventory_head_gallery_image_caption',
-      'manage_title' => 'inventory_head_gallery_manage_title',
-      'manage_description' => 'inventory_head_gallery_manage_description',
-      'subtypes' => array(
-        'presentation' => t('Presentational objects')
-      ),
-      'location_provider' => 'inventory_head_gallery_location_provider',
-      'item_provider' => 'inventory_head_gallery_item_provider'
-    )
-  );
+	return array(
+			'inventory_entry' => array(
+					'edit_gallery' => 'inventory_gallery_access_callback',
+					'image_caption' => 'inventory_gallery_image_caption',
+					'manage_title' => 'inventory_gallery_manage_title',
+					'manage_description' => 'inventory_gallery_manage_description',
+					'subtypes' => array(
+							'presentation' => t('Presentational objects')
+					),
+					'condition' => 'inventory_gallery_condition',
+					'location_provider' => 'inventory_gallery_location_provider'
+			),
+			'head_inventory' => array(
+					'edit_gallery' => 'gallery_owner_access_callback',
+					'image_caption' => 'inventory_head_gallery_image_caption',
+					'manage_title' => 'inventory_head_gallery_manage_title',
+					'manage_description' => 'inventory_head_gallery_manage_description',
+					'subtypes' => array(
+							'presentation' => t('Presentational objects')
+					),
+					'location_provider' => 'inventory_head_gallery_location_provider',
+					'item_provider' => 'inventory_head_gallery_item_provider'
+			)
+	);
 }
 
 /**
@@ -45,10 +45,10 @@ function inventory_gallery_types() {
  *  based on the permissions of the current user
  */
 function inventory_gallery_condition() {
-  $protected = inventory_redlisted_entries();
-  if(!$protected)
-    return false;
-  return '(gi.item_type != \'inventory_entry\' OR NOT gi.item_id IN ('.implode(', ', $protected).'))';
+	$protected = inventory_redlisted_entries();
+	if (!$protected)
+		return false;
+	return '(gi.item_type != \'inventory_entry\' OR NOT gi.item_id IN (' . implode(', ', $protected) . '))';
 }
 
 /**
@@ -63,12 +63,12 @@ function inventory_gallery_condition() {
  *   The image to be accessed.
  * @return boolean
  */
-function inventory_gallery_access_callback($type, $id, $image=false) {
-  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
-  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
-  $query->fields('i', array('head_inventory_id'));
-  $result = $query->execute()->fetch();
-  return inventory_edit_access($result->head_inventory_id);
+function inventory_gallery_access_callback($type, $id, $image = false) {
+	$query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
+	$query->join('inventory', 'i', 'i.id = ie.inventory_id');
+	$query->fields('i', array('head_inventory_id'));
+	$result = $query->execute()->fetch();
+	return inventory_edit_access($result->head_inventory_id);
 }
 
 /**
@@ -80,17 +80,18 @@ function inventory_gallery_access_callback($type, $id, $image=false) {
  * @return string
  */
 function inventory_gallery_image_caption($id) {
-  $query = db_select('inventory_entry', 'ie')
-    ->condition('ie.id', $id)
-    ->fields('ie', array('organism_id'));
-  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
-  $query->join('head_inventory', 'hi', 'hi.id = i.head_inventory_id');
-  $query->fields('hi', array('area_id'));
-  $result = $query->execute()->fetch();
-  return t('!organism observed in !area', array(
-    '!organism' => organism_gallery_image_caption($result->organism_id),
-    '!area' => '<br>'.l(area_gallery_caption($result->area_id), 'area/'.$result->area_id, array('html' => true))
-  ));
+	$query = db_select('inventory_entry', 'ie')->condition('ie.id', $id)->fields('ie', array('organism_id'));
+	$query->join('inventory', 'i', 'i.id = ie.inventory_id');
+	$query->join('head_inventory', 'hi', 'hi.id = i.head_inventory_id');
+	$query->fields('hi', array('area_id'));
+	$result = $query->execute()->fetch();
+	return t('!organism observed in !area',
+			array('!organism' => organism_gallery_image_caption($result->organism_id),
+					'!area' => '<br>'
+							. l(area_gallery_caption($result->area_id), 'area/' . $result->area_id, array(
+									'html' => true
+							))
+			));
 }
 
 /**
@@ -101,17 +102,19 @@ function inventory_gallery_image_caption($id) {
  *   The ID of the inventory entry
  * @return string
  */
-function inventory_gallery_manage_title($id,$mediatype) {
-  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
-  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
-  $query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
-  $query->fields('ie', array('organism_id'));
-  $query->fields('h', array('id', 'area_id'));
-  $result = $query->execute()->fetch();
-  return t(''.$mediatype.' of the organism !title<br>observed in the inventory !context', array(
-    '!title' => '<em>'.organism_gallery_image_caption($result->organism_id).'</em>',
-    '!context' => '<em>'.inventory_head_gallery_caption($result->id).'</em>'
-  ));
+function inventory_gallery_manage_title($id, $mediatype) {
+	$query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
+	$query->join('inventory', 'i', 'i.id = ie.inventory_id');
+	$query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
+	$query->fields('ie', array('organism_id'));
+	$query->fields('h', array('id',
+					'area_id'
+			));
+	$result = $query->execute()->fetch();
+	return t('' . $mediatype . ' of the organism !title<br>observed in the inventory !context',
+			array('!title' => '<em>' . organism_gallery_image_caption($result->organism_id) . '</em>',
+					'!context' => '<em>' . inventory_head_gallery_caption($result->id) . '</em>'
+			));
 }
 
 /**
@@ -122,8 +125,8 @@ function inventory_gallery_manage_title($id,$mediatype) {
  *   The ID of the inventory entry
  * @return string
  */
-function inventory_gallery_manage_description($id,$mediatype) {
-  return t('Add and edit '.$mediatype.' of the specified organism taken in the area of this inventory.');
+function inventory_gallery_manage_description($id, $mediatype) {
+	return t('Add and edit ' . $mediatype . ' of the specified organism taken in the area of this inventory.');
 }
 
 /**
@@ -135,12 +138,12 @@ function inventory_gallery_manage_description($id,$mediatype) {
  * @return string
  */
 function inventory_gallery_location_provider($id) {
-  $query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
-  $query->join('inventory', 'i', 'i.id = ie.inventory_id');
-  $query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
-  $query->fields('h', array('area_id'));
-  $result = $query->execute()->fetch();
-  return area_gallery_location_provider($result->area_id);
+	$query = db_select('inventory_entry', 'ie')->condition('ie.id', $id);
+	$query->join('inventory', 'i', 'i.id = ie.inventory_id');
+	$query->join('head_inventory', 'h', 'h.id = i.head_inventory_id');
+	$query->fields('h', array('area_id'));
+	$result = $query->execute()->fetch();
+	return area_gallery_location_provider($result->area_id);
 }
 
 /**
@@ -152,23 +155,23 @@ function inventory_gallery_location_provider($id) {
  * @return array
  */
 function inventory_head_gallery_item_provider($id) {
-  $items = array();
-  $items['head_inventory:'.$id] = t('Not related to an organism');
-  $data = inventory_data($id, 'flora.name_de, fauna.name_de ASC', false, false, false, false);
-  $seen = array();
-  foreach($data as $group) {
-    $name = $group['invDesc']['name'];
-    if(!array_key_exists($name, $items))
-      $items[$name] = array();
-    foreach($group as $k => $entry) {
-      if(is_string($k) || in_array($entry['orgId'], $seen))
-        continue;
-      array_push($seen, $entry['orgId']);
-      $items[$name]['inventory_entry:'.$entry['id']] = $entry['label'].' ('.$entry['label_latin'].')';
-    }
-  }
-  $items = array_filter($items);
-  return $items;
+	$items = array();
+	$items['head_inventory:' . $id] = t('Not related to an organism');
+	$data = inventory_data($id, 'flora.name_de, fauna.name_de ASC', false, false, false, false);
+	$seen = array();
+	foreach ($data as $group) {
+		$name = $group['invDesc']['name'];
+		if (!array_key_exists($name, $items))
+			$items[$name] = array();
+		foreach ($group as $k => $entry) {
+			if (is_string($k) || in_array($entry['orgId'], $seen))
+				continue;
+			array_push($seen, $entry['orgId']);
+			$items[$name]['inventory_entry:' . $entry['id']] = $entry['label'] . ' (' . $entry['label_latin'] . ')';
+		}
+	}
+	$items = array_filter($items);
+	return $items;
 }
 
 /**
@@ -180,12 +183,14 @@ function inventory_head_gallery_item_provider($id) {
  * @return string
  */
 function inventory_head_gallery_image_caption($id) {
-  $result = db_select('head_inventory', 'h')
-    ->condition('id', $id)
-    ->fields('h', array('id', 'name', 'area_id'))
-    ->execute()
-    ->fetch();
-  return l($result->name, 'inventory/'.$result->id).' ['.l(area_gallery_caption($result->area_id), 'area/'.$result->area_id, array('html' => true)).']';
+	$result = db_select('head_inventory', 'h')->condition('id', $id)->fields('h', array('id',
+					'name',
+					'area_id'
+			))->execute()->fetch();
+	return l($result->name, 'inventory/' . $result->id) . ' ['
+			. l(area_gallery_caption($result->area_id), 'area/' . $result->area_id, array(
+					'html' => true
+			)) . ']';
 }
 
 /**
@@ -196,8 +201,9 @@ function inventory_head_gallery_image_caption($id) {
  *   The ID of the head inventory
  * @return string
  */
-function inventory_head_gallery_manage_title($id,$mediatype) {
-  return t(''.$mediatype.' of the inventory !title', array('!title' => '<em>'.inventory_head_gallery_caption($id).'</em>'));
+function inventory_head_gallery_manage_title($id, $mediatype) {
+	return t('' . $mediatype . ' of the inventory !title',
+			array('!title' => '<em>' . inventory_head_gallery_caption($id) . '</em>'));
 }
 
 /**
@@ -208,12 +214,11 @@ function inventory_head_gallery_manage_title($id,$mediatype) {
  * @return string
  */
 function inventory_head_gallery_caption($id) {
-  $result = db_select('head_inventory', 'h')
-    ->condition('id', $id)
-    ->fields('h', array('id', 'name', 'area_id'))
-    ->execute()
-    ->fetch();
-  return $result->name.' ['.area_gallery_caption($result->area_id).']';
+	$result = db_select('head_inventory', 'h')->condition('id', $id)->fields('h', array('id',
+					'name',
+					'area_id'
+			))->execute()->fetch();
+	return $result->name . ' [' . area_gallery_caption($result->area_id) . ']';
 }
 
 /**
@@ -224,8 +229,9 @@ function inventory_head_gallery_caption($id) {
  *   The ID of the head inventory
  * @return string
  */
-function inventory_head_gallery_manage_description($id,$mediatype) {
-  return t('Add and edit '.$mediatype.' of this inventory\'s area and optionally link them to an observed organism.');
+function inventory_head_gallery_manage_description($id, $mediatype) {
+	return t('Add and edit ' . $mediatype
+			. ' of this inventory\'s area and optionally link them to an observed organism.');
 }
 
 /**
@@ -237,12 +243,9 @@ function inventory_head_gallery_manage_description($id,$mediatype) {
  * @return string
  */
 function inventory_head_gallery_location_provider($id) {
-  $result = db_select('head_inventory', 'h')
-    ->condition('h.id', $id)
-    ->fields('h', array('area_id'))
-    ->execute()
-    ->fetch();
-  return area_gallery_location_provider($result->area_id);
+	$result = db_select('head_inventory', 'h')->condition('h.id', $id)->fields('h', array('area_id'))->execute()
+			->fetch();
+	return area_gallery_location_provider($result->area_id);
 }
 
 /**
@@ -252,22 +255,22 @@ function inventory_head_gallery_location_provider($id) {
  * @return array
  */
 function inventory_gallery_type_edit_conversions() {
-  return array(
-    array(
-      array(
-        'source' => 'inventory_entry',
-        'source_key' => 'inventory_id',
-        'target' => 'inventory',
-        'target_key' => 'id',
-      ),
-      array(
-        'source' => 'inventory',
-        'source_key' => 'head_inventory_id',
-        'target' => 'head_inventory',
-        'target_key' => 'id',
-      )
-    )
-  );
+	return array(
+			array(
+					array(
+							'source' => 'inventory_entry',
+							'source_key' => 'inventory_id',
+							'target' => 'inventory',
+							'target_key' => 'id',
+					),
+					array(
+							'source' => 'inventory',
+							'source_key' => 'head_inventory_id',
+							'target' => 'head_inventory',
+							'target_key' => 'id',
+					)
+			)
+	);
 }
 
 /**
@@ -277,55 +280,55 @@ function inventory_gallery_type_edit_conversions() {
  * @return array
  */
 function inventory_gallery_type_conversions() {
-  return array(
-    array(
-      array(
-        'source' => 'inventory_entry',
-        'source_key' => 'organism_id',
-        'target' => 'organism',
-        'target_key' => 'id',
-        'subtype' => 'presentation'
-      )
-    ),
-    array(
-      array(
-        'source' => 'inventory_entry',
-        'source_key' => 'organism_id',
-        'target' => 'organism',
-        'target_key' => 'id',
-        'subtype' => 'presentation'
-      ),
-      array(
-        'source' => 'organism',
-        'source_key' => 'inventory_type_id',
-        'target' => 'inventory_type',
-        'target_key' => 'id'
-      )
-    ),
-    array(
-      array(
-        'source' => 'head_inventory',
-        'source_key' => 'area_id',
-        'target' => 'area',
-        'target_key' => 'id',
-        'subtype' => 'presentation'
-      )
-    ),
-    array(
-      array(
-        'source' => 'inventory_entry',
-        'source_key' => 'inventory_id',
-        'target' => 'inventory',
-        'target_key' => 'id',
-      ),
-      array(
-        'source' => 'inventory',
-        'source_key' => 'head_inventory_id',
-        'target' => 'head_inventory',
-        'target_key' => 'id',
-      )
-    )
-  );
+	return array(
+			array(
+					array(
+							'source' => 'inventory_entry',
+							'source_key' => 'organism_id',
+							'target' => 'organism',
+							'target_key' => 'id',
+							'subtype' => 'presentation'
+					)
+			),
+			array(
+					array(
+							'source' => 'inventory_entry',
+							'source_key' => 'organism_id',
+							'target' => 'organism',
+							'target_key' => 'id',
+							'subtype' => 'presentation'
+					),
+					array(
+							'source' => 'organism',
+							'source_key' => 'inventory_type_id',
+							'target' => 'inventory_type',
+							'target_key' => 'id'
+					)
+			),
+			array(
+					array(
+							'source' => 'head_inventory',
+							'source_key' => 'area_id',
+							'target' => 'area',
+							'target_key' => 'id',
+							'subtype' => 'presentation'
+					)
+			),
+			array(
+					array(
+							'source' => 'inventory_entry',
+							'source_key' => 'inventory_id',
+							'target' => 'inventory',
+							'target_key' => 'id',
+					),
+					array(
+							'source' => 'inventory',
+							'source_key' => 'head_inventory_id',
+							'target' => 'head_inventory',
+							'target_key' => 'id',
+					)
+			)
+	);
 }
 
 /**
@@ -335,34 +338,37 @@ function inventory_gallery_type_conversions() {
  * @return array
  */
 function inventory_gallery_category_conditions() {
-  return array(
-    'inventory_entry' => array(
-      'name' => t('Inventory entries'),
-      'type' => 'inventory_entry'
-    ),
-    'head_inventory' => array(
-      'name' => t('Inventories'),
-      'type' => 'head_inventory'
-    )
-  );
+	return array(
+			'inventory_entry' => array(
+					'name' => t('Inventory entries'),
+					'type' => 'inventory_entry'
+			),
+			'head_inventory' => array(
+					'name' => t('Inventories'),
+					'type' => 'head_inventory'
+			)
+	);
 }
 
 /**
  * Implements hook_image_default_styles().
  */
 function inventory_image_default_styles() {
-  $styles = array();
+	$styles = array();
 
-  $styles['inventory_mini'] = array(
-    'effects' => array(
-      array(
-        'name' => 'image_scale_and_crop',
-        'data' => array('width' => 40, 'height' => 40),
-        'weight' => 0,
-      ),
-    )
-  );
-  return $styles;
+	$styles['inventory_mini'] = array(
+			'effects' => array(
+					array(
+							'name' => 'image_scale_and_crop',
+							'data' => array(
+									'width' => 40,
+									'height' => 40
+							),
+							'weight' => 0,
+					),
+			)
+	);
+	return $styles;
 }
 
 ?>

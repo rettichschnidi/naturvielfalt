@@ -9,22 +9,25 @@
  * 
  * Example of how to use this theme:
  * ---------------------------------
- * 	$progressElement = array(t('Inventory'), t('Area'), t('Element'), t('Completion')); // List of elements
- *	$render_array['test'] = array(
- *	'#theme' => 'progress_done',
- *	'#elements' => $progressElement,
- *	'#active' => 1, 		// Indicate active Element
- *	);
+ * $progressElements = array(t('Inventory'), t('Area'), t('Element'), t('Completion')); // List of elements
+ * $render_array['test'] = array(
+ * '#theme' => 'progress_done',
+ * '#elements' => $progressElements,
+ * '#active' => 1, 		// Indicate active Element
+ * );
  *----------------------------------
  *
  * @return an array with theme template information
  */
 function progress_theme() {
 	return array(
-    	'progress_done' => array(
- 			'template' => 'progress_done',
-    		'variables' => array('elements' => NULL, 'active' => NULL)
-		)
+			'progress_done' => array(
+					'template' => 'progress_done',
+					'variables' => array(
+							'elements' => NULL,
+							'active' => NULL
+					)
+			)
 	);
 }
 ?>
