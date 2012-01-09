@@ -1,4 +1,10 @@
 
+/**
+ * Push the control buttons to the map 
+ * @param map
+ * @param changed
+ * @returns
+ */
 function GeometryControl(map, changed) {
 
     this.map = map;
@@ -11,6 +17,10 @@ function GeometryControl(map, changed) {
     
 }
 
+/**
+ * Reset the control buttons and set the focus on the first element
+ * @param first
+ */
 GeometryControl.prototype.reset = function (first) {
 
     // reset all icons
@@ -29,6 +39,10 @@ GeometryControl.prototype.reset = function (first) {
     this.changed();
 };
 
+/**
+ * Handels a click on a edit button and triggers start
+ * @param event
+ */
 GeometryControl.prototype.click = function (event) {
 
     this.reset();
@@ -44,18 +58,28 @@ GeometryControl.prototype.click = function (event) {
     this.element.trigger('start');
 };
 
+/**
+ * Finish the dragging of new geometry??
+ */
 GeometryControl.prototype.finish = function () {
 
     this.map.fitBounds(this.overlay.getBounds());
     if (this.map.getZoom() > 17) {
         this.map.setZoom(17);
     }
-
     this.reset(true);
-
     this.element.trigger('stop');
 };
 
+/**
+ * Adds a button to the control panel?
+ * @param title
+ * @param icon
+ * @param selected
+ * @param start
+ * @param stop
+ * @returns 
+ */
 GeometryControl.prototype.add = function (title, icon, selected, start, stop) {
     
     var element = jQuery('<img title="' + title + '" src="' + Drupal.settings.basePath + 'modules/area/images/map_controls/' + icon + '" />');
@@ -72,10 +96,18 @@ GeometryControl.prototype.add = function (title, icon, selected, start, stop) {
     return element;
 };
 
+/**
+ * Adds the hand icon to ???
+ * @param callback
+ */
 GeometryControl.prototype.addHand = function (callback) {
     this.hand = this.add('', 'hand.png', 'hand-selected.png', function () {}, callback);
 };
 
+/**
+ * Init the marker for drawing a point
+ * @param callback
+ */
 GeometryControl.prototype.addMarker = function (callback) {
     this.marker = this.add('Gebiet zeichnen', 'markerCtl.png', 'markerCtl-selected.png', function () {
         this.overlay = new Marker(this.map);
@@ -83,6 +115,10 @@ GeometryControl.prototype.addMarker = function (callback) {
     }, callback);
 };
 
+/**
+ * Init the marker for drawing a Line
+ * @param callback
+ */
 GeometryControl.prototype.addPath = function (callback) {
     this.path = this.add('Gebiet zeichnen', 'path.png', 'path-selected.png', function () {
         this.overlay = new Polyline(this.map);
@@ -90,6 +126,10 @@ GeometryControl.prototype.addPath = function (callback) {
     }, callback);
 };
 
+/**
+ * Init the marker for drawing a polygon
+ * @param callback
+ */
 GeometryControl.prototype.addPolygon = function (callback) {
     this.polygon = this.add('Gebiet zeichnen', 'polygon.png', 'polygon-selected.png', function () {
         this.overlay = new Polygon(this.map);
@@ -98,7 +138,9 @@ GeometryControl.prototype.addPolygon = function (callback) {
 };
 
 /**
- * GeometryOverlay
+ * Add the geometry overlays to the map 
+ * @param map
+ * @returns
  */
 function GeometryOverlays(map){
     this.map = map;
@@ -107,6 +149,10 @@ function GeometryOverlays(map){
     this.fitBoundsOnLoad = true;
 }
 
+/**
+ * Add the geometry figures from the json to overlay array
+ * @param json
+ */
 GeometryOverlays.prototype.addOverlaysJson = function(json){
 
     var overlay;
@@ -114,38 +160,35 @@ GeometryOverlays.prototype.addOverlaysJson = function(json){
     for (var i in json) {
 
         if (json[i].type == 'polygon') {
-
             overlay = new Polygon(this.map, json[i]);
             this.overlays[json[i].id] = overlay;
-
         } else if (json[i].type == 'polyline') {
-
             overlay = new Polyline(this.map, json[i]);
             this.overlays[json[i].id] = overlay;
-
         } else if (json[i].type == 'marker') {
-
             overlay = new Marker(this.map, json[i]);
             this.overlays[json[i].id] = overlay;
-
         } else {
             console.error('Unknown type of overlay!');
+            overlay = false;
         }
 
-        var latLngs = [];
-        for (var k in json[i].area_points) {
-            latLngs[k] = new google.maps.LatLng(json[i].area_points[k].lat, json[i].area_points[k].lng);
-        }
-        
-        if (json[i].type == 'polygon' || json[i].type == 'polyline') {
-            overlay.overlay.setPath(latLngs);
-        } else if (json[i].type == 'marker') {
-            overlay.overlay.setCenter(latLngs[0]);
-        }
-
-        var points = overlay.getLatLngs().getArray();
-        for (var n = 0; n < points.length; n++) {
-            this.bounds.extend(points[n]);
+        if(overlay){
+	        var latLngs = [];
+	        for (var k in json[i].area_points) {
+	            latLngs[k] = new google.maps.LatLng(json[i].area_points[k].lat, json[i].area_points[k].lng);
+	        }
+	        
+	        if (json[i].type == 'polygon' || json[i].type == 'polyline') {
+	            overlay.overlay.setPath(latLngs);
+	        } else if (json[i].type == 'marker') {
+	            overlay.overlay.setCenter(latLngs[0]);
+	        }
+	
+	        var points = overlay.getLatLngs().getArray();
+	        for (var n = 0; n < points.length; n++) {
+	            this.bounds.extend(points[n]);
+	        }
         }
     }
     if (this.fitBoundsOnLoad)
