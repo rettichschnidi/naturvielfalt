@@ -205,11 +205,19 @@ GeometryOverlays.prototype.clear = function() {
     this.overlays = [];
 };
 
+/**
+ * Mark a overlay with the id as selected
+ * @param id
+ */
 GeometryOverlays.prototype.selectOverlay = function(id) {
     console.info("select: " + id);
     this.overlays[id].setStyle('selected');
 };
 
+/**
+ * Mark a overlay with the id as hightlighted
+ * @param id
+ */
 GeometryOverlays.prototype.highlightOverlay = function(id) {
     console.info("highlight: " + id);
     this.overlays[id].setStyle('highlighted');
@@ -219,15 +227,16 @@ GeometryOverlays.prototype.highlightOverlay = function(id) {
 /**
  * Abstract Geometry, implementation should provide this.overlay, this.type, addLatLng(), ?removeMarkers(), contains(latLng) and getCenter()
  */
-function Geometry() {
-     
-}
+function Geometry() {}
 
+/**
+ * Start draw a line and show the distance on the map???
+ * @param control
+ */
 Geometry.prototype.start = function (control) {
 
     this.control = control;
     this.map.setOptions({disableDoubleClickZoom: true, draggableCursor: 'crosshair'});
-
     this.listener = google.maps.event.addListener(this.map, 'click', jQuery.proxy(this.addLatLng, this));
     
     if (typeof(areaselect) != 'undefined') {
@@ -237,18 +246,15 @@ Geometry.prototype.start = function (control) {
             var overlay = areaselect.mapOverlays.overlays[i];
             overlay.overlay.setOptions({clickable: false});
         }
-
         //deselect area if one was previously selected
         if (areaselect.selected_area){
             areaselect.mapOverlays.overlays[areaselect.selected_area].setStyle('selected-disable');
         }
-
         areaselect.areaInfo.close();
     }
 
     this.hover = jQuery('<div style="z-index: 9999; width: 200px; position: absolute; display: none; border: 1px solid #666; background-color: #fff; padding: 3px 6px 2px;"><span class="desc"></span><span class="distance" style="color: #666;"></span></div>');
     jQuery('body').append(this.hover);
-    
     var that = this;
 
     jQuery(document).mousemove(function (e) {
@@ -272,6 +278,9 @@ Geometry.prototype.start = function (control) {
     });
 };
 
+/**
+ * Stop draw line on the map???
+ */
 Geometry.prototype.stop = function () {
 
     google.maps.event.removeListener(this.listener);
@@ -282,11 +291,9 @@ Geometry.prototype.stop = function () {
 
     this.hover.hide();
     this.measure.setMap(null);
-
     this.map.setOptions({disableDoubleClickZoom: false, draggableCursor: null});
 
     if (typeof(areaselect) != 'undefined') {
-
         //after editing stops we have to enable our fancy listeners again
         for (var i in areaselect.mapOverlays.overlays) {
             var overlay = areaselect.mapOverlays.overlays[i];
@@ -312,7 +319,6 @@ Geometry.prototype.getAltitude = function (callback) {
     var elevator = new google.maps.ElevationService();
     elevator.getElevationForLocations(request, function(results, status) {
         if (status == google.maps.ElevationStatus.OK) {
-        
             // Retrieve the first result
             if (results[0]) {
                 var altitude = parseInt(results[0].elevation + 0.5);
@@ -322,6 +328,10 @@ Geometry.prototype.getAltitude = function (callback) {
     });
 };
 
+/**
+ * Get the adress from the center of the map
+ * @param callback
+ */
 Geometry.prototype.getAddress = function (callback) {
 
     var geocoder = new google.maps.Geocoder();
@@ -372,10 +382,13 @@ Geometry.prototype.getLatLngs = function(){
     return this.overlay.getPath();
 };
 
+/**
+ * Get bounds from overlay??
+ * @returns {google.maps.LatLngBounds}
+ */
 Geometry.prototype.getBounds = function() {
 
     var path = this.overlay.getPath();
-
     var bounds = new google.maps.LatLngBounds();
     path.forEach(function (point) {
         bounds.extend(point);
@@ -384,16 +397,18 @@ Geometry.prototype.getBounds = function() {
     return bounds;
 };
 
+/**
+ * Returns the center of a geometry
+ * @returns
+ */
 Geometry.prototype.getCenter = function() {
-
     var path = this.overlay.getPath();
     var bounds = this.getBounds();
-
     return bounds.getCenter();
 };
 
 /**
- * Create a json from polygon
+ * Create json request data from polygon
  * @return json
  */
 Geometry.prototype.toJson = function(){
@@ -401,7 +416,7 @@ Geometry.prototype.toJson = function(){
         type: this.type,
         attr: {},
         coords: {}
-    }
+    };
     var latLngs = this.overlay.getPath();
     for (var i = 0; i < latLngs.getLength(); i++){
         json.coords[i] = {
@@ -412,6 +427,9 @@ Geometry.prototype.toJson = function(){
     return json;
 };
 
+/**
+ * Clear the overlay of the map???
+ */
 Geometry.prototype.clear = function () {
     this.stop();
     this.overlay.setMap(null);
@@ -444,6 +462,7 @@ Geometry.prototype.setStyle = function(style) {
             break;
         default:
             this.style = this.type;
+        	break;
     }
     this.overlay.setOptions(overlayStyle[this.style]);
 };
@@ -454,20 +473,26 @@ Geometry.prototype.setStyle = function(style) {
  */
 Polyline.prototype = new Geometry(); 
 Polyline.prototype.constructor = Polyline;
+
+/**
+ * Initialize a new polyline
+ * @param map
+ * @param opts
+ * @returns {Polyline}
+ */
 function Polyline(map, opts) {
-
     this.type = 'polyline';
-
     this.id = opts && opts.id ? opts.id: null;
-
     this.map = map;
-
     this.overlay = new google.maps.Polyline(overlayStyle.polyline);
     this.overlay.setMap(this.map);
-
     this.markers = [];
 }
 
+/**
+ * Add a new marking point to the polyline
+ * @param event
+ */
 Polyline.prototype.addLatLng = function (event) {
 
     this.hover.show();
@@ -524,15 +549,11 @@ Polyline.prototype.addLatLng = function (event) {
     google.maps.event.addListener(marker, "click", function () {
         for (var m = 0, l = that.markers.length; m < l; m++) {
             if (that.markers[m] == marker) {
-                
                 if (l - 1 == m && m > 0) {
-
                     // clicked on last marker
                     that.stop();
                     that.control.finish();
-
                 } else {
-
                     // clicked on any marker
                     marker.setMap(null);
                     that.markers.splice(m, 1);
@@ -546,6 +567,9 @@ Polyline.prototype.addLatLng = function (event) {
     this.markers.push(marker);
 };
 
+/**
+ * Remove the markers from the polyline
+ */
 Polyline.prototype.removeMarkers = function() {
     for (var m = 0, l = this.markers.length; m < l; m++) {
         this.markers[m].setMap(null);
@@ -556,14 +580,11 @@ Polyline.prototype.removeMarkers = function() {
  * Use center of two middle points as polyline center.
  */
 Polyline.prototype.getCenter = function() {
-
     var path = this.overlay.getPath();
     var middle = Math.floor(path.getLength() / 2);
-
     var bounds = new google.maps.LatLngBounds();
     bounds.extend(path.getAt(middle));
     bounds.extend(path.getAt(middle - 1));
-
     return bounds.getCenter();
 };
 
@@ -575,7 +596,7 @@ Polyline.prototype.getCenter = function() {
 Polyline.prototype.closestPoint = function(latLng) {
 	var minDist = 100;
 	var currentMinDist = Number.MAX_VALUE;
-	var currentClosestPoint;
+	var currentClosestPoint = latLng;
 	var p3 = latLng;
 	var path = this.getLatLngs();
 	
@@ -615,7 +636,7 @@ Polyline.prototype.closestPoint = function(latLng) {
 		}
 	}
 	return currentClosestPoint;
-}
+};
 
 
 /**
