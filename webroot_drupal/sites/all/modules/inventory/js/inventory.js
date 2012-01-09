@@ -982,13 +982,13 @@ var inventory = {
     inventory.map_pan = document.createElement('div');
     inventory.map_pan.className = 'map-control';
     var pan = document.createElement('img');
-    pan.src = Drupal.settings.basePath+'modules/area/images/map_controls/hand-selected.png';
+    pan.src = Drupal.settings.basePath+'sites/all/modules/area/images/map_controls/hand-selected.png';
     inventory.map_pan.appendChild(pan);
     
     inventory.map_place = document.createElement('div');
     inventory.map_place.className = 'map-control';
     var place = document.createElement('img');
-    place.src = Drupal.settings.basePath+'modules/area/images/map_controls/markerCtl.png';
+    place.src = Drupal.settings.basePath+'sites/all/modules/area/images/map_controls/markerCtl.png';
     inventory.map_place.appendChild(place);
     
     inventory.map.map.controls[google.maps.ControlPosition.TOP_LEFT].push(inventory.map_pan);

@@ -1,16 +1,25 @@
+/**
+ * 
+ * 
+ */
+
 var area = {};
-		
-		
+
+/**
+ * ??
+ * @return
+ */
 area.init = function() {
-		var parcels = jQuery("#parcels");
-		if(!parcels.size())
-			return;
-		parcels.find('tr:last td:first input').blur(area.addField);
-}
-	
+	var parcels = jQuery("#parcels");
+	if(!parcels.size()) return;
+	parcels.find('tr:last td:first input').blur(area.addField);
+};
+
+/**
+ * 
+ */
 area.addField = function() {
-	if(!jQuery(this).val())
-		return;
+	if(!jQuery(this).val()) return;
 	var row = jQuery(this).parents('tr');
 	var clone = jQuery('<tr>'+row.html()+'</tr>');
 	clone.addClass(row.hasClass('odd') ? 'even' : 'odd');
@@ -22,6 +31,6 @@ area.addField = function() {
 		jQuery(this).attr('name', name.replace('['+i+']', '['+(i+1)+']'));
 	});
 	jQuery(this).unbind('blur');
-}
+};
 
 jQuery(document).ready(area.init);

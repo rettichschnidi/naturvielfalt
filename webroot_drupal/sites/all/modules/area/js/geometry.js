@@ -26,13 +26,13 @@ GeometryControl.prototype.reset = function (first) {
     // reset all icons
     jQuery('img', this.controls).each(function (i, img) {
         var $img = jQuery(img);
-        $img.attr('src', Drupal.settings.basePath + 'modules/area/images/map_controls/' + $img.data('icon'));
+        $img.attr('src', Drupal.settings.basePath + 'sites/all/modules/area/images/map_controls/' + $img.data('icon'));
     });
     
     // set focus to first element
     if (first) {
         var $img = jQuery('img:first-child', this.controls);
-        $img.attr('src', Drupal.settings.basePath + 'modules/area/images/map_controls/' + $img.data('selected'));
+        $img.attr('src', Drupal.settings.basePath + 'sites/all/modules/area/images/map_controls/' + $img.data('selected'));
     }
 
     // inform others
@@ -53,7 +53,7 @@ GeometryControl.prototype.click = function (event) {
 
     // mark current icon as selected
     this.element = jQuery(event.target);
-    this.element.attr('src', Drupal.settings.basePath + 'modules/area/images/map_controls/' + this.element.data('selected'));
+    this.element.attr('src', Drupal.settings.basePath + 'sites/all/modules/area/images/map_controls/' + this.element.data('selected'));
     
     this.element.trigger('start');
 };
@@ -82,7 +82,7 @@ GeometryControl.prototype.finish = function () {
  */
 GeometryControl.prototype.add = function (title, icon, selected, start, stop) {
     
-    var element = jQuery('<img title="' + title + '" src="' + Drupal.settings.basePath + 'modules/area/images/map_controls/' + icon + '" />');
+    var element = jQuery('<img title="' + title + '" src="' + Drupal.settings.basePath + 'sites/all/modules/area/images/map_controls/' + icon + '" />');
 
     element.data('icon', icon);
     element.data('selected', selected);

@@ -1,5 +1,10 @@
-// This JavaScript is responsible for adding and removing the habitats at creation of a new area.
+/**
+ * This JavaScript is responsible for adding and removing the habitats at creation of a new area.
+ */
 
+/**
+ * bind the autocomplete select to function
+ */
 jQuery(document).ready(function() {
 	// bind event "autocomplete_selection"
 	jQuery("input#edit-habitattext").bind("autocomplete_select", habitatAutocompleteSelect);
@@ -7,7 +12,10 @@ jQuery(document).ready(function() {
 
 var habitantIds = new Array();
 
-// This will be called if user selects an autocompletion value
+/**
+ * This will be called if user selects an autocompletion value
+ * @param event
+ */
 function habitatAutocompleteSelect(event) {
 	// get the new selected value
 	var newHabitat = jQuery(this).val();
@@ -24,12 +32,13 @@ function habitatAutocompleteSelect(event) {
 		var remove = "<td><img src='" + removeImg + "' onClick='removeHabitat(this);' style='cursor:pointer'/>";
 		jQuery("#habitatSelected table").append("<tr>" + id + label + name + remove + "</tr>");
 	}
-
 	// reset the autocompletion textfield
 	jQuery(this).val("");
 }
-
-// This will be called if a user clicks on the remove icon
+/**
+ * This will be called if a user clicks on the remove icon
+ * @param image
+ */
 function removeHabitat(image) {
 	var row = jQuery(image).parent().parent();
 	var id = row.find('input').attr('value');

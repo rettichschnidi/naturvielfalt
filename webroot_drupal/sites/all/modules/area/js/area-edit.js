@@ -36,7 +36,7 @@ function enable_map_editing() {
 				}
 			};
 			var toolTip = Drupal.t('undo');
-			undo.attr('src',  Drupal.settings.basePath + 'modules/area/images/map_controls/' + undo.data('inactive'))
+			undo.attr('src',  Drupal.settings.basePath + 'sites/all/modules/area/images/map_controls/' + undo.data('inactive'))
 			.attr('alt', toolTip)
 			.attr('title', toolTip)
 			.click(handler);

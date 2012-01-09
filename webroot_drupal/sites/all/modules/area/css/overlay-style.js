@@ -61,7 +61,7 @@ var overlayStyle = {
     
     'marker-highlighted': {
         flat:           false,
-        icon:           new google.maps.MarkerImage(Drupal.settings.basePath+'modules/area/images/map_controls/marker_green.png'),
+        icon:           new google.maps.MarkerImage(Drupal.settings.basePath+'sites/all/modules/area/images/map_controls/marker_green.png'),
         raiseOnTrag:    false,
         //shadow:         '',
     }
