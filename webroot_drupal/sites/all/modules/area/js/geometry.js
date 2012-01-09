@@ -592,6 +592,8 @@ Polyline.prototype.getCenter = function() {
  * Calculates the closest Point from the pathline based on the given location.
  * If the point is 100m from the path, the same position is returned.
  * Otherwise it calculates the closest point from the given location (100m from path)
+ * @param latLng
+ * @return 
  */
 Polyline.prototype.closestPoint = function(latLng) {
 	var minDist = 100;
@@ -644,16 +646,19 @@ Polyline.prototype.closestPoint = function(latLng) {
  */
 Polygon.prototype = new Geometry(); 
 Polygon.prototype.constructor = Polygon;
+
+/**
+ * Initalize a polygon
+ * @param map
+ * @param opts
+ * @returns {Polygon}
+ */
 function Polygon(map, opts) {
-
     this.type = 'polygon';
-
     this.id = opts && opts.id ? opts.id: null;
     this.map = map;
-
     this.removeListener = function(){};
     this.overlay = new google.maps.Polygon(overlayStyle.polygon);
-
     this.markers = []; // markers at the vertexes to edit/delete the vertex of a polygon
     this.vmarkers = []; // markers on line between vertexes
     this.tmpPolyLine = new google.maps.Polyline(); // if marker is draged a polyline is shown
@@ -664,7 +669,6 @@ function Polygon(map, opts) {
         strokeWeight:   1,
         strokeOpacity:  0.75
     });
-
     this.polyline.setMap(this.map);
     this.overlay.setMap(this.map);
 };
@@ -675,23 +679,22 @@ function Polygon(map, opts) {
  * @var marker_on if true, vertex is editable
  */
 Polygon.prototype.addLatLng = function(event) {
-
     this.hover.show();
+    
     if (this.markers.length > 0) {
         jQuery('.desc', this.hover).text('Klicke auf den Anfangspunkt, um das Gebiet abzuschliessen.');
     } else {
         jQuery('.desc', this.hover).text('Klicke, um das Gebiet zu zeichnen.');
     }
-    this.last = event.latLng;
-
-    var latLng = event.latLng;
     
+    this.last = event.latLng;
+    var latLng = event.latLng;
     this.polyline.setMap(this.map);
     this.polyline.getPath().push(latLng);
     this.overlay.getPath().push(latLng);
-
     this.overlay.setMap(null); // hide polygon while editing
     this.createControlMarker(latLng);
+    
     if (this.markers.length != 1) {
         this.createVMarker(latLng);
     }
@@ -702,9 +705,7 @@ Polygon.prototype.addLatLng = function(event) {
  * @var latLngs array<google.maps.LatLng>
  */
 Polygon.prototype.createControlMarkers = function(latLngs){
-
     this.markers.length = 0;
-
     for (latLng in latLngs) {
         this.createControlMarker(latLng);
     }
@@ -716,6 +717,7 @@ Polygon.prototype.createControlMarkers = function(latLngs){
  */
 Polygon.prototype.createControlMarker = function(latLng) {
 
+	// never readed, possible remove it?
     var hasmoved = false;
 
     var imageNormal = new google.maps.MarkerImage(
@@ -758,17 +760,13 @@ Polygon.prototype.createControlMarker = function(latLng) {
     });
 
     google.maps.event.addListener(marker, "click", function() {
-
         if (that.markers[0] == marker) {
-            
             // polygon closed
             that.polyline.setMap(null); // hide line
             that.overlay.setMap(that.map); // show polygon
-
             // finish
             that.stop();
             that.control.finish();
-
         } else {
             that.addLatLng(marker.getPosition());
             console.info("planning to query due to click");
@@ -776,7 +774,6 @@ Polygon.prototype.createControlMarker = function(latLng) {
     });
 
     this.markers.push(marker);
-
     return marker;
 };
 
@@ -797,7 +794,7 @@ Polygon.prototype.showControlMarkers = function(show){
 Polygon.prototype.showControlMarker = function(marker, show){
 
     if (typeof show == undefined) {
-        var show = true;
+        show = true;
     }
 
     if (show) {
@@ -959,6 +956,9 @@ Polygon.prototype.removeVMarkers = function(index) {
     index = null;
 };
 
+/**
+ * Clear the polygon
+ */
 Polygon.prototype.clear = function () {
     this.stop();
     this.polyline.setMap(null);
@@ -1018,7 +1018,7 @@ Polygon.prototype.closestPoint = function(latLng){
 		// calculate the closest point to the boundaries of the polygon
 		return Polyline.prototype.closestPoint.call(this, latLng); 
 	}
-}
+};
 
 
 /**
@@ -1026,22 +1026,27 @@ Polygon.prototype.closestPoint = function(latLng){
  */
 Marker.prototype = new Geometry(); 
 Marker.prototype.constructor = Marker;
+
+/**
+ * Initialize a Marker
+ * @param map
+ * @param opts
+ * @returns {Marker}
+ */
 function Marker(map, opts) {
-
     this.type = 'marker';
-
     this.id = opts && opts.id ? opts.id: null;
-
     this.map = map;
-
     this.overlay = new google.maps.Circle(overlayStyle.marker);
     this.overlay.setMap(this.map);
 }
 
+/**
+ * Add the Latlng as center to the marker
+ * @param event
+ */
 Marker.prototype.addLatLng = function (event) {
-
     this.overlay.setCenter(event.latLng);
-
     // finish
     this.stop();
     this.control.finish();
@@ -1049,23 +1054,41 @@ Marker.prototype.addLatLng = function (event) {
 
 /**
  * Use center of two middle points as polyline center.
+ * @return 
  */
 Marker.prototype.getCenter = function() {
     return this.overlay.getCenter();
 };
 
+/**
+ * Return the bounds
+ * @return 
+ */
 Marker.prototype.getBounds = function() {
     return this.overlay.getBounds();
 };
 
+/**
+ * Return the area
+ * @return int
+ */
 Marker.prototype.getArea = function() {
     return 1;
 };
 
+/**
+ * Return the MVC Array of the LatLng
+ * @return
+ */
 Marker.prototype.getLatLngs = function() {
     return new google.maps.MVCArray([this.overlay.getCenter()]);
 };
 
+/**
+ * Return the closest point from LatLng
+ * @param latLng
+ * @returns
+ */
 Marker.prototype.closestPoint = function(latLng) {
 	var minDist = 100;
 	var center = this.getCenter();
@@ -1081,5 +1104,5 @@ Marker.prototype.closestPoint = function(latLng) {
 		var lng = center.lng() + (latLng.lng() - center.lng()) * multiplier;
 		return new google.maps.LatLng(lat, lng);
 	}
-}
+};
 
