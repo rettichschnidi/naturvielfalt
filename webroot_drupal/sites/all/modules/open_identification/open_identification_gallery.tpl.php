@@ -1,3 +1,8 @@
 <p>
-<?php echo $text; ?>
+<?php
+/**
+ * @file open_identification_gallery.tpl.php
+ */
+echo $text;
+?>
 </p>
