@@ -5,7 +5,9 @@ jQuery(document).ready(function() {
 	jQuery("td.delete div").bind("click", deleteMember);
 });
 
-// This gets called if a user clicks on the delete button
+/**
+ * This gets called if a user clicks on the delete button
+ */
 function deleteMember(event) {
 	var row = jQuery(this).parent().parent();
 	var id = jQuery(this).attr('id');

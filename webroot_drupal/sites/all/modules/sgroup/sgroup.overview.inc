@@ -1,6 +1,11 @@
 <?php
 
-//FIXME document this...
+/**
+ * Shows the users overview, includes a description of what he can do and his group
+ * 
+ * @see user/%user/sgroup
+ * @return 
+ */
 function sgroup_overview() {
 	$output['introduction'] = array(
 			'#markup' => t(
@@ -12,7 +17,11 @@ function sgroup_overview() {
 	return $output;
 }
 
-//FIXME document this...
+/**
+ * Shows the users group in a table
+ * 
+ * @return Table of groups the user is member of
+ */
 function _sgroup_create_group_table() {
 	global $user;
 

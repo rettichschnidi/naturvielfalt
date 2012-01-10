@@ -2,7 +2,12 @@
 /**
  * Implements hook_schema().
  */
-//FIXME document this...
+
+/**
+ * Create the tables needed to run this module.
+ * 
+ * @see More information about the schema API: http://drupal.org/node/146843
+ */
 function sgroup_schema() {
 	$schema['sgroup'] = array(
 			'description' => 'Holds swissmon groups.',
@@ -35,14 +40,14 @@ function sgroup_schema() {
 							'unsigned' => TRUE,
 							'not null' => TRUE,
 							'default' => 0,
-							'description' => 'foreign key to swissmon groups'
+							'description' => 'foreign key to swissmon groups',
 					),
 					'uid' => array(
 							'type' => 'int',
 							'unsigned' => TRUE,
 							'not null' => TRUE,
 							'default' => 0,
-							'description' => 'foreign key to users'
+							'description' => 'foreign key to {users}'
 					),
 					'admin' => array(
 							'type' => 'int',

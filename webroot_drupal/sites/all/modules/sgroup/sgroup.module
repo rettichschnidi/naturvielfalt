@@ -4,11 +4,12 @@
  *********************************/
 
 /**
- * Implements hook_menu()
- *
- * @return array
+ * Implements hook_menu().
+ * This hook enables modules to register paths in order to define how URL requests are handled. 
+ * 
+ * @see http://api.drupal.org/api/drupal/modules--system--system.api.php/function/hook_menu/7
+ * @return associative array Define menu items and page callbacks.
  */
-//FIXME document this...
 function sgroup_menu() {
 	$items['user/%user/sgroup'] = array(
 			'title' => 'Groups',
@@ -67,24 +68,30 @@ function sgroup_menu() {
 	return $items;
 }
 
+/**
+ * Enables the administrator to allow or deny a usergroup or user to use this module
+ * @see http://api.drupal.org/api/drupal/modules--system--system.api.php/function/hook_permission/7
+ */
 function sgroup_permission() {
 	return array(
 			'access sgroup' => array(
-					'title' => t('can view, create and manage swissmon groups')
+					'title' => t('Can view, create and manage swissmon groups')
 			)
 	);
 }
 
-//FIXME document this...
+/**
+ * Allows an administrator of a group to edit his group
+ */
 function sgroup_edit_access($sgroupId) {
 	$access = user_access('access sgroup');
 	// check if this user is administrator of the group
 	global $user;
-	$adminRecords = db_query('SELECT 
+	$adminRecords = db_query('SELECT
 				admin
-			FROM 
+			FROM
 				sgroup_users
-			WHERE 
+			WHERE
 				sgid=:sgid AND
 				uid=:uid', array(':sgid' => $sgroupId,
 					':uid' => $user->uid

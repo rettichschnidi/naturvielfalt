@@ -27,7 +27,7 @@ function sgroup_new_form() {
 			'#value' => t("Create group"),
 			'#submit' => array(
 					'sgroup_new_save'
-			),
+			)
 	);
 	return $form;
 }
@@ -56,7 +56,6 @@ function sgroup_new_save($form, &$form_state) {
 
 		// show success message
 		drupal_set_message(t('Group @name was created', array('@name' => $name)));
-
 	} catch (Exception $e) {
 		$tx->rollback();
 		drupal_set_message(
