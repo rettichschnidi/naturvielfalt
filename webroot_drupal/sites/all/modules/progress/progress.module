@@ -11,9 +11,9 @@
  * ---------------------------------
  * $progressElements = array(t('Inventory'), t('Area'), t('Element'), t('Completion')); // List of elements
  * $render_array['test'] = array(
- * '#theme' => 'progress_done',
- * '#elements' => $progressElements,
- * '#active' => 1, 		// Indicate active Element
+ *		'#theme' => 'progress_done',
+ *		'#elements' => $progressElements,
+ *		'#active' => 1 		// Indicate active Element
  * );
  *----------------------------------
  *
