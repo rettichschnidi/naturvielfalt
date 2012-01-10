@@ -1,13 +1,19 @@
-// @author Damian Conrad
+/**
+ * @author Damian Conrad
+ */
 
+/**
+ * 
+ */
 function inventoryRowSelect() {
+	
 	/**
 	 * This function is called when the user clicks on a row
+	 * @param 
 	 */
-
 	inventoryRowSelect.prototype.onTableRowClicked = function(e) {
 		if (!e)
-			var e = window.event;
+			e = window.event;
 		if (e.target)
 			targ = e.target;
 		else if (e.srcElement)
@@ -30,7 +36,7 @@ function inventoryRowSelect() {
 		if (idType[0] == 'protection')
 			window.location.href = Drupal.settings.basePath
 					+ 'protection_lists/' + idType[1];
-	}
+	};
 
 	// register events
 	jQuery("#flora").live('click', this.onTableRowClicked);
