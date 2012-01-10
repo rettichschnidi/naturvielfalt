@@ -521,6 +521,12 @@ function area_new_details_form_submit($form, $form_state) {
 	drupal_goto('area/' . $area_id);
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ */
 function area_new_details_form_validate($form, &$form_state) {
 	if ($form_state['input']['field_name'] == '') {
 		form_set_error('id', t('An area name is required'));

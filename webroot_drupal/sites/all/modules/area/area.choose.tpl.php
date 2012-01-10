@@ -1,18 +1,22 @@
-<div class="area-search-map"><?php
-							 ?>
+<div class="area-search-map">
   <div id="map_search-element">
-    <div><?php echo t('Search with Google Maps') ?></div>
+    <div>
+    <?php
+   		echo t('Search with Google Maps') 
+    ?>
+    </div>
     <input type="text" id="map_search" name="map_search" value="" size="60" maxlength="128"/>
     <button id="map_search_button">
-    <?php echo t('Search map'); ?>
+    <?php
+    	echo t('Search map');
+    ?>
     </button>
   </div>
-  
   <ul class="area-choices">
     <li>
       <div class="controlAreaChoose selected"></div>
       <?php
-echo t('Choose area:');
+		echo t('Choose area:');
 	  ?>
     </li>
   </ul>

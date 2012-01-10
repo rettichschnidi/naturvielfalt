@@ -1,9 +1,26 @@
 <?php
+/**
+ * 
+ * 
+ */
+
+
+
+/**
+ * return delete form
+ * @param unknown_type $area_id
+ */
 function area_delete($area_id) {
 	$render_array['area_delete'] = drupal_get_form(area_delete_form, $area_id);
 	return $render_array;
 }
 
+/**
+ * Return confirm form to delete a area
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $area_id
+ */
 function area_delete_form($form, &$form_state, $area_id) {
 	$form_state['area_id'] = $area_id;
 
@@ -17,12 +34,20 @@ function area_delete_form($form, &$form_state, $area_id) {
 					array('%name' => $name)), t('Delete'), t('Cancel'));
 }
 
+/**
+ * Return title of area
+ * @param unknown_type $area_id
+ */
 function area_title($area_id) {
 	$result = db_select('area', 'a')->fields('a')->condition('id', $area_id)->execute()->fetch();
 	$title = $result->field_name;
 	return $title;
 }
 
+/**
+ * Check if a area with the area_id no inventories are assigned
+ * @param unknown_type $area_id
+ */
 function area_check_delete($area_id) {
 
 	$result = db_query(
@@ -40,7 +65,6 @@ function area_check_delete($area_id) {
 }
 
 /**
- * 
  * Deletes area record from DB and assigned files. Only deletes if no inventories are assigned.
  * @param unknown_type $form
  * @param unknown_type $form_state

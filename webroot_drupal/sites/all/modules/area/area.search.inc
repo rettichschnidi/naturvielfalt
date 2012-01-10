@@ -1,5 +1,9 @@
 <?php
 /**
+ * 
+ */
+
+/**
  * Chose or create new area
  * @return render array
  */
@@ -17,6 +21,10 @@ function show_area_search() {
 	return $output;
 }
 
+/**
+ * 
+ * Enter description here ...
+ */
 function show_area_search_userspecified() {
 
 	$output['search'] = array(
@@ -145,6 +153,12 @@ function area_field_name_form($userspecified = false) {
 	return $form;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ */
 function area_search($form, &$form_state) {
 	$form['AreaText'] = array(
 			'#title' => t('Search through existing areas'),

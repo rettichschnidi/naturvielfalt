@@ -1,5 +1,13 @@
 <?php
+/**
+ * 
+ */
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $area_id
+ */
 function area_edit($area_id) {
 	//include code for gmap_static_image_path
 	module_load_include('inc', 'area', 'area.search');
@@ -128,6 +136,13 @@ function area_edit_files_form($form, &$form_state, $area_id) {
 	return $form;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @return string
+ */
 function area_update_file($form, &$form_state) {
 
 	$area_id = $form_state['storage']['area_id'];
@@ -169,6 +184,13 @@ function area_update_file($form, &$form_state) {
 	return $form_state['redirect'] = 'area/' . $area_id . '/edit';
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $area_id
+ */
 function area_edit_form($form, &$form_state, $area_id) {
 	$title = db_select('area', 'a')->condition('id', $area_id)->fields('a')->execute()->fetch();
 	drupal_set_title($title->field_name);
@@ -197,7 +219,6 @@ function area_edit_form($form, &$form_state, $area_id) {
  * @param array $form
  * @param *array $form_state
  */
-
 function area_edit_form_submit($form, &$form_state) {
 	// get values from form
 	$area_id = $form_state['values']['area_id'];
@@ -297,6 +318,14 @@ function area_edit_form_submit($form, &$form_state) {
 	drupal_set_message(t('Area successfully updated'), 'status');
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $area_id
+ * @param unknown_type $file_id
+ */
 function area_delete_file($form, &$form_state, $area_id, $file_id) {
 	$query = db_select('area_file_managed', 'afm')->condition('afm.area_id', $area_id)
 			->condition('afm.file_id', $file_id)->fields('afm', array('description'));
@@ -312,6 +341,12 @@ function area_delete_file($form, &$form_state, $area_id, $file_id) {
 			t('Are you sure you want to delete the file %name?', array('%name' => $name)), t('Delete'), t('Cancel'));
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ */
 function area_delete_file_submit($form, &$form_state) {
 	$area_id = $form_state['area_id'];
 	$file_id = $form_state['file_id'];

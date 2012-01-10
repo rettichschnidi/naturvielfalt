@@ -1,4 +1,13 @@
 <?php
+/**
+ * 
+ */
+
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $areaId
+ */
 function show_area($areaId) {
 
 	$areaResult = db_query(
@@ -261,14 +270,32 @@ function show_area($areaId) {
 
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $areaId
+ */
 function area_gallery($areaId) {
 	return _area_presentation($areaId);
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $areaId
+ */
 function area_list($areaId) {
 	return _area_presentation($areaId, 'gallery_presentation_list', 'presentation-list', 1000000);
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $areaId
+ * @param unknown_type $size
+ * @param unknown_type $cssClass
+ * @param unknown_type $columns
+ */
 function _area_presentation($areaId, $size = 'gallery_presentation', $cssClass = false, $columns = GALLERY_COLUMNS) {
 	if (!function_exists('gallery_presentation_renderer'))
 		return;
@@ -898,6 +925,11 @@ function array_unique_multi($array) {
 	return array_intersect_key($copy, $array);
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $area_id
+ */
 function area_files($area_id) {
 	$render_array = array();
 	$result = db_query(
@@ -967,6 +999,11 @@ function area_files($area_id) {
 	return $render_array;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $area_id
+ */
 function _area_parcels_table($area_id) {
 	$result = db_select('area_parcel')->fields('area_parcel')->condition('area_id', $area_id)->execute();
 	foreach ($result as $record) {
