@@ -1,5 +1,13 @@
 <?php
-//Display all habitats from database
+/**
+ * 
+ */
+
+
+/**
+ * Return all habitats from database
+ * @return 
+ */
 function habitat_list() {
 	drupal_add_js(drupal_get_path('module', 'habitat') . '/js/habitat.datatable.select.js');
 

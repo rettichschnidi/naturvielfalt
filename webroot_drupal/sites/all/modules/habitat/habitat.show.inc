@@ -1,5 +1,13 @@
 <?php
-//Display linked areas
+/**
+ * 
+ */
+
+/**
+ *  Return linked areas array
+ * @param unknown_type $habitatGroupId
+ * @return 
+ */
 function habitat_show($habitatGroupId) {
 	drupal_add_js(drupal_get_path('module', 'habitat') . '/js/habitat.datatable.select.js');
 	$habitat = db_select('habitat', 'h')->condition('h.id', $habitatGroupId)->fields('h')->execute()->fetch();
