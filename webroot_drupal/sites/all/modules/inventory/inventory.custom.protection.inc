@@ -1,4 +1,9 @@
 <?php
+/**
+ * 
+ */
+
+
 // Load all edit functions from inventory.
 module_load_include('inc', 'inventory', 'inventory.edit');
 // Load all show functions from inventory.

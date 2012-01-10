@@ -1,5 +1,9 @@
 <?php
 /**
+ * 
+ */
+
+/**
  * form to edit basic attributes of inventory
  *
  * @param unknown_type $form

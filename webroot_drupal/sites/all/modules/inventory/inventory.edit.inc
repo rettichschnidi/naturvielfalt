@@ -1,4 +1,9 @@
 <?php
+/**
+ * 
+ * 
+ */
+
 
 /**
  * Menu callback; Edit form of an inventory
@@ -134,6 +139,9 @@ function inventory_edit($head_inventory_id, $redirect = true) {
 	return $render_array;
 }
 
+/**
+ * 
+ */
 function inventory_add_single() {
 
 	$render_array['basics'] = array(
@@ -238,6 +246,13 @@ function inventory_add_single() {
 	return $render_array;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $head_inventory_id
+ */
 function inventory_delete($form, &$form_state, $head_inventory_id) {
 	$form_state['head_inventory_id'] = $head_inventory_id;
 
@@ -248,6 +263,12 @@ function inventory_delete($form, &$form_state, $head_inventory_id) {
 					array('%name' => $name)), t('Delete'), t('Cancel'));
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ */
 function inventory_delete_submit($form, &$form_state) {
 	$head_inventory_id = $form_state['head_inventory_id'];
 
@@ -282,6 +303,9 @@ function inventory_delete_submit($form, &$form_state) {
 /**
  * Form to edit the entries of an inventory
  * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $head_inventory_id
  * @return form of inventory entries
  */
 function inventory_edit_entries($form, &$form_state, $head_inventory_id) {
@@ -1950,7 +1974,7 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 			$filename = l($record->filename,
 					'sites/default/files/swissmon/inventory/' . $head_inventory_id . '/' . $record->filename);
 			$filemime = '<img class="file-icon" alt="" title="' . $record->filemime
-					. '" src="../../modules/inventory/images/' . inventory_icon_map($record->filemime) . '.png" />';
+					. '" src="../../sites/all/modules/inventory/images/' . inventory_icon_map($record->filemime) . '.png" />';
 			$filesize = ($record->filesize / 1000) . " KB";
 			$timestamp = date('d.m.Y', $record->timestamp);
 			$row = array();
@@ -2398,6 +2422,11 @@ function inventory_update_rights($form, &$form_state) {
 	return $form_state['redirect'] = 'inventory/' . $head_inventory_id . '/edit';
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $string
+ */
 function inventory_sgroup_autocomplete($string) {
 	global $user;
 

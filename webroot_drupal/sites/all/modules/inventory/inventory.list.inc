@@ -1,7 +1,8 @@
 <?php
 
-/*
+/**
  * Menu callback f�r User-Inventare
+ * @return Array
  */
 function inventory_list_show_users_inventory() {
 	global $user;
@@ -13,8 +14,10 @@ function inventory_list_show_users_inventory() {
 	return $render_array;
 }
 
-/*
+/**
  * Generiert eine Liste mit den vom Benutzer erstellten Inventories
+ * @param unknown_type $render_array
+ * @return Array
  */
 function generate_user_list(&$render_array) {
 	$result = db_query(
@@ -40,8 +43,9 @@ function generate_user_list(&$render_array) {
 	return $render_array;
 }
 
-/*
+/**
  * Generiert eine Liste mit den gemeinsamen Inventaren
+ * @param unknown_type $render_array
  */
 function generate_shared_list(&$render_array) {
 	$result = db_query(
@@ -74,8 +78,9 @@ function generate_shared_list(&$render_array) {
 					), '_inventory_shared_row_factory'), $render_array);
 }
 
-/*
+/**
  * Generiert eine Liste mit den �ffentlichen Inventaren
+ * @param unknown_type $render_array
  */
 function generate_public_list(&$render_array) {
 	$result = db_query(
@@ -97,6 +102,12 @@ function generate_public_list(&$render_array) {
 					t('No public inventories have been created so far')), $render_array);
 
 }
+
+/**
+ * 
+ * Enter description here ...
+ * @return array
+ */
 function inventory_list() {
 	global $user;
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
@@ -109,6 +120,11 @@ function inventory_list() {
 	return $render_array;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @return multitype: array
+ */
 function inventory_editable() {
 	global $user;
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
@@ -162,9 +178,17 @@ function inventory_editable() {
 	return $render_array;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $row
+ * @param unknown_type $record
+ * @param unknown_type $rows
+ * @return
+ */
 function _inventory_own_row_factory($row, $record, &$rows) {
 	$img_edit = theme('image',
-			array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
+			array('path' => 'sites/all/sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
 					'alt' => t('Edit'),
 					'title' => t('Edit'),
 			));
@@ -181,6 +205,14 @@ function _inventory_own_row_factory($row, $record, &$rows) {
 	return $row;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $row
+ * @param unknown_type $record
+ * @param unknown_type $rows
+ * @return boolean|multitype:string unknown Ambigous <The, string, A, Returns, multitype:Ambigous <> , multitype:Optional >
+ */
 function _inventory_shared_row_factory($row, $record, &$rows) {
 	static $seen;
 	$sgroups = $record->sgroup_name;
@@ -194,7 +226,7 @@ function _inventory_shared_row_factory($row, $record, &$rows) {
 	if ($record->write == true) {
 		//Edit Image
 		$img_edit = theme('image',
-				array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
+				array('path' => 'sites/all/sites/all/modules/inventory/images/fatcow_icons/16x16/application_edit.png',
 						'alt' => t('Edit'),
 						'title' => t('Edit'),
 				));
@@ -215,6 +247,13 @@ function _inventory_shared_row_factory($row, $record, &$rows) {
 	return $row;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $row
+ * @param unknown_type $record
+ * @param unknown_type $rows
+ */
 function _inventory_editable_own_row_factory($row, $record, &$rows) {
 	$row = array(
 			l($row[0], 'inventory/' . $record->id . '/edit'),
@@ -226,6 +265,14 @@ function _inventory_editable_own_row_factory($row, $record, &$rows) {
 	return $row;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $row
+ * @param unknown_type $record
+ * @param unknown_type $rows
+ * @return
+ */
 function _inventory_editable_shared_row_factory($row, $record, &$rows) {
 	static $seen;
 	$sgroups = $record->sgroup_name;
@@ -247,11 +294,21 @@ function _inventory_editable_shared_row_factory($row, $record, &$rows) {
 	return $row;
 }
 
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $result
+ * @param unknown_type $id
+ * @param unknown_type $title
+ * @param unknown_type $msg_empty
+ * @param unknown_type $headings
+ * @param unknown_type $row_factory
+ */
 function _inventory_list_factory($result, $id, $title, $msg_empty = false, $headings = array(), $row_factory = false) {
 	$render_array = array();
 	//Localize Image
 	$img_localize = theme('image',
-			array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
+			array('path' => 'sites/all/sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
 					'alt' => t('Localize'),
 					'title' => t('Localize'),
 			));

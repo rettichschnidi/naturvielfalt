@@ -1,4 +1,9 @@
+// FIXME
 /**
+ * 
+ * FALSCHE BESCHREIBUNG???
+ * 
+ * 
  * This function creates a autocomplete field, in which you must select a value
  * from the dropdown.
  * 
@@ -13,11 +18,20 @@
  *            This function will be executed, when an entry has been selected.
  * @return
  */
+// FIXME
+
 
 var util = {};
 
+/**
+ * 
+ * @param input_id
+ * @param search_button_id
+ * @param map
+ */
 util.geocode = function(input_id, search_button_id, map) {
-	var me = this;
+	// FIXME
+	me = this;
 	var geocoder = new google.maps.Geocoder();
 
 	jQuery('#' + input_id)
@@ -61,20 +75,12 @@ util.geocode = function(input_id, search_button_id, map) {
 	});
 };
 
+/**
+ * 
+ * @param a
+ * @param i
+ * @param m
+ */
 jQuery.expr[':'].textEquals = function(a, i, m) {
 	return jQuery(a).text().match("^" + m[3] + "$");
-}
-
-// Create an entry for every console function that is used.
-function checkForConsole() {
-	if (typeof console === "undefined") {
-		console = {
-			info : function() {
-			},
-			error : function() {
-			}
-		};
-	}
 };
-
-checkForConsole();

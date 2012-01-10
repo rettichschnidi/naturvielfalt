@@ -1,7 +1,19 @@
+/**
+ * 
+ * 
+ */
+
+
+/**
+ * 
+ */
 (function($) {
 
 	var sgroupIds = new Array();
 
+	/**
+	 * 
+	 */
 	function initializeGroupRow() {
 		$(this).find('input[name^="write"]').change(
 				function() {
@@ -16,7 +28,10 @@
 		$(this).find("td.delete img").unbind('click').click(removeSgroup);
 	}
 
-	// This will be called if user selects an autocompletion value
+	/**
+	 * This will be called if user selects an autocompletion value
+	 * @param event
+	 */
 	function sgroupAutocompleteSelect(event) {
 		// get the new selected value
 		var newSgroup = $(this).val();
@@ -38,7 +53,7 @@
 			var show_red = "<td><input type='checkbox' class='form-checkbox' name='show_red_new_"
 					+ cnt + "' value='1'/></td>";
 			var removeImg = Drupal.settings.basePath
-					+ "/modules/inventory/images/can_delete.png";
+					+ "/sites/all/modules/inventory/images/can_delete.png";
 			var remove = "<td class='delete'><img src='" + removeImg
 					+ "' style='cursor:pointer'/></td>";
 			var row = $("<tr>" + name + write + read + show_red + remove
@@ -51,8 +66,11 @@
 		$(this).val("");
 	}
 
-	// This will be called if a user clicks on the remove icon if permissions
-	// are not yet saved in db
+	/**
+	 * This will be called if a user clicks on the remove icon if permissions
+	 * are not yet saved in db
+	 * @param image
+	 */
 	function removeSgroup(image) {
 		var row = $(this).parent().parent();
 		var id = row.find('input').attr('value');
@@ -61,8 +79,11 @@
 		row.remove();
 	}
 
-	// This gets called if a user clicks on the delete button if permissions are
-	// already saved in db
+	/**
+	 * This gets called if a user clicks on the delete button if permissions are
+	 * already saved in db
+	 * @param event
+	 */
 	function deleteSgroup(event) {
 		var row = $(this).parent().parent();
 		var id = $(this).attr('id');
@@ -77,6 +98,9 @@
 		});
 	}
 
+	/**
+	 * 
+	 */
 	$(document).ready(
 			function() {
 				// bind event "autocomplete_selection"

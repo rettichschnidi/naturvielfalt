@@ -1,4 +1,8 @@
 <?php
+/**
+ * 
+ */
+
 
 /**
  * Menu callback; View of an inventory
@@ -374,11 +378,11 @@ function _inventory_presentation($head_inventory_id, $size = 'gallery_presentati
 		}
 	}
 
-	if (!$render_array)
+	if (!$render_array){
 		$render_array['empty'] = array(
 				'#markup' => '<p>' . t('There are no organisms available in this inventory.') . '</p>'
 		);
-	else {
+	}else {
 		$url = drupal_get_destination();
 		$url = drupal_parse_url($url['destination']);
 		$url = $url['path'];
@@ -411,6 +415,11 @@ function _inventory_presentation($head_inventory_id, $size = 'gallery_presentati
 	return $render_array;
 }
 
+//FIXME
+/**
+ * 
+ * Enter description here ...
+ */
 function inventory_show_all_singleobservations() {
 	// 	$query = db_select('inventory_entry', 'ie')
 	// 	->condition('area_id', '155')
@@ -698,7 +707,7 @@ function inventory_redlist_count($head_inventory_id) {
 function inventory_inventories($head_inventory_id, $invArr = false, $gallery = true) {
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	$img_localize = theme('image',
-			array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/location_pin.png',
+			array('path' => 'sites/all/sites/all/modules/inventory/images/fatcow_icons/16x16/location_pin.png',
 					'alt' => t('Observation location'),
 					'title' => t('Observation location'),
 			));
