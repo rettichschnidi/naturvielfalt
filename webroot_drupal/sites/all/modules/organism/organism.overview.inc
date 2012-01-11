@@ -1,6 +1,12 @@
 <?php
 /**
- * Menu callback. This will be called if someone visits drupal/showcase.
+ * 
+ */
+
+
+/**
+ * Menu callback. This will be called for visits /organism.
+ * @return array
  */
 function organism_overview() {
 	drupal_set_title(t('Organisms - Grouped by Categories'));
@@ -14,7 +20,7 @@ function organism_overview() {
 	$result = db_query(
 			'
 		SELECT it.name, o.inventory_type_id, count (o.inventory_type_id) FROM organism o
-			LEFT JOIN inventory_type it ON it.id = organism.inventory_type_id
+			LEFT JOIN inventory_type it ON it.id = o.inventory_type_id
 		GROUP BY o.inventory_type_id, it.name
 		ORDER BY it.name
 	');
