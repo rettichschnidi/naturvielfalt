@@ -41,7 +41,7 @@ function open_identification_new($form, &$form_state) {
 	$options = array(
 			'' => t('- Please choose1 -') // FIXME ASCII art or what?
 	);
-	
+
 	$options['0'] = t('unknown');
 	foreach ($result as $record)
 		$options[$record->id] = $record->name;
