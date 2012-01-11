@@ -1,4 +1,14 @@
 <?php
+/**
+ * 
+ */
+
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $organismId
+ * @return array
+ */
 function organism_show($organismId) {
 	if (function_exists('gallery_list_renderer')) {
 		$forms['ImageGallery'] = gallery_list_renderer('images', 'organism', $organismId, false, -1, false);
@@ -11,7 +21,12 @@ function organism_show($organismId) {
 	return $forms;
 }
 
-// display basic organism details	
+/**
+ * display basic organism details
+ * 
+ * @param unknown_type $organismId
+ * @return Ambigous <multitype:string , multitype:The , multitype:string number boolean multitype:multitype:string   Ambigous <The, string, A, Returns, multitype:Ambigous <> , multitype:Optional > >
+ */	
 function getOrganismDetails($organismId) {
 	$result = db_query(
 			'SELECT organism.id, organism.organism_type, flo.name flora_name, flo.name_de, fao.genus fauna_genus, fao.species fauna_species, fao.name_de fauna_namede, frl.red_list_ch, fao.protection_ch
@@ -76,7 +91,11 @@ function getOrganismDetails($organismId) {
 	return $form;
 }
 
-//display organism in inventories
+/**
+ * display organism in inventories
+ * @param unknown_type $organismId
+ * @return
+ */
 function getOrganismInventories($organismId) {
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.datatable.select.js');
 	global $user;

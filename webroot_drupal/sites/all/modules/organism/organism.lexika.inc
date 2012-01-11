@@ -1,6 +1,8 @@
 <?php
 /**
  * Queries Wikipedia for organism entry and displays content on local page
+ * @param organism_id
+ * @return
  */
 function organism_lexika_show($organism_id) {
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css',

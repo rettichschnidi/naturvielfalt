@@ -56,6 +56,13 @@ function _organismresource_retrieve($id) {
 }
 
 //FIXME: document me...
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $page
+ * @param unknown_type $parameters
+ * @return
+ */
 function _organismresource_index($page, $parameters) {
 	global $user;
 

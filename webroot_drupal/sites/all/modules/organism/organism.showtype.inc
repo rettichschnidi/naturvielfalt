@@ -1,5 +1,10 @@
 <?php
 // FIXME: document this...
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $typeId
+ */
 function organism_showtype($typeId) {
 	$inventory_type = db_query("SELECT name FROM inventory_type WHERE id=:id", array(':id' => $typeId));
 	drupal_set_title(check_plain($inventory_type->fetch()->name));

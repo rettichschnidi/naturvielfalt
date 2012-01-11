@@ -1,5 +1,10 @@
-// @author Damian Conrad
+/**
+ * @author Damian Conrad
+ */
 
+/**
+ * 
+ */
 function organismRowSelect() {
 	/**
 	 * This function is called when the user clicks on a row
@@ -7,7 +12,7 @@ function organismRowSelect() {
 
 	organismRowSelect.prototype.onTableRowClicked = function(e) {
 		if (!e)
-			var e = window.event;
+			e = window.event;
 		if (e.target)
 			targ = e.target;
 		else if (e.srcElement)
@@ -28,7 +33,7 @@ function organismRowSelect() {
 		if (organismId[0] == 'inventoryprotected')
 			window.location.href = Drupal.settings.basePath + 'user/'
 					+ organismId[1] + '/contact';
-	}
+	};
 	// register events
 	jQuery("#organisms").live('click', this.onTableRowClicked);
 	jQuery("#areas").live('click', this.onTableRowClicked);
