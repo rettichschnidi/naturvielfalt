@@ -2,7 +2,11 @@ name = Gallery
 description = Provides functionality for rated image galleries bound to inventory entries, areas, habitants or organisms
 package = Swissmon
 core = 7.x
-version = "7.0"
+version = "7.0-dev"
 dependencies[] = image
 dependencies[] = user
+dependencies[] = organism
+dependencies[] = inventory
+dependencies[] = area
+
 configure = admin/config/media/gallery

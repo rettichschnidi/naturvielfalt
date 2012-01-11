@@ -139,7 +139,8 @@ function _gallery_list_parameters($type, $id) {
 	$params['crosslinking'] = array_key_exists('crosslinked', $types[$type]);
 	if ($params['crosslinking'] && array_key_exists($key . '_crosslinked', $_GET))
 		$_SESSION[$key . '_crosslinked'] = $_GET[$key . '_crosslinked'] ? true : false;
-	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION) ? $_SESSION[$key . '_crosslinked'] : null;
+	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION) ? $_SESSION[$key . '_crosslinked']
+			: null;
 	$params['subtypes'] = _gallery_get_subtypes($type, $params['crosslinked']);
 	if ($params['subtypes'] && array_key_exists($key . '_subtype', $_GET))
 		$_SESSION[$key . '_subtype'] = $_GET[$key . '_subtype'];
@@ -341,8 +342,9 @@ function gallery_presentation_renderer($mediatype, $items, $imgsize = 'gallery_p
 				);
 			foreach ($ids as $id) {
 				if (gallery_edit_access_callback($item['type'], $id)) {
-					$content .= '<br>' . l(t('Add one'), 'gallery/' . $item['type'] . '/' . $id . '/' . $mediatype
-									. '/edit');
+					$content .= '<br>'
+							. l(t('Add one'),
+									'gallery/' . $item['type'] . '/' . $id . '/' . $mediatype . '/edit');
 					break;
 				}
 			}
@@ -398,7 +400,8 @@ function gallery_presentation_renderer($mediatype, $items, $imgsize = 'gallery_p
  * @param object $id
  * @param object $url[Optional]
  */
-function gallery_view_link($type, $id, $url = false, $check = true, $count_images = 0, $count_sounds = 0, $count_videos = 0) {
+function gallery_view_link($type, $id, $url = false, $check = true, $count_images = 0, $count_sounds = 0,
+		$count_videos = 0) {
 	if (!gallery_access_callback($type))
 		return false;
 	$params = _gallery_list_parameters($type, $id);
@@ -430,15 +433,18 @@ function gallery_view_link($type, $id, $url = false, $check = true, $count_image
 	$return_link = "";
 	if ($count_images > 0) {
 		$return_link .= ''
-				. l($gallery_img_localize, $url ? $url : 'gallery/' . $type . '/' . $id . '/images', array('html' => true));
+				. l($gallery_img_localize, $url ? $url : 'gallery/' . $type . '/' . $id . '/images',
+						array('html' => true));
 	}
 	if ($count_sounds > 0) {
 		$return_link .= ''
-				. l($gallery_sound_localize, $url ? $url : 'gallery/' . $type . '/' . $id . '/sounds', array('html' => true));
+				. l($gallery_sound_localize, $url ? $url : 'gallery/' . $type . '/' . $id . '/sounds',
+						array('html' => true));
 	}
 	if ($count_videos > 0) {
 		$return_link .= ''
-				. l($gallery_video_localize, $url ? $url : 'gallery/' . $type . '/' . $id . '/videos', array('html' => true));
+				. l($gallery_video_localize, $url ? $url : 'gallery/' . $type . '/' . $id . '/videos',
+						array('html' => true));
 	}
 
 	return $return_link;
@@ -561,7 +567,8 @@ function _gallery_get_title_description($type, $id, $mediatype) {
  * @ingroup forms
  * @see gallery_medias_form_submit()
  */
-function gallery_images_form($form, &$form_state, $mediatype, $type = false, $id = false, $images = false, $camefrom = false) {
+function gallery_images_form($form, &$form_state, $mediatype, $type = false, $id = false, $images = false,
+		$camefrom = false) {
 	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
 			array(
 					'group' => CSS_DEFAULT,
@@ -648,11 +655,12 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false, $id
 		$row[] = $caption;
 		$row[] = $editable ? l(t('edit'),
 						'gallery/' . $image['item_type'] . '/' . $image['item_id'] . '/' . $mediatype . '/edit/'
-								. $image['id'], $camefrom ? array(
-								'query' => array(
-										'camefrom' => $camefrom
-								)
-						) : array()) : '&nbsp;';
+								. $image['id'],
+						$camefrom ? array(
+										'query' => array(
+												'camefrom' => $camefrom
+										)
+								) : array()) : '&nbsp;';
 		$row[] = $editable ? '<input type="checkbox" name="delete[' . $image['id'] . ']" value="1" />' : '&nbsp;';
 		$rows[] = $row;
 	}
@@ -701,7 +709,8 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false, $id
  * @ingroup forms
  * @see gallery_media_form_submit()
  */
-function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image, $new_open_identification = false, $i = 1) {
+function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image, $new_open_identification = false,
+		$i = 1) {
 	global $user;
 	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
 			array(
@@ -767,8 +776,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$form['thumb'] = array(
 				'#markup' => '<a class="user-picture" rel="lightbox" href="'
 						. url('gallery/' . $type . '/' . $id . '/thumb/' . $image['id'] . '/gallery_large')
-						. '"><img src="' . url('gallery/' . $type . '/' . $id . '/thumb/' . $image['id']
-								. '/gallery_mini') . '" alt="' . $image['title'] . '" /></a>'
+						. '"><img src="'
+						. url('gallery/' . $type . '/' . $id . '/thumb/' . $image['id'] . '/gallery_mini') . '" alt="'
+						. $image['title'] . '" /></a>'
 		);
 
 	}
@@ -927,9 +937,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 					),
 					'#weight' => 2,
 					'#required' => false, /*'#ajax' => array(
-										     'callback' => 'open_identification_new_add_organismgroup',
-										     'wrapper' => 'organismgroup',
-										   )*/
+										  'callback' => 'open_identification_new_add_organismgroup',
+										  'wrapper' => 'organismgroup',
+										  )*/
 			);
 			$result = db_select('inventory_type', 'it')->fields('it', array('id',
 							'name'
@@ -1383,8 +1393,8 @@ function gallery_image_show($image) {
 	if ($_REQUEST['ajax'])
 		return drupal_json_output(
 				array('label' => t('Hide'),
-						'action' => url('gallery/' . $image['item_type'] . '/' . $image['item_id'] . '/hide/'
-								. $image['id'])
+						'action' => url(
+								'gallery/' . $image['item_type'] . '/' . $image['item_id'] . '/hide/' . $image['id'])
 				));
 	$camefrom = $_REQUEST['camefrom'];
 	return drupal_goto($camefrom);
@@ -1398,8 +1408,8 @@ function gallery_image_hide($image) {
 	if ($_REQUEST['ajax'])
 		return drupal_json_output(
 				array('label' => t('Show'),
-						'action' => url('gallery/' . $image['item_type'] . '/' . $image['item_id'] . '/show/'
-								. $image['id'])
+						'action' => url(
+								'gallery/' . $image['item_type'] . '/' . $image['item_id'] . '/show/' . $image['id'])
 				));
 	$camefrom = $_REQUEST['camefrom'];
 	return drupal_goto($camefrom);

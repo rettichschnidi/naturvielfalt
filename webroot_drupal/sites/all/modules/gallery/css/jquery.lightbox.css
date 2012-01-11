@@ -20,7 +20,6 @@
 	z-index: 90;
 	width: 100%;
 }
-
 #jquery-lightbox {
 	position: absolute;
 	top: 0;
@@ -30,15 +29,12 @@
 	text-align: center;
 	line-height: 0;
 }
-
-* html #jquery-lightbox,* html #jquery-overlay {
+* html #jquery-lightbox, * html #jquery-overlay {
 	position: absolute;
 }
-
 #jquery-lightbox a img {
 	border: none;
 }
-
 #lightbox-container-image-box {
 	position: relative;
 	background-color: #fff;
@@ -47,7 +43,6 @@
 	margin: 0 auto;
 	padding-bottom: 10px;
 }
-
 #lightbox-loading {
 	position: absolute;
 	top: 40%;
@@ -56,36 +51,30 @@
 	text-align: center;
 	line-height: 0;
 }
-
 #lightbox-container-wrap {
 	position: relative;
 	overflow: hidden;
 }
-
 #lightbox-container-image {
 	overflow: hidden;
 	position: relative;
 }
-
 #lightbox-image {
 	display: block;
 	position: relative;
 }
-
 #lightbox-container-image-prev {
 	overflow: hidden;
 	position: absolute;
 	top: 0;
 	left: 0;
 }
-
 #lightbox-image-prev {
 	display: block;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 }
-
 #lightbox-nav {
 	position: absolute;
 	top: 0;
@@ -94,32 +83,26 @@
 	right: 0;
 	z-index: 10;
 }
-
-#lightbox-container-image-box>#lightbox-nav {
+#lightbox-container-image-box > #lightbox-nav {
 	left: 0;
 }
-
 #lightbox-nav a {
 	outline: none;
 }
-
-#lightbox-nav-btnPrev,#lightbox-nav-btnNext {
+#lightbox-nav-btnPrev, #lightbox-nav-btnNext {
 	width: 49%;
 	height: 100%;
 	zoom: 1;
 	display: block;
 }
-
 #lightbox-nav-btnPrev {
 	left: 0;
 	float: left;
 }
-
 #lightbox-nav-btnNext {
 	right: 0;
 	float: right;
 }
-
 #lightbox-container-image-data-box {
 	font: 10px Verdana, Helvetica, sans-serif;
 	background-color: #fff;
@@ -129,25 +112,21 @@
 	width: 100%;
 	padding: 0 10px 0;
 }
-
 #lightbox-container-image-data {
 	padding: 0 10px;
 	color: #666;
 }
-
-#lightbox-container-image-data #lightbox-image-details { /*width: 90%; 
-  float: left;*/
+#lightbox-container-image-data #lightbox-image-details { /*width: 90%;
+	 float: left;*/
 	text-align: left;
 }
-
 #lightbox-image-details-currentNumber {
 	display: block;
 	clear: left;
 	padding-bottom: 1.0em;
 	background: url(../images/image.gif) transparent no-repeat 0 2px;
 }
-
-#lightbox-secNav-btnClose,#lightbox-secNav-btnClose:focus {
+#lightbox-secNav-btnClose, #lightbox-secNav-btnClose:focus {
 	background-color: #fff;
 	width: 26px;
 	float: right;

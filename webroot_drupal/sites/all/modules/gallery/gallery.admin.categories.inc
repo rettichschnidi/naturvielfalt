@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file
+ * @file gallery.admin.categories.inc
  * Administration pages for gallery categories.
  */
 
