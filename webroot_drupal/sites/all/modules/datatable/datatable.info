@@ -2,4 +2,4 @@ name = Datatable
 description = Sortable Table with included paging
 package = Swissmon
 core = 7.x
-version = "7.0"
+version = "7.0-dev"

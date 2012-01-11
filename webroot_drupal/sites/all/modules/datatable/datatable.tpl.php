@@ -24,8 +24,10 @@ $table[$id_table] = array(
 		),
 );
 
-if ($len == NULL)
+// FIXME what length?
+if ($len == NULL) {
 	$len = 300;
+}
 
 print drupal_render($table);
 
