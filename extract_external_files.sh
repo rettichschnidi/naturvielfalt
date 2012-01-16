@@ -1,4 +1,9 @@
 #!/bin/bash
+if [ ! -d webroot_drupal ]; then
+	echo Please do not execute this script from an external place.
+	exit 1
+fi
+
 echo "Untaring modules to webroot"
 for next in `ls external/drupal/modules/*.tar.gz`
     do
@@ -19,4 +24,5 @@ for next in `ls -d external/drupal/core/*/`
 		echo "Remove temp drupal files"
 		rm -rf $next
 	done
+cp external/drupal/translations-core/drupal-* webroot_drupal/profiles/standard/translations/
 exit 0
