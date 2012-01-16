@@ -1,6 +1,10 @@
 <?php
 /**
- * Hook implementations for gallery integration
+ * @file organism.gallery.inc
+ * @abstract Hook implementations for gallery integration
+ * @author Marco Zimmerli, 2011
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
  */
 
 /**

@@ -1,14 +1,14 @@
 /**
- * @author Damian Conrad
+ * @file organism.datatable.select.js
+ * @author Damian Conrad, 2011
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
  */
 
 /**
- * 
+ * This function is called when the user clicks on a row
  */
 function organismRowSelect() {
-	/**
-	 * This function is called when the user clicks on a row
-	 */
 
 	organismRowSelect.prototype.onTableRowClicked = function(e) {
 		if (!e)

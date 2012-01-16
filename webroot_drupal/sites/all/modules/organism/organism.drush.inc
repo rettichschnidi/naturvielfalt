@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file organism.drush.inc
+ * @author Marco Zimmerli, 2011
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
 
 /**
  * Implements hook_drush_command().

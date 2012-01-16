@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file organism.edit.inc
+ * @author Marco Zimmerli, 2011
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
 
 /**
  *
@@ -33,7 +39,7 @@ function organism_edit_files_form($form, &$form_state, $organism_id) {
 			$img_mime = theme('image', $mimeIconMap);
 
 			$description = $record -> description;
-			$filename = l($record -> filename, 'sites/default/files/swissmon/organism/' . $organism_id . '/' . $record -> filename);
+			$filename = l($record -> filename, 'sites/default/files/naturvielfalt/organism/' . $organism_id . '/' . $record -> filename);
 
 			$img_delete = '<img src="' . url(drupal_get_path('module', 'inventory') . '/images/can_delete.png') . '" alt="' . t('Delete') . '" />';
 			$filemime = $img_mime;
@@ -85,7 +91,7 @@ function organism_edit_file($form, &$form_state) {
 	// File upload
 	$validators = array('file_validate_extensions' => array('doc txt pdf docx mp3'), 'file_validate_size' => array(1000000, 0), );
 
-	$destination = 'public://swissmon/organism/' . $organism_id;
+	$destination = 'public://naturvielfalt/organism/' . $organism_id;
 
 	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
 
