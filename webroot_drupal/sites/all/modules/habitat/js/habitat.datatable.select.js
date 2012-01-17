@@ -1,5 +1,9 @@
-
-// @author Damian Conrad
+/**
+* @file habitat.datatable.select.js
+* @author Damian Conrad, 2011
+* @author Ramon Gamma, 2012
+* @copyright 2011-2012 Naturwerk, Brugg
+*/
 
 /**
  * 

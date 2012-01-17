@@ -1,12 +1,15 @@
 <?php
 /**
- * 
- */
+* @file habitat.show.inc
+* @author ?, 2011
+* @author Ramon Gamma, 2012
+* @copyright 2011-2012 Naturwerk, Brugg
+*/
 
 /**
  *  Return linked areas array
  * @param unknown_type $habitatGroupId
- * @return 
+ * @return
  */
 function habitat_show($habitatGroupId) {
 	drupal_add_js(drupal_get_path('module', 'habitat') . '/js/habitat.datatable.select.js');
@@ -43,7 +46,7 @@ function habitat_show($habitatGroupId) {
 
 	foreach ($result as $record) {
 		$inventories = db_query(
-				'SELECT 
+				'SELECT
 					COUNT(area_id)
 				FROM
 					head_inventory

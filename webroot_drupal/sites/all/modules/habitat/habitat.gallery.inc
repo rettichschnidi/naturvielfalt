@@ -1,12 +1,16 @@
 <?php
 /**
- * Hook implementations for gallery integration
- */
+* @file habitat.galery.inc
+* @abstract Hook implementations for gallery integration
+* @author ?, 2011
+* @author Ramon Gamma, 2012
+* @copyright 2011-2012 Naturwerk, Brugg
+*/
 
 /**
  * Implements hook of gallery module to activate the gallery
  * functionality for habitat
- * 
+ *
  * @return array
  */
 function habitat_gallery_types() {
@@ -22,7 +26,7 @@ function habitat_gallery_types() {
 /**
  * Helper function referenced in habitat_gallery_types to define the caption
  * for images added to intentory entries
- * 
+ *
  * @return string
  */
 function habitat_gallery_image_caption($id) {
@@ -32,9 +36,9 @@ function habitat_gallery_image_caption($id) {
 }
 
 /**
- * Helper function referenced in habitat_gallery_types to define the title of 
+ * Helper function referenced in habitat_gallery_types to define the title of
  * the manage images page for habitats
- * 
+ *
  * @param string $id
  *   The id of object
  * @return string
@@ -46,7 +50,7 @@ function habitat_gallery_manage_title($id, $mediatype) {
 
 /**
  * Helper function creating a generic caption for a habitat
- * 
+ *
  * @param string $id
  *   The id of object
  * @return string
@@ -57,9 +61,9 @@ function habitat_gallery_caption($id) {
 }
 
 /**
- * Helper function referenced in habitat_gallery_types to define the description of 
+ * Helper function referenced in habitat_gallery_types to define the description of
  * the manage images page for habitats
- * 
+ *
  * @param string $id
  *   The id of object
  * @return string
@@ -71,7 +75,7 @@ function habitat_gallery_manage_description($id, $mediatype) {
 /**
  * Implements hook of gallery module to define the different category
  * conditions available for habitat types
- * 
+ *
  * @return array
  */
 function habitat_gallery_category_conditions() {
