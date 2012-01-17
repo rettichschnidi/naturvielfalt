@@ -1,12 +1,16 @@
 <?php
 /**
- * 
- */
+* @file habitat.list.inc
+* @abstract
+* @author ?, 2011
+* @author Ramon Gamma, 2012
+* @copyright 2011-2012 Naturwerk, Brugg
+*/
 
 
 /**
  * Return all habitats from database
- * @return 
+ * @return
  */
 function habitat_list() {
 	drupal_add_js(drupal_get_path('module', 'habitat') . '/js/habitat.datatable.select.js');
