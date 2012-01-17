@@ -24,6 +24,7 @@ sites/all/modules/addressfield/
 sites/all/modules/commerce/
 sites/all/modules/commerce_paypal/
 sites/all/modules/ctools/
+sites/all/modules/datatables/
 sites/all/modules/devel/
 sites/all/modules/dhtml_menu/
 sites/all/modules/draggableviews/
