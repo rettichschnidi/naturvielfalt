@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @file organism.module
+ * @author Marco Zimmerli, 2011
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
 /**********************************
  *  Hook implementations
  *********************************/
@@ -176,8 +181,8 @@ function organism_files($organism_id) {
 		$img_mime = theme('image', $mimeIconMap);
 
 		$description = $record->description;
-		$filename = l($record->filename, 'sites/default/files/swissmon/organism/' . $organism_id . '/'
-				. $record->filename);
+		$filename = l($record->filename,
+				'sites/default/files/naturvielfalt/organism/' . $organism_id . '/' . $record->filename);
 		$filemime = $img_mime;
 		$filesize = ($record->filesize / 1000) . " KB";
 		$timestamp = date('d.m.Y', $record->timestamp);

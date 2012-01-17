@@ -1,5 +1,12 @@
 <?php
 /**
+ * @file organism.lexika.inc
+ * @author Marco Zimmerli, 2011
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
+
+/**
  * Queries Wikipedia for organism entry and displays content on local page
  * @param organism_id
  * @return

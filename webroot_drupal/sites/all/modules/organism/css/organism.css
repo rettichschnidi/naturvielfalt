@@ -3,7 +3,6 @@ div.wikientry {
 	background-color: #F7F7F7;
 	padding: 8px;
 }
-
 div.thumb {
 	border: 1px solid #DEDEDE;
 	float: right;
@@ -13,7 +12,6 @@ div.thumb {
 	padding-left: 5px;
 	padding-top: 5px;
 }
-
 div.wiki_source {
 	font-size: 10px;
 }

@@ -1,4 +1,5 @@
 name = organism
 description = Shows all available organisms from DB
-package = Swissmon
+package = naturvielfalt
 core = 7.x
+version = "7.x-current"
