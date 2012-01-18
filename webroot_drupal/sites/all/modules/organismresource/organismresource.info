@@ -1,8 +1,0 @@
-name = Organism Resource
-description = Sample resource implementation
-package = Organism example
-
-core = 7.x
-
-files[] = organismresource.inc
-files[] = organismresource.module
