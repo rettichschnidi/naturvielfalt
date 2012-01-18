@@ -11,19 +11,19 @@ function organism_schema() {
 					),
 					'parent_id' => array(
 							'description' => 'Reference to its parent, for root nodes this value is equal to its id',
-							'type' => 'integer',
+							'type' => 'int',
 							'unsigned' => TRUE,
 							'not null' => TRUE
 					),
 					'left_value' => array(
 							'description' => 'All childs have a left_value > this value',
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					),
 					'right_value' => array(
 							'description' => 'All childs have a right_value < this value',
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					)
@@ -90,21 +90,21 @@ function organism_schema() {
 			'description' => 'References an image from this organism',
 			'fields' => array(
 					'organism_id' => array(
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
+					),
+					'file_managed_id' => array(
+							'type' => 'int',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'description' => array(
+							'type' => 'text'
+					),
+					'author' => array(
+							'type' => 'text'
 					)
-			),
-			'file_managed_id' => array(
-					'type' => 'integer',
-					'not null' => TRUE,
-					'unsigned' => TRUE
-			),
-			'description' => array(
-					'type' => 'text'
-			),
-			'author' => array(
-					'type' => 'text'
 			),
 			'indexes' => array(
 					'organism_id' => array(
@@ -140,7 +140,7 @@ function organism_schema() {
 					),
 					'name' => array(
 							'type' => 'text',
-							'not null' => 'true'
+							'not null' => TRUE
 					),
 			),
 			'unique keys' => array(
@@ -162,24 +162,24 @@ function organism_schema() {
 					),
 					'parent_id' => array(
 							'description' => 'Reference to its parent, for root nodes this value is equal to its id',
-							'type' => 'integer',
+							'type' => 'int',
 							'unsigned' => TRUE,
 							'not null' => TRUE
 					),
 					'left_value' => array(
 							'description' => 'All childs have a left_value > this value',
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					),
 					'right_value' => array(
 							'description' => 'All childs have a right_value < this value',
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					),
 					'organism_classifier_id' => array(
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					)
@@ -217,12 +217,12 @@ function organism_schema() {
 			'description' => '"Subscribes" an organism to organism_classifications',
 			'fields' => array(
 					'organism_classification_id' => array(
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					),
 					'organism_id' => array(
-							'type' => 'integer',
+							'type' => 'int',
 							'not null' => TRUE,
 							'unsigned' => TRUE
 					)
@@ -250,6 +250,60 @@ function organism_schema() {
 					)
 			)
 	);
-
+	$schema['organism_classification_lang'] = array(
+			'description' => 'Add a level-name for this classification',
+			'fields' => array(
+					'organism_classification_id' => array(
+							'type' => 'int',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'languages_language' => array(
+							'type' => 'varchar',
+							'size' => 12
+					),
+					'value' => array(
+							'type' => 'text',
+							'not null' => TRUE
+					)
+			),
+			'indexes' => array(
+					'organism_classification_id' => array(
+							'organism_classification_id'
+					),
+					'languages_language' => array(
+							'languages_language'
+					)
+			),
+			'unique keys' => array(
+					'name' => array(
+							'name'
+					),
+					'languages_language_id_and_value' => array(
+							'languages_language_id',
+							'value'
+					),
+			),
+			'foreign keys' => array(
+					'reference to organism_classification' => array(
+							'table' => 'organism_classification',
+							'columns' => array(
+									'organism_classification_id' => 'id'
+							)
+					),
+					'reference to languages' => array(
+							'table' => 'languages_language',
+							'columns' => array(
+									'languages_language_id' => 'id'
+							)
+					)
+			),
+			'primary key' => array(
+					'organism_classification_id',
+					'languages_language_id',
+					'value'
+			)
+	);
+	return $schema;
 }
 ?>
