@@ -10,17 +10,10 @@ function organism_schema() {
 							'not null' => TRUE
 					),
 					'parent_id' => array(
-							'Reference to its parent, for root nodes this value is equal to its id',
+							'description' => 'Reference to its parent, for root nodes this value is equal to its id',
 							'type' => 'integer',
 							'unsigned' => TRUE,
 							'not null' => TRUE
-					),
-					'organism_type' => array(
-							'description' => 'Type of organism: 1 = fauna, 2 = flora',
-							'type' => 'int',
-							'size' => 'tiny',
-							'not null' => TRUE,
-							'unsigned' => TRUE
 					),
 					'left_value' => array(
 							'description' => 'All childs have a left_value > this value',
@@ -58,6 +51,205 @@ function organism_schema() {
 					)
 			)
 	);
-	return $schema;
+	$schema['organism_scientific_name'] = array(
+			'description' => 'Stores the latin name(s) for a given organism',
+			'fields' => array(
+					'organism_id' => array(
+							'type' => 'serial',
+							'unsigned' => TRUE,
+							'not null' => TRUE
+					),
+					'value' => array(
+							'type' => 'text',
+							'not null' => TRUE
+					)
+			),
+			'unique keys' => array(
+					'value' => array(
+							'value'
+					)
+			),
+			'foreign keys' => array(
+					'link to organism' => array(
+							'table' => 'organism',
+							'columns' => array(
+									'organism_id' => 'id'
+							)
+					)
+			),
+			'indexes' => array(
+					'value' => array(
+							'value'
+					),
+					'organism_id' => array(
+							'organism_id'
+					)
+			)
+	);
+	$schema['organism_file_managed'] = array(
+			'description' => 'References an image from this organism',
+			'fields' => array(
+					'organism_id' => array(
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					)
+			),
+			'file_managed_id' => array(
+					'type' => 'integer',
+					'not null' => TRUE,
+					'unsigned' => TRUE
+			),
+			'description' => array(
+					'type' => 'text'
+			),
+			'author' => array(
+					'type' => 'text'
+			),
+			'indexes' => array(
+					'organism_id' => array(
+							'organism_id'
+					),
+					'file_managed_id' => array(
+							'file_managed_id'
+					)
+			),
+			'foreign keys' => array(
+					'link to file_managed' => array(
+							'table' => 'file_managed',
+							'columns' => array(
+									'file_managed_id' => 'id'
+							)
+					),
+					'link to organism' => array(
+							'table' => 'organism',
+							'columns' => array(
+									'organism_id' => 'id'
+							)
+					)
+			)
+	);
+	// organism classifier
+	$schema['organism_classifier'] = array(
+			'description' => 'Kind of classfiers, e.g. a bookname or its author',
+			'fields' => array(
+					'id' => array(
+							'type' => 'serial',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'name' => array(
+							'type' => 'text',
+							'not null' => 'true'
+					),
+			),
+			'unique keys' => array(
+					'name' => array(
+							'name'
+					),
+			),
+			'primary key' => array(
+					'id'
+			)
+	);
+	$schema['organism_classification'] = array(
+			'description' => 'Creates a hierarchical structure of classifications',
+			'fields' => array(
+					'id' => array(
+							'type' => 'serial',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'parent_id' => array(
+							'description' => 'Reference to its parent, for root nodes this value is equal to its id',
+							'type' => 'integer',
+							'unsigned' => TRUE,
+							'not null' => TRUE
+					),
+					'left_value' => array(
+							'description' => 'All childs have a left_value > this value',
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'right_value' => array(
+							'description' => 'All childs have a right_value < this value',
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'organism_classifier_id' => array(
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					)
+			),
+			'indexes' => array(
+					'left_value' => array(
+							'left_value'
+					),
+					'right_value' => array(
+							'right_value'
+					),
+					'parent_id' => array(
+							'parent_id'
+					)
+			),
+			'foreign keys' => array(
+					'parent_child_relation' => array(
+							'table' => 'organism_classification',
+							'columns' => array(
+									'parent_id' => 'id'
+							)
+					),
+					'link to organism_classifier' => array(
+							'table' => 'organism_classifier',
+							'columns' => array(
+									'organism_classifier_id' => 'id'
+							)
+					)
+			),
+			'primary key' => array(
+					'id'
+			)
+	);
+	$schema['organism_classification'] = array(
+			'description' => '"Subscribes" an organism to organism_classifications',
+			'fields' => array(
+					'organism_classification_id' => array(
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'organism_id' => array(
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					)
+			),
+			'indexes' => array(
+					'organism_id' => array(
+							'organism_id'
+					),
+					'organism_classification_id' => array(
+							'organism_classification_id'
+					)
+			),
+			'foreign keys' => array(
+					'reference to organism' => array(
+							'table' => 'organism',
+							'columns' => array(
+									'organism_id' => 'id'
+							)
+					),
+					'reference to organism_classifiation' => array(
+							'table' => 'organism_classifiation',
+							'columns' => array(
+									'organism_classifiation_id' => 'id'
+							)
+					)
+			)
+	);
+
 }
 ?>
