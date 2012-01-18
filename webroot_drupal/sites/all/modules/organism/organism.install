@@ -1,0 +1,63 @@
+<?php
+function organism_schema() {
+	$schema['organism'] = array(
+			'description' => 'The base table for organisms.',
+			'fields' => array(
+					'id' => array(
+							'description' => 'The primary identifier for an organism.',
+							'type' => 'serial',
+							'unsigned' => TRUE,
+							'not null' => TRUE
+					),
+					'parent_id' => array(
+							'Reference to its parent, for root nodes this value is equal to its id',
+							'type' => 'integer',
+							'unsigned' => TRUE,
+							'not null' => TRUE
+					),
+					'organism_type' => array(
+							'description' => 'Type of organism: 1 = fauna, 2 = flora',
+							'type' => 'int',
+							'size' => 'tiny',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'left_value' => array(
+							'description' => 'All childs have a left_value > this value',
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					),
+					'right_value' => array(
+							'description' => 'All childs have a right_value < this value',
+							'type' => 'integer',
+							'not null' => TRUE,
+							'unsigned' => TRUE
+					)
+			),
+			'indexes' => array(
+					'left_value' => array(
+							'left_value'
+					),
+					'right_value' => array(
+							'right_value'
+					),
+					'parent_id' => array(
+							'parent_id'
+					)
+			),
+			'primary key' => array(
+					'id'
+			),
+			'foreign keys' => array(
+					'parent_child_relation' => array(
+							'table' => 'organism',
+							'columns' => array(
+									'parent_id' => 'id'
+							)
+					)
+			)
+	);
+	return $schema;
+}
+?>

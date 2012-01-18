@@ -3,3 +3,4 @@ description = Shows all available organisms from DB
 package = naturvielfalt
 core = 7.x
 version = "7.x-current"
+dependencies[] = habitat
