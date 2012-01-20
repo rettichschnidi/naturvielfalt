@@ -1,5 +1,5 @@
 name = organism
-description = Shows all available organisms from DB
+description = Manage organisms
 package = naturvielfalt
 core = 7.x
 version = "7.x-current"
