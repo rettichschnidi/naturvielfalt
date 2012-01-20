@@ -5,3 +5,4 @@
 settings.php
 test.php
 webroot_drupal/sites/default/settings.php-mac
+various/migrate/config/databases.php
