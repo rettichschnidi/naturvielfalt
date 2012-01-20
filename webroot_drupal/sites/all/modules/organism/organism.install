@@ -6,242 +6,262 @@
 function organism_schema() {
 	return array(
 			'organism_attribute_lang' => array(
-					'languages_language' => array(
-							'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
-							'type' => 'varchar',
-							'size' => '12',
-							'not null' => 'TRUE',
+					'fields' => array(
+							'languages_language' => array(
+									'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
+									'type' => 'varchar',
+									'size' => 'normal',
+									'not null' => 'TRUE',
+							),
+							'organism_attribute_id' => array(
+									'description' => 'No description for column organism_attribute_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'value' => array(
+									'description' => 'No description for column value available, please fix',
+									'type' => 'text',
+									'not null' => 'TRUE',
+							),
 					),
-					'organism_attribute_id' => array(
-							'description' => 'No description for column organism_attribute_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'value' => array(
-							'description' => 'No description for column value available, please fix',
-							'type' => 'text',
-							'not null' => 'TRUE',
-					),
-					'unique keys' => array('languages_language-organism_attribute_id' => array(
-								'languages_language',
-								' organism_attribute_id'
-						)),
-					'foreign keys' => array('organism_attribute_lang_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_attribute_id' => 'organism_attribute')
-						)),
+					'unique keys' => array('languages_language_organism_attribute_id' => array(
+								0 => 'languages_language',
+								1 => ' organism_attribute_id',
+						), ),
+					'foreign keys' => array('organism_attribute_lang_2_organism_attribute' => array(
+								'table' => 'organism_attribute',
+								'columns' => array('organism_attribute_id' => 'id', ),
+						), ),
 			),
 			'organism_attribute_value' => array(
-					'organism_attribute_id' => array(
-							'description' => 'No description for column organism_attribute_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
+					'fields' => array(
+							'organism_attribute_id' => array(
+									'description' => 'No description for column organism_attribute_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
+							'text' => array(
+									'description' => 'No description for column text available, please fix',
+									'type' => 'text',
+							),
+							'boolean' => array(
+									'description' => 'No description for column boolean available, please fix',
+									'type' => 'int',
+									'size' => 'tiny',
+							),
+							'number' => array(
+									'description' => 'No description for column number available, please fix',
+									'type' => 'int',
+							),
 					),
-					'text' => array(
-							'description' => 'No description for column text available, please fix',
-							'type' => 'text',
-					),
-					'boolean' => array(
-							'description' => 'No description for column boolean available, please fix',
-							'type' => 'boolean',
-					),
-					'number' => array(
-							'description' => 'No description for column number available, please fix',
-							'type' => 'int',
-					),
-					'foreign keys' => array('organism_attribute_value_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_attribute_id' => 'organism_attribute', ),
+					'foreign keys' => array('organism_attribute_value_2_organism_attribute' => array(
+								'table' => 'organism_attribute',
+								'columns' => array('organism_attribute_id' => 'id', ),
 						), ),
 			),
 			'organism_classification' => array(
-					'id' => array(
-							'description' => 'No description for column id available, please fix',
-							'type' => 'serial',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
-							'indexes' => array(),
-					),
-					'parent_id' => array(
-							'description' => 'If this classifier is on top level, then parent_id == 0',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'organism_classifier_id' => array(
-							'description' => 'No description for column organism_classifier_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'left_value' => array(
-							'description' => 'No description for column left_value available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
-					),
-					'right_value' => array(
-							'description' => 'No description for column right_value available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
+					'fields' => array(
+							'id' => array(
+									'description' => 'No description for column id available, please fix',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
+							'parent_id' => array(
+									'description' => 'If this classifier is on top level, then parent_id == 0',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'organism_classifier_id' => array(
+									'description' => 'No description for column organism_classifier_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'left_value' => array(
+									'description' => 'No description for column left_value available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'right_value' => array(
+									'description' => 'No description for column right_value available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
 					),
 					'primary key' => array(0 => 'id', ),
-					'foreign keys' => array('organism_classification_2_' => array(
-								'table' => '',
-								'columns' => array('organism_classifier_id' => 'organism_classifier', ),
-						), ),
+					'foreign keys' => array(
+							'organism_classification_2_organism_classification' => array(
+									'table' => 'organism_classification',
+									'columns' => array('parent_id' => 'id', ),
+							),
+							'organism_classification_2_organism_classifier' => array(
+									'table' => 'organism_classifier',
+									'columns' => array('organism_classifier_id' => 'id', ),
+							),
+					),
 					'indexes' => array(
 							'primaryKey' => array(0 => 'id', ),
 							'left_value' => array(0 => 'right_value', ),
 					),
 			),
 			'organism_classification_lang' => array(
-					'organism_classificaton_id' => array(
-							'description' => 'No description for column organism_classificaton_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'languages_language' => array(
-							'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
-							'type' => 'varchar',
-							'size' => '12',
-							'not null' => 'TRUE',
-					),
-					'value' => array(
-							'description' => 'No description for column value available, please fix',
-							'type' => 'text',
-							'not null' => 'TRUE',
+					'fields' => array(
+							'organism_classificaton_id' => array(
+									'description' => 'No description for column organism_classificaton_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'languages_language' => array(
+									'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
+									'type' => 'varchar',
+									'size' => 'normal',
+									'not null' => 'TRUE',
+							),
+							'value' => array(
+									'description' => 'No description for column value available, please fix',
+									'type' => 'text',
+									'not null' => 'TRUE',
+							),
 					),
 					'unique keys' => array(
-							'languages_language-value' => array(
+							'languages_language_value' => array(
 									0 => 'languages_language',
 									1 => ' value',
 							),
-							'organism_classificaton_id-languages_language-value' => array(
+							'organism_classificaton_id_languages_language_value' => array(
 									0 => 'organism_classificaton_id',
 									1 => ' languages_language',
 									2 => ' value',
 							),
 					),
-					'foreign keys' => array('organism_classification_lang_2_' => array(
-								'table' => '',
-								'columns' => array('organism_classificaton_id' => 'organism_classification', ),
+					'foreign keys' => array('organism_classification_lang_2_organism_classification' => array(
+								'table' => 'organism_classification',
+								'columns' => array('organism_classificaton_id' => 'id', ),
 						), ),
 			),
 			'organism_classification_subscription' => array(
-					'organism_id' => array(
-							'description' => 'No description for column organism_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
+					'fields' => array(
+							'organism_id' => array(
+									'description' => 'No description for column organism_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'organism_classification_id' => array(
+									'description' => 'No description for column organism_classification_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
 					),
-					'organism_classification_id' => array(
-							'description' => 'No description for column organism_classification_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'unique keys' => array('organism_classification_id-organism_id' => array(
+					'unique keys' => array('organism_classification_id_organism_id' => array(
 								0 => 'organism_classification_id',
 								1 => ' organism_id',
 						), ),
 					'foreign keys' => array(
-							'organism_classification_subscription_2_' => array(
-									'table' => '',
-									'columns' => array('organism_id' => 'organism_classification', ),
+							'organism_classification_subscription_2_organism_classification' => array(
+									'table' => 'organism_classification',
+									'columns' => array('organism_id' => 'id', ),
 							),
-							'organism_classification_subscription_2_public.' => array(
-									'table' => 'public.',
-									'columns' => array('organism_classification_id' => 'organism', ),
+							'organism_classification_subscription_2_organism' => array(
+									'table' => 'organism',
+									'columns' => array('organism_classification_id' => 'id', ),
 							),
 					),
 			),
 			'organism_classification_value_lang' => array(
-					'organism_classification_id' => array(
-							'description' => 'No description for column organism_classification_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
+					'fields' => array(
+							'organism_classification_id' => array(
+									'description' => 'No description for column organism_classification_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'languages_language' => array(
+									'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
+									'type' => 'varchar',
+									'size' => 'normal',
+									'not null' => 'TRUE',
+							),
+							'value' => array(
+									'description' => 'No description for column value available, please fix',
+									'type' => 'text',
+									'not null' => 'TRUE',
+							),
 					),
-					'languages_language' => array(
-							'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
-							'type' => 'varchar',
-							'size' => '12',
-							'not null' => 'TRUE',
-					),
-					'value' => array(
-							'description' => 'No description for column value available, please fix',
-							'type' => 'text',
-							'not null' => 'TRUE',
-					),
-					'unique keys' => array('organism_classification_id-languages_language-value' => array(
+					'unique keys' => array('organism_classification_id_languages_language_value' => array(
 								0 => 'organism_classification_id',
 								1 => ' languages_language',
 								2 => ' value',
 						), ),
-					'foreign keys' => array('organism_classification_value_lang_2_' => array(
-								'table' => '',
-								'columns' => array('organism_classification_id' => 'organism_classification', ),
+					'foreign keys' => array('organism_classification_value_lang_2_organism_classification' => array(
+								'table' => 'organism_classification',
+								'columns' => array('organism_classification_id' => 'id', ),
 						), ),
 			),
 			'organism_classifier' => array(
-					'id' => array(
-							'description' => 'No description for column id available, please fix',
-							'type' => 'serial',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
-					),
-					'name' => array(
-							'description' => 'Author, discoverer, book, etc.',
-							'type' => 'text',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
+					'fields' => array(
+							'id' => array(
+									'description' => 'No description for column id available, please fix',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
+							'name' => array(
+									'description' => 'Author, discoverer, book, etc.',
+									'type' => 'text',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
 					),
 					'primary key' => array(0 => 'id', ),
 			),
 			'organism_lang' => array(
-					'id' => array(
-							'description' => 'No description for column id available, please fix',
-							'type' => 'serial',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
-					),
-					'languages_language' => array(
-							'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
-							'type' => 'varchar',
-							'size' => '12',
-							'not null' => 'TRUE',
-					),
-					'organism_id' => array(
-							'description' => 'No description for column organism_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'name' => array(
-							'description' => 'No description for column name available, please fix',
-							'type' => 'text',
-							'not null' => 'TRUE',
+					'fields' => array(
+							'id' => array(
+									'description' => 'No description for column id available, please fix',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
+							'languages_language' => array(
+									'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
+									'type' => 'varchar',
+									'size' => 'normal',
+									'not null' => 'TRUE',
+							),
+							'organism_id' => array(
+									'description' => 'No description for column organism_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'name' => array(
+									'description' => 'No description for column name available, please fix',
+									'type' => 'text',
+									'not null' => 'TRUE',
+							),
 					),
 					'primary key' => array(0 => 'id', ),
-					'foreign keys' => array('organism_lang_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_id' => 'organism', ),
+					'foreign keys' => array('organism_lang_2_organism' => array(
+								'table' => 'organism',
+								'columns' => array('organism_id' => 'id', ),
 						), ),
 			),
 			'organism_scientific_name' => array(
-					'organism_id' => array(
-							'description' => 'No description for column organism_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
+					'fields' => array(
+							'organism_id' => array(
+									'description' => 'No description for column organism_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'value' => array(
+									'description' => 'No description for column value available, please fix',
+									'type' => 'text',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
 					),
-					'value' => array(
-							'description' => 'No description for column value available, please fix',
-							'type' => 'text',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
-							'indexes' => array(),
-					),
-					'foreign keys' => array('organism_scientific_name_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_id' => 'organism', ),
+					'foreign keys' => array('organism_scientific_name_2_organism' => array(
+								'table' => 'organism',
+								'columns' => array('organism_id' => 'id', ),
 						), ),
 					'indexes' => array(
 							'organism_id' => array(0 => 'organism_id', ),
@@ -249,34 +269,33 @@ function organism_schema() {
 					),
 			),
 			'organism' => array(
-					'id' => array(
-							'description' => 'No description for column id available, please fix',
-							'type' => 'serial',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
-							'indexes' => array(),
-					),
-					'parent_id' => array(
-							'description' => 'If this organism is not part of an aggregated organism, then parent_id == id',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'left_value' => array(
-							'description' => 'Used to build a hierarchically class',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
-					),
-					'right_value' => array(
-							'description' => 'Used to build a hierarchically class',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
+					'fields' => array(
+							'id' => array(
+									'description' => 'No description for column id available, please fix',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
+							'parent_id' => array(
+									'description' => 'If this organism is not part of an aggregated organism, then parent_id == id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'left_value' => array(
+									'description' => 'Used to build a hierarchically class',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'right_value' => array(
+									'description' => 'Used to build a hierarchically class',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
 					),
 					'primary key' => array(0 => 'id', ),
-					'foreign keys' => array('organism_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('parent_id' => 'organism', ),
+					'foreign keys' => array('organism_2_organism' => array(
+								'table' => 'organism',
+								'columns' => array('parent_id' => 'id', ),
 						), ),
 					'indexes' => array(
 							'FK_organism_11' => array(0 => 'id', ),
@@ -285,61 +304,64 @@ function organism_schema() {
 					),
 			),
 			'organism_attribute' => array(
-					'id' => array(
-							'description' => 'No description for column id available, please fix',
-							'type' => 'serial',
-							'not null' => 'TRUE',
-							'unique' => 'TRUE',
-					),
-					'organism_id' => array(
-							'description' => 'No description for column organism_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-					),
-					'valuetype' => array(
-							'description' => 'Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number',
-							'type' => 'char',
-							'not null' => 'TRUE',
-					),
-					'optional' => array(
-							'description' => 'No description for column optional available, please fix',
-							'type' => 'boolean',
-							'not null' => 'TRUE',
+					'fields' => array(
+							'id' => array(
+									'description' => 'No description for column id available, please fix',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'unique' => 'TRUE',
+							),
+							'organism_id' => array(
+									'description' => 'No description for column organism_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'valuetype' => array(
+									'description' => 'Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number',
+									'type' => 'char',
+									'not null' => 'TRUE',
+							),
+							'optional' => array(
+									'description' => 'No description for column optional available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'size' => 'tiny',
+							),
 					),
 					'primary key' => array(0 => 'id', ),
-					'foreign keys' => array('organism_attribute_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_id' => 'organism', ),
+					'foreign keys' => array('organism_attribute_2_organism' => array(
+								'table' => 'organism',
+								'columns' => array('organism_id' => 'id', ),
 						), ),
 			),
 			'organism_file_managed' => array(
-					'organism_id' => array(
-							'description' => 'No description for column organism_id available, please fix',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
+					'fields' => array(
+							'organism_id' => array(
+									'description' => 'No description for column organism_id available, please fix',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'file_managed_id' => array(
+									'description' => 'file_managed_id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'description' => array(
+									'description' => 'No description for column description available, please fix',
+									'type' => 'text',
+							),
+							'author' => array(
+									'description' => 'Stores information about the author of the document',
+									'type' => 'text',
+							),
 					),
-					'file_managed_id' => array(
-							'description' => 'file_managed_id',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
-					),
-					'description' => array(
-							'description' => 'No description for column description available, please fix',
-							'type' => 'text',
-					),
-					'author' => array(
-							'description' => 'Stores information about the author of the document',
-							'type' => 'text',
-					),
-					'unique keys' => array('organism_id-file_managed_id' => array(
+					'unique keys' => array('organism_id_file_managed_id' => array(
 								0 => 'organism_id',
 								1 => ' file_managed_id',
 						), ),
-					'foreign keys' => array('organism_file_managed_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_id' => 'organism', ),
+					'foreign keys' => array('organism_file_managed_2_organism' => array(
+								'table' => 'organism',
+								'columns' => array('organism_id' => 'id', ),
 						), ),
 					'indexes' => array(
 							'fki_organism_file_managed_ibfk_1' => array(0 => 'organism_id', ),
@@ -347,30 +369,32 @@ function organism_schema() {
 					),
 			),
 			'organism_habitat_subscription' => array(
-					'organism_id' => array(
-							'description' => 'FK to organism.id',
-							'type' => 'int',
-							'not null' => 'TRUE',
-							'indexes' => array(),
+					'fields' => array(
+							'organism_id' => array(
+									'description' => 'FK to organism.id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+							),
+							'habitat_id' => array(
+									'description' => 'FK to habitat.id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'characteristic_organism' => array(
+									'description' => 'True if this organism is a characteristic organism (Leitorganismus) for this habitat.',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'size' => 'tiny',
+							),
 					),
-					'habitat_id' => array(
-							'description' => 'FK to habitat.id',
-							'type' => 'bigint',
-							'not null' => 'TRUE',
-							'indexes' => array(),
-					),
-					'characteristic_organism' => array(
-							'description' => 'True if this organism is a characteristic organism (Leitorganismus) for this habitat.',
-							'type' => 'boolean',
-							'not null' => 'TRUE',
-					),
-					'unique keys' => array('organism_id-habitat_id' => array(
+					'unique keys' => array('organism_id_habitat_id' => array(
 								0 => 'organism_id',
 								1 => ' habitat_id',
 						), ),
-					'foreign keys' => array('organism_habitat_subscription_2_public.' => array(
-								'table' => 'public.',
-								'columns' => array('organism_id' => 'organism', ),
+					'foreign keys' => array('organism_habitat_subscription_2_organism' => array(
+								'table' => 'organism',
+								'columns' => array('organism_id' => 'id', ),
 						), ),
 					'indexes' => array(
 							'organism_habitat_habitat_id_idx' => array(0 => 'habitat_id', ),

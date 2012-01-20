@@ -51,7 +51,7 @@
 			<create_comment>true</create_comment>
 			<create_foreignKey>true</create_foreignKey>
 			<create_index>true</create_index>
-			<create_sequence>false</create_sequence>
+			<create_sequence>true</create_sequence>
 			<create_table>true</create_table>
 			<create_tablespace>true</create_tablespace>
 			<create_trigger>true</create_trigger>
@@ -162,7 +162,7 @@
 			</connections>
 			<display>true</display>
 			<creation_date>2012-01-16 15:39:47</creation_date>
-			<updated_date>2012-01-19 15:54:24</updated_date>
+			<updated_date>2012-01-20 08:55:25</updated_date>
 			<model_property>
 				<name>Project Name</name>
 				<value>naturvielfalt</value>
@@ -1813,7 +1813,7 @@
 			<connections>
 				<relation>
 					<id>2</id>
-					<source>14</source>
+					<source>0</source>
 					<target>4</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -1830,7 +1830,7 @@
 				</relation>
 				<relation>
 					<id>3</id>
-					<source>0</source>
+					<source>14</source>
 					<target>4</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -1856,7 +1856,7 @@
 				<normal_column>
 					<id>24</id>
 					<referenced_column>65</referenced_column>
-					<relation>2</relation>
+					<relation>3</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_id</logical_name>
@@ -1889,7 +1889,7 @@
 				<normal_column>
 					<id>25</id>
 					<referenced_column>0</referenced_column>
-					<relation>3</relation>
+					<relation>2</relation>
 					<description>file_managed_id</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>file_managed_id</logical_name>
@@ -2811,23 +2811,6 @@
 			<connections>
 				<relation>
 					<id>7</id>
-					<source>1</source>
-					<target>8</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>100</target_xp>
-					<target_yp>51</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>8</id>
 					<source>7</source>
 					<target>8</target>
 					<child_cardinality>1..n</child_cardinality>
@@ -2843,6 +2826,23 @@
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
 				</relation>
+				<relation>
+					<id>8</id>
+					<source>1</source>
+					<target>8</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>100</target_xp>
+					<target_yp>51</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
 			</connections>
 			<physical_name>organism_classification_lang</physical_name>
 			<logical_name>organism_classification_lang</logical_name>
@@ -2854,7 +2854,7 @@
 				<normal_column>
 					<id>45</id>
 					<referenced_column>40</referenced_column>
-					<relation>8</relation>
+					<relation>7</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_classificaton_id</logical_name>
@@ -2887,7 +2887,7 @@
 				<normal_column>
 					<id>46</id>
 					<referenced_column>8</referenced_column>
-					<relation>7</relation>
+					<relation>8</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>languages_language</logical_name>
@@ -3002,23 +3002,6 @@
 			<connections>
 				<relation>
 					<id>9</id>
-					<source>14</source>
-					<target>9</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>10</id>
 					<source>1</source>
 					<target>9</target>
 					<child_cardinality>1..n</child_cardinality>
@@ -3031,6 +3014,23 @@
 					<source_yp>-1</source_yp>
 					<target_xp>100</target_xp>
 					<target_yp>78</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>10</id>
+					<source>14</source>
+					<target>9</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
 				</relation>
@@ -3077,7 +3077,7 @@
 				<normal_column>
 					<id>49</id>
 					<referenced_column>8</referenced_column>
-					<relation>10</relation>
+					<relation>9</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>languages_language</logical_name>
@@ -3110,7 +3110,7 @@
 				<normal_column>
 					<id>50</id>
 					<referenced_column>65</referenced_column>
-					<relation>9</relation>
+					<relation>10</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_id</logical_name>
@@ -4096,12 +4096,12 @@
 			<connections>
 				<relation>
 					<id>18</id>
-					<source>14</source>
+					<source>6</source>
 					<target>15</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
-					<name></name>
+					<name>FK_organism_habitat_1</name>
 					<on_delete_action>CASCADE</on_delete_action>
 					<on_update_action>NO ACTION</on_update_action>
 					<source_xp>-1</source_xp>
@@ -4113,12 +4113,12 @@
 				</relation>
 				<relation>
 					<id>19</id>
-					<source>6</source>
+					<source>14</source>
 					<target>15</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
-					<name>FK_organism_habitat_1</name>
+					<name></name>
 					<on_delete_action>CASCADE</on_delete_action>
 					<on_update_action>NO ACTION</on_update_action>
 					<source_xp>-1</source_xp>
@@ -4139,7 +4139,7 @@
 				<normal_column>
 					<id>69</id>
 					<referenced_column>65</referenced_column>
-					<relation>18</relation>
+					<relation>19</relation>
 					<description>FK to organism.id</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>FK to organism.id</logical_name>
@@ -4172,7 +4172,7 @@
 				<normal_column>
 					<id>70</id>
 					<referenced_column>30</referenced_column>
-					<relation>19</relation>
+					<relation>18</relation>
 					<description>FK to habitat.id</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>FK to habitat.id</logical_name>
