@@ -6,17 +6,17 @@
 $drupalprefix = 'drupal_';
 
 $config['swissmon'] = array(
-		'name' => 'swissmon',
-		'user' => 'swissmon',
-		'password' => 'Shee2ha7oonahv5eimai',
-		'host' => '82.220.2.223',
+		'name' => 'olddb',
+		'user' => 'olduser',
+		'password' => 'password',
+		'host' => 'host',
 		'driver' => 'pgsql'
 );
 
 $config['naturvielfalt_dev'] = array(
-		'name' => 'naturvielfalt_dev',
-		'user' => 'postgres',
-		'password' => 'postgres',
+		'name' => 'newdb',
+		'user' => 'newuser',
+		'password' => 'password',
 		'host' => 'localhost',
 		'driver' => 'pgsql'
 );
