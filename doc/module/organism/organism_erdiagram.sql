@@ -18,12 +18,10 @@ DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
 /* Drop Tables */
 
-DROP TABLE IF EXISTS organism_attribute_lang;
 DROP TABLE IF EXISTS organism_attribute_value;
-DROP TABLE IF EXISTS organism_classification_lang;
 DROP TABLE IF EXISTS organism_classification_subscription;
-DROP TABLE IF EXISTS organism_classification_value_lang;
 DROP TABLE IF EXISTS organism_classification;
+DROP TABLE IF EXISTS organism_classification_level;
 DROP TABLE IF EXISTS organism_classifier;
 DROP TABLE IF EXISTS organism_lang;
 DROP TABLE IF EXISTS organism_scientific_name;
@@ -37,16 +35,6 @@ DROP TABLE IF EXISTS public.organism;
 
 /* Create Tables */
 
-CREATE TABLE organism_attribute_lang
-(
-	-- Language code, e.g. 'de' or 'en-US'.
-	languages_language varchar(12) DEFAULT '''''::character varying' NOT NULL,
-	organism_attribute_id int NOT NULL,
-	value text NOT NULL,
-	UNIQUE (languages_language, organism_attribute_id)
-) WITHOUT OIDS;
-
-
 CREATE TABLE organism_attribute_value
 (
 	organism_attribute_id int NOT NULL UNIQUE,
@@ -58,24 +46,25 @@ CREATE TABLE organism_attribute_value
 
 CREATE TABLE organism_classification
 (
+	id serial NOT NULL,
+	organism_classification_level_id int NOT NULL,
+	name text,
+	PRIMARY KEY (id),
+	UNIQUE (id, organism_classification_level_id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_classification_level
+(
 	id serial NOT NULL UNIQUE,
 	-- If this classifier is on top level, then parent_id == 0
 	parent_id int,
 	organism_classifier_id int NOT NULL,
 	left_value int DEFAULT 1 NOT NULL,
 	right_value int DEFAULT 2 NOT NULL,
+	-- Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus
+	name text NOT NULL,
 	PRIMARY KEY (id)
-) WITHOUT OIDS;
-
-
-CREATE TABLE organism_classification_lang
-(
-	organism_classificaton_id int NOT NULL,
-	-- Language code, e.g. 'de' or 'en-US'.
-	languages_language varchar(12) DEFAULT '''''::character varying' NOT NULL,
-	value text NOT NULL,
-	UNIQUE (languages_language, value),
-	UNIQUE (organism_classificaton_id, languages_language, value)
 ) WITHOUT OIDS;
 
 
@@ -83,24 +72,14 @@ CREATE TABLE organism_classification_subscription
 (
 	organism_id int NOT NULL,
 	organism_classification_id int NOT NULL,
-	UNIQUE (organism_classification_id, organism_id)
-) WITHOUT OIDS;
-
-
-CREATE TABLE organism_classification_value_lang
-(
-	organism_classification_id int NOT NULL,
-	-- Language code, e.g. 'de' or 'en-US'.
-	languages_language varchar(12) DEFAULT '''''::character varying' NOT NULL,
-	value text NOT NULL,
-	UNIQUE (organism_classification_id, languages_language, value)
+	UNIQUE (organism_id)
 ) WITHOUT OIDS;
 
 
 CREATE TABLE organism_classifier
 (
 	id serial NOT NULL UNIQUE,
-	-- Author, discoverer, book, etc.
+	-- Name of this attribute. Gets translated by Drupal.
 	name text NOT NULL UNIQUE,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
@@ -143,7 +122,10 @@ CREATE TABLE public.organism_attribute
 	organism_id int NOT NULL,
 	-- Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number
 	valuetype char NOT NULL,
+	-- Wether this attribute is optional (true) or not (false).
 	optional boolean NOT NULL,
+	-- Name of this attribute. Gets translated by Drupal.
+	name text NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -175,31 +157,7 @@ CREATE TABLE public.organism_habitat_subscription
 
 /* Create Foreign Keys */
 
-ALTER TABLE organism_classification
-	ADD FOREIGN KEY (parent_id)
-	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE organism_classification_lang
-	ADD FOREIGN KEY (organism_classificaton_id)
-	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
 ALTER TABLE organism_classification_subscription
-	ADD FOREIGN KEY (organism_id)
-	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE organism_classification_value_lang
 	ADD FOREIGN KEY (organism_classification_id)
 	REFERENCES organism_classification (id)
 	ON UPDATE RESTRICT
@@ -208,6 +166,22 @@ ALTER TABLE organism_classification_value_lang
 
 
 ALTER TABLE organism_classification
+	ADD FOREIGN KEY (organism_classification_level_id)
+	REFERENCES organism_classification_level (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_classification_level
+	ADD FOREIGN KEY (parent_id)
+	REFERENCES organism_classification_level (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_classification_level
 	ADD FOREIGN KEY (organism_classifier_id)
 	REFERENCES organism_classifier (id)
 	ON UPDATE RESTRICT
@@ -216,7 +190,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_subscription
-	ADD FOREIGN KEY (organism_classification_id)
+	ADD FOREIGN KEY (organism_id)
 	REFERENCES public.organism (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -271,14 +245,6 @@ ALTER TABLE public.organism_habitat_subscription
 ;
 
 
-ALTER TABLE organism_attribute_lang
-	ADD FOREIGN KEY (organism_attribute_id)
-	REFERENCES public.organism_attribute (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
 ALTER TABLE organism_attribute_value
 	ADD FOREIGN KEY (organism_attribute_id)
 	REFERENCES public.organism_attribute (id)
@@ -290,9 +256,9 @@ ALTER TABLE organism_attribute_value
 
 /* Create Indexes */
 
-CREATE INDEX primaryKey ON organism_classification USING BTREE (id);
-CREATE INDEX left_value ON organism_classification (left_value);
-CREATE INDEX left_value ON organism_classification (right_value);
+CREATE INDEX primaryKey ON organism_classification_level USING BTREE (id);
+CREATE INDEX left_value ON organism_classification_level (left_value);
+CREATE INDEX left_value ON organism_classification_level (right_value);
 CREATE INDEX organism_id ON organism_scientific_name (organism_id);
 CREATE INDEX value ON organism_scientific_name (value);
 CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);
@@ -307,16 +273,16 @@ CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscri
 
 /* Comments */
 
-COMMENT ON COLUMN organism_attribute_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
-COMMENT ON COLUMN organism_classification.parent_id IS 'If this classifier is on top level, then parent_id == 0';
-COMMENT ON COLUMN organism_classification_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
-COMMENT ON COLUMN organism_classification_value_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
-COMMENT ON COLUMN organism_classifier.name IS 'Author, discoverer, book, etc.';
+COMMENT ON COLUMN organism_classification_level.parent_id IS 'If this classifier is on top level, then parent_id == 0';
+COMMENT ON COLUMN organism_classification_level.name IS 'Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus';
+COMMENT ON COLUMN organism_classifier.name IS 'Name of this attribute. Gets translated by Drupal.';
 COMMENT ON COLUMN organism_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
 COMMENT ON COLUMN public.organism.parent_id IS 'If this organism is not part of an aggregated organism, then parent_id == id';
 COMMENT ON COLUMN public.organism.left_value IS 'Used to build a hierarchically class';
 COMMENT ON COLUMN public.organism.right_value IS 'Used to build a hierarchically class';
 COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number';
+COMMENT ON COLUMN public.organism_attribute.optional IS 'Wether this attribute is optional (true) or not (false).';
+COMMENT ON COLUMN public.organism_attribute.name IS 'Name of this attribute. Gets translated by Drupal.';
 COMMENT ON COLUMN public.organism_file_managed.file_managed_id IS 'file_managed_id';
 COMMENT ON COLUMN public.organism_file_managed.author IS 'Stores information about the author of the document';
 COMMENT ON COLUMN public.organism_habitat_subscription.organism_id IS 'FK to organism.id';
