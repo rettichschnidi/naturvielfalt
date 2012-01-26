@@ -107,7 +107,7 @@ function getUnique(&$line) {
 }
 
 function getPrimaryKey(&$line) {
-	if (preg_match('/^PRIMARY KEY\ \(([a-z0-9_,\ ]*)\)$/', $line, $match)) {
+	if (preg_match('/^PRIMARY KEY\ \(([a-z0-9_,\ ]*)\),?$/', $line, $match)) {
 		$found = $match[1];
 		$keys = preg_split('/,/', $found);
 		return $keys;
@@ -235,7 +235,7 @@ function handleCreateTable(&$schema, &$input, &$line) {
 				$schema[$tabName]['primary key'] = $primaryKey;
 				continue;
 			}
-			fprint(STDERR, "Unknown statements within CREATE TABLE: $line\n");
+			fwrite(STDERR, "Unknown statements within CREATE TABLE: $line\n");
 		}
 		return true;
 	}
