@@ -9,7 +9,7 @@
 /**
  * 
  * Enter description here ...
- * @param unknown_type $organismId
+ * @param integer $organismId
  * @return array
  */
 function organism_show($organismId) {
@@ -31,13 +31,23 @@ function organism_show($organismId) {
  * @return Ambigous <multitype:string , multitype:The , multitype:string number boolean multitype:multitype:string   Ambigous <The, string, A, Returns, multitype:Ambigous <> , multitype:Optional > >
  */	
 function getOrganismDetails($organismId) {
-	$result = db_query(
-			'SELECT organism.id, organism.organism_type, flo.name flora_name, flo.name_de, fao.genus fauna_genus, fao.species fauna_species, fao.name_de fauna_namede, frl.red_list_ch, fao.protection_ch
-		FROM organism
-		LEFT JOIN flora_organism flo ON organism.organism_id = flo.id
-		LEFT JOIN fauna_organism fao ON organism.organism_id = fao.id
-		LEFT JOIN flora_red_list frl ON flo.id = frl.flora_organism_id
-		WHERE organism.id = :id limit 1', array(":id" => $organismId));
+	$result = db_query('SELECT
+			organism.id,
+			organism.organism_type,
+			flo.name flora_name,
+			flo.name_de,
+			fao.genus fauna_genus,
+			fao.species fauna_species,
+			fao.name_de fauna_namede,
+			frl.red_list_ch,
+			fao.protection_ch
+		FROM
+			organism
+			LEFT JOIN flora_organism flo ON organism.organism_id = flo.id
+			LEFT JOIN fauna_organism fao ON organism.organism_id = fao.id
+			LEFT JOIN flora_red_list frl ON flo.id = frl.flora_organism_id
+		WHERE
+			organism.id = :id limit 1', array(":id" => $organismId));
 
 	$row = array();
 	$record = $result->fetch();

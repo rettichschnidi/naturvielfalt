@@ -17,13 +17,22 @@ function organism_lexika_show($organism_id) {
 					'group' => CSS_DEFAULT,
 					'every_page' => TRUE
 			));
-	$organism = db_query(
-			'
-		SELECT o.organism_type, fo."Gattung" gattung, fo."Art" art, fa.genus, fa.species, fo.name_de floraname, fa.name_de faunaname
-		FROM organism o
-		LEFT JOIN flora_organism fo ON o.organism_id = fo.id
-		LEFT JOIN fauna_organism fa ON o.organism_id = fa.id
-		WHERE o.id = :id', array(':id' => $organism_id));
+	$organism = db_query('SELECT
+			o.organism_type,
+			fo."Gattung" gattung,
+			fo."Art" art,
+			fa.genus,
+			fa.species,
+			fo.name_de
+			floraname,
+			fa.name_de
+			faunaname
+		FROM
+			organism o
+			LEFT JOIN flora_organism fo ON o.organism_id = fo.id
+			LEFT JOIN fauna_organism fa ON o.organism_id = fa.id
+		WHERE
+			o.id = :id', array(':id' => $organism_id));
 
 	$organism = $organism->fetch();
 	if ($organism->organism_type == '1') {

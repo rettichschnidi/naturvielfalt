@@ -9,7 +9,6 @@
  * This function is called when the user clicks on a row
  */
 function organismRowSelect() {
-
 	organismRowSelect.prototype.onTableRowClicked = function(e) {
 		if (!e)
 			e = window.event;
