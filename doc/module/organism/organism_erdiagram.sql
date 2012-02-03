@@ -51,9 +51,11 @@ CREATE TABLE organism_attribute_value
 
 CREATE TABLE organism_attribute_value_subscription
 (
+	id serial NOT NULL UNIQUE,
 	organism_id int NOT NULL,
 	-- Used just for importing
 	organism_attribute_value_id int NOT NULL,
+	PRIMARY KEY (id),
 	UNIQUE (organism_id, organism_attribute_value_id)
 ) WITHOUT OIDS;
 
@@ -62,9 +64,9 @@ CREATE TABLE organism_classification
 (
 	id serial NOT NULL,
 	organism_classification_level_id int NOT NULL,
-	name text,
+	name text NOT NULL,
 	PRIMARY KEY (id),
-	UNIQUE (id, organism_classification_level_id)
+	UNIQUE (organism_classification_level_id, name)
 ) WITHOUT OIDS;
 
 
@@ -72,7 +74,7 @@ CREATE TABLE organism_classification_level
 (
 	id serial NOT NULL UNIQUE,
 	-- If this classifier is on top level, then parent_id = 0
-	parent_id int,
+	parent_id int NOT NULL,
 	organism_classifier_id int NOT NULL,
 	left_value int DEFAULT 1 NOT NULL,
 	right_value int DEFAULT 2 NOT NULL,
@@ -85,9 +87,11 @@ CREATE TABLE organism_classification_level
 
 CREATE TABLE organism_classification_subscription
 (
+	id serial NOT NULL UNIQUE,
 	organism_id int NOT NULL,
 	organism_classification_id int NOT NULL,
-	UNIQUE (organism_id)
+	PRIMARY KEY (id),
+	UNIQUE (organism_id, organism_classification_id)
 ) WITHOUT OIDS;
 
 
@@ -108,7 +112,8 @@ CREATE TABLE organism_lang
 	languages_language varchar(12) DEFAULT '''''::character varying' NOT NULL,
 	organism_id int NOT NULL,
 	name text NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (languages_language, organism_id)
 ) WITHOUT OIDS;
 
 
@@ -119,7 +124,8 @@ CREATE TABLE organism_scientific_name
 	organism_id int NOT NULL,
 	-- scientific, latin name
 	name text NOT NULL UNIQUE,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (organism_id, name)
 ) WITHOUT OIDS;
 
 
@@ -129,7 +135,7 @@ CREATE TABLE public.organism
 	-- If this organism is not part of an aggregated organism, then parent_id = 0
 	parent_id int NOT NULL,
 	-- Points to the root node of this element
-	prime_father int NOT NULL,
+	prime_father_id int NOT NULL,
 	-- Used to build a hierarchically class
 	left_value int DEFAULT 1 NOT NULL,
 	-- Used to build a hierarchically class
@@ -143,10 +149,8 @@ CREATE TABLE public.organism_attribute
 	id serial NOT NULL UNIQUE,
 	-- Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number
 	valuetype char NOT NULL,
-	-- Wether this attribute is optional (true) or not (false).
-	optional boolean NOT NULL,
 	-- Name of this attribute. Gets translated by Drupal.
-	name text NOT NULL,
+	name text NOT NULL UNIQUE,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -205,7 +209,7 @@ ALTER TABLE organism_classification
 ALTER TABLE organism_classification_level
 	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
@@ -253,7 +257,7 @@ ALTER TABLE organism_scientific_name
 ALTER TABLE public.organism
 	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
@@ -311,11 +315,10 @@ COMMENT ON COLUMN organism_lang.languages_language IS 'Language code, e.g. ''de'
 COMMENT ON COLUMN organism_scientific_name.id IS 'Used just for importing';
 COMMENT ON COLUMN organism_scientific_name.name IS 'scientific, latin name';
 COMMENT ON COLUMN public.organism.parent_id IS 'If this organism is not part of an aggregated organism, then parent_id = 0';
-COMMENT ON COLUMN public.organism.prime_father IS 'Points to the root node of this element';
+COMMENT ON COLUMN public.organism.prime_father_id IS 'Points to the root node of this element';
 COMMENT ON COLUMN public.organism.left_value IS 'Used to build a hierarchically class';
 COMMENT ON COLUMN public.organism.right_value IS 'Used to build a hierarchically class';
 COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number';
-COMMENT ON COLUMN public.organism_attribute.optional IS 'Wether this attribute is optional (true) or not (false).';
 COMMENT ON COLUMN public.organism_attribute.name IS 'Name of this attribute. Gets translated by Drupal.';
 COMMENT ON COLUMN public.organism_file_managed.file_managed_id IS 'file_managed_id';
 COMMENT ON COLUMN public.organism_file_managed.author IS 'Stores information about the author of the document';
