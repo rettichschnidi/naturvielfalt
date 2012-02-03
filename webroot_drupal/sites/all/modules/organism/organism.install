@@ -70,6 +70,12 @@ function organism_schema() {
   array (
     'fields' => 
     array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
       'organism_id' => 
       array (
         'description' => 'No description for column organism_id available, please fix',
@@ -85,11 +91,19 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
       'organism_id_organism_attribute_value_id' => 
       array (
         0 => 'organism_id',
         1 => ' organism_attribute_value_id',
       ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
     ),
     'foreign keys' => 
     array (
@@ -131,6 +145,7 @@ function organism_schema() {
       array (
         'description' => 'No description for column name available, please fix',
         'type' => 'text',
+        'not null' => 'TRUE',
       ),
     ),
     'primary key' => 
@@ -139,10 +154,10 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
-      'id_organism_classification_level_id' => 
+      'organism_classification_level_id_name' => 
       array (
-        0 => 'id',
-        1 => ' organism_classification_level_id',
+        0 => 'organism_classification_level_id',
+        1 => ' name',
       ),
     ),
     'foreign keys' => 
@@ -171,6 +186,7 @@ function organism_schema() {
       array (
         'description' => 'If this classifier is on top level, then parent_id = 0',
         'type' => 'int',
+        'not null' => 'TRUE',
       ),
       'organism_classifier_id' => 
       array (
@@ -250,6 +266,12 @@ function organism_schema() {
   array (
     'fields' => 
     array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
       'organism_id' => 
       array (
         'description' => 'No description for column organism_id available, please fix',
@@ -265,10 +287,19 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
-      'organism_id' => 
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'organism_id_organism_classification_id' => 
       array (
         0 => 'organism_id',
+        1 => ' organism_classification_id',
       ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
     ),
     'foreign keys' => 
     array (
@@ -366,6 +397,11 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
+      'languages_language_organism_id' => 
+      array (
+        0 => 'languages_language',
+        1 => ' organism_id',
+      ),
     ),
     'primary key' => 
     array (
@@ -416,6 +452,11 @@ function organism_schema() {
       array (
         0 => 'name',
       ),
+      'organism_id_name' => 
+      array (
+        0 => 'organism_id',
+        1 => ' name',
+      ),
     ),
     'primary key' => 
     array (
@@ -460,7 +501,7 @@ function organism_schema() {
         'type' => 'int',
         'not null' => 'TRUE',
       ),
-      'prime_father' => 
+      'prime_father_id' => 
       array (
         'description' => 'Points to the root node of this element',
         'type' => 'int',
@@ -535,13 +576,6 @@ function organism_schema() {
         'type' => 'char',
         'not null' => 'TRUE',
       ),
-      'optional' => 
-      array (
-        'description' => 'Wether this attribute is optional (true) or not (false).',
-        'type' => 'int',
-        'not null' => 'TRUE',
-        'size' => 'tiny',
-      ),
       'name' => 
       array (
         'description' => 'Name of this attribute. Gets translated by Drupal.',
@@ -554,6 +588,10 @@ function organism_schema() {
       'id' => 
       array (
         0 => 'id',
+      ),
+      'name' => 
+      array (
+        0 => 'name',
       ),
     ),
     'primary key' => 
