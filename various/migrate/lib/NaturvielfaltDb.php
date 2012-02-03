@@ -449,7 +449,6 @@ class NaturvielfaltDb extends Db {
 		);
 		$num = $this -> insert_query($columnArray, $table, $typesArray, $valuesArray);
 		assert($num == 1);
-		print "NUM: " . var_export($num, true) . "\n";
 		$ids = $this -> getIdArray_query($columnArray, $table, $typesArray, $valuesArray);
 		assert(count($ids) == 1);
 		return $ids[0];

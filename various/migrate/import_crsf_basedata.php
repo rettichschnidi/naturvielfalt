@@ -42,7 +42,7 @@ $organism_classifier_id = 0;
 	if (!$db -> haveClassifier($crsfCode)) {
 		$db -> createClassifier($crsfCode, 1);
 	} else {
-		print "CRSF classification already existing.\n";
+		print $crsfCode . " classification already existing.\n";
 	}
 	$organism_classifier_id = $db -> getClassifierId($crsfCode);
 	assert($organism_classifier_id != 0);
@@ -56,10 +56,10 @@ $organism_attribute_id = 0;
 {
 	$attribute_name = 'SISF-Nr.';
 	if (!$db -> haveAttributeName($attribute_name)) {
-		$db -> createAttribute('SISF-Nr.', 'n');
+		$db -> createAttribute($attribute_name, 'n');
 	}
 	$organism_attribute_id = $db -> getAttributeId($attribute_name);
-	print "Attribute id for 'SIFS-Nr.': $organism_attribute_id\n";
+	print "Attribute id for '$attribute_name': $organism_attribute_id\n";
 	assert($organism_attribute_id != 0);
 }
 
@@ -70,11 +70,12 @@ $organism_attribute_id = 0;
  */
 $organism_classification_level_id = 0;
 {
-	if (!$db -> haveClassificationLevel('family', $organism_classifier_id)) {
-		$db -> createClassificationLevel('family', NULL, $organism_classifier_id);
+	$classification_level_name = 'family';
+	if (!$db -> haveClassificationLevel($classification_level_name, $organism_classifier_id)) {
+		$db -> createClassificationLevel($classification_level_name, NULL, $organism_classifier_id);
 	}
-	$organism_classification_level_id = $db -> getClassificationLevelId('family', $organism_classifier_id);
-	print "Classification level id for 'family': $organism_classification_level_id\n";
+	$organism_classification_level_id = $db -> getClassificationLevelId($classification_level_name, $organism_classifier_id);
+	print "Classification level id for '$classification_level_name': $organism_classification_level_id\n";
 	assert($organism_classification_level_id != 0);
 }
 
