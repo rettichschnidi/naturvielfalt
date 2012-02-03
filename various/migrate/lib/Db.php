@@ -65,33 +65,48 @@ class Db {
 	 * @return array
 	 */
 
-	public function query($query, $typesArray, $valuesArray) {
+	public function query($query, $typesArray, $valuesArray, $isSelect = true, $assoziativeResult = true) {
 		global $errors;
 		$results = false;
-		$statement = &$this -> connection -> prepare($query, $typesArray);
+		if ($isSelect) {
+			$statement = &$this -> connection -> prepare($query, $typesArray);
+		} else {
+			$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
+		}
 		if (PEAR::isError($statement)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $statement -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $statement -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
+			$errors[] = $statement -> getMessage();
+			$errors[] = $statement -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			$errors[] = "Values : " . var_export($valuesArray, true);
 			return $results;
 		}
 		$res = $statement -> execute($valuesArray);
 		if (PEAR::isError($res)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $res -> getMessage() . "\n" . $res -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($valuesArray, true);
+			$errors[] = $res -> getMessage();
+			$errors[] = $res -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			$errors[] = "Values : " . var_export($valuesArray, true);
 			return $results;
 		}
-		while ($row = $res -> fetchRow()) {
-			$array = array();
-			foreach ($row as $field) {
-				$array[] = $field;
+		$statement -> free();
+		if ($isSelect) {
+			if ($assoziativeResult) {
+				$this -> connection -> setFetchMode(MDB2_FETCHMODE_ASSOC);
+			} else {
+				$this -> connection -> setFetchMode(MDB2_FETCHMODE_ORDERED);
 			}
-			$results[] = $array;
+
+			while ($row = $res -> fetchRow()) {
+				$results[] = $row;
+			}
+			return $results;
+		} else {
+			//return the affected rows
+			return $res;
 		}
-		return $results;
+		die(__FILE__ . '@' . __LINE__ . ": WTF?\n");
 	}
 
 	/**
@@ -130,24 +145,24 @@ class Db {
 		assert(is_array($valuesArray));
 		$columns = implode(',', $columnNameArray);
 		$query = $ownselect . ' ' . $columns . ' ' . $fromQuery;
-		 print "SELECTQUERY:  $query\n";
-		 print "SELECTTYPES:  " . var_export($typesArray, true) . "\n";
-		 print "SELECTVALUES: " . var_export($valuesArray, true) . "\n";
+		// print "SELECTQUERY:  $query\n";
+		// print "SELECTTYPES:  " . var_export($typesArray, true) . "\n";
+		// print "SELECTVALUES: " . var_export($valuesArray, true) . "\n";
 		$statement = &$this -> connection -> prepare($query, $typesArray);
 		if (PEAR::isError($statement)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $statement -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $statement -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
+			$errors[] = $statement -> getMessage();
+			$errors[] = $statement -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
 		$rows = $statement -> execute($valuesArray);
 		if (PEAR::isError($rows)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $rows -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $rows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($valuesArray, true);
+			$errors[] = $rows -> getMessage();
+			$errors[] = $rows -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			$errors[] = "Values : " . var_export($valuesArray, true);
 			return false;
 		}
 		if ($assoziative) {
@@ -155,9 +170,11 @@ class Db {
 		} else {
 			$this -> connection -> setFetchMode(MDB2_FETCHMODE_ORDERED);
 		}
+		$statement -> free();
 		while ($row = $rows -> fetchRow()) {
 			$finalArray[] = $row;
 		}
+		$statement -> free();
 		return $finalArray;
 	}
 
@@ -187,28 +204,32 @@ class Db {
 		$columns = implode(',', $columnArray);
 		$questionmarks = '?';
 		for ($i = 0; $i < count($columnArray) - 1; $i++) {
-			$questionmarks .= ',?';
+			$questionmarks .= ', ?';
 		}
 		$query = 'INSERT INTO ' . $table . ' (' . $columns . ')' . ' VALUES(' . $questionmarks . ')';
-		//print "insert_query: $query\n";
-		//var_dump($valuesArray);
+		// print "insert_query: $query\n";
+		// var_dump($typesArray);
+		// var_dump($valuesArray);
 		$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $statement -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $statement -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($valuesArray, true);
+			$errors[] = $statement -> getMessage();
+			$errors[] = $statement -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			assert(false);
 			return false;
 		}
 		$rows = $statement -> execute($valuesArray);
 		if (PEAR::isError($rows)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $rows -> getMessage() . "\n" . $rows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($valuesArray, true);
+			$errors[] = $rows -> getMessage();
+			$errors[] = $rows -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			$errors[] = "Values : " . var_export($valuesArray, true);
+			assert(false);
 			return false;
 		}
+		$statement -> free();
 		return $rows;
 	}
 
@@ -231,10 +252,10 @@ class Db {
 		// print "multiinsert_query: $query\n";
 		$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $statement -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $statement -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
+			$errors[] = $statement -> getMessage();
+			$errors[] = $statement -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
 		if ($this -> connection -> supports('transactions')) {
@@ -245,12 +266,14 @@ class Db {
 			$this -> connection -> commit();
 		}
 		if (PEAR::isError($rows)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $rows -> getMessage() . "\n" . $rows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($typesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($valuesArrayArray, true);
+			$errors[] = $rows -> getMessage();
+			$errors[] = $rows -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			$errors[] = "Values : " . var_export($valuesArray, true);
 			return false;
 		}
+		$statement -> free();
 		return $rows;
 	}
 
@@ -274,57 +297,55 @@ class Db {
 		}
 		$statement = &$this -> connection -> prepare($query, $unifiedTypesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $statement -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $statement -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($unifiedTypesArray, true);
+			$errors[] = $statement -> getMessage();
+			$errors[] = $statement -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
 		$numrows = $statement -> execute($unifiedValuesArray);
 		if (PEAR::isError($numrows)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $numrows -> getMessage() . "\n" . $numrows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $numrows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($unifiedTypesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($unifiedValuesArray, true);
+			$errors[] = $numrows -> getMessage();
+			$errors[] = $numrows -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			$errors[] = "Values : " . var_export($valuesArray, true);
 			return false;
 		}
+		$statement -> free();
 		return $numrows;
 	}
 
-	public function getIdArray_query($whereColumnArray, $table, $whereTypesArray, $whereValuesArray) {
-		assert(count($whereColumnArray) == count($whereValuesArray));
-		assert(count($whereColumnArray) > 0);
-		$whereColumns = implode(' = ? AND ', $whereColumnArray);
+	public function getIdArray_query($columnArray, $table, $typesArray, $valuesArray) {
+		assert(count($columnArray) == count($columnArray));
+		assert(count($columnArray) > 0);
+		$whereColumns = implode(' = ? AND ', $columnArray);
 		$whereColumns .= ' = ?';
 		$query = 'SELECT id FROM ' . $table . ' WHERE ' . $whereColumns;
-		// print "QUERY: $query\n";
-		// print "VALUES: \n";
-		// var_dump($whereValuesArray);
-		// print "\nTYPES:\n";
-		// var_dump($whereTypesArray);
-		// print "\n";
-		$statement = &$this -> connection -> prepare($query, $whereTypesArray);
+		//print "QUERY: $query\n";
+		//print "TYPES: " . var_export($typesArray, true) . "\n";
+		//print "VALUES:" . var_export($valuesArray, true) . "\n";
+		$statement = &$this -> connection -> prepare($query, $typesArray);
 		if (PEAR::isError($statement)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $statement -> getMessage();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $statement -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($whereTypesArray, true);
-			return $finalArray;
+			$errors[] = $statement -> getMessage();
+			$errors[] = $statement -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
+			return false;
 		}
-		$rows = $statement -> execute($whereValuesArray);
+		$rows = $statement -> execute($valuesArray);
 		if (PEAR::isError($rows)) {
-			$errors[] = __FILE__ . "@" . __LINE__ . " :  " . $rows -> getMessage() . "\n" . $rows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . " :  " . $rows -> getUserInfo();
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Query : " . $query;
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Types : " . var_export($whereTypesArray, true);
-			$errors[] = basename(__FILE__) . "@" . __LINE__ . ", Values : " . var_export($whereValuesArray, true);
+			$errors[] = $rows -> getMessage();
+			$errors[] = $rows -> getUserInfo();
+			$errors[] = "Query : " . $query;
+			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
 		$ids = array();
 		while ($row = $rows -> fetchRow(MDB2_FETCHMODE_ASSOC)) {
 			$ids[] = $row['id'];
 		}
+		$statement -> free();
 		return $ids;
 	}
 
@@ -344,7 +365,7 @@ class Db {
 		$numrowsinsert = 0;
 		$count = 0;
 		if ($numrowsupdate == 0) {
-			//print "Could not update\n";
+			// print "Could not update\n";
 			$fromQuery = ' FROM ' . $table;
 			if (count($updateColumnArray) > 0) {
 				$fromQuery .= ' WHERE ' . $whereColumns;
@@ -352,33 +373,39 @@ class Db {
 			$num = $this -> getcount_query($fromQuery, $updateTypesArray, $updateValuesArray);
 			if ($num == 0) {
 				$numrowsinsert = $this -> insert_query($updateColumnArray, $table, $updateTypesArray, $updateValuesArray);
-				assert($numrowsinsert == 1);
+				// print "Affected: " . var_export($numrowsinsert, true) . "\n";
+				assert($numrowsinsert == 1 || $numrowsinsert == false);
 			} else {
 				print "This should be one: $num\n";
 				assert($num == 1);
 			}
 		}
 		$ids = $this -> getIdArray_query($updateColumnArray, $table, $updateTypesArray, $updateValuesArray);
-		assert(count($ids) == 1);
-		/*
-		 print "VARDUMP:\n";
-		 var_dump($ids);
-		 print "\nERRORDUMP:\n";
-		 var_dump($errors);*/
+		if (count($ids) != 1) {
+			print "Table: $table\n";
+			print "VARDUMP: " . var_export($updateTypesArray, true) . "\n";
+			print "TYPEDUMP: " . var_export($updateTypesArray, true) . "\n";
+			print "ERRORDUMP: " . var_export($errors, true) . "\n";
+		}
 		return $ids[0];
 	}
 
 	public function get_nextval($sequenceId) {
 		global $errors;
-		$nextval = $this -> query("SELECT nextval(?)", array('text'), array($sequenceId));
+		$sql = "SELECT nextval(?) as nextval";
+		$nextval = $this -> query($sql, array('text'), array($sequenceId), true, true);
 		if ($nextval && count($nextval) == 1) {
-			return $nextval[0][0];
+			return $nextval[0]['nextval'];
 		}
-		die("FAILED: " . __FILE__ . "\n");
+		$errors[] = "Nextval: " . var_export($nextval, true) . "\n";
+		$errors[] =  "SQL: $sql\n";
+		$errors[] =  "SequenceId:" . $sequenceId . "\n";
+		$errors[] =  "Errors: " . var_export($errors, true) . "\n";
+		assert(false);
 	}
 
 	public function startTransactionIfPossible() {
-		if ($this -> connection -> supports('transactions')) {
+		if ($this -> connection -> supports('transactions') && !$this -> connection -> in_transaction) {
 			$this -> connection -> beginTransaction();
 		}
 	}
@@ -390,11 +417,14 @@ class Db {
 	}
 
 	public function addSubOrganism($subElementId, $parentElementId, $table) {
-		$columnNameArray = array('left_value', 'right_value');
+		$columnNameArray = array(
+				'left_value',
+				'right_value'
+		);
 		$fromQuery = 'FROM ' . $table . ' WHERE id = ?';
 		$typesArray = array('integer');
 		$valuesArray = array($parentElementId);
-		$parent = $this->select_query($columnNameArray, $fromQuery, $typesArray, $valuesArray, false);
+		$parent = $this -> select_query($columnNameArray, $fromQuery, $typesArray, $valuesArray, false);
 		print "Parent: " . var_export($parent, true) . "\n";
 	}
 
