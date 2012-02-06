@@ -1,9 +1,9 @@
 <?php
 /**
- * @file migrate_organism.php
- * @author Reto Schneider, 2011, github@reto-schneider.ch
+ * @file import_fungus_basedata.php
+ * @author Reto Schneider, 2012, github@reto-schneider.ch
  *
- * Migrate the organisms to the new naturvielfalt DB
+ * Import fungus to the new naturvielfalt DB
  */
 
 require_once (dirname(__FILE__) . '/lib/bootstrap.php');
@@ -14,7 +14,7 @@ global $errors;
 $db = new NaturvielfaltDb($config['naturvielfalt_dev']['driver'], $config['naturvielfalt_dev']['name'], $config['naturvielfalt_dev']['user'], $config['naturvielfalt_dev']['password'], $config['naturvielfalt_dev']['host']);
 
 /**
- * Copy all crsf organisms including metadata into naturvielfalt DB
+ * Copy all fungus including metadata into naturvielfalt DB
  *
  * $columns = array(
  * 	'fungus_artnr',
@@ -34,8 +34,9 @@ $db = new NaturvielfaltDb($config['naturvielfalt_dev']['driver'], $config['natur
 $organism_classifier_id = 0;
 {
 	$crsfCode = 'Fungus';
+	$isScientificClassification = TRUE;
 	if (!$db -> haveClassifier($crsfCode)) {
-		$db -> createClassifier($crsfCode, 1);
+		$db -> createClassifier($crsfCode, $isScientificClassification);
 	} else {
 		print $crsfCode . " classification already existing.\n";
 	}
