@@ -37,9 +37,7 @@ class NaturvielfaltDb extends Db {
 
 	function haveScientificName($scientific_name_name) {
 		global $drupalprefix;
-		$fromQuery = 'FROM ' . $drupalprefix . 'organism_scientific_name
-						WHERE
-							name = ?';
+		$fromQuery = 'FROM ' . $drupalprefix . 'organism_scientific_name WHERE name = ?';
 		$typesArray = array('text');
 		$valuesArray = array($scientific_name_name);
 		$num = $this -> getcount_query($fromQuery, $typesArray, $valuesArray);
@@ -50,9 +48,7 @@ class NaturvielfaltDb extends Db {
 	function getScientificNameId($scientific_name_name) {
 		global $drupalprefix;
 		$columnNameArray = array('id');
-		$fromQuery = 'FROM ' . $drupalprefix . 'organism_scientific_name
-						WHERE
-							name = ?';
+		$fromQuery = 'FROM ' . $drupalprefix . 'organism_scientific_name WHERE name = ?';
 		$typesArray = array('text');
 		$valuesArray = array($scientific_name_name);
 		$rows = $this -> select_query($columnNameArray, $fromQuery, $typesArray, $valuesArray);
