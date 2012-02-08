@@ -418,17 +418,5 @@ class Db {
 		}
 	}
 
-	public function addSubOrganism($subElementId, $parentElementId, $table) {
-		$columnNameArray = array(
-				'left_value',
-				'right_value'
-		);
-		$fromQuery = 'FROM ' . $table . ' WHERE id = ?';
-		$typesArray = array('integer');
-		$valuesArray = array($parentElementId);
-		$parent = $this -> select_query($columnNameArray, $fromQuery, $typesArray, $valuesArray, false);
-		print "Parent: " . var_export($parent, true) . "\n";
-	}
-
 }
 ?>
