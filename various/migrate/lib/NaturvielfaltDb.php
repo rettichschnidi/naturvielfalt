@@ -213,7 +213,7 @@ class NaturvielfaltDb extends Db {
 			$this -> query($query, $typesArray, $valuesArray, false);
 
 			$leftValue = $parentLeftValue + 1;
-			$rightValue = $parentRightValue + 2;
+			$rightValue = $parentLeftValue + 2;
 		} else {
 			$leftValue = 1;
 			$rightValue = 2;
