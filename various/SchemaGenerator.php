@@ -13,6 +13,10 @@
  */
 $arguments = getopt("i:o:m:");
 
+if (!isset($arguments['i'])) {
+	die("No filename (-i) given!\n");
+}
+
 if (!file_exists($arguments['i'])) {
 	die("File " . $arguments['i'] . " does not exist!\n");
 }
