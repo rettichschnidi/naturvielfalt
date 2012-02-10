@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Implementation of hook_schema()
+ */
+function custom_acl_schema() {
+  $schema['custom_acl'] = array(
+     // specification for mytable1
+  );
+  $schema['custom_acl_items'] = array(
+     // specification for mytable2
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install()
+ */
+function custom_acl_install() {
+  // Create my tables.
+  drupal_install_schema('custom_acl');
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function custom_acl_uninstall() {
+  // Drop my tables.
+  drupal_uninstall_schema('custom_acl');
+}
+?>
