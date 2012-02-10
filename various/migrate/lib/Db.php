@@ -145,9 +145,11 @@ class Db {
 		assert(is_array($valuesArray));
 		$columns = implode(',', $columnNameArray);
 		$query = $ownselect . ' ' . $columns . ' ' . $fromQuery;
-		// print "SELECTQUERY:  $query\n";
-		// print "SELECTTYPES:  " . var_export($typesArray, true) . "\n";
-		// print "SELECTVALUES: " . var_export($valuesArray, true) . "\n";
+		if (FALSE) {
+			print "SELECTQUERY:  $query\n";
+			print "SELECTTYPES:  " . var_export($typesArray, true) . "\n";
+			print "SELECTVALUES: " . var_export($valuesArray, true) . "\n";
+		}
 		$statement = &$this -> connection -> prepare($query, $typesArray);
 		if (PEAR::isError($statement)) {
 			$errors[] = $statement -> getMessage();
@@ -398,9 +400,9 @@ class Db {
 			return $nextval[0]['nextval'];
 		}
 		$errors[] = "Nextval: " . var_export($nextval, true) . "\n";
-		$errors[] =  "SQL: $sql\n";
-		$errors[] =  "SequenceId:" . $sequenceId . "\n";
-		$errors[] =  "Errors: " . var_export($errors, true) . "\n";
+		$errors[] = "SQL: $sql\n";
+		$errors[] = "SequenceId:" . $sequenceId . "\n";
+		$errors[] = "Errors: " . var_export($errors, true) . "\n";
 		assert(false);
 	}
 
@@ -414,18 +416,6 @@ class Db {
 		if ($this -> connection -> supports('transactions') && $this -> connection -> in_transaction) {
 			$this -> connection -> commit();
 		}
-	}
-
-	public function addSubOrganism($subElementId, $parentElementId, $table) {
-		$columnNameArray = array(
-				'left_value',
-				'right_value'
-		);
-		$fromQuery = 'FROM ' . $table . ' WHERE id = ?';
-		$typesArray = array('integer');
-		$valuesArray = array($parentElementId);
-		$parent = $this -> select_query($columnNameArray, $fromQuery, $typesArray, $valuesArray, false);
-		print "Parent: " . var_export($parent, true) . "\n";
 	}
 
 }
