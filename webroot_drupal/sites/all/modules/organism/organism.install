@@ -135,53 +135,6 @@ function organism_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
-      'organism_classification_level_id' => 
-      array (
-        'description' => 'No description for column organism_classification_level_id available, please fix',
-        'type' => 'int',
-        'not null' => 'TRUE',
-      ),
-      'name' => 
-      array (
-        'description' => 'No description for column name available, please fix',
-        'type' => 'text',
-        'not null' => 'TRUE',
-      ),
-    ),
-    'primary key' => 
-    array (
-      0 => 'id',
-    ),
-    'unique keys' => 
-    array (
-      'organism_classification_level_id_name' => 
-      array (
-        0 => 'organism_classification_level_id',
-        1 => ' name',
-      ),
-    ),
-    'foreign keys' => 
-    array (
-      'organism_classification_2_organism_classification_level' => 
-      array (
-        'table' => 'organism_classification_level',
-        'columns' => 
-        array (
-          'organism_classification_level_id' => 'id',
-        ),
-      ),
-    ),
-  ),
-  'organism_classification_level' => 
-  array (
-    'fields' => 
-    array (
-      'id' => 
-      array (
-        'description' => 'No description for column id available, please fix',
-        'type' => 'serial',
-        'not null' => 'TRUE',
-      ),
       'parent_id' => 
       array (
         'description' => 'If this classifier is on top level, then parent_id = 0',
@@ -191,6 +144,12 @@ function organism_schema() {
       'organism_classifier_id' => 
       array (
         'description' => 'No description for column organism_classifier_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_classification_level_id' => 
+      array (
+        'description' => 'No description for column organism_classification_level_id available, please fix',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
@@ -220,6 +179,135 @@ function organism_schema() {
       'id' => 
       array (
         0 => 'id',
+      ),
+      'organism_classifier_id_organism_classification_level_id_name' => 
+      array (
+        0 => 'organism_classifier_id',
+        1 => ' organism_classification_level_id',
+        2 => ' name',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_classification_2_organism_classification' => 
+      array (
+        'table' => 'organism_classification',
+        'columns' => 
+        array (
+          'parent_id' => 'id',
+        ),
+      ),
+      'organism_classification_2_organism_classification_level' => 
+      array (
+        'table' => 'organism_classification_level',
+        'columns' => 
+        array (
+          'organism_classification_level_id' => 'id',
+        ),
+      ),
+      'organism_classification_2_organism_classifier' => 
+      array (
+        'table' => 'organism_classifier',
+        'columns' => 
+        array (
+          'organism_classifier_id' => 'id',
+        ),
+      ),
+    ),
+    'indexes' => 
+    array (
+      'primaryKey' => 
+      array (
+        0 => 'id',
+      ),
+      'left_value' => 
+      array (
+        0 => 'right_value',
+        1 => 'organism_classifier_id',
+      ),
+      'levelindex' => 
+      array (
+        0 => 'organism_classification_level_id',
+      ),
+      'classifierid' => 
+      array (
+        0 => 'organism_classifier_id',
+      ),
+      'nameindex' => 
+      array (
+        0 => 'name',
+      ),
+      'parentid' => 
+      array (
+        0 => 'parent_id',
+      ),
+      'anotherindex' => 
+      array (
+        0 => 'name',
+        1 => 'organism_classification_level_id',
+      ),
+    ),
+  ),
+  'organism_classification_level' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'parent_id' => 
+      array (
+        'description' => 'No description for column parent_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_classifier_id' => 
+      array (
+        'description' => 'No description for column organism_classifier_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'left_value' => 
+      array (
+        'description' => 'No description for column left_value available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'right_value' => 
+      array (
+        'description' => 'No description for column right_value available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'organism_classifier_id_left_value' => 
+      array (
+        0 => 'organism_classifier_id',
+        1 => ' left_value',
+      ),
+      'organism_classifier_id_right_value' => 
+      array (
+        0 => 'organism_classifier_id',
+        1 => ' right_value',
       ),
       'organism_classifier_id_name' => 
       array (
@@ -252,13 +340,29 @@ function organism_schema() {
     ),
     'indexes' => 
     array (
-      'primaryKey' => 
+      'index' => 
       array (
         0 => 'id',
       ),
+      'parent_id' => 
+      array (
+        0 => 'parent_id',
+      ),
       'left_value' => 
       array (
+        0 => 'left_value',
+      ),
+      'right_value' => 
+      array (
         0 => 'right_value',
+      ),
+      'name' => 
+      array (
+        0 => 'name',
+      ),
+      'classifier_id' => 
+      array (
+        0 => 'organism_classifier_id',
       ),
     ),
   ),
@@ -291,10 +395,9 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'organism_id_organism_classification_id' => 
+      'organism_id' => 
       array (
         0 => 'organism_id',
-        1 => ' organism_classification_id',
       ),
     ),
     'primary key' => 
@@ -397,10 +500,11 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'languages_language_organism_id' => 
+      'languages_language_organism_id_name' => 
       array (
         0 => 'languages_language',
         1 => ' organism_id',
+        2 => ' name',
       ),
     ),
     'primary key' => 
@@ -557,6 +661,10 @@ function organism_schema() {
       'idx_name_de' => 
       array (
         0 => 'right_value',
+      ),
+      'parent_id_index' => 
+      array (
+        0 => 'parent_id',
       ),
     ),
   ),
