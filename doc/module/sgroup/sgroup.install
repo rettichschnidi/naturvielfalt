@@ -1,0 +1,173 @@
+<?php
+/**
+ * do not modify this file, it is generated! 
+ */
+
+function sgroup_schema() {
+	return array (
+  'sgroup_acl' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Primary key for swissmon acl items',
+        'type' => 'bigserial',
+        'not null' => 'TRUE',
+      ),
+      'description' => 
+      array (
+        'description' => 'desccription of acl item',
+        'type' => 'text',
+      ),
+      'users_id' => 
+      array (
+        'description' => 'foreign key for swissmon user id who created acl item',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '0',
+        'size' => 'big',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'sgroup_acl_link' => 
+  array (
+    'fields' => 
+    array (
+      'level' => 
+      array (
+        'description' => 'access level',
+        'type' => 'smallint',
+      ),
+      'acl_id' => 
+      array (
+        'description' => 'foreign key for swissmon acl item id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'sgroup_id' => 
+      array (
+        'description' => 'foreign key for swissmon group id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'users_id' => 
+      array (
+        'description' => 'foreign key for swissmon user id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '0',
+        'size' => 'big',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'acl_id' => 
+      array (
+        0 => 'acl_id',
+      ),
+    ),
+    'foreign keys' => 
+    array (
+      'sgroup_acl_link_2_sgroup_acl' => 
+      array (
+        'table' => 'sgroup_acl',
+        'columns' => 
+        array (
+          'acl_id' => 'id',
+        ),
+      ),
+      'sgroup_acl_link_2_sgroup' => 
+      array (
+        'table' => 'sgroup',
+        'columns' => 
+        array (
+          'sgroup_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'sgroup' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Primary key for swissmon groups',
+        'type' => 'bigserial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'The name of the swissmon group',
+        'type' => 'varchar',
+        'size' => 'normal',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'sgroup_users' => 
+  array (
+    'fields' => 
+    array (
+      'admin' => 
+      array (
+        'description' => '0 if this is only a member, 1 if it is an administrator of that group.',
+        'type' => 'int',
+        'default' => '0',
+      ),
+      'sgroup_id' => 
+      array (
+        'description' => 'foreign key for swissmon group id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'users_id' => 
+      array (
+        'description' => 'foreign key for swissmon user id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '0',
+        'size' => 'big',
+      ),
+    ),
+    'foreign keys' => 
+    array (
+      'sgroup_users_2_sgroup' => 
+      array (
+        'table' => 'sgroup',
+        'columns' => 
+        array (
+          'sgroup_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+);
+}
+?>

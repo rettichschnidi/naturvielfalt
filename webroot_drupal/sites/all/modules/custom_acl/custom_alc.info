@@ -1,6 +1,0 @@
-; $Id$
-name = Custom ACL
-description = "Allow modules to use a custom acl, independant of nodes"
-package = Swissmon
-core = 7.x
-version = "7.0-dev"

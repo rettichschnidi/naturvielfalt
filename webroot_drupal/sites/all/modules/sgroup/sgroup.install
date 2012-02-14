@@ -5,84 +5,143 @@
 
 /**
  * Create the tables needed to run this module.
- * 
+ *
  * @see More information about the schema API: http://drupal.org/node/146843
  */
 function sgroup_schema() {
-	$schema['sgroup'] = array(
-			'description' => 'Holds swissmon groups.',
+	return array(
+		'sgroup_acl' => array(
+			'description' => 'ACL items',
 			'fields' => array(
-					'sgid' => array(
-							'type' => 'serial',
-							'size' => 'big',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-							'description' => 'primary key for swissmon groups'
-					),
-					'sgroup_name' => array(
-							'type' => 'varchar',
-							'length' => 64,
-							'not null' => TRUE,
-							'default' => '',
-							'description' => 'The name of a swissmon group'
-					)
+				'id' => array(
+					'description' => 'Primary key for swissmon acl items',
+					'type' => 'bigserial',
+					'not null' => 'TRUE',
+				),
+				'description' => array(
+					'description' => 'desccription of acl item',
+					'type' => 'text',
+				),
+				'users_id' => array(
+					'description' => 'foreign key for swissmon user id who created acl item',
+					'type' => 'int',
+					'not null' => 'TRUE',
+					'default' => '0',
+					'size' => 'big',
+				),
+			),
+			'unique keys' => array(
+				'id' => array(
+					0 => 'id',
+				),
 			),
 			'primary key' => array(
-					'sgid'
-			)
-	);
-
-	$schema['sgroup_users'] = array(
-			'description' => 'Links users to groups.',
-			'fields' => array(
-					'sgid' => array(
-							'type' => 'int',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-							'default' => 0,
-							'description' => 'foreign key to swissmon groups',
-					),
-					'uid' => array(
-							'type' => 'int',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-							'default' => 0,
-							'description' => 'foreign key to {users}'
-					),
-					'admin' => array(
-							'type' => 'int',
-							'size' => 'tiny',
-							'default' => 0,
-							'unsigned' => TRUE,
-							'description' => '0 if this is only a member, 1 if it is an administrator of that group.'
-					)
+				0 => 'id',
 			),
-			'indexes' => array(
-					'sgid_uid' => array(
-							'sgid',
-							'uid'
-					),
+		),
+		'sgroup_acl_link' => array(
+			'description' => 'Links acl items to users and groups',
+			'fields' => array(
+				'level' => array(
+					'description' => 'access level',
+					'type' => 'smallint',
+				),
+				'acl_id' => array(
+					'description' => 'foreign key for swissmon acl item id',
+					'type' => 'int',
+					'not null' => 'TRUE',
+					'size' => 'big',
+				),
+				'sgroup_id' => array(
+					'description' => 'foreign key for swissmon group id',
+					'type' => 'int',
+					'not null' => 'TRUE',
+					'size' => 'big',
+				),
+				'users_id' => array(
+					'description' => 'foreign key for swissmon user id',
+					'type' => 'int',
+					'not null' => 'TRUE',
+					'default' => '0',
+					'size' => 'big',
+				),
+			),
+			'unique keys' => array(
+				'acl_id' => array(
+					0 => 'acl_id',
+				),
 			),
 			'foreign keys' => array(
-					'sgroup_sgid' => array(
-							'table' => 'sgroup',
-							'columns' => array(
-									'sgid' => 'sgid',
-							),
+				'sgroup_acl_link_2_sgroup_acl' => array(
+					'table' => 'sgroup_acl',
+					'columns' => array(
+						'acl_id' => 'id',
 					),
-					'users_uid' => array(
-							'table' => 'users',
-							'columns' => array(
-									'uid' => 'uid'
-							),
+				),
+				'sgroup_acl_link_2_sgroup' => array(
+					'table' => 'sgroup',
+					'columns' => array(
+						'sgroup_id' => 'id',
 					),
+				),
+			),
+		),
+		'sgroup' => array(
+			'description' => 'Holds user groups',
+			'fields' => array(
+				'id' => array(
+					'description' => 'Primary key for swissmon groups',
+					'type' => 'bigserial',
+					'not null' => 'TRUE',
+				),
+				'name' => array(
+					'description' => 'The name of the swissmon group',
+					'type' => 'varchar',
+					'size' => 'normal',
+					'not null' => 'TRUE',
+				),
+			),
+			'unique keys' => array(
+				'id' => array(
+					0 => 'id',
+				),
 			),
 			'primary key' => array(
-					'sgid',
-					'uid'
+				0 => 'id',
 			),
+		),
+		'sgroup_users' => array(
+			'description' => 'Links users to groups',
+			'fields' => array(
+				'admin' => array(
+					'description' => '0 if this is only a member, 1 if it is an administrator of that group.',
+					'type' => 'int',
+					'default' => '0',
+				),
+				'sgroup_id' => array(
+					'description' => 'foreign key for swissmon group id',
+					'type' => 'int',
+					'not null' => 'TRUE',
+					'size' => 'big',
+				),
+				'users_id' => array(
+					'description' => 'foreign key for swissmon user id',
+					'type' => 'int',
+					'not null' => 'TRUE',
+					'default' => '0',
+					'size' => 'big',
+				),
+			),
+			'foreign keys' => array(
+				'sgroup_users_2_sgroup' => array(
+					'table' => 'sgroup',
+					'columns' => array(
+						'sgroup_id' => 'id',
+					),
+				),
+			),
+		),
 	);
-	return $schema;
 }
 
 /**
