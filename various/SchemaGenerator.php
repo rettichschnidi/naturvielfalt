@@ -50,24 +50,31 @@ function getColumnName(&$line) {
 
 function pruneTypesAndSize(&$column) {
 	$type = $column['type'];
-	switch($type) {
-		case 'boolean' :
-			$column['type'] = 'int';
-			$column['size'] = 'tiny';
-			break;
-		case 'varchar' :
-			$column['size'] = 'normal';
-			break;
-		case 'bigint' :
-			$column['type'] = 'int';
-			$column['size'] = 'big';
-			break;
-		case 'text' :
-			if (isset($column['default'])) {
-				fwrite(STDERR, "Warning: text fields can not have a default value, dropping '" . $column['default'] . "'.\n");
-				unset($column['default']);
-			}
-			break;
+	switch ($type) {
+	case 'boolean':
+		$column['type'] = 'int';
+		$column['size'] = 'tiny';
+		break;
+	case 'varchar':
+		$column['size'] = 'normal';
+		break;
+	case 'bigint':
+		$column['type'] = 'int';
+		$column['size'] = 'big';
+		break;
+	case 'bigserial':
+		$column['type'] = 'serial';
+		$column['size'] = 'big';
+		break;
+	case 'text':
+		if (isset($column['default'])) {
+			fwrite(
+				STDERR,
+				"Warning: text fields can not have a default value, dropping '"
+						. $column['default'] . "'.\n");
+			unset($column['default']);
+		}
+		break;
 	}
 }
 
@@ -81,7 +88,9 @@ function getColumnType(&$table, $lastcolumn, &$line) {
 			$table['fields'][$lastcolumn]['not null'] = 'TRUE';
 		}
 		if (preg_match('/^.*UNIQUE.*/', $line)) {
-			$table['unique keys'][$lastcolumn] = array($lastcolumn);
+			$table['unique keys'][$lastcolumn] = array(
+					$lastcolumn
+			);
 		}
 		if (preg_match('/^.*DEFAULT \'(.+)\'.*/', $line, $matchdef)) {
 			$default = $matchdef[1];
@@ -136,23 +145,30 @@ function handleComment(&$schema, &$input, &$line) {
 }
 
 function handleAlterTable(&$schema, &$input, &$line) {
-	if (preg_match('/^ALTER TABLE ([a-z]*\.)?([a-z0-9_]+)$/', $line, $match) == 1) {
+	if (preg_match('/^ALTER TABLE ([a-z]*\.)?([a-z0-9_]+)$/', $line, $match)
+			== 1) {
 		$tablename = $match[2];
 		$line = getNextLine($input);
-		if (preg_match('/^ADD FOREIGN KEY \(([a-z0-9_]+)\)$/', $line, $matchFK) == 1) {
+		if (preg_match('/^ADD FOREIGN KEY \(([a-z0-9_]+)\)$/', $line, $matchFK)
+				== 1) {
 			$columnname = $matchFK[1];
 			$line = getNextLine($input);
 		} else {
 			die("Unsupported statement within ALTER TABLE: '" . $line . "'");
 		}
-		if (preg_match('/^REFERENCES ([a-z]+\.)?([a-z0-9_]+) \(([0-9a-z_]+)\)$/', $line, $matchREF) == 1) {
+		if (preg_match(
+			'/^REFERENCES ([a-z]+\.)?([a-z0-9_]+) \(([0-9a-z_]+)\)$/',
+			$line,
+			$matchREF) == 1) {
 			$foreigntablename = $matchREF[2];
 			$foreigncolumnname = $matchREF[3];
 			$line = getNextLine($input);
 		} else {
 			die("Unsupported statement within ALTER TABLE: '" . $line . "'");
 		}
-		while (preg_match('/^ON (DELETE|UPDATE) (RESTRICT|NO ACTION|CASCADE)$/', $line) == 1) {
+		while (preg_match(
+			'/^ON (DELETE|UPDATE) (RESTRICT|NO ACTION|CASCADE)$/',
+			$line) == 1) {
 			$line = getNextLine($input);
 		}
 		if (!isset($schema[$tablename]['foreign keys'])) {
@@ -161,7 +177,9 @@ function handleAlterTable(&$schema, &$input, &$line) {
 		$fkdescription = $tablename . '_2_' . $foreigntablename;
 		$schema[$tablename]['foreign keys'][$fkdescription] = array(
 				'table' => $foreigntablename,
-				'columns' => array($columnname => $foreigncolumnname),
+				'columns' => array(
+						$columnname => $foreigncolumnname
+				),
 		);
 		if (preg_match('/^;$/', $line) == 1) {
 			$line = getNextLine($input);
@@ -172,7 +190,10 @@ function handleAlterTable(&$schema, &$input, &$line) {
 }
 
 function handleCommentOnColumn(&$schema, &$input, &$line) {
-	if (preg_match('/^COMMENT ON COLUMN ([a-z]*\.)?([a-z0-9_]+)\.([a-z0-9_]+) IS \'(.+)\';$/', $line, $match) == 1) {
+	if (preg_match(
+		'/^COMMENT ON COLUMN ([a-z]*\.)?([a-z0-9_]+)\.([a-z0-9_]+) IS \'(.+)\';$/',
+		$line,
+		$match) == 1) {
 		$table = $match[2];
 		$column = $match[3];
 		$description = $match[4];
@@ -188,7 +209,10 @@ function handleCommentOnColumn(&$schema, &$input, &$line) {
  * CREATE INDEX left_value ON organism_classification (left_value);
  */
 function handleCreateIndex(&$schema, &$input, &$line) {
-	if (preg_match('/^CREATE INDEX ([a-zA-Z0-9_]+) ON ([a-z]*\.)?([a-zA-Z0-9_]+).*\(([a-zA-Z0-9_]+)\);$/', $line, $match) == 1) {
+	if (preg_match(
+		'/^CREATE INDEX ([a-zA-Z0-9_]+) ON ([a-z]*\.)?([a-zA-Z0-9_]+).*\(([a-zA-Z0-9_]+)\);$/',
+		$line,
+		$match) == 1) {
 		$indexname = $match[1];
 		$table = $match[3];
 		$column = $match[4];
@@ -196,7 +220,9 @@ function handleCreateIndex(&$schema, &$input, &$line) {
 		if (!isset($schema[$table]['indexes'])) {
 			$schema[$table]['indexes'] = array();
 		}
-		$schema[$table]['indexes'][$indexname] = array($column);
+		$schema[$table]['indexes'][$indexname] = array(
+				$column
+		);
 		$line = getNextLine($input);
 		return true;
 	}
@@ -204,7 +230,8 @@ function handleCreateIndex(&$schema, &$input, &$line) {
 }
 
 function handleCreateTable(&$schema, &$input, &$line) {
-	if (preg_match('/^CREATE\ TABLE\ ([a-z]*\.)?([a-z_]+)$/', $line, $match) == 1) {
+	if (preg_match('/^CREATE\ TABLE\ ([a-z]*\.)?([a-z_]+)$/', $line, $match)
+			== 1) {
 		$tabName = $match[2];
 		// eat (
 		getNextLine($input);
@@ -219,7 +246,9 @@ function handleCreateTable(&$schema, &$input, &$line) {
 			if ($column)
 				$lastcolumn = $column;
 			if (!isset($schema[$tabName]['fields'][$lastcolumn])) {
-				$schema[$tabName]['fields'][$lastcolumn] = array('description' => "No description for column $lastcolumn available, please fix");
+				$schema[$tabName]['fields'][$lastcolumn] = array(
+						'description' => "No description for column $lastcolumn available, please fix"
+				);
 			}
 			if ($comment) {
 				$schema[$tabName]['fields'][$lastcolumn]['description'] = $comment;
@@ -286,7 +315,10 @@ if (isset($arguments['o'])) {
 	if (!$outputhandle) {
 		die("Could not open file '" . $arguments['o'] . "' for writing.\n");
 	}
-	fwrite($outputhandle, "<?php\n/**\n * do not modify this file, it is generated! \n */\n\nfunction " . $modulname . "_schema() {\n\treturn ");
+	fwrite(
+		$outputhandle,
+		"<?php\n/**\n * do not modify this file, it is generated! \n */\n\nfunction "
+				. $modulname . "_schema() {\n\treturn ");
 	fwrite($outputhandle, var_export($schema, true) . ";\n");
 	fwrite($outputhandle, "}\n?>");
 } else {
