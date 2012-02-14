@@ -11,12 +11,12 @@
 function sgroup_schema() {
 	return array(
 		'sgroup_acl' => array(
-			'description' => 'ACL items',
 			'fields' => array(
 				'id' => array(
 					'description' => 'Primary key for swissmon acl items',
-					'type' => 'bigserial',
+					'type' => 'serial',
 					'not null' => 'TRUE',
+					'size' => 'big',
 				),
 				'description' => array(
 					'description' => 'desccription of acl item',
@@ -40,11 +40,11 @@ function sgroup_schema() {
 			),
 		),
 		'sgroup_acl_link' => array(
-			'description' => 'Links acl items to users and groups',
 			'fields' => array(
 				'level' => array(
 					'description' => 'access level',
-					'type' => 'smallint',
+					'type' => 'int',
+					'size' => 'small',
 				),
 				'acl_id' => array(
 					'description' => 'foreign key for swissmon acl item id',
@@ -87,12 +87,12 @@ function sgroup_schema() {
 			),
 		),
 		'sgroup' => array(
-			'description' => 'Holds user groups',
 			'fields' => array(
 				'id' => array(
 					'description' => 'Primary key for swissmon groups',
-					'type' => 'bigserial',
+					'type' => 'serial',
 					'not null' => 'TRUE',
+					'size' => 'big',
 				),
 				'name' => array(
 					'description' => 'The name of the swissmon group',
@@ -111,7 +111,6 @@ function sgroup_schema() {
 			),
 		),
 		'sgroup_users' => array(
-			'description' => 'Links users to groups',
 			'fields' => array(
 				'admin' => array(
 					'description' => '0 if this is only a member, 1 if it is an administrator of that group.',
@@ -142,6 +141,15 @@ function sgroup_schema() {
 			),
 		),
 	);
+}
+
+/**
+ * Implements hook_install();
+ *
+ * This adds all tables defined in sgroup_schema().
+ */
+function sgroup_install() {
+	drupal_install_schema('sgroup');
 }
 
 /**

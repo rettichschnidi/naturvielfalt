@@ -12,8 +12,9 @@ function sgroup_schema() {
       'id' => 
       array (
         'description' => 'Primary key for swissmon acl items',
-        'type' => 'bigserial',
+        'type' => 'serial',
         'not null' => 'TRUE',
+        'size' => 'big',
       ),
       'description' => 
       array (
@@ -107,8 +108,9 @@ function sgroup_schema() {
       'id' => 
       array (
         'description' => 'Primary key for swissmon groups',
-        'type' => 'bigserial',
+        'type' => 'serial',
         'not null' => 'TRUE',
+        'size' => 'big',
       ),
       'name' => 
       array (
