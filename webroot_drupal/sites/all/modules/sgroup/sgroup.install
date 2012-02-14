@@ -25,7 +25,6 @@ function sgroup_schema() {
 				'users_id' => array(
 					'description' => 'foreign key for swissmon user id who created acl item',
 					'type' => 'int',
-					'not null' => 'TRUE',
 					'default' => '0',
 					'size' => 'big',
 				),
@@ -46,30 +45,33 @@ function sgroup_schema() {
 					'type' => 'int',
 					'size' => 'small',
 				),
-				'acl_id' => array(
-					'description' => 'foreign key for swissmon acl item id',
-					'type' => 'int',
-					'not null' => 'TRUE',
-					'size' => 'big',
-				),
-				'sgroup_id' => array(
-					'description' => 'foreign key for swissmon group id',
-					'type' => 'int',
-					'not null' => 'TRUE',
-					'size' => 'big',
-				),
 				'users_id' => array(
 					'description' => 'foreign key for swissmon user id',
 					'type' => 'int',
-					'not null' => 'TRUE',
 					'default' => '0',
 					'size' => 'big',
 				),
-			),
-			'unique keys' => array(
 				'acl_id' => array(
-					0 => 'acl_id',
+					'description' => 'Foreign key of acl id',
+					'type' => 'int',
+					'default' => '0',
+					'size' => 'big',
 				),
+				'sgroup_id' => array(
+					'description' => 'Foreign key of swissmon sgroup',
+					'type' => 'int',
+					'default' => '0',
+					'size' => 'big',
+				),
+				'id' => array(
+					'description' => 'primary key of linking table',
+					'type' => 'serial',
+					'not null' => 'TRUE',
+					'size' => 'big',
+				),
+			),
+			'primary key' => array(
+				0 => 'id',
 			),
 			'foreign keys' => array(
 				'sgroup_acl_link_2_sgroup_acl' => array(
@@ -146,10 +148,10 @@ function sgroup_schema() {
 /**
  * Implements hook_install();
  *
- * This adds all tables defined in sgroup_schema().
+ * Add missing foreign keys
  */
 function sgroup_install() {
-	drupal_install_schema('sgroup');
+
 }
 
 /**

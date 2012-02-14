@@ -12,7 +12,7 @@
  */
 function sgroup_menu() {
 	// only debug
-	$items['user/%user/sgroup/test'] = array(
+	$items['sgroup/test'] = array(
 			'title' => 'Test ACL',
 			'description' => 'Test ACL functions and DB',
 			'page callback' => 'run_acl_test',

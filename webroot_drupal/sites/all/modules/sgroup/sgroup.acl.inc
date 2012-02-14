@@ -32,11 +32,6 @@
  * @author Simon Maurer
  */
 
-$_READ_PERMISSION = 1;
-$_WRITE_PERMISSION = 2;
-$_DELETE_PERMISSION = 3;
-$_MANAGE_PERMISSION = 4;
-
 /**
  * Add's a user group to an Access Control List
  *
@@ -52,11 +47,12 @@ function add_group_to_acl($acl_id, $group_id, $level = 1) {
 		return false;
 	}
 
-	$exists = db_result(
-		db_select('sgroup_acl_link')->condition('acl_id', $acl_id)
-			->condition('sgroup_id', $group_id)
-			->execute()
-			->fetch());
+	$exists = db_select('sgroup_acl_link', 'sal')->condition('sal.acl_id',
+			$acl_id)
+		->condition('sal.sgroup_id', $group_id)
+		->fields('sal')
+		->execute()
+		->fetch();
 
 	if ($exists) {
 		// update
@@ -73,8 +69,7 @@ function add_group_to_acl($acl_id, $group_id, $level = 1) {
 		$res = db_insert('sgroup_acl_link')->fields(
 				array(
 					'acl_id' => $acl_id,
-					'sgroup_id',
-					$group_id,
+					'sgroup_id' => $group_id,
 					'level' => $level,
 				))
 			->execute();
@@ -99,11 +94,12 @@ function add_user_to_acl($acl_id, $user_id, $level = 1) {
 		return false;
 	}
 
-	$exists = db_result(
-		db_select('sgroup_acl_link')->condition('acl_id', $acl_id)
-			->condition('users_id', $user_id)
-			->execute()
-			->fetch());
+	$exists = db_select('sgroup_acl_link', 'sal')->condition('sal.acl_id',
+			$acl_id)
+		->condition('sal.users_id', $user_id)
+		->fields('sal')
+		->execute()
+		->fetch();
 
 	if ($exists) {
 		// update
@@ -140,20 +136,20 @@ function add_user_to_acl($acl_id, $user_id, $level = 1) {
 /*
  * admin permission is checked y each module
 function check_admin_permission($user_id) {
-	global $GO_CONFIG;
-	
-	require_once($GLOBALS['GO_CONFIG']->class_path
-	        . 'base/groups.class.inc.php');
-	$GO_GROUPS = new GO_GROUPS();
-	
-	if (!isset($this->is_admin))
-	    $this->is_admin = $GO_GROUPS
-	        ->is_in_group($user_id, $GLOBALS['GO_CONFIG']->group_root);
-	
-	return $this->is_admin;
-	 
+    global $GO_CONFIG;
+    
+    require_once($GLOBALS['GO_CONFIG']->class_path
+            . 'base/groups.class.inc.php');
+    $GO_GROUPS = new GO_GROUPS();
+    
+    if (!isset($this->is_admin))
+        $this->is_admin = $GO_GROUPS
+            ->is_in_group($user_id, $GLOBALS['GO_CONFIG']->group_root);
+    
+    return $this->is_admin;
+     
 }
-*/
+ */
 
 /**
  * Checks presence of a group in an ACL
@@ -173,7 +169,7 @@ function check_group_in_acl($acl_id, $group_id) {
 		->execute()
 		->fetch();
 
-	return $level;
+	return $level->level;
 }
 
 /**
@@ -190,27 +186,27 @@ function check_permission($acl_id, $user_id = 0, $groups_only = false) {
 		$user_id = $user->uid;
 
 	if ($user_id > 0 && $acl_id > 0) {
-		$query = db_select('sgroup_acl_link', 'sal')->join('sgroup_users',
-				'su', 'su.sgroup_id = sal.sgroup_id')
-			->fields('sal', array(
-				'acl_id',
-				'level'
-			))
+		$query = db_select('sgroup_acl_link', 'sal')->fields('sal',
+				array(
+					'acl_id',
+					'level'
+				))
 			->condition('sal.acl_id', $acl_id);
+		$query->leftJoin('sgroup_users', 'su', 'su.sgroup_id = sal.sgroup_id');
 
 		if (!$groups_only) {
 			$query->condition(
 					db_or()->condition('su.users_id', $user_id)
 						->condition('sal.users_id', $user_id))
-				->orderBy('sal.lvl', 'DESC');
+				->orderBy('sal.level', 'DESC');
 		}
 		else {
 			$query->condition('su.users_id', $user_id);
 		}
 
-		$query->execute();
+		$db_level = $query->execute();
 
-		if ($record = $query->fetchAssoc()) {
+		if ($record = $db_level->fetch()) {
 			return $record->level;
 		}
 	}
@@ -225,7 +221,7 @@ function check_permission($acl_id, $user_id = 0, $groups_only = false) {
  * @access	public
  * @return	int					level of user permission
  */
-function check_user_in_acl($acl_id, $user_id=-1) {
+function check_user_in_acl($acl_id, $user_id = -1) {
 	global $user;
 	if ($user_id == -1) {
 		$user_id = $user->uid;
@@ -239,7 +235,7 @@ function check_user_in_acl($acl_id, $user_id=-1) {
 		->execute()
 		->fetch();
 
-	return $level;
+	return $level->level;
 }
 
 /**
@@ -257,15 +253,15 @@ function check_user_owns_acl($acl_id, $user_id) {
 			'users_id'
 		))
 		->execute()
-		->fetchAssoc();
+		->fetch();
 	if ($user_id == $db_res->users_id) {
 		// user owns acl
 		$res = true;
 	}
-/*	elseif ($db_res->users_id == '0') {
-		// 
-		$res = check_admin_permission($user_id);
-	}*/
+	/*	elseif ($db_res->users_id == '0') {
+	        // 
+	        $res = check_admin_permission($user_id);
+	    }*/
 	return $res;
 }
 
@@ -281,7 +277,7 @@ function chown_acl($acl_id, $user_id) {
 	$res = set_acl_owner($acl_id, $user_id);
 
 	if ($res) {
-		$res = add_user_to_acl($acl_id, $user_id, $_MANAGE_PERMISSION);
+		$res = add_user_to_acl($acl_id, $user_id, 99);
 	}
 
 	return $res;
@@ -378,15 +374,14 @@ function delete_group_from_acl($acl_id, $group_id, $force_group_root = false) {
 
 	$res = false;
 	// if ($force_group_root /* || $group_id != root group / get drupal naturwerk root group*/) {
-		// do not delete root group except $froce_group_root is set
-		// no: -> admin permission is checked in corresponding module
-		$num_deleted = db_delete('sgroup_acl_link')->condition('acl_id',
-				$acl_id)
-			->condition('sgroup_id', $group_id)
-			->execute();
-		if ($num_deleted > 0) {
-			$res = true;
-		}
+	// do not delete root group except $froce_group_root is set
+	// no: -> admin permission is checked in corresponding module
+	$num_deleted = db_delete('sgroup_acl_link')->condition('acl_id', $acl_id)
+		->condition('sgroup_id', $group_id)
+		->execute();
+	if ($num_deleted > 0) {
+		$res = true;
+	}
 	//}
 	return $res;
 }
@@ -419,21 +414,22 @@ function delete_user_from_acl($acl_id, $user_id) {
  * @return	Array			all sgroups from ACL (sg.id, sg.name, sal.level)
  */
 function get_groups_in_acl($acl_id, $level = 0) {
-	$query = db_select('sgroup', 'sg')->join('sgroup_acl_link', 'sal',
-			'sg.id = sal.sgroup_id')
-		->fields('sg', array(
-			'id',
-			'name'
-		))
-		->fields('sal', array(
+	$query = db_select('sgroup', 'sg')->fields('sg',
+			array(
+				'id',
+				'name'
+			));
+	$query->join('sgroup_acl_link', 'sal', 'sg.id = sal.sgroup_id');
+	$db_groups = $query->fields('sal', array(
 			'level'
 		))
 		->condition('sal.acl_id', $acl_id)
 		->condition('sal.level', $level, '>=')
 		->orderBy('sg.name')
 		->execute();
+
 	$groups = array();
-	while ($record = $query->fetchAssoc()) {
+	while ($record = $db_groups->fetch()) {
 		$groups[] = $record;
 	}
 	return $groups;
@@ -448,21 +444,22 @@ function get_groups_in_acl($acl_id, $level = 0) {
  * @return	Array			all users from ACL (u.uid, u.name, sal.level)
  */
 function get_users_in_acl($acl_id, $level = 0) {
-	$query = db_select('users', 'u')->join('sgroup_acl_link', 'sal',
-			'i.uid = sal.users_id')
-		->fields('u', array(
-			'uid',
-			'name'
-		))
-		->fields('sal', array(
-			'level'
+	$query = db_select('users', 'u')->fields('u',
+			array(
+				'uid',
+				'name',
+			));
+	$query->join('sgroup_acl_link', 'sal', 'sal.users_id=u.uid');
+	$db_users = $query->fields('sal', array(
+			'level',
 		))
 		->condition('sal.acl_id', $acl_id)
 		->condition('sal.level', $level, '>=')
 		->orderBy('u.name')
 		->execute();
+
 	$users = array();
-	while ($record = $query->fetchAssoc()) {
+	while ($record = $db_users->fetch()) {
 		$users[] = $record;
 	}
 	return $users;
@@ -478,6 +475,8 @@ function get_users_in_acl($acl_id, $level = 0) {
  * @return	int						The ID of the new Access Control List
  */
 function new_acl($description = '', $user_id = -1) {
+	global $user;
+	$res = false;
 	if ($user_id == -1) {
 		$user_id = $user->uid;
 	}
@@ -485,14 +484,16 @@ function new_acl($description = '', $user_id = -1) {
 	$id = db_insert('sgroup_acl')->fields(
 			array(
 				'description' => $description,
-				'user_id' => $user_id,
+				'users_id' => $user_id,
 			))
 		->execute();
-	//$this->add_group_to_acl($id, $GLOBALS['GO_CONFIG']->group_root, $_MANAGE_PERMISSION);
+	//$this->add_group_to_acl($id, $GLOBALS['GO_CONFIG']->group_root, 99);
 	// bypass manage permissions if admin
 	// no: -> admin permission is checked in corresponding module
-	add_user_to_acl($id, $user_id, $_MANAGE_PERMISSION);
-	return $id;
+	if (add_user_to_acl($id, $user_id, 99)) {
+		$res = $id;
+	}
+	return $res;
 }
 
 /**
@@ -507,7 +508,7 @@ function set_acl_owner($acl_id, $user_id) {
 	$ret = FALSE;
 	$res = db_update('sgroup_acl')->fields(
 			array(
-				'user_id' => $user_id
+				'users_id' => $user_id
 			))
 		->condition('id', $acl_id)
 		->execute();

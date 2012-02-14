@@ -25,7 +25,6 @@ function sgroup_schema() {
       array (
         'description' => 'foreign key for swissmon user id who created acl item',
         'type' => 'int',
-        'not null' => 'TRUE',
         'default' => '0',
         'size' => 'big',
       ),
@@ -49,37 +48,41 @@ function sgroup_schema() {
       'level' => 
       array (
         'description' => 'access level',
-        'type' => 'smallint',
-      ),
-      'acl_id' => 
-      array (
-        'description' => 'foreign key for swissmon acl item id',
         'type' => 'int',
-        'not null' => 'TRUE',
-        'size' => 'big',
-      ),
-      'sgroup_id' => 
-      array (
-        'description' => 'foreign key for swissmon group id',
-        'type' => 'int',
-        'not null' => 'TRUE',
-        'size' => 'big',
+        'size' => 'small',
       ),
       'users_id' => 
       array (
         'description' => 'foreign key for swissmon user id',
         'type' => 'int',
-        'not null' => 'TRUE',
         'default' => '0',
         'size' => 'big',
       ),
-    ),
-    'unique keys' => 
-    array (
       'acl_id' => 
       array (
-        0 => 'acl_id',
+        'description' => 'Foreign key of acl id',
+        'type' => 'int',
+        'default' => '0',
+        'size' => 'big',
       ),
+      'sgroup_id' => 
+      array (
+        'description' => 'Foreign key of swissmon sgroup',
+        'type' => 'int',
+        'default' => '0',
+        'size' => 'big',
+      ),
+      'id' => 
+      array (
+        'description' => 'primary key of linking table',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
     ),
     'foreign keys' => 
     array (
