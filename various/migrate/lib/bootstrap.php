@@ -37,6 +37,7 @@ function my_assert_handler($file, $line, $code) {
 		debug_backtrace();
 		exit(-1);
 	}
+	exit(-2);
 }
 
 // Set up the callback
