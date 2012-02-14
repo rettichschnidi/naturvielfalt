@@ -31,22 +31,54 @@ function organism_theme() {
 /**
  * Implements hook_menu()
  *
- * This makes it possible to visit the link drupal/organism.
- * It is also possible to create an URL like drupal/organism/42. This would show probably the element with the ID 42.
+ * This makes it possible to visit the link example.com/organism.
+ * It is also possible to create an URL like example.com/organism/42. This would show the element with the ID 42.
  *
  * @return array
  */
 function organism_menu() {
-
 	$items['organism'] = array(
 			'title' => t('Organisms'),
-			'page callback' => 'organism_overview',
+			'page callback' => 'organism_classifier_view',
 			'access arguments' => array('access content'),
 			'description' => t('List of organisms'),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'organism.overview.inc',
 	);
 
+	$items['organism/classifier/%'] = array(
+			'title' => t('Organisms classifications'),
+			'page arguments' => array(2),
+			'page callback' => 'organism_classification_top_view',
+			'access arguments' => array('access content'),
+			'description' => t('List of organisms classifications'),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'organism.overview.inc',
+	);
+
+	$items['organism/classifier/%/classification/%'] = array(
+			'title' => t('Organisms classifications'),
+			'page arguments' => array(
+					2,
+					4
+			),
+			'page callback' => 'organism_classification_view',
+			'access arguments' => array('access content'),
+			'description' => t('List of organisms classifications'),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'organism.overview.inc',
+	);
+
+	/*
+	 * 	$items['organismclassification'] = array(
+	 'title' => t('Organisms'),
+	 'page callback' => 'organism_classification',
+	 'access arguments' => array('access content'),
+	 'description' => t('List of organism classificators'),
+	 'type' => MENU_NORMAL_ITEM,
+	 'file' => 'organism.overview.inc',
+	 );
+	 */
 	//FIXME: Take what we can use, throw away the rest
 	/*
 	 $items['organism'] = array(
@@ -140,7 +172,7 @@ function organism_menu() {
 }
 
 function organism_permission() {
-	return array('organism upload' => array('title' => t('Attach media files to organisms'), ), );
+	return array('organism upload' => array('title' => t('Attach media files to organisms')));
 }
 
 /*
