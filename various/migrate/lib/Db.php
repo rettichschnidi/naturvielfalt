@@ -186,10 +186,15 @@ class Db {
 	 * @param array of values $valuesArray
 	 * @return integer
 	 */
-	public function getcount_query($fromQuery, $typesArray, $valuesArray) {
+	public function getcount_query($query, $typesArray, $valuesArray) {
+		if (FALSE) {
+			print "QUERY: $query\n";
+			print "TYPES: " . var_export($typesArray, true) . "\n";
+			print "VALUES:" . var_export($valuesArray, true) . "\n";
+		}
 		global $errors;
 		assert(count($typesArray) == count($valuesArray));
-		$rows = $this -> select_query(array('COUNT(*)'), $fromQuery, $typesArray, $valuesArray, false);
+		$rows = $this -> select_query(array('COUNT(*)'), $query, $typesArray, $valuesArray, false);
 		return $rows[0][0];
 	}
 
@@ -209,9 +214,11 @@ class Db {
 			$questionmarks .= ', ?';
 		}
 		$query = 'INSERT INTO ' . $table . ' (' . $columns . ')' . ' VALUES(' . $questionmarks . ')';
-		// print "insert_query: $query\n";
-		// var_dump($typesArray);
-		// var_dump($valuesArray);
+		if (FALSE) {
+			print "QUERY: $query\n";
+			print "TYPES: " . var_export($typesArray, true) . "\n";
+			print "VALUES:" . var_export($valuesArray, true) . "\n";
+		}
 		$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
 			$errors[] = $statement -> getMessage();
@@ -324,9 +331,11 @@ class Db {
 		$whereColumns = implode(' = ? AND ', $columnArray);
 		$whereColumns .= ' = ?';
 		$query = 'SELECT id FROM ' . $table . ' WHERE ' . $whereColumns;
-		//print "QUERY: $query\n";
-		//print "TYPES: " . var_export($typesArray, true) . "\n";
-		//print "VALUES:" . var_export($valuesArray, true) . "\n";
+		if (FALSE) {
+			print "QUERY: $query\n";
+			print "TYPES: " . var_export($typesArray, true) . "\n";
+			print "VALUES:" . var_export($valuesArray, true) . "\n";
+		}
 		$statement = &$this -> connection -> prepare($query, $typesArray);
 		if (PEAR::isError($statement)) {
 			$errors[] = $statement -> getMessage();
