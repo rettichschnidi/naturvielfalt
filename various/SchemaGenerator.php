@@ -66,6 +66,10 @@ function pruneTypesAndSize(&$column) {
 		$column['type'] = 'serial';
 		$column['size'] = 'big';
 		break;
+	case 'smallint':
+		$column['type'] = 'int';
+		$column['size'] = 'small';
+		break;
 	case 'text':
 		if (isset($column['default'])) {
 			fwrite(
