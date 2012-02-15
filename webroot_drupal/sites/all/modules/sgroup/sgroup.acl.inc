@@ -32,13 +32,6 @@
  * @author Simon Maurer
  */
 
-global $PERMISSION_DEF;
-$PERMISSION_DEF = Array(
-	"PARTIAL_READ" => 1,
-	"READ" => 1,
-	
-);
-
 /**
  * Add's a user group to an Access Control List
  *
@@ -63,7 +56,13 @@ function add_group_to_acl($acl_id, $group_id, $level = 1) {
 
 	if ($exists) {
 		// update
-		$res = update_group_in_acl($acl_id, $group_id, $level);
+		$res = db_update('sgroup_acl_link')->fields(
+				array(
+					'level' => $level
+				))
+			->condition('acl_id', $acl_id)
+			->condition('sgroup_id', $group_id)
+			->execute();
 	}
 	else {
 		// insert
@@ -74,8 +73,9 @@ function add_group_to_acl($acl_id, $group_id, $level = 1) {
 					'level' => $level,
 				))
 			->execute();
-		$res = ($res != NULL) ? TRUE : FALSE;
 	}
+
+	$res = (($res != NULL) && ($res != 0)) ? TRUE : FALSE;
 	return $res;
 }
 
@@ -103,7 +103,13 @@ function add_user_to_acl($acl_id, $user_id, $level = 1) {
 
 	if ($exists) {
 		// update
-		$res = update_user_in_acl($acl_id, $user_id, $level);
+		$res = db_update('sgroup_acl_link')->fields(
+				array(
+					'level' => $level
+				))
+			->condition('acl_id', $acl_id)
+			->condition('users_id', $user_id)
+			->execute();
 	}
 	else {
 		// insert
@@ -114,8 +120,9 @@ function add_user_to_acl($acl_id, $user_id, $level = 1) {
 					'level' => $level,
 				))
 			->execute();
-		$res = ($res != NULL) ? TRUE : FALSE;
 	}
+
+	$res = (($res != NULL) && ($res != 0)) ? TRUE : FALSE;
 	return $res;
 }
 
@@ -153,7 +160,6 @@ function check_admin_permission($user_id) {
  * @return	int					level of group permission
  */
 function check_group_in_acl($acl_id, $group_id) {
-	$res = false;
 	$level = db_select('sgroup_acl_link', 'sal')->fields('sal',
 			array(
 				'level'
@@ -163,13 +169,7 @@ function check_group_in_acl($acl_id, $group_id) {
 		->execute()
 		->fetch();
 
-	if (!$level) {
-		$res = $level;
-	}
-	else {
-		$res = $level->level;
-	}
-	return $res;
+	return $level->level;
 }
 
 /**
@@ -223,7 +223,6 @@ function check_permission($acl_id, $user_id = 0, $groups_only = false) {
  */
 function check_user_in_acl($acl_id, $user_id = -1) {
 	global $user;
-	$res = false;
 	if ($user_id == -1) {
 		$user_id = $user->uid;
 	}
@@ -236,14 +235,7 @@ function check_user_in_acl($acl_id, $user_id = -1) {
 		->execute()
 		->fetch();
 
-	if (!$level) {
-		$res = $level;
-	}
-	else {
-		$res = $level->level;
-	}
-	;
-	return $res;
+	return $level->level;
 }
 
 /**
@@ -304,11 +296,6 @@ function clear_acl($acl_id) {
 		->execute();
 	if ($num_deleted > 0) {
 		$res = TRUE;
-		$acl = get_acl($acl_id);
-		if ($acl) {
-			// add owner to acl
-			add_user_to_acl($acl_id, $acl->users_id, 99);
-		}
 		// add root group with add_group_to_acl
 		// no: -> admin permission is checked in corresponding module
 	}
@@ -339,13 +326,15 @@ function copy_acl($sAcl, $dAcl = 0, $level = 0) {
 		->condition('sal.level', $level, '>=')
 		->execute();
 
-	while ($record = $query->fetch()) {
-		if ($record->sgroup_id != 0) {
+	while ($record = $query->fetchAssoc()) {
+		if ($record->sgroup_id != 0
+				&& !check_group_in_acl($dAcl, $record->sgroup_id)) {
 			// group_id != root group
 			// no: -> admin permission is checked in corresponding module
 			add_group_to_acl($dAcl, $record->sgroup_id, $record->level);
 		}
-		if ($record->users_id != 0) {
+		if ($record->usres_id != 0
+				&& !check_user_in_acl($dAcl, $record->users_id)) {
 			add_user_to_acl($dAcl, $record->users_id, $record->level);
 		}
 	}
@@ -408,7 +397,7 @@ function delete_group_from_acl($acl_id, $group_id, $force_group_root = false) {
 function delete_user_from_acl($acl_id, $user_id) {
 	$res = false;
 	$num_deleted = db_delete('sgroup_acl_link')->condition('acl_id', $acl_id)
-		->condition('users_id', $user_id)
+		->condition('user_id', $user_id)
 		->execute();
 	if ($num_deleted > 0) {
 		$res = true;
@@ -417,22 +406,7 @@ function delete_user_from_acl($acl_id, $user_id) {
 }
 
 /**
- * Gets acl entry by id
- * 
- * @param	int		$acl_id	The ACL ID
- * @access	public
- * @return	Object			ACL entry of specified id
- */
-function get_acl($acl_id) {
-	$acl = db_select('sgroup_acl', 'sa')->fields('sa')
-		->condition('sa.id', $acl_id)
-		->execute()
-		->fetch();
-	return $acl;
-}
-
-/**
- * Gets all groups from an ACL
+ * Get's all groups from an ACL
  *
  * @param	int		$acl_id	The ACL ID
  * @param	int		$level 
@@ -462,7 +436,7 @@ function get_groups_in_acl($acl_id, $level = 0) {
 }
 
 /**
- * Gets all users from an ACL
+ * Get's all users from an ACL
  *
  * @param	int		$acl_id	The ACL ID
  * @param	int		$level 
@@ -481,7 +455,6 @@ function get_users_in_acl($acl_id, $level = 0) {
 		))
 		->condition('sal.acl_id', $acl_id)
 		->condition('sal.level', $level, '>=')
-		->condition('u.uid', 0, '!=')
 		->orderBy('u.name')
 		->execute();
 
@@ -531,7 +504,7 @@ function new_acl($description = '', $user_id = -1) {
  * @access	public
  * @return	bool				True on success
  */
-function update_acl_owner($acl_id, $user_id) {
+function set_acl_owner($acl_id, $user_id) {
 	$ret = FALSE;
 	$res = db_update('sgroup_acl')->fields(
 			array(
@@ -545,47 +518,15 @@ function update_acl_owner($acl_id, $user_id) {
 	return $ret;
 }
 
-/**
- * Updates acl group element
- * 
- * @param	int			$acl_id		The ID of the Access Control List
- * @param	int			$group_id	The group_id to add to the ACL
- * @param	int			$level
- * @access	public
- * @return	bool					True on success
- */
-function update_group_in_acl($acl_id, $group_id, $level) {
-	$res = db_update('sgroup_acl_link')->fields(
-			array(
-				'level' => $level
-			))
-		->condition('acl_id', $acl_id)
-		->condition('sgroup_id', $group_id)
-		->execute();
-	$res = ($res != 0) ? TRUE : FALSE;
-	return $res;
+/*
+ * @todo do we need this?
+function get_acl($acl_id) {
+    $this->query(
+            "SELECT * FROM go_acl WHERE acl_id='" . $this->escape($acl_id)
+                    . "'");
+    return $this->next_record();
 }
-
-/**
- * Updates acl user element
- * 
- * @param	int			$acl_id		The ID of the Access Control List
- * @param	int			$user_id	The user_id to add to the ACL
- * @param	int			$level
- * @access	public
- * @return	bool					True on success
  */
-function update_user_in_acl($acl_id, $user_id, $level) {
-	$res = db_update('sgroup_acl_link')->fields(
-			array(
-				'level' => $level
-			))
-		->condition('acl_id', $acl_id)
-		->condition('users_id', $user_id)
-		->execute();
-	$res = ($res != 0) ? TRUE : FALSE;
-	return $res;
-}
 
 /*
  * @todo: do we need this?
