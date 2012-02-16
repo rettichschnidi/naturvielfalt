@@ -22,12 +22,13 @@ function organismRowSelect() {
 		if (organismId[0] == 'organism')
 			window.location.href = Drupal.settings.basePath + 'organism/'
 					+ organismId[1];
-		if (organismId[0] == 'classifier')
-			window.location.href = Drupal.settings.basePath + 'organism/classifier/'
-					+ organismId[1];
+		if (organismId[0] == 'classification')
+			window.location.href = Drupal.settings.basePath
+					+ 'organism/classification/' + organismId[1];
 		if (organismId[0] == 'classifierclassification')
-			window.location.href = Drupal.settings.basePath + 'organism/classifier/'
-					+ organismId[1] + '/classification/' + organismId[2];
+			window.location.href = Drupal.settings.basePath
+					+ 'organism/classifier/' + organismId[1]
+					+ '/classification/' + organismId[2];
 		if (organismId[0] == 'inventory')
 			window.location.href = Drupal.settings.basePath + 'inventory/'
 					+ organismId[1];

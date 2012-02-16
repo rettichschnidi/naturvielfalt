@@ -39,24 +39,14 @@ function organism_theme() {
 function organism_menu() {
 	$items['organism'] = array(
 			'title' => t('Organisms'),
-			'page callback' => 'organism_classifier_view',
+			'page callback' => 'organism_show_all_classifiers',
 			'access arguments' => array('access content'),
 			'description' => t('List of organisms'),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'organism.overview.inc',
 	);
 
-	$items['organism/classifier/%'] = array(
-			'title' => t('Organisms classifications'),
-			'page arguments' => array(2),
-			'page callback' => 'organism_classification_top_view',
-			'access arguments' => array('access content'),
-			'description' => t('List of organisms classifications'),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
-	);
-
-	$items['organism/classifier/%/classification/%'] = array(
+	$items['organism/classification/%'] = array(
 			'title' => t('Organisms classifications'),
 			'page arguments' => array(
 					2,
@@ -65,6 +55,18 @@ function organism_menu() {
 			'page callback' => 'organism_classification_view',
 			'access arguments' => array('access content'),
 			'description' => t('List of organisms classifications'),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'organism.overview.inc',
+	);
+	
+	$items['organism/%'] = array(
+			'title' => t('Organisms'),
+			'page arguments' => array(
+					1
+			),
+			'page callback' => 'organism_show_organism',
+			'access arguments' => array('access content'),
+			'description' => t('Specific organism'),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'organism.overview.inc',
 	);

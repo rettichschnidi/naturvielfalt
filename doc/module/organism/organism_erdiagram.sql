@@ -4,17 +4,10 @@
 DROP INDEX IF EXISTS primaryKey;
 DROP INDEX IF EXISTS left_value;
 DROP INDEX IF EXISTS left_value;
-DROP INDEX IF EXISTS levelindex;
-DROP INDEX IF EXISTS classifierid;
-DROP INDEX IF EXISTS nameindex;
-DROP INDEX IF EXISTS parentid;
-DROP INDEX IF EXISTS anotherindex;
-DROP INDEX IF EXISTS index;
-DROP INDEX IF EXISTS parent_id;
-DROP INDEX IF EXISTS left_value;
-DROP INDEX IF EXISTS right_value;
-DROP INDEX IF EXISTS name;
-DROP INDEX IF EXISTS classifier_id;
+DROP INDEX IF EXISTS PrimefatherAndRight;
+DROP INDEX IF EXISTS PrimefatherAndLeft;
+DROP INDEX IF EXISTS PrimefatherAndLeft;
+DROP INDEX IF EXISTS PrimefatherAndRight;
 DROP INDEX IF EXISTS organism_id;
 DROP INDEX IF EXISTS value;
 DROP INDEX IF EXISTS FK_organism_11;
@@ -35,7 +28,6 @@ DROP TABLE IF EXISTS organism_attribute_value;
 DROP TABLE IF EXISTS organism_classification_subscription;
 DROP TABLE IF EXISTS organism_classification;
 DROP TABLE IF EXISTS organism_classification_level;
-DROP TABLE IF EXISTS organism_classifier;
 DROP TABLE IF EXISTS organism_lang;
 DROP TABLE IF EXISTS organism_scientific_name;
 DROP TABLE IF EXISTS public.organism_file_managed;
@@ -77,14 +69,14 @@ CREATE TABLE organism_classification
 	id serial NOT NULL UNIQUE,
 	-- If this classifier is on top level, then parent_id = 0
 	parent_id int NOT NULL,
-	organism_classifier_id int NOT NULL,
+	prime_father_id int NOT NULL,
 	organism_classification_level_id int NOT NULL,
 	left_value int DEFAULT 1 NOT NULL,
 	right_value int DEFAULT 2 NOT NULL,
 	-- Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus
 	name text NOT NULL,
 	PRIMARY KEY (id),
-	UNIQUE (organism_classifier_id, organism_classification_level_id, name)
+	UNIQUE (organism_classification_level_id, name)
 ) WITHOUT OIDS;
 
 
@@ -92,14 +84,12 @@ CREATE TABLE organism_classification_level
 (
 	id serial NOT NULL UNIQUE,
 	parent_id int NOT NULL,
-	organism_classifier_id int NOT NULL,
+	prime_father_id int NOT NULL,
 	left_value int NOT NULL,
 	right_value int NOT NULL,
 	name text NOT NULL,
 	PRIMARY KEY (id),
-	UNIQUE (organism_classifier_id, left_value),
-	UNIQUE (organism_classifier_id, right_value),
-	UNIQUE (organism_classifier_id, name)
+	UNIQUE (prime_father_id, name)
 ) WITHOUT OIDS;
 
 
@@ -110,16 +100,6 @@ CREATE TABLE organism_classification_subscription
 	organism_classification_id int NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (organism_id)
-) WITHOUT OIDS;
-
-
-CREATE TABLE organism_classifier
-(
-	id serial NOT NULL UNIQUE,
-	-- Name of this attribute. Gets translated by Drupal.
-	name text NOT NULL UNIQUE,
-	scientific_classification boolean NOT NULL,
-	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
 
@@ -216,6 +196,14 @@ ALTER TABLE organism_classification
 ;
 
 
+ALTER TABLE organism_classification
+	ADD FOREIGN KEY (prime_father_id)
+	REFERENCES organism_classification (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
 ALTER TABLE organism_classification_subscription
 	ADD FOREIGN KEY (organism_classification_id)
 	REFERENCES organism_classification (id)
@@ -240,17 +228,9 @@ ALTER TABLE organism_classification_level
 ;
 
 
-ALTER TABLE organism_classification
-	ADD FOREIGN KEY (organism_classifier_id)
-	REFERENCES organism_classifier (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (organism_classifier_id)
-	REFERENCES organism_classifier (id)
+	ADD FOREIGN KEY (prime_father_id)
+	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
@@ -289,7 +269,7 @@ ALTER TABLE organism_scientific_name
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -297,7 +277,7 @@ ALTER TABLE public.organism
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -332,19 +312,12 @@ ALTER TABLE organism_attribute_value
 /* Create Indexes */
 
 CREATE INDEX primaryKey ON organism_classification USING BTREE (id);
-CREATE INDEX left_value ON organism_classification (left_value, organism_classifier_id);
-CREATE INDEX left_value ON organism_classification (right_value, organism_classifier_id);
-CREATE INDEX levelindex ON organism_classification (organism_classification_level_id);
-CREATE INDEX classifierid ON organism_classification (organism_classifier_id);
-CREATE INDEX nameindex ON organism_classification (name);
-CREATE INDEX parentid ON organism_classification (parent_id);
-CREATE INDEX anotherindex ON organism_classification (name, organism_classification_level_id);
-CREATE INDEX index ON organism_classification_level (id);
-CREATE INDEX parent_id ON organism_classification_level (parent_id);
-CREATE INDEX left_value ON organism_classification_level (left_value);
-CREATE INDEX right_value ON organism_classification_level (right_value);
-CREATE INDEX name ON organism_classification_level (name);
-CREATE INDEX classifier_id ON organism_classification_level (organism_classifier_id);
+CREATE INDEX left_value ON organism_classification (left_value);
+CREATE INDEX left_value ON organism_classification (right_value);
+CREATE INDEX PrimefatherAndRight ON organism_classification (prime_father_id, right_value);
+CREATE INDEX PrimefatherAndLeft ON organism_classification (prime_father_id, left_value);
+CREATE INDEX PrimefatherAndLeft ON organism_classification_level (prime_father_id, left_value);
+CREATE INDEX PrimefatherAndRight ON organism_classification_level (prime_father_id, right_value);
 CREATE INDEX organism_id ON organism_scientific_name (organism_id);
 CREATE INDEX value ON organism_scientific_name (name);
 CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);
@@ -364,7 +337,6 @@ COMMENT ON COLUMN organism_attribute_value.id IS 'Used just for importing';
 COMMENT ON COLUMN organism_attribute_value_subscription.organism_attribute_value_id IS 'Used just for importing';
 COMMENT ON COLUMN organism_classification.parent_id IS 'If this classifier is on top level, then parent_id = 0';
 COMMENT ON COLUMN organism_classification.name IS 'Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus';
-COMMENT ON COLUMN organism_classifier.name IS 'Name of this attribute. Gets translated by Drupal.';
 COMMENT ON COLUMN organism_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
 COMMENT ON COLUMN organism_scientific_name.id IS 'Used just for importing';
 COMMENT ON COLUMN organism_scientific_name.name IS 'scientific, latin name';
