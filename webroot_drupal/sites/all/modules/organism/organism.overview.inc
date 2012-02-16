@@ -47,14 +47,20 @@ function organism_show_all_classifiers() {
  * @return array
  */
 function organism_classification_view($classificationid) {
-	print "1: " . var_export($classificationid, TRUE) . "\n";
 	drupal_set_title(t('Organisms - Grouped by class'));
 	drupal_add_js(
 		drupal_get_path('module', 'organism')
 				. '/js/organism.datatable.select.js');
 
 	$resultClassification = db_query(
-		'SELECT oc.id, oc.name, oc.organism_classification_level_id FROM {organism_classification} oc WHERE oc.parent_id = :ocid',
+		'SELECT
+			oc.id,
+			oc.name,
+			oc.organism_classification_level_id
+		FROM
+			{organism_classification} oc
+		WHERE
+			oc.parent_id = :ocid',
 		array(':ocid' => $classificationid));
 
 	$render_array = array();
@@ -87,7 +93,7 @@ function organism_classification_view($classificationid) {
 	}
 
 	$resultOrganism = db_query(
-		'SELECT 
+		'SELECT
 			osc.id AS name_id,
 			osc.name AS name,
 			o.id AS organism_id
@@ -102,8 +108,8 @@ function organism_classification_view($classificationid) {
 
 	if ($resultOrganism->rowCount() > 0) {
 		$header = array(
-				t('Organisms'),
-				'organism ids'
+				t('Organism'),
+				'organism id'
 		);
 
 		$rows = array();
@@ -132,25 +138,18 @@ function organism_classification_view($classificationid) {
  */
 function organism_show_organism($organismid) {
 	drupal_set_title(t('Show specific organisms'));
-
-	print "WILL SHOW YOU ORGANISM: #$organismid<br/>";
-	exit();
-	$result = db_query(
-		'SELECT ocl.id, ocl.name FROM {organism_classification_level} ocl WHERE ocl.id = :parentid',
-		array(':parentid' => $classifierid));
-
-	foreach ($result as $record) {
-		$title = $record->name;
-	}
+	drupal_add_js(
+		drupal_get_path('module', 'organism')
+				. '/js/organism.datatable.select.js');
 
 	$header = array(
-			t($title),
+			t("Synonyms"),
 			'id'
 	);
 
 	$result = db_query(
-		'SELECT oc.id, oc.name FROM {organism_classification} oc WHERE oc.organism_classification_level_id = :oclid',
-		array(':oclid' => $classifierid));
+		'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.id = :oscid',
+		array(':oscid' => $organismid));
 
 	foreach ($result as $record) {
 		$row = array();
@@ -158,8 +157,7 @@ function organism_show_organism($organismid) {
 		$row[] = $record->id;
 		$rows[] = array(
 				'data' => $row,
-				'id' => 'classifierclassification_' . $classifierid . '_'
-						. $record->id
+				'id' => 'organism_' . $record->id
 		);
 	}
 
