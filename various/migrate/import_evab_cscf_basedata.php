@@ -56,14 +56,17 @@ $importTable = 'import_evab_cscf_view';
 
 $organism_classifier_id = 0;
 {
-	$crsfCode = 'CSCF';
+	$classifierName = 'CSCF';
 	$isScientificClassification = TRUE;
-	if (!$db->haveClassifier($crsfCode)) {
-		$db->createClassifier($crsfCode, $isScientificClassification);
+	if (!$db->haveClassifier($classifierName)) {
+		print "Classifier $classifierName not found. Create it.\n";
+		$organism_classifier_id = $db->createClassifier(
+				$classifierName,
+				$isScientificClassification);
 	} else {
-		print $crsfCode . " classification already existing.\n";
+		print $classifierName . " classification already existing.\n";
+		$organism_classifier_id = $db->getClassifierId($classifierName);
 	}
-	$organism_classifier_id = $db->getClassifierId($crsfCode);
 	assert($organism_classifier_id != 0);
 }
 
@@ -83,12 +86,11 @@ $organism_attribute_id = 0;
 }
 
 /**
- * create organism classification level according to the CSCF
+ * create organism classification level
  * set $organism_classification_level_id
  * fill hashmap $$organism_classification_level_name2$organism_classification_level_id
  */
 
-$organism_classification_level_name2organism_classification_level_id = array();
 {
 	$classification_data = array(
 			'class' => array(
@@ -109,28 +111,52 @@ $organism_classification_level_name2organism_classification_level_id = array();
 			)
 	);
 
-	$organism_classification_level_id = NULL;
+	$organism_classification_level_id = $organism_classifier_id;
+	$parent_id = $organism_classification_level_id;
 	foreach ($classification_data as $classification_level_name => $moredata) {
-		$column = $moredata['columnname'];
 		if (!$db->haveClassificationLevel(
 				$classification_level_name,
-				$organism_classifier_id)) {
+				$organism_classifier_id,
+				$parent_id)) {
+			print "create\n";
 			$organism_classification_level_id = $db->createClassificationLevel(
 					$classification_level_name,
 					$organism_classifier_id,
-					$organism_classification_level_id);
+					$parent_id);
 		} else {
+			print "got it\n";
 			$organism_classification_level_id = $db->getClassificationLevelId(
 					$classification_level_name,
 					$organism_classifier_id,
-					$organism_classification_level_id);
+					$parent_id);
 		}
 		print
 			("Classification level id for '$classification_level_name': $organism_classification_level_id\n");
 		$classification_data[$classification_level_name]['classificationlevelid'] = $organism_classification_level_id;
+		$parent_id = $organism_classification_level_id;
 	}
 	assert($organism_classification_level_id != NULL);
 }
+
+{
+	if (!$db->haveClassification($classifierName, $organism_classifier_id)) {
+		print "Adding new classificator: $classifierName\n";
+		// ...then add entry
+		$classification_id = $db->createClassification(
+				$classifierName,
+				NULL,
+				$organism_classifier_id,
+				NULL);
+	} else {
+		print 
+			"Getting classificator $classification_level_name: $classifierName\n";
+		// ...or just get its id
+		$classification_id = $db->getClassificationId(
+				$classifierName,
+				$organism_classifier_id);
+	}
+}
+print "ClassificatorId for $classifierName: $classification_id\n";
 
 /**
  * Add all classifications and connect them to their classifications_level,
@@ -156,7 +182,6 @@ $organism_classification_level_name2organism_classification_level_id = array();
 	// for each unique classification...
 	$i = 0;
 	$start = microtime(true);
-	$db->startTransactionIfPossible();
 	foreach ($rows as $row) {
 		if (++$i % 100 == 0) {
 			$current = microtime(true);
@@ -164,8 +189,9 @@ $organism_classification_level_name2organism_classification_level_id = array();
 			print "Time: " . ($current - $start) . " seconds\n";
 			$start = $current;
 		}
-		$classification_parent_id = NULL;
+		$classification_parent_id = $classification_id;
 		// ...do add an entry to the organism_classification table
+		$db->startTransactionIfPossible();
 		foreach ($classification_data as $classification_level_name => $classification_level_data) {
 			$classification_level_name = $classification_level_name;
 			$classification_level_columnname = $classification_level_data['columnname'];
@@ -195,6 +221,8 @@ $organism_classification_level_name2organism_classification_level_id = array();
 				print 
 					"Adding new $classification_level_name: $classification_name\n";
 				// ...then add entry
+				assert($classification_parent_id != NULL);
+				assert($organism_classifier_id != NULL);
 				$classification_id = $db->createClassification(
 						$classification_name,
 						$organism_classifier_id,
@@ -209,13 +237,14 @@ $organism_classification_level_name2organism_classification_level_id = array();
 						$classification_level_id);
 			}
 			$classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
+			print "New ID: $classification_id\n";
 			assert($classification_id != NULL);
 			$classification_parent_id = $classification_id;
+			$db->stopTransactionIfPossible();
 		}
 	}
-	$db->stopTransactionIfPossible();
 }
-print "Classification done\n";
+print "Classification done...\n";
 exit();
 /**
  * add all species which have no subspecies to:

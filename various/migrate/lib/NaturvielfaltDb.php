@@ -114,9 +114,7 @@ class NaturvielfaltDb extends Db {
 	function haveClassifier($classifier_name) {
 		global $drupalprefix;
 		$fromQuery = 'FROM ' . $drupalprefix
-				. 'organism_classifier
-						WHERE
-							name = ?';
+				. 'organism_classification_level WHERE name = ? AND id = parent_id';
 		$typesArray = array(
 				'text'
 		);
@@ -128,20 +126,34 @@ class NaturvielfaltDb extends Db {
 		return $num;
 	}
 
-	function createClassifier($classifier_name, $scientific_classification) {
+	function createClassifier($classifier_name) { // TODO: $isScientificClassification
 		global $drupalprefix;
-		$table = $drupalprefix . 'organism_classifier';
+		$table = $drupalprefix . 'organism_classification_level';
+		$newid = $this->get_nextval(
+				$drupalprefix . 'organism_classification_level_id_seq');
 		$columnArray = array(
-				'name',
-				'scientific_classification'
+				'id',
+				'parent_id',
+				'prime_father_id',
+				'left_value',
+				'right_value',
+				'name'
 		);
 		$typesArray = array(
-				'text',
-				'integer'
+				'integer',
+				'integer',
+				'integer',
+				'integer',
+				'integer',
+				'text'
 		);
 		$valuesArray = array(
-				$classifier_name,
-				$scientific_classification
+				$newid,
+				$newid,
+				$newid,
+				1,
+				2,
+				$classifier_name
 		);
 		$rowcount = $this->insert_query(
 				$columnArray,
@@ -149,64 +161,34 @@ class NaturvielfaltDb extends Db {
 				$typesArray,
 				$valuesArray);
 		assert($rowcount == 1);
-		$ids = $this->getIdArray_query(
-				$columnArray,
-				$table,
-				$typesArray,
-				$valuesArray);
-		assert(count($ids) == 1);
-		return $ids[0];
+		return $newid;
 	}
 
 	function getClassifierId($classifier_name) {
 		global $drupalprefix;
-		$table = $drupalprefix . 'organism_classifier';
-		$columnNameArray = array(
-				'id'
-		);
-		$fromQuery = 'FROM ' . $table . '
-						WHERE
-							name = ?';
+		$table = $drupalprefix . 'organism_classification_level';
+		$fromQuery = 'SELECT id FROM ' . $table
+				. ' WHERE name = ? AND id = parent_id';
 		$typesArray = array(
 				'text'
 		);
 		$valuesArray = array(
 				$classifier_name
 		);
-		$rows = $this->select_query(
-				$columnNameArray,
-				$fromQuery,
-				$typesArray,
-				$valuesArray);
-		assert(count($rows) == 1);
-		return $rows[0]['id'];
+		$num = $this->query($fromQuery, $typesArray, $valuesArray);
+		assert(count($num) == 1);
+		return $num[0]['id'];
 	}
 
-	function haveClassificationLevel($classification_level_name, $classifier_id) {
+	function haveClassificationLevel($classification_level_name, $classifier_id,
+			$parent_id) {
+		print "Name: $classification_level_name\n";
+		print "Id: $classifier_id\n";
+		print "Parent: $parent_id\n";
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_classification_level';
 		$fromQuery = 'FROM ' . $table
-				. ' WHERE name = ? AND organism_classifier_id = ?';
-		$typesArray = array(
-				'text',
-				'integer'
-		);
-		$valuesArray = array(
-				$classification_level_name,
-				$classifier_id
-		);
-		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
-		assert($num <= 1);
-		return $num;
-	}
-
-	function haveClassificationLevelWithSpecialParentId(
-			$classification_level_name, $classification_parent_id,
-			$classifier_id) {
-		global $drupalprefix;
-		$table = $drupalprefix . 'organism_attribute';
-		$fromQuery = 'FROM ' . $table
-				. ' WHERE name = ? AND parent_id = ? AND organism_classifier_id = ?';
+				. ' WHERE name = ? AND parent_id = ? AND prime_father_id = ?';
 		$typesArray = array(
 				'text',
 				'integer',
@@ -214,7 +196,7 @@ class NaturvielfaltDb extends Db {
 		);
 		$valuesArray = array(
 				$classification_level_name,
-				$classification_parent_id,
+				$parent_id,
 				$classifier_id
 		);
 		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
@@ -269,7 +251,7 @@ class NaturvielfaltDb extends Db {
 						SET
 							right_value = right_value + 2
 						WHERE
-							organism_classifier_id = ? AND
+							prime_father_id = ? AND
 							right_value > ?";
 			$typesArray = array(
 					'integer',
@@ -286,7 +268,7 @@ class NaturvielfaltDb extends Db {
 						SET
 							left_value = left_value + 2
 						WHERE
-							organism_classifier_id = ? AND
+							prime_father_id = ? AND
 							left_value > ?";
 			$typesArray = array(
 					'integer',
@@ -308,7 +290,7 @@ class NaturvielfaltDb extends Db {
 		$columnArray = array(
 				'id',
 				'parent_id',
-				'organism_classifier_id',
+				'prime_father_id',
 				'left_value',
 				'right_value',
 				'name'
@@ -334,20 +316,23 @@ class NaturvielfaltDb extends Db {
 	}
 
 	function getClassificationLevelId($classification_level_name,
-			$classifier_id) {
+			$classifier_id, $parent_id) {
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_classification_level';
 		$columnArray = array(
 				'name',
-				'organism_classifier_id'
+				'prime_father_id',
+				'parent_id'
 		);
 		$typesArray = array(
 				'text',
+				'integer',
 				'integer'
 		);
 		$valuesArray = array(
 				$classification_level_name,
-				$classifier_id
+				$classifier_id,
+				$parent_id
 		);
 		$ids = $this->getIdArray_query(
 				$columnArray,
@@ -402,15 +387,29 @@ class NaturvielfaltDb extends Db {
 		return $ids[0];
 	}
 
-	function createClassification($classification_name, $classifier_id,
+	function createClassification($classification_name, $prime_father_id,
 			$classification_level_id, $parent_id) {
 		assert($classification_name != NULL && $classification_name != '');
 		assert($classification_level_id != NULL);
+		if (TRUE) {
+			print "classification_name: $classification_name\n";
+			print "prime_father_id: $prime_father_id\n";
+			print "classification_level_id: $classification_level_id\n";
+			print "parent_id: $parent_id\n";
+		}
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_classification';
 		$newid = $this->get_nextval(
 				$drupalprefix . 'organism_classification_id_seq');
+		if ($parent_id == NULL) {
+			assert($prime_father_id == NULL);
+		}
+		if ($prime_father_id == NULL) {
+			assert($parent_id == NULL);
+			$prime_father_id = $newid;
+		}
 		if ($parent_id != NULL) {
+			assert($prime_father_id != NULL);
 			$parentLeftValue = $this->getSingleValue(
 					'left_value',
 					$table,
@@ -425,17 +424,17 @@ class NaturvielfaltDb extends Db {
 						SET
 							right_value = right_value + 2
 						WHERE
-							organism_classifier_id = ? AND right_value > ?";
+							prime_father_id = ? AND right_value > ?";
 			$typesArray = array(
 					'integer',
 					'integer'
 			);
 			$valuesArray = array(
-					$classifier_id,
+					$prime_father_id,
 					$parentLeftValue
 			);
 			$changed = $this->query($query, $typesArray, $valuesArray, false);
-			if (TRUE) {
+			if (true) {
 				print 
 					"Had to change $changed records to update the right values.\n";
 			}
@@ -444,17 +443,17 @@ class NaturvielfaltDb extends Db {
 						SET
 							left_value = left_value + 2
 						WHERE
-							organism_classifier_id = ? AND left_value > ?";
+							prime_father_id = ? AND left_value > ?";
 			$typesArray = array(
 					'integer',
 					'integer'
 			);
 			$valuesArray = array(
-					$classifier_id,
+					$prime_father_id,
 					$parentLeftValue
 			);
 			$changed = $this->query($query, $typesArray, $valuesArray, false);
-			if (TRUE) {
+			if (true) {
 				print 
 					"Had to change $changed records to update the left values.\n";
 			}
@@ -468,8 +467,8 @@ class NaturvielfaltDb extends Db {
 		$columnArray = array(
 				'id',
 				'parent_id',
+				'prime_father_id',
 				'organism_classification_level_id',
-				'organism_classifier_id',
 				'left_value',
 				'right_value',
 				'name'
@@ -486,8 +485,8 @@ class NaturvielfaltDb extends Db {
 		$valuesArray = array(
 				$newid,
 				$parent_id,
+				$prime_father_id,
 				$classification_level_id,
-				$classifier_id,
 				$leftValue,
 				$rightValue,
 				$classification_name,
