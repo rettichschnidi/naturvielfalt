@@ -62,7 +62,7 @@ function organism_classification_view($classificationid) {
 		FROM
 			{organism_classification} oc
 		WHERE
-			oc.parent_id = :ocid',
+			oc.parent_id != oc.id AND oc.parent_id = :ocid',
 		array(':ocid' => $classificationid));
 
 	$render_array = array();
@@ -148,7 +148,7 @@ function organism_show_organism($organismid) {
 	);
 
 	$result = db_query(
-		'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.id = :oscid',
+		'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.organism_id = :oscid',
 		array(':oscid' => $organismid));
 
 	if ($result->rowCount() > 0) {
