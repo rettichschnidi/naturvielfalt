@@ -177,11 +177,14 @@ function check_group_in_acl($acl_id, $group_id) {
  * 
  * @param	int		$acl_id			id of acl to check
  * @param	int		$user_id		id of user to check
+ * @param	int		$min_level		minimum level to pass check
  * @param	bool	$groups_only	set to true if check on groups only
  * @access	public
- * @return	int						level of permission
+ * @return	bool					TRUE on pass check
  */
-function check_permission($acl_id, $user_id = 0, $groups_only = false) {
+function check_permission($acl_id, $min_level, $user_id = 0, $groups_only = FALSE) {
+	$res = FALSE;
+	$level = 0;
 	if ($user_id == 0)
 		$user_id = $user->uid;
 
@@ -207,10 +210,13 @@ function check_permission($acl_id, $user_id = 0, $groups_only = false) {
 		$db_level = $query->execute();
 
 		if ($record = $db_level->fetch()) {
-			return $record->level;
+			$level = $record->level;
 		}
 	}
-	return false;
+	if ($min_level <= $level) {
+		$res = TRUE;
+	}
+	return $res;
 }
 
 /**
@@ -223,7 +229,7 @@ function check_permission($acl_id, $user_id = 0, $groups_only = false) {
  */
 function check_user_in_acl($acl_id, $user_id = -1) {
 	global $user;
-	$res = false;
+	$res = FALSE;
 	if ($user_id == -1) {
 		$user_id = $user->uid;
 	}

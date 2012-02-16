@@ -562,9 +562,8 @@ function run_acl_test() {
 		$row[] = $rowCount;
 		$row[] = t('Check Permission All');
 		$row[] = t('Check if user_id = '.$user_id.' in ACL id = '.$acl_id.' has permission level = '.$acl_lvl);
-		$lvl = check_permission($acl_id, $user_id);
 		$do_next = TRUE;
-		if ($lvl == $acl_lvl) {
+		if (check_permission($acl_id, $acl_lvl, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
 		}
@@ -586,9 +585,8 @@ function run_acl_test() {
 		$row[] = $rowCount;
 		$row[] = t('Check Permission Group');
 		$row[] = t('Check if user_id = '.$user_id.' in ACL id = '.$acl_id.' has permission level = '.$acl_lvl.' (only group-permission check)');
-		$lvl = check_permission($acl_id, $user_id, true);
 		$do_next = TRUE;
-		if ($lvl == $acl_lvl) {
+		if (check_permission($acl_id, $acl_lvl, $user_id, true)) {
 			$row[] = $success;
 			$do_next = TRUE;
 		}
@@ -609,9 +607,8 @@ function run_acl_test() {
 		$row[] = $rowCount;
 		$row[] = t('Check Permission All');
 		$row[] = t('Check if user_id = '.$user_id.' (in no group) in ACL id = '.$acl_id.' has permission level = '.$acl_lvl);
-		$lvl = check_permission($acl_id, $user_id);
 		$do_next = TRUE;
-		if ($lvl == $acl_lvl) {
+		if (check_permission($acl_id, $acl_lvl, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
 		}
@@ -631,9 +628,8 @@ function run_acl_test() {
 		$row[] = $rowCount;
 		$row[] = t('Check Permission Group');
 		$row[] = t('Check if user_id = '.$user_id.' (in no group) in ACL id = '.$acl_id.' has no permission (only group-permission check)');
-		$lvl = check_permission($acl_id, $user_id, true);
 		$do_next = TRUE;
-		if ($lvl == false) {
+		if (!check_permission($acl_id, $acl_lvl, $user_id, true)) {
 			$row[] = $success;
 			$do_next = TRUE;
 		}
