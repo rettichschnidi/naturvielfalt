@@ -282,7 +282,7 @@ function check_user_owns_acl($acl_id, $user_id) {
  * @return	bool
  */
 function chown_acl($acl_id, $user_id) {
-	$res = set_acl_owner($acl_id, $user_id);
+	$res = update_acl_owner($acl_id, $user_id);
 
 	if ($res) {
 		$res = add_user_to_acl($acl_id, $user_id, 99);
