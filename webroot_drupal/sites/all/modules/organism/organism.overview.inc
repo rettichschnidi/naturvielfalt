@@ -23,22 +23,24 @@ function organism_show_all_classifiers() {
 	$result = db_query(
 		'SELECT id, name FROM {organism_classification} WHERE prime_father_id=id');
 
-	foreach ($result as $record) {
-		$row = array();
-		$row[] = $record->name;
-		$row[] = $record->id;
-		$rows[] = array(
-				'data' => $row,
-				'id' => 'classification_' . $record->id
+	$render_array = array();
+	if ($result->rowCount() > 0) {
+		foreach ($result as $record) {
+			$row = array();
+			$row[] = $record->name;
+			$row[] = $record->id;
+			$rows[] = array(
+					'data' => $row,
+					'id' => 'classification_' . $record->id
+			);
+		}
+		$render_array['organisms'] = array(
+				'#theme' => 'datatable',
+				'#header' => $header,
+				'#rows' => $rows,
+				'#id_table' => 'organisms',
 		);
 	}
-
-	$render_array['organisms'] = array(
-			'#theme' => 'datatable',
-			'#header' => $header,
-			'#rows' => $rows,
-			'#id_table' => 'organisms',
-	);
 	return $render_array;
 }
 
@@ -64,7 +66,7 @@ function organism_classification_view($classificationid) {
 		array(':ocid' => $classificationid));
 
 	$render_array = array();
-
+	
 	if ($resultClassification->rowCount() > 0) {
 		$header = array(
 				t('Classification of Organisms'),
@@ -72,7 +74,6 @@ function organism_classification_view($classificationid) {
 				'level'
 		);
 
-		$rows = array();
 		foreach ($resultClassification as $record) {
 			$row = array();
 			$row[] = $record->name;
@@ -83,7 +84,6 @@ function organism_classification_view($classificationid) {
 					'id' => 'classification_' . $record->id
 			);
 		}
-
 		$render_array['organisms'] = array(
 				'#theme' => 'datatable',
 				'#header' => $header,
@@ -112,7 +112,6 @@ function organism_classification_view($classificationid) {
 				'organism id'
 		);
 
-		$rows = array();
 		foreach ($resultOrganism as $record) {
 			$row = array();
 			$row[] = $record->name;
@@ -129,6 +128,7 @@ function organism_classification_view($classificationid) {
 				'#id_table' => 'organisms',
 		);
 	}
+
 	return $render_array;
 }
 
@@ -151,22 +151,24 @@ function organism_show_organism($organismid) {
 		'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.id = :oscid',
 		array(':oscid' => $organismid));
 
-	foreach ($result as $record) {
-		$row = array();
-		$row[] = $record->name;
-		$row[] = $record->id;
-		$rows[] = array(
-				'data' => $row,
-				'id' => 'organism_' . $record->id
+	if ($result->rowCount() > 0) {
+		foreach ($result as $record) {
+			$row = array();
+			$row[] = $record->name;
+			$row[] = $record->id;
+			$rows[] = array(
+					'data' => $row,
+					'id' => 'organism_' . $record->id
+			);
+		}
+		$render_array = array();
+		$render_array['organisms'] = array(
+				'#theme' => 'datatable',
+				'#header' => $header,
+				'#rows' => $rows,
+				'#id_table' => 'organisms',
 		);
 	}
-
-	$render_array['organisms'] = array(
-			'#theme' => 'datatable',
-			'#header' => $header,
-			'#rows' => $rows,
-			'#id_table' => 'organisms',
-	);
 	return $render_array;
 }
 ?>
