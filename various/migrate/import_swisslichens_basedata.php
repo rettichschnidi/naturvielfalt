@@ -115,7 +115,6 @@ print "ClassificatorId for $classifierName: $classification_id\n";
  */
 {
 	// get all familynames
-	$classification_name2classification_id = array();
 	$columns = array(
 			'familyname'
 	);
@@ -124,13 +123,14 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 	$typeValue = array();
 	$rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
 	print "Make sure all " . count($rows) . " classifications are in DB\n";
+
 	$i = 0;
 	$start = microtime(true);
 	foreach ($rows as $row) {
 		if (++$i % 100 == 0) {
 			$current = microtime(true);
 			print "#: $i, ";
-			print "Time: " . ($current - $start) . " seconds\n";
+			print "Time: " . ($current - $start) . " s\n";
 			$start = $current;
 		}
 		$classification_parent_id = $classification_root_id;
@@ -180,9 +180,10 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 						$classification_name,
 						$classification_level_id);
 			}
-			$classification_name2classification_id[$classification_name] = $classification_id;
 			$classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
-			print "New ID: $classification_id\n";
+			if (false) {
+				print "New ID: $classification_id\n";
+			}
 			assert($classification_id != NULL);
 			$db->stopTransactionIfPossible();
 		}

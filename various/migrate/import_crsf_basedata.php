@@ -76,7 +76,6 @@ $organism_attribute_id = 0;
  * create organism classification level
  * set $organism_classification_level_id
  */
-
 {
 	$classification_data = array(
 			'family' => array(
@@ -133,45 +132,6 @@ $classification_root_id = $classification_id;
 print "ClassificatorId for $classifierName: $classification_id\n";
 
 /**
- * Add all families to the classification_level family,
- * set $organism_classification_id and
- * hashmap $classification_name2classification_id
- */
-/*{
-    // get all familynames
-    $classification_name2classification_id = array();
-    $columns = array(
-            'familienname'
-    );
-    $sql = "FROM import_crsf_basedata WHERE familienname <> '#N/A' GROUP BY familienname ORDER BY familienname";
-    $typeArray = array();
-    $typeValue = array();
-    $rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
-    print "Make sure all " . count($rows) . " classifications are in DB\n";
-    $db->startTransactionIfPossible();
-    foreach ($rows as $row) {
-        $organism_classification_id = 0;
-        $organism_classification_name = $row['familienname'];
-        $table = $drupalprefix . 'organism_classification';
-        if ($db->haveClassification(
-                $organism_classification_name,
-                $organism_classification_level_id)) {
-            $organism_classification_id = $db->getClassificationId(
-                    $organism_classification_name,
-                    $organism_classification_level_id);
-        } else {
-            $organism_classification_id = $db->createClassification(
-                    $organism_classification_name,
-                    $organism_classification_level_id);
-        }
-        $classification_name2classification_id[$organism_classification_name] = $organism_classification_id;
-        assert($organism_classification_id != 0);
-    }
-    $db->stopTransactionIfPossible();
-}
- */
-
-/**
  * Add all classifications and connect them to their classifications_level,
  * fill hashmap $classification_name2classification_id
  */
@@ -193,7 +153,7 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 		if (++$i % 100 == 0) {
 			$current = microtime(true);
 			print "#: $i, ";
-			print "Time: " . ($current - $start) . " seconds\n";
+			print "Time: " . ($current - $start) . " s\n";
 			$start = $current;
 		}
 		$classification_parent_id = $classification_root_id;
@@ -245,10 +205,12 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 			}
 			$classification_name2classification_id[$classification_name] = $classification_id;
 			$classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
-			print "New ID: $classification_id\n";
+			if (false) {
+				print "New ID: $classification_id\n";
+			}
 			assert($classification_id != NULL);
-			$db->stopTransactionIfPossible();
 		}
+		$db->stopTransactionIfPossible();
 	}
 }
 print "Classification done...\n";
@@ -281,7 +243,15 @@ print "Classification done...\n";
 	print "Make sure all " . count($rows) . " species are in DB\n";
 
 	$db->startTransactionIfPossible();
+	$i = 0;
+	$start = microtime(true);
 	foreach ($rows as $row) {
+		if (++$i % 100 == 0) {
+			$current = microtime(true);
+			print "#: $i, ";
+			print "Time: " . ($current - $start) . " s\n";
+			$start = $current;
+		}
 		$organism_id = 0;
 		$scientific_name_name = $row['artname'];
 		$organism_classification_name = $row['familienname'];

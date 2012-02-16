@@ -391,12 +391,7 @@ class NaturvielfaltDb extends Db {
 			$classification_level_id, $parent_id) {
 		assert($classification_name != NULL && $classification_name != '');
 		assert($classification_level_id != NULL);
-		if (TRUE) {
-			print "classification_name: $classification_name\n";
-			print "prime_father_id: $prime_father_id\n";
-			print "classification_level_id: $classification_level_id\n";
-			print "parent_id: $parent_id\n";
-		}
+		// print "----\nprime_father_id: $prime_father_id\n----\n";
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_classification';
 		$newid = $this->get_nextval(
@@ -408,7 +403,9 @@ class NaturvielfaltDb extends Db {
 			assert($parent_id == NULL);
 			$prime_father_id = $newid;
 		}
+		$trigger = 200 ;
 		if ($parent_id != NULL) {
+			$slowQuery = false;
 			assert($prime_father_id != NULL);
 			$parentLeftValue = $this->getSingleValue(
 					'left_value',
@@ -424,19 +421,20 @@ class NaturvielfaltDb extends Db {
 						SET
 							right_value = right_value + 2
 						WHERE
-							prime_father_id = ? AND right_value > ?";
+							prime_father_id = ? AND right_value >= ?";
 			$typesArray = array(
 					'integer',
 					'integer'
 			);
 			$valuesArray = array(
 					$prime_father_id,
-					$parentLeftValue
+					$parentRightValue
 			);
-			$changed = $this->query($query, $typesArray, $valuesArray, false);
-			if (true) {
+			$changedR = $this->query($query, $typesArray, $valuesArray, false);
+			if ($changedR - 1 > $trigger) {
 				print 
-					"Had to change $changed records to update the right values.\n";
+					"Had to change $changedR records to update the right values.\n";
+				$slowQuery = true;
 			}
 			$query = "UPDATE
 							$table
@@ -450,20 +448,37 @@ class NaturvielfaltDb extends Db {
 			);
 			$valuesArray = array(
 					$prime_father_id,
-					$parentLeftValue
+					$parentRightValue
 			);
-			$changed = $this->query($query, $typesArray, $valuesArray, false);
-			if (true) {
+			$changedL = $this->query($query, $typesArray, $valuesArray, false);
+			if ($changedL > $trigger) {
 				print 
-					"Had to change $changed records to update the left values.\n";
+					"Had to change $changedL records to update the left values.\n";
+				$slowQuery = true;
 			}
-			$leftValue = $parentLeftValue + 1;
-			$rightValue = $parentLeftValue + 2;
+
+			$leftValue = $parentRightValue;
+			$rightValue = $parentRightValue + 1;
+			if ($slowQuery) {
+				print "------------\n";
+				print "classification_name: $classification_name\n";
+				print "prime_father_id: $prime_father_id\n";
+				print "classification_level_id: $classification_level_id\n";
+				print "parent_id: $parent_id\n";
+				print "Parent leftValue: $parentLeftValue\n";
+				print "Parent rightValue: $parentRightValue\n";
+				print "leftValue: $leftValue\n";
+				print "rightValue: $rightValue\n";
+				if ($changedR - 1 > $trigger || $changedL > $trigger) {
+					die("$trigger+ updates are waaaay too  much. Optimize!\n");
+				}
+			}
 		} else {
 			$leftValue = 1;
 			$rightValue = 2;
 			$parent_id = $newid;
 		}
+
 		$columnArray = array(
 				'id',
 				'parent_id',

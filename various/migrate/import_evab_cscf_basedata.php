@@ -157,7 +157,7 @@ $organism_attribute_id = 0;
 	}
 }
 print "ClassificatorId for $classifierName: $classification_id\n";
-
+$classification_root_id = $classification_id;
 /**
  * Add all classifications and connect them to their classifications_level,
  * fill hashmap $classification_name2classification_id
@@ -172,13 +172,14 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 	// extract all unique organism classifications
 	$sql = "SELECT DISTINCT ON(" . implode(',', $classification_level_columns)
 			. ") " . implode(',', $classification_level_columns)
-			. " FROM $importTable";
+			. " FROM $importTable ORDER BY "
+			. implode(',', $classification_level_columns);
 	// print "Query: $sql\n";
 	$typeArray = array();
 	$typeValue = array();
 	$rows = $dbevab->query($sql, $typeArray, $typeValue);
 	assert($rows != false);
-	print "Got " . count($rows) . " unique unique classifications.\n";
+	print "Got " . count($rows) . " unique unique classification trees.\n";
 	// for each unique classification...
 	$i = 0;
 	$start = microtime(true);
@@ -186,12 +187,12 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 		if (++$i % 100 == 0) {
 			$current = microtime(true);
 			print "#: $i, ";
-			print "Time: " . ($current - $start) . " seconds\n";
+			print "Time: " . ($current - $start) . " \tseconds\n";
 			$start = $current;
 		}
-		$classification_parent_id = $classification_id;
 		// ...do add an entry to the organism_classification table
-		$db->startTransactionIfPossible();
+		//$db->startTransactionIfPossible();
+		$classification_parent_id = $classification_root_id;
 		foreach ($classification_data as $classification_level_name => $classification_level_data) {
 			$classification_level_name = $classification_level_name;
 			$classification_level_columnname = $classification_level_data['columnname'];
@@ -218,34 +219,40 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 			if (!$db->haveClassification(
 					$classification_name,
 					$classification_level_id)) {
-				print 
-					"Adding new $classification_level_name: $classification_name\n";
+				if (FALSE) {
+					print 
+						"Adding new $classification_level_name: $classification_name\n";
+				}
 				// ...then add entry
 				assert($classification_parent_id != NULL);
 				assert($organism_classifier_id != NULL);
 				$classification_id = $db->createClassification(
 						$classification_name,
-						$organism_classifier_id,
+						$classification_root_id,
 						$classification_level_id,
 						$classification_parent_id);
 			} else {
-				print 
-					"Getting $classification_level_name: $classification_name\n";
+				if (FALSE) {
+					print 
+						"Getting $classification_level_name: $classification_name\n";
+				}
 				// ...or just get its id
 				$classification_id = $db->getClassificationId(
 						$classification_name,
 						$classification_level_id);
 			}
 			$classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
-			print "New ID: $classification_id\n";
+			if (FALSE) {
+				print "New ID: $classification_id\n";
+			}
 			assert($classification_id != NULL);
 			$classification_parent_id = $classification_id;
-			$db->stopTransactionIfPossible();
 		}
+		$db->stopTransactionIfPossible();
 	}
 }
 print "Classification done...\n";
-exit();
+
 /**
  * add all species which have no subspecies to:
  * - the organism_scientific_name table,
@@ -274,8 +281,19 @@ exit();
 	$valuesArray = array();
 	$rows = $dbevab->select_query($columns, $sql, $typeArray, $typeValue);
 	print "Make sure all " . count($rows) . " species are in DB\n";
+	$i = 0;
 	$db->startTransactionIfPossible();
 	foreach ($rows as $row) {
+		if (++$i % 100 == 0) {
+			$current = microtime(true);
+			print "#: $i, ";
+			print "Time: " . ($current - $start) . " \tseconds\n";
+			$start = $current;
+		}
+		if ($i % 1000 == 0) {
+			$db->stopTransactionIfPossible();
+			$db->startTransactionIfPossible();
+		}
 		$organism_id = 0;
 		$organism_genus = $row['genus'];
 		$organism_subgenus = $row['subgenus'];
