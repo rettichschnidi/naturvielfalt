@@ -7,7 +7,7 @@ function sgroup_edit($sgid) {
 	drupal_add_css(drupal_get_path('module', 'sgroup') . '/sgroup.edit.css');
 
 	// load record
-	$sgroups = db_query('SELECT sgid, sgroup_name FROM sgroup WHERE sgid = :sgid', array(':sgid' => $sgid));
+	$sgroups = db_query('SELECT id, name FROM sgroup WHERE id = :sgid', array(':sgid' => $sgid));
 	$sgroup = $sgroups->fetch();
 
 	// show edit form
@@ -34,9 +34,9 @@ function _sgroup_get_member_table($sgroup) {
 				sgu.admin
 			FROM
 				sgroup_users sgu 
-				LEFT JOIN users u ON sgu.uid = u.uid
+				LEFT JOIN users u ON sgu.users_id = u.uid
 			WHERE
-				sgu.sgid = :sgid', array(':sgid' => $sgroup->sgid));
+				sgu.sgroup_id = :sgid', array(':sgid' => $sgroup->id));
 	foreach ($users as $user) {
 		$row = array();
 		$row[] = array(
@@ -46,7 +46,7 @@ function _sgroup_get_member_table($sgroup) {
 				'data' => $user->admin == 1 ? t('Administrator') : t('Member')
 		);
 		$row[] = array(
-				'data' => '<div id="' . $sgroup->sgid . '/' . $user->uid . '"></div>',
+				'data' => '<div id="' . $sgroup->id . '/' . $user->uid . '"></div>',
 				'class' => 'delete'
 		);
 		$rows[] = $row;
@@ -71,7 +71,7 @@ function sgroup_edit_form($form, &$form_state, $sgroup) {
 	$form['sgroup_name'] = array(
 			'#type' => 'textfield',
 			'#title' => t('Group name'),
-			'#value' => $sgroup->sgroup_name,
+			'#value' => $sgroup->name,
 			'#required' => TRUE,
 	);
 	$form['submit'] = array(
@@ -81,7 +81,7 @@ function sgroup_edit_form($form, &$form_state, $sgroup) {
 
 	// Saving something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-	$form_state['storage']['sgid'] = $sgroup->sgid;
+	$form_state['storage']['sgid'] = $sgroup->id;
 
 	return $form;
 }
@@ -99,8 +99,8 @@ function sgroup_edit_form_submit($form, &$form_state) {
 		$sgroup_name = $form_state['input']['sgroup_name'];
 
 		// save group
-		$affectedRows = db_update('sgroup')->fields(array('sgroup_name' => $sgroup_name,))
-				->condition('sgid', $sgid, '=')->execute();
+		$affectedRows = db_update('sgroup')->fields(array('name' => $sgroup_name,))
+				->condition('id', $sgid, '=')->execute();
 
 		// check success
 		if ($affectedRows == 1) {
@@ -139,7 +139,7 @@ function sgroup_add_member_form($form, &$form_state, $sgroup) {
 	);
 	$form['sgid'] = array(
 			'#type' => 'hidden',
-			'#value' => $sgroup->sgid,
+			'#value' => $sgroup->id,
 	);
 	$form['submit'] = array(
 			'#type' => 'submit',
@@ -160,15 +160,15 @@ function sgroup_add_member_form_submit($form, &$form_state) {
 	// yes, there is one
 	if ($user->uid > 0) {
 		// find out if there is already a sgroup_user record
-		$sgroup_users = db_query('SELECT count(*) AS count FROM {sgroup_users} WHERE uid = :uid AND sgid = :sgid',
+		$sgroup_users = db_query('SELECT count(*) AS count FROM {sgroup_users} WHERE users_id = :uid AND sgroup_id = :sgid',
 				array(':uid' => $user->uid,
 						':sgid' => $sgid
 				));
 		$count = $sgroup_users->fetch();
 		if ($count->count == 0) {
 			db_insert('sgroup_users')
-					->fields(array('sgid' => $sgid,
-							'uid' => $user->uid,
+					->fields(array('sgroup_id' => $sgid,
+							'users_id' => $user->uid,
 							'admin' => $admin,
 					))->execute();
 		} else {
@@ -186,7 +186,7 @@ function sgroup_delete_member($sgid, $uid) {
 	$result = 'fail';
 	global $user;
 	if ($user->uid != $uid) {
-		db_delete('sgroup_users')->condition('sgid', $sgid)->condition('uid', $uid)->execute();
+		db_delete('sgroup_users')->condition('sgroup_id', $sgid)->condition('users_id', $uid)->execute();
 		$result = 'success';
 	}
 	return drupal_json_output($result);

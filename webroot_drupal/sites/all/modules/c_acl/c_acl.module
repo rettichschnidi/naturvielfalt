@@ -1,0 +1,40 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_menu().
+ * This hook enables modules to register paths in order to define how URL requests are handled. 
+ * 
+ * @see http://api.drupal.org/api/drupal/modules--system--system.api.php/function/hook_menu/7
+ * @return associative array Define menu items and page callbacks.
+ */
+function c_acl_menu() {
+	// only debug
+	$items['c_acl/test'] = array(
+			'title' => 'Test ACL',
+			'description' => 'Test ACL functions and DB',
+			'page callback' => 'run_acl_test',
+			'access arguments' => array(
+					'access c_acl test'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 5,
+			'file' => 'c_acl.test.inc',
+	);
+	return $items;
+}
+
+/**
+ * Enables the administrator to allow or deny c_acl functions to a userrole
+ * @see http://api.drupal.org/api/drupal/modules--system--system.api.php/function/hook_permission/7
+ */
+function c_acl_permission() {
+	return array(
+			'access sgroup test' => array(
+					'title' => t('Can run ACL tests (use to debug only)')
+			)
+	);
+}
+?>

@@ -7,11 +7,12 @@
  * @return 
  */
 function sgroup_overview() {
+	global $user;
 	$output['introduction'] = array(
 			'#markup' => t(
 					'Groups are designed to share inventories with other users. You can !link
 		and invite others to join you. Currently you are member of following groups:',
-					array('!link' => l('create your own group', 'sgroup/new'))),
+					array('!link' => l('create your own group', 'user/'.$user->uid.'/sgroup/new'))),
 	);
 	$output['groupTable'] = _sgroup_create_group_table();
 	return $output;
@@ -29,26 +30,27 @@ function _sgroup_create_group_table() {
 	$tableHeader[] = t('group name');
 	$tableHeader[] = t('my role');
 	$tableHeader[] = t('Operations');
+	$rows = array();
 
 	// get all groups ordered by status and name
 	$groups = db_query(
 			'SELECT 
-				g.sgid, 
-				sgroup_name,
-				admin
+				g.id, 
+				g.name,
+				gu.admin
 			FROM
 				sgroup g 
-				LEFT JOIN sgroup_users gu ON g.sgid = gu.sgid
+				LEFT JOIN sgroup_users gu ON g.id = gu.sgroup_id
 			WHERE
-				gu.uid = :uid', array(':uid' => $user->uid));
+				gu.users_id = :uid', array(':uid' => $user->uid));
 
 	foreach ($groups as $group) {
 		$row = array();
-		$row[] = $group->sgroup_name;
+		$row[] = $group->name;
 		if ($group->admin == 1) {
 			// this is an administrator of that group
 			$row[] = t('Administrator');
-			$row[] = l(t('Edit'), 'user/' . $user->uid . '/sgroup/' . $group->sgid . '/edit');
+			$row[] = l(t('Edit'), 'user/' . $user->uid . '/sgroup/' . $group->id . '/edit');
 		} else {
 			// this is a normal member
 			$row[] = t('Member');

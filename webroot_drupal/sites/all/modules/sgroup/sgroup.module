@@ -11,19 +11,7 @@
  * @return associative array Define menu items and page callbacks.
  */
 function sgroup_menu() {
-	// only debug
-	$items['sgroup/test'] = array(
-			'title' => 'Test ACL',
-			'description' => 'Test ACL functions and DB',
-			'page callback' => 'run_acl_test',
-			'access arguments' => array(
-					'access sgroup'
-			),
-			'type' => MENU_LOCAL_TASK,
-			'weight' => 5,
-			'file' => 'sgroup.acl.test.inc',
-	);
-/*	$items['user/%user/sgroup'] = array(
+	$items['user/%user/sgroup'] = array(
 			'title' => 'Groups',
 			'description' => 'Shows ones groups',
 			'page callback' => 'sgroup_overview',
@@ -77,7 +65,6 @@ function sgroup_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'sgroup.edit.inc',
 	);
-	*/
 	return $items;
 }
 
@@ -96,7 +83,7 @@ function sgroup_permission() {
 /**
  * Allows an administrator of a group to edit his group
  */
-/*
+
 function sgroup_edit_access($sgroupId) {
 	$access = user_access('access sgroup');
 	// check if this user is administrator of the group
@@ -106,13 +93,13 @@ function sgroup_edit_access($sgroupId) {
 			FROM
 				sgroup_users
 			WHERE
-				sgid=:sgid AND
-				uid=:uid', array(':sgid' => $sgroupId,
+				sgroup_id=:sgid AND
+				users_id=:uid', array(':sgid' => $sgroupId,
 					':uid' => $user->uid
 			));
 	$admin = $adminRecords->fetch();
 	$access = $access && $admin->admin == 1;
 	return $access;
 }
-*/
+
 ?>

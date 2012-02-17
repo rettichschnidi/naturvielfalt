@@ -1,11 +1,23 @@
 <?php
-module_load_include('inc', 'sgroup', 'sgroup.acl');
+module_load_include('inc', 'c_acl', 'c_acl.base');
 /**
  * 
  * Enter description here ...
  */
 function run_acl_test() {
 	global $user;
+	$def_user_id = array();
+	$def_group_id = array();
+	
+	/* START SET TEST VARIABLES */
+	// set user ids
+	$def_user_id['user1'] = 2;
+	$def_user_id['user2'] = 3; // must be member of group 1
+	$def_user_id['user3'] = 4;
+	// set group ids
+	$def_group_id['group1'] = 1; // must contain user 2
+	$def_group_id['group2'] = 2;
+	/* END SET TEST VARIABLES */
 	
 	$output['introduction'] = array(
 			'#markup' => t("ACL tests are executed and the result is listed in the table below"),
@@ -19,11 +31,11 @@ function run_acl_test() {
 	$tableHeader[] = t('Description');
 	$tableHeader[] = t('Result');
 	
-	// cerate new acl with user 2
+	// cerate new acl with user 1
 	$row = array();
 	$rowCount = 1;
 	$displayCount = 1;
-	$user_id = 2;
+	$user_id = $def_user_id['user1'];
 	$row[] = $rowCount;
 	$row[] = t('Create new ACL');
 	$row[] = t('Create a new ACL by user_id = '.$user_id);
@@ -44,10 +56,10 @@ function run_acl_test() {
 		$row = array();
 		$row[] = $rowCount;
 		$row[] = t('User in ACL');
-		$row[] = t('Check if user_id = '.$user_id.' is in created ACL id = '.$acl_id.' and lvl = 99');
+		$row[] = t('Check if user_id = '.$user_id.' is in created ACL id = '.$acl_id.' and lvl = '.variable_get("ACL_ADMIN"));
 		$lvl = check_user_in_acl($acl_id, $user_id);
 		$do_next = FALSE;
-		if ($lvl == 99) {
+		if ($lvl == variable_get("ACL_ADMIN")) {
 			$row[] = $success;
 			$do_next = TRUE;
 		}
@@ -107,8 +119,8 @@ function run_acl_test() {
 	$displayCount++;
 	/* DISPLAY END */
 	
-	// add user 10, lvl 2 to acl
-	$user_id = 10;
+	// add user 2, lvl 2 to acl
+	$user_id = $def_user_id['user2'];
 	$acl_lvl = 2;
 	if ($do_next) {
 		$rowCount++;
@@ -127,7 +139,7 @@ function run_acl_test() {
 		$rows[] = $row;
 	}
 	
-	// check if user 10 is in acl and if lvl is ok
+	// check if user 2 is in acl and if lvl is ok
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -196,8 +208,8 @@ function run_acl_test() {
 	$displayCount++;
 	/* DISPLAY END */
 	
-	// change lvl of user 10 in acl
-	$user_id = 10;
+	// change lvl of user 2 in acl
+	$user_id = $def_user_id['user2'];
 	$acl_lvl = 3;
 	if ($do_next) {
 		$rowCount++;
@@ -216,7 +228,7 @@ function run_acl_test() {
 		$rows[] = $row;
 	}
 	
-	// check if user 10 is in acl and if lvl is ok
+	// check if user 2 is in acl and if lvl is ok
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -267,8 +279,8 @@ function run_acl_test() {
 	$displayCount++;
 	/* DISPLAY END */
 	
-	// change ownership of acl to user 11
-	$user_id = 11;
+	// change ownership of acl to user 3
+	$user_id = $def_user_id['user3'];
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -338,7 +350,7 @@ function run_acl_test() {
 	/* DISPLAY END */
 	
 	// add group 1, lvl 2 to acl
-	$group_id = 1;
+	$group_id = $def_group_id['group1'];
 	$acl_lvl = 3;
 	if ($do_next) {
 		$rowCount++;
@@ -409,7 +421,7 @@ function run_acl_test() {
 	/* DISPLAY END */
 	
 	// add group 2, lvl 4 to acl
-	$group_id = 2;
+	$group_id = $def_group_id['group2'];
 	$acl_lvl = 4;
 	if ($do_next) {
 		$rowCount++;
@@ -480,7 +492,7 @@ function run_acl_test() {
 	/* DISPLAY END */
 	
 	// change group lvl of group 1 in acl
-	$group_id = 1;
+	$group_id = $def_group_id['group1'];
 	$acl_lvl = 2;
 	if ($do_next) {
 		$rowCount++;
@@ -550,12 +562,12 @@ function run_acl_test() {
 	$displayCount++;
 	/* DISPLAY END */
 	
-	// check permission of user_id 10 (all permissions)
-	// this user is in group_id 1
-	$user_id = 10;
+	// check permission of user 2 (all permissions)
+	// this user is in group 1
+	$user_id = $def_user_id['user2'];
 	$acl_lvl = 3;
-	// user_id 10 has lvl 3 -> wins
-	// group_id 1 has lvl 2
+	// user 2 has lvl 3 -> wins
+	// group 1 has lvl 2
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -573,12 +585,12 @@ function run_acl_test() {
 		$rows[] = $row;
 	}
 	
-	// check permission of user_id 10 (only group permission)
-	// this user is in group_id 1
-	$user_id = 10;
+	// check permission of user 2 (only group permission)
+	// this user is in group 1
+	$user_id = $def_user_id['user2'];
 	$acl_lvl = 2;
-	// user_id 10 has lvl 3
-	// group_id 1 has lvl 2 -> wins (only group lvls are checked)
+	// user 2 has lvl 3
+	// group 1 has lvl 2 -> wins (only group lvls are checked)
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -596,11 +608,11 @@ function run_acl_test() {
 		$rows[] = $row;
 	}
 	
-	// check permission of user_id 2 (all permissions)
+	// check permission of user 1 (all permissions)
 	// this user is in no group
-	$user_id = 2;
-	$acl_lvl = 99;
-	// user_id 2 has lvl 99
+	$user_id = $def_user_id['user1'];
+	$acl_lvl = variable_get("ACL_ADMIN");
+	// user 1 has lvl variable_get("ACL_ADMIN")
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -621,7 +633,7 @@ function run_acl_test() {
 	// check permission of user_id 2 (only group permission)
 	// this user is in no group
 	// this is a negative-test
-	$user_id = 2;
+	$user_id = $def_user_id['user1'];
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -639,8 +651,8 @@ function run_acl_test() {
 		$rows[] = $row;
 	}
 	
-	// remove user 11 from acl
-	$user_id = 11;
+	// remove user 3 from acl
+	$user_id = $def_user_id['user3'];
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -658,7 +670,7 @@ function run_acl_test() {
 		$rows[] = $row;
 	}
 	
-	// check if user 11 is not in acl
+	// check if user 3 is not in acl
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -709,7 +721,7 @@ function run_acl_test() {
 	/* DISPLAY END */
 	
 	// remove group 2 from acl
-	$group_id = 2;
+	$group_id = $def_group_id['group2'];
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
@@ -778,12 +790,13 @@ function run_acl_test() {
 	/* DISPLAY END */
 	
 	// copy acl
+	$acl_id_copy = 0;
 	if ($do_next) {
 		$rowCount++;
 		$row = array();
 		$row[] = $rowCount;
-		$row[] = t('Clear ACL');
-		$row[] = t('Clear the ACL id = '.$acl_id);
+		$row[] = t('Copy ACL');
+		$row[] = t('Copy the ACL id = '.$acl_id);
 		$acl_id_copy = copy_acl($acl_id);
 		$do_next = FALSE;
 		if ($acl_id_copy) {
