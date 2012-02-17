@@ -10,28 +10,41 @@
  * @return array
  */
 function organism_show_all_classifiers() {
-	drupal_set_title(t('Organisms - Grouped by Classifier'));
+	drupal_set_title(t('Please select the classifier'));
 	drupal_add_js(
 		drupal_get_path('module', 'organism')
 				. '/js/organism.datatable.select.js');
 
 	$header = array(
-			t('Classifiers of Organisms'),
-			'id'
+			t('Classifiers'),
+			'id',
+			'number of classification levels'
 	);
 
 	$result = db_query(
-		'SELECT id, name FROM {organism_classification} WHERE prime_father_id=id');
+		'SELECT
+			oc.id AS oc_id,
+			oc.name AS oc_name,
+			COUNT(ocl.id) - 1 AS levelcount
+		FROM
+			{organism_classification} oc
+			JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id
+		WHERE
+			oc.prime_father_id = oc.id
+		GROUP BY
+			oc_id,
+			oc_name');
 
 	$render_array = array();
 	if ($result->rowCount() > 0) {
 		foreach ($result as $record) {
 			$row = array();
-			$row[] = $record->name;
-			$row[] = $record->id;
+			$row[] = $record->oc_name;
+			$row[] = $record->oc_id;
+			$row[] = $record->levelcount;
 			$rows[] = array(
 					'data' => $row,
-					'id' => 'classification_' . $record->id
+					'id' => 'classification_' . $record->oc_id
 			);
 		}
 		$render_array['organisms'] = array(
@@ -56,34 +69,39 @@ function organism_classification_view($classificationid) {
 
 	$resultClassification = db_query(
 		'SELECT
-			oc.id,
-			oc.name,
-			oc.organism_classification_level_id
+			oc.id AS id,
+			oc.name AS name,
+			oc.organism_classification_level_id AS classification_level_id,
+			ocl.name AS levelname
 		FROM
 			{organism_classification} oc
+			JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id
 		WHERE
 			oc.parent_id != oc.id AND oc.parent_id = :ocid',
 		array(':ocid' => $classificationid));
 
 	$render_array = array();
-	
+
 	if ($resultClassification->rowCount() > 0) {
+		$levelname = '';
+		foreach ($resultClassification as $record) {
+			$row = array();
+			$row[] = $record->name;
+			$row[] = $record->id;
+			$row[] = $record->classification_level_id;
+			$rows[] = array(
+					'data' => $row,
+					'id' => 'classification_' . $record->id
+			);
+			$levelname = $record->levelname;
+		}
+		drupal_set_title(t('Organisms - Grouped by' . ' ' . $levelname));
+
 		$header = array(
 				t('Classification of Organisms'),
 				'id',
 				'level'
 		);
-
-		foreach ($resultClassification as $record) {
-			$row = array();
-			$row[] = $record->name;
-			$row[] = $record->id;
-			$row[] = $record->organism_classification_level_id;
-			$rows[] = array(
-					'data' => $row,
-					'id' => 'classification_' . $record->id
-			);
-		}
 		$render_array['organisms'] = array(
 				'#theme' => 'datatable',
 				'#header' => $header,
@@ -148,6 +166,13 @@ function organism_show_organism($organismid) {
 	);
 
 	$result = db_query(
+		'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.organism_id = :oscid LIMIT 1',
+		array(':oscid' => $organismid));
+
+	if ($record = $result->fetchObject()) {
+		drupal_set_title(t('Show organism') . ' ' . $record->name);
+	}
+	$result = db_query(
 		'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.organism_id = :oscid',
 		array(':oscid' => $organismid));
 
@@ -155,10 +180,10 @@ function organism_show_organism($organismid) {
 		foreach ($result as $record) {
 			$row = array();
 			$row[] = $record->name;
-			$row[] = $record->id;
+			$row[] = $organismid;
 			$rows[] = array(
 					'data' => $row,
-					'id' => 'organism_' . $record->id
+					'id' => 'organism_' . $organismid
 			);
 		}
 		$render_array = array();
