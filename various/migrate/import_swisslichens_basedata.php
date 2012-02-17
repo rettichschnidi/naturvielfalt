@@ -22,11 +22,10 @@ $importTable = 'import_swisslichens_basedata';
 /**
  * Copy all SwissLichens into naturvielfalt DB
  *
- * $columns = array(
- * 	'familyname',
- * 	'species'
- * );
- *
+ *    Column   | Type | Modifiers
+ *  -----------+------+-----------
+ *  familyname | text | not null
+ *  species    | text | not null
  */
 
 /**
@@ -51,12 +50,13 @@ $organism_classifier_id = 0;
 
 /**
  * create organism classification level
- * set $organism_classification_level_id
+ * create and fill hashmap $classification_data
  */
-
 {
 	$classification_data = array(
-			'family' => array(
+			// My bad. Gattung actualy gets translated to genus, not to family. But for now
+			// I wont change it in the database
+			'genus' => array(
 					'columnname' => 'familyname'
 			)
 	);
@@ -88,6 +88,7 @@ $organism_classifier_id = 0;
 	assert($organism_classification_level_id != NULL);
 }
 
+// Create classifier in classifaction tree/table
 {
 	if (!$db->haveClassification($classifierName, $organism_classifier_id)) {
 		print "Adding new classificator: $classifierName\n";
@@ -108,6 +109,7 @@ $organism_classifier_id = 0;
 }
 $classification_root_id = $classification_id;
 print "ClassificatorId for $classifierName: $classification_id\n";
+
 /**
  * Add all families to the classification,
  * set $organism_classification_id and
@@ -219,7 +221,7 @@ print "Classification done...\n";
 		$organism_id = 0;
 		$scientific_name_name = $row['species'];
 		$organism_classification_name = $row['familyname'];
-		$organism_classification_id = $classification_data['family']['classifications'][$organism_classification_name];
+		$organism_classification_id = $classification_data['genus']['classifications'][$organism_classification_name];
 
 		if (!$db->haveScientificName($scientific_name_name)) {
 			$organism_id = $db->createOrganism(NULL, NULL);

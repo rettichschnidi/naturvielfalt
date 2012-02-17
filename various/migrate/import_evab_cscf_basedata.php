@@ -49,7 +49,7 @@ $dbevab = new Db(
  */
 
 /**
- * Create classifier CRSF if not already existing,
+ * Create classifier if not already existing,
  * set $organism_classifier_id
  */
 $importTable = 'import_evab_cscf_view';
@@ -90,7 +90,6 @@ $organism_attribute_id = 0;
  * set $organism_classification_level_id
  * fill hashmap $$organism_classification_level_name2$organism_classification_level_id
  */
-
 {
 	$classification_data = array(
 			'class' => array(
@@ -158,6 +157,7 @@ $organism_attribute_id = 0;
 }
 print "ClassificatorId for $classifierName: $classification_id\n";
 $classification_root_id = $classification_id;
+
 /**
  * Add all classifications and connect them to their classifications_level,
  * fill hashmap $classification_name2classification_id
@@ -187,7 +187,7 @@ $classification_root_id = $classification_id;
 		if (++$i % 100 == 0) {
 			$current = microtime(true);
 			print "#: $i, ";
-			print "Time: " . ($current - $start) . " \tseconds\n";
+			print "Time: " . ($current - $start) . " s\n";
 			$start = $current;
 		}
 		// ...do add an entry to the organism_classification table
@@ -254,7 +254,8 @@ $classification_root_id = $classification_id;
 print "Classification done...\n";
 
 /**
- * add all species which have no subspecies to:
+ * add all organism
+ * - connect with the correct classification
  * - the organism_scientific_name table,
  * - organism table,
  * - hashmap $scientific_name2organism_id
@@ -287,7 +288,7 @@ print "Classification done...\n";
 		if (++$i % 100 == 0) {
 			$current = microtime(true);
 			print "#: $i, ";
-			print "Time: " . ($current - $start) . " \tseconds\n";
+			print "Time: " . ($current - $start) . " s\n";
 			$start = $current;
 		}
 		if ($i % 1000 == 0) {
