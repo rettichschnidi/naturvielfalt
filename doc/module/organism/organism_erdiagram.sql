@@ -42,11 +42,15 @@ DROP TABLE IF EXISTS public.organism_attribute;
 
 CREATE TABLE organism_attribute_value
 (
-	-- Used just for importing
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
+	-- Fremdschlüssel auf die Tabelle organism_attribute. 
 	organism_attribute_id int NOT NULL,
+	-- Falls der valuetype = t, dann kann wird der Text hier gespeichert. 
 	text_value text,
+	-- Falls der valuetype = b, dann kann wird der Boolean hier gespeichert. 
 	boolean_value boolean,
+	-- Falls der valuetype = n, dann kann wird die Nummer hier gespeichert. 
 	number_value int,
 	PRIMARY KEY (id),
 	UNIQUE (id, organism_attribute_id)
@@ -55,9 +59,11 @@ CREATE TABLE organism_attribute_value
 
 CREATE TABLE organism_attribute_value_subscription
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
+	-- Fremdschlüssel auf die Tabelle organism. 
 	organism_id int NOT NULL,
-	-- Used just for importing
+	-- Fremdschlüssel auf die Tabelle organism_attribute_value. 
 	organism_attribute_value_id int NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (organism_id, organism_attribute_value_id)
@@ -66,14 +72,19 @@ CREATE TABLE organism_attribute_value_subscription
 
 CREATE TABLE organism_classification
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
-	-- If this classifier is on top level, then parent_id = 0
+	-- Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. 
 	parent_id int NOT NULL,
+	-- Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. 
 	prime_father_id int NOT NULL,
+	-- Fremdschlüssel auf die Tabelle organism_classification_level.
 	organism_classification_level_id int NOT NULL,
+	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. 
 	left_value int DEFAULT 1 NOT NULL,
+	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. 
 	right_value int DEFAULT 2 NOT NULL,
-	-- Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus
+	-- Enthält den eigenen Klassifizierungsname als Text, entweder Englisch oder Latein. 
 	name text NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (organism_classification_level_id, name)
@@ -82,11 +93,17 @@ CREATE TABLE organism_classification
 
 CREATE TABLE organism_classification_level
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
+	-- Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. 
 	parent_id int NOT NULL,
+	-- Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. 
 	prime_father_id int NOT NULL,
+	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.
 	left_value int NOT NULL,
+	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.
 	right_value int NOT NULL,
+	-- Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) 
 	name text NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (prime_father_id, name)
@@ -95,8 +112,11 @@ CREATE TABLE organism_classification_level
 
 CREATE TABLE organism_classification_subscription
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
+	-- Fremdschlüssel auf die Tabelle organism. 
 	organism_id int NOT NULL,
+	-- Fremdschlüssel auf die Tabelle organism_classification. 
 	organism_classification_id int NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (organism_id)
@@ -105,10 +125,13 @@ CREATE TABLE organism_classification_subscription
 
 CREATE TABLE organism_lang
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
 	-- Language code, e.g. 'de' or 'en-US'.
 	languages_language varchar(12) DEFAULT '''''::character varying' NOT NULL,
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	organism_id int NOT NULL,
+	-- Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) 
 	name text NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (languages_language, organism_id, name)
@@ -117,10 +140,11 @@ CREATE TABLE organism_lang
 
 CREATE TABLE organism_scientific_name
 (
-	-- Used just for importing
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
+	-- Fremdschlüssel auf die Tabelle organism. 
 	organism_id int NOT NULL,
-	-- scientific, latin name
+	-- Der lateinische Name. 
 	name text NOT NULL UNIQUE,
 	PRIMARY KEY (id),
 	UNIQUE (organism_id, name)
@@ -129,14 +153,15 @@ CREATE TABLE organism_scientific_name
 
 CREATE TABLE public.organism
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
-	-- If this organism is not part of an aggregated organism, then parent_id = 0
+	-- Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. 
 	parent_id int NOT NULL,
-	-- Points to the root node of this element
+	-- Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. 
 	prime_father_id int NOT NULL,
-	-- Used to build a hierarchically class
+	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. 
 	left_value int DEFAULT 1 NOT NULL,
-	-- Used to build a hierarchically class
+	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. 
 	right_value int DEFAULT 2 NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
@@ -144,10 +169,11 @@ CREATE TABLE public.organism
 
 CREATE TABLE public.organism_attribute
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
-	-- Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number
+	-- Gibt den Typ an, welcher in den dazugehörigen organism_attribute_value gespeichert wird. Zuordnung: n=number, b=boolean, t=text.
 	valuetype char NOT NULL,
-	-- Name of this attribute. Gets translated by Drupal.
+	-- Der englische Name des Attributs.
 	name text NOT NULL UNIQUE,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
@@ -155,6 +181,7 @@ CREATE TABLE public.organism_attribute
 
 CREATE TABLE public.organism_file_managed
 (
+	-- Die eigene Id, wird fortlaufend inkrementiert.
 	organism_id int NOT NULL,
 	-- file_managed_id
 	file_managed_id int NOT NULL,
@@ -269,7 +296,7 @@ ALTER TABLE organism_scientific_name
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -277,7 +304,7 @@ ALTER TABLE public.organism
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -333,19 +360,46 @@ CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscri
 
 /* Comments */
 
-COMMENT ON COLUMN organism_attribute_value.id IS 'Used just for importing';
-COMMENT ON COLUMN organism_attribute_value_subscription.organism_attribute_value_id IS 'Used just for importing';
-COMMENT ON COLUMN organism_classification.parent_id IS 'If this classifier is on top level, then parent_id = 0';
-COMMENT ON COLUMN organism_classification.name IS 'Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus';
+COMMENT ON COLUMN organism_attribute_value.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_attribute_value.organism_attribute_id IS 'Fremdschlüssel auf die Tabelle organism_attribute. ';
+COMMENT ON COLUMN organism_attribute_value.text_value IS 'Falls der valuetype = t, dann kann wird der Text hier gespeichert. ';
+COMMENT ON COLUMN organism_attribute_value.boolean_value IS 'Falls der valuetype = b, dann kann wird der Boolean hier gespeichert. ';
+COMMENT ON COLUMN organism_attribute_value.number_value IS 'Falls der valuetype = n, dann kann wird die Nummer hier gespeichert. ';
+COMMENT ON COLUMN organism_attribute_value_subscription.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_attribute_value_subscription.organism_id IS 'Fremdschlüssel auf die Tabelle organism. ';
+COMMENT ON COLUMN organism_attribute_value_subscription.organism_attribute_value_id IS 'Fremdschlüssel auf die Tabelle organism_attribute_value. ';
+COMMENT ON COLUMN organism_classification.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification.parent_id IS 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ';
+COMMENT ON COLUMN organism_classification.prime_father_id IS 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ';
+COMMENT ON COLUMN organism_classification.organism_classification_level_id IS 'Fremdschlüssel auf die Tabelle organism_classification_level.';
+COMMENT ON COLUMN organism_classification.left_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
+COMMENT ON COLUMN organism_classification.right_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
+COMMENT ON COLUMN organism_classification.name IS 'Enthält den eigenen Klassifizierungsname als Text, entweder Englisch oder Latein. ';
+COMMENT ON COLUMN organism_classification_level.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_level.parent_id IS 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ';
+COMMENT ON COLUMN organism_classification_level.prime_father_id IS 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ';
+COMMENT ON COLUMN organism_classification_level.left_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.';
+COMMENT ON COLUMN organism_classification_level.right_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.';
+COMMENT ON COLUMN organism_classification_level.name IS 'Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) ';
+COMMENT ON COLUMN organism_classification_subscription.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_subscription.organism_id IS 'Fremdschlüssel auf die Tabelle organism. ';
+COMMENT ON COLUMN organism_classification_subscription.organism_classification_id IS 'Fremdschlüssel auf die Tabelle organism_classification. ';
+COMMENT ON COLUMN organism_lang.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
-COMMENT ON COLUMN organism_scientific_name.id IS 'Used just for importing';
-COMMENT ON COLUMN organism_scientific_name.name IS 'scientific, latin name';
-COMMENT ON COLUMN public.organism.parent_id IS 'If this organism is not part of an aggregated organism, then parent_id = 0';
-COMMENT ON COLUMN public.organism.prime_father_id IS 'Points to the root node of this element';
-COMMENT ON COLUMN public.organism.left_value IS 'Used to build a hierarchically class';
-COMMENT ON COLUMN public.organism.right_value IS 'Used to build a hierarchically class';
-COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number';
-COMMENT ON COLUMN public.organism_attribute.name IS 'Name of this attribute. Gets translated by Drupal.';
+COMMENT ON COLUMN organism_lang.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_lang.name IS 'Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) ';
+COMMENT ON COLUMN organism_scientific_name.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_scientific_name.organism_id IS 'Fremdschlüssel auf die Tabelle organism. ';
+COMMENT ON COLUMN organism_scientific_name.name IS 'Der lateinische Name. ';
+COMMENT ON COLUMN public.organism.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN public.organism.parent_id IS 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ';
+COMMENT ON COLUMN public.organism.prime_father_id IS 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ';
+COMMENT ON COLUMN public.organism.left_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
+COMMENT ON COLUMN public.organism.right_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
+COMMENT ON COLUMN public.organism_attribute.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Gibt den Typ an, welcher in den dazugehörigen organism_attribute_value gespeichert wird. Zuordnung: n=number, b=boolean, t=text.';
+COMMENT ON COLUMN public.organism_attribute.name IS 'Der englische Name des Attributs.';
+COMMENT ON COLUMN public.organism_file_managed.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN public.organism_file_managed.file_managed_id IS 'file_managed_id';
 COMMENT ON COLUMN public.organism_file_managed.author IS 'Stores information about the author of the document';
 COMMENT ON COLUMN public.organism_habitat_subscription.organism_id IS 'FK to organism.id';

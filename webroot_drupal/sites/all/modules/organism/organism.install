@@ -11,30 +11,30 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'Used just for importing',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'organism_attribute_id' => 
       array (
-        'description' => 'No description for column organism_attribute_id available, please fix',
+        'description' => 'Fremdschlüssel auf die Tabelle organism_attribute. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'text_value' => 
       array (
-        'description' => 'No description for column text_value available, please fix',
+        'description' => 'Falls der valuetype = t, dann kann wird der Text hier gespeichert. ',
         'type' => 'text',
       ),
       'boolean_value' => 
       array (
-        'description' => 'No description for column boolean_value available, please fix',
+        'description' => 'Falls der valuetype = b, dann kann wird der Boolean hier gespeichert. ',
         'type' => 'int',
         'size' => 'tiny',
       ),
       'number_value' => 
       array (
-        'description' => 'No description for column number_value available, please fix',
+        'description' => 'Falls der valuetype = n, dann kann wird die Nummer hier gespeichert. ',
         'type' => 'int',
       ),
     ),
@@ -72,19 +72,19 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'organism_id' => 
       array (
-        'description' => 'No description for column organism_id available, please fix',
+        'description' => 'Fremdschlüssel auf die Tabelle organism. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'organism_attribute_value_id' => 
       array (
-        'description' => 'Used just for importing',
+        'description' => 'Fremdschlüssel auf die Tabelle organism_attribute_value. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
@@ -131,45 +131,45 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'parent_id' => 
       array (
-        'description' => 'If this classifier is on top level, then parent_id = 0',
+        'description' => 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'prime_father_id' => 
       array (
-        'description' => 'No description for column prime_father_id available, please fix',
+        'description' => 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'organism_classification_level_id' => 
       array (
-        'description' => 'No description for column organism_classification_level_id available, please fix',
+        'description' => 'Fremdschlüssel auf die Tabelle organism_classification_level.',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'left_value' => 
       array (
-        'description' => 'No description for column left_value available, please fix',
+        'description' => 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ',
         'type' => 'int',
         'not null' => 'TRUE',
         'default' => '1',
       ),
       'right_value' => 
       array (
-        'description' => 'No description for column right_value available, please fix',
+        'description' => 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ',
         'type' => 'int',
         'not null' => 'TRUE',
         'default' => '2',
       ),
       'name' => 
       array (
-        'description' => 'Name of this classification level - e.g. domain, kingdom, phylum, class, order, familiy, genus',
+        'description' => 'Enthält den eigenen Klassifizierungsname als Text, entweder Englisch oder Latein. ',
         'type' => 'text',
         'not null' => 'TRUE',
       ),
@@ -237,37 +237,37 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'parent_id' => 
       array (
-        'description' => 'No description for column parent_id available, please fix',
+        'description' => 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'prime_father_id' => 
       array (
-        'description' => 'No description for column prime_father_id available, please fix',
+        'description' => 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'left_value' => 
       array (
-        'description' => 'No description for column left_value available, please fix',
+        'description' => 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'right_value' => 
       array (
-        'description' => 'No description for column right_value available, please fix',
+        'description' => 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'name' => 
       array (
-        'description' => 'No description for column name available, please fix',
+        'description' => 'Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) ',
         'type' => 'text',
         'not null' => 'TRUE',
       ),
@@ -319,19 +319,19 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'organism_id' => 
       array (
-        'description' => 'No description for column organism_id available, please fix',
+        'description' => 'Fremdschlüssel auf die Tabelle organism. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'organism_classification_id' => 
       array (
-        'description' => 'No description for column organism_classification_id available, please fix',
+        'description' => 'Fremdschlüssel auf die Tabelle organism_classification. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
@@ -377,7 +377,7 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
@@ -390,13 +390,13 @@ function organism_schema() {
       ),
       'organism_id' => 
       array (
-        'description' => 'No description for column organism_id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'name' => 
       array (
-        'description' => 'No description for column name available, please fix',
+        'description' => 'Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) ',
         'type' => 'text',
         'not null' => 'TRUE',
       ),
@@ -436,19 +436,19 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'Used just for importing',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'organism_id' => 
       array (
-        'description' => 'No description for column organism_id available, please fix',
+        'description' => 'Fremdschlüssel auf die Tabelle organism. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'name' => 
       array (
-        'description' => 'scientific, latin name',
+        'description' => 'Der lateinische Name. ',
         'type' => 'text',
         'not null' => 'TRUE',
       ),
@@ -502,32 +502,32 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'parent_id' => 
       array (
-        'description' => 'If this organism is not part of an aggregated organism, then parent_id = 0',
+        'description' => 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'prime_father_id' => 
       array (
-        'description' => 'Points to the root node of this element',
+        'description' => 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
       'left_value' => 
       array (
-        'description' => 'Used to build a hierarchically class',
+        'description' => 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ',
         'type' => 'int',
         'not null' => 'TRUE',
         'default' => '1',
       ),
       'right_value' => 
       array (
-        'description' => 'Used to build a hierarchically class',
+        'description' => 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ',
         'type' => 'int',
         'not null' => 'TRUE',
         'default' => '2',
@@ -551,7 +551,7 @@ function organism_schema() {
         'table' => 'organism',
         'columns' => 
         array (
-          'prime_father_id' => 'id',
+          'parent_id' => 'id',
         ),
       ),
     ),
@@ -581,19 +581,19 @@ function organism_schema() {
     array (
       'id' => 
       array (
-        'description' => 'No description for column id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
       'valuetype' => 
       array (
-        'description' => 'Specify, which type this value this attribute has and thus which column is set in organism_attribute_value. t = text, b = boolean, n = number',
+        'description' => 'Gibt den Typ an, welcher in den dazugehörigen organism_attribute_value gespeichert wird. Zuordnung: n=number, b=boolean, t=text.',
         'type' => 'char',
         'not null' => 'TRUE',
       ),
       'name' => 
       array (
-        'description' => 'Name of this attribute. Gets translated by Drupal.',
+        'description' => 'Der englische Name des Attributs.',
         'type' => 'text',
         'not null' => 'TRUE',
       ),
@@ -620,7 +620,7 @@ function organism_schema() {
     array (
       'organism_id' => 
       array (
-        'description' => 'No description for column organism_id available, please fix',
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
