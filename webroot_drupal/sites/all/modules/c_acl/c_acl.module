@@ -1,4 +1,5 @@
 <?php
+
 /**********************************
  *  Hook implementations
  *********************************/
@@ -13,15 +14,22 @@
 function c_acl_menu() {
 	// only debug
 	$items['c_acl/test'] = array(
-			'title' => 'Test ACL',
-			'description' => 'Test ACL functions and DB',
-			'page callback' => 'run_acl_test',
-			'access arguments' => array(
-					'access c_acl test'
-			),
-			'type' => MENU_LOCAL_TASK,
-			'weight' => 5,
-			'file' => 'c_acl.test.inc',
+		'title' => 'Test ACL',
+		'description' => 'Test ACL functions and DB',
+		'page callback' => 'run_acl_test',
+		'access arguments' => array(
+			'access c_acl test'
+		),
+		'type' => MENU_LOCAL_TASK,
+		'weight' => 5,
+		'file' => 'c_acl.test.inc',
+	);
+	$items['c_acl/form'] = array(
+		'title' => 'Theming Forms',
+		'description' => 'Practicing theming forms in Drupal 7',
+		'page callback' => 'show_acl_form',
+		'access callback' => TRUE,
+		'file' => 'c_acl.test.inc',
 	);
 	return $items;
 }
@@ -32,9 +40,32 @@ function c_acl_menu() {
  */
 function c_acl_permission() {
 	return array(
-			'access sgroup test' => array(
-					'title' => t('Can run ACL tests (use to debug only)')
+		'access sgroup test' => array(
+			'title' => t('Can run ACL tests (use to debug only)')
+		)
+	);
+}
+
+/**
+ * Implements hook_theme()
+ * 
+ * Example of how to use this theme:
+ * ---------------------------------
+ * 
+ *----------------------------------
+ *
+ * @return an array with theme template information
+ */
+function c_acl_theme() {
+	return array(
+		'c_acl' => array(
+			'function' => 'c_acl_show_form',
+			'file' => 'c_acl.form.inc',
+			'variables' => array(
+				'defaults' => NULL,
+				'acl_id' => 0,
 			)
+		)
 	);
 }
 ?>

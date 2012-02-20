@@ -129,18 +129,18 @@ function add_user_to_acl($acl_id, $user_id, $level = -1) {
  * @access	public
  * @return	bool				True on success
  */
-function check_admin_permission($user_id) {
-	global $my_user;
-	$user = NULL;
-	$res = false;
+function check_admin_permission($user_id = -1) {
+	global $user;
+	$my_user = NULL;
+	$res = FALSE;
 	if ($user_id < 0) {
-		$user = my_user;
+		$my_user = $user;
 	}
 	else {
-		$user = user_load($user_id);
+		$my_user = user_load($user_id);
 	}
 
-	if (in_array('administrator', array_values($user->roles))) {
+	if (in_array('administrator', array_values($my_user->roles))) {
 		$res = true;
 	}
 
@@ -185,11 +185,12 @@ function check_group_in_acl($acl_id, $group_id) {
  * @access	public
  * @return	bool					TRUE on pass check
  */
-function check_permission($acl_id, $min_level, $user_id = 0,
+function check_permission($acl_id, $min_level, $user_id = -1,
 	$groups_only = FALSE) {
+	global $user;
 	$res = FALSE;
 	$level = 0;
-	if ($user_id == 0) {
+	if ($user_id < 0) {
 		$user_id = $user->uid;
 	}
 
