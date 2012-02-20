@@ -1,6 +1,6 @@
 name = organism
 description = Manage organisms
-package = naturvielfalt
+package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
 dependencies[] = habitat
