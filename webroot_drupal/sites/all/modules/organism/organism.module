@@ -71,6 +71,17 @@ function organism_menu() {
 			'file' => 'organism.overview.inc',
 	);
 
+	$items['organism/testpage'] = array(
+			'title' => t('Testpage'),
+			'page arguments' => array(
+					1
+			),
+			'page callback' => 'organism_testpage',
+			'access arguments' => array('access content'),
+			'description' => t('Specific organism'),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'organism.overview.inc',
+	);
 	/*
 	 * 	$items['organismclassification'] = array(
 	 'title' => t('Organisms'),

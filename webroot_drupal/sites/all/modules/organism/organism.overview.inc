@@ -47,7 +47,7 @@ function organism_show_all_classifiers() {
 					'id' => 'classification_' . $record->oc_id
 			);
 		}
-		$render_array['organisms'] = array(
+		$render_array['organismsShowAllClassifiers'] = array(
 				'#theme' => 'datatable',
 				'#header' => $header,
 				'#rows' => $rows,
@@ -127,7 +127,7 @@ function organism_classification_view($classificationid) {
 					'level'
 			);
 
-			$render_array['organisms'] = array(
+			$render_array['organismsClassificationViewClassifications'] = array(
 					'#theme' => 'datatable',
 					'#header' => $header,
 					'#rows' => $rows,
@@ -167,7 +167,7 @@ function organism_classification_view($classificationid) {
 						'id' => 'organism_' . $record->organism_id
 				);
 			}
-			$render_array['organisms'] = array(
+			$render_array['organismsClassificationViewOrganisms'] = array(
 					'#theme' => 'datatable',
 					'#header' => $header,
 					'#rows' => $rows,
@@ -192,19 +192,66 @@ function organism_show_organism($organismid) {
 
 	// show all attributes of this organism
  {
-		$result = db_query(
+		$attributeresult = db_query(
 			'SELECT
-				DISTINCT (oa.name, oa.valuetype)
-			FROM
-				drupal_organism_attribute oa
-				JOIN drupal_organism_attribute_value oav ON oav.organism_attribute_id = oa.id
-				JOIN drupal_organism_attribute_value_subscription oavs ON oavs.organism_attribute_value_id = oav.id
-				JOIN drupal_organism_classification_subscription ocs ON oavs.organism_id = ocs.organism_id
-				JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id WHERE oc.prime_father_id = :primefatherid
-			GROUP BY
-				oa.name,
-				oa.valuetype;',
-			array(':primefatherid' => $organismid));
+					DISTINCT oa.name, oa.valuetype, oa.id
+				FROM
+					drupal_organism_attribute oa
+					JOIN {organism_attribute_value} oav ON oav.organism_attribute_id = oa.id
+					JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_attribute_value_id = oav.id
+					JOIN {organism_classification_subscription} ocs ON oavs.organism_id = ocs.organism_id
+					JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
+				WHERE
+					oavs.organism_id = :organismid
+				GROUP BY
+					oa.name,
+					oa.valuetype,
+					oa.id;',
+			array(':organismid' => $organismid));
+
+		if ($attributeresult->rowCount() > 0) {
+			$render_array['attributes'] = array(
+					'#type' => 'fieldset',
+					'#title' => t('Attributes'),
+					'#tree' => TRUE
+			);
+			foreach ($attributeresult as $attribute) {
+				$attributevaluetype = $attribute->valuetype;
+				$attributeid = $attribute->id;
+				$attributename = $attribute->name;
+
+				$render_array['attributes'][$attributename] = array(
+						'#type' => 'markup',
+						'#markup' => "<b>$attributename</b>: ",
+				);
+
+				$attributevalueresult = db_query(
+					'SELECT
+							oav.text_value,
+							oav.boolean_value,
+							oav.number_value
+						FROM
+							drupal_organism_attribute oa
+							JOIN {organism_attribute_value} oav ON oav.organism_attribute_id = oa.id
+							JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_attribute_value_id = oav.id
+							JOIN {organism_classification_subscription} ocs ON oavs.organism_id = ocs.organism_id
+							JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
+						WHERE
+							oavs.organism_id = :organismid AND oa.id = :attributeid',
+					array(':organismid' => $organismid,
+							':attributeid' => $attributeid
+					));
+				foreach ($attributevalueresult as $attributevalue) {
+					if ($attributevaluetype == 'n') {
+						$render_array['attributes'][$attributename]['#markup'] .= $attributevalue->number_value;
+					} else if ($attributevaluetype == 'b') {
+						$render_array['attributes'][$attributename]['#markup'] .= $attributevalue->boolean_value;
+					} else if ($attributevaluetype == 't') {
+						$render_array['attributes'][$attributename]['#markup'] .= $attributevalue->text_value;
+					}
+				}
+			}
+		}
 	}
 
 	// Show all synonyms of this organism
@@ -236,7 +283,7 @@ function organism_show_organism($organismid) {
 				);
 			}
 
-			$render_array['organisms'] = array(
+			$render_array['organismsShowOrganisms'] = array(
 					'#theme' => 'datatable',
 					'#header' => $header,
 					'#rows' => $rows,
