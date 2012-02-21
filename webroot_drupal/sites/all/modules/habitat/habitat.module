@@ -5,6 +5,10 @@
 * @author Ramon Gamma, 2012
 * @copyright 2011-2012 Naturwerk, Brugg
 */
+
+//define('HABITAT_ACCESS', 'area access');
+//define('AREA_CREATE', 'area create');
+
 /**********************************
  *  Hook implementations
  *********************************/
@@ -30,6 +34,7 @@ function habitat_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'habitat.list.inc',
 	);
+
 	$items['habitat/%'] = array(
 			'title' => 'Show Habitat Areas',
 			'description' => 'View existing Habitat Areas',
@@ -42,6 +47,27 @@ function habitat_menu() {
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'habitat.show.inc',
+	);
+	$items['habitat/%/json'] = array(
+					'title' => t('existing Habitat Areas in JSON format'),
+					'page callback' => 'habitat_show_ajax',
+					'access arguments' => array(
+							'access content'
+					),
+					'page arguments' => array(
+							1
+					),
+					'type' => MENU_CALLBACK,
+						'file' => 'habitat.show.inc',
+	);
+	$items['habitat/json'] = array(
+					'title' => t('Habitat list information in JSON format'),
+					'page callback' => 'habitat_list_ajax',
+					'access arguments' => array(
+							'access content'
+					),
+					'type' => MENU_CALLBACK,
+						'file' => 'habitat.list.inc',
 	);
 	return $items;
 }

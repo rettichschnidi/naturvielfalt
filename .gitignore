@@ -10,3 +10,4 @@ webroot_drupal/sites/all/modules/organism/old
 doc/module/organism/organism_erdiagram.png
 various/migrate/import_crsf_basedata-test.php
 *~
+.DS_Store

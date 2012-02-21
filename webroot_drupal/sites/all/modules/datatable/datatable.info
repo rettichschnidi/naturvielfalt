@@ -1,5 +1,16 @@
+<<<<<<< HEAD
 name = datatable
 description = Sortable Table with included paging
 package = Swissmon
+=======
+name = Datatable
+description = Custom Sortable Table with included paging
+package = Naturvielfalt
+>>>>>>> ramongamma
 core = 7.x
-version = "7.0-dev"
+version = 1.0
+
+<!-- scripts[] = js/lib/jquery.scrollTo-min.js -->
+<!-- scripts[] = js/custom.datatable.delay.js -->
+<!-- scripts[] = js/custom.datatable.select.js -->
+<!-- scripts[] = js/custom.datatable.lang.js -->
