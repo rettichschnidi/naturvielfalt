@@ -10,50 +10,76 @@
  * @return array
  */
 function organism_show_all_classifiers() {
-	drupal_set_title(t('Please select the classifier'));
-	drupal_add_js(
-		drupal_get_path('module', 'organism')
-				. '/js/organism.datatable.select.js');
+	drupal_set_title(t('Select the classifier'));
 
-	$header = array(
-			t('Classifiers'),
-			'id',
-			'number of classification levels'
+	// Set the table header
+	$tableHeader[] = array(
+			'name' => t('Internal id'),
+			'dbfield' => 'oc_id',
+			'hide' => true,
+			'width' => 90
+	);
+	$tableHeader[] = array(
+			'name' => t('Classificator name'),
+			'dbfield' => 'oc_name'
+	);
+	$tableHeader[] = array(
+			'name' => t('# of levels'),
+			'dbfield' => 'levelcount',
+			'width' => 120
 	);
 
-	$result = db_query(
-		'SELECT
-			oc.id AS oc_id,
-			oc.name AS oc_name,
-			COUNT(ocl.id) - 1 AS levelcount
-		FROM
-			{organism_classification} oc
-			JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id
-		WHERE
-			oc.prime_father_id = oc.id
-		GROUP BY
-			oc_id,
-			oc_name');
+	$render_array['classificators'] = array(
+			'#theme' => 'datatable',
+			'#header' => $tableHeader,
+			'#id_table' => 'classificators',
+			'#options' => array(
+					'jsonUrl' => "'organism/json'",
+					'rowClick' => 'rowClick',
+					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+									window.location.href = Drupal.settings.basePath+'organism/'+oc_id;})}"
+			)
+	);
 
-	$render_array = array();
-	if ($result->rowCount() > 0) {
-		foreach ($result as $record) {
-			$row = array();
-			$row[] = $record->oc_name;
-			$row[] = $record->oc_id;
-			$row[] = $record->levelcount;
-			$rows[] = array(
-					'data' => $row,
-					'id' => 'classification_' . $record->oc_id
-			);
-		}
-		$render_array['organismsShowAllClassifiers'] = array(
-				'#theme' => 'datatable',
-				'#header' => $header,
-				'#rows' => $rows,
-				'#id_table' => 'organisms',
-		);
-	}
+	// 	$header = array(
+	// 			t('Classifiers'),
+	// 			'id',
+	// 			'number of classification levels'
+	// 	);
+
+	// 	$result = db_query(
+	// 		'SELECT
+	// 			oc.id AS oc_id,
+	// 			oc.name AS oc_name,
+	// 			COUNT(ocl.id) - 1 AS levelcount
+	// 		FROM
+	// 			{organism_classification} oc
+	// 			JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id
+	// 		WHERE
+	// 			oc.prime_father_id = oc.id
+	// 		GROUP BY
+	// 			oc_id,
+	// 			oc_name');
+
+	// 	$render_array = array();
+	// 	if ($result->rowCount() > 0) {
+	// 		foreach ($result as $record) {
+	// 			$row = array();
+	// 			$row[] = $record->oc_name;
+	// 			$row[] = $record->oc_id;
+	// 			$row[] = $record->levelcount;
+	// 			$rows[] = array(
+	// 					'data' => $row,
+	// 					'id' => 'classification_' . $record->oc_id
+	// 			);
+	// 		}
+	// 		$render_array['organismsShowAllClassifiers'] = array(
+	// 				'#theme' => 'datatable',
+	// 				'#header' => $header,
+	// 				'#rows' => $rows,
+	// 				'#id_table' => 'organisms',
+	// 		);
+	// 	}
 	return $render_array;
 }
 
@@ -293,5 +319,35 @@ function organism_show_organism($organismid) {
 	}
 
 	return $render_array;
+}
+
+function organism_all_classifiers_json() {
+	/* Set the db fields to select */
+	$sql['dbColumns'] = array(
+			'oc.id AS oc_id',
+			'oc.name AS oc_name',
+			'COUNT(ocl.id) - 1 AS levelcount'
+	);
+	
+	$sql['dbSearchColumns'] = array(
+			'oc.id',
+			'oc.name'
+	);
+	
+	/* DB table to use */
+	$sql['dbTable'] = "{organism_classification} oc";
+
+	/* Joins to use */
+	$sql['dbJoins'] = "JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id";
+
+	/* Group */
+	$sql['dbGroupBy'] = "GROUP BY
+							oc_id,
+							oc_name";
+
+	$sql['dbWhere'] = 'oc.prime_father_id = oc.id';
+
+	$output = datatable_dbRequest($sql);
+	return drupal_json_output($output);
 }
 ?>
