@@ -24,7 +24,6 @@ drupal_add_css(drupal_get_path('module', 'datatable') . '/css/flexigrid.css',
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
 
-
 $options['tableWidth'] > 0 ? $tableWidth =  $options['tableWidth']: $tableWidth = 800;
 $options['tableHeight'] > 0 ? $tableHeight =  $options['tableHeight']: $tableHeight = 200;
 
