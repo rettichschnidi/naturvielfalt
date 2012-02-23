@@ -52,8 +52,11 @@ foreach ($header as $head) {
 	}
 }
 $countHeadChars = strlen($allHeaders);
-if ($countHeadChars > 0)
+if ($countHeadChars > 0) {
 	$charTableSize = ($tableWidth - $allWidths - 62) / $countHeadChars;
+} else {
+	$charTableSize = 0;
+}
 $colsized = (7 > $charTableSize) ? 8 : $charTableSize;
 
 /**

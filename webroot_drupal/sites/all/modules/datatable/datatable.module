@@ -45,6 +45,7 @@ function datatable_theme() {
  * 			'dbJoins' 			optional; the joins String
  * 			'dbGroupBy' 		optional; the group by string
  * 			'dbWhere' 			optional; the WHERE statement string
+ * 			'id' 				optional: id column, default 'id'
  *
  * 			$sql['dbColumns'] = array();
  * 			$sql['dbSearchColumns'] = array();
@@ -53,6 +54,7 @@ function datatable_theme() {
  * 			$sql['dbJoins'] = "";
  * 			$sql['dbGroupBy'] = "";
  * 			$sql['dbWhere'] = "";
+ * 			$sql['id] = "id";
  *
  * @return Array
  * 			[sEcho] => Site which is show
@@ -61,7 +63,7 @@ function datatable_theme() {
  * 			[aaData] => Array of filtered and limited data from db as dbfields
  * @note If you do not like this, do it better and shut up.
  */
-function datatable_dbRequest($sql) {
+function datatable_dbRequest($sql, $arguments = array()) {
 	/* Set the db fields to select */
 	if (!$sql['dbColumns'] || !$sql['dbTable'])
 		return "Error! No dbColumns or dbTable";
@@ -108,6 +110,9 @@ function datatable_dbRequest($sql) {
 				}
 			}
 		}
+		/**
+		 * WARNING: This is an ugly hack.... // FIXME
+		 */
 		if (!is_int(array_search($sortname, $sortColumnsTemp)))
 			return "Error! Sortname not possible. '$sortname' is not in "
 					. implode(", ", $sortColumnsTemp);
@@ -176,7 +181,12 @@ function datatable_dbRequest($sql) {
 	if (isset($query) && $query != "") {
 		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
 		for ($i = 0; $i < count($searchColumns); $i++) {
-			$sWhere .= "LOWER(CAST(" . $searchColumns[$i] . " AS TEXT)) LIKE LOWER(CAST('%" . $query . "%' AS TEXT)) OR ";
+			/**
+			 * yes, this is ia terrible hack, but I do not know how another solution to make sure 
+			 * that all(?!) types can be used with LIKE
+			 */
+			$sWhere .= "LOWER(CAST(" . $searchColumns[$i]
+					. " AS TEXT)) LIKE LOWER(CAST('%$query%' AS TEXT)) OR ";
 		}
 		$sWhere = substr_replace($sWhere, "", -3);
 		$sWhere .= ')';
@@ -208,17 +218,17 @@ function datatable_dbRequest($sql) {
 			. "
 				FROM   $sTable $sWhere $sGroupBy $sOrder";
 	$sQuery = $nQuery . " " . $sLimit;
-	$rResult = db_query($sQuery);
+	$rResult = db_query($sQuery, $arguments);
 
 	/* Data set length after filtering */
-	$nResult = db_query($nQuery);
+	$nResult = db_query($nQuery, $arguments);
 	$iFilteredTotal = $nResult->rowCount();
 
 	/* Total data set length */
 	$tQuery = "SELECT  " . str_replace(" , ", " ", implode(", ", $aColumns))
 			. "
 				FROM   $sTable $where $sGroupBy $sOrder ";
-	$rResultTotal = db_query($tQuery);
+	$rResultTotal = db_query($tQuery, $arguments);
 	$iTotal = $rResultTotal->rowCount();
 
 	$output = array(
