@@ -47,49 +47,49 @@ function organism_menu() {
 			'access arguments' => array(
 					'access content'
 			),
-			'description' => t('List of organisms'),
+			'description' => t('List of classifiers'),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'organism.overview.inc',
 	);
 
 	$items['organism/json'] = array(
-			'title' => t('Organisms'),
+			'title' => t('Organisms JSON'),
 			'page callback' => 'organism_show_classifiers_json',
 			'access arguments' => array(
 					'access content'
 			),
-			'description' => t('List of organisms'),
-			'type' => MENU_NORMAL_ITEM,
+			'description' => t('Json of classifiers'),
+			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
 
-	$items['organism/classification/%'] = array(
-			'title' => t('Organisms classifications'),
-			'page arguments' => array(
-					2
-			),
-			'page callback' => 'organism_show_classification',
-			'access arguments' => array(
-					'access content'
-			),
-			'description' => t('List of organisms classifications'),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
-	);
+// 	$items['organism/classification/%'] = array(
+// 			'title' => t('Organisms classifications'),
+// 			'page arguments' => array(
+// 					2
+// 			),
+// 			'page callback' => 'organism_show_classification',
+// 			'access arguments' => array(
+// 					'access content'
+// 			),
+// 			'description' => t('List of organisms classifications'),
+// 			'type' => MENU_NORMAL_ITEM,
+// 			'file' => 'organism.overview.inc',
+// 	);
 
-	$items['organism/classification/%/json'] = array(
-			'title' => t('Organisms classifications'),
-			'page arguments' => array(
-					2
-			),
-			'page callback' => 'organism_show_classification',
-			'access arguments' => array(
-					'access content'
-			),
-			'description' => t('List of organisms classifications'),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.json.inc',
-	);
+// 	$items['organism/classification/%/json'] = array(
+// 			'title' => t('Organisms classifications'),
+// 			'page arguments' => array(
+// 					2
+// 			),
+// 			'page callback' => 'organism_show_classification',
+// 			'access arguments' => array(
+// 					'access content'
+// 			),
+// 			'description' => t('List of organisms classifications'),
+// 			'type' => MENU_NORMAL_ITEM,
+// 			'file' => 'organism.json.inc',
+// 	);
 
 	// 	$items['organism/%'] = array(
 	// 			'title' => t('Organisms'),
