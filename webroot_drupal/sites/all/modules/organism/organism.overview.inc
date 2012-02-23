@@ -14,10 +14,9 @@ function organism_show_classifiers() {
 
 	// Set the table header
 	$tableHeader[] = array(
-			'name' => t('Internal id'),
+			'name' => t('Internal Id'),
 			'dbfield' => 'oc_id',
-			'hide' => true,
-			'width' => 90
+			'hide' => false,
 	);
 	$tableHeader[] = array(
 			'name' => t('Classificator name'),
@@ -26,7 +25,6 @@ function organism_show_classifiers() {
 	$tableHeader[] = array(
 			'name' => t('# of levels'),
 			'dbfield' => 'levelcount',
-			'width' => 120
 	);
 
 	$render_array['classificators'] = array(
@@ -34,12 +32,12 @@ function organism_show_classifiers() {
 			'#header' => $tableHeader,
 			'#id_table' => 'classificators',
 			'#options' => array(
-					'jsonUrl' => "'organism/json'",
+					'jsonUrl' => "'" . base_path() . "organism/json'",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, oc_id) {
 												jQuery(celDiv).click(
 													function() {
-														window.location.href = Drupal.settings.basePath+'organism/classification/'+oc_id;
+														window.location.href = Drupal.settings.basePath+'organism/classification/'+celDiv.innerHTML;
 													}
 												)
 											}"
@@ -59,8 +57,8 @@ function organism_show_classification($classificationid) {
  {
 		$resultClassification = db_query(
 			'SELECT
-				oc.id AS id,
-				oc.name AS name
+				oc.id AS oc_id,
+				oc.name AS oc_name
 			FROM
 				{organism_classification} oc
 			WHERE
@@ -72,34 +70,66 @@ function organism_show_classification($classificationid) {
 		if ($resultClassification->rowCount() == 1) {
 			$resultClassificationObject = $resultClassification->fetchObject();
 			drupal_set_title(
-				t('Classification') . ' ' . $resultClassificationObject->name);
+				t('Classification') . ' '
+						. $resultClassificationObject->oc_name);
 		}
 	}
 
 	// Set the table header
-	$tableHeader[] = array(
+	$classificationTableHeader[] = array(
 			'name' => t('Internal id'),
 			'dbfield' => 'oc_id',
 			'hide' => false
 	);
-	$tableHeader[] = array(
+	$classificationTableHeader[] = array(
 			'name' => t('Classificator name'),
-			'dbfield' => 'oc_name'
+			'dbfield' => 'oc_name',
+			'hide' => false
 	);
-	$tableHeader[] = array(
-			'name' => t('# of levels'),
-			'dbfield' => 'levelcount'
+	$classificationTableHeader[] = array(
+			'name' => t('Classification level'),
+			'dbfield' => 'classification_level_id',
+			'hide' => false
 	);
-
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
-			'#header' => $tableHeader,
+			'#header' => $classificationTableHeader,
 			'#id_table' => 'classificators',
 			'#options' => array(
-					'jsonUrl' => "'organism/classification/$classificationid/json'",
+					'jsonUrl' => "'" . base_path()
+							. "organism/classification/$classificationid/classificationjson'",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-									window.location.href = Drupal.settings.basePath+'organism/'+oc_id;})}"
+									window.location.href = Drupal.settings.basePath+'organism/classification/'+celDiv.innerHTML;})}"
+			)
+	);
+
+	// Set the table header
+	$organismsTableHeader[] = array(
+			'name' => t('Organism scientific id'),
+			'dbfield' => 'ABCDS',
+			'hide' => false
+	);
+	$organismsTableHeader[] = array(
+			'name' => t('Organism scientific name'),
+			'dbfield' => 'osc_name',
+			'hide' => false
+	);
+	$organismsTableHeader[] = array(
+			'name' => t('Organism Name'),
+			'dbfield' => 'o_id',
+			'hide' => false
+	);
+	$render_array['organisms'] = array(
+			'#theme' => 'datatable',
+			'#header' => $organismsTableHeader,
+			'#id_table' => 'organisms',
+			'#options' => array(
+					'jsonUrl' => "'" . base_path()
+							. "organism/classification/$classificationid/organismjson'",
+					'rowClick' => 'rowClick',
+					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+										window.location.href = Drupal.settings.basePath+'organism/'+celDiv.innerHTML;})}"
 			)
 	);
 
