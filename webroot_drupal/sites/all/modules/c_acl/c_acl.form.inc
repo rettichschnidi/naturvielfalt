@@ -14,9 +14,9 @@ function c_acl_show_form($vars) {
 	$defaults = $vars['defaults'];
 	// (*2) Array with groups int their default permission values (default = NULL)
 	$defaults_group = $vars['defaults_group'];
-	// (*3) acl id of element to modify acl permissions(default = NULL)
+	// (*3) acl id of element to modify acl permissions (default = 0)
 	$acl_id = $vars['acl_id'];
-	// (*4) Array with child acl ids of acl_id (default = 0)
+	// (*4) Array with child acl ids of acl_id (default = NULL)
 	$child_acl_ids = $vars['child_acl_ids'];
 	// (*5) Boolean indicating if only users shall be displayed (default = FALSE)
 	$users_only = $vars['users_only'];

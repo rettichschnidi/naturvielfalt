@@ -57,9 +57,9 @@ function add_group_to_acl($acl_id, $group_id, $level = -1) {
 		$level = variable_get("ACL_RED_READ");
 	}
 
-	$exists = db_select('acl_link', 'sal')->condition('sal.acl_id', $acl_id)
-		->condition('sal.sgroup_id', $group_id)
-		->fields('sal')
+	$exists = db_select('acl_sgroup', 'ag')->condition('ag.acl_id', $acl_id)
+		->condition('ag.sgroup_id', $group_id)
+		->fields('ag')
 		->execute()
 		->fetch();
 
@@ -68,7 +68,7 @@ function add_group_to_acl($acl_id, $group_id, $level = -1) {
 		$res = update_group_in_acl($acl_id, $group_id, $level);
 	} else {
 		// insert
-		$res = db_insert('acl_link')->fields(
+		$res = db_insert('acl_sgroup')->fields(
 				array('acl_id' => $acl_id,
 						'sgroup_id' => $group_id,
 						'level' => $level,
@@ -97,9 +97,9 @@ function add_user_to_acl($acl_id, $user_id, $level = -1) {
 		$level = variable_get("ACL_RED_READ");
 	}
 
-	$exists = db_select('acl_link', 'sal')->condition('sal.acl_id', $acl_id)
-		->condition('sal.users_id', $user_id)
-		->fields('sal')
+	$exists = db_select('acl_users', 'au')->condition('au.acl_id', $acl_id)
+		->condition('au.users_id', $user_id)
+		->fields('au')
 		->execute()
 		->fetch();
 
@@ -108,7 +108,7 @@ function add_user_to_acl($acl_id, $user_id, $level = -1) {
 		$res = update_user_in_acl($acl_id, $user_id, $level);
 	} else {
 		// insert
-		$res = db_insert('acl_link')->fields(
+		$res = db_insert('acl_users')->fields(
 				array('acl_id' => $acl_id,
 						'users_id' => $user_id,
 						'level' => $level,
@@ -153,9 +153,9 @@ function check_admin_permission($user_id = -1) {
  */
 function check_group_in_acl($acl_id, $group_id) {
 	$res = false;
-	$level = db_select('acl_link', 'sal')->fields('sal', array('level'))
-		->condition('sal.acl_id', $acl_id)
-		->condition('sal.sgroup_id', $group_id)
+	$level = db_select('acl_sgroup', 'ag')->fields('ag', array('level'))
+		->condition('ag.acl_id', $acl_id)
+		->condition('ag.sgroup_id', $group_id)
 		->execute()
 		->fetch();
 
@@ -191,22 +191,27 @@ function check_permission($acl_id, $min_level, $user_id = -1,
 	}
 
 	if ($user_id > 0 && $acl_id > 0) {
-		$query = db_select('acl_link', 'al')->fields('al', array('level',))
-			->condition('al.acl_id', $acl_id);
-		$query->leftJoin('sgroup', 'g', 'g.id = al.sgroup_id');
-		$query->leftJoin('acl_link', 'alEx', 'alEx.acl_id = g.acl_id');
-		if (!$groups_only) {
-			$query->condition(
-					db_or()->condition('alEx.users_id', $user_id)
-						->condition('al.users_id', $user_id))
-				->orderBy('al.level', 'DESC');
-		} else {
-			$query->condition('alEx.users_id', $user_id);
-		}
-		$db_level = $query->execute();
-
+		$query = db_select('acl_sgroup', 'ag')->fields('ag', array('level',))
+			->condition('ag.acl_id', $acl_id);
+		$query->join('sgroup', 'g', 'g.id = ag.sgroup_id');
+		$query->join('acl_users', 'au', 'au.acl_id = g.acl_id');
+		$db_level = $query->condition('au.users_id', $user_id)->orderBy('ag.level', 'DESC')->execute();
 		if ($record = $db_level->fetch()) {
 			$level = $record->level;
+		}
+		if (!$groups_only) {
+			// check user
+			$temp_level = 0;
+			$query = db_select('acl_users', 'au')->fields('au', array('level',))
+				->condition('au.acl_id', $acl_id)
+				->condition('au.users_id', $user_id);
+			$db_level = $query->execute();
+			if ($record = $db_level->fetch()) {
+				$temp_level = $record->level;
+			}
+			if ($temp_level > $level) {
+				$level = $temp_level;
+			}			
 		}
 	}
 	if ($min_level <= $level) {
@@ -235,9 +240,9 @@ function check_user_in_acl($acl_id, $user_id = -1) {
 		return variable_get("ACL_ADMIN");
 	}
 
-	$level = db_select('acl_link', 'sal')->fields('sal', array('level'))
-		->condition('sal.acl_id', $acl_id)
-		->condition('sal.users_id', $user_id)
+	$level = db_select('acl_users', 'au')->fields('au', array('level'))
+		->condition('au.acl_id', $acl_id)
+		->condition('au.users_id', $user_id)
 		->execute()
 		->fetch();
 
@@ -288,8 +293,8 @@ function check_user_owns_acl($acl_id, $user_id = -1) {
 	if ($user_id == -1) {
 		$user_id = $user->uid;
 	}
-	$db_res = db_select('acl', 'sa')->condition('id', $acl_id)
-		->fields('sa', array('users_id'))
+	$db_res = db_select('acl', 'a')->condition('id', $acl_id)
+		->fields('a', array('users_id'))
 		->execute()
 		->fetch();
 	if ($user_id == $db_res->users_id) {
@@ -332,7 +337,7 @@ function chown_acl($acl_id, $user_id = -1) {
  */
 function clear_acl($acl_id) {
 	$res = FALSE;
-	$num_deleted = db_delete('acl_link')->condition('acl_id', $acl_id)
+	$num_deleted = db_delete('acl_users')->condition('acl_id', $acl_id)
 		->execute();
 	if ($num_deleted > 0) {
 		$res = TRUE;
@@ -341,6 +346,11 @@ function clear_acl($acl_id) {
 			// add owner to acl
 			add_user_to_acl($acl_id, $acl->users_id, variable_get("ACL_ADMIN"));
 		}
+	}
+	$num_deleted = db_delete('acl_sgroup')->condition('acl_id', $acl_id)
+		->execute();
+	if ($num_deleted > 0) {
+		$res = TRUE;
 	}
 	return $res;
 }
@@ -363,18 +373,22 @@ function copy_acl($sAcl, $dAcl = 0, $level = 0) {
 		$dAcl = new_acl();
 	}
 
-	$query = db_select('acl_link', 'sal')->fields('sal')
-		->condition('sal.acl_id', $sAcl)
-		->condition('sal.level', $level, '>=')
+	$query = db_select('acl_users', 'au')->fields('au')
+		->condition('au.acl_id', $sAcl)
+		->condition('au.level', $level, '>=')
 		->execute();
 
 	while ($record = $query->fetch()) {
-		if ($record->sgroup_id != 0) {
-			add_group_to_acl($dAcl, $record->sgroup_id, $record->level);
-		}
-		if ($record->users_id != 0) {
-			add_user_to_acl($dAcl, $record->users_id, $record->level);
-		}
+		add_user_to_acl($dAcl, $record->users_id, $record->level);
+	}
+	
+	$query = db_select('acl_sgroup', 'ag')->fields('ag')
+		->condition('ag.acl_id', $sAcl)
+		->condition('ag.level', $level, '>=')
+		->execute();
+
+	while ($record = $query->fetch()) {
+		add_group_to_acl($dAcl, $record->sgroup_id, $record->level);
 	}
 	return $dAcl;
 }
@@ -388,7 +402,9 @@ function copy_acl($sAcl, $dAcl = 0, $level = 0) {
  */
 function delete_acl($acl_id) {
 	$res = true;
-	$num_deleted = db_delete('acl_link')->condition('acl_id', $acl_id)
+	$num_deleted = db_delete('acl_users')->condition('acl_id', $acl_id)
+		->execute();
+	$num_deleted += db_delete('acl_sgroup')->condition('acl_id', $acl_id)
 		->execute();
 	if ($num_deleted > 0) {
 		$num_deleted = db_delete('acl')->condition('id', $acl_id)
@@ -409,9 +425,8 @@ function delete_acl($acl_id) {
  * @return	bool				True on success
  */
 function delete_group_from_acl($acl_id, $group_id) {
-
 	$res = false;
-	$num_deleted = db_delete('acl_link')->condition('acl_id', $acl_id)
+	$num_deleted = db_delete('acl_sgroup')->condition('acl_id', $acl_id)
 		->condition('sgroup_id', $group_id)
 		->execute();
 	if ($num_deleted > 0) {
@@ -430,7 +445,7 @@ function delete_group_from_acl($acl_id, $group_id) {
  */
 function delete_user_from_acl($acl_id, $user_id) {
 	$res = false;
-	$num_deleted = db_delete('acl_link')->condition('acl_id', $acl_id)
+	$num_deleted = db_delete('acl_users')->condition('acl_id', $acl_id)
 		->condition('users_id', $user_id)
 		->execute();
 	if ($num_deleted > 0) {
@@ -463,16 +478,16 @@ function get_acl($acl_id) {
  * @return	Array			all sgroups from ACL (sg.id, sg.name, sal.level)
  */
 function get_groups_in_acl($acl_id, $level = 0) {
-	$query = db_select('sgroup', 'sg')->fields(
-			'sg',
+	$query = db_select('sgroup', 'g')->fields(
+			'g',
 			array('id',
 					'name'
 			));
-	$query->join('acl_link', 'sal', 'sg.id = sal.sgroup_id');
-	$db_groups = $query->fields('sal', array('level'))
-		->condition('sal.acl_id', $acl_id)
-		->condition('sal.level', $level, '>')
-		->orderBy('sg.name')
+	$query->join('acl_sgroup', 'ag', 'g.id = ag.sgroup_id');
+	$db_groups = $query->fields('ag', array('level'))
+		->condition('ag.acl_id', $acl_id)
+		->condition('ag.level', $level, '>')
+		->orderBy('g.name')
 		->execute();
 
 	$groups = array();
@@ -497,10 +512,10 @@ function get_users_in_acl($acl_id, $level = 0, $incl_group = false) {
 			array('uid',
 					'name',
 			));
-	$query->join('acl_link', 'sal', 'sal.users_id=u.uid');
-	$db_users = $query->fields('sal', array('level',))
-		->condition('sal.acl_id', $acl_id)
-		->condition('sal.level', $level, '>')
+	$query->join('acl_users', 'au', 'au.users_id = u.uid');
+	$db_users = $query->fields('au', array('level',))
+		->condition('au.acl_id', $acl_id)
+		->condition('au.level', $level, '>')
 		->condition('u.uid', 0, '!=')
 		->orderBy('u.name')
 		->execute();
@@ -565,7 +580,7 @@ function new_acl($description = '', $user_id = -1) {
  * @return	bool					True on success
  */
 function update_group_in_acl($acl_id, $group_id, $level) {
-	$res = db_update('acl_link')->fields(array('level' => $level))
+	$res = db_update('acl_sgroup')->fields(array('level' => $level))
 		->condition('acl_id', $acl_id)
 		->condition('sgroup_id', $group_id)
 		->execute();
@@ -583,7 +598,7 @@ function update_group_in_acl($acl_id, $group_id, $level) {
  * @return	bool					True on success
  */
 function update_user_in_acl($acl_id, $user_id, $level) {
-	$res = db_update('acl_link')->fields(array('level' => $level))
+	$res = db_update('acl_users')->fields(array('level' => $level))
 		->condition('acl_id', $acl_id)
 		->condition('users_id', $user_id)
 		->execute();

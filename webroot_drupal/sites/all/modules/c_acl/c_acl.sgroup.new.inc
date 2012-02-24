@@ -76,7 +76,7 @@ function sgroup_new_save($form, &$form_state) {
 			t(
 				'Group @name could not be saved. (@exception)',
 				array('@name' => $name,
-						'@exception' => $e->message
+						'@exception' => $e->getMessage()
 				)),
 			'error');
 	}

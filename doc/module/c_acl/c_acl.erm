@@ -12,7 +12,7 @@
 	<category_index>0</category_index>
 	<zoom>1.0</zoom>
 	<x>0</x>
-	<y>0</y>
+	<y>-23</y>
 	<default_color>
 		<r>255</r>
 		<g>0</g>
@@ -41,7 +41,7 @@
 		<suspend_validator>false</suspend_validator>
 		<export_setting>
 			<category_name_to_export>sgroup</category_name_to_export>
-			<ddl_output>/home/moiri/webserver/naturvielfalt/doc/module/sgroup/sgroup.sql</ddl_output>
+			<ddl_output>/home/moiri/webserver/naturvielfalt/doc/module/c_acl/c_acl.sql</ddl_output>
 			<excel_output></excel_output>
 			<excel_template></excel_template>
 			<image_output></image_output>
@@ -88,12 +88,12 @@
 			<categories>
 				<category>
 					<id></id>
-					<height>337</height>
+					<height>372</height>
 					<width>949</width>
 						<font_name>Ubuntu</font_name>
 						<font_size>9</font_size>
 					<x>60</x>
-					<y>12</y>
+					<y>-23</y>
 					<color>
 						<r>255</r>
 						<g>0</g>
@@ -103,8 +103,9 @@
 					</connections>
 					<name>sgroup</name>
 					<selected>true</selected>
-					<node_element>2</node_element>
 					<node_element>1</node_element>
+					<node_element>4</node_element>
+					<node_element>2</node_element>
 					<node_element>3</node_element>
 				</category>
 				<category>
@@ -150,7 +151,7 @@
 			</connections>
 			<display>false</display>
 			<creation_date>2012-02-10 10:08:21</creation_date>
-			<updated_date>2012-02-22 16:03:42</updated_date>
+			<updated_date>2012-02-24 11:09:23</updated_date>
 			<model_property>
 				<name>Project Name</name>
 				<value></value>
@@ -1059,12 +1060,12 @@
 		</table>
 		<table>
 			<id>1</id>
-			<height>149</height>
-			<width>174</width>
+			<height>-1</height>
+			<width>-1</width>
 				<font_name>Ubuntu</font_name>
 				<font_size>9</font_size>
-			<x>158</x>
-			<y>31</y>
+			<x>791</x>
+			<y>171</y>
 			<color>
 				<r>128</r>
 				<g>128</g>
@@ -1073,7 +1074,7 @@
 			<connections>
 				<relation>
 					<id>0</id>
-					<source>3</source>
+					<source>0</source>
 					<target>1</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -1090,254 +1091,8 @@
 				</relation>
 				<relation>
 					<id>1</id>
-					<source>0</source>
-					<target>1</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>2</id>
 					<source>2</source>
 					<target>1</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-			</connections>
-			<physical_name>acl_link</physical_name>
-			<logical_name>acl_link</logical_name>
-			<description>Links acl items to users and groups</description>
-			<constraint></constraint>
-			<primary_key_name></primary_key_name>
-			<option></option>
-			<columns>
-				<normal_column>
-					<word_id>7</word_id>
-					<id>16</id>
-					<description></description>
-					<unique_key_name></unique_key_name>
-					<logical_name></logical_name>
-					<physical_name></physical_name>
-					<type>bigserial</type>
-					<constraint></constraint>
-					<default_value></default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>false</foreign_key>
-					<not_null>true</not_null>
-					<primary_key>true</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<word_id>10</word_id>
-					<id>17</id>
-					<description></description>
-					<unique_key_name></unique_key_name>
-					<logical_name></logical_name>
-					<physical_name></physical_name>
-					<type>smallint</type>
-					<constraint></constraint>
-					<default_value></default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>false</foreign_key>
-					<not_null>false</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<id>18</id>
-					<referenced_column>26</referenced_column>
-					<relation>0</relation>
-					<description>Foreign key of acl id</description>
-					<unique_key_name></unique_key_name>
-					<logical_name>acl_id</logical_name>
-					<physical_name>acl_id</physical_name>
-					<type>bigint</type>
-					<constraint></constraint>
-					<default_value>0</default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>true</foreign_key>
-					<not_null>false</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<id>19</id>
-					<referenced_column>0</referenced_column>
-					<relation>1</relation>
-					<description>foreign key for swissmon user id</description>
-					<unique_key_name></unique_key_name>
-					<logical_name>users_id</logical_name>
-					<physical_name>users_id</physical_name>
-					<type>bigint</type>
-					<constraint></constraint>
-					<default_value>0</default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>true</foreign_key>
-					<not_null>false</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<id>20</id>
-					<referenced_column>21</referenced_column>
-					<relation>2</relation>
-					<description>Foreign key of swissmon sgroup</description>
-					<unique_key_name></unique_key_name>
-					<logical_name>sgroup_id</logical_name>
-					<physical_name>sgroup_id</physical_name>
-					<type>bigint</type>
-					<constraint></constraint>
-					<default_value>0</default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>true</foreign_key>
-					<not_null>false</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-			</columns>
-			<indexes>
-			</indexes>
-			<complex_unique_key_list>
-			</complex_unique_key_list>
-			<table_properties>
-				<schema></schema>
-				<without_oids>true</without_oids>
-			</table_properties>
-		</table>
-		<table>
-			<id>2</id>
-			<height>-1</height>
-			<width>-1</width>
-				<font_name>Ubuntu</font_name>
-				<font_size>9</font_size>
-			<x>735</x>
-			<y>135</y>
-			<color>
-				<r>128</r>
-				<g>128</g>
-				<b>192</b>
-			</color>
-			<connections>
-				<relation>
-					<id>3</id>
-					<source>3</source>
-					<target>2</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>4</id>
-					<source>0</source>
-					<target>2</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
@@ -1361,7 +1116,7 @@
 			<columns>
 				<normal_column>
 					<word_id>6</word_id>
-					<id>21</id>
+					<id>16</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -1393,7 +1148,7 @@
 				</normal_column>
 				<normal_column>
 					<word_id>13</word_id>
-					<id>22</id>
+					<id>17</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -1425,7 +1180,7 @@
 				</normal_column>
 				<normal_column>
 					<word_id>4</word_id>
-					<id>23</id>
+					<id>18</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -1456,9 +1211,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>24</id>
-					<referenced_column>26</referenced_column>
-					<relation>3</relation>
+					<id>19</id>
+					<referenced_column>21</referenced_column>
+					<relation>1</relation>
 					<description>foreign key of natutvielfalt acl_id</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>acl_id</logical_name>
@@ -1468,7 +1223,7 @@
 					<default_value></default_value>
 					<auto_increment>false</auto_increment>
 					<foreign_key>true</foreign_key>
-					<not_null>false</not_null>
+					<not_null>true</not_null>
 					<primary_key>false</primary_key>
 					<unique_key>false</unique_key>
 					<character_set></character_set>
@@ -1489,9 +1244,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>25</id>
+					<id>20</id>
 					<referenced_column>0</referenced_column>
-					<relation>4</relation>
+					<relation>0</relation>
 					<description>Foreign key of naturviefalt user_id (indicates owner of group)</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>users_id</logical_name>
@@ -1532,13 +1287,13 @@
 			</table_properties>
 		</table>
 		<table>
-			<id>3</id>
+			<id>2</id>
 			<height>128</height>
 			<width>166</width>
 				<font_name>Ubuntu</font_name>
 				<font_size>9</font_size>
-			<x>453</x>
-			<y>190</y>
+			<x>548</x>
+			<y>210</y>
 			<color>
 				<r>128</r>
 				<g>128</g>
@@ -1546,9 +1301,9 @@
 			</color>
 			<connections>
 				<relation>
-					<id>5</id>
+					<id>2</id>
 					<source>0</source>
-					<target>3</target>
+					<target>2</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
@@ -1572,7 +1327,7 @@
 			<columns>
 				<normal_column>
 					<word_id>5</word_id>
-					<id>26</id>
+					<id>21</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -1604,7 +1359,7 @@
 				</normal_column>
 				<normal_column>
 					<word_id>3</word_id>
-					<id>27</id>
+					<id>22</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -1635,10 +1390,402 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
+					<id>23</id>
+					<referenced_column>0</referenced_column>
+					<relation>2</relation>
+					<description>foreign key for swissmon user id who created acl item</description>
+					<unique_key_name></unique_key_name>
+					<logical_name>users_id</logical_name>
+					<physical_name>users_id</physical_name>
+					<type>bigint</type>
+					<constraint></constraint>
+					<default_value>0</default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>true</foreign_key>
+					<not_null>false</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+			</columns>
+			<indexes>
+			</indexes>
+			<complex_unique_key_list>
+			</complex_unique_key_list>
+			<table_properties>
+				<schema></schema>
+				<without_oids>true</without_oids>
+			</table_properties>
+		</table>
+		<table>
+			<id>3</id>
+			<height>149</height>
+			<width>174</width>
+				<font_name>Ubuntu</font_name>
+				<font_size>9</font_size>
+			<x>611</x>
+			<y>-7</y>
+			<color>
+				<r>128</r>
+				<g>128</g>
+				<b>192</b>
+			</color>
+			<connections>
+				<relation>
+					<id>3</id>
+					<source>2</source>
+					<target>3</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>4</id>
+					<source>1</source>
+					<target>3</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+			</connections>
+			<physical_name>acl_sgroup</physical_name>
+			<logical_name>acl_sgroup</logical_name>
+			<description>Links acl items to users and groups</description>
+			<constraint></constraint>
+			<primary_key_name></primary_key_name>
+			<option></option>
+			<columns>
+				<normal_column>
+					<word_id>7</word_id>
+					<id>24</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>bigserial</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>true</primary_key>
+					<unique_key>true</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<word_id>10</word_id>
+					<id>25</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>smallint</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>false</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<id>26</id>
+					<referenced_column>21</referenced_column>
+					<relation>3</relation>
+					<description>foreign key of natutvielfalt acl_id</description>
+					<unique_key_name></unique_key_name>
+					<logical_name>acl_id</logical_name>
+					<physical_name>acl_id</physical_name>
+					<type>bigint</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>true</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<id>27</id>
+					<referenced_column>16</referenced_column>
+					<relation>4</relation>
+					<description>Foreign key of swissmon sgroup</description>
+					<unique_key_name></unique_key_name>
+					<logical_name>sgroup_id</logical_name>
+					<physical_name>sgroup_id</physical_name>
+					<type>bigint</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>true</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+			</columns>
+			<indexes>
+			</indexes>
+			<complex_unique_key_list>
+			</complex_unique_key_list>
+			<table_properties>
+				<schema></schema>
+				<without_oids>true</without_oids>
+			</table_properties>
+		</table>
+		<table>
+			<id>4</id>
+			<height>149</height>
+			<width>174</width>
+				<font_name>Ubuntu</font_name>
+				<font_size>9</font_size>
+			<x>111</x>
+			<y>49</y>
+			<color>
+				<r>128</r>
+				<g>128</g>
+				<b>192</b>
+			</color>
+			<connections>
+				<relation>
+					<id>5</id>
+					<source>0</source>
+					<target>4</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>6</id>
+					<source>2</source>
+					<target>4</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+			</connections>
+			<physical_name>acl_users</physical_name>
+			<logical_name>acl_users</logical_name>
+			<description>Links acl items to users and groups</description>
+			<constraint></constraint>
+			<primary_key_name></primary_key_name>
+			<option></option>
+			<columns>
+				<normal_column>
+					<word_id>7</word_id>
 					<id>28</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>bigserial</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>true</primary_key>
+					<unique_key>true</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<word_id>10</word_id>
+					<id>29</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>smallint</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>false</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<id>30</id>
+					<referenced_column>21</referenced_column>
+					<relation>6</relation>
+					<description>Foreign key of acl id</description>
+					<unique_key_name></unique_key_name>
+					<logical_name>acl_id</logical_name>
+					<physical_name>acl_id</physical_name>
+					<type>bigint</type>
+					<constraint></constraint>
+					<default_value>0</default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>true</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<id>31</id>
 					<referenced_column>0</referenced_column>
 					<relation>5</relation>
-					<description>foreign key for swissmon user id who created acl item</description>
+					<description>foreign key for swissmon user id</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>users_id</logical_name>
 					<physical_name>users_id</physical_name>

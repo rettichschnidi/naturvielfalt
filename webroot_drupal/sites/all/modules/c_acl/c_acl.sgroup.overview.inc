@@ -67,18 +67,18 @@ function _sgroup_own_group_table($user_id) {
 		$row[] = array(
 				'data' => l(
 					$record->name,
-					'user/' . $user_id . '/sgroup/' . $record->id)
+					'sgroup/' . $record->id)
 						. '<div class="description">' . $description . '</div>',
 		);
 		$row[] = array(
 				'data' => l(
 					t('Edit Group'),
-					'user/' . $user_id . '/sgroup/' . $record->id . '/edit')
+					'sgroup/' . $record->id . '/edit')
 		);
 		$row[] = array(
 				'data' => l(
 					t('Permissions'),
-					'user/' . $user_id . '/sgroup/' . $record->id . '/acl')
+					'sgroup/' . $record->id . '/acl')
 		);
 		$rows[] = $row;
 		$row_cnt++;
@@ -117,7 +117,7 @@ function _sgroup_member_group_table($user_id) {
 			'colspan' => 2,
 	);
 	$rows = array();
-
+		
 	// get all groups, user is member
 	$query = db_select('sgroup', 'g')->fields(
 			'g',
@@ -128,11 +128,10 @@ function _sgroup_member_group_table($user_id) {
 					'acl_id',
 			))
 		->condition('g.users_id', $user_id, "!=");
+	$query->join('acl_users', 'au', 'au.acl_id = g.acl_id');
+	$query->condition('au.users_id', $user_id);
 	$query->join('users', 'u', 'u.uid = g.users_id');
-	$query->fields('u', array('name',));
-	$query->join('acl_link', 'al', 'al.acl_id = g.acl_id');
-	$db_groups = $query->condition('al.users_id', $user_id)
-		->execute();
+	$db_groups = $query->fields('u', array('name',))->execute();
 
 	// create table
 	$row_cnt = 0;
@@ -149,18 +148,18 @@ function _sgroup_member_group_table($user_id) {
 		$row[] = array(
 				'data' => l(
 					$record->name,
-					'user/' . $user_id . '/sgroup/' . $record->id)
+					'sgroup/' . $record->id)
 						. '<div class="description">' . $description . '</div>',
 		);
 		$row[] = array(
-				'data' => l($record->u_name, 'user/' . $record->users_id)
+				'data' => $record->u_name,
 		);
 		if (check_permission($record->acl_id, variable_get("ACL_WRITE"))) {
 			// write permission on group ok
 			$row[] = array(
 					'data' => l(
 						t('Edit Group'),
-						'user/' . $user_id . '/sgroup/' . $record->id . '/edit')
+						'sgroup/' . $record->id . '/edit')
 			);
 		}
 		if (check_permission($record->acl_id, variable_get("ACL_ADMIN"))) {
@@ -168,7 +167,7 @@ function _sgroup_member_group_table($user_id) {
 			$row[] = array(
 					'data' => l(
 						t('Permissions'),
-						'user/' . $user_id . '/sgroup/' . $record->id . '/acl')
+						'sgroup/' . $record->id . '/acl')
 			);
 		}
 		$rows[] = $row;

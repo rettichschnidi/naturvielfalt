@@ -40,7 +40,10 @@ function sgroup_show($sgroup_id) {
 			if ($acl_user->uid == $record->users_id) {
 				$name .= " (" . t('Owner') . ")";
 			}
-			$users[] = l($name, 'user/' . $acl_user->uid);
+			if ($acl_user->uid == $user->uid) {
+				$name = l($name, 'user/' . $acl_user->uid);
+			}
+			$users[] = $name;
 		}
 		// display group members in collapsible box mentioned above  
 		$output['member']['list'] = array(

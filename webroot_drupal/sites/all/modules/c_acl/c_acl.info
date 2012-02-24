@@ -3,5 +3,3 @@ description = Costom ACL module to handle permissions
 package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
-
-dependencies[] = sgroup

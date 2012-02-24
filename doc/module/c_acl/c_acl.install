@@ -3,7 +3,7 @@
  * do not modify this file, it is generated! 
  */
 
-function sgroup_schema() {
+function c_acl_schema() {
 	return array (
   'acl' => 
   array (
@@ -41,7 +41,70 @@ function sgroup_schema() {
       0 => 'id',
     ),
   ),
-  'acl_link' => 
+  'acl_sgroup' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'primary key of linking table',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'level' => 
+      array (
+        'description' => 'access level',
+        'type' => 'int',
+        'size' => 'small',
+      ),
+      'acl_id' => 
+      array (
+        'description' => 'foreign key of natutvielfalt acl_id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'sgroup_id' => 
+      array (
+        'description' => 'Foreign key of swissmon sgroup',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'acl_sgroup_2_acl' => 
+      array (
+        'table' => 'acl',
+        'columns' => 
+        array (
+          'acl_id' => 'id',
+        ),
+      ),
+      'acl_sgroup_2_sgroup' => 
+      array (
+        'table' => 'sgroup',
+        'columns' => 
+        array (
+          'sgroup_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'acl_users' => 
   array (
     'fields' => 
     array (
@@ -62,6 +125,7 @@ function sgroup_schema() {
       array (
         'description' => 'Foreign key of acl id',
         'type' => 'int',
+        'not null' => 'TRUE',
         'default' => '0',
         'size' => 'big',
       ),
@@ -72,12 +136,12 @@ function sgroup_schema() {
         'default' => '0',
         'size' => 'big',
       ),
-      'sgroup_id' => 
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
       array (
-        'description' => 'Foreign key of swissmon sgroup',
-        'type' => 'int',
-        'default' => '0',
-        'size' => 'big',
+        0 => 'id',
       ),
     ),
     'primary key' => 
@@ -86,20 +150,12 @@ function sgroup_schema() {
     ),
     'foreign keys' => 
     array (
-      'acl_link_2_acl' => 
+      'acl_users_2_acl' => 
       array (
         'table' => 'acl',
         'columns' => 
         array (
           'acl_id' => 'id',
-        ),
-      ),
-      'acl_link_2_sgroup' => 
-      array (
-        'table' => 'sgroup',
-        'columns' => 
-        array (
-          'sgroup_id' => 'id',
         ),
       ),
     ),
@@ -131,6 +187,7 @@ function sgroup_schema() {
       array (
         'description' => 'foreign key of natutvielfalt acl_id',
         'type' => 'int',
+        'not null' => 'TRUE',
         'size' => 'big',
       ),
       'users_id' => 

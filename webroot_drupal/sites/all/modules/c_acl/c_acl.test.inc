@@ -16,8 +16,8 @@ function run_acl_test() {
 	$def_user_id['user2'] = 3; // must be member of group 1
 	$def_user_id['user3'] = 4;
 	// set group ids
-	$def_group_id['group1'] = 5; // must contain user 2 as member (not owner)
-	$def_group_id['group2'] = 6;
+	$def_group_id['group1'] = 2; // must contain user 2 as member (not owner)
+	$def_group_id['group2'] = 3;
 	/* END SET TEST VARIABLES */
 
 	$output['introduction'] = array(
@@ -1123,12 +1123,13 @@ function show_acl_form() {
 			),
 	);
 	
-	$groupDefaults = array();
-	$groupDefault->id = variable_get("ACL_GROUP_ALL_ID");
-	$groupDefault->name = "All";
-	$groupDefault->level = variable_get("ACL_READ");
-	$groupDefaults[] = $groupDefault;
-	
+	$groupDefaults = array(
+		(object)array (
+			'id' => variable_get("ACL_GROUP_ALL_ID"),
+			'name' => "All",
+			'level' => variable_get("ACL_READ"),
+		),
+	);
 	$render_array['test'] = array(
 			'#theme' => 'c_acl',
 			'#defaults' => $formDefaults,
