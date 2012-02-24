@@ -63,7 +63,6 @@ $colsized = (7 > $charTableSize) ? 8 : $charTableSize;
  * Render the headers and columns
  */
 if ($header) {
-
 	$aoColumns = "colModel : [";
 	$headers = array();
 	$sortField = $header[0]['dbfield'];
@@ -85,7 +84,7 @@ if ($header) {
 				: $aoColumns .= ",  align : 'left'";
 		if (isset($head['hide']) && $head['hide'] == true)
 			$aoColumns .= ", hide : true";
-		if ($options['rowClick'])
+		if (isset($options['rowClick']))
 			$aoColumns .= ", process : " . $options['rowClick'];
 		$aoColumns .= "},";
 		$headers[] = $head['name'];
@@ -98,12 +97,6 @@ if ($header) {
 	// remove trailing comma
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
-
-	// 	// we need data, otherwise drupal will render the table without <thead> tag
-	// 	if(!isset($rows)){
-	// 		$rows[] = array($head['dbfield'][0] => t('Please wait...'));
-	// 	}
-
 }
 
 /**
@@ -168,7 +161,7 @@ width: <?php echo $tableWidth; ?>,
 height: <?php echo $tableHeight; ?>,
 tableId: '<?php echo $id_table; ?>'
 });
-<?php if ($options['rowClick'])
+<?php if (isset($options['rowClick']))
 	echo $options['rowClickHandler'];
 ?>
 

@@ -79,10 +79,16 @@ function datatable_dbRequest($sql, $arguments = array()) {
 	$Table = $sql['dbTable'];
 
 	/* Joins to use */
-	$sJoins = $sql['dbJoins'];
+	$sJoins = '';
+	if (isset($sql['dbJoins'])) {
+		$sJoins = $sql['dbJoins'];
+	}
 
 	/* Group */
-	$sGroupBy = $sql['dbGroupBy'];
+	$sGroupBy = '';
+	if (isset($sql['dbGroupBy'])) {
+		$sGroupBy = $sql['dbGroupBy'];
+	}
 
 	isset($sql['dbWhere']) ? $where = "WHERE " . $sql['dbWhere'] : $where = "";
 
@@ -100,13 +106,15 @@ function datatable_dbRequest($sql, $arguments = array()) {
 		$page = pg_escape_string($_POST['page']);
 		if ($page < 1)
 			return "Error! Pagevalue '$page' is smaller than 1.";
+	} else {
+		$page = 1;
 	}
 	if (isset($_POST['sortname'])) {
 		$sortname = $_POST['sortname'];
 		foreach ($sortColumns as $sortColumn) {
 			foreach (explode(".", $sortColumn) as $sortCol) {
 				$sortColumnsTemp[] = trim($sortCol);
-				//make sure that "oneofmyids AS id" works
+				//make sure that "oneofmyids AS id" works (BURN AFTER READING!)
 				foreach (explode("AS", $sortCol) as $sortCol2) {
 					$sortColumnsTemp[] = trim($sortCol2);
 				}
@@ -147,7 +155,6 @@ function datatable_dbRequest($sql, $arguments = array()) {
 	$sLimit = "";
 	if (isset($page) && isset($rp)) {
 		$pageStart = ($page - 1) * $rp;
-
 		$sLimit = " OFFSET " . $pageStart . " LIMIT " . $rp;
 	}
 
@@ -220,6 +227,9 @@ function datatable_dbRequest($sql, $arguments = array()) {
 			. "
 				FROM   $sTable $sWhere $sGroupBy $sOrder";
 	$sQuery = $nQuery . " " . $sLimit;
+	if (false) {
+		die("sQuery: $sQuery");
+	}
 	$rResult = db_query($sQuery, $arguments);
 
 	/* Data set length after filtering */
