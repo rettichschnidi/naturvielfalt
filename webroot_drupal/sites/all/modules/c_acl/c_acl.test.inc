@@ -1,8 +1,9 @@
 <?php
-module_load_include('inc', 'c_acl', 'c_acl.base');
 /**
+ * This routine was only used to debug acl module
+ * ATTENTION: to use this correctly you have to define the users and groups listed below
  * 
- * Enter description here ...
+ * @return 	Array	drupal form array with table with testresults
  */
 function run_acl_test() {
 	global $user;
@@ -15,14 +16,14 @@ function run_acl_test() {
 	$def_user_id['user2'] = 3; // must be member of group 1
 	$def_user_id['user3'] = 4;
 	// set group ids
-	$def_group_id['group1'] = 1; // must contain user 2
-	$def_group_id['group2'] = 2;
+	$def_group_id['group1'] = 5; // must contain user 2 as member (not owner)
+	$def_group_id['group2'] = 6;
 	/* END SET TEST VARIABLES */
 
 	$output['introduction'] = array(
-		'#markup' => t(
-			"ACL tests are executed and the result is listed in the table below"),
-		'#weight' => 0,
+			'#markup' => t(
+				"ACL tests are executed and the result is listed in the table below"),
+			'#weight' => 0,
 	);
 	$success = t('success');
 	$fail = t('fail');
@@ -45,8 +46,7 @@ function run_acl_test() {
 	if ($acl_id != NULL) {
 		$row[] = $success;
 		$do_next = TRUE;
-	}
-	else {
+	} else {
 		$row[] = $fail;
 	}
 	$rows[] = $row;
@@ -65,8 +65,7 @@ function run_acl_test() {
 		if ($lvl == variable_get("ACL_ADMIN")) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -84,8 +83,7 @@ function run_acl_test() {
 		if (check_user_owns_acl($acl_id, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -94,10 +92,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -116,10 +114,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -140,8 +138,7 @@ function run_acl_test() {
 		if (add_user_to_acl($acl_id, $user_id, $acl_lvl)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -161,8 +158,7 @@ function run_acl_test() {
 		if ($lvl == $acl_lvl) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -181,8 +177,7 @@ function run_acl_test() {
 		if (!check_user_owns_acl($acl_id, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -191,10 +186,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -213,10 +208,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -237,8 +232,7 @@ function run_acl_test() {
 		if (update_user_in_acl($acl_id, $user_id, $acl_lvl)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -258,8 +252,7 @@ function run_acl_test() {
 		if ($lvl == $acl_lvl) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -268,10 +261,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -290,10 +283,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -313,8 +306,7 @@ function run_acl_test() {
 		if (chown_acl($acl_id, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -332,8 +324,7 @@ function run_acl_test() {
 		if (check_user_owns_acl($acl_id, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -342,10 +333,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 	$displayCount++;
 
@@ -365,10 +356,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -389,8 +380,7 @@ function run_acl_test() {
 		if (add_group_to_acl($acl_id, $group_id, $acl_lvl)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -410,8 +400,7 @@ function run_acl_test() {
 		if ($lvl == $acl_lvl) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -420,10 +409,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show group in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All groups in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All groups in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -442,10 +431,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -466,8 +455,7 @@ function run_acl_test() {
 		if (add_group_to_acl($acl_id, $group_id, $acl_lvl)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -487,8 +475,7 @@ function run_acl_test() {
 		if ($lvl == $acl_lvl) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -497,10 +484,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show group in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All groups in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All groups in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -519,10 +506,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -544,8 +531,7 @@ function run_acl_test() {
 		if (update_group_in_acl($acl_id, $group_id, $acl_lvl)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -565,8 +551,7 @@ function run_acl_test() {
 		if ($lvl == $acl_lvl) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -575,10 +560,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show group in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All groups in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All groups in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -597,10 +582,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -624,8 +609,7 @@ function run_acl_test() {
 		if (check_permission($acl_id, $acl_lvl, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -650,8 +634,7 @@ function run_acl_test() {
 		if (check_permission($acl_id, $acl_lvl, $user_id, true)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -674,8 +657,7 @@ function run_acl_test() {
 		if (check_permission($acl_id, $acl_lvl, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -698,8 +680,7 @@ function run_acl_test() {
 		if (!check_permission($acl_id, $acl_lvl, $user_id, true)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -719,8 +700,7 @@ function run_acl_test() {
 		if (delete_user_from_acl($acl_id, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -738,8 +718,7 @@ function run_acl_test() {
 		if (!check_user_in_acl($acl_id, $user_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -748,10 +727,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -770,10 +749,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -793,8 +772,7 @@ function run_acl_test() {
 		if (delete_group_from_acl($acl_id, $group_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -813,8 +791,7 @@ function run_acl_test() {
 		if (!check_group_in_acl($acl_id, $group_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -823,10 +800,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show group in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All groups in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All groups in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -845,10 +822,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -867,8 +844,7 @@ function run_acl_test() {
 		if ($acl_id_copy) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -877,10 +853,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id_copy . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id_copy
+						. " after testcase " . $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -899,10 +875,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -911,10 +887,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show group in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All groups in ACL with id = " . $acl_id_copy . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All groups in ACL with id = " . $acl_id_copy
+						. " after testcase " . $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -933,10 +909,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -953,8 +929,7 @@ function run_acl_test() {
 		if (clear_acl($acl_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -963,10 +938,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show user in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All users in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All users in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -985,10 +960,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -997,10 +972,10 @@ function run_acl_test() {
 	/* DISPLAY START */
 	// show group in acl
 	$output['info_display' . $displayCount] = array(
-		'#markup' => t(
-			"All groups in ACL with id = " . $acl_id . " after testcase "
-					. $rowCount),
-		'#weight' => $displayCount * 10,
+			'#markup' => t(
+				"All groups in ACL with id = " . $acl_id . " after testcase "
+						. $rowCount),
+			'#weight' => $displayCount * 10,
 	);
 
 	$t_tableHeader = array();
@@ -1019,10 +994,10 @@ function run_acl_test() {
 	}
 
 	$t_table = array(
-		'#theme' => 'table',
-		'#header' => $t_tableHeader,
-		'#rows' => $t_rows,
-		'#weight' => $displayCount * 10 + 1,
+			'#theme' => 'table',
+			'#header' => $t_tableHeader,
+			'#rows' => $t_rows,
+			'#weight' => $displayCount * 10 + 1,
 	);
 	$output['table_display' . $displayCount] = $t_table;
 	$displayCount++;
@@ -1039,8 +1014,7 @@ function run_acl_test() {
 		if (delete_acl($acl_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -1057,8 +1031,7 @@ function run_acl_test() {
 		if (!get_acl($acl_id)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -1075,8 +1048,7 @@ function run_acl_test() {
 		if (delete_acl($acl_id_copy)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
@@ -1093,69 +1065,82 @@ function run_acl_test() {
 		if (!get_acl($acl_id_copy)) {
 			$row[] = $success;
 			$do_next = TRUE;
-		}
-		else {
+		} else {
 			$row[] = $fail;
 		}
 		$rows[] = $row;
 	}
 
 	$table = array(
-		'#theme' => 'table',
-		'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#weight' => 1,
+			'#theme' => 'table',
+			'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#weight' => 1,
 	);
 	$output['table_test1'] = $table;
 
 	$theme = array(
-		'#theme' => 'c_acl_form',
-		'#weight' => -1,
+			'#theme' => 'c_acl_form',
+			'#weight' => -1,
 	);
-	
+
 	$output['theme'] = $theme;
 
 	return $output;
 }
 
 /**
+ * This routine was only used to debug acl module
  * 
- * Enter description here ...
+ * @return 	Array	drupal form array with acl of specified acl
  */
 function show_acl_form() {
 	$formDefaults = array(
-		array (
-			'type' => variable_get("ACL_RED_READ"),
-			'name' => t('Reduced Read'),
-			'value' => FALSE,
-		),
-		array (
-			'type' => variable_get("ACL_READ"),
-			'name' => t('Read'),
-			'value' => TRUE,
-		),
-		array (
-			'type' => variable_get("ACL_RED_WRITE"),
-			'name' => t('Reduces Write'),
-			'value' => FALSE,
-		),
-		array (
-			'type' => variable_get("ACL_WRITE"),
-			'name' => t('Write'),
-			'value' => FALSE,
-		),
-		array (
-			'type' => variable_get("ACL_ADMIN"),
-			'name' => t('Admin'),
-			'value' => FALSE,
-		),
-	);
-	$render_array['test'] = array(
-		'#theme' => 'c_acl',
-		'#defaults' => $formDefaults,
-		'#acl_id' => 52,
+			array(
+					'type' => variable_get("ACL_RED_READ"),
+					'name' => t('Reduced Read'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_READ"),
+					'name' => t('Read'),
+					'value' => TRUE,
+			),
+			array(
+					'type' => variable_get("ACL_RED_WRITE"),
+					'name' => t('Reduces Write'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_WRITE"),
+					'name' => t('Write'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_ADMIN"),
+					'name' => t('Admin'),
+					'value' => FALSE,
+			),
 	);
 	
+	$groupDefaults = array();
+	$groupDefault->id = variable_get("ACL_GROUP_ALL_ID");
+	$groupDefault->name = "All";
+	$groupDefault->level = variable_get("ACL_READ");
+	$groupDefaults[] = $groupDefault;
+	
+	$render_array['test'] = array(
+			'#theme' => 'c_acl',
+			'#defaults' => $formDefaults,
+			'#defaults_group' => $groupDefaults,
+			'#acl_id' => 21,
+			/*'#child_acl_ids' => array(
+					54,
+					55,
+					56,
+			),*/
+	);
+
 	return $render_array;
 }
 

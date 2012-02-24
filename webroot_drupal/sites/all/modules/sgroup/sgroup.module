@@ -2,6 +2,8 @@
 /**********************************
  *  Hook implementations
  *********************************/
+// use base acl functions in hooks
+module_load_include('inc', 'c_acl', 'c_acl.base');
 
 /**
  * Implements hook_menu().
@@ -11,24 +13,22 @@
  * @return associative array Define menu items and page callbacks.
  */
 function sgroup_menu() {
-	$items['user/%user/sgroup'] = array(
-			'title' => 'Groups',
-			'description' => 'Shows ones groups',
+	$items['user/%/sgroup'] = array(
+			'title' => t('Groups'),
+			'description' => t('Shows ones groups'),
 			'page callback' => 'sgroup_overview',
+			'page arguments' => array(
+					1,
+			),
 			'access arguments' => array(
 					'access sgroup'
 			),
 			'type' => MENU_LOCAL_TASK,
 			'file' => 'sgroup.overview.inc'
 	);
-	$items['user/%user/sgroup/show'] = array(
-			'title' => 'Show groups',
-			'type' => MENU_DEFAULT_LOCAL_TASK,
-			'weight' => -10,
-	);
 	$items['user/%user/sgroup/new'] = array(
-			'title' => 'Create a new group',
-			'description' => 'Create a new group',
+			'title' => t('New Group'),
+			'description' => t('Create a new group'),
 			'page callback' => 'sgroup_new',
 			'access arguments' => array(
 					'access sgroup'
@@ -37,33 +37,59 @@ function sgroup_menu() {
 			'weight' => 5,
 			'file' => 'sgroup.new.inc',
 	);
-	$items['user/%user/sgroup/%/edit'] = array(
-			'title' => 'Edit group',
-			'description' => 'Edit group',
-			'page callback' => 'sgroup_edit',
+	$items['user/%user/sgroup/show'] = array(
+			'title' => t('List Groups'),
+			'type' => MENU_DEFAULT_LOCAL_TASK,
+			'weight' => -10,
+	);
+	$items['user/%user/sgroup/%'] = array(
+			'title' => t('Group'),
+			'description' => t('Display Group'),
+			'page callback' => 'sgroup_show',
 			'page arguments' => array(
-					3
+					3,
 			),
-			'access callback' => 'sgroup_edit_access',
+			'access callback' => 'sgroup_read_access',
 			'access arguments' => array(
 					3
 			),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'sgroup.edit.inc',
+			'file' => 'sgroup.show.inc'
 	);
-	$items['sgroup/delete_member/%/%'] = array(
-			'title' => 'JSON request to delete a member from a group',
-			'page callback' => 'sgroup_delete_member',
+	$items['user/%user/sgroup/%/view'] = array(
+			'title' => t('View'),
+			'type' => MENU_DEFAULT_LOCAL_TASK,
+			'weight' => -10,
+	);
+	$items['user/%user/sgroup/%/edit'] = array(
+			'title' => t('Edit'),
+			'description' => t('Edit group'),
+			'page callback' => 'sgroup_edit',
 			'page arguments' => array(
-					2,
 					3
 			),
-			'access callback' => 'sgroup_edit_access',
+			'access callback' => 'sgroup_write_access',
 			'access arguments' => array(
-					2
+					3
 			),
-			'type' => MENU_CALLBACK,
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 5,
 			'file' => 'sgroup.edit.inc',
+	);
+	$items['user/%user/sgroup/%/acl'] = array(
+			'title' => t('Permissions'),
+			'description' => t('Edit permissions group'),
+			'page callback' => 'sgroup_admin',
+			'page arguments' => array(
+					3
+			),
+			'access callback' => 'sgroup_admin_access',
+			'access arguments' => array(
+					3
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 10,
+			'file' => 'sgroup.admin.inc',
 	);
 	return $items;
 }
@@ -81,24 +107,59 @@ function sgroup_permission() {
 }
 
 /**
- * Allows an administrator of a group to edit his group
+ * Check read permission of active user of a group
+ * 
+ * @param	string	$sgroup_id	id of group to edit
  */
-
-function sgroup_edit_access($sgroupId) {
+function sgroup_read_access($sgroup_id) {
 	$access = user_access('access sgroup');
-	// check if this user is administrator of the group
-	global $user;
-	$adminRecords = db_query('SELECT
-				admin
-			FROM
-				sgroup_users
-			WHERE
-				sgroup_id=:sgid AND
-				users_id=:uid', array(':sgid' => $sgroupId,
-					':uid' => $user->uid
-			));
-	$admin = $adminRecords->fetch();
-	$access = $access && $admin->admin == 1;
+	// check if this user has write access to group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_READ"));
+	return $access;
+}
+
+/**
+ * Check edit permission of active user of a group
+ * 
+ * @param	string	$sgroup_id	id of group to edit
+ */
+function sgroup_write_access($sgroup_id) {
+	$access = user_access('access sgroup');
+	// check if this user has write access to group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_WRITE"));
+	return $access;
+}
+
+/**
+ * Check admin permission of active user of a group
+ * 
+ * @param	string	$sgroup_id	id of group to edit
+ */
+function sgroup_admin_access($sgroup_id) {
+	$access = user_access('access sgroup');
+	// check if this user has write access to group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_ADMIN"));
 	return $access;
 }
 

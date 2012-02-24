@@ -4,102 +4,16 @@
  */
 
 /**
- * Create the tables needed to run this module.
- *
- * @see More information about the schema API: http://drupal.org/node/146843
- */
-function c_acl_schema() {
-	return array(
-		'acl' => array(
-			'fields' => array(
-				'id' => array(
-					'description' => 'Primary key for swissmon acl items',
-					'type' => 'serial',
-					'not null' => 'TRUE',
-					'size' => 'big',
-				),
-				'description' => array(
-					'description' => 'desccription of acl item',
-					'type' => 'text',
-				),
-				'users_id' => array(
-					'description' => 'foreign key for swissmon user id who created acl item',
-					'type' => 'int',
-					'default' => '0',
-					'size' => 'big',
-				),
-			),
-			'unique keys' => array(
-				'id' => array(
-					0 => 'id',
-				),
-			),
-			'primary key' => array(
-				0 => 'id',
-			),
-		),
-		'acl_link' => array(
-			'fields' => array(
-				'id' => array(
-					'description' => 'primary key of linking table',
-					'type' => 'serial',
-					'not null' => 'TRUE',
-					'size' => 'big',
-				),
-				'level' => array(
-					'description' => 'access level',
-					'type' => 'int',
-					'size' => 'small',
-				),
-				'acl_id' => array(
-					'description' => 'Foreign key of acl id',
-					'type' => 'int',
-					'default' => '0',
-					'size' => 'big',
-				),
-				'users_id' => array(
-					'description' => 'foreign key for swissmon user id',
-					'type' => 'int',
-					'default' => '0',
-					'size' => 'big',
-				),
-				'sgroup_id' => array(
-					'description' => 'Foreign key of swissmon sgroup',
-					'type' => 'int',
-					'default' => '0',
-					'size' => 'big',
-				),
-			),
-			'primary key' => array(
-				0 => 'id',
-			),
-			'foreign keys' => array(
-				'acl_link_2_acl' => array(
-					'table' => 'acl',
-					'columns' => array(
-						'acl_id' => 'id',
-					),
-				),
-			),
-		),
-	);
-}
-
-/**
  * Implements hook_install();
  *
  * Add missing foreign keys
  */
-function c_acl_install() {
-
-}
+function c_acl_install() {}
 
 /**
  * Implements hook_uninstall();
  *
  * This drops all tables defined in sgroup_schema().
  */
-function c_acl_uninstall() {
-	drupal_uninstall_schema('c_acl');
-}
+function c_acl_uninstall() {}
 ?>

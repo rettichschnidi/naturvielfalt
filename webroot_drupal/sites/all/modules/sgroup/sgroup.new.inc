@@ -1,11 +1,16 @@
 <?php
 /**
  * Returns the new group page
+ * 
  * @return Output array
  */
 function sgroup_new() {
+	// set title
+	drupal_set_title(check_plain(t("New Group")));
+	// display short instruction text
 	$output['introduction'] = array(
-			'#markup' => t('Please enter a name for your new group and click on "Create group".'),
+			'#markup' => t(
+				'Please enter a name for your new group and click on "Create group".'),
 	);
 	$output['form'] = drupal_get_form('sgroup_new_form');
 
@@ -19,8 +24,12 @@ function sgroup_new() {
 function sgroup_new_form() {
 	$form['name'] = array(
 			'#type' => 'textfield',
-			'#title' => t('Group name'),
+			'#title' => t('Group Name'),
 			'#required' => TRUE,
+	);
+	$form['description'] = array(
+			'#type' => 'textarea',
+			'#title' => t('Group Description'),
 	);
 	$form['submit'] = array(
 			'#type' => 'submit',
@@ -34,8 +43,10 @@ function sgroup_new_form() {
 
 /**
  * Saves a new group
- * @param $form
- * @param $form_state
+ * 
+ * @param	Array	$form			drupal generated form array
+ * @param	Array	&$form_state	drupal generated form array
+ * @return	Array					drupal generated form array
  */
 function sgroup_new_save($form, &$form_state) {
 	global $user;
@@ -44,25 +55,30 @@ function sgroup_new_save($form, &$form_state) {
 
 	try {
 		$name = $form_state['values']['name'];
+		$description = $form_state['values']['description'];
 
+		$acl_id = new_acl("group");
 		// save group
-		$sgid = db_insert('sgroup')->fields(array('name' => $name,))->execute();
-
-		// save user as admin of this group
-		db_insert('sgroup_users')->fields(array('sgroup_id' => $sgid,
+		$sgid = db_insert('sgroup')->fields(
+				array('name' => $name,
+						'description' => $description,
 						'users_id' => $user->uid,
-						'admin' => 1,
-				))->execute();
+						'acl_id' => $acl_id,
+				))
+			->execute();
 
 		// show success message
-		drupal_set_message(t('Group @name was created', array('@name' => $name)));
+		drupal_set_message(
+			t('Group @name was created', array('@name' => $name)));
 	} catch (Exception $e) {
 		$tx->rollback();
 		drupal_set_message(
-				t('Group @name could not be saved. (@exception)',
-						array('@name' => $name,
-								'@exception' => $e->message
-						)), 'error');
+			t(
+				'Group @name could not be saved. (@exception)',
+				array('@name' => $name,
+						'@exception' => $e->message
+				)),
+			'error');
 	}
 
 	return $form_state['redirect'] = 'user/' . $user->uid . '/sgroup';

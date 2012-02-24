@@ -1,4 +1,6 @@
 <?php
+// use base acl functions in hooks
+module_load_include('inc', 'c_acl', 'c_acl.base');
 
 /**********************************
  *  Hook implementations
@@ -14,24 +16,56 @@
 function c_acl_menu() {
 	// only debug
 	$items['c_acl/test'] = array(
-		'title' => 'Test ACL',
-		'description' => 'Test ACL functions and DB',
-		'page callback' => 'run_acl_test',
-		'access arguments' => array(
-			'access c_acl test'
-		),
-		'type' => MENU_LOCAL_TASK,
-		'weight' => 5,
-		'file' => 'c_acl.test.inc',
+			'title' => 'Test ACL',
+			'description' => 'Test ACL functions and DB',
+			'page callback' => 'run_acl_test',
+			'access arguments' => array(
+					'access c_acl test'
+			),
+			'file' => 'c_acl.test.inc',
 	);
+	// only debug
 	$items['c_acl/form'] = array(
-		'title' => 'Theming Forms',
-		'description' => 'Practicing theming forms in Drupal 7',
-		'page callback' => 'show_acl_form',
-		'access callback' => TRUE,
-		'file' => 'c_acl.test.inc',
+			'title' => 'Theming Forms',
+			'description' => 'Practicing theming forms in Drupal 7',
+			'page callback' => 'show_acl_form',
+			'access arguments' => array(
+					'access c_acl form'
+			),
+			'file' => 'c_acl.test.inc',
+	);
+	$items['c_acl/%/autocomplete_sgroup'] = array(
+			'page callback' => 'c_acl_autocomplete_sgroup',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_access',
+			'access arguments' => array(
+					1,
+			),
+			'file' => 'c_acl.autocomplete.inc',
+	);
+	$items['c_acl/%/autocomplete_users'] = array(
+			'page callback' => 'c_acl_autocomplete_users',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_access',
+			'access arguments' => array(
+					1,
+			),
+			'file' => 'c_acl.autocomplete.inc',
 	);
 	return $items;
+}
+
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $acl_id
+ */
+function c_acl_access ($acl_id) {
+	return check_permission($acl_id, variable_get("ACL_ADMIN"));
 }
 
 /**
@@ -40,9 +74,9 @@ function c_acl_menu() {
  */
 function c_acl_permission() {
 	return array(
-		'access sgroup test' => array(
-			'title' => t('Can run ACL tests (use to debug only)')
-		)
+			'access sgroup test' => array(
+					'title' => t('Can run ACL tests (use to debug only)')
+			)
 	);
 }
 
@@ -58,14 +92,17 @@ function c_acl_permission() {
  */
 function c_acl_theme() {
 	return array(
-		'c_acl' => array(
-			'function' => 'c_acl_show_form',
-			'file' => 'c_acl.form.inc',
-			'variables' => array(
-				'defaults' => NULL,
-				'acl_id' => 0,
+			'c_acl' => array(
+					'function' => 'c_acl_show_form',
+					'file' => 'c_acl.form.inc',
+					'variables' => array(
+							'defaults' => NULL,
+							'defaults_group' => NULL,
+							'acl_id' => 0,
+							'child_acl_ids' => NULL,
+							'users_only' => FALSE, 
+					)
 			)
-		)
 	);
 }
 ?>
