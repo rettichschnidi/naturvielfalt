@@ -5,16 +5,17 @@
  * @copyright 2012 Naturwerk, Brugg
  */
 
+module_load_include('inc', 'organism', 'organism');
+
 /**
  * Menu callback. This will be called for visits to /organism.
  * @return array
  */
 function organism_show_classifiers() {
-	drupal_set_title(t('Select classifier'));
-
 	// Set the table header
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
+			'idField' => true,
 			'dbfield' => 'oc_id',
 			'hide' => false,
 	);
@@ -30,14 +31,15 @@ function organism_show_classifiers() {
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
+			'#title' => 'Classifiers',
 			'#id_table' => 'classificators',
 			'#options' => array(
 					'jsonUrl' => "'" . base_path() . "organism/json'",
 					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, oc_id) {
+					'rowClickHandler' => "function rowClick(celDiv, id) {
 												jQuery(celDiv).click(
 													function() {
-														window.location.href = Drupal.settings.basePath+'organism/classification/'+celDiv.innerHTML;
+														window.location.href = Drupal.settings.basePath+'organism/classification/' + id;
 													}
 												)
 											}"
@@ -99,89 +101,62 @@ function organism_show_classification($classificationid) {
 					'jsonUrl' => "'" . base_path()
 							. "organism/classification/$classificationid/classificationjson'",
 					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-									window.location.href = Drupal.settings.basePath+'organism/classification/'+id;})}"
+					'rowClickHandler' => "function rowClick(celDiv, id) {
+											jQuery(celDiv).click(
+												function() {
+													window.location.href = Drupal.settings.basePath+'organism/classification/' + id;
+												}
+											)
+										}"
 			)
 	);
 
 	// Set the table header
 	$organismsTableHeader[] = array(
-			'name' => t('Organism scientific id'),
-			'dbfield' => 'osc_id',
+			'name' => t('Organism id'),
+			'dbfield' => 'o_id',
+			'idField' => true,
+			'hide' => false
+	);
+	$organismsTableHeader[] = array(
+			'name' => t('Organism scientific name id'),
+			'dbfield' => 'osn_id',
 			'hide' => false
 	);
 	$organismsTableHeader[] = array(
 			'name' => t('Organism scientific name'),
-			'dbfield' => 'osc_name',
-			'hide' => false
-	);
-	$organismsTableHeader[] = array(
-			'name' => t('Organism Name'),
-			'dbfield' => 'o_id',
+			'dbfield' => 'osn_name',
 			'hide' => false
 	);
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => 'Organisms in' . $classificationName,
+			'#title' => 'Organisms with classification ' . $classificationName,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
 					'jsonUrl' => "'" . base_path()
 							. "organism/classification/$classificationid/organismjson'",
-					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-										window.location.href = Drupal.settings.basePath+'organism/'+id;})}"
+					'rowClick' => 'rowClickOrganism',
+					'rowClickHandler' => "function rowClickOrganism(celDiv, id){
+												jQuery(celDiv).click(
+													function() {
+														window.location.href = Drupal.settings.basePath+'organism/' + id;
+													}
+												)
+											}"
 			)
 	);
-
-	// 	// If this classification has organisms attached, then show those organisms
-	//  {
-	// 		$resultOrganism = db_query(
-	// 			'SELECT
-	// 			osc.id AS name_id,
-	// 			osc.name AS name,
-	// 			o.id AS organism_id
-	// 		FROM
-	// 			{organism_classification} oc
-	// 			JOIN {organism_classification_subscription} ocs ON ocs.organism_classification_id = oc.id
-	// 			JOIN {organism} o ON ocs.organism_id = o.id
-	// 			JOIN {organism_scientific_name} osc ON osc.organism_id = o.id
-	// 		WHERE
-	// 			oc.id = :ocid',
-	// 			array(':ocid' => $classificationid));
-
-	// 		if ($resultOrganism->rowCount() > 0) {
-	// 			$header = array(
-	// 					t('Organism'),
-	// 					'organism id'
-	// 			);
-
-	// 			foreach ($resultOrganism as $record) {
-	// 				$row = array();
-	// 				$row[] = $record->name;
-	// 				$row[] = $record->organism_id;
-	// 				$rows[] = array(
-	// 						'data' => $row,
-	// 						'id' => 'organism_' . $record->organism_id
-	// 				);
-	// 			}
-	// 			$render_array['organismsClassificationViewOrganisms'] = array(
-	// 					'#theme' => 'datatable',
-	// 					'#header' => $header,
-	// 					'#rows' => $rows,
-	// 					'#id_table' => 'organisms',
-	// 			);
-	// 		}
-	// 	}
 	return $render_array;
 }
 
 /**
  * Menu callback. This will be called for visits to /organism/%.
+ * @todo Refactor this stuff into its own function
  * @return array
  */
 function organism_show_organism($organismid) {
-	drupal_set_title(t('Show specific organisms'));
+	$organism = organism_get_single_name_of_organism($organismid);
+	drupal_set_title(t('Show attributes and synonyms of ' . $organism['name']));
 	// include the datatable javascript
 	drupal_add_js(
 		drupal_get_path('module', 'organism')
@@ -254,42 +229,36 @@ function organism_show_organism($organismid) {
 
 	// Show all synonyms of this organism
  {
-		$header = array(
-				t("Synonyms"),
-				'id'
+		// Set the table header
+		$tableHeader[] = array(
+				'name' => t('Organism id'),
+				'dbfield' => 'o_id',
+				'idField' => true,
+				'hide' => false
 		);
-
-		$result = db_query(
-			'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.organism_id = :oscid LIMIT 1',
-			array(':oscid' => $organismid));
-
-		if ($record = $result->fetchObject()) {
-			drupal_set_title(t('Show organism') . ' ' . $record->name);
-		}
-		$result = db_query(
-			'SELECT osc.id, osc.name FROM {organism_scientific_name} osc WHERE osc.organism_id = :oscid',
-			array(':oscid' => $organismid));
-
-		if ($result->rowCount() > 0) {
-			foreach ($result as $record) {
-				$row = array();
-				$row[] = $record->name;
-				$row[] = $organismid;
-				$rows[] = array(
-						'data' => $row,
-						'id' => 'organism_' . $organismid
-				);
-			}
-
-			$render_array['organismsShowOrganisms'] = array(
-					'#theme' => 'datatable',
-					'#header' => $header,
-					'#rows' => $rows,
-					'#id_table' => 'organisms',
-			);
-		}
+		$tableHeader[] = array(
+				'name' => t('Organism scientific name id'),
+				'dbfield' => 'osn_id',
+				'idField' => false,
+				'hide' => false
+		);
+		$tableHeader[] = array(
+				'name' => t('Organism scientific name'),
+				'dbfield' => 'osn_name',
+				'idField' => false,
+				'hide' => false
+		);
+		$render_array['organisms'] = array(
+				'#theme' => 'datatable',
+				'#title' => t('Synonyms for') . ' ' . $organism['name'],
+				'#header' => $tableHeader,
+				'#id_table' => 'organisms',
+				'#options' => array(
+						'jsonUrl' => "'" . base_path()
+								. "organism/$organismid/json'"
+				)
+		);
 	}
-
 	return $render_array;
 }
 ?>

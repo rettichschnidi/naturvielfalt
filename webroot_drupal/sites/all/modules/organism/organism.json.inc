@@ -107,14 +107,14 @@ function organism_show_classification_classificationjson($classificationid) {
 function organism_show_classification_organismjson($classificationid) {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
-			'osc.id AS osc_id',
-			'osc.name AS osc_name',
-			'o.id AS organism_id'
+			'osn.id AS osn_id',
+			'osn.name AS osn_name',
+			'o.id AS o_id'
 	);
 
 	$sql['dbSearchColumns'] = array(
-			'osc.id',
-			'osc.name',
+			'osn.id',
+			'osn.name',
 			'o.id'
 	);
 
@@ -123,10 +123,10 @@ function organism_show_classification_organismjson($classificationid) {
 	/* Joins to use */
 	$sql['dbJoins'] = 'JOIN {organism_classification_subscription} ocs ON ocs.organism_classification_id = oc.id
 				JOIN {organism} o ON ocs.organism_id = o.id
-				JOIN {organism_scientific_name} osc ON osc.organism_id = o.id';
+				JOIN {organism_scientific_name} osn ON osn.organism_id = o.id';
 	/* Group */
 	$sql['dbWhere'] = 'oc.id = :ocid';
-	$sql['id'] = 'osc_id';
+	$sql['id'] = 'o_id';
 
 	$arguments = array(
 			':ocid' => $classificationid
@@ -135,44 +135,36 @@ function organism_show_classification_organismjson($classificationid) {
 	$output = datatable_dbRequest($sql, $arguments);
 	return drupal_json_output($output);
 }
-// 	// If this classification has organisms attached, then show those organisms
-// 	{
-// 		$resultOrganism = db_query(
-// 			'SELECT
-// 			osc.id AS name_id,
-// 			osc.name AS name,
-// 			o.id AS organism_id
-// 		FROM
-// 			{organism_classification} oc
-// 			JOIN {organism_classification_subscription} ocs ON ocs.organism_classification_id = oc.id
-// 			JOIN {organism} o ON ocs.organism_id = o.id
-// 			JOIN {organism_scientific_name} osc ON osc.organism_id = o.id
-// 		WHERE
-// 			oc.id = :ocid',
-// 		array(':ocid' => $classificationid));
 
-// 		if ($resultOrganism->rowCount() > 0) {
-// 			$header = array(
-// 			t('Organism'),
-// 					'organism id'
-// 			);
+/**
+ * Menu callback. This will be called for visits to /organism/%/organismjson.
+ * @return array
+ */
+function organism_show_organism_json($organismid) {
+	/* Set the db fields to select */
+	$sql['dbColumns'] = array(
+			'osn.id AS osn_id',
+			'osn.name AS osn_name',
+			'osn.organism_id AS o_id',
+	);
 
-// 			foreach ($resultOrganism as $record) {
-// 				$row = array();
-// 				$row[] = $record->name;
-// 				$row[] = $record->organism_id;
-// 				$rows[] = array(
-// 						'data' => $row,
-// 						'id' => 'organism_' . $record->organism_id
-// 				);
-// 			}
-// 			$render_array['organismsClassificationViewOrganisms'] = array(
-// 					'#theme' => 'datatable',
-// 					'#header' => $header,
-// 					'#rows' => $rows,
-// 					'#id_table' => 'organisms',
-// 			);
-// 		}
-// 	}
-// 	return $render_array;
+	$sql['dbSearchColumns'] = array(
+			'osn.id',
+			'osn.name',
+			'osn.organism_id'
+	);
+
+	/* DB table to use */
+	$sql['dbTable'] = '{organism_scientific_name} osn';
+	/* Group */
+	$sql['dbWhere'] = 'osn.organism_id = :oid';
+	$sql['id'] = 'osn_id';
+
+	$arguments = array(
+			':oid' => $organismid
+	);
+
+	$output = datatable_dbRequest($sql, $arguments);
+	return drupal_json_output($output);
+}
 ?>
