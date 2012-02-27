@@ -120,8 +120,7 @@ function organism_get_attributes_of_organism($organismid) {
 }
 
 /**
- * 
- * Enter description here ...
+ * Return the value of an attribute for a given orgnaism, attribute and attributetype
  * @param integer $organismid
  * @param integer $attributeid
  * @param integer $attributetype
