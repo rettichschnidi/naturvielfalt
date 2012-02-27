@@ -41,11 +41,13 @@ function sgroup_show($sgroup_id) {
 			$name = $acl_user->name;
 			if ($acl_user->uid == $record->users_id) {
 				$name .= " (" . t('Owner') . ")";
-				$user_is_owner = TRUE;
 			}
 			if ($acl_user->uid == $user->uid) {
 				$name = l($name, 'user/' . $acl_user->uid);
 				$user_is_member = TRUE;
+				if ($user->uid == $record->users_id) {
+					$user_is_owner = TRUE;
+				}
 			}
 			$users[] = $name;
 		}
@@ -58,16 +60,19 @@ function sgroup_show($sgroup_id) {
 						'#items' => $users,
 				),
 		);
-		
+
 		// check if active user is member of group but not owner
 		if ($user_is_member && !$user_is_owner) {
 			// provide possibility to leave group
 			$output['quit_group'] = array(
-				'#markup' => t('If you wish to quit membership of this group, click the button "Leave group" below.'),
-				'#weight' => 10,
+					'#markup' => t(
+						'If you wish to quit membership of this group, click the button "Leave Group" below.'),
+					'#weight' => 10,
 			);
 			//$form_state['storage']['acl_id'] = $record->acl_id;
-			$output['form'] = drupal_get_form('sgroup_quit_form', $record->acl_id);
+			$output['form'] = drupal_get_form(
+				'sgroup_quit_form',
+				$record->acl_id);
 			$output['form']['#weight'] = 11;
 		}
 	} else {
@@ -92,7 +97,7 @@ function sgroup_quit_form($form, &$form_state, $acl_id) {
 	$form_state['storage']['acl_id'] = $acl_id;
 	$form['submit'] = array(
 			'#type' => 'submit',
-			'#value' => t("Leave group"),
+			'#value' => t("Leave Group"),
 			'#submit' => array(
 					'sgroup_quit_form_submit'
 			),
@@ -110,8 +115,8 @@ function sgroup_quit_form($form, &$form_state, $acl_id) {
 function sgroup_quit_form_submit($form, &$form_state) {
 	global $user;
 	delete_user_from_acl($form_state['storage']['acl_id'], $user->uid);
-	
-	return $form_state['redirect'] = 'user/'.$user->uid.'/sgroup';
+
+	return $form_state['redirect'] = 'user/' . $user->uid . '/sgroup';
 }
 
 ?>

@@ -10,7 +10,7 @@ function sgroup_new() {
 	// display short instruction text
 	$output['introduction'] = array(
 			'#markup' => t(
-				'Please enter a name for your new group and click on "Create group".'),
+				'Please enter a name for your new group and click on "Create Group".'),
 	);
 	$output['form'] = drupal_get_form('sgroup_new_form');
 
@@ -33,7 +33,7 @@ function sgroup_new_form() {
 	);
 	$form['submit'] = array(
 			'#type' => 'submit',
-			'#value' => t("Create group"),
+			'#value' => t("Create Group"),
 			'#submit' => array(
 					'sgroup_new_save'
 			)
