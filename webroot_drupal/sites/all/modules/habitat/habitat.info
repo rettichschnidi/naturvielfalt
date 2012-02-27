@@ -1,5 +1,5 @@
-name = Habitat
+name = habitat
 description = Manage Habitats
-package = Swissmon
+package = Naturvielfalt
 core = 7.x
-version = "7.0"
+version = "7.x-current"

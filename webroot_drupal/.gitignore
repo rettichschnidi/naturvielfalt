@@ -42,10 +42,12 @@
 /sites/all/modules/wysiwyg/
 /sites/all/themes/README.txt
 /sites/default/default.settings.php
+/sites/default/files/languages/
 /sites/default/settings.php
 /sites/example.sites.php
 /themes/
 /update.php
 /web.config
 /xmlrpc.php
-/sites/default/files/languages/
+/test.html
+/test2.html

@@ -10,7 +10,10 @@ for next in `ls external/drupal/modules/*.tar.gz`
         echo "$next"
         tar -xzf $next -C webroot_drupal/sites/all/modules/
     done
-    
+
+#echo "Untaring files ~700MB"
+#tar -xzf external/drupal/files/files.tar.gz -C webroot_drupal/sites/default/files/
+
 for next in `ls external/drupal/core/*.tar.gz`
 	do
 		echo "Untaring drupal - $next"

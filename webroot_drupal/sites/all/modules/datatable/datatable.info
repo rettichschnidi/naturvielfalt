@@ -1,5 +1,10 @@
-name = Datatable
+name = datatable
 description = Sortable Table with included paging
-package = Swissmon
+package = Naturvielfalt
 core = 7.x
-version = "7.0-dev"
+version = "7.x-current"
+
+<!-- scripts[] = js/lib/jquery.scrollTo-min.js -->
+<!-- scripts[] = js/custom.datatable.delay.js -->
+<!-- scripts[] = js/custom.datatable.select.js -->
+<!-- scripts[] = js/custom.datatable.lang.js -->

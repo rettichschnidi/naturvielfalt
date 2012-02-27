@@ -22,8 +22,11 @@ function inventory_list_show_users_inventory() {
 function generate_user_list(&$render_array) {
 	$result = db_query(
 			"SELECT a.field_name, a.id area_id, a.township, hi.id, hi.name hi_name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time,
-	      (SELECT COUNT(e.id) FROM inventory_entry e LEFT JOIN inventory i ON i.id = e.inventory_id WHERE i.head_inventory_id = hi.id) entries
-	    FROM head_inventory hi 
+	      (SELECT COUNT(e.id)
+	      FROM inventory_entry e
+	      LEFT JOIN inventory i ON i.id = e.inventory_id
+	      WHERE i.head_inventory_id = hi.id) entries
+	    FROM head_inventory hi
 	      LEFT JOIN area a ON hi.area_id = a.id
 	    WHERE (hi.owner_id=:id AND hi.hidden IS NOT TRUE)
 	    ORDER BY hi.name, a.field_name asc;", array(':id' => $user->uid));
@@ -50,7 +53,7 @@ function generate_user_list(&$render_array) {
 function generate_shared_list(&$render_array) {
 	$result = db_query(
 			"
-	    SELECT hi.name hi_name, hi.id, a.field_name, a.id area_id, a.township, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time, 
+	    SELECT hi.name hi_name, hi.id, a.field_name, a.id area_id, a.township, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name, sg.sgroup_name, hi.shared, write, hi.create_time, hi.modify_time,
 	      (SELECT COUNT(e.id) FROM inventory_entry e LEFT JOIN inventory i ON i.id = e.inventory_id WHERE i.head_inventory_id = hi.id) entries
 	    FROM head_inventory hi
 	      LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
@@ -104,7 +107,7 @@ function generate_public_list(&$render_array) {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @return array
  */
@@ -121,7 +124,7 @@ function inventory_list() {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @return multitype: array
  */
@@ -135,7 +138,7 @@ function inventory_editable() {
 			"
     SELECT a.field_name, a.id area_id, a.township, hi.id, hi.name hi_name,hi.owner_id, hi.shared, hi.create_time, hi.modify_time,
       (SELECT COUNT(e.id) FROM inventory_entry e LEFT JOIN inventory i ON i.id = e.inventory_id WHERE i.head_inventory_id = hi.id) entries
-    FROM head_inventory hi 
+    FROM head_inventory hi
       LEFT JOIN area a ON hi.area_id = a.id
     WHERE (hi.owner_id=:id AND hi.hidden IS NOT TRUE)
     ORDER BY hi.name, a.field_name asc;", array(':id' => $user->uid));
@@ -153,7 +156,7 @@ function inventory_editable() {
 	// Shared inventories
 	$result = db_query(
 			"
-    SELECT hi.name hi_name, hi.id, a.field_name, a.township, u.name u_name, sg.sgroup_name, hi.shared, 
+    SELECT hi.name hi_name, hi.id, a.field_name, a.township, u.name u_name, sg.sgroup_name, hi.shared,
       (SELECT COUNT(e.id) FROM inventory_entry e LEFT JOIN inventory i ON i.id = e.inventory_id WHERE i.head_inventory_id = hi.id) entries
     FROM head_inventory hi
       LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
@@ -179,7 +182,7 @@ function inventory_editable() {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @param unknown_type $row
  * @param unknown_type $record
@@ -206,7 +209,7 @@ function _inventory_own_row_factory($row, $record, &$rows) {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @param unknown_type $row
  * @param unknown_type $record
@@ -248,7 +251,7 @@ function _inventory_shared_row_factory($row, $record, &$rows) {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @param unknown_type $row
  * @param unknown_type $record
@@ -266,7 +269,7 @@ function _inventory_editable_own_row_factory($row, $record, &$rows) {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @param unknown_type $row
  * @param unknown_type $record
@@ -295,7 +298,7 @@ function _inventory_editable_shared_row_factory($row, $record, &$rows) {
 }
 
 /**
- * 
+ *
  * Enter description here ...
  * @param unknown_type $result
  * @param unknown_type $id
@@ -308,7 +311,7 @@ function _inventory_list_factory($result, $id, $title, $msg_empty = false, $head
 	$render_array = array();
 	//Localize Image
 	$img_localize = theme('image',
-			array('path' => 'sites/all/sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
+			array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
 					'alt' => t('Localize'),
 					'title' => t('Localize'),
 			));

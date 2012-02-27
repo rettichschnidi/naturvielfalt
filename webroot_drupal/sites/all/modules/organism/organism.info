@@ -1,4 +1,8 @@
 name = organism
-description = Shows all available organisms from DB
-package = Swissmon
+description = Manage organisms
+package = Naturvielfalt
 core = 7.x
+version = "7.x-current"
+dependencies[] = habitat
+dependencies[] = locale
+dependencies[] = datatable

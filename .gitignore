@@ -1,0 +1,13 @@
+.project
+.buildpath
+.settings/
+.*.swp
+settings.php
+test.php
+webroot_drupal/sites/default/settings.php-mac
+various/migrate/config/databases.php
+webroot_drupal/sites/all/modules/organism/old
+doc/module/organism/organism_erdiagram.png
+various/migrate/import_crsf_basedata-test.php
+*~
+.DS_Store
