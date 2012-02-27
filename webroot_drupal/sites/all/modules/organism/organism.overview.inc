@@ -110,6 +110,11 @@ function organism_show_classification($classificationid) {
 			)
 	);
 
+	$render_array['organismsTitle'] = array(
+			'#type' => 'markup',
+			'#markup' => '<h1>' . t('Organisms') . '</h1>',
+	);
+
 	// Set the table header
 	$organismsTableHeader[] = array(
 			'name' => t('Organism id'),
