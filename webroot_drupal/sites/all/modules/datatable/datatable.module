@@ -44,8 +44,8 @@ function datatable_theme() {
  * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
  * 			'dbSortColumns'		optional; Array of column on that can be sorted
  * 			'dbTable' 			String db table
- * 			'dbJoins' 			optional; the joins String
- * 			'dbGroupBy' 		optional; the group by string
+ * 			'dbJoins' 			optional; the joins String (including all JOIN statements)
+ * 			'dbGroupBy' 		optional; the GROUP BY string
  * 			'dbWhere' 			optional; the WHERE statement string
  * 			'id' 				optional: id column, default 'id'
  *
@@ -87,7 +87,7 @@ function datatable_dbRequest($sql, $arguments = array()) {
 	/* Group */
 	$sGroupBy = '';
 	if (isset($sql['dbGroupBy'])) {
-		$sGroupBy = $sql['dbGroupBy'];
+		$sGroupBy = ' GROUP BY ' . $sql['dbGroupBy'];
 	}
 
 	isset($sql['dbWhere']) ? $where = "WHERE " . $sql['dbWhere'] : $where = "";

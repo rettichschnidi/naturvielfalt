@@ -54,7 +54,7 @@ function organism_show_classifiers_json() {
 	/* Joins to use */
 	$sql['dbJoins'] = "JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id";
 	/* Group */
-	$sql['dbGroupBy'] = "GROUP BY oc_id, oc_name";
+	$sql['dbGroupBy'] = "oc_id, oc_name";
 	$sql['dbWhere'] = 'oc.prime_father_id = oc.id';
 	$sql['id'] = 'oc_id';
 
@@ -87,7 +87,7 @@ function organism_show_classification_classificationjson($classificationid) {
 	/* Joins to use */
 	$sql['dbJoins'] = 'JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id';
 	/* Group */
-	$sql['dbGroupBy'] = 'GROUP BY oc_id, oc_name, classification_level_id, levelname';
+	$sql['dbGroupBy'] = 'oc_id, oc_name, classification_level_id, levelname';
 	$sql['dbWhere'] = 'oc.parent_id != oc.id AND oc.parent_id = :ocid';
 	$sql['id'] = 'oc_id';
 
@@ -122,12 +122,35 @@ function organism_show_classification_organismjson($classificationid) {
 	$sql['dbTable'] = '{organism_classification} oc';
 	/* Joins to use */
 	$sql['dbJoins'] = 'JOIN {organism_classification_subscription} ocs ON ocs.organism_classification_id = oc.id
-				JOIN {organism} o ON ocs.organism_id = o.id
-				JOIN {organism_scientific_name} osn ON osn.organism_id = o.id';
+						JOIN {organism} o ON o.id = ocs.organism_id 
+						JOIN {organism_scientific_name} osn ON osn.organism_id = o.id';
 	/* Group */
-	$sql['dbWhere'] = 'oc.id = :ocid';
+	$sql['dbWhere'] = 'oc.prime_father_id = (
+								SELECT
+									innerOc.prime_father_id
+								FROM
+									{organism_classification} innerOc
+								WHERE
+									innerOc.id = :ocid
+								)
+						AND oc.left_value >= (
+								SELECT
+									innerOc.left_value
+								FROM
+									{organism_classification} innerOc
+								WHERE
+									innerOc.id = :ocid
+								)
+						AND	oc.right_value <= (
+								SELECT
+									innerOc.right_value
+								FROM
+									{organism_classification} innerOc
+								WHERE
+									innerOc.id = :ocid)';
 	$sql['id'] = 'o_id';
-
+	$sql['dbGroupBy'] = ' osn_name, osn_id, o_id';
+	
 	$arguments = array(
 			':ocid' => $classificationid
 	);
