@@ -81,6 +81,6 @@ function sgroup_new_save($form, &$form_state) {
 			'error');
 	}
 
-	return $form_state['redirect'] = 'user/' . $user->uid . '/sgroup';
+	return $form_state['redirect'] = 'sgroup/'.$sgid.'/acl';
 }
 ?>

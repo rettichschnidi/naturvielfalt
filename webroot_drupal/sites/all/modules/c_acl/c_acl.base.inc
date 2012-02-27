@@ -33,11 +33,12 @@
  */
 
 variable_set("ACL_RESTRICT", -1);
-variable_set("ACL_RED_READ", 1);
-variable_set("ACL_READ", 2);
-variable_set("ACL_RED_WRITE", 3);
-variable_set("ACL_WRITE", 4);
-variable_set("ACL_ADMIN", 5);
+variable_set("ACL_PERMISSION_NOT_SET", 1);
+variable_set("ACL_RED_READ", 10);
+variable_set("ACL_READ", 20);
+variable_set("ACL_RED_WRITE", 30);
+variable_set("ACL_WRITE", 40);
+variable_set("ACL_ADMIN", 50);
 
 /**
  * Add's a user group to an Access Control List
@@ -190,14 +191,28 @@ function check_permission($acl_id, $min_level, $user_id = -1,
 		return TRUE;
 	}
 
-	if ($user_id > 0 && $acl_id > 0) {
+	// get level of All group
+	$query = db_select('acl_sgroup', 'ag')->fields('ag', array('level',))
+		->condition('ag.acl_id', $acl_id)
+		->condition('ag.sgroup_id', variable_get("ACL_GROUP_ALL_ID"));
+	$db_level = $query->execute();
+	if ($record = $db_level->fetch()) {
+		$level = $record->level;
+	}
+
+	if (($user_id > 0) && ($acl_id > 0)) {
 		$query = db_select('acl_sgroup', 'ag')->fields('ag', array('level',))
 			->condition('ag.acl_id', $acl_id);
 		$query->join('sgroup', 'g', 'g.id = ag.sgroup_id');
 		$query->join('acl_users', 'au', 'au.acl_id = g.acl_id');
-		$db_level = $query->condition('au.users_id', $user_id)->orderBy('ag.level', 'DESC')->execute();
+		$query->condition('au.users_id', $user_id);
+		$db_level = $query->orderBy('ag.level', 'DESC')
+			->execute();
 		if ($record = $db_level->fetch()) {
-			$level = $record->level;
+			$temp_level = $record->level;
+			if ($temp_level > $level) {
+				$level = $temp_level;
+			}
 		}
 		if (!$groups_only) {
 			// check user
@@ -208,10 +223,10 @@ function check_permission($acl_id, $min_level, $user_id = -1,
 			$db_level = $query->execute();
 			if ($record = $db_level->fetch()) {
 				$temp_level = $record->level;
+				if ($temp_level > $level) {
+					$level = $temp_level;
+				}
 			}
-			if ($temp_level > $level) {
-				$level = $temp_level;
-			}			
 		}
 	}
 	if ($min_level <= $level) {
@@ -381,7 +396,7 @@ function copy_acl($sAcl, $dAcl = 0, $level = 0) {
 	while ($record = $query->fetch()) {
 		add_user_to_acl($dAcl, $record->users_id, $record->level);
 	}
-	
+
 	$query = db_select('acl_sgroup', 'ag')->fields('ag')
 		->condition('ag.acl_id', $sAcl)
 		->condition('ag.level', $level, '>=')
@@ -478,11 +493,9 @@ function get_acl($acl_id) {
  * @return	Array			all sgroups from ACL (sg.id, sg.name, sal.level)
  */
 function get_groups_in_acl($acl_id, $level = 0) {
-	$query = db_select('sgroup', 'g')->fields(
-			'g',
-			array('id',
-					'name'
-			));
+	$query = db_select('sgroup', 'g')->fields('g', array('id',
+				'name'
+		));
 	$query->join('acl_sgroup', 'ag', 'g.id = ag.sgroup_id');
 	$db_groups = $query->fields('ag', array('level'))
 		->condition('ag.acl_id', $acl_id)

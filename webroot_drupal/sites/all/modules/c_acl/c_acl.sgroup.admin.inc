@@ -13,12 +13,16 @@ function sgroup_admin($sgroup_id) {
 			'#weight' => 1,
 	);
 	// get group infos
-	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id', 'name',))
+	$db_group = db_select('sgroup', 'g')->fields(
+			'g',
+			array('acl_id',
+					'name',
+			))
 		->condition('g.id', $sgroup_id)
 		->execute();
 	if ($record = $db_group->fetch()) {
 		// set group admin title
-		drupal_set_title(t('Administrate ').check_plain($record->name));
+		drupal_set_title(t('Administrate ') . check_plain($record->name));
 		$acl_id = $record->acl_id;
 		// define permission defaults to pass to acl theme
 		$formDefaults = array(
@@ -38,11 +42,30 @@ function sgroup_admin($sgroup_id) {
 						'value' => FALSE,
 				),
 		);
+		// get group infos of system group ALL
+		$db_group = db_select('sgroup', 'g')->fields(
+				'g',
+				array('id',
+						'name',
+				))
+			->condition('g.id', variable_get("ACL_GROUP_ALL_ID"))
+			->execute();
+		if ($record = $db_group->fetch()) {
+			$groupDefaults = array(
+					(object) array(
+							'id' => $record->id,
+							'name' => $record->name,
+							'level' => variable_get("ACL_READ"),
+					),
+			);
+		}
 		$render_array['acl'] = array(
 				'#theme' => 'c_acl',
 				'#defaults' => $formDefaults,
+				'#defaults_group' => $groupDefaults,
 				'#acl_id' => $acl_id,
-				'#users_only' => TRUE, // no subgroups possible, ACL modul does not support it (yet?)
+				// no subgroups possible, ACL modul does not support it (yet?)
+				'#users_only' => TRUE,
 				'#weight' => 2,
 		);
 	} else {

@@ -23,41 +23,52 @@ function c_acl_show_form($vars) {
 
 	// get groups from acl
 	$groups = NULL;
-	if (!$users_only) {
+	//if (!$users_only) {
 		$groups = get_groups_in_acl($acl_id);
 		// merge groups and defaults_group (if same key exists, overwrite value of defaults_group)
 		// search for the same id in groups and defaults_group
-		foreach ($groups as $group) {
-			$rm_cnt = 0;
-			foreach ($defaults_group as $default_group) {
-				if ($group->id == $default_group->id) {
-					if ($default_group->level == variable_get("ACL_RESTRICT")) {
-						$group->level = $default_group->level;
-						delete_group_from_acl($acl_id, $group->id);
+		if (isset($defaults_group)) {
+			foreach ($groups as $group) {
+				$rm_cnt = 0;
+				foreach ($defaults_group as $default_group) {
+					if ($group->id == $default_group->id) {
+						// already a value set in acl for this default group
+						$group->default = TRUE;
+						if ($default_group->level
+								== variable_get("ACL_RESTRICT")) {
+							// group is restricted and should not be in group table
+							// -> restrict it here and delete group from acl
+							$group->level = $default_group->level;
+							delete_group_from_acl($acl_id, $group->id);
+						}
+						// remove matching group from defaults_group
+						array_splice($defaults_group, $rm_cnt, 1);
+						break;
 					}
-					// remove matching group from defaults_group
-					array_splice($defaults_group, $rm_cnt, 1);
-					break;
+					else {
+						// no value in acl -> set default
+						add_group_to_acl($acl_id, $default_group->id, $default_group->level);
+					}
+					$rm_cnt++;
 				}
-				$rm_cnt++;
+			}
+			// prepend defaults_group to groups
+			foreach ($defaults_group as $default_group) {
+				$default_group->default = TRUE;
+				array_unshift($groups, $default_group);
 			}
 		}
-		// prepend defaults_group to groups
-		foreach ($defaults_group as $default_group) {
-			array_unshift($groups, $default_group);
-		}
-	}
+	//}
 	// get users from acl
 	$users = get_users_in_acl($acl_id);
 	// get form and draw it
 	$form = drupal_get_form(
 		'c_acl_form',
 		$defaults,
-		$defaults_group,
 		$groups,
 		$users,
 		$acl_id,
-		$child_acl_ids);
+		$child_acl_ids, $users_only);
 	return drupal_render($form);
 }
 
@@ -67,14 +78,13 @@ function c_acl_show_form($vars) {
  * @param	obj		$form			drupal object
  * @param	objPtr	&$form_state	drupal object
  * @param	Array	$defaults		array containing permission defaults
- * @param	Array	$defaults_group	array containing group permission defaults
  * @param	Array	$groups			array containing group acl permissions
  * @param	Array	$users			array containing user acl permissions
  * 
  * @return	Array					form array to be rendered by drupal
  */
-function c_acl_form($form, &$form_state, $defaults, $defaults_group, $groups,
-		$users, $acl_id, $child_acl_ids) {
+function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
+		$child_acl_ids, $users_only) {
 	$form_state['storage']['acl_id'] = $acl_id;
 	$form_state['storage']['child_acl_ids'] = $child_acl_ids;
 	// create table header
@@ -82,7 +92,7 @@ function c_acl_form($form, &$form_state, $defaults, $defaults_group, $groups,
 	foreach ($defaults as $default) {
 		$tableHeader[] = $default['name'];
 	}
-	$tableHeader[] = t('Remove');
+	$tableHeader[] = t('Clear');
 	$rows = array();
 
 	// check if group table shall be displayed
@@ -104,7 +114,7 @@ function c_acl_form($form, &$form_state, $defaults, $defaults_group, $groups,
 
 				foreach ($defaults as $default) {
 					if ($group->level == $default['type']) {
-						// permission level of selected group is superior or equal
+						// permission level of selected group is equal
 						// to actual permission level of iteration element to draw
 						$default['value'] = TRUE;
 					} else {
@@ -123,45 +133,63 @@ function c_acl_form($form, &$form_state, $defaults, $defaults_group, $groups,
 							'data' => $form[$name]
 					);
 				}
-				$row[] = array(
-						'data' => '<div id="delete-group-' . $group->id
-								. '"></div>',
-						'class' => 'delete'
-				);
+				if (isset($group->default)) {
+					// render form into table
+					$name = "group-" . $group->id;
+					$form[$name] = array(
+							'#type' => 'radio',
+							'#value' => ($group->level
+									== variable_get("ACL_PERMISSION_NOT_SET")) ? variable_get(
+										"ACL_PERMISSION_NOT_SET") : NULL,
+							'#return_value' => variable_get("ACL_PERMISSION_NOT_SET"),
+							'#name' => $name,
+					);
+					$row[] = array(
+							'data' => $form[$name]
+					);
+				} else {
+					$row[] = array(
+							'data' => '<div id="delete-group-' . $group->id
+									. '"></div>',
+							'class' => 'delete'
+					);
+				}
 				$rows[] = $row;
 			}
 		}
 
-		// new group row
-		$row = array();
-		// add group autocomplete field in table
-		$form['add_group'] = array(
-				'#type' => 'textfield',
-				'#size' => '20',
-				'#attributes' => array(
-						'id' => 'add-sgroup',
-				),
-				'#autocomplete_path' => 'c_acl/' . $acl_id
-						. '/autocomplete_sgroup',
-		);
-		$row[] = array(
-				'data' => $form['add_group'],
-		);
-		// add default radio buttons in table
-		foreach ($defaults as $default) {
-			$name = "group-new";
-			$form[$name] = array(
-					'#type' => 'radio',
-					'#value' => $default['value'] ? $default['type'] : NULL,
-					'#return_value' => $default['type'],
-					'#name' => $name,
+		if (!$users_only) {
+			// new group row
+			$row = array();
+			// add group autocomplete field in table
+			$form['add_group'] = array(
+					'#type' => 'textfield',
+					'#size' => '20',
+					'#attributes' => array(
+							'id' => 'add-sgroup',
+					),
+					'#autocomplete_path' => 'c_acl/' . $acl_id
+							. '/autocomplete_sgroup',
 			);
 			$row[] = array(
-					'data' => $form[$name]
+					'data' => $form['add_group'],
 			);
+			// add default radio buttons in table
+			foreach ($defaults as $default) {
+				$name = "group-new";
+				$form[$name] = array(
+						'#type' => 'radio',
+						'#value' => $default['value'] ? $default['type'] : NULL,
+						'#return_value' => $default['type'],
+						'#name' => $name,
+				);
+				$row[] = array(
+						'data' => $form[$name]
+				);
+			}
+			$row[] = '&nbsp;';
+			$rows[] = $row;
 		}
-		$row[] = '&nbsp;';
-		$rows[] = $row;
 
 	}
 

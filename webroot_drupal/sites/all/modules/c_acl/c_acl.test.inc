@@ -1122,24 +1122,23 @@ function show_acl_form() {
 					'value' => FALSE,
 			),
 	);
-	
+
 	$groupDefaults = array(
-		(object)array (
-			'id' => variable_get("ACL_GROUP_ALL_ID"),
-			'name' => "All",
-			'level' => variable_get("ACL_READ"),
-		),
+			(object) array(
+					'id' => variable_get("ACL_GROUP_ALL_ID"),
+					'name' => "All",
+					'level' => variable_get("ACL_READ"),
+			),
 	);
 	$render_array['test'] = array(
 			'#theme' => 'c_acl',
 			'#defaults' => $formDefaults,
 			'#defaults_group' => $groupDefaults,
-			'#acl_id' => 21,
-			/*'#child_acl_ids' => array(
-					54,
-					55,
-					56,
-			),*/
+			'#acl_id' => 21, /*'#child_acl_ids' => array(
+							         54,
+							         55,
+							         56,
+							 ),*/
 	);
 
 	return $render_array;

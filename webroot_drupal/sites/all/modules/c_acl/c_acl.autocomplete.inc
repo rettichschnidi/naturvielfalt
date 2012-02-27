@@ -36,7 +36,7 @@ function c_acl_autocomplete_sgroup($acl_id, $string) {
 			if ($read_permission) {
 				// user has read access to group
 				$value = $record->name;
-				$key = $record->id . "|" . $record->name;
+				$key = '{"id" : "' . $record->id . '", "name" : "' . $record->name . '"}';
 				$items[$key] = check_plain($value);
 			}
 		}
