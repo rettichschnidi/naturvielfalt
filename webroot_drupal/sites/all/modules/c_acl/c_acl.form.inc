@@ -23,42 +23,36 @@ function c_acl_show_form($vars) {
 
 	// get groups from acl
 	$groups = NULL;
-	//if (!$users_only) {
-		$groups = get_groups_in_acl($acl_id);
-		// merge groups and defaults_group (if same key exists, overwrite value of defaults_group)
-		// search for the same id in groups and defaults_group
-		if (isset($defaults_group)) {
-			foreach ($groups as $group) {
-				$rm_cnt = 0;
-				foreach ($defaults_group as $default_group) {
-					if ($group->id == $default_group->id) {
-						// already a value set in acl for this default group
-						$group->default = TRUE;
-						if ($default_group->level
-								== variable_get("ACL_RESTRICT")) {
-							// group is restricted and should not be in group table
-							// -> restrict it here and delete group from acl
-							$group->level = $default_group->level;
-							delete_group_from_acl($acl_id, $group->id);
-						}
-						// remove matching group from defaults_group
-						array_splice($defaults_group, $rm_cnt, 1);
-						break;
-					}
-					else {
-						// no value in acl -> set default
-						add_group_to_acl($acl_id, $default_group->id, $default_group->level);
-					}
-					$rm_cnt++;
-				}
-			}
-			// prepend defaults_group to groups
+	$groups = get_groups_in_acl($acl_id);
+	// merge groups and defaults_group (if same key exists, overwrite value of defaults_group)
+	// search for the same id in groups and defaults_group
+	if (isset($defaults_group)) {
+		foreach ($groups as $group) {
+			$rm_cnt = 0;
 			foreach ($defaults_group as $default_group) {
-				$default_group->default = TRUE;
-				array_unshift($groups, $default_group);
+				if ($group->id == $default_group->id) {
+					// already a value set in acl for this default group
+					$group->default = TRUE;
+					if ($default_group->level == variable_get("ACL_RESTRICT")) {
+						// group is restricted and should not be in group table
+						// -> restrict it here and delete group from acl
+						$group->level = $default_group->level;
+						delete_group_from_acl($acl_id, $group->id);
+					}
+					// remove matching group from defaults_group
+					array_splice($defaults_group, $rm_cnt, 1);
+					break;
+				}
+				$rm_cnt++;
 			}
 		}
-	//}
+		// prepend defaults_group to groups
+		foreach ($defaults_group as $default_group) {
+			$default_group->default = TRUE;
+			add_group_to_acl($acl_id, $default_group->id, $default_group->level);
+			array_unshift($groups, $default_group);
+		}
+	}
 	// get users from acl
 	$users = get_users_in_acl($acl_id);
 	// get form and draw it
@@ -68,7 +62,8 @@ function c_acl_show_form($vars) {
 		$groups,
 		$users,
 		$acl_id,
-		$child_acl_ids, $users_only);
+		$child_acl_ids,
+		$users_only);
 	return drupal_render($form);
 }
 
@@ -141,7 +136,8 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 							'#value' => ($group->level
 									== variable_get("ACL_PERMISSION_NOT_SET")) ? variable_get(
 										"ACL_PERMISSION_NOT_SET") : NULL,
-							'#return_value' => variable_get("ACL_PERMISSION_NOT_SET"),
+							'#return_value' => variable_get(
+								"ACL_PERMISSION_NOT_SET"),
 							'#name' => $name,
 					);
 					$row[] = array(
