@@ -51,7 +51,6 @@ function organism_show_classifiers() {
 /**
  * Menu callback. This will be called for visits to /organism/classification/%.
  * @return array
- * @todo Find a better title
  */
 function organism_show_classification($classificationid) {
 	// Extract the name of the current classification
@@ -151,7 +150,6 @@ function organism_show_classification($classificationid) {
 
 /**
  * Menu callback. This will be called for visits to /organism/%.
- * @todo Refactor this stuff into its own function
  * @return array
  */
 function organism_show_organism($organismid) {
@@ -163,71 +161,47 @@ function organism_show_organism($organismid) {
 				. '/js/organism.datatable.select.js');
 	$render_array = array();
 
-	// show all attributes of this organism
- {
-		$attributeresult = db_query(
-			'SELECT
-					DISTINCT oa.name, oa.valuetype, oa.id
-				FROM
-					drupal_organism_attribute oa
-					JOIN {organism_attribute_value} oav ON oav.organism_attribute_id = oa.id
-					JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_attribute_value_id = oav.id
-					JOIN {organism_classification_subscription} ocs ON oavs.organism_id = ocs.organism_id
-					JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
-				WHERE
-					oavs.organism_id = :organismid
-				GROUP BY
-					oa.name,
-					oa.valuetype,
-					oa.id;',
-			array(':organismid' => $organismid));
+	$attributes = organism_get_attributes_of_organism($organismid);
 
-		if ($attributeresult->rowCount() > 0) {
-			$render_array['attributes'] = array(
-					'#type' => 'fieldset',
-					'#title' => t('Attributes'),
-					'#tree' => TRUE
+	$render_array['attributes'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Attributes'),
+			'#tree' => TRUE
+	);
+
+	if (!empty($attributes)) {
+		foreach ($attributes as $attribute) {
+			$attributevaluetype = $attribute['valuetype'];
+			$attributeid = $attribute['id'];
+			$attributename = $attribute['name'];
+
+			$render_array['attributes'][$attributename] = array(
+					'#type' => 'markup',
+					'#markup' => "<b>$attributename</b>: ",
 			);
-			foreach ($attributeresult as $attribute) {
-				$attributevaluetype = $attribute->valuetype;
-				$attributeid = $attribute->id;
-				$attributename = $attribute->name;
-
-				$render_array['attributes'][$attributename] = array(
-						'#type' => 'markup',
-						'#markup' => "<b>$attributename</b>: ",
-				);
-
-				$attributevalueresult = db_query(
-					'SELECT
-							oav.text_value,
-							oav.boolean_value,
-							oav.number_value
-						FROM
-							drupal_organism_attribute oa
-							JOIN {organism_attribute_value} oav ON oav.organism_attribute_id = oa.id
-							JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_attribute_value_id = oav.id
-							JOIN {organism_classification_subscription} ocs ON oavs.organism_id = ocs.organism_id
-							JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
-						WHERE
-							oavs.organism_id = :organismid AND oa.id = :attributeid',
-					array(':organismid' => $organismid,
-							':attributeid' => $attributeid
-					));
-				foreach ($attributevalueresult as $attributevalue) {
-					if ($attributevaluetype == 'n') {
-						$render_array['attributes'][$attributename]['#markup'] .= $attributevalue->number_value;
-					} else if ($attributevaluetype == 'b') {
-						$render_array['attributes'][$attributename]['#markup'] .= $attributevalue->boolean_value;
-					} else if ($attributevaluetype == 't') {
-						$render_array['attributes'][$attributename]['#markup'] .= $attributevalue->text_value;
-					}
-				}
-			}
+			$attributevalues = organism_get_attribute_values_of_organism(
+				$organismid,
+				$attributeid,
+				$attributevaluetype);
+			/**
+			 * This is untested, but should generate a reasonable output 
+			 * even if there is more than a single value
+			 */
+			$render_array['attributes'][$attributename]['#markup'] .= implode(
+				', ',
+				$attributevalues);
 		}
+	} else {
+		$render_array['attributes']['noattribute'] = array(
+				'#type' => 'markup',
+				'#markup' => '<b>' . t("No attributes set for this organism")
+						. '</b>',
+		);
 	}
 
-	// Show all synonyms of this organism
+	/**
+	 * Show all synonyms of this organism
+	 */
  {
 		// Set the table header
 		$tableHeader[] = array(
