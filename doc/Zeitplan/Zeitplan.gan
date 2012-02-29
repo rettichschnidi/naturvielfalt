@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Naturvielfalt" company="www.naturwerk.info" webLink="http://www.naturvielfalt.ch" view-date="2012-02-19" view-index="0" gantt-divider-location="694" resource-divider-location="538" version="2.0">
+<project name="Naturvielfalt" company="www.naturwerk.info" webLink="http://www.naturvielfalt.ch" view-date="2012-04-08" view-index="1" gantt-divider-location="694" resource-divider-location="538" version="2.0">
     <description/>
-    <view zooming-state="default:5" id="gantt-chart"/>
+    <view zooming-state="default:4" id="gantt-chart"/>
     <view id="resource-table">
         <field id="0" name="Name" width="50" order="0"/>
         <field id="1" name="Default role" width="50" order="1"/>
@@ -125,6 +125,7 @@
         <allocation task-id="106" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="84" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="82" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="118" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="4" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="47" resource-id="1" function="Default:1" responsible="true" load="25.0"/>
         <allocation task-id="87" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
