@@ -6,13 +6,23 @@
  * Import evab's classification of the fauna to the new naturvielfalt DB
  */
 
-require_once (dirname(__FILE__) . '/lib/bootstrap.php');
-require_once ($libdir . '/NaturvielfaltDb.php');
+require_once(dirname(__FILE__) . '/lib/bootstrap.php');
+require_once($libdir . '/NaturvielfaltDb.php');
 global $drupalprefix;
 global $errors;
 
-$db = new NaturvielfaltDb($config['naturvielfalt_dev']['driver'], $config['naturvielfalt_dev']['name'], $config['naturvielfalt_dev']['user'], $config['naturvielfalt_dev']['password'], $config['naturvielfalt_dev']['host']);
-$dbevab = new Db($config['evab']['driver'], $config['evab']['name'], $config['evab']['user'], $config['evab']['password'], $config['evab']['host']);
+$db = new NaturvielfaltDb(
+	$config['naturvielfalt_dev']['driver'],
+	$config['naturvielfalt_dev']['name'],
+	$config['naturvielfalt_dev']['user'],
+	$config['naturvielfalt_dev']['password'],
+	$config['naturvielfalt_dev']['host']);
+$dbevab = new Db(
+	$config['evab']['driver'],
+	$config['evab']['name'],
+	$config['evab']['user'],
+	$config['evab']['password'],
+	$config['evab']['host']);
 
 /**
  * Copy all crsf organisms including metadata into naturvielfalt DB
@@ -39,21 +49,24 @@ $dbevab = new Db($config['evab']['driver'], $config['evab']['name'], $config['ev
  */
 
 /**
- * Create classifier CRSF if not already existing,
+ * Create classifier if not already existing,
  * set $organism_classifier_id
  */
 $importTable = 'import_evab_cscf_view';
 
 $organism_classifier_id = 0;
 {
-	$crsfCode = 'CSCF';
+	$classifierName = 'CSCF';
 	$isScientificClassification = TRUE;
-	if (!$db -> haveClassifier($crsfCode)) {
-		$db -> createClassifier($crsfCode, $isScientificClassification);
+	if (!$db->haveClassifier($classifierName)) {
+		print "Classifier $classifierName not found. Create it.\n";
+		$organism_classifier_id = $db->createClassifier(
+				$classifierName,
+				$isScientificClassification);
 	} else {
-		print $crsfCode . " classification already existing.\n";
+		print $classifierName . " classification already existing.\n";
+		$organism_classifier_id = $db->getClassifierId($classifierName);
 	}
-	$organism_classifier_id = $db -> getClassifierId($crsfCode);
 	assert($organism_classifier_id != 0);
 }
 
@@ -64,88 +77,185 @@ $organism_classifier_id = 0;
 $organism_attribute_id = 0;
 {
 	$attribute_name = 'NUESP';
-	if (!$db -> haveAttributeName($attribute_name)) {
-		$db -> createAttribute($attribute_name, 'n');
+	if (!$db->haveAttributeName($attribute_name)) {
+		$db->createAttribute($attribute_name, 'n');
 	}
-	$organism_attribute_id = $db -> getAttributeId($attribute_name);
+	$organism_attribute_id = $db->getAttributeId($attribute_name);
 	print "Attribute id for '$attribute_name': $organism_attribute_id\n";
 	assert($organism_attribute_id != 0);
 }
 
 /**
- * create organism classification level according to the CSCF
+ * create organism classification level
  * set $organism_classification_level_id
- * set $$organism_classification_level_name2$organism_classification_level_id
+ * fill hashmap $$organism_classification_level_name2$organism_classification_level_id
  */
-
-$organism_classification_level_id = NULL;
-$organism_classification_level_name2organism_classification_level_id = array();
 {
-	$classification_level_name_array = array(
-			'class',
-			'order',
-			'family',
-			'genus',
-			'subgenus'
+	$classification_data = array(
+			'class' => array(
+					'columnname' => 'class'
+			),
+			// order is a reserved word
+			'order' => array(
+					'columnname' => '"order"'
+			),
+			'family' => array(
+					'columnname' => 'family'
+			),
+			'genus' => array(
+					'columnname' => 'genus'
+			),
+			'subgenus' => array(
+					'columnname' => 'subgenus'
+			)
 	);
 
-	foreach ($classification_level_name_array as $classification_level_name) {
-		if (!$db -> haveClassificationLevel($classification_level_name, $organism_classifier_id)) {
-			$organism_classification_level_id = $db -> createClassificationLevel($classification_level_name, $organism_classification_level_id, $organism_classifier_id);
+	$organism_classification_level_id = $organism_classifier_id;
+	$parent_id = $organism_classification_level_id;
+	foreach ($classification_data as $classification_level_name => $moredata) {
+		if (!$db->haveClassificationLevel(
+				$classification_level_name,
+				$organism_classifier_id,
+				$parent_id)) {
+			print "create\n";
+			$organism_classification_level_id = $db->createClassificationLevel(
+					$classification_level_name,
+					$organism_classifier_id,
+					$parent_id);
 		} else {
-			$organism_classification_level_id = $db -> getClassificationLevelId($classification_level_name, $organism_classifier_id);
-			print "Classification level id for '$classification_level_name': $organism_classification_level_id\n";
+			print "got it\n";
+			$organism_classification_level_id = $db->getClassificationLevelId(
+					$classification_level_name,
+					$organism_classifier_id,
+					$parent_id);
 		}
-		$organism_classification_level_name2organism_classification_level_id[$classification_level_name] = $organism_classification_level_id;
+		print
+			("Classification level id for '$classification_level_name': $organism_classification_level_id\n");
+		$classification_data[$classification_level_name]['classificationlevelid'] = $organism_classification_level_id;
+		$parent_id = $organism_classification_level_id;
 	}
-	$organism_classification_level_id = $db -> getClassificationLevelId($classification_level_name, $organism_classifier_id);
 	assert($organism_classification_level_id != NULL);
 }
 
-/**
- * Add all families to the classification_level family,
- * set $organism_classification_id and
- * hashmap $classification_name2classification_id
- */
 {
-	// get all familynames
-	$classification_name2classification_id = array();
-	$allClassifications = array(
-			'class' => 'class',
-			'order' => '"order"', // order is a reserved word
-			'family' => 'family',
-			'genus' => 'genus',
-			'subgenus' => 'subgenus'
-	);
-	foreach ($allClassifications as $name => $column) {
-		$columns = array();
-		$ownselect = 'SELECT DISTINCT(' . $column . ') ';
-		$sql = 'FROM ' . $importTable . ' WHERE ' . $column . ' IS NOT NULL AND ' . $column . " != ''";
-		$typeArray = array();
-		$typeValue = array();
-		$rows = $dbevab -> select_query($columns, $sql, $typeArray, $typeValue, TRUE, $ownselect);
-		print "Make sure all " . count($rows) . " $name's are in DB\n";
-		print "Its classification level id will be: " . $organism_classification_level_name2organism_classification_level_id[$name] . "\n";
-		$organism_classification_id = $organism_classification_level_name2organism_classification_level_id[$name];
-		$db -> startTransactionIfPossible();
-		foreach ($rows as $row) {
-			$organism_classification_id = 0;
-			$organism_classification_name = $row[$name];
-			$table = $drupalprefix . 'organism_classification';
-			if ($db -> haveClassification($organism_classification_name, $organism_classification_level_id)) {
-				$organism_classification_id = $db -> getClassificationId($organism_classification_name, $organism_classification_level_id);
-			} else {
-				$organism_classification_id = $db -> createClassification($organism_classification_name, $organism_classification_level_id);
-			}
-			$classification_name2classification_id[$name . '_' . $organism_classification_name] = $organism_classification_id;
-			assert($organism_classification_id != 0);
-		}
-		$db -> stopTransactionIfPossible();
+	if (!$db->haveClassification($classifierName, $organism_classifier_id)) {
+		print "Adding new classificator: $classifierName\n";
+		// ...then add entry
+		$classification_id = $db->createClassification(
+				$classifierName,
+				NULL,
+				$organism_classifier_id,
+				NULL);
+	} else {
+		print 
+			"Getting classificator $classification_level_name: $classifierName\n";
+		// ...or just get its id
+		$classification_id = $db->getClassificationId(
+				$classifierName,
+				$organism_classifier_id);
 	}
 }
+print "ClassificatorId for $classifierName: $classification_id\n";
+$classification_root_id = $classification_id;
 
 /**
- * add all species which have no subspecies to:
+ * Add all classifications and connect them to their classifications_level,
+ * fill hashmap $classification_name2classification_id
+ */
+{
+	// store all level names in $classification_level_columns
+	$classification_level_columns = array();
+	foreach ($classification_data as $classification_level_name => $data) {
+		$classification_level_columns[] = $data['columnname'];
+	}
+
+	// extract all unique organism classifications
+	$sql = "SELECT DISTINCT ON(" . implode(',', $classification_level_columns)
+			. ") " . implode(',', $classification_level_columns)
+			. " FROM $importTable ORDER BY "
+			. implode(',', $classification_level_columns);
+	// print "Query: $sql\n";
+	$typeArray = array();
+	$typeValue = array();
+	$rows = $dbevab->query($sql, $typeArray, $typeValue);
+	assert($rows != false);
+	print "Got " . count($rows) . " unique unique classification trees.\n";
+	// for each unique classification...
+	$i = 0;
+	$start = microtime(true);
+	foreach ($rows as $row) {
+		if (++$i % 100 == 0) {
+			$current = microtime(true);
+			print "#: $i, ";
+			print "Time: " . ($current - $start) . " s\n";
+			$start = $current;
+		}
+		// ...do add an entry to the organism_classification table
+		//$db->startTransactionIfPossible();
+		$classification_parent_id = $classification_root_id;
+		foreach ($classification_data as $classification_level_name => $classification_level_data) {
+			$classification_level_name = $classification_level_name;
+			$classification_level_columnname = $classification_level_data['columnname'];
+			$classification_level_id = $classification_level_data['classificationlevelid'];
+			$classification_name = $row[$classification_level_name];
+			if (isset(
+				$classification_data[$classification_level_name]['classifications'][$classification_name])) {
+				$classification_parent_id = $classification_data[$classification_level_name]['classifications'][$classification_name];
+				continue;
+			}
+			// doge emtpy entries...
+			if (!$classification_name) {
+				// ...but make sure that just subgenus entries can be NULL
+				if ($classification_level_name != 'subgenus') {
+					print 
+						"$classification_level_name can not be NULL('$classification_name')\n";
+					print "Result row: " . var_export($row, TRUE) . "\n";
+					assert(false);
+				}
+				continue;
+			}
+
+			// If not yet existing...
+			if (!$db->haveClassification(
+					$classification_name,
+					$classification_level_id)) {
+				if (FALSE) {
+					print 
+						"Adding new $classification_level_name: $classification_name\n";
+				}
+				// ...then add entry
+				assert($classification_parent_id != NULL);
+				assert($organism_classifier_id != NULL);
+				$classification_id = $db->createClassification(
+						$classification_name,
+						$classification_root_id,
+						$classification_level_id,
+						$classification_parent_id);
+			} else {
+				if (FALSE) {
+					print 
+						"Getting $classification_level_name: $classification_name\n";
+				}
+				// ...or just get its id
+				$classification_id = $db->getClassificationId(
+						$classification_name,
+						$classification_level_id);
+			}
+			$classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
+			if (FALSE) {
+				print "New ID: $classification_id\n";
+			}
+			assert($classification_id != NULL);
+			$classification_parent_id = $classification_id;
+		}
+		$db->stopTransactionIfPossible();
+	}
+}
+print "Classification done...\n";
+
+/**
+ * add all organism
+ * - connect with the correct classification
  * - the organism_scientific_name table,
  * - organism table,
  * - hashmap $scientific_name2organism_id
@@ -170,10 +280,21 @@ $organism_classification_level_name2organism_classification_level_id = array();
 				nuesp";
 	$typesArray = array();
 	$valuesArray = array();
-	$rows = $dbevab -> select_query($columns, $sql, $typeArray, $typeValue);
+	$rows = $dbevab->select_query($columns, $sql, $typeArray, $typeValue);
 	print "Make sure all " . count($rows) . " species are in DB\n";
-	$db -> startTransactionIfPossible();
+	$i = 0;
+	$db->startTransactionIfPossible();
 	foreach ($rows as $row) {
+		if (++$i % 100 == 0) {
+			$current = microtime(true);
+			print "#: $i, ";
+			print "Time: " . ($current - $start) . " s\n";
+			$start = $current;
+		}
+		if ($i % 1000 == 0) {
+			$db->stopTransactionIfPossible();
+			$db->startTransactionIfPossible();
+		}
 		$organism_id = 0;
 		$organism_genus = $row['genus'];
 		$organism_subgenus = $row['subgenus'];
@@ -186,145 +307,63 @@ $organism_classification_level_name2organism_classification_level_id = array();
 		$organism_scientific_name_synonym = $row['name_latin'];
 		$nuesp_nr = $row['nuesp'];
 
-		$organism_scientific_name = $organism_subgenus ? ucfirst($organism_subgenus) : ucfirst($organism_genus);
+		$organism_scientific_name = $organism_subgenus ? ucfirst(
+					$organism_subgenus) : ucfirst($organism_genus);
 		$organism_scientific_name .= " $organism_species";
-		$organism_scientific_name .= $organism_subspecies ? " $organism_subspecies" : '';
+		$organism_scientific_name .= $organism_subspecies ? " $organism_subspecies"
+				: '';
 		$organism_classification_id = '';
 		if ($organism_subgenus) {
 			$organism_classification_name = $organism_subgenus;
-			$organism_classification_name_lookup = 'subgenus' . '_' . $organism_classification_name;
-			$organism_classification_id = $classification_name2classification_id[$organism_classification_name_lookup];
+			// $classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
+			$organism_classification_id = $classification_data['subgenus']['classifications'][$organism_classification_name];
 		} else {
 			$organism_classification_name = $organism_genus;
-			$organism_classification_name_lookup = 'genus' . '_' . $organism_classification_name;
-			$organism_classification_id = $classification_name2classification_id[$organism_classification_name_lookup];
+			$organism_classification_id = $classification_data['genus']['classifications'][$organism_classification_name];
 		}
 		assert($organism_classification_id);
-		if (!$db -> haveScientificName($organism_scientific_name)) {
-			$organism_id = $db -> createOrganism(NULL, NULL);
-			$organism_scientific_name_id = $db -> createScientificName($organism_id, $organism_scientific_name);
+		if (!$db->haveScientificName($organism_scientific_name)) {
+			$organism_id = $db->createOrganism(NULL, NULL);
+			$organism_scientific_name_id = $db->createScientificName(
+					$organism_id,
+					$organism_scientific_name);
 			assert($organism_id != 0);
-			if (!$db -> haveAttributeValueNumber($organism_attribute_id, $nuesp_nr)) {
-				$organism_attribute_value_id = $db -> createAttributeValueNumber($organism_attribute_id, $nuesp_nr);
-				$db -> createAttributeValueSubscription($organism_id, $organism_attribute_value_id);
+			if (!$db->haveAttributeValueNumber(
+					$organism_attribute_id,
+					$nuesp_nr)) {
+				$organism_attribute_value_id = $db->createAttributeValueNumber(
+						$organism_attribute_id,
+						$nuesp_nr);
+				$db->createAttributeValueSubscription(
+						$organism_id,
+						$organism_attribute_value_id);
 			}
-			if (!$db -> haveOrganismClassificationSubscription($organism_id, $organism_classification_id)) {
-				$organism_classification_subscription_id = $db -> createOrganismClassificationSubscription($organism_id, $organism_classification_id);
+			if (!$db->haveOrganismClassificationSubscription(
+					$organism_id,
+					$organism_classification_id)) {
+				$organism_classification_subscription_id = $db->createOrganismClassificationSubscription(
+						$organism_id,
+						$organism_classification_id);
 			}
 		} else {
-			$organism_id = $db -> getScientificNameOrganismId($organism_scientific_name);
+			$organism_id = $db->getScientificNameOrganismId(
+					$organism_scientific_name);
 		}
-		if (!$db -> haveScientificName($organism_scientific_name_synonym)) {
-			$organism_scientific_name_id = $db -> createScientificName($organism_id, $organism_scientific_name_synonym);
+		if (!$db->haveScientificName($organism_scientific_name_synonym)) {
+			$organism_scientific_name_id = $db->createScientificName(
+					$organism_id,
+					$organism_scientific_name_synonym);
 		}
 		if (FALSE) {
-			print "Scientific Classification Name: $organism_classification_name, id: $organism_classification_id\n";
-			print "Scientific Name: $organism_scientific_name + $organism_scientific_name_synonym, id: $organism_id\n";
+			print 
+				"Scientific Classification Name: $organism_classification_name, id: $organism_classification_id\n";
+			print 
+				"Scientific Name: $organism_scientific_name + $organism_scientific_name_synonym, id: $organism_id\n";
 		}
 		$scientific_name2organism_id[$organism_scientific_name] = $organism_id;
 		$scientific_name2organism_id[$organism_scientific_name_synonym] = $organism_id;
 		assert($organism_id != 0);
 	}
-	$db -> stopTransactionIfPossible();
-}
-exit();
-
-/**
- * Import all "included" species ('I')
- */
-{
-	$columns = array(
-			'artname',
-			'eingeschlossen_in_artname',
-			'sisf_nr'
-	);
-	$sql = " FROM import_crsf_basedata WHERE status IN ('I')";
-	$typesArray = array();
-	$valuesArray = array();
-	$synonyms = $db -> select_query($columns, $sql, $typesArray, $valuesArray, true);
-	print "Got " . count($synonyms) . " species which are subspecies for already imported ones.\n";
-	$db -> startTransactionIfPossible();
-	foreach ($synonyms as $synonym) {
-		$subspecies_name = $synonym['artname'];
-		$metaspecies_name = $synonym['eingeschlossen_in_artname'];
-		$sisf_nr = $synonym['sisf_nr'];
-
-		if (!isset($scientific_name2organism_id[$metaspecies_name])) {
-			global $errors;
-			$errors[] = "Undefined metaspecies: $metaspecies_name";
-			assert(false);
-		}
-		$metaspecies_id = $scientific_name2organism_id[$metaspecies_name];
-
-		if (!$db -> haveScientificName($subspecies_name)) {
-			if ($db -> haveScientificName($metaspecies_name)) {
-				$prime_father_id = $db -> getPrimeFatherId($metaspecies_id);
-				$organism_id = $db -> createOrganism($prime_father_id, $metaspecies_id);
-				$organism_scientific_name_id = $db -> createScientificName($organism_id, $subspecies_name);
-				$organism_classification_id = $classification_name2classification_id[$organism_classification_name];
-
-				if (!$db -> haveAttributeValueNumber($organism_attribute_id, $sisf_nr)) {
-					$organism_attribute_value_id = $db -> createAttributeValueNumber($organism_attribute_id, $sisf_nr);
-					$db -> createAttributeValueSubscription($organism_id, $organism_attribute_value_id);
-				}
-				if (!$db -> haveOrganismClassificationSubscription($organism_id, $organism_classification_id)) {
-					$organism_classification_subscription_id = $db -> createOrganismClassificationSubscription($organism_id, $organism_classification_id);
-				}
-			} else {
-				global $errors;
-				$errors[] = "$subspecies_name is subspecies of $metaspecies_name, but $metaspecies_name is not available in DB.";
-				assert(false);
-			}
-		} else {
-			$organism_id = $db -> getScientificNameOrganismId($subspecies_name);
-		}
-		$scientific_name2organism_id[$subspecies_name] = $organism_id;
-	}
-	$db -> stopTransactionIfPossible();
-}
-
-/**
- * Import all "synonym" species ('S')
- * @note SIFS-Nr. of synonyms get dropped as synonyms will have the SIFS-Nr. of the already importet speciesname
- */
-{
-	$columns = array(
-			'artname',
-			'synonym_von_artname'
-	);
-	$sql = " FROM import_crsf_basedata WHERE status IN ('S')";
-	$typesArray = array();
-	$valuesArray = array();
-	$synonyms = $db -> select_query($columns, $sql, $typesArray, $valuesArray, true);
-	print "Got " . count($synonyms) . " species which are synonyms for already imported ones.\n";
-	$db -> startTransactionIfPossible();
-	foreach ($synonyms as $synonym) {
-		$organism_scientific_name_id = NULL;
-		$synonymspecies_name = $synonym['artname'];
-		$species_name = $synonym['synonym_von_artname'];
-
-		if (!isset($scientific_name2organism_id[$species_name])) {
-			global $errors;
-			$errors[] = "Undefined metaspecies: $species_name";
-			assert(false);
-		}
-		$species_id = $scientific_name2organism_id[$species_name];
-
-		if (!$db -> haveScientificName($synonymspecies_name)) {
-			if ($db -> haveScientificName($species_name)) {
-				$organism_id = $db -> getScientificNameOrganismId($species_name);
-				$organism_scientific_name_id = $db -> createScientificName($organism_id, $synonymspecies_name);
-				assert($organism_scientific_name_id != NULL);
-			} else {
-				global $errors;
-				$errors[] = "$subspecies_name is subspecies of $metaspecies_name, but $metaspecies_name is not available in DB.";
-				assert(false);
-			}
-		} else {
-			$organism_id = $db -> getScientificNameOrganismId($subspecies_name);
-		}
-		$scientific_name2organism_id[$synonymspecies_name] = $organism_id;
-	}
-	$db -> stopTransactionIfPossible();
+	$db->stopTransactionIfPossible();
 }
 ?>

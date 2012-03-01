@@ -24,7 +24,6 @@
 /sites/all/modules/commerce/
 /sites/all/modules/commerce_paypal/
 /sites/all/modules/ctools/
-/sites/all/modules/datatable
 /sites/all/modules/devel/
 /sites/all/modules/dhtml_menu/
 /sites/all/modules/draggableviews/
@@ -50,3 +49,5 @@
 /update.php
 /web.config
 /xmlrpc.php
+/test.html
+/test2.html

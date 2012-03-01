@@ -230,6 +230,22 @@ function handleCreateIndex(&$schema, &$input, &$line) {
 		$line = getNextLine($input);
 		return true;
 	}
+	if (preg_match(
+		'/^CREATE INDEX ([a-zA-Z0-9_]+) ON ([a-z]*\.)?([a-zA-Z0-9_]+).*\((.+)\);$/',
+		$line,
+		$match) == 1) {
+		$indexname = $match[1];
+		$table = $match[3];
+		$columns = $match[4];
+		$column = explode(", ", $columns);
+
+		if (!isset($schema[$table]['indexes'])) {
+			$schema[$table]['indexes'] = array();
+		}
+		$schema[$table]['indexes'][$indexname] = $column;
+		$line = getNextLine($input);
+		return true;
+	}
 	return false;
 }
 
