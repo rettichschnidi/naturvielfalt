@@ -44,7 +44,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'id_organism_attribute_id' => 
+      'id_AND_organism_attribute_id' => 
       array (
         0 => 'id',
         1 => ' organism_attribute_id',
@@ -95,7 +95,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'organism_id_organism_attribute_value_id' => 
+      'organism_id_AND_organism_attribute_value_id' => 
       array (
         0 => 'organism_id',
         1 => ' organism_attribute_value_id',
@@ -167,23 +167,12 @@ function organism_schema() {
         'not null' => 'TRUE',
         'default' => '2',
       ),
-      'name' => 
-      array (
-        'description' => 'Enthält den eigenen Klassifizierungsname als Text, entweder Englisch oder Latein. ',
-        'type' => 'text',
-        'not null' => 'TRUE',
-      ),
     ),
     'unique keys' => 
     array (
       'id' => 
       array (
         0 => 'id',
-      ),
-      'organism_classification_level_id_name' => 
-      array (
-        0 => 'organism_classification_level_id',
-        1 => ' name',
       ),
     ),
     'primary key' => 
@@ -228,6 +217,166 @@ function organism_schema() {
       array (
         0 => 'prime_father_id',
         1 => 'left_value',
+      ),
+    ),
+  ),
+  'organism_classification_attribute' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'Name dieses Attributes.',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'name' => 
+      array (
+        0 => 'name',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'organism_classification_attribute_value' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'organism_classification_id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_classification_attribute_id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'value' => 
+      array (
+        'description' => 'Value als String',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'organism_classification_attribute_id' => 
+      array (
+        0 => 'organism_classification_attribute_id',
+      ),
+      'unique_organism_classification_idANDvalue' => 
+      array (
+        0 => 'organism_classification_id',
+        1 => ' value',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_classification_attribute_value_2_organism_classification' => 
+      array (
+        'table' => 'organism_classification',
+        'columns' => 
+        array (
+          'organism_classification_id' => 'id',
+        ),
+      ),
+      'organism_classification_attribute_value_2_organism_classification_attribute' => 
+      array (
+        'table' => 'organism_classification_attribute',
+        'columns' => 
+        array (
+          'organism_classification_attribute_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'organism_classification_lang' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'organism_classification_lang_id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'languages_language' => 
+      array (
+        'description' => 'Language code, e.g. \'\'de\'\' or \'\'en-US\'\'.',
+        'type' => 'varchar',
+        'size' => 'normal',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'Der Name des Attributs in der entsprechenden Sprache.',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'organism_classification_lang_id_AND_languages_language' => 
+      array (
+        0 => 'organism_classification_lang_id',
+        1 => ' languages_language',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_classification_lang_2_organism_classification' => 
+      array (
+        'table' => 'organism_classification',
+        'columns' => 
+        array (
+          'organism_classification_lang_id' => 'id',
+        ),
       ),
     ),
   ),
@@ -278,7 +427,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'prime_father_id_name' => 
+      'prime_father_id_AND_name' => 
       array (
         0 => 'prime_father_id',
         1 => ' name',
@@ -295,7 +444,7 @@ function organism_schema() {
         'table' => 'organism_classification_level',
         'columns' => 
         array (
-          'prime_father_id' => 'id',
+          'parent_id' => 'id',
         ),
       ),
     ),
@@ -407,7 +556,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'languages_language_organism_id_name' => 
+      'languages_language_AND_organism_id_AND_name' => 
       array (
         0 => 'languages_language',
         1 => ' organism_id',
@@ -463,7 +612,7 @@ function organism_schema() {
       array (
         0 => 'name',
       ),
-      'organism_id_name' => 
+      'organism_id_AND_name' => 
       array (
         0 => 'organism_id',
         1 => ' name',
@@ -593,7 +742,7 @@ function organism_schema() {
       ),
       'name' => 
       array (
-        'description' => 'Der englische Name des Attributs.',
+        'description' => 'Der Name des Attributs in der entsprechenden Sprache.',
         'type' => 'text',
         'not null' => 'TRUE',
       ),
@@ -643,7 +792,7 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
-      'organism_id_file_managed_id' => 
+      'organism_id_AND_file_managed_id' => 
       array (
         0 => 'organism_id',
         1 => ' file_managed_id',
@@ -699,7 +848,7 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
-      'organism_id_habitat_id' => 
+      'organism_id_AND_habitat_id' => 
       array (
         0 => 'organism_id',
         1 => ' habitat_id',
