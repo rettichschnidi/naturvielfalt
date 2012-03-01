@@ -1,0 +1,264 @@
+<?php
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_theme()
+ *
+ * @return an array with theme template information
+ */
+function datatable_theme() {
+	return array(
+			'datatable' => array(
+					'template' => 'datatable',
+					'variables' => array(
+							// id of html table element
+							'id_table' => NULL,
+							// header of table similar to table theme
+							'header' => NULL,
+							// content of table similar to table theme
+							'rows' => NULL,
+							// height of displayed datatable in pixel
+							'len' => NULL,
+							// Array of options to be set for the jquery datatable plugin where the key is the option name and the value is the javascript value as a string
+							'options' => NULL,
+							'dbFields' => NULL,
+							// Table title
+							'title' => "I forgot to set the title of this table"
+					),
+			),
+	);
+}
+
+/**
+ * Function for other modules to progress the data from the db to the json
+ * Fields from and for http://datatables.net
+ * $_Request is used for filtering
+ *
+ * @author Ramon Gamma, 2012
+ *
+ * @param array sql
+ * 			'dbColumns' 		Array of columns
+ * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
+ * 			'dbSortColumns'		optional; Array of column on that can be sorted
+ * 			'dbTable' 			String db table
+ * 			'dbJoins' 			optional; the joins String (including all JOIN statements)
+ * 			'dbGroupBy' 		optional; the GROUP BY string
+ * 			'dbWhere' 			optional; the WHERE statement string
+ * 			'id' 				optional: id column, default 'id'
+ *
+ * 			$sql['dbColumns'] = array();
+ * 			$sql['dbSearchColumns'] = array();
+ * 			$sql['dbSortColumns'] = array();
+ * 			$sql['dbTable'] = "";
+ * 			$sql['dbJoins'] = "";
+ * 			$sql['dbGroupBy'] = "";
+ * 			$sql['dbWhere'] = "";
+ * 			$sql['id] = "id";
+ *
+ * @return Array
+ * 			[sEcho] => Site which is show
+ * 			[iTotalRecords] => Total records without filtering
+ * 			[iTotalDisplayRecords] => found records with filtering
+ * 			[aaData] => Array of filtered and limited data from db as dbfields
+ * @note If you do not like this, do it better and shut up.
+ */
+function datatable_dbRequest($sql, $arguments = array()) {
+	/* Set the db fields to select */
+	if (!$sql['dbColumns'] || !$sql['dbTable'])
+		return "Error! No dbColumns or dbTable";
+	assert(isset($sql['dbSearchColumns']));
+	$aColumns = $sql['dbColumns'];
+	$searchColumns = $sql['dbSearchColumns'];
+	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns']
+			: $sql['dbColumns'];
+
+	/* DB table to use */
+	$Table = $sql['dbTable'];
+
+	/* Joins to use */
+	$sJoins = '';
+	if (isset($sql['dbJoins'])) {
+		$sJoins = $sql['dbJoins'];
+	}
+
+	/* Group */
+	$sGroupBy = '';
+	if (isset($sql['dbGroupBy'])) {
+		$sGroupBy = ' GROUP BY ' . $sql['dbGroupBy'];
+	}
+
+	isset($sql['dbWhere']) ? $where = "WHERE " . $sql['dbWhere'] : $where = "";
+
+	$idColumn = isset($sql['id']) ? $sql['id'] : "id";
+
+	$sTable = $Table . " " . $sJoins . " ";
+
+	$sortOrders = array(
+			'asc',
+			'desc'
+	);
+
+	// Get posted data and check the variables
+	if (isset($_POST['page'])) {
+		$page = pg_escape_string($_POST['page']);
+		if ($page < 1)
+			return "Error! Pagevalue '$page' is smaller than 1.";
+	} else {
+		$page = 1;
+	}
+	if (isset($_POST['sortname'])) {
+		$sortname = $_POST['sortname'];
+		foreach ($sortColumns as $sortColumn) {
+			foreach (explode(".", $sortColumn) as $sortCol) {
+				$sortColumnsTemp[] = trim($sortCol);
+				//make sure that "oneofmyids AS id" works (BURN AFTER READING!)
+				foreach (explode("AS", $sortCol) as $sortCol2) {
+					$sortColumnsTemp[] = trim($sortCol2);
+				}
+			}
+		}
+		/**
+		 * WARNING: This is an ugly hack.... // FIXME
+		 */
+		if (!is_int(array_search($sortname, $sortColumnsTemp)))
+			return "Error! Sortname not possible. '$sortname' is not in "
+					. implode(", ", $sortColumnsTemp);
+		$sortname = pg_escape_string($sortname);
+	}
+	if (isset($_POST['sortorder'])) {
+		$sortorder = pg_escape_string($_POST['sortorder']);
+		if (!is_int(array_search($sortorder, $sortOrders)))
+			return "Error! Sortorder not possible";
+	}
+	// 	Not progressed, always search in all searchable columns
+	// 	if (isset($_POST['qtype'])) {
+	// 		$qtype = pg_escape_string($_POST['qtype']);
+	// 	}
+	if (isset($_POST['query'])) {
+		$query = $_POST['query'];
+		if (!is_string($query))
+			return "Error! Query not a string";
+		$query = pg_escape_string($query);
+	}
+	if (isset($_POST['rp'])) {
+		$rp = pg_escape_string($_POST['rp']);
+		if ($rp < 1)
+			return "Error! pg < 1";
+	}
+
+	/*
+	 * Paging
+	 */
+	$sLimit = "";
+	if (isset($page) && isset($rp)) {
+		$pageStart = ($page - 1) * $rp;
+		$sLimit = " OFFSET " . $pageStart . " LIMIT " . $rp;
+	}
+
+	/*
+	 * Ordering
+	 */
+	$sOrder = '';
+	if (isset($sortname)) {
+		$sOrder = "ORDER BY " . $sortname . " " . $sortorder;
+		// 		for ( $i=0 ; $i<intval( $_REQUEST['iSortingCols'] ) ; $i++ )
+		// 		{
+		// 			if ( $_REQUEST[ 'bSortable_'.intval($_REQUEST['iSortCol_'.$i]) ] == "true" )
+		// 			{
+		// 				$sOrder .= $sortColumns[ intval( $_REQUEST['iSortCol_'.$i] ) ]."
+		// 						 	".pg_escape_string( $_REQUEST['sSortDir_'.$i] ) .", ";
+		// 			}
+		// 		}
+
+		// 		$sOrder = substr_replace( $sOrder, "", -2 );
+		// 		if ( $sOrder == "ORDER BY" )
+		// 		{
+		// 			$sOrder = "";
+		// 		}
+	}
+
+	/*
+	 * Filtering
+	 * NOTE this does not match the built-in DataTables filtering which does it
+	 * word by word on any field. It's possible to do here, but concerned about efficiency
+	 * on very large tables, and MySQL's regex functionality is very limited
+	 */
+	($where == "") ? $sWhere = "" : $sWhere = $where . "";
+	if (isset($query) && $query != "") {
+		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
+		for ($i = 0; $i < count($searchColumns); $i++) {
+			/**
+			 * yes, this is ia terrible hack, but I do not know how another solution to make sure 
+			 * that all(?!) types can be used with LIKE
+			 */
+			$sWhere .= "LOWER(CAST(" . $searchColumns[$i]
+					. " AS TEXT)) LIKE LOWER(CAST('%$query%' AS TEXT)) OR ";
+		}
+		$sWhere = substr_replace($sWhere, "", -3);
+		$sWhere .= ')';
+	}
+
+	/* Individual column filtering */
+	// 	for ( $i=0 ; $i<count($aColumns) ; $i++ )
+	// 	{
+	// 		if ( $_REQUEST['bSearchable_'.$i] == "true" && $_REQUEST['sSearch_'.$i] != '' )
+	// 		{
+	// 			if ( $sWhere == "" )
+	// 			{
+	// 				$sWhere = "WHERE ";
+	// 			}
+	// 			else
+	// 			{
+	// 				$sWhere .= " AND ";
+	// 			}
+	// 			$sWhere .= $aColumns[$i]." LIKE '%".pg_escape_string($_REQUEST['sSearch_'.$i])."%' ";
+	// 		}
+	// 	}
+
+	/*
+	 * SQL queries
+	 * Get data to display
+	 */
+	// removed SQL_CALC_FOUND_ROWS
+	$nQuery = "SELECT  " . str_replace(" , ", " ", implode(", ", $aColumns))
+			. "
+				FROM   $sTable $sWhere $sGroupBy $sOrder";
+	$sQuery = $nQuery . " " . $sLimit;
+	if (false) {
+		die("sQuery: $sQuery");
+	}
+	$rResult = db_query($sQuery, $arguments);
+
+	/* Data set length after filtering */
+	$nResult = db_query($nQuery, $arguments);
+	$iFilteredTotal = $nResult->rowCount();
+
+	/* Total data set length */
+	$tQuery = "SELECT  " . str_replace(" , ", " ", implode(", ", $aColumns))
+			. "
+				FROM   $sTable $where $sGroupBy $sOrder ";
+	$rResultTotal = db_query($tQuery, $arguments);
+	$iTotal = $rResultTotal->rowCount();
+
+	$output = array(
+			"page" => $page,
+			"total" => $iFilteredTotal,
+			// 			"iTotalDisplayRecords" => $iFilteredTotal,
+			"rows" => array()
+	);
+
+	$data = $rResult->fetchAll();
+	foreach ($data as $aRow) {
+		$row = get_object_vars($aRow);
+		$output['rows'][] = array(
+				'id' => $row[$idColumn],
+				'cell' => $row
+		);
+	}
+	// die(print_r($output));
+	return $output;
+}
+?>
