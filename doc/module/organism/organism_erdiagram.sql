@@ -25,8 +25,11 @@ DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
 DROP TABLE IF EXISTS organism_attribute_value_subscription;
 DROP TABLE IF EXISTS organism_attribute_value;
+DROP TABLE IF EXISTS organism_classification_attribute_value;
+DROP TABLE IF EXISTS organism_classification_lang;
 DROP TABLE IF EXISTS organism_classification_subscription;
 DROP TABLE IF EXISTS organism_classification;
+DROP TABLE IF EXISTS organism_classification_attribute;
 DROP TABLE IF EXISTS organism_classification_level;
 DROP TABLE IF EXISTS organism_lang;
 DROP TABLE IF EXISTS organism_scientific_name;
@@ -84,10 +87,47 @@ CREATE TABLE organism_classification
 	left_value int DEFAULT 1 NOT NULL,
 	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. 
 	right_value int DEFAULT 2 NOT NULL,
-	-- Enthält den eigenen Klassifizierungsname als Text, entweder Englisch oder Latein. 
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_classification_attribute
+(
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	id serial NOT NULL UNIQUE,
+	-- Name dieses Attributes.
+	name text NOT NULL UNIQUE,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_classification_attribute_value
+(
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	id serial NOT NULL UNIQUE,
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	organism_classification_id int NOT NULL,
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	organism_classification_attribute_id int NOT NULL UNIQUE,
+	-- Value als String
+	value text NOT NULL,
+	PRIMARY KEY (id),
+	CONSTRAINT unique_organism_classification_idANDvalue UNIQUE (organism_classification_id, value)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_classification_lang
+(
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	id serial NOT NULL UNIQUE,
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	organism_classification_lang_id int NOT NULL,
+	-- Language code, e.g. 'de' or 'en-US'.
+	languages_language varchar(12) DEFAULT '''''::character varying' NOT NULL,
+	-- Der Name des Attributs in der entsprechenden Sprache.
 	name text NOT NULL,
 	PRIMARY KEY (id),
-	UNIQUE (organism_classification_level_id, name)
+	UNIQUE (organism_classification_lang_id, languages_language)
 ) WITHOUT OIDS;
 
 
@@ -173,7 +213,7 @@ CREATE TABLE public.organism_attribute
 	id serial NOT NULL UNIQUE,
 	-- Gibt den Typ an, welcher in den dazugehörigen organism_attribute_value gespeichert wird. Zuordnung: n=number, b=boolean, t=text.
 	valuetype char NOT NULL,
-	-- Der englische Name des Attributs.
+	-- Der Name des Attributs in der entsprechenden Sprache.
 	name text NOT NULL UNIQUE,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
@@ -231,16 +271,48 @@ ALTER TABLE organism_classification
 ;
 
 
-ALTER TABLE organism_classification_subscription
+ALTER TABLE organism_classification_attribute_value
 	ADD FOREIGN KEY (organism_classification_id)
+	REFERENCES organism_classification (id)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+;
+
+
+ALTER TABLE organism_classification_lang
+	ADD FOREIGN KEY (organism_classification_lang_id)
 	REFERENCES organism_classification (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
 
 
+ALTER TABLE organism_classification_subscription
+	ADD FOREIGN KEY (organism_classification_id)
+	REFERENCES organism_classification (id)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+;
+
+
+ALTER TABLE organism_classification_attribute_value
+	ADD FOREIGN KEY (organism_classification_attribute_id)
+	REFERENCES organism_classification_attribute (id)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+;
+
+
 ALTER TABLE organism_classification
 	ADD FOREIGN KEY (organism_classification_level_id)
+	REFERENCES organism_classification_level (id)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+;
+
+
+ALTER TABLE organism_classification_level
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -249,14 +321,6 @@ ALTER TABLE organism_classification
 
 ALTER TABLE organism_classification_level
 	ADD FOREIGN KEY (parent_id)
-	REFERENCES organism_classification_level (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -374,7 +438,16 @@ COMMENT ON COLUMN organism_classification.prime_father_id IS 'Eine Referenz auf 
 COMMENT ON COLUMN organism_classification.organism_classification_level_id IS 'Fremdschlüssel auf die Tabelle organism_classification_level.';
 COMMENT ON COLUMN organism_classification.left_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
 COMMENT ON COLUMN organism_classification.right_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
-COMMENT ON COLUMN organism_classification.name IS 'Enthält den eigenen Klassifizierungsname als Text, entweder Englisch oder Latein. ';
+COMMENT ON COLUMN organism_classification_attribute.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_attribute.name IS 'Name dieses Attributes.';
+COMMENT ON COLUMN organism_classification_attribute_value.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_attribute_value.organism_classification_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_attribute_value.organism_classification_attribute_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_attribute_value.value IS 'Value als String';
+COMMENT ON COLUMN organism_classification_lang.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_lang.organism_classification_lang_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_classification_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
+COMMENT ON COLUMN organism_classification_lang.name IS 'Der Name des Attributs in der entsprechenden Sprache.';
 COMMENT ON COLUMN organism_classification_level.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_classification_level.parent_id IS 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ';
 COMMENT ON COLUMN organism_classification_level.prime_father_id IS 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ';
@@ -398,7 +471,7 @@ COMMENT ON COLUMN public.organism.left_value IS 'Nötig zur Strukturierung, sieh
 COMMENT ON COLUMN public.organism.right_value IS 'Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. ';
 COMMENT ON COLUMN public.organism_attribute.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Gibt den Typ an, welcher in den dazugehörigen organism_attribute_value gespeichert wird. Zuordnung: n=number, b=boolean, t=text.';
-COMMENT ON COLUMN public.organism_attribute.name IS 'Der englische Name des Attributs.';
+COMMENT ON COLUMN public.organism_attribute.name IS 'Der Name des Attributs in der entsprechenden Sprache.';
 COMMENT ON COLUMN public.organism_file_managed.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN public.organism_file_managed.file_managed_id IS 'file_managed_id';
 COMMENT ON COLUMN public.organism_file_managed.author IS 'Stores information about the author of the document';
