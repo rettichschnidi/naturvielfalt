@@ -89,7 +89,9 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 	foreach ($defaults as $default) {
 		$tableHeader[] = $default['name'];
 	}
-	$tableHeader[] = t('Clear');
+	if ($add_element) {
+		$tableHeader[] = t('Remove');
+	}
 	$rows = array();
 
 	// check if group table shall be displayed
@@ -105,12 +107,14 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 		$rows[] = $row;
 		// group permissions
 		foreach ($groups as $group) {
-			if (($group->level > variable_get("ACL_RESTRICT"))
-					&& (isset($group->default)
-							|| ($group->level
-									> variable_get("ACL_PERMISSION_NOT_SET")))) {
+			if (($group->level >= variable_get("ACL_PERMISSION_NOT_SET")) /*	&& (isset($group->default)
+																		              || ($group->level
+																		                      > variable_get("ACL_PERMISSION_NOT_SET")))*/) {
 				$row = array();
-				$row[] = l($group->name, 'sgroup/'.$group->id);
+				$row[] = array(
+						'data' => l($group->name, 'sgroup/' . $group->id),
+						'style' => 'min-width:80px',
+				);
 
 				foreach ($defaults as $default) {
 					if ($group->level == $default['type']) {
@@ -133,22 +137,7 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 							'data' => $form[$name],
 					);
 				}
-				if (isset($group->default)) {
-					// render form into table
-					$name = "group-" . $group->id;
-					$form[$name] = array(
-							'#type' => 'radio',
-							'#value' => ($group->level
-									== variable_get("ACL_PERMISSION_NOT_SET")) ? variable_get(
-										"ACL_PERMISSION_NOT_SET") : NULL,
-							'#return_value' => variable_get(
-								"ACL_PERMISSION_NOT_SET"),
-							'#name' => $name,
-					);
-					$row[] = array(
-							'data' => $form[$name],
-					);
-				} else {
+				if ($add_element && !isset($group->default)) {
 					$row[] = array(
 							'data' => '<div id="delete-group-' . $group->id
 									. '"></div>',
@@ -207,11 +196,11 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 	$rows[] = $row;
 	// user permissions
 	foreach ($users as $user) {
-		if ($user->level > variable_get("ACL_PERMISSION_NOT_SET")) {
+		if ($user->level >= variable_get("ACL_PERMISSION_NOT_SET")) {
 			$row = array();
 			$owner = check_user_owns_acl($acl_id, $user->uid);
 			$name = $user->name;
-			$row[] = l($name, 'user/'.$user->uid);
+			$row[] = l($name, 'user/' . $user->uid);
 
 			foreach ($defaults as $default) {
 				if ($user->level == $default['type']) {
@@ -233,18 +222,20 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 						'data' => $form[$name],
 				);
 			}
-			if (!$owner) {
-				// only allow to delete non-owner
-				$row[] = array(
-						'data' => '<div id="delete-user-' . $user->uid
-								. '"></div>',
-						'class' => 'delete',
-				);
-			} else {
-				$row[] = array(
-						'data' => '<div class="description">' . t("Owner")
-								. "<div>",
-				);
+			if ($add_element) {
+				if (!$owner) {
+					// only allow to delete non-owner
+					$row[] = array(
+							'data' => '<div id="delete-user-' . $user->uid
+									. '"></div>',
+							'class' => 'delete',
+					);
+				} else {
+					$row[] = array(
+							'data' => '<div class="description">' . t("Owner")
+									. "<div>",
+					);
+				}
 			}
 			$rows[] = $row;
 		}
@@ -350,6 +341,9 @@ function c_acl_form_submit($form, &$form_state) {
 		}
 	}
 
+	// get old users and groups from acl
+	$users_old = get_users_in_acl($acl_id);
+	$groups_old = get_groups_in_acl($acl_id);
 	// remove all users and groups from acl
 	clear_acl($acl_id);
 
@@ -367,6 +361,22 @@ function c_acl_form_submit($form, &$form_state) {
 		}
 		$acl_count++;
 	}
+	// save old not activated groups
+	foreach ($groups_old as $group_old) {
+		if ($group_old->level < variable_get("ACL_PERMISSION_NOT_SET")) {
+			//add groups not displayed in acl form but must still be preserverd
+			if (!add_group_to_acl($acl_id, $group_old->id, $group_old->level)) {
+				drupal_set_message(
+					t(
+						'Error occured during group permission change (group_id = "'
+								. $group_old->id . '" / main acl, acl_id = "'
+								. $acl_id . '")'),
+					'error');
+				$error++;
+			}
+		}
+		$acl_count++;
+	}
 	// add or modify user in acl
 	foreach ($users as $user_id => $level) {
 		if (!add_user_to_acl($acl_id, $user_id, $level)) {
@@ -380,6 +390,22 @@ function c_acl_form_submit($form, &$form_state) {
 		}
 		$acl_count++;
 	}
+	// save old not activated users
+	foreach ($users_old as $user_old) {
+		if ($user_old->level < variable_get("ACL_PERMISSION_NOT_SET")) {
+			// add users not displayed in acl form but must still be preserverd
+			if (!add_user_to_acl($acl_id, $user_old->uid, $user_old->level)) {
+				drupal_set_message(
+					t(
+						'Error occured during group permission change (group_id = "'
+								. $user_old->uid . '" / main acl, acl_id = "'
+								. $acl_id . '")'),
+					'error');
+				$error++;
+			}
+		}
+		$acl_count++;
+	}
 
 	// propagate permissions to child elements
 	$child_set = 0;
@@ -387,39 +413,10 @@ function c_acl_form_submit($form, &$form_state) {
 	if (isset($form_state['storage']['child_acl_ids']) && $propagate) {
 		// save permissions for all child acls
 		$child_acl_ids = $form_state['storage']['child_acl_ids'];
-		foreach ($child_acl_ids as $acl_id) {
-			if (check_admin_acl($acl_id)) {
+		foreach ($child_acl_ids as $child_acl_id) {
+			if (check_admin_acl($child_acl_id)) {
 				// permission to modify acl ok
-				// remove all users and groups from acl
-				clear_acl($acl_id);
-				// add or modify group in acl
-				foreach ($groups as $group_id => $level) {
-					if (!add_group_to_acl($acl_id, $group_id, $level)) {
-						drupal_set_message(
-							t(
-								'Error occured during group permission change (group_id = "'
-										. $group_id
-										. '" / child acl, acl_id = "' . $acl_id
-										. '")'),
-							'error');
-						$error++;
-					}
-					$acl_count++;
-				}
-				// add or modify user in acl
-				foreach ($users as $user_id => $level) {
-					if (!add_user_to_acl($acl_id, $user_id, $level)) {
-						drupal_set_message(
-							t(
-								'Error occured during user permission change (user_id = "'
-										. $user_id
-										. '" / child acl, acl_id = "' . $acl_id
-										. '")'),
-							'error');
-						$error++;
-					}
-					$acl_count++;
-				}
+				copy_acl($acl_id, $child_acl_id);
 				$child_set++;
 			} else {
 				$child_fail++;

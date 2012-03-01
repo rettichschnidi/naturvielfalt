@@ -267,7 +267,7 @@ function sgroup_member_mail($key, &$message, $params) {
 	case 'invitation':
 	// send email to user indication that he was invited to a group
 		$message['subject'] = t(
-			'Invitation to Group' . ' ' . $params['group_name']);
+			'Invitation to group') . ' ' . $params['group_name'];
 		$message['body'] = array(
 				t('Dear') . ' ' . $params['user_name'],
 				t('You have been invited to join the group ')
@@ -284,7 +284,7 @@ function sgroup_member_mail($key, &$message, $params) {
 	case 'remove':
 	// send email to user indication that he was removed from group
 		$message['subject'] = t(
-			'You were removed from Group' . ' ' . $params['group_name']);
+			'You were removed from group') . ' ' . $params['group_name'];
 		$message['body'] = array(
 				t('Dear') . ' ' . $params['user_name'],
 				t('You have been removed from the group ')

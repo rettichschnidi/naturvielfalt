@@ -27,6 +27,11 @@ function sgroup_admin($sgroup_id) {
 		// define permission defaults to pass to acl theme
 		$formDefaults = array(
 				array(
+						'type' => variable_get("ACL_PERMISSION_NOT_SET"),
+						'name' => t('Hidden'),
+						'value' => TRUE,
+				),
+				array(
 						'type' => variable_get("ACL_READ"),
 						'name' => t('Read'),
 						'value' => TRUE,
@@ -55,7 +60,7 @@ function sgroup_admin($sgroup_id) {
 					(object) array(
 							'id' => $record->id,
 							'name' => $record->name,
-							'level' => variable_get("ACL_READ"),
+							'level' => variable_get("ACL_PERMISSION_NOT_SET"),
 					),
 			);
 		}
