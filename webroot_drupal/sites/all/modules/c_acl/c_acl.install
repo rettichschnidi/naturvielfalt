@@ -1,0 +1,303 @@
+<?php
+/**
+ * Implements hook_schema().
+ */
+
+/**
+ * Create the tables needed to run this module.
+ *
+ * @see More information about the schema API: http://drupal.org/node/146843
+ */
+function c_acl_schema() {
+	return array(
+			'acl' => array(
+					'fields' => array(
+							'id' => array(
+									'description' => 'Primary key for swissmon acl items',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'description' => array(
+									'description' => 'desccription of acl item',
+									'type' => 'text',
+							),
+							'users_id' => array(
+									'description' => 'foreign key for swissmon user id who created acl item',
+									'type' => 'int',
+									'default' => '0',
+									'size' => 'big',
+							),
+					),
+					'unique keys' => array(
+							'id' => array(
+									0 => 'id',
+							),
+					),
+					'primary key' => array(
+							0 => 'id',
+					),
+			),
+			'acl_sgroup' => array(
+					'fields' => array(
+							'id' => array(
+									'description' => 'primary key of linking table',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'level' => array(
+									'description' => 'access level',
+									'type' => 'int',
+									'size' => 'small',
+							),
+							'acl_id' => array(
+									'description' => 'foreign key of natutvielfalt acl_id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'sgroup_id' => array(
+									'description' => 'Foreign key of swissmon sgroup',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+					),
+					'unique keys' => array(
+							'id' => array(
+									0 => 'id',
+							),
+					),
+					'primary key' => array(
+							0 => 'id',
+					),
+					'foreign keys' => array(
+							'acl_sgroup_2_acl' => array(
+									'table' => 'acl',
+									'columns' => array(
+											'acl_id' => 'id',
+									),
+							),
+							'acl_sgroup_2_sgroup' => array(
+									'table' => 'sgroup',
+									'columns' => array(
+											'sgroup_id' => 'id',
+									),
+							),
+					),
+			),
+			'acl_users' => array(
+					'fields' => array(
+							'id' => array(
+									'description' => 'primary key of linking table',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'level' => array(
+									'description' => 'access level',
+									'type' => 'int',
+									'size' => 'small',
+							),
+							'acl_id' => array(
+									'description' => 'Foreign key of acl id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'default' => '0',
+									'size' => 'big',
+							),
+							'users_id' => array(
+									'description' => 'foreign key for swissmon user id',
+									'type' => 'int',
+									'default' => '0',
+									'size' => 'big',
+							),
+					),
+					'unique keys' => array(
+							'id' => array(
+									0 => 'id',
+							),
+					),
+					'primary key' => array(
+							0 => 'id',
+					),
+					'foreign keys' => array(
+							'acl_users_2_acl' => array(
+									'table' => 'acl',
+									'columns' => array(
+											'acl_id' => 'id',
+									),
+							),
+					),
+			),
+			'sgroup' => array(
+					'fields' => array(
+							'id' => array(
+									'description' => 'Primary key for swissmon groups',
+									'type' => 'serial',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'name' => array(
+									'description' => 'The name of the swissmon group',
+									'type' => 'varchar',
+									'size' => 'normal',
+									'not null' => 'TRUE',
+							),
+							'description' => array(
+									'description' => 'description of group',
+									'type' => 'text',
+							),
+							'acl_id' => array(
+									'description' => 'foreign key of natutvielfalt acl_id',
+									'type' => 'int',
+									'not null' => 'TRUE',
+									'size' => 'big',
+							),
+							'users_id' => array(
+									'description' => 'Foreign key of naturviefalt user_id (indicates owner of group)',
+									'type' => 'int',
+									'default' => '0',
+									'size' => 'big',
+							),
+					),
+					'unique keys' => array(
+							'id' => array(
+									0 => 'id',
+							),
+					),
+					'primary key' => array(
+							0 => 'id',
+					),
+					'foreign keys' => array(
+							'sgroup_2_acl' => array(
+									'table' => 'acl',
+									'columns' => array(
+											'acl_id' => 'id',
+									),
+							),
+					),
+			),
+	);
+}
+
+/**
+ * Implements hook_install();
+ *
+ * Add missing foreign keys
+ * Add group "All" to group table
+ */
+function c_acl_install() {
+	global $user;
+	// add foreign key constraints
+	db_query(
+		'
+		ALTER TABLE {acl}
+		ADD CONSTRAINT acl_2_users
+		FOREIGN KEY (users_id) REFERENCES users (uid);
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_users}
+		ADD CONSTRAINT acl_users_2_users
+		FOREIGN KEY (users_id) REFERENCES users (uid);
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_users}
+		ADD CONSTRAINT acl_users_2_acl
+		FOREIGN KEY (acl_id) REFERENCES acl (id);
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_sgroup}
+		ADD CONSTRAINT acl_sgroup_2_sgroup
+		FOREIGN KEY (sgroup_id) REFERENCES sgroup (id);
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_sgroup}
+		ADD CONSTRAINT acl_sgroup_2_acl
+		FOREIGN KEY (acl_id) REFERENCES acl (id);
+	');
+	db_query(
+		'
+		ALTER TABLE {sgroup}
+		ADD CONSTRAINT sgroup_2_users
+		FOREIGN KEY (users_id) REFERENCES users (uid);
+	');
+	db_query(
+		'
+		ALTER TABLE {sgroup}
+		ADD CONSTRAINT sgroup_2_acl
+		FOREIGN KEY (acl_id) REFERENCES acl (id);
+	');
+	// add admin group All
+	$acl_id = new_acl();
+	$group_all_id = db_insert('sgroup')->fields(
+			array('name' => 'All',
+					'description' => 'All users (including authenticated and anonymous users)',
+					'acl_id' => $acl_id,
+					'users_id' => $user->uid,
+			))
+		->execute();
+	if ($group_all_id != NULL) {
+		variable_set("ACL_GROUP_ALL_ID", $group_all_id);
+	} else {
+		drupal_set_message(
+			t(
+				'Error occured during creation of group "All". Try to uninstall and install the module again'),
+			'error');
+	}
+	// set default permission
+	user_role_change_permissions(DRUPAL_AUTHENTICATED_RID, array('access c_acl sgroup' => TRUE));
+}
+
+/**
+ * Implements hook_uninstall();
+ *
+ * Remove added foreign keys
+ * This drops all tables defined in sgroup_schema().
+ */
+function c_acl_uninstall() {
+	// remove foreign key constraints
+	db_query(
+		'
+		ALTER TABLE {acl}
+		DROP CONSTRAINT acl_2_users;
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_users}
+		DROP CONSTRAINT acl_users_2_users;
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_users}
+		DROP CONSTRAINT acl_users_2_acl;
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_sgroup}
+		DROP CONSTRAINT acl_sgroup_2_sgroup;
+	');
+	db_query(
+		'
+		ALTER TABLE {acl_sgroup}
+		DROP CONSTRAINT acl_sgroup_2_acl;
+	');
+	db_query(
+		'
+		ALTER TABLE {sgroup}
+		DROP CONSTRAINT sgroup_2_users;
+	');
+	db_query(
+		'
+		ALTER TABLE {sgroup}
+		DROP CONSTRAINT sgroup_2_acl;
+	');
+	// remove db tables
+	drupal_uninstall_schema('sgroup');
+}
+?>

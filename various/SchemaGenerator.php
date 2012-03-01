@@ -14,7 +14,7 @@
 $arguments = getopt("i:o:m:");
 
 if (!isset($arguments['i'])) {
-	die("No filename (-i) given!\n");
+	die("No sql-filename (-i) given!\n");
 }
 
 if (!file_exists($arguments['i'])) {
