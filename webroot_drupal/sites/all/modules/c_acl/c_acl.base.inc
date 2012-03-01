@@ -33,7 +33,10 @@
  */
 
 variable_set("ACL_RESTRICT", -1);
-variable_set("ACL_PERMISSION_NOT_SET", 1);
+variable_set("ACL_DECLINED", 1);
+variable_set("ACL_ASKING", 2);
+variable_set("ACL_PENDING", 3);
+variable_set("ACL_PERMISSION_NOT_SET", 4);
 variable_set("ACL_RED_READ", 10);
 variable_set("ACL_READ", 20);
 variable_set("ACL_RED_WRITE", 30);
@@ -231,6 +234,29 @@ function check_permission($acl_id, $min_level, $user_id = -1,
 	}
 	if ($min_level <= $level) {
 		$res = TRUE;
+	}
+	return $res;
+}
+
+/**
+ * Check permission of user in a list of acl ids
+ * 
+ * @param	array	$acl_ids		list of ids of acls to check
+ * @param	int		$min_level		minimum level to pass check
+ * @param	int		$user_id		id of user to check (optional, default: active user)
+ * @access	public
+ * @return	bool					TRUE on pass check
+ */
+function check_permission_array($acl_ids, $min_level, $user_id = -1) {
+	global $user;
+	
+	if ($user_id < 0) {
+		$user_id = $user->uid;
+	}
+	
+	$res = array();
+	foreach ($acl_ids as $acl_id) {
+		$res[$acl_id] = check_permission($acl_id, $min_level, $user_id);
 	}
 	return $res;
 }

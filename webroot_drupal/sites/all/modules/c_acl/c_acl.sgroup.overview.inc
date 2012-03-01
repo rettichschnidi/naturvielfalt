@@ -9,7 +9,7 @@
 function sgroup_overview($user_id) {
 	global $user;
 	// set group list title
-	drupal_set_title(check_plain($user->name).t("'s Groups"));
+	drupal_set_title(check_plain($user->name) . t("'s Groups"));
 	// display short instruction text
 	$output['introduction'] = array(
 			'#markup' => t(
@@ -24,6 +24,8 @@ function sgroup_overview($user_id) {
 	$output['ownGroupTable'] = _sgroup_own_group_table($user_id);
 	// get table of groups user is member of
 	$output['memberGroupTable'] = _sgroup_member_group_table($user_id);
+	// get table of groups user has an invitation
+	$output['invitationGroupTable'] = _sgroup_invitation_group_table($user_id);
 	return $output;
 }
 
@@ -38,7 +40,7 @@ function _sgroup_own_group_table($user_id) {
 	$tableHeader[] = t('Own Groups');
 	$tableHeader[] = array(
 			'data' => t('Operations'),
-			'colspan' => 2,
+			'colspan' => 3,
 	);
 	$rows = array();
 
@@ -58,6 +60,7 @@ function _sgroup_own_group_table($user_id) {
 		$row = array();
 		$description = $record->description;
 		$teaser_len = 80;
+		$permission_len = 80;
 		if (strlen($description) > $teaser_len) {
 			// if description is too long, display only a teaser
 			$teaser_len = stripos($description, ' ', $teaser_len);
@@ -65,20 +68,20 @@ function _sgroup_own_group_table($user_id) {
 			$description .= '(...)';
 		}
 		$row[] = array(
-				'data' => l(
-					$record->name,
-					'sgroup/' . $record->id)
+				'data' => l($record->name, 'sgroup/' . $record->id)
 						. '<div class="description">' . $description . '</div>',
 		);
 		$row[] = array(
-				'data' => l(
-					t('Edit Group'),
-					'sgroup/' . $record->id . '/edit')
+				'data' => l(t('Edit Group'), 'sgroup/' . $record->id . '/edit'),
+				'width' => $permission_len,
 		);
 		$row[] = array(
-				'data' => l(
-					t('Permissions'),
-					'sgroup/' . $record->id . '/acl')
+				'data' => l(t('Member'), 'sgroup/' . $record->id . '/member'),
+				'width' => $permission_len,
+		);
+		$row[] = array(
+				'data' => l(t('Permissions'), 'sgroup/' . $record->id . '/acl'),
+				'width' => $permission_len,
 		);
 		$rows[] = $row;
 		$row_cnt++;
@@ -106,7 +109,8 @@ function _sgroup_own_group_table($user_id) {
 /**
  * Shows the group the user is memer of in a table
  * 
- * @return Table of groups the user is member of
+ * @param	string	$user_id	id of user to show own and member groups
+ * @return 	Array				Table of groups the user is member of
  */
 function _sgroup_member_group_table($user_id) {
 	// create table header
@@ -117,7 +121,7 @@ function _sgroup_member_group_table($user_id) {
 			'colspan' => 2,
 	);
 	$rows = array();
-		
+
 	// get all groups, user is member
 	$query = db_select('sgroup', 'g')->fields(
 			'g',
@@ -129,9 +133,11 @@ function _sgroup_member_group_table($user_id) {
 			))
 		->condition('g.users_id', $user_id, "!=");
 	$query->join('acl_users', 'au', 'au.acl_id = g.acl_id');
-	$query->condition('au.users_id', $user_id);
+	$query->condition('au.users_id', $user_id)
+		->condition('au.level', variable_get("ACL_PERMISSION_NOT_SET"), ">");
 	$query->join('users', 'u', 'u.uid = g.users_id');
-	$db_groups = $query->fields('u', array('name',))->execute();
+	$db_groups = $query->fields('u', array('name',))
+		->execute();
 
 	// create table
 	$row_cnt = 0;
@@ -139,6 +145,7 @@ function _sgroup_member_group_table($user_id) {
 		$row = array();
 		$description = $record->description;
 		$teaser_len = 80;
+		$permission_len = 80;
 		if (strlen($description) > $teaser_len) {
 			// if description is too long, display only a teaser
 			$teaser_len = stripos($description, ' ', $teaser_len);
@@ -146,9 +153,7 @@ function _sgroup_member_group_table($user_id) {
 			$description .= '(...)';
 		}
 		$row[] = array(
-				'data' => l(
-					$record->name,
-					'sgroup/' . $record->id)
+				'data' => l($record->name, 'sgroup/' . $record->id)
 						. '<div class="description">' . $description . '</div>',
 		);
 		$row[] = array(
@@ -159,15 +164,39 @@ function _sgroup_member_group_table($user_id) {
 			$row[] = array(
 					'data' => l(
 						t('Edit Group'),
-						'sgroup/' . $record->id . '/edit')
+						'sgroup/' . $record->id . '/edit'),
+					'width' => $permission_len,
+			);
+		}
+		else {
+			$row[] = array(
+					'data' => '&nbsp;',
+					'width' => $permission_len,
 			);
 		}
 		if (check_permission($record->acl_id, variable_get("ACL_ADMIN"))) {
 			// admin permission on group ok
 			$row[] = array(
 					'data' => l(
+						t('Member'),
+						'sgroup/' . $record->id . '/member'),
+					'width' => $permission_len,
+			);
+			$row[] = array(
+					'data' => l(
 						t('Permissions'),
-						'sgroup/' . $record->id . '/acl')
+						'sgroup/' . $record->id . '/acl'),
+					'width' => $permission_len,
+			);
+		}
+		else {
+			$row[] = array(
+					'data' => '&nbsp;',
+					'width' => $permission_len,
+			);
+			$row[] = array(
+					'data' => '&nbsp;',
+					'width' => $permission_len,
 			);
 		}
 		$rows[] = $row;
@@ -191,5 +220,127 @@ function _sgroup_member_group_table($user_id) {
 	);
 
 	return $table;
+}
+
+/**
+ * Shows the group the user is memer of in a table
+ * 
+ * @param	string	$user_id	id of user to show own and member groups
+ * @return	Array				Table of groups the user is member of
+ */
+function _sgroup_invitation_group_table($user_id) {
+	// create table header
+	$tableHeader[] = t('Pending Memberships');
+	$tableHeader[] = t('Owner');
+	$tableHeader[] = t('State');
+	$tableHeader[] = t('Operations');
+	$rows = array();
+
+	// get all groups, user has an invitation
+	$query = db_select('sgroup', 'g')->fields(
+			'g',
+			array('id',
+					'name',
+					'description',
+					'users_id',
+					'acl_id',
+			))
+		->condition('g.users_id', $user_id, "!=");
+	$query->join('acl_users', 'au', 'au.acl_id = g.acl_id');
+	$query->fields('au', array('level',))
+		->condition('au.users_id', $user_id)
+		->condition(
+			db_or()->condition('au.level', variable_get("ACL_PENDING"))
+				->condition('au.level', variable_get("ACL_ASKING"))
+				->condition('au.level', variable_get("ACL_DECLINED")));
+	$query->join('users', 'u', 'u.uid = g.users_id');
+	$db_groups = $query->fields('u', array('name',))
+		->execute();
+
+	// create table
+	$permission_len = 100;
+	$row_cnt = 0;
+	while ($record = $db_groups->fetch()) {
+		$row = array();
+		$description = $record->description;
+		$teaser_len = 80;
+		if (strlen($description) > $teaser_len) {
+			// if description is too long, display only a teaser
+			$teaser_len = stripos($description, ' ', $teaser_len);
+			$description = substr($description, 0, $teaser_len + 1);
+			$description .= '(...)';
+		}
+		$row[] = array(
+				'data' => l($record->name, 'sgroup/' . $record->id)
+						. '<div class="description">' . $description . '</div>',
+		);
+		$row[] = array(
+				'data' => $record->u_name,
+		);
+		if ($record->level == variable_get("ACL_PENDING")) {
+			$row[] = t('invited');
+			$row[] = array(
+					'data' => l(
+						t('Membership'),
+						'sgroup/' . $record->id . '/invite'),
+					'width' => $permission_len,
+			);
+		}
+		else if ($record->level == variable_get("ACL_ASKING")) {
+			$row[] = t('requested');
+			$row[] = array(
+					'data' => l(
+						t('Membership'),
+						'sgroup/' . $record->id . '/action'),
+					'width' => $permission_len,
+			);
+		}
+		else if ($record->level == variable_get("ACL_DECLINED")) {
+			$row[] = t('declined');
+			$row[] = array(
+					'data' => l(
+						t('Membership'),
+						'sgroup/' . $record->id . '/action'),
+					'width' => $permission_len,
+			);
+		}
+		$rows[] = $row;
+		$row_cnt++;
+	}
+
+	if ($row_cnt == 0) {
+		// table is empty
+		$rows[] = array(
+				array(
+						'data' => t('You have no pending memberships'),
+						'colspan' => count($tableHeader),
+				)
+		);
+	}
+
+	$table = array(
+			'#theme' => 'table',
+			'#header' => $tableHeader,
+			'#rows' => $rows
+	);
+
+	return $table;
+}
+
+/**
+ * Shows a list of public groups
+ * 
+ * @param	string	$user_id	id of user to show own and member groups
+ * @return	array				drupal form array with group list
+ */
+function sgroup_overview_all() {
+	global $user;
+	// set group list title
+	drupal_set_title(t('Public Groups'));
+	// display short instruction text
+	$output['introduction'] = array(
+			'#markup' => t('In the table below, all public groups are listed.'),
+	);
+	return $output;
 }
 ?>

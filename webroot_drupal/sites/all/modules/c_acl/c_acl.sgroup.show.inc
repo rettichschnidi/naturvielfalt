@@ -1,4 +1,6 @@
 <?php
+// use base acl functions in hooks
+module_load_include('inc', 'c_acl', 'c_acl.sgroup.invite');
 /**
  * Shows details of a group
  * 
@@ -32,7 +34,7 @@ function sgroup_show($sgroup_id) {
 				),
 		);
 		// get all members of group
-		$acl_users = get_users_in_acl($record->acl_id);
+		$acl_users = get_users_in_acl($record->acl_id, variable_get("ACL_PERMISSION_NOT_SET"));
 		$users = array();
 		// generate array with user info
 		$user_is_member = FALSE;
@@ -42,8 +44,8 @@ function sgroup_show($sgroup_id) {
 			if ($acl_user->uid == $record->users_id) {
 				$name .= " (" . t('Owner') . ")";
 			}
+			$name = l($name, 'user/' . $acl_user->uid);
 			if ($acl_user->uid == $user->uid) {
-				$name = l($name, 'user/' . $acl_user->uid);
 				$user_is_member = TRUE;
 				if ($user->uid == $record->users_id) {
 					$user_is_owner = TRUE;
@@ -60,9 +62,14 @@ function sgroup_show($sgroup_id) {
 						'#items' => $users,
 				),
 		);
-
 		// check if active user is member of group but not owner
 		if ($user_is_member && !$user_is_owner) {
+			// display box with buttons
+			$output['box1'] = array(
+					'#type' => 'fieldset',
+					'#weight' => 20,
+					'#collapsible' => FALSE,
+			);
 			// provide possibility to leave group
 			$output['quit_group'] = array(
 					'#markup' => t(
@@ -70,9 +77,35 @@ function sgroup_show($sgroup_id) {
 					'#weight' => 10,
 			);
 			//$form_state['storage']['acl_id'] = $record->acl_id;
-			$output['form'] = drupal_get_form(
+			$output['box1']['form'] = drupal_get_form(
 				'sgroup_quit_form',
 				$record->acl_id);
+			$output['form']['#weight'] = 11;
+		}
+		// check if active user neither member nor owner of group
+		if (!$user_is_member && !$user_is_owner) {
+			// display box with buttons
+			$output['box2'] = array(
+					'#type' => 'fieldset',
+					'#weight' => 20,
+					'#collapsible' => FALSE,
+			);
+			// provide possibility to leave group
+			$output['join_group'] = array(
+					'#markup' => t(
+						'If you wish to join this group, click the button')
+							. ' "' . t("Request Membership") . '" '
+							. t('below') . '.',
+					'#weight' => 10,
+			);
+			$item = array(
+					'request' => TRUE,
+			);
+			$output['box2']['form'] = drupal_get_form(
+				// this form can be found in the file c_acl.sgroup.invite.inc
+				'sgroup_invite_form',
+				$record,
+				$item);
 			$output['form']['#weight'] = 11;
 		}
 	} else {

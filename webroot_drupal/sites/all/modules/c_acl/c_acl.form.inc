@@ -9,7 +9,6 @@
 function c_acl_show_form($vars) {
 	drupal_add_js(drupal_get_path('module', 'c_acl') . '/js/c_acl.js');
 	drupal_add_css(drupal_get_path('module', 'c_acl') . '/css/c_acl.css');
-
 	// (*1) Array with permission types and their default permission values (default = NULL)
 	$defaults = $vars['defaults'];
 	// (*2) Array with groups int their default permission values (default = NULL)
@@ -19,7 +18,7 @@ function c_acl_show_form($vars) {
 	// (*4) Array with child acl ids of acl_id (default = NULL)
 	$child_acl_ids = $vars['child_acl_ids'];
 	// (*5) Boolean indicating if only users shall be displayed (default = FALSE)
-	$users_only = $vars['users_only'];
+	$add_element = $vars['add_element'];
 
 	// get groups from acl
 	$groups = NULL;
@@ -63,7 +62,7 @@ function c_acl_show_form($vars) {
 		$users,
 		$acl_id,
 		$child_acl_ids,
-		$users_only);
+		$add_element);
 	return drupal_render($form);
 }
 
@@ -75,11 +74,14 @@ function c_acl_show_form($vars) {
  * @param	Array	$defaults		array containing permission defaults
  * @param	Array	$groups			array containing group acl permissions
  * @param	Array	$users			array containing user acl permissions
+ * @param	string	$acl_id			id of acl_element the permissions will be set
+ * @param	Array	$child_acl_ids	array with child acl ids of acl_id
+ * @param	boolean	$add_element	indication if elements can bee added to acl
  * 
  * @return	Array					form array to be rendered by drupal
  */
 function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
-		$child_acl_ids, $users_only) {
+		$child_acl_ids, $add_element) {
 	$form_state['storage']['acl_id'] = $acl_id;
 	$form_state['storage']['child_acl_ids'] = $child_acl_ids;
 	// create table header
@@ -103,9 +105,12 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 		$rows[] = $row;
 		// group permissions
 		foreach ($groups as $group) {
-			if ($group->level > variable_get("ACL_RESTRICT")) {
+			if (($group->level > variable_get("ACL_RESTRICT"))
+					&& (isset($group->default)
+							|| ($group->level
+									> variable_get("ACL_PERMISSION_NOT_SET")))) {
 				$row = array();
-				$row[] = $group->name;
+				$row[] = l($group->name, 'sgroup/'.$group->id);
 
 				foreach ($defaults as $default) {
 					if ($group->level == $default['type']) {
@@ -125,7 +130,7 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 							'#name' => $name,
 					);
 					$row[] = array(
-							'data' => $form[$name]
+							'data' => $form[$name],
 					);
 				}
 				if (isset($group->default)) {
@@ -141,7 +146,7 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 							'#name' => $name,
 					);
 					$row[] = array(
-							'data' => $form[$name]
+							'data' => $form[$name],
 					);
 				} else {
 					$row[] = array(
@@ -154,7 +159,7 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 			}
 		}
 
-		if (!$users_only) {
+		if ($add_element) {
 			// new group row
 			$row = array();
 			// add group autocomplete field in table
@@ -180,10 +185,12 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 						'#name' => $name,
 				);
 				$row[] = array(
-						'data' => $form[$name]
+						'data' => $form[$name],
 				);
 			}
-			$row[] = '&nbsp;';
+			$row[] = array(
+					'data' => '-',
+			);
 			$rows[] = $row;
 		}
 
@@ -200,24 +207,72 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 	$rows[] = $row;
 	// user permissions
 	foreach ($users as $user) {
-		$row = array();
-		$owner = check_user_owns_acl($acl_id, $user->uid);
-		$name = $user->name;
-		if ($owner) {
-			$name .= " (" . t("Owner") . ")";
-		}
-		$row[] = $name;
+		if ($user->level > variable_get("ACL_PERMISSION_NOT_SET")) {
+			$row = array();
+			$owner = check_user_owns_acl($acl_id, $user->uid);
+			$name = $user->name;
+			$row[] = l($name, 'user/'.$user->uid);
 
-		foreach ($defaults as $default) {
-			if ($user->level == $default['type']) {
-				// permission level of selected group is superior or equal
-				// to actual permission level of iteration element to draw
-				$default['value'] = TRUE;
-			} else {
-				$default['value'] = FALSE;
+			foreach ($defaults as $default) {
+				if ($user->level == $default['type']) {
+					// permission level of selected group is superior or equal
+					// to actual permission level of iteration element to draw
+					$default['value'] = TRUE;
+				} else {
+					$default['value'] = FALSE;
+				}
+				// render form into table
+				$name = "user-" . $user->uid;
+				$form[$name] = array(
+						'#type' => 'radio',
+						'#value' => $default['value'] ? $default['type'] : NULL,
+						'#return_value' => $default['type'],
+						'#name' => $name,
+				);
+				$row[] = array(
+						'data' => $form[$name],
+				);
 			}
-			// render form into table
-			$name = "user-" . $user->uid;
+			if (!$owner) {
+				// only allow to delete non-owner
+				$row[] = array(
+						'data' => '<div id="delete-user-' . $user->uid
+								. '"></div>',
+						'class' => 'delete',
+				);
+			} else {
+				$row[] = array(
+						'data' => '<div class="description">' . t("Owner")
+								. "<div>",
+				);
+			}
+			$rows[] = $row;
+		}
+	}
+
+	if ($add_element) {
+		// new user row
+		$row = array();
+		// add user autocomplete field in table
+		$form['add_user'] = array(
+				'#type' => 'textfield',
+				'#size' => '20',
+				'#attributes' => array(
+						'id' => 'add-users',
+				),
+				'#value' => "",
+				'#name' => "users",
+				// unfortuantely we cannot use "user/autocomplete"
+				// because we dont want to add users already in the list
+				'#autocomplete_path' => 'c_acl/' . $acl_id
+						. '/autocomplete_users',
+		);
+		$row[] = array(
+				'data' => $form['add_user'],
+		);
+		// add default radio buttons in table
+		foreach ($defaults as $default) {
+			$name = "user-new";
 			$form[$name] = array(
 					'#type' => 'radio',
 					'#value' => $default['value'] ? $default['type'] : NULL,
@@ -228,49 +283,11 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 					'data' => $form[$name],
 			);
 		}
-		if (!$owner) {
-			// only allow to delete non-owner
-			$row[] = array(
-					'data' => '<div id="delete-user-' . $user->uid . '"></div>',
-					'class' => 'delete'
-			);
-		}
+		$row[] = array(
+				'data' => '-',
+		);
 		$rows[] = $row;
 	}
-
-	// new user row
-	$row = array();
-	// add user autocomplete field in table
-	$form['add_user'] = array(
-			'#type' => 'textfield',
-			'#size' => '20',
-			'#attributes' => array(
-					'id' => 'add-users',
-			),
-			'#value' => "",
-			'#name' => "users",
-			// unfortuantely we cannot use "user/autocomplete"
-			// because we dont want to add users already in the list
-			'#autocomplete_path' => 'c_acl/' . $acl_id . '/autocomplete_users',
-	);
-	$row[] = array(
-			'data' => $form['add_user'],
-	);
-	// add default radio buttons in table
-	foreach ($defaults as $default) {
-		$name = "user-new";
-		$form[$name] = array(
-				'#type' => 'radio',
-				'#value' => $default['value'] ? $default['type'] : NULL,
-				'#return_value' => $default['type'],
-				'#name' => $name,
-		);
-		$row[] = array(
-				'data' => $form[$name]
-		);
-	}
-	$row[] = '&nbsp;';
-	$rows[] = $row;
 
 	// create propagate checkbox if child_acl_ids are defined
 	if (isset($child_acl_ids)) {

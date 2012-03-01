@@ -1,45 +1,88 @@
 /**
  * Handle custom autocomplete functions
  */
-(function($) {
-	$(document).ready( function () {
-		// Overwrite default Drupal function to define autocomplete_select event
-		// START
-		/**
-		 * Puts the currently highlighted suggestion into the autocomplete field.
-		 */
-		Drupal.jsAC.prototype.select = function (node) {
-			this.input.value = $(node).data('autocompleteValue');
-			// !! INSERTED BY SWISSMON PROJECT!! START
-			$(this.input).trigger('autocomplete_select', [node]);
-			// !! INSERTED BY SWISSMON PROJECT!! END
-		};
+jQuery(document).ready( function () {
+	(function($) {
+		if (Drupal.jsAC !== undefined) {
+			// Overwrite default Drupal function to define autocomplete_select event
+			// do it only if autocomplete.js is loaded
+			// START
+			/**
+			 * Puts the currently highlighted suggestion into the autocomplete field.
+			 */
+			Drupal.jsAC.prototype.select = function (node) {
+				this.input.value = $(node).data('autocompleteValue');
+				// !! INSERTED BY SWISSMON PROJECT!! START
+				$(this.input).trigger('autocomplete_select', [node]);
+				// !! INSERTED BY SWISSMON PROJECT!! END
+			};
+
+			/**
+			 * Handler for the "keydown" event.
+			 */
+			Drupal.jsAC.prototype.onkeydown = function (input, e) {
+				if (!e) {
+					e = window.event;
+				}
+				switch (e.keyCode) {
+				// !! INSERTED BY SWISSMON PROJECT!! START
+				case 13: // Enter.
+					this.hidePopup(e.keyCode);
+					$(this.input).trigger('autocomplete_select');
+					return true;
+					// !! INSERTED BY SWISSMON PROJECT!! END
+				case 40: // down arrow.
+					this.selectDown();
+					return false;
+				case 38: // up arrow.
+					this.selectUp();
+					return false;
+				default: // All other keys.
+					return true;
+				}
+			};
+			// END
+		}
 
 		/**
-		 * Handler for the "keydown" event.
+		 * This will be called if user selects an autocompletion value
+		 * @param event
 		 */
-		Drupal.jsAC.prototype.onkeydown = function (input, e) {
-			if (!e) {
-				e = window.event;
-			}
-			switch (e.keyCode) {
-			// !! INSERTED BY SWISSMON PROJECT!! START
-			case 13: // Enter.
-				this.hidePopup(e.keyCode);
-				$(this.input).trigger('autocomplete_select');
-				return true;
-				// !! INSERTED BY SWISSMON PROJECT!! END
-			case 40: // down arrow.
-				this.selectDown();
-				return false;
-			case 38: // up arrow.
-				this.selectUp();
-				return false;
-			default: // All other keys.
-				return true;
-			}
-		};
-		// END
+		function autocompleteInvite(event) {
+			// get the new selected value
+			var elemStr, elem, line, marker; // line_copy, css_class
+			marker = '<span class="warning">*</span>';
+			$("#tabs-wrapper").after('<div class="messages warning"><h2 class="element-invisible">Error message</h2>'
+					+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this user	') + '</div>');
+			elemStr = $(this).val();
+			elem = $.parseJSON(elemStr);
+			/*
+			// reset input value and copy line
+			$(this).val('');
+			line_copy = $(this).parents('tr:first').clone();
+			 */
+			// set value and name
+			$(this).val(elem.name);
+			$(this).attr('name', $(this).attr('name') + '-' + elem.id);
+			$(this).hide();
+			line = $(this).parents('tr:first');
+			line.find('td').each(function (i) {
+				if (i === 0) {
+					$(this).append(elem.name);
+					$(this).append(marker);
+				}
+				else {
+					$(this).html("<div class='emptyTableField'></div>");
+					$(this).html("-");
+				}
+			});
+			/*
+			css_class = line_copy.hasClass('even') ? 'odd' : 'even';
+			line_copy.attr('class', css_class);
+			line_copy.find('div#autocomplete').remove();
+			line_copy.appendTo($(this).parents('tbody:first'));
+			 */
+		}
 
 		/**
 		 * This will be called if user selects an autocompletion value
@@ -47,9 +90,14 @@
 		 */
 		function autocompleteSelect(event) {
 			// get the new selected value
-			var elemStr, elem, line;
+			var elemStr, elem, line, marker;
 			elemStr = $(this).val();
 			elem = $.parseJSON(elemStr);
+			marker = '<span class="warning">*</span>';
+			if ($("#mymsgbox").length === 0) {
+				$("#tabs-wrapper").after('<div id="mymsgbox" class="messages warning"><h2 class="element-invisible">Error message</h2>'
+					+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this element') + '</div>');
+			}
 			// replace "new" by [acl_id] in all radio elements
 			line = $(this).parents('tr:first');
 			line.find('div[class$="new"]').each(function () {
@@ -65,11 +113,12 @@
 				$(this).attr('name', name);
 			});
 			// replace inputfield by new name
-			$(this).parents('td:first').html(elem.name);
+			$(this).parents('td:first').html(elem.name + marker);
 		}
 
 		/**
 		 * This will be called if user clicks on delete symbol
+		 * @param event
 		 */
 		function deleteRow (event) {
 			$(this).parents('tr:first').remove();
@@ -80,9 +129,11 @@
 				autocompleteSelect);
 		jQuery("input#add-users").bind("autocomplete_select",
 				autocompleteSelect);
+		jQuery("input#invite-users").bind("autocomplete_select",
+				autocompleteInvite);
 		// bind click event on delete icons
 		jQuery("div[id^='delete']").bind("click",
 				deleteRow);
-	});
 
-})(jQuery);
+	})(jQuery);
+});

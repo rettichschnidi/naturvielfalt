@@ -64,8 +64,7 @@ function sgroup_admin($sgroup_id) {
 				'#defaults' => $formDefaults,
 				'#defaults_group' => $groupDefaults,
 				'#acl_id' => $acl_id,
-				// no subgroups possible, ACL modul does not support it (yet?)
-				'#users_only' => TRUE,
+				'#add_element' => FALSE,
 				'#weight' => 2,
 		);
 	} else {
