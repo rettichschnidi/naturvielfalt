@@ -44,7 +44,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'id_organism_attribute_id' => 
+      'id_AND_organism_attribute_id' => 
       array (
         0 => 'id',
         1 => ' organism_attribute_id',
@@ -95,7 +95,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'organism_id_organism_attribute_value_id' => 
+      'organism_id_AND_organism_attribute_value_id' => 
       array (
         0 => 'organism_id',
         1 => ' organism_attribute_value_id',
@@ -292,6 +292,11 @@ function organism_schema() {
       array (
         0 => 'organism_classification_attribute_id',
       ),
+      'unique_organism_classification_idANDvalue' => 
+      array (
+        0 => 'organism_classification_id',
+        1 => ' value',
+      ),
     ),
     'primary key' => 
     array (
@@ -353,7 +358,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'organism_classification_lang_id_languages_language' => 
+      'organism_classification_lang_id_AND_languages_language' => 
       array (
         0 => 'organism_classification_lang_id',
         1 => ' languages_language',
@@ -422,7 +427,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'prime_father_id_name' => 
+      'prime_father_id_AND_name' => 
       array (
         0 => 'prime_father_id',
         1 => ' name',
@@ -551,7 +556,7 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'languages_language_organism_id_name' => 
+      'languages_language_AND_organism_id_AND_name' => 
       array (
         0 => 'languages_language',
         1 => ' organism_id',
@@ -607,7 +612,7 @@ function organism_schema() {
       array (
         0 => 'name',
       ),
-      'organism_id_name' => 
+      'organism_id_AND_name' => 
       array (
         0 => 'organism_id',
         1 => ' name',
@@ -787,7 +792,7 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
-      'organism_id_file_managed_id' => 
+      'organism_id_AND_file_managed_id' => 
       array (
         0 => 'organism_id',
         1 => ' file_managed_id',
@@ -843,7 +848,7 @@ function organism_schema() {
     ),
     'unique keys' => 
     array (
-      'organism_id_habitat_id' => 
+      'organism_id_AND_habitat_id' => 
       array (
         0 => 'organism_id',
         1 => ' habitat_id',
