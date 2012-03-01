@@ -193,43 +193,43 @@ function c_acl_install() {
 	// add foreign key constraints
 	db_query(
 		'
-		ALTER TABLE acl
+		ALTER TABLE {acl}
 		ADD CONSTRAINT acl_2_users
 		FOREIGN KEY (users_id) REFERENCES users (uid);
 	');
 	db_query(
 		'
-		ALTER TABLE acl_users
+		ALTER TABLE {acl_users}
 		ADD CONSTRAINT acl_users_2_users
 		FOREIGN KEY (users_id) REFERENCES users (uid);
 	');
 	db_query(
 		'
-		ALTER TABLE acl_users
+		ALTER TABLE {acl_users}
 		ADD CONSTRAINT acl_users_2_acl
 		FOREIGN KEY (acl_id) REFERENCES acl (id);
 	');
 	db_query(
 		'
-		ALTER TABLE acl_sgroup
+		ALTER TABLE {acl_sgroup}
 		ADD CONSTRAINT acl_sgroup_2_sgroup
 		FOREIGN KEY (sgroup_id) REFERENCES sgroup (id);
 	');
 	db_query(
 		'
-		ALTER TABLE acl_sgroup
+		ALTER TABLE {acl_sgroup}
 		ADD CONSTRAINT acl_sgroup_2_acl
 		FOREIGN KEY (acl_id) REFERENCES acl (id);
 	');
 	db_query(
 		'
-		ALTER TABLE sgroup
+		ALTER TABLE {sgroup}
 		ADD CONSTRAINT sgroup_2_users
 		FOREIGN KEY (users_id) REFERENCES users (uid);
 	');
 	db_query(
 		'
-		ALTER TABLE sgroup
+		ALTER TABLE {sgroup}
 		ADD CONSTRAINT sgroup_2_acl
 		FOREIGN KEY (acl_id) REFERENCES acl (id);
 	');
@@ -264,37 +264,37 @@ function c_acl_uninstall() {
 	// remove foreign key constraints
 	db_query(
 		'
-		ALTER TABLE acl
+		ALTER TABLE {acl}
 		DROP CONSTRAINT acl_2_users;
 	');
 	db_query(
 		'
-		ALTER TABLE acl_users
+		ALTER TABLE {acl_users}
 		DROP CONSTRAINT acl_users_2_users;
 	');
 	db_query(
 		'
-		ALTER TABLE acl_users
+		ALTER TABLE {acl_users}
 		DROP CONSTRAINT acl_users_2_acl;
 	');
 	db_query(
 		'
-		ALTER TABLE acl_sgroup
+		ALTER TABLE {acl_sgroup}
 		DROP CONSTRAINT acl_sgroup_2_sgroup;
 	');
 	db_query(
 		'
-		ALTER TABLE acl_sgroup
+		ALTER TABLE {acl_sgroup}
 		DROP CONSTRAINT acl_sgroup_2_acl;
 	');
 	db_query(
 		'
-		ALTER TABLE sgroup
+		ALTER TABLE {sgroup}
 		DROP CONSTRAINT sgroup_2_users;
 	');
 	db_query(
 		'
-		ALTER TABLE sgroup
+		ALTER TABLE {sgroup}
 		DROP CONSTRAINT sgroup_2_acl;
 	');
 	// remove db tables
