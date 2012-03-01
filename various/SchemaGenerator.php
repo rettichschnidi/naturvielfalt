@@ -114,11 +114,27 @@ function getColumnType(&$table, $lastcolumn, &$line) {
 	return false;
 }
 
-function getUnique(&$line) {
+function getUniqueConstraints(&$line) {
 	if (preg_match('/^UNIQUE\ \(([a-z0-9_,\ ]+)\),?$/', $line, $match)) {
-		$found = $match[1];
-		$keys = preg_split('/,/', $found);
-		return $keys;
+		$foundKeys = $match[1];
+		$keysArray = preg_split('/,/', $foundKeys);
+		$constraintname = str_replace(' ', '_', implode('_AND', $keysArray));
+		return array(
+				'name' => $constraintname,
+				'keys' => $keysArray
+		);
+	}
+	if (preg_match(
+		'/^CONSTRAINT\ ([a-zA-Z0-9_]+)\ UNIQUE\ \(([a-z0-9_,\ ]+)\),?$/',
+		$line,
+		$match)) {
+		$constraintname = $match[1];
+		$foundKeys = $match[2];
+		$keysArray = preg_split('/,/', $foundKeys);
+		return array(
+				'name' => $constraintname,
+				'keys' => $keysArray
+		);
 	}
 	return false;
 }
@@ -279,9 +295,9 @@ function handleCreateTable(&$schema, &$input, &$line) {
 			if (preg_match('/^\) WITHOUT OIDS;/', $line)) {
 				continue;
 			}
-			if ($uniquekeys = getUnique($line)) {
-				$keyname = str_replace(' ', '_', implode('', $uniquekeys));
-				$schema[$tabName]['unique keys'][$keyname] = $uniquekeys;
+			if ($uniqueconstraints = getUniqueConstraints($line)) {
+				$keyname = $uniqueconstraints['name'];
+				$schema[$tabName]['unique keys'][$keyname] = $uniqueconstraints['keys'];
 				continue;
 			}
 			if ($primaryKey = getPrimaryKey($line)) {
