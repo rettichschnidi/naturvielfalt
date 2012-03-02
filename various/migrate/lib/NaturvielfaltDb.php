@@ -403,7 +403,7 @@ class NaturvielfaltDb extends Db {
 			assert($parent_id == NULL);
 			$prime_father_id = $newid;
 		}
-		$trigger = 200 ;
+		$trigger = 200;
 		if ($parent_id != NULL) {
 			$slowQuery = false;
 			assert($prime_father_id != NULL);
@@ -704,16 +704,93 @@ class NaturvielfaltDb extends Db {
 		assert($attribute_id != null && $attribute_id > 0);
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_attribute_value';
-		$fromQuery = 'FROM ' . $table . ' WHERE number_value = ?';
+		$fromQuery = 'FROM ' . $table
+				. ' WHERE number_value = ? AND organism_attribute_id = ?';
 		$typesArray = array(
+				'integer',
 				'integer'
 		);
 		$valuesArray = array(
-				$number_value
+				$number_value,
+				$attribute_id
 		);
 		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
 		assert($num <= 1);
 		return $num;
+	}
+
+	/**
+	 * @note We are screwed it $text_value should _really_ be 0
+	 */
+	function haveAttributeValueText($attribute_id, $text_value) {
+		assert($text_value != null);
+		assert($attribute_id != null && $attribute_id > 0);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$fromQuery = 'FROM ' . $table
+				. ' WHERE text_value = ? AND organism_attribute_id = ?';
+		$typesArray = array(
+				'text',
+				'integer'
+		);
+		$valuesArray = array(
+				$text_value,
+				$attribute_id
+		);
+		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
+		assert($num <= 1);
+		return $num;
+	}
+
+	/**
+	 * @return id
+	 */
+	function getAttributeValueTextId($attribute_id, $text_value) {
+		assert($text_value != null);
+		assert($attribute_id != null && $attribute_id > 0);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$query = 'SELECT id FROM ' . $table
+				. ' WHERE text_value = ? AND organism_attribute_id = ?';
+		$typesArray = array(
+				'text',
+				'integer'
+		);
+		$valuesArray = array(
+				$text_value,
+				$attribute_id
+		);
+		$num = $this->query($query, $typesArray, $valuesArray);
+		assert(count($num) == 1);
+		return $num[0]['id'];
+	}
+
+	/**
+	 * @return id
+	 */
+	function getAttributeValueNumberId($attribute_id, $number_value) {
+		assert($number_value != null);
+		assert($attribute_id != null && $attribute_id > 0);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$query = 'SELECT id FROM ' . $table
+				. ' WHERE number_value = ? AND organism_attribute_id = ?';
+		$typesArray = array(
+				'integer',
+				'integer'
+		);
+		$valuesArray = array(
+				$number_value,
+				$attribute_id
+		);
+		$num = $this->query($query, $typesArray, $valuesArray);
+		assert(count($num) == 1);
+		if ($num[0]['id'] == NULL) {
+			print "Query '$query' got NULL as anwer.\n";
+			print 
+				"Parameter: number_value = $number_value, organism_attribute_id = $attribute_id\n";
+		}
+		return $num[0]['id'];
 	}
 
 	function createAttributeValueNumber($attribute_id, $number_value) {
@@ -737,6 +814,43 @@ class NaturvielfaltDb extends Db {
 				$newid,
 				$attribute_id,
 				$number_value
+		);
+		$rowcount = $this->insert_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert($rowcount == 1);
+		$ids = $this->getIdArray_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert(count($ids) == 1);
+		return $ids[0];
+	}
+
+	function createAttributeValueText($attribute_id, $text_value) {
+		assert($text_value != NULL);
+		assert($attribute_id != NULL);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$newid = $this->get_nextval(
+				$drupalprefix . 'organism_attribute_value_id_seq');
+		$columnArray = array(
+				'id',
+				'organism_attribute_id',
+				'text_value'
+		);
+		$typesArray = array(
+				'integer',
+				'integer',
+				'text'
+		);
+		$valuesArray = array(
+				$newid,
+				$attribute_id,
+				$text_value
 		);
 		$rowcount = $this->insert_query(
 				$columnArray,

@@ -54,17 +54,54 @@ $organism_classifier_id = 0;
 
 /**
  * add the attribute 'SISF-Nr.',
- * set $organism_attribute_id
+ * set $organism_attribute_sisfnr_id
  */
-$organism_attribute_id = 0;
+$organism_attribute_sisfnr_id = 0;
 {
 	$attribute_name = 'Fungus-Nr.';
 	if (!$db->haveAttributeName($attribute_name)) {
 		$db->createAttribute($attribute_name, 'n');
 	}
-	$organism_attribute_id = $db->getAttributeId($attribute_name);
-	print "Attribute id for '$attribute_name': $organism_attribute_id\n";
-	assert($organism_attribute_id != 0);
+	$organism_attribute_sisfnr_id = $db->getAttributeId($attribute_name);
+	print "Attribute id for '$attribute_name': $organism_attribute_sisfnr_id\n";
+	assert($organism_attribute_sisfnr_id != 0);
+}
+
+/**
+ * add the attribute 'Author',
+ * set $organism_attribute_author_id
+ */
+$organism_attribute_author_id = 0;
+{
+	$attribute_name = 'Author';
+	if (!$db->haveAttributeName($attribute_name)) {
+		$organism_attribute_author_id = $db->createAttribute(
+				$attribute_name,
+				't');
+	} else {
+		$organism_attribute_author_id = $db->getAttributeId($attribute_name);
+	}
+	print "Attribute id for '$attribute_name': $organism_attribute_author_id\n";
+	assert($organism_attribute_author_id != 0);
+}
+
+/**
+ * add the attribute 'Author',
+ * set $organism_attribute_author_id
+ */
+$organism_attribute_firstfind_id = 0;
+{
+	$attribute_name = 'First find';
+	if (!$db->haveAttributeName($attribute_name)) {
+		$organism_attribute_firstfind_id = $db->createAttribute(
+				$attribute_name,
+				'n');
+	} else {
+		$organism_attribute_firstfind_id = $db->getAttributeId($attribute_name);
+	}
+	print 
+		"Attribute id for '$attribute_name': $organism_attribute_firstfind_id\n";
+	assert($organism_attribute_firstfind_id != 0);
 }
 
 /**
@@ -197,10 +234,10 @@ print "ClassificatorId for $classifierName: $classification_id\n";
 			}
 			$classification_name2classification_id[$classification_name] = $classification_id;
 			$classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
-			if(false){
-			 print "New ID: $classification_id\n";
+			if (false) {
+				print "New ID: $classification_id\n";
 			}
-			 assert($classification_id != NULL);
+			assert($classification_id != NULL);
 		}
 		$db->stopTransactionIfPossible();
 	}
@@ -215,6 +252,8 @@ print "Classification done...\n";
 {
 	$scientific_name2organism_id = array();
 	$columns = array(
+			'author',
+			'erstnachweis',
 			'pilzname',
 			'klasse',
 			'fungus_artnr'
@@ -222,6 +261,8 @@ print "Classification done...\n";
 	$sql = "FROM
 				import_fungus_basedata
 			GROUP BY
+				author,
+				erstnachweis,
 				pilzname,
 				klasse,
 				fungus_artnr
@@ -232,7 +273,7 @@ print "Classification done...\n";
 	$rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
 	print "Make sure all " . count($rows) . " species are in DB\n";
 
-	$db->startTransactionIfPossible();
+// 	$db->startTransactionIfPossible();
 	$i = 0;
 	$start = microtime(true);
 	foreach ($rows as $row) {
@@ -246,6 +287,8 @@ print "Classification done...\n";
 		$scientific_name_name = $row['pilzname'];
 		$organism_classification_name = $row['klasse'];
 		$sisf_nr = $row['fungus_artnr'];
+		$author = $row['author'];
+		$firstfind = $row['erstnachweis'];
 		$organism_classification_id = $classification_data['family']['classifications'][$organism_classification_name];
 
 		if (!$db->haveScientificName($scientific_name_name)) {
@@ -254,14 +297,57 @@ print "Classification done...\n";
 					$organism_id,
 					$scientific_name_name);
 			assert($organism_id != 0);
-			if (!$db->haveAttributeValueNumber($organism_attribute_id, $sisf_nr)) {
+			// Add the SISF-Nr. attribute
+			if (!$db->haveAttributeValueNumber(
+					$organism_attribute_sisfnr_id,
+					$sisf_nr)) {
 				$organism_attribute_value_id = $db->createAttributeValueNumber(
-						$organism_attribute_id,
+						$organism_attribute_sisfnr_id,
 						$sisf_nr);
 				$db->createAttributeValueSubscription(
 						$organism_id,
 						$organism_attribute_value_id);
 			}
+			// Add the author attribute
+			if ($db->haveAttributeValueText(
+					$organism_attribute_author_id,
+					$author)) {
+				$organism_attribute_value_id = $db->getAttributeValueTextId(
+						$organism_attribute_author_id,
+						$author);
+				print 
+					"Author $author already exists and has value id $organism_attribute_value_id\n";
+			} else {
+				$organism_attribute_value_id = $db->createAttributeValueText(
+						$organism_attribute_author_id,
+						$author);
+				print 
+					"Author $author created with value id $organism_attribute_value_id\n";
+			}
+			$db->createAttributeValueSubscription(
+					$organism_id,
+					$organism_attribute_value_id);
+
+			// Add the 'first find' attribute
+			if ($db->haveAttributeValueNumber(
+					$organism_attribute_firstfind_id,
+					$firstfind)) {
+				$organism_attribute_value_id = $db->getAttributeValueNumberId(
+						$organism_attribute_firstfind_id,
+						$firstfind);
+				print 
+					"Firstfind $firstfind already exists and has value id $organism_attribute_value_id\n";
+			} else {
+				$organism_attribute_value_id = $db->createAttributeValueNumber(
+						$organism_attribute_firstfind_id,
+						$firstfind);
+				print 
+					"Firstfind $firstfind created with value id $organism_attribute_value_id\n";
+			}
+			$db->createAttributeValueSubscription(
+					$organism_id,
+					$organism_attribute_value_id);
+			// connect the organism to its classification
 			if (!$db->haveOrganismClassificationSubscription(
 					$organism_id,
 					$organism_classification_id)) {
@@ -276,6 +362,6 @@ print "Classification done...\n";
 		$scientific_name2organism_id[$scientific_name_name] = $organism_id;
 		assert($organism_id != 0);
 	}
-	$db->stopTransactionIfPossible();
+// 	$db->stopTransactionIfPossible();
 }
 ?>
