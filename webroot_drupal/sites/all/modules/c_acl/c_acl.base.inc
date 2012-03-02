@@ -32,11 +32,11 @@
  * @author Simon Maurer
  */
 
-variable_set("ACL_RESTRICT", -1);
-variable_set("ACL_DECLINED", 1);
-variable_set("ACL_ASKING", 2);
-variable_set("ACL_PENDING", 3);
-variable_set("ACL_PERMISSION_NOT_SET", 4);
+variable_set("ACL_RESTRICT", 1);
+variable_set("ACL_DECLINED", 2);
+variable_set("ACL_ASKING", 3);
+variable_set("ACL_PENDING", 4);
+variable_set("ACL_PERMISSION_NOT_SET", 5);
 variable_set("ACL_RED_READ", 10);
 variable_set("ACL_READ", 20);
 variable_set("ACL_RED_WRITE", 30);
@@ -52,12 +52,12 @@ variable_set("ACL_ADMIN", 50);
  * @access	public
  * @return	bool					True on success
  */
-function add_group_to_acl($acl_id, $group_id, $level = -1) {
+function add_group_to_acl($acl_id, $group_id, $level = 0) {
 	$res = false;
 	if ($acl_id < 1 || $group_id < 1) {
 		return false;
 	}
-	if ($level < 0) {
+	if ($level == 0) {
 		$level = variable_get("ACL_RED_READ");
 	}
 
@@ -92,12 +92,12 @@ function add_group_to_acl($acl_id, $group_id, $level = -1) {
  * @access	public
  * @return	bool				True on success
  */
-function add_user_to_acl($acl_id, $user_id, $level = -1) {
+function add_user_to_acl($acl_id, $user_id, $level = 0) {
 	$res = false;
 	if ($acl_id < 1 || $user_id < 1) {
 		return false;
 	}
-	if ($level < 0) {
+	if ($level == 0) {
 		$level = variable_get("ACL_RED_READ");
 	}
 
@@ -130,11 +130,11 @@ function add_user_to_acl($acl_id, $user_id, $level = -1) {
  * @access	public
  * @return	bool				True on success
  */
-function check_admin_permission($user_id = -1) {
+function check_admin_permission($user_id = 0) {
 	global $user;
 	$my_user = NULL;
 	$res = FALSE;
-	if ($user_id < 0) {
+	if ($user_id == 0) {
 		$my_user = $user;
 	} else {
 		$my_user = user_load($user_id);
@@ -181,12 +181,12 @@ function check_group_in_acl($acl_id, $group_id) {
  * @access	public
  * @return	bool					TRUE on pass check
  */
-function check_permission($acl_id, $min_level, $user_id = -1,
+function check_permission($acl_id, $min_level, $user_id = 0,
 		$groups_only = FALSE) {
 	global $user;
 	$res = FALSE;
 	$level = 0;
-	if ($user_id < 0) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 
@@ -247,10 +247,10 @@ function check_permission($acl_id, $min_level, $user_id = -1,
  * @access	public
  * @return	bool					TRUE on pass check
  */
-function check_permission_array($acl_ids, $min_level, $user_id = -1) {
+function check_permission_array($acl_ids, $min_level, $user_id = 0) {
 	global $user;
 	
-	if ($user_id < 0) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 	
@@ -269,10 +269,10 @@ function check_permission_array($acl_ids, $min_level, $user_id = -1) {
  * @access	public
  * @return	int					level of user permission
  */
-function check_user_in_acl($acl_id, $user_id = -1) {
+function check_user_in_acl($acl_id, $user_id = 0) {
 	global $user;
 	$res = FALSE;
-	if ($user_id == -1) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 
@@ -303,10 +303,10 @@ function check_user_in_acl($acl_id, $user_id = -1) {
  * @access	public
  * @return	bool
  */
-function check_admin_acl($acl_id, $user_id = -1) {
+function check_admin_acl($acl_id, $user_id = 0) {
 	global $user;
 	$res = FALSE;
-	if ($user_id == -1) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 	if (check_admin_permission($user_id)) {
@@ -328,10 +328,10 @@ function check_admin_acl($acl_id, $user_id = -1) {
  * @access	public
  * @return	bool
  */
-function check_user_owns_acl($acl_id, $user_id = -1) {
+function check_user_owns_acl($acl_id, $user_id = 0) {
 	global $user;
 	$res = FALSE;
-	if ($user_id == -1) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 	$db_res = db_select('acl', 'a')->condition('id', $acl_id)
@@ -353,8 +353,8 @@ function check_user_owns_acl($acl_id, $user_id = -1) {
  * @access	public
  * @return	bool
  */
-function chown_acl($acl_id, $user_id = -1) {
-	if ($user_id == -1) {
+function chown_acl($acl_id, $user_id = 0) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 	$res = db_update('acl')->fields(array('users_id' => $user_id))
@@ -525,7 +525,7 @@ function get_groups_in_acl($acl_id, $level = 0) {
 	$query->join('acl_sgroup', 'ag', 'g.id = ag.sgroup_id');
 	$db_groups = $query->fields('ag', array('level'))
 		->condition('ag.acl_id', $acl_id)
-		->condition('ag.level', $level, '>')
+		->condition('ag.level', $level, '>=')
 		->orderBy('g.name')
 		->execute();
 
@@ -554,7 +554,7 @@ function get_users_in_acl($acl_id, $level = 0, $incl_group = false) {
 	$query->join('acl_users', 'au', 'au.users_id = u.uid');
 	$db_users = $query->fields('au', array('level',))
 		->condition('au.acl_id', $acl_id)
-		->condition('au.level', $level, '>')
+		->condition('au.level', $level, '>=')
 		->condition('u.uid', 0, '!=')
 		->orderBy('u.name')
 		->execute();
@@ -591,10 +591,10 @@ function get_users_in_acl($acl_id, $level = 0, $incl_group = false) {
  * @access	public
  * @return	int						The ID of the new Access Control List
  */
-function new_acl($description = '', $user_id = -1) {
+function new_acl($description = '', $user_id = 0) {
 	global $user;
 	$res = false;
-	if ($user_id == -1) {
+	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
 

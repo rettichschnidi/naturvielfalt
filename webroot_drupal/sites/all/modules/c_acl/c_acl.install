@@ -195,48 +195,48 @@ function c_acl_install() {
 		'
 		ALTER TABLE {acl}
 		ADD CONSTRAINT acl_2_users
-		FOREIGN KEY (users_id) REFERENCES users (uid);
+		FOREIGN KEY (users_id) REFERENCES {users} (uid);
 	');
 	db_query(
 		'
 		ALTER TABLE {acl_users}
 		ADD CONSTRAINT acl_users_2_users
-		FOREIGN KEY (users_id) REFERENCES users (uid);
+		FOREIGN KEY (users_id) REFERENCES {users} (uid);
 	');
 	db_query(
 		'
 		ALTER TABLE {acl_users}
 		ADD CONSTRAINT acl_users_2_acl
-		FOREIGN KEY (acl_id) REFERENCES acl (id);
+		FOREIGN KEY (acl_id) REFERENCES {acl} (id);
 	');
 	db_query(
 		'
 		ALTER TABLE {acl_sgroup}
 		ADD CONSTRAINT acl_sgroup_2_sgroup
-		FOREIGN KEY (sgroup_id) REFERENCES sgroup (id);
+		FOREIGN KEY (sgroup_id) REFERENCES {sgroup} (id);
 	');
 	db_query(
 		'
 		ALTER TABLE {acl_sgroup}
 		ADD CONSTRAINT acl_sgroup_2_acl
-		FOREIGN KEY (acl_id) REFERENCES acl (id);
+		FOREIGN KEY (acl_id) REFERENCES {acl} (id);
 	');
 	db_query(
 		'
 		ALTER TABLE {sgroup}
 		ADD CONSTRAINT sgroup_2_users
-		FOREIGN KEY (users_id) REFERENCES users (uid);
+		FOREIGN KEY (users_id) REFERENCES {users} (uid);
 	');
 	db_query(
 		'
 		ALTER TABLE {sgroup}
 		ADD CONSTRAINT sgroup_2_acl
-		FOREIGN KEY (acl_id) REFERENCES acl (id);
+		FOREIGN KEY (acl_id) REFERENCES {acl} (id);
 	');
 	// add admin group All
 	$acl_id = new_acl();
 	$group_all_id = db_insert('sgroup')->fields(
-			array('name' => 'All',
+			array('name' => 'ALL',
 					'description' => 'All users (including authenticated and anonymous users)',
 					'acl_id' => $acl_id,
 					'users_id' => $user->uid,

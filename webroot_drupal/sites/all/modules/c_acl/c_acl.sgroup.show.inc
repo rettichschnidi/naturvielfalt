@@ -34,24 +34,37 @@ function sgroup_show($sgroup_id) {
 				),
 		);
 		// get all members of group
-		$acl_users = get_users_in_acl($record->acl_id, variable_get("ACL_PERMISSION_NOT_SET"));
+		$acl_users = get_users_in_acl(
+			$record->acl_id,
+			variable_get("ACL_PENDING"));
 		$users = array();
 		// generate array with user info
+		$user_is_invited = FALSE;
 		$user_is_member = FALSE;
 		$user_is_owner = FALSE;
 		foreach ($acl_users as $acl_user) {
-			$name = $acl_user->name;
-			if ($acl_user->uid == $record->users_id) {
-				$name .= " (" . t('Owner') . ")";
-			}
-			$name = l($name, 'user/' . $acl_user->uid);
-			if ($acl_user->uid == $user->uid) {
-				$user_is_member = TRUE;
-				if ($user->uid == $record->users_id) {
-					$user_is_owner = TRUE;
+			if ($acl_user->level > variable_get("ACL_PERMISSION_NOT_SET")) {
+				// add only active members to list
+				$name = $acl_user->name;
+				if ($acl_user->uid == $record->users_id) {
+					// this user is owner of the group
+					$name .= " (" . t('Owner') . ")";
 				}
+				$name = l($name, 'user/' . $acl_user->uid);
+				if ($acl_user->uid == $user->uid) {
+					// active user is member
+					$user_is_member = TRUE;
+					if ($user->uid == $record->users_id) {
+						// active user is owner
+						$user_is_owner = TRUE;
+					}
+				}
+				$users[] = $name;
+			} else if (($acl_user->uid == $user->uid)
+					&& ($acl_user->level == variable_get("ACL_PENDING"))) {
+				// active user is invited
+				$user_is_invited = TRUE;
 			}
-			$users[] = $name;
 		}
 		// display group members in collapsible box mentioned above  
 		$output['member']['list'] = array(
@@ -62,28 +75,43 @@ function sgroup_show($sgroup_id) {
 						'#items' => $users,
 				),
 		);
-		// check if active user is member of group but not owner
-		if ($user_is_member && !$user_is_owner) {
+		// check if user is invited to group
+		if ($user_is_invited) {
 			// display box with buttons
 			$output['box1'] = array(
 					'#type' => 'fieldset',
 					'#weight' => 20,
 					'#collapsible' => FALSE,
 			);
-			// provide possibility to leave group
+			// provide possibility to accept, decline or remove group
 			$output['quit_group'] = array(
-					'#markup' => t(
-						'If you wish to quit membership of this group, click the button "Leave Group" below.'),
+					'#markup' => t('You are invited to this group') . '. '
+							. t(
+								'You can accept or decline membership to the group by clicking "@accept" or "@decline" below.',
+								array('@accept' => t('Accept'),
+										'@decline' => t('Decline'),
+								)) . ' '
+							. t(
+								'By clicking "@remove" you will decline membership and the group will be removed from your "@pending" list.',
+								array('@remove' => t('Remove'),
+										'@pending' => t('Pending Membership'),
+								)),
 					'#weight' => 10,
 			);
-			//$form_state['storage']['acl_id'] = $record->acl_id;
+			$item = array(
+					'accept' => TRUE,
+					'decline' => TRUE,
+					'remove' => TRUE,
+			);
 			$output['box1']['form'] = drupal_get_form(
-				'sgroup_quit_form',
-				$record->acl_id);
+				// this form can be found in the file c_acl.sgroup.invite.inc
+				'sgroup_invite_form',
+				$record,
+				$item);
 			$output['form']['#weight'] = 11;
 		}
-		// check if active user neither member nor owner of group
-		if (!$user_is_member && !$user_is_owner) {
+		// check if active user is member of group but not owner
+ else if ($user_is_member && !$user_is_owner) {
 			// display box with buttons
 			$output['box2'] = array(
 					'#type' => 'fieldset',
@@ -91,17 +119,37 @@ function sgroup_show($sgroup_id) {
 					'#collapsible' => FALSE,
 			);
 			// provide possibility to leave group
+			$output['quit_group'] = array(
+					'#markup' => t(
+						'If you wish to quit membership of this group, click the button "@leave" below.',
+						array('@leave' => t('Leave Group'))),
+					'#weight' => 10,
+			);
+			//$form_state['storage']['acl_id'] = $record->acl_id;
+			$output['box2']['form'] = drupal_get_form(
+				'sgroup_quit_form',
+				$record->acl_id);
+			$output['form']['#weight'] = 11;
+		}
+		// check if active user neither member nor owner of group
+ else if (!$user_is_member && !$user_is_owner) {
+			// display box with buttons
+			$output['box3'] = array(
+					'#type' => 'fieldset',
+					'#weight' => 20,
+					'#collapsible' => FALSE,
+			);
+			// provide possibility to leave group
 			$output['join_group'] = array(
 					'#markup' => t(
-						'If you wish to join this group, click the button')
-							. ' "' . t("Request Membership") . '" '
-							. t('below') . '.',
+						'If you wish to join this group, click the button "@request" below.',
+						array('@request' => t("Request Membership"),)),
 					'#weight' => 10,
 			);
 			$item = array(
 					'request' => TRUE,
 			);
-			$output['box2']['form'] = drupal_get_form(
+			$output['box3']['form'] = drupal_get_form(
 				// this form can be found in the file c_acl.sgroup.invite.inc
 				'sgroup_invite_form',
 				$record,

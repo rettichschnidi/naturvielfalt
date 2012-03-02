@@ -16,13 +16,14 @@ function sgroup_member($sgroup_id) {
 		// set group name as title
 		drupal_set_title(t("Group Members"));
 		// display group description
+		$save_txt = t('Save');
 		$output['description'] = array(
 				'#markup' => t(
 					'Invite users to your group by adding them to the table below with help of the autocompletion form')
 						. '. '
 						. t(
-							'To remove a user from a group use the delete checkbox in the table and click on')
-						. ' "' . t('Save') . '".',
+							'To remove a user from a group use select the corresponding action in the table and click on "@save"',
+							array('@save' => $save_txt,)) . '.',
 		);
 		$acl_id = $record->acl_id;
 		// get users from acl
@@ -56,7 +57,7 @@ function sgroup_member_form($form, &$form_state, $users, $acl_id, $group) {
 	$tableHeader = array();
 	$tableHeader[] = t('Username');
 	$tableHeader[] = t('Membership');
-	$tableHeader[] = t('Action');
+	$tableHeader[] = t('Operation');
 
 	$rows = array();
 
@@ -193,9 +194,10 @@ function sgroup_member_form_submit($form, &$form_state) {
 		if (!add_user_to_acl($acl_id, $add_user_id, $level)) {
 			drupal_set_message(
 				t(
-					'Error occured during user invitation change (user_id = "'
-							. $user_id . '" / main acl, acl_id = "' . $acl_id
-							. '")'),
+					'Error occured during user invitation change (user_id = "@user_id" / main acl, acl_id = "@acl_id")',
+					array('@user_id' => $user_id,
+							'@acl_id' => $acl_id,
+					)),
 				'error');
 			$error++;
 		} else {
@@ -223,9 +225,10 @@ function sgroup_member_form_submit($form, &$form_state) {
 		if (!delete_user_from_acl($acl_id, $rm_user_id)) {
 			drupal_set_message(
 				t(
-					'Error occured during remove user from acl (user_id = "'
-							. $user_id . '" / main acl, acl_id = "' . $acl_id
-							. '")'),
+					'Error occured during remove user from acl (user_id = "@user_id" / main acl, acl_id = "@acl_id")',
+					array('@user_id' => $user_id,
+							'@acl_id' => $acl_id,
+					)),
 				'error');
 			$error++;
 		} else {
@@ -248,10 +251,12 @@ function sgroup_member_form_submit($form, &$form_state) {
 	}
 
 	if (($add_user > 0) && ($error == 0)) {
-		drupal_set_message($add_user . t(' user invited to Group'));
+		drupal_set_message(
+			t('@user user invited to Group', array('@user' => $add_user,)));
 	}
 	if (($rm_user > 0) && ($error == 0)) {
-		drupal_set_message($rm_user . t(' user removed from Group'));
+		drupal_set_message(
+			t('@user user removed from Group', array('@user' => $rm_user,)));
 	}
 }
 
@@ -267,33 +272,43 @@ function sgroup_member_mail($key, &$message, $params) {
 	case 'invitation':
 	// send email to user indication that he was invited to a group
 		$message['subject'] = t(
-			'Invitation to Group' . ' ' . $params['group_name']);
+			'Invitation to group @group',
+			array('@group' => $params['group_name'],));
 		$message['body'] = array(
-				t('Dear') . ' ' . $params['user_name'],
-				t('You have been invited to join the group ')
-						. l(
-							$params['group_name'],
-							'sgroup/' . $params['group_id']),
-				t('To join the group please visit your') . ' '
-						. l(
-							t('user profile'),
-							'user/' . $params['user_id'] . '/sgroup') . ' '
-						. t('and accept the invitation') . '.',
+				t('Dear @user', array('@user' => $params['user_name'])),
+				t(
+					'You have been invited to join the group "@group".',
+					array('@group' => l(
+								$params['group_name'],
+								'sgroup/' . $params['group_id']),
+					)),
+				t(
+					'To join the group please visit your @user_profile and accept the invitation.',
+					array('@user_profile' => l(
+								t('user profile'),
+								'user/' . $params['user_id'] . '/sgroup'),
+					)),
 		);
 		break;
 	case 'remove':
 	// send email to user indication that he was removed from group
 		$message['subject'] = t(
-			'You were removed from Group' . ' ' . $params['group_name']);
+			'You were removed from group @group',
+			array('@group' => $params['group_name'],));
 		$message['body'] = array(
-				t('Dear') . ' ' . $params['user_name'],
-				t('You have been removed from the group ')
-						. l(
-							$params['group_name'],
-							'sgroup/' . $params['group_id']),
-				t('You can see a list of groups you are member of') . ' '
-						. l(t('here'), 'user/' . $params['user_id'] . '/sgroup')
-						. '.',
+				t('Dear @user', array('@user' => $params['user_name'],)),
+				t(
+					'You have been removed from the group @group.',
+					array('@group' => l(
+								$params['group_name'],
+								'sgroup/' . $params['group_id']),
+					)),
+				t(
+					'You can see a list of groups you are member of @here.',
+					array('@here' => l(
+								t('here'),
+								'user/' . $params['user_id'] . '/sgroup'),
+					)),
 		);
 		break;
 	}
@@ -318,17 +333,22 @@ function sgroup_invite($sgroup_id) {
 		// display group description
 		$output['description'] = array(
 				'#markup' => t(
-					'You can accept or decline membership to the group') . ' '
-						. $record->name . ' ' . t('by clicking') . ' "'
-						. t('Accept') . '" ' . t('or') . ' "' . t('Decline')
-						. '" ' . t('below') . '. ' . t('By clicking') . ' "'
-						. t('Remove') . '", '
+					'You can accept or decline membership to the group, @group by clicking "@accept" or "@decline" below.',
+					array('@group' => $record->name,
+							'@accept' => t('Accept'),
+							'@decline' => t('Decline'),
+					)) . ' '
 						. t(
-							'you will decline membership and the group will be removed from your')
-						. ' "' . t('Pending Membership') . '" ' . t('list')
-						. '. ' . t('Click') . ' '
-						. l(t('here'), 'user/' . $user->uid . '/sgroup') . ' '
-						. t('to abort.'),
+							'By clicking "@remove" you will decline membership and the group will be removed from your "@list" list.',
+							array('@remove' => t('Remove'),
+									'@list' => t('Pending Membership'),
+							)) . ' '
+						. t(
+							'Click @here to abort.',
+							array('@here' => l(
+										t('here'),
+										'user/' . $user->uid . '/sgroup'),
+							)),
 		);
 
 		// display collapsible box with all group members
@@ -429,7 +449,9 @@ function sgroup_invite_form_accept_submit($form, &$form_state) {
 	$error = TRUE;
 	if (add_user_to_acl($acl_id, $user->uid, variable_get("ACL_READ"))) {
 		drupal_set_message(
-			t('You were added as member to the group') . ' ' . $sgroup_name);
+			t(
+				'You were added as member to the group @group',
+				array('@group' => $sgroup_name,)));
 		$error = FALSE;
 	}
 	if ($error) {
@@ -455,7 +477,9 @@ function sgroup_invite_form_decline_submit($form, &$form_state) {
 	$error = TRUE;
 	if (add_user_to_acl($acl_id, $user->uid, variable_get("ACL_DECLINED"))) {
 		drupal_set_message(
-			t('You declined membership to the group') . ' ' . $sgroup_name);
+			t(
+				'You declined membership to the group @group',
+				array('@group' => $sgroup_name,)));
 		$error = FALSE;
 	}
 	if ($error) {
@@ -481,8 +505,9 @@ function sgroup_invite_form_remove_submit($form, &$form_state) {
 	$error = TRUE;
 	if (delete_user_from_acl($acl_id, $user->uid)) {
 		drupal_set_message(
-			t('You declined membership to the group') . ' ' . $sgroup_name
-					. ' ' . t('and were removed.'));
+			t(
+				'You declined membership to the group @group and were removed',
+				array('@group' => $sgroup_name,)));
 		$error = FALSE;
 	}
 	if ($error) {
@@ -508,7 +533,9 @@ function sgroup_invite_form_request_submit($form, &$form_state) {
 	$error = TRUE;
 	if (add_user_to_acl($acl_id, $user->uid, variable_get("ACL_ASKING"))) {
 		drupal_set_message(
-			t('You required membership to the group') . ' ' . $sgroup_name);
+			t(
+				'You required membership to the group @group',
+				array('@group' => $sgroup_name,)));
 		$my_user = user_load($form_state['storage']['group_owner']);
 		$emailTo = $my_user->mail;
 		$params = array(
@@ -553,15 +580,20 @@ function sgroup_request($sgroup_id) {
 
 		// display group description
 		$output['description'] = array(
-				'#markup' => t('You can request membership to the group') . ' '
-						. $record->name . ' ' . t('by clicking') . ' "'
-						. t('Request Membership') . '" '
+				'#markup' => t(
+					'You can request membership to the group @group by clicking "@request" or remove 
+					the group from your "@pending" list by clicking "@remove" below.',
+					array('@group' => $record->name,
+							'@request' => t('Request Membership'),
+							'@pending' => t('Pending Membership'),
+							'@remove' => t('Remove'),
+					)) . ' '
 						. t(
-							'or remove the group from your "Pending Membership" list by clicking')
-						. ' "' . t('Remove') . '" ' . t('below') . '. '
-						. t('Click') . ' '
-						. l(t('here'), 'user/' . $user->uid . '/sgroup') . ' '
-						. t('to abort.'),
+							'Click @here to abort.',
+							array('@here' => l(
+										t('here'),
+										'user/' . $user->uid . '/sgroup'),
+							)),
 		);
 
 		// display box buttons
@@ -595,22 +627,24 @@ function sgroup_member_request_mail($key, &$message, $params) {
 	switch ($key) {
 	case 'request':
 	// send email to group owner to indicate that a user requestet membership
-		$message['subject'] = $params['user_name'] . ' '
-				. t('is requesting membership to Group') . ' '
-				. $params['group_name'];
+		$message['subject'] = t(
+			'@user is requesting membership to Group',
+			array('@user' => $params['user_name'],));
 		$message['body'] = array(
-				t('Dear') . ' ' . $params['group_owner_name'],
-				t('The user') . ' ' . $params['user_name'] . ' '
-						. t('requests membership to your group') . ' '
-						. l(
-							$params['group_name'],
-							'sgroup/' . $params['group_id']),
-				t('To grant or decline hid membership to the group go to the')
-						. ' '
-						. l(
-							t('grpoup member management'),
-							'sgroup/' . $params['group_id'] . '/member') . ' '
-						. t('and change the user status') . '.',
+				t('Dear @owner', array('@owner' => $params['group_owner_name'])),
+				t(
+					'The user @user requests membership to your group @group.',
+					array('@user' => $params['user_name'],
+							'@group' => l(
+								$params['group_name'],
+								'sgroup/' . $params['group_id']),
+					)),
+				t(
+					'To grant or decline his membership to the group, go to the @link and change the user status.',
+					array('@link' => l(
+								t('grpoup member management'),
+								'sgroup/' . $params['group_id'] . '/member'),
+					)),
 		);
 		break;
 	}

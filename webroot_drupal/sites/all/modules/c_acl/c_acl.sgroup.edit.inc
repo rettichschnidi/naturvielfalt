@@ -7,9 +7,10 @@
  */
 function sgroup_edit($sgroup_id) {
 	// display short instruction text
+	$save_txt = t('Save');
 	$output['introduction'] = array(
 			'#markup' => t(
-				'Edit the group name and description. When finished click "Save".'),
+				'Edit the group name and description. When finished click "@save".', array('@save' => $save_txt)),
 	);
 
 	$db_group = db_select('sgroup', 'g')->fields('g')
