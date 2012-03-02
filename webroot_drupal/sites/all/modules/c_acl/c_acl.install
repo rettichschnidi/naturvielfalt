@@ -236,7 +236,7 @@ function c_acl_install() {
 	// add admin group All
 	$acl_id = new_acl();
 	$group_all_id = db_insert('sgroup')->fields(
-			array('name' => 'All',
+			array('name' => 'ALL',
 					'description' => 'All users (including authenticated and anonymous users)',
 					'acl_id' => $acl_id,
 					'users_id' => $user->uid,
