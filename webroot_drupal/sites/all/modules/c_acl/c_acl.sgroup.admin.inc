@@ -7,9 +7,11 @@
  */
 function sgroup_admin($sgroup_id) {
 	// display short instruction text
+	$save_txt = t('Save');
 	$render_array['introduction'] = array(
 			'#markup' => t(
-				'Administrate the group permissions. When finished click "Save".'),
+				'Administrate the group permissions. When finished click "@save".',
+				array('@save' => $save_txt,)),
 			'#weight' => 1,
 	);
 	// get group infos
@@ -75,8 +77,8 @@ function sgroup_admin($sgroup_id) {
 	} else {
 		drupal_set_message(
 			t(
-				'Error occured permission settings load (group_id = "'
-						. $sgroup_id . '" does not exist).'),
+				'Error occured permission settings load (group_id = "@group_id" does not exist).',
+				array('@group_id' => $sgroup_id,)),
 			'error');
 	}
 

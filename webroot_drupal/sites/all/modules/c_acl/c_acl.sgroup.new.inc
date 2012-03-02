@@ -10,7 +10,8 @@ function sgroup_new() {
 	// display short instruction text
 	$output['introduction'] = array(
 			'#markup' => t(
-				'Please enter a name for your new group and click on "Create Group".'),
+				'Please enter a name for your new group and click on "@create".',
+				array('@create' => t('Create Group'))),
 	);
 	$output['form'] = drupal_get_form('sgroup_new_form');
 
@@ -81,6 +82,6 @@ function sgroup_new_save($form, &$form_state) {
 			'error');
 	}
 
-	return $form_state['redirect'] = 'sgroup/'.$sgid.'/acl';
+	return $form_state['redirect'] = 'sgroup/' . $sgid . '/acl';
 }
 ?>

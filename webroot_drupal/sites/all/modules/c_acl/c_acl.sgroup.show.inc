@@ -87,14 +87,15 @@ function sgroup_show($sgroup_id) {
 			$output['quit_group'] = array(
 					'#markup' => t('You are invited to this group') . '. '
 							. t(
-								'You can accept or decline membership to the group by clicking')
-							. ' "' . t('Accept') . '" ' . t('or') . ' "'
-							. t('Decline') . '" ' . t('below') . '. '
-							. t('By clicking') . ' "' . t('Remove') . '", '
+								'You can accept or decline membership to the group by clicking "@accept" or "@decline" below.',
+								array('@accept' => t('Accept'),
+										'@decline' => t('Decline'),
+								)) . ' '
 							. t(
-								'you will decline membership and the group will be removed from your')
-							. ' "' . t('Pending Membership') . '" ' . t('list')
-							. '. ',
+								'By clicking "@remove" you will decline membership and the group will be removed from your "@pending" list.',
+								array('@remove' => t('Remove'),
+										'@pending' => t('Pending Membership'),
+								)),
 					'#weight' => 10,
 			);
 			$item = array(
@@ -120,7 +121,8 @@ function sgroup_show($sgroup_id) {
 			// provide possibility to leave group
 			$output['quit_group'] = array(
 					'#markup' => t(
-						'If you wish to quit membership of this group, click the button "Leave Group" below.'),
+						'If you wish to quit membership of this group, click the button "@leave" below.',
+						array('@leave' => t('Leave Group'))),
 					'#weight' => 10,
 			);
 			//$form_state['storage']['acl_id'] = $record->acl_id;
@@ -140,9 +142,8 @@ function sgroup_show($sgroup_id) {
 			// provide possibility to leave group
 			$output['join_group'] = array(
 					'#markup' => t(
-						'If you wish to join this group, click the button')
-							. ' "' . t("Request Membership") . '" '
-							. t('below') . '.',
+						'If you wish to join this group, click the button "@request" below.',
+						array('@request' => t("Request Membership"),)),
 					'#weight' => 10,
 			);
 			$item = array(

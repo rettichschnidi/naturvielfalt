@@ -111,8 +111,13 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 																		              || ($group->level
 																		                      > variable_get("ACL_PERMISSION_NOT_SET")))*/) {
 				$row = array();
+				$name = $group->name;
+				if(isset($group->default)) {
+					$name = t($group->name);
+				}
+				
 				$row[] = array(
-						'data' => l($group->name, 'sgroup/' . $group->id),
+						'data' => l($name, 'sgroup/' . $group->id),
 						'style' => 'min-width:80px',
 				);
 
@@ -353,9 +358,10 @@ function c_acl_form_submit($form, &$form_state) {
 		if (!add_group_to_acl($acl_id, $group_id, $level)) {
 			drupal_set_message(
 				t(
-					'Error occured during group permission change (group_id = "'
-							. $group_id . '" / main acl, acl_id = "' . $acl_id
-							. '")'),
+					'Error occured during group permission change (group_id = "@group_id" / main acl, acl_id = "@acl_id")',
+					array('@group_id' => $group_id,
+							'@acl_id' => $acl_id,
+					)),
 				'error');
 			$error++;
 		}
@@ -368,9 +374,10 @@ function c_acl_form_submit($form, &$form_state) {
 			if (!add_group_to_acl($acl_id, $group_old->id, $group_old->level)) {
 				drupal_set_message(
 					t(
-						'Error occured during group permission change (group_id = "'
-								. $group_old->id . '" / main acl, acl_id = "'
-								. $acl_id . '")'),
+						'Error occured during group permission change (group_id = "@group_id" / main acl, acl_id = "@acl_id")',
+						array('@group_id' => $group_id,
+								'@acl_id' => $acl_id,
+						)),
 					'error');
 				$error++;
 			}
@@ -382,9 +389,10 @@ function c_acl_form_submit($form, &$form_state) {
 		if (!add_user_to_acl($acl_id, $user_id, $level)) {
 			drupal_set_message(
 				t(
-					'Error occured during user permission change (user_id = "'
-							. $user_id . '" / main acl, acl_id = "' . $acl_id
-							. '")'),
+					'Error occured during user permission change (user_id = "@user_id" / main acl, acl_id = "@acl_id")',
+					array('@user_id' => $user_id,
+							'@acl_id' => $acl_id,
+					)),
 				'error');
 			$error++;
 		}
@@ -397,10 +405,11 @@ function c_acl_form_submit($form, &$form_state) {
 			if (!add_user_to_acl($acl_id, $user_old->uid, $user_old->level)) {
 				drupal_set_message(
 					t(
-						'Error occured during group permission change (group_id = "'
-								. $user_old->uid . '" / main acl, acl_id = "'
-								. $acl_id . '")'),
-					'error');
+					'Error occured during user permission change (user_id = "@user_id" / main acl, acl_id = "@acl_id")',
+					array('@user_id' => $user_id,
+							'@acl_id' => $acl_id,
+					)),
+				'error');
 				$error++;
 			}
 		}
@@ -428,23 +437,30 @@ function c_acl_form_submit($form, &$form_state) {
 		drupal_set_message(t('Permission changes saved in main element'));
 		if ($child_set > 0) {
 			// display count of set child elements
-			$txt = 'Permission changes saved in ' . $child_set
-					. ' child element';
+			$txt = t('Permission changes saved in') . ' ' . $child_set . ' '
+					. t('child element');
 			$txt .= ($child_set > 1) ? 's' : '';
 			drupal_set_message(t($txt));
 		}
 		if ($child_fail > 0) {
 			// display count of failed child elements
-			$txt = 'Permission denied for ' . $child_fail . ' child element';
-			$txt .= ($child_fail > 1) ? 's' : '';
-			drupal_set_message(t($txt), 'warning');
+			if ($child_fail > 1) {
+				$txt = t(
+					'Permission denied for @cnt child elements',
+					array('@cnt' => $child_fail));
+			} else {
+				$txt = t('Permission denied for one child element');
+			}
+			drupal_set_message($txt, 'warning');
 		}
 	} else {
 		// show only overview of failed actions. Error messages have already been displayed
 		drupal_set_message(
 			t(
-				'Only ' . ($acl_count - $error) . ' of ' . $acl_count
-						. ' entries have been saved'),
+				'Only @ok_cnt of @cnt entries have been saved',
+				array('@ok_cnt' => ($acl_count - $error),
+						'@cnt' => $acl_count
+				)),
 			'warning');
 	}
 }
