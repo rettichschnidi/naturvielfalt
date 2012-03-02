@@ -62,7 +62,7 @@ function sgroup_admin($sgroup_id) {
 					(object) array(
 							'id' => $record->id,
 							'name' => $record->name,
-							'level' => variable_get("ACL_RED_READ"),
+							'level' => variable_get("ACL_READ"),
 					),
 			);
 		}
