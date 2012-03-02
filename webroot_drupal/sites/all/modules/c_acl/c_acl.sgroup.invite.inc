@@ -22,7 +22,7 @@ function sgroup_member($sgroup_id) {
 					'Invite users to your group by adding them to the table below with help of the autocompletion form')
 						. '. '
 						. t(
-							'To remove a user from a group use the delete checkbox in the table and click on "@save"',
+							'To remove a user from a group use select the corresponding action in the table and click on "@save"',
 							array('@save' => $save_txt,)) . '.',
 		);
 		$acl_id = $record->acl_id;
@@ -57,7 +57,7 @@ function sgroup_member_form($form, &$form_state, $users, $acl_id, $group) {
 	$tableHeader = array();
 	$tableHeader[] = t('Username');
 	$tableHeader[] = t('Membership');
-	$tableHeader[] = t('Action');
+	$tableHeader[] = t('Operation');
 
 	$rows = array();
 

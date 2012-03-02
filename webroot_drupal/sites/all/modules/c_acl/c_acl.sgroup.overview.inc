@@ -16,7 +16,7 @@ function sgroup_overview($user_id) {
 				'Groups are designed to share inventories with other users. You can !link
 		and invite others to join you. Currently you are member of following groups:',
 				array('!link' => l(
-							'create your own group',
+							t('create your own group'),
 							'user/' . $user->uid . '/sgroup/new')
 				)),
 	);
@@ -163,7 +163,7 @@ function _sgroup_member_group_table($user_id) {
 			// write permission on group ok
 			$row[] = array(
 					'data' => l(
-						t('Edit Group'),
+						t('Edit'),
 						'sgroup/' . $record->id . '/edit'),
 					'width' => $permission_len,
 			);
@@ -178,7 +178,7 @@ function _sgroup_member_group_table($user_id) {
 			// admin permission on group ok
 			$row[] = array(
 					'data' => l(
-						t('Member'),
+						t('Members'),
 						'sgroup/' . $record->id . '/member'),
 					'width' => $permission_len,
 			);
