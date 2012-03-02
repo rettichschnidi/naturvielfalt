@@ -54,9 +54,15 @@ jQuery(document).ready( function () {
 			marker = '<span class="warning">*</span>';	
 			elemStr = $(this).val();
 			if (elemStr !== '') {
+				try {
+					elem = $.parseJSON(elemStr);
+				}
+				catch(e) {
+					return;
+				}
+				
 				$("#tabs-wrapper").after('<div class="messages warning"><h2 class="element-invisible">Error message</h2>'
 						+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this user	') + '</div>');
-				elem = $.parseJSON(elemStr);
 				/*
 				// reset input value and copy line
 				$(this).val('');
@@ -95,7 +101,12 @@ jQuery(document).ready( function () {
 			var elemStr, elem, line, marker;
 			elemStr = $(this).val();
 			if (elemStr !== '') {
-				elem = $.parseJSON(elemStr);
+				try {
+					elem = $.parseJSON(elemStr);
+				}
+				catch(e) {
+					return;
+				}
 				marker = '<span class="warning">*</span>';
 				if ($("#mymsgbox").length === 0) {
 					$("#tabs-wrapper").after('<div id="mymsgbox" class="messages warning"><h2 class="element-invisible">Error message</h2>'
