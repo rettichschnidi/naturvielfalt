@@ -9,9 +9,21 @@
  *
  */
 
+$debug = true;
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set('display_errors', 1);
+ini_set('error_log', $_SERVER["DOCUMENT_ROOT"].'/webservice/php.log');
+
+//phpinfo();
+// die('yeah');
+
+if($debug) webservice_log('------------------------------------------------------');
+if($debug) webservice_log('Start add a Observation');
+
 $successful = true;
 
-define('DRUPAL_ROOT', dirname(__FILE__) . '/../../../../');
+//define('DRUPAL_ROOT', dirname(__FILE__) . '/../../../../');
+define('DRUPAL_ROOT', dirname(__FILE__) . '/..');
 require_once(DRUPAL_ROOT . '/includes/bootstrap.inc');
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
@@ -20,6 +32,7 @@ function auth() {
 	header('HTTP/1.0 401 Unauthorized');
 
 	echo 'FAIL: Please authorize';
+	if($debug) webservice_log('FAIL: Please authorize');
 	exit;
 }
 
@@ -36,22 +49,32 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 	if ($uid) {
 
-		$organism = @$_POST['organism'];
-		$type = @$_POST['type'];
-		$count = @$_POST['count'];
-		$date = @$_POST['date'];
-		$accuracy = @$_POST['accuracy'];
-		$author = @$_POST['author'];
-		$longitude = @$_POST['longitude'];
-		$latitude = @$_POST['latitude'];
+		$request = $_POST;
+
+		if(!$request) die('FAIL');
+
+		$organism = @$request['organism'] ? $request['organism'] : "";
+		$type = @$request['type'] ? $request['type'] : "";
+		$count = @$request['count'] ? $request['count'] : 1;
+		$date = @$request['date'] ? $request['date'] : "";
+		$accuracy = @$request['accuracy'] ? $request['accuracy'] : 0;
+		$author = @$request['author'] ? $request['author'] : "";
+		$longitude = @$request['longitude'] ? $request['longitude'] : "";
+		$latitude = @$request['latitude'] ? $request['latitude'] : "";
 		// $comment = @$_POST['comment']; // noch nicht komplett implementiert
+
+		if($debug) webservice_log('request :'.var_export($request, true) );
 
 		// FIXME Dieses Daten müssen allesammt validiert werden BEVOR diese auf die DB aufschlagen...
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
 
+		if($debug) webservice_log('reverseGeocode: '.var_export($jsondata, true));
+
 		// get head_inventory_id
 		$head = _inventory_single_get_id($user);
+
+		if($debug) webservice_log('head_inventory_id: '.$head);
 
 		// check for existing inventory
 		$inventory = db_select('inventory', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('head_inventory_id', $head)->execute()->fetchField();
@@ -59,14 +82,19 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		if (!$inventory) {
 			// inventory doesn't exist, create it
 			$inventory = db_insert('inventory')->fields(array('inventory_type_id' => $type, 'head_inventory_id' => $head))->execute();
+			if($debug) webservice_log('create inventory');
+		}else{
+			if($debug) webservice_log('use existing inventory');
 		}
+
+		if($debug) webservice_log('inventory_id: '.$inventory);
 
 		// Get location based information
 		$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
 		if(!$zip) {
 			$zip = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['PostalCode']['PostalCodeNumber'];
 		}
-			
+
 		$city = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['Locality']['LocalityName'];
 		if(!$city) {
 			$city = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['LocalityName'];
@@ -75,8 +103,24 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		$country = $jsondata['Placemark'][0]['AddressDetails']['Country']['CountryName'];
 		$canton = $jsondata['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['AdministrativeAreaName'];
 
+		if(!$zip) $zip = "0";
+		if(!$city) $city = '';
+		if(!$country) $country = '';
+		if(!$canton) $canton = '';
+
 		// Create the entry insert
-		$entry = db_insert('inventory_entry')->fields(array('organism_id' => $organism, 'inventory_id' => $inventory, 'position' => 0, 'accuracy' => $accuracy, 'zip' => $zip, 'township' => $city, 'canton' => $canton, 'country' => $country))->execute();
+		$entry = db_insert('inventory_entry')->fields(array(
+														'organism_id' => $organism,
+														'inventory_id' => $inventory,
+														'position' => 0,
+														'accuracy' => $accuracy,
+														'zip' => $zip,
+														'township' => $city,
+														'canton' => $canton,
+														'country' => $country
+														))->execute();
+
+		if($debug) webservice_log('Inventory entry id: '.$entry);
 
 		// Add Funddatum, Beobachter und Amount and other dynamic attributes
 		if($entry) {
@@ -111,14 +155,19 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 		if($successful) {
 			echo 'SUCCESS';
+			if($debug) webservice_log('SUCCESS');
 		} else {
 			echo 'Some went wrong.. Please check the submitData.php file on the Swissmon Webserver.';
+			if($debug) webservice_log('FAIL');
 		}
 
 	} else {
 		auth();
 	}
 }
+
+if($debug) webservice_log('END');
+if($debug) webservice_log('------------------------------------------------------------------');
 
 /**
  * Create a copy of the uploaded image at the right path and create all necesarry
@@ -130,6 +179,7 @@ function storeImage($entry, $uid, $author) {
 	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 
+	if($debug) webservice_log('try to store image: '. $target_path);
 	// echo 'Folder: ' . $folder;
 	// echo 'Target path: ' . $target_path;
 
@@ -150,9 +200,11 @@ function storeImage($entry, $uid, $author) {
 			$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $author, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
 		} else {
 			$successful = false;
+			if($debug) webservice_log('db insert fail (file_managed)');
 		}
 	} else {
 		$successful = false;
+		if($debug) webservice_log("can't move file");
 	}
 }
 
@@ -189,4 +241,16 @@ function reverseGeocode($longitude, $latitude) {
 	}
 
 	return $jsondata;
+}
+
+
+function webservice_log($message = NULL, $type = NULL, $ip= NULL){
+	if(empty($ip)){
+		$ip=$_SERVER['REMOTE_ADDR'];
+		$ipr=gethostbyaddr($_SERVER['REMOTE_ADDR']);
+	}
+	$logline = @date("d.m.Y") ." ". @date("H:i:s") ." ". $_SERVER['PHP_AUTH_USER'] ." ". $type ." ". $ip ." ". $ipr." ". $message ."\n";
+	$newsletterlog = fopen($_SERVER["DOCUMENT_ROOT"].'/webservice/data.log','a');
+	fwrite($newsletterlog,$logline);
+	fclose($newsletterlog);
 }
