@@ -273,7 +273,7 @@ print "Classification done...\n";
 	$rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
 	print "Make sure all " . count($rows) . " species are in DB\n";
 
-// 	$db->startTransactionIfPossible();
+	$db->startTransactionIfPossible();
 	$i = 0;
 	$start = microtime(true);
 	foreach ($rows as $row) {
@@ -362,6 +362,6 @@ print "Classification done...\n";
 		$scientific_name2organism_id[$scientific_name_name] = $organism_id;
 		assert($organism_id != 0);
 	}
-// 	$db->stopTransactionIfPossible();
+	$db->stopTransactionIfPossible();
 }
 ?>
