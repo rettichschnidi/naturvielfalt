@@ -215,7 +215,7 @@ function organism_show_organism($organismid) {
 			 */
 			$render_array['attributes'][$attributename]['#markup'] .= implode(
 				', ',
-				$attributevalues);
+				$attributevalues) . "<br/>";
 		}
 	} else {
 		$render_array['attributes']['noattribute'] = array(
