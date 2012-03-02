@@ -262,7 +262,6 @@ function c_acl_install() {
  */
 function c_acl_uninstall() {
 	// remove foreign key constraints
-	/*
 	db_query(
 		'
 		ALTER TABLE {acl}
@@ -297,7 +296,7 @@ function c_acl_uninstall() {
 		'
 		ALTER TABLE {sgroup}
 		DROP CONSTRAINT sgroup_2_acl;
-	');*/
+	');
 	// remove db tables
 	drupal_uninstall_schema('sgroup');
 }
