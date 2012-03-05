@@ -93,7 +93,7 @@ function organism_get_attributes_of_organism($organismid) {
 					oa.valuetype,
 					oa.id
 			FROM
-				drupal_organism_attribute oa
+				{organism_attribute} oa
 				JOIN {organism_attribute_value} oav ON oav.organism_attribute_id = oa.id
 				JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_attribute_value_id = oav.id
 				JOIN {organism_classification_subscription} ocs ON oavs.organism_id = ocs.organism_id
@@ -137,7 +137,7 @@ function organism_get_attribute_values_of_organism($organismid, $attributeid,
 				oav.boolean_value,
 				oav.number_value
 			FROM
-				drupal_organism_attribute oa
+				{organism_attribute} oa
 				JOIN {organism_attribute_value} oav ON oav.organism_attribute_id = oa.id
 				JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_attribute_value_id = oav.id
 				JOIN {organism_classification_subscription} ocs ON oavs.organism_id = ocs.organism_id

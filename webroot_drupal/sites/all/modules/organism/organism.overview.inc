@@ -132,10 +132,18 @@ function organism_show_classification($classificationid) {
 			'hide' => false
 	);
 	$organismsTableHeader[] = array(
-			'name' => t('Organism scientific name'),
+			'name' => t('Latin name'),
 			'dbfield' => 'osn_name',
 			'hide' => false
 	);
+	$classificationleveldata = organism_get_available_classification_levels($classificationid); // TODO
+	
+	$organismsTableHeader[] = array(
+				'name' => t('Latin name'),
+				'dbfield' => 'osn_name',
+				'hide' => false
+	);
+
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
 			'#title' => 'Organisms with classification ' . $classificationName,
