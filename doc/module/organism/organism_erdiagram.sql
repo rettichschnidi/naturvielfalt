@@ -88,7 +88,7 @@ CREATE TABLE organism_classification
 	-- Der Name des Klassifizierungslevels in Latein.
 	name text NOT NULL,
 	PRIMARY KEY (id),
-	UNIQUE (prime_father_id, name)
+	UNIQUE (parent_id, prime_father_id, name)
 ) WITHOUT OIDS;
 
 
@@ -232,17 +232,17 @@ ALTER TABLE organism_attribute_value_subscription
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE CASCADE
+	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
 
@@ -272,7 +272,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -280,7 +280,7 @@ ALTER TABLE organism_classification_level
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT

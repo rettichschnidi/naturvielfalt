@@ -180,10 +180,11 @@ function organism_schema() {
       array (
         0 => 'id',
       ),
-      'prime_father_id_AND_name' => 
+      'parent_id_AND_prime_father_id_AND_name' => 
       array (
-        0 => 'prime_father_id',
-        1 => ' name',
+        0 => 'parent_id',
+        1 => ' prime_father_id',
+        2 => ' name',
       ),
     ),
     'primary key' => 
@@ -197,7 +198,7 @@ function organism_schema() {
         'table' => 'organism_classification',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
       'organism_classification_2_organism_classification_level' => 
@@ -353,7 +354,7 @@ function organism_schema() {
         'table' => 'organism_classification_level',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
     ),
