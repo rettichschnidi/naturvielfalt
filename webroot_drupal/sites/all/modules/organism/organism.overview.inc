@@ -27,7 +27,11 @@ function organism_show_classifiers() {
 			'name' => t('# of levels'),
 			'dbfield' => 'levelcount',
 	);
-
+	$tableHeader[] = array(
+				'name' => t('# of organisms'),
+				'dbfield' => 'cnt',
+	);
+	
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
