@@ -277,14 +277,14 @@ function sgroup_member_mail($key, &$message, $params) {
 		$message['body'] = array(
 				t('Dear @user', array('@user' => $params['user_name'])),
 				t(
-					'You have been invited to join the group "@group".',
-					array('@group' => l(
+					'You have been invited to join the group "!group".',
+					array('!group' => l(
 								$params['group_name'],
 								'sgroup/' . $params['group_id']),
 					)),
 				t(
-					'To join the group please visit your @user_profile and accept the invitation.',
-					array('@user_profile' => l(
+					'To join the group please visit your !user_profile and accept the invitation.',
+					array('!user_profile' => l(
 								t('user profile'),
 								'user/' . $params['user_id'] . '/sgroup'),
 					)),
@@ -293,19 +293,19 @@ function sgroup_member_mail($key, &$message, $params) {
 	case 'remove':
 	// send email to user indication that he was removed from group
 		$message['subject'] = t(
-			'You were removed from group @group',
+			'You were removed from group !group',
 			array('@group' => $params['group_name'],));
 		$message['body'] = array(
 				t('Dear @user', array('@user' => $params['user_name'],)),
 				t(
 					'You have been removed from the group @group.',
-					array('@group' => l(
+					array('!group' => l(
 								$params['group_name'],
 								'sgroup/' . $params['group_id']),
 					)),
 				t(
-					'You can see a list of groups you are member of @here.',
-					array('@here' => l(
+					'You can see a list of groups you are member of !here.',
+					array('!here' => l(
 								t('here'),
 								'user/' . $params['user_id'] . '/sgroup'),
 					)),
@@ -344,8 +344,8 @@ function sgroup_invite($sgroup_id) {
 									'@list' => t('Pending Membership'),
 							)) . ' '
 						. t(
-							'Click @here to abort.',
-							array('@here' => l(
+							'Click !here to abort.',
+							array('!here' => l(
 										t('here'),
 										'user/' . $user->uid . '/sgroup'),
 							)),
@@ -589,8 +589,8 @@ function sgroup_request($sgroup_id) {
 							'@remove' => t('Remove'),
 					)) . ' '
 						. t(
-							'Click @here to abort.',
-							array('@here' => l(
+							'Click !here to abort.',
+							array('!here' => l(
 										t('here'),
 										'user/' . $user->uid . '/sgroup'),
 							)),
@@ -633,15 +633,15 @@ function sgroup_member_request_mail($key, &$message, $params) {
 		$message['body'] = array(
 				t('Dear @owner', array('@owner' => $params['group_owner_name'])),
 				t(
-					'The user @user requests membership to your group @group.',
+					'The user @user requests membership to your group !group.',
 					array('@user' => $params['user_name'],
-							'@group' => l(
+							'!group' => l(
 								$params['group_name'],
 								'sgroup/' . $params['group_id']),
 					)),
 				t(
-					'To grant or decline his membership to the group, go to the @link and change the user status.',
-					array('@link' => l(
+					'To grant or decline his membership to the group, go to the !link and change the user status.',
+					array('!link' => l(
 								t('grpoup member management'),
 								'sgroup/' . $params['group_id'] . '/member'),
 					)),

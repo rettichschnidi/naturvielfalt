@@ -51,37 +51,45 @@ jQuery(document).ready( function () {
 		function autocompleteInvite(event) {
 			// get the new selected value
 			var elemStr, elem, line, marker; // line_copy, css_class
-			marker = '<span class="warning">*</span>';
-			$("#tabs-wrapper").after('<div class="messages warning"><h2 class="element-invisible">Error message</h2>'
-					+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this user	') + '</div>');
+			marker = '<span class="warning">*</span>';	
 			elemStr = $(this).val();
-			elem = $.parseJSON(elemStr);
-			/*
-			// reset input value and copy line
-			$(this).val('');
-			line_copy = $(this).parents('tr:first').clone();
-			 */
-			// set value and name
-			$(this).val(elem.name);
-			$(this).attr('name', $(this).attr('name') + '-' + elem.id);
-			$(this).hide();
-			line = $(this).parents('tr:first');
-			line.find('td').each(function (i) {
-				if (i === 0) {
-					$(this).append(elem.name);
-					$(this).append(marker);
+			if (elemStr !== '') {
+				try {
+					elem = $.parseJSON(elemStr);
 				}
-				else {
-					$(this).html("<div class='emptyTableField'></div>");
-					$(this).html("-");
+				catch(e) {
+					return;
 				}
-			});
-			/*
-			css_class = line_copy.hasClass('even') ? 'odd' : 'even';
-			line_copy.attr('class', css_class);
-			line_copy.find('div#autocomplete').remove();
-			line_copy.appendTo($(this).parents('tbody:first'));
-			 */
+				
+				$("#tabs-wrapper").after('<div class="messages warning"><h2 class="element-invisible">Error message</h2>'
+						+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this user	') + '</div>');
+				/*
+				// reset input value and copy line
+				$(this).val('');
+				line_copy = $(this).parents('tr:first').clone();
+				 */
+				// set value and name
+				$(this).val(elem.name);
+				$(this).attr('name', $(this).attr('name') + '-' + elem.id);
+				$(this).hide();
+				line = $(this).parents('tr:first');
+				line.find('td').each(function (i) {
+					if (i === 0) {
+						$(this).append(elem.name);
+						$(this).append(marker);
+					}
+					else {
+						$(this).html("<div class='emptyTableField'></div>");
+						$(this).html("-");
+					}
+				});
+				/*
+				css_class = line_copy.hasClass('even') ? 'odd' : 'even';
+				line_copy.attr('class', css_class);
+				line_copy.find('div#autocomplete').remove();
+				line_copy.appendTo($(this).parents('tbody:first'));
+				 */
+			}
 		}
 
 		/**
@@ -92,28 +100,35 @@ jQuery(document).ready( function () {
 			// get the new selected value
 			var elemStr, elem, line, marker;
 			elemStr = $(this).val();
-			elem = $.parseJSON(elemStr);
-			marker = '<span class="warning">*</span>';
-			if ($("#mymsgbox").length === 0) {
-				$("#tabs-wrapper").after('<div id="mymsgbox" class="messages warning"><h2 class="element-invisible">Error message</h2>'
-					+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this element') + '</div>');
+			if (elemStr !== '') {
+				try {
+					elem = $.parseJSON(elemStr);
+				}
+				catch(e) {
+					return;
+				}
+				marker = '<span class="warning">*</span>';
+				if ($("#mymsgbox").length === 0) {
+					$("#tabs-wrapper").after('<div id="mymsgbox" class="messages warning"><h2 class="element-invisible">Error message</h2>'
+							+ marker + Drupal.t('You need to click') + ' "' + Drupal.t('Save') + '" ' + Drupal.t('in order to add this element') + '</div>');
+				}
+				// replace "new" by [acl_id] in all radio elements
+				line = $(this).parents('tr:first');
+				line.find('div[class$="new"]').each(function () {
+					var input_class;
+					input_class = $(this).attr('class');
+					input_class = input_class.replace("new", elem.id);
+					$(this).attr('class', input_class);
+				});
+				line.find('input[name$="new"]').each(function () {
+					var name;
+					name = $(this).attr('name');
+					name = name.replace("new", elem.id);
+					$(this).attr('name', name);
+				});
+				// replace inputfield by new name
+				$(this).parents('td:first').html(elem.name + marker);
 			}
-			// replace "new" by [acl_id] in all radio elements
-			line = $(this).parents('tr:first');
-			line.find('div[class$="new"]').each(function () {
-				var input_class;
-				input_class = $(this).attr('class');
-				input_class = input_class.replace("new", elem.id);
-				$(this).attr('class', input_class);
-			});
-			line.find('input[name$="new"]').each(function () {
-				var name;
-				name = $(this).attr('name');
-				name = name.replace("new", elem.id);
-				$(this).attr('name', name);
-			});
-			// replace inputfield by new name
-			$(this).parents('td:first').html(elem.name + marker);
 		}
 
 		/**
@@ -129,7 +144,13 @@ jQuery(document).ready( function () {
 				autocompleteSelect);
 		jQuery("input#add-users").bind("autocomplete_select",
 				autocompleteSelect);
+		jQuery("input#add-sgroup").bind("blur",
+				autocompleteSelect);
+		jQuery("input#add-users").bind("blur",
+				autocompleteSelect);
 		jQuery("input#invite-users").bind("autocomplete_select",
+				autocompleteInvite);
+		jQuery("input#invite-users").bind("blur",
 				autocompleteInvite);
 		// bind click event on delete icons
 		jQuery("div[id^='delete']").bind("click",
