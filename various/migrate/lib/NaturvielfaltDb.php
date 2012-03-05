@@ -182,9 +182,11 @@ class NaturvielfaltDb extends Db {
 
 	function haveClassificationLevel($classification_level_name, $classifier_id,
 			$parent_id) {
-		print "Name: $classification_level_name\n";
-		print "Id: $classifier_id\n";
-		print "Parent: $parent_id\n";
+		if (false) {
+			print "Name: $classification_level_name\n";
+			print "Id: $classifier_id\n";
+			print "Parent: $parent_id\n";
+		}
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_classification_level';
 		$fromQuery = 'FROM ' . $table
@@ -963,5 +965,71 @@ class NaturvielfaltDb extends Db {
 		return $num;
 	}
 
+	function haveOrganismLang($organism_id, $lang, $name) {
+		assert($organism_id != null);
+		assert($lang != null);
+		assert($name != null);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_lang';
+		$fromQuery = "FROM
+							$table
+						WHERE
+							name = ?
+							AND languages_language = ?
+							AND organism_id = ?";
+		$typesArray = array(
+				'text',
+				'text',
+				'integer'
+		);
+		$valuesArray = array(
+				$name,
+				$lang,
+				$organism_id
+		);
+		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
+		assert($num <= 1);
+		return $num;
+	}
+
+	function createOrganismLang($organism_id, $lang, $name) {
+		assert($organism_id != NULL);
+		assert($lang != NULL);
+		assert($name != NULL);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_lang';
+		$newid = $this->get_nextval($drupalprefix . 'organism_lang_id_seq');
+		$columnArray = array(
+				'id',
+				'organism_id',
+				'name',
+				'languages_language'
+		);
+		$typesArray = array(
+				'integer',
+				'integer',
+				'text',
+				'text'
+		);
+		$valuesArray = array(
+				$newid,
+				$organism_id,
+				$name,
+				$lang
+		);
+		$rowcount = $this->insert_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert($rowcount == 1);
+		$ids = $this->getIdArray_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert(count($ids) == 1);
+		return $ids[0];
+	}
 }
 ?>

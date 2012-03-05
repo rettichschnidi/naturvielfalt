@@ -20,7 +20,8 @@
  *          "cell":{
  *              "oc_id":"1",
  *              "oc_name":"SwissLichens",
- *              "levelcount":"1"
+ *              "levelcount":"1",
+ *              "cnt":"666"
  *          }
  *      },
  *      {
@@ -28,7 +29,8 @@
  *          "cell":{
  *              "oc_id":"7382",
  *              "oc_name":"CSCF",
- *              "levelcount":"5"
+ *              "levelcount":"5",
+ *              "cnt":"1337"
  *          }
  *      }
  *  ]
@@ -41,7 +43,8 @@ function organism_show_classifiers_json() {
 	$sql['dbColumns'] = array(
 			'oc.id AS oc_id',
 			'oc.name AS oc_name',
-			'COUNT(ocl.id) - 1 AS levelcount'
+			'COUNT(ocl.id) - 1 AS levelcount',
+			'organismcount.cnt'
 	);
 
 	$sql['dbSearchColumns'] = array(
@@ -49,12 +52,49 @@ function organism_show_classifiers_json() {
 			'oc.name'
 	);
 
+	/* Original query:
+		SELECT
+			oc.id AS oc_id,
+			oc.name AS oc_name,
+			COUNT(ocl.id) - 1 AS levelcount,
+			organismcount.cnt
+		FROM
+			drupal_organism_classification oc 
+			JOIN drupal_organism_classification_level ocl ON oc.organism_classification_level_id = ocl.prime_father_id
+			JOIN (
+				SELECT
+					oc.prime_father_id AS prime_father_id,
+					COUNT(ocs.id) AS cnt
+				FROM
+					drupal_organism_classification_subscription ocs
+					JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id 
+				GROUP BY
+					prime_father_id
+			)
+			AS organismcount ON organismcount.prime_father_id = oc.prime_father_id
+		WHERE
+			oc.prime_father_id = oc.id
+		GROUP BY
+			oc_id,
+			oc_name,
+			organismcount.cnt;
+	 */
 	/* DB table to use */
 	$sql['dbTable'] = "{organism_classification} oc";
 	/* Joins to use */
-	$sql['dbJoins'] = "JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id";
+	$sql['dbJoins'] = "JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.prime_father_id
+						JOIN (
+							SELECT
+								oc.prime_father_id AS prime_father_id,
+								COUNT(ocs.id) AS cnt
+							FROM
+								drupal_organism_classification_subscription ocs
+								JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id 
+							GROUP BY
+								prime_father_id
+						) AS organismcount ON organismcount.prime_father_id = oc.prime_father_id";
 	/* Group */
-	$sql['dbGroupBy'] = "oc_id, oc_name";
+	$sql['dbGroupBy'] = "oc_id, oc_name, organismcount.cnt";
 	$sql['dbWhere'] = 'oc.prime_father_id = oc.id';
 	$sql['id'] = 'oc_id';
 

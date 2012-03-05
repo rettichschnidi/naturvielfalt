@@ -27,7 +27,11 @@ function organism_show_classifiers() {
 			'name' => t('# of levels'),
 			'dbfield' => 'levelcount',
 	);
-
+	$tableHeader[] = array(
+				'name' => t('# of organisms'),
+				'dbfield' => 'cnt',
+	);
+	
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
@@ -159,6 +163,11 @@ function organism_show_classification($classificationid) {
  */
 function organism_show_organism($organismid) {
 	$organism = organism_get_single_name_of_organism($organismid);
+	if (empty($organism)) {
+		drupal_set_title(t('No such organism available'));
+		$render_array['nosuchorganism'] = null;
+		return $render_array;
+	}
 	drupal_set_title(t('Show attributes and synonyms of ' . $organism['name']));
 	// include the datatable javascript
 	drupal_add_js(
