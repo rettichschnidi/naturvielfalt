@@ -5,9 +5,6 @@
  * @author Reto Schneider, 2012
  * @copyright 2011-2012 Naturwerk, Brugg
  */
-/**********************************
- *  Hook implementations
- *********************************/
 
 /**
  * Return all scientific names of an organism
