@@ -150,11 +150,11 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'osn_name',
 			'hide' => false
 	);
-	
+
 	$organismsTableHeader[] = array(
-				'name' => t('Name'),
-				'dbfield' => 'ol_name',
-				'hide' => false
+			'name' => t('Name'),
+			'dbfield' => 'ol_name',
+			'hide' => false
 	);
 
 	$render_array['organisms'] = array(
