@@ -146,8 +146,6 @@ function organism_show_classification_classificationjson($classificationid) {
  */
 function organism_show_classification_organismjson($classificationid) {
 	global $language;
-	// 	print "LANG: " . $language->language;
-
 	/*
 	 Original (example) query:
 	 SELECT
