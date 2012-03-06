@@ -53,31 +53,31 @@ function organism_show_classifiers_json() {
 	);
 
 	/* Original query:
-		SELECT
-			oc.id AS oc_id,
-			oc.name AS oc_name,
-			COUNT(ocl.id) - 1 AS levelcount,
-			organismcount.cnt
-		FROM
-			drupal_organism_classification oc 
-			JOIN drupal_organism_classification_level ocl ON oc.organism_classification_level_id = ocl.prime_father_id
-			JOIN (
-				SELECT
-					oc.prime_father_id AS prime_father_id,
-					COUNT(ocs.id) AS cnt
-				FROM
-					drupal_organism_classification_subscription ocs
-					JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id 
-				GROUP BY
-					prime_father_id
-			)
-			AS organismcount ON organismcount.prime_father_id = oc.prime_father_id
-		WHERE
-			oc.prime_father_id = oc.id
-		GROUP BY
-			oc_id,
-			oc_name,
-			organismcount.cnt;
+	    SELECT
+	        oc.id AS oc_id,
+	        oc.name AS oc_name,
+	        COUNT(ocl.id) - 1 AS levelcount,
+	        organismcount.cnt
+	    FROM
+	        drupal_organism_classification oc 
+	        JOIN drupal_organism_classification_level ocl ON oc.organism_classification_level_id = ocl.prime_father_id
+	        JOIN (
+	            SELECT
+	                oc.prime_father_id AS prime_father_id,
+	                COUNT(ocs.id) AS cnt
+	            FROM
+	                drupal_organism_classification_subscription ocs
+	                JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id 
+	            GROUP BY
+	                prime_father_id
+	        )
+	        AS organismcount ON organismcount.prime_father_id = oc.prime_father_id
+	    WHERE
+	        oc.prime_father_id = oc.id
+	    GROUP BY
+	        oc_id,
+	        oc_name,
+	        organismcount.cnt;
 	 */
 	/* DB table to use */
 	$sql['dbTable'] = "{organism_classification} oc";
@@ -145,17 +145,64 @@ function organism_show_classification_classificationjson($classificationid) {
  * @todo Find a better title
  */
 function organism_show_classification_organismjson($classificationid) {
+	global $language;
+	// 	print "LANG: " . $language->language;
+
+	/*
+	 Original (example) query:
+	 SELECT
+	    osn.id AS osn_id,
+	    osn.name AS osn_name,
+	    o.id AS o_id,
+	    ol.name AS ol_name
+	 FROM
+	    drupal_organism_classification oc
+	    JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+	    JOIN drupal_organism o ON o.id = ocs.organism_id
+	    JOIN drupal_organism_scientific_name osn ON osn.organism_id = o.id
+	    LEFT JOIN drupal_organism_lang ol ON ol.organism_id = o.id
+	 WHERE
+	    oc.prime_father_id = (
+	        SELECT
+	            innerOc.prime_father_id
+	        FROM
+	            drupal_organism_classification innerOc
+	        WHERE
+	            innerOc.id = 500 
+	        )
+	    AND oc.left_value >= (
+	        SELECT
+	            innerOc.left_value
+	        FROM
+	            drupal_organism_classification innerOc
+	        WHERE
+	            innerOc.id = 500
+	        )
+	    AND
+	        oc.right_value <= (
+	            SELECT
+	                innerOc.right_value
+	            FROM
+	                drupal_organism_classification innerOc
+	            WHERE
+	                innerOc.id = 500
+	            )
+	    AND ol.languages_language = 'de';
+	 */
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'osn.id AS osn_id',
 			'osn.name AS osn_name',
-			'o.id AS o_id'
+			'o.id AS o_id',
+			'ol.name AS ol_name'
 	);
 
 	$sql['dbSearchColumns'] = array(
 			'osn.id',
 			'osn.name',
-			'o.id'
+			'o.id',
+			'ol.name',
+			'ol.languages_language'
 	);
 
 	/* DB table to use */
@@ -163,7 +210,8 @@ function organism_show_classification_organismjson($classificationid) {
 	/* Joins to use */
 	$sql['dbJoins'] = 'JOIN {organism_classification_subscription} ocs ON ocs.organism_classification_id = oc.id
 						JOIN {organism} o ON o.id = ocs.organism_id 
-						JOIN {organism_scientific_name} osn ON osn.organism_id = o.id';
+						JOIN {organism_scientific_name} osn ON osn.organism_id = o.id
+						LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id';
 	/* Group */
 	$sql['dbWhere'] = 'oc.prime_father_id = (
 								SELECT
@@ -187,12 +235,14 @@ function organism_show_classification_organismjson($classificationid) {
 								FROM
 									{organism_classification} innerOc
 								WHERE
-									innerOc.id = :ocid)';
+									innerOc.id = :ocid)
+						AND ol.languages_language = :lang';
 	$sql['id'] = 'o_id';
-	$sql['dbGroupBy'] = ' osn_name, osn_id, o_id';
-	
+	$sql['dbGroupBy'] = ' osn_name, ol_name, osn_id, o_id';
+
 	$arguments = array(
-			':ocid' => $classificationid
+			':ocid' => $classificationid,
+			':lang' => $language->language
 	);
 
 	$output = datatable_dbRequest($sql, $arguments);

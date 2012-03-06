@@ -28,10 +28,10 @@ function organism_show_classifiers() {
 			'dbfield' => 'levelcount',
 	);
 	$tableHeader[] = array(
-				'name' => t('# of organisms'),
-				'dbfield' => 'cnt',
+			'name' => t('# of organisms'),
+			'dbfield' => 'cnt',
 	);
-	
+
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
@@ -131,16 +131,29 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'osn_id',
 			'hide' => false
 	);
+	$classificationleveldata = organism_get_available_classification_levels(
+		$classificationid);
+
+	foreach ($classificationleveldata as $index => $value) {
+		if ($index == 0) {
+			continue;
+		}
+		$organismsTableHeader[] = array(
+				'name' => t(ucfirst($value->name)),
+				'dbfield' => $value->name,
+				'hide' => false
+		);
+	}
+
 	$organismsTableHeader[] = array(
 			'name' => t('Latin name'),
 			'dbfield' => 'osn_name',
 			'hide' => false
 	);
-	$classificationleveldata = organism_get_available_classification_levels($classificationid); // TODO
 	
 	$organismsTableHeader[] = array(
-				'name' => t('Latin name'),
-				'dbfield' => 'osn_name',
+				'name' => t('Name'),
+				'dbfield' => 'ol_name',
 				'hide' => false
 	);
 
