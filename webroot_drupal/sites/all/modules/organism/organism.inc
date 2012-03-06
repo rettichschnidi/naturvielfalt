@@ -158,4 +158,23 @@ function organism_get_attribute_values_of_organism($organismid, $attributeid,
 	}
 	return $attributevalues;
 }
+
+function organism_get_available_classification_levels($classificationid) {
+	$classificationdata = array();
+	$attributevalueresult = db_query(
+		'SELECT
+			ocl2.id,
+			ocl2.left_value,
+			ocl2.name
+		FROM
+			drupal_organism_classification oc
+			JOIN drupal_organism_classification_level ocl ON oc.organism_classification_level_id = ocl.id
+			JOIN drupal_organism_classification_level ocl2 ON ocl2.prime_father_id = ocl.prime_father_id
+		WHERE
+			oc.id = :organismid
+		ORDER BY
+			left_value;',
+		array(':organismid' => $classificationid));
+	return $attributevalueresult->fetchAll();
+}
 ?>
