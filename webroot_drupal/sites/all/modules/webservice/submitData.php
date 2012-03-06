@@ -6,7 +6,7 @@
  * authentication is used.
  *
  * @author Robin Oster
- *
+ * @author Ramon Gamma, 2012
  */
 
 $debug = true;
@@ -151,6 +151,8 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// Create image and store information in the database
 		if(isset($_FILES['file'])) {
 			storeImage($entry, $uid, $author);
+		}else {
+			if($debug) webservice_log('no image to store');
 		}
 
 		if($successful) {
@@ -174,8 +176,9 @@ if($debug) webservice_log('-----------------------------------------------------
  * db entries to make the image occur at the single observation of the user.
  */
 function storeImage($entry, $uid, $author) {
+	global $debug;
 	$filename = "iphoneprovepicture.png";
-	$folder = "/srv/www/htdocs/drupal/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/'; // FIXME: Dateipfad soll aus der DB stammen
+	$folder = $_SERVER["DOCUMENT_ROOT"] . "/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/'; // FIXME: Dateipfad soll aus der DB stammen
 	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 
@@ -184,10 +187,15 @@ function storeImage($entry, $uid, $author) {
 	// echo 'Target path: ' . $target_path;
 
 	if (!file_exists($folder)) {
-		mkdir($folder, 0777);
+		if(mkdir($folder, 0777)){
+			if($debug) webservice_log('folder created');
+		}else{
+			if($debug) webservice_log('create folder failed');
+		}
 	}
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
+		if($debug) webservice_log('move file success');
 		$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
 		$filesize = filesize($target_path);
 		$timestamp = time();
