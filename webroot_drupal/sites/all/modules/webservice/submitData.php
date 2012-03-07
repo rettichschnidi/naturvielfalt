@@ -51,7 +51,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 		$request = $_POST;
 
-		if(!$request) die('FAIL');
+		if(!$request) error_exit('no request to processing...');
 
 		$organism = @$request['organism'] ? $request['organism'] : "";
 		$type = @$request['type'] ? $request['type'] : "";
@@ -65,20 +65,29 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
 		if($debug) webservice_log('request :'.var_export($request, true) );
 
+		// Check the variables
+		if($organism < 1) 	error_exit('organism should an int and not smaller than 1 || variable value:'.$organism);
+		if($type < 1) 		error_exit('type should an int and not smaller than 1 || variable value:'.$type);
+		if($count < 1) 		error_exit('count should an int and not smaller than 1 || variable value:'.$count);
+		if($date == "") 	error_exit('date should not be empty || variable value:'.$date);
+		if($accuracy < 0) 		error_exit('accuracy should an int and not smaller than 0 || variable value:'.$accuracy);
+		if($author == "") 		error_exit('autor should not be empty || variable value:'.$author);
+		if($longitude == "") 		error_exit('longitude should an double || variable value:'.$longitude);
+		if($latitude == "") 		error_exit('latitude should an double || variable value:'.$latitude);
+
+
 		// FIXME Dieses Daten müssen allesammt validiert werden BEVOR diese auf die DB aufschlagen...
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
-
 		if($debug) webservice_log('reverseGeocode: '.var_export($jsondata, true));
 
 		// get head_inventory_id
 		$head = _inventory_single_get_id($user);
-
+		if($head < 1) error_exit('get head inventory failed!');
 		if($debug) webservice_log('head_inventory_id: '.$head);
 
 		// check for existing inventory
 		$inventory = db_select('inventory', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('head_inventory_id', $head)->execute()->fetchField();
-
 		if (!$inventory) {
 			// inventory doesn't exist, create it
 			$inventory = db_insert('inventory')->fields(array('inventory_type_id' => $type, 'head_inventory_id' => $head))->execute();
@@ -86,7 +95,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		}else{
 			if($debug) webservice_log('use existing inventory');
 		}
-
 		if($debug) webservice_log('inventory_id: '.$inventory);
 
 		// Get location based information
@@ -120,26 +128,37 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 														'country' => $country
 														))->execute();
 
-		if($debug) webservice_log('Inventory entry id: '.$entry);
+		//if($debug) webservice_log('Inventory entry id: '.$entry);
 
 		// Add Funddatum, Beobachter und Amount and other dynamic attributes
 		if($entry) {
 			$funddatumId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Funddatum")->execute()->fetchField();
+			if($funddatumId < 0) error_exit('find date id could not be found in the db');
+
 			$attributeFunddatum = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $funddatumId, 'value' => $date))->execute();
+			if(!$attributeFunddatum) error_exit("the find date attribute can't inserted in the db");
 
 			// Flowers don't have any amount..
 			if($type != 16) {
 				$anzahlId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Anzahl")->execute()->fetchField();
+				if($anzahlId < 0) error_exit('anzahlId could not be found in the db');
 				$attributesAnzahl = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $anzahlId, 'value' => $count))->execute();
+				if(!$attributesAnzahl) error_exit("the count attribute can't inserted in the db");
+			}else{
+				if($debug) webservice_log("Flowers don't have any amount..");
 			}
 
 			$beobachterId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Beobachter")->execute()->fetchField();
+			if($anzahlId < 0) error_exit('beobachterId could not be found in the db');
 			$attributesBeobachter = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $beobachterId, 'value' => $author))->execute();
+			if(!$attributesBeobachter) error_exit("the beobachter attribute can't inserted in the db");
 
 			// TODO: Implementieren
 			// noch nicht komplett implementiert
 			// $commentId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Comment")->execute();
 			// $attributesComment = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => 85, 'value' => $comment))->execute();
+		}else{
+			error_exit('insert inventory entry failed!');
 		}
 
 		// Add POINT to database as geometry information
@@ -261,4 +280,13 @@ function webservice_log($message = NULL, $type = NULL, $ip= NULL){
 	$newsletterlog = fopen($_SERVER["DOCUMENT_ROOT"].'/webservice/data.log','a');
 	fwrite($newsletterlog,$logline);
 	fclose($newsletterlog);
+}
+
+function error_exit($message){
+	global $debug;
+	if(!$message) $message = 'ERROR, exiting... (no message given)';
+	if($debug) webservice_log($message);
+	// clean up db inserts
+	//TODO
+	die($message);
 }
