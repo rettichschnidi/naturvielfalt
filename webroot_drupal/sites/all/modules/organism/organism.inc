@@ -167,9 +167,9 @@ function organism_get_available_classification_levels($classificationid) {
 			ocl2.left_value,
 			ocl2.name
 		FROM
-			drupal_organism_classification oc
-			JOIN drupal_organism_classification_level ocl ON oc.organism_classification_level_id = ocl.id
-			JOIN drupal_organism_classification_level ocl2 ON ocl2.prime_father_id = ocl.prime_father_id
+			{organism_classification} oc
+			JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id
+			JOIN {organism_classification_level} ocl2 ON ocl2.prime_father_id = ocl.prime_father_id
 		WHERE
 			oc.id = :organismid
 		ORDER BY
