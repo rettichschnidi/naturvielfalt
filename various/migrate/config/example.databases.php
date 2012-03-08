@@ -3,9 +3,9 @@
  * @author Reto Schneider, 2011, github@reto-schneider.ch
  */
 
-$drupalprefix = 'drupal_';
+$drupalprefix = ''; // Drupal prefix (e.g. 'drupal_')
 
-$config['swissmon'] = array(
+$config['naturvielfalt_dev'] = array( // Drupal database
 		'name' => '',
 		'user' => '',
 		'password' => '',
@@ -13,7 +13,7 @@ $config['swissmon'] = array(
 		'driver' => 'pgsql'
 );
 
-$config['naturvielfalt_dev'] = array(
+$config['evab'] = array( // 2nd database for import from evab
 		'name' => '',
 		'user' => '',
 		'password' => '',
