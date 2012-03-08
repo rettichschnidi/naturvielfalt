@@ -1,0 +1,354 @@
+<?php
+// use base acl functions in hooks
+module_load_include('inc', 'c_acl', 'c_acl.base');
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_menu().
+ * This hook enables modules to register paths in order to define how URL requests are handled. 
+ * 
+ * @see http://api.drupal.org/api/drupal/modules--system--system.api.php/function/hook_menu/7
+ * @return associative array Define menu items and page callbacks.
+ */
+function c_acl_menu() {
+	// only debug
+	$items['c_acl/test'] = array(
+			'title' => 'Test ACL',
+			'description' => 'Test ACL functions and DB',
+			'page callback' => 'run_acl_test',
+			'access arguments' => array(
+					'access c_acl test'
+			),
+			'file' => 'c_acl.test.inc',
+	);
+	// only debug
+	$items['c_acl/form'] = array(
+			'title' => 'Theming Forms',
+			'description' => 'Practicing theming forms in Drupal 7',
+			'page callback' => 'show_acl_form',
+			'access arguments' => array(
+					'access c_acl test'
+			),
+			'file' => 'c_acl.test.inc',
+	);
+	$items['c_acl/%/autocomplete_sgroup'] = array(
+			'page callback' => 'c_acl_autocomplete_sgroup',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_access',
+			'access arguments' => array(
+					1,
+			),
+			'file' => 'c_acl.autocomplete.inc',
+	);
+	$items['c_acl/%/autocomplete_users'] = array(
+			'page callback' => 'c_acl_autocomplete_users',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_access',
+			'access arguments' => array(
+					1,
+			),
+			'file' => 'c_acl.autocomplete.inc',
+	);
+	// group items
+	$items['user/%/sgroup'] = array(
+			'title' => t('Groups'),
+			'description' => t('Shows ones groups'),
+			'page callback' => 'sgroup_overview',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_main_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_LOCAL_TASK,
+			'file' => 'c_acl.sgroup.overview.inc'
+	);
+	$items['user/%/sgroup/new'] = array(
+			'title' => t('New Group'),
+			'description' => t('Create a new group'),
+			'page callback' => 'sgroup_new',
+			'access callback' => 'c_acl_sgroup_main_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 5,
+			'file' => 'c_acl.sgroup.new.inc',
+	);
+	$items['user/%/sgroup/show_all'] = array(
+			'title' => t('Public Groups'),
+			'description' => t('Shows all public groups'),
+			'page callback' => 'sgroup_overview_all',
+			'access arguments' => array(
+					'access c_acl sgroup',
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 0,
+			'file' => 'c_acl.sgroup.overview.inc'
+	);
+	$items['user/%/sgroup/show'] = array(
+			'title' => t('Member Groups'),
+			'access callback' => 'c_acl_sgroup_main_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_DEFAULT_LOCAL_TASK,
+			'weight' => -10,
+	);
+	$items['sgroup/%'] = array(
+			'title' => t('Group'),
+			'description' => t('Display Group'),
+			'page callback' => 'sgroup_show',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_read_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'c_acl.sgroup.show.inc'
+	);
+	$items['sgroup/%/view'] = array(
+			'title' => t('View'),
+			'type' => MENU_DEFAULT_LOCAL_TASK,
+			'weight' => -10,
+	);
+	$items['sgroup/%/edit'] = array(
+			'title' => t('Edit'),
+			'description' => t('Edit group'),
+			'page callback' => 'sgroup_edit',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_write_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 5,
+			'file' => 'c_acl.sgroup.edit.inc',
+	);
+	$items['sgroup/%/member'] = array(
+			'title' => t('Member'),
+			'description' => t('Invite user to group'),
+			'page callback' => 'sgroup_member',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_admin_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 5,
+			'file' => 'c_acl.sgroup.invite.inc',
+	);
+	$items['sgroup/%/acl'] = array(
+			'title' => t('Permissions'),
+			'description' => t('Edit permissions group'),
+			'page callback' => 'sgroup_admin',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_admin_access',
+			'access arguments' => array(
+					1,
+			),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 10,
+			'file' => 'c_acl.sgroup.admin.inc',
+	);
+	$items['sgroup/%/invite'] = array(
+			'page callback' => 'sgroup_invite',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_invite_access',
+			'access arguments' => array(
+					1,
+			),
+			'file' => 'c_acl.sgroup.invite.inc',
+	);
+	$items['sgroup/%/action'] = array(
+			'page callback' => 'sgroup_request',
+			'page arguments' => array(
+					1,
+			),
+			'access callback' => 'c_acl_sgroup_invite_access',
+			'access arguments' => array(
+					1,
+			),
+			'file' => 'c_acl.sgroup.invite.inc',
+	);
+	return $items;
+}
+
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $acl_id
+ */
+function c_acl_access ($acl_id) {
+	return check_permission($acl_id, variable_get("ACL_ADMIN"));
+}
+
+/**
+ * Check access permission of active user to view group lists and create a new group
+ * 
+ * @param	string	$users_id	id of user to access list
+ * @return	boolean				true if access ok
+ */
+function c_acl_sgroup_main_access($users_id) {
+	global $user;
+	$access_drupal = user_access('access c_acl sgroup');
+	// access only own group list
+	$access = ($users_id == $user->uid) ? TRUE : FALSE;
+	return $access & $access_drupal;
+}
+/**
+ * Check read permission of active user of a group
+ * 
+ * @param	string	$sgroup_id	id of group to edit
+ * @return	boolean				true if access ok
+ */
+function c_acl_sgroup_read_access($sgroup_id) {
+	$access_drupal = user_access('access c_acl sgroup');
+	// check if this user has write access to group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_READ"));
+	return $access & $access_drupal;
+}
+
+/**
+ * Check edit permission of active user of a group
+ * 
+ * @param	string	$sgroup_id	id of group to edit
+ * @return	boolean				true if access ok
+ */
+function c_acl_sgroup_write_access($sgroup_id) {
+	$access_drupal = user_access('access c_acl sgroup');
+	// check if this user has write access to group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_WRITE"));
+	return $access & $access_drupal;
+}
+
+/**
+ * Check admin permission of active user of a group
+ * 
+ * @param	string	$sgroup_id	id of group to edit
+ * @return	boolean				true if access ok
+ */
+function c_acl_sgroup_admin_access($sgroup_id) {
+	$access_drupal = user_access('access c_acl sgroup');
+	// check if this user has write access to group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_ADMIN"));
+	return $access & $access_drupal;
+}
+
+/**
+ * Check accept/decline permissions to a group of active user
+ * 
+ * @param	string	$sgroup_id	id of group to edit
+ * @return	boolean				true if access ok
+ */
+function c_acl_sgroup_invite_access($sgroup_id) {
+	$access_drupal = user_access('access c_acl sgroup');
+	// check if this user is in acl of group
+	$acl_id = 0;
+	$db_group = db_select('sgroup', 'g')->fields('g', array('acl_id',))
+		->condition('g.id', $sgroup_id)
+		->execute();
+	if ($record = $db_group->fetch()) {
+		$acl_id = $record->acl_id;
+	}
+	$access = check_permission($acl_id, variable_get("ACL_DECLINED"));
+	return $access & $access_drupal;
+}
+
+/**
+ * Enables the administrator to allow or deny a usergroup or user to use this module
+ * @see http://api.drupal.org/api/drupal/modules--system--system.api.php/function/hook_permission/7
+ */
+function c_acl_permission() {
+	return array(
+			'access c_acl sgroup' => array(
+					'title' => t('Can view, create and manage swissmon groups')
+			),
+			'access c_acl test' => array(
+					'title' => t('Can run ACL tests (use to debug only)')
+			)
+	);
+}
+
+/**
+ * Implements hook_theme()
+ * 
+ * Description of variables:
+ *  - defaults:			Array with permission types and their default permission values. e.g.:
+ 	 					$defaults = array(
+							array(
+									'type' => variable_get("ACL_RED_READ"),
+									'name' => t('Reduced Read'),
+									'value' => FALSE,
+							),
+						);
+ *  - defaults_group:	Array with groups and their default permission values. e.g.:
+ 						$defaults_group = array(
+							(object)array (
+									'id' => $group_id,
+									'name' => $group_name,
+									'level' => variable_get("ACL_READ"),
+							),
+						);
+ *  - acl_id:			acl id string of element to modify acl permissions
+ *  - child_acl_ids:	Array with child acl id strings of acl_id to propagate the permisssions to. e.g.:
+	 					$child_acl_ids = array ($id_1, $id2,);
+ *  - add_element:		Boolean indicating if new users or groups may be added
+ *
+ * @return an array with theme template information
+ */
+function c_acl_theme() {
+	return array(
+			'c_acl' => array(
+					'function' => 'c_acl_show_form',
+					'file' => 'c_acl.form.inc',
+					'variables' => array(
+							'defaults' => NULL,
+							'defaults_group' => NULL,
+							'acl_id' => 0,
+							'child_acl_ids' => NULL,
+							'add_element' => TRUE, 
+					)
+			)
+	);
+}
+?>

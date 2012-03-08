@@ -9,9 +9,6 @@
  *  Hook implementations
  *********************************/
 
-// Load gallery integration
-module_load_include('inc', 'organism', 'organism.gallery');
-
 /**
  * Implements hook_theme()
  *
@@ -32,209 +29,111 @@ function organism_theme() {
 /**
  * Implements hook_menu()
  *
- * This makes it possible to visit the link drupal/organism.
- * It is also possible to create an URL like drupal/organism/42. This would show probably the element with the ID 42.
+ * This makes it possible to visit the link example.com/organism.
+ * It is also possible to create an URL like example.com/organism/42. This would show the element with the ID 42.
  *
  * @return array
  */
 function organism_menu() {
-
 	$items['organism'] = array(
-			'title' => t('Organisms'),
-			'page callback' => 'organism_overview',
+			'title' => t('Classifiers'),
+			'page callback' => 'organism_show_classifiers',
 			'access arguments' => array(
 					'access content'
 			),
-			'description' => t('List of organisms'),
+			'description' => t('List of classifiers'),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'organism.overview.inc',
 	);
-	$items['organism/%'] = array(
-			'title' => 'Basisinfo',
-			'description' => 'Show organism',
-			'page callback' => 'organism_show',
-			'page arguments' => array(
-					1
-			),
+
+	$items['organism/json'] = array(
+			'title' => t('Organisms JSON'),
+			'page callback' => 'organism_show_classifiers_json',
 			'access arguments' => array(
 					'access content'
 			),
+			'description' => t('Json of classifiers'),
 			'type' => MENU_CALLBACK,
-			'file' => 'organism.show.inc',
+			'file' => 'organism.json.inc',
 	);
-	$items['organism/%/normal'] = array(
-			'title' => 'Basisinfo',
-			'description' => 'Show organism',
-			'page callback' => 'organism_show',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					'access content'
-			),
-			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'organism.show.inc',
-	);
-	$items['organism/type/%'] = array(
-			'title' => 'Lexikon',
-			'description' => 'Show organism',
-			'page callback' => 'organism_showtype',
+
+	$items['organism/classification/%'] = array(
+			'title' => t('Classification'),
 			'page arguments' => array(
 					2
 			),
+			'page callback' => 'organism_show_classification',
 			'access arguments' => array(
 					'access content'
 			),
-			'type' => MENU_CALLBACK,
-			'file' => 'organism.showtype.inc',
+			'description' => t('List of organisms classifications'),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'organism.overview.inc',
 	);
-	$items['organism/%/lexikon'] = array(
-			'title' => t('Lexikon'),
-			'description' => 'Show organism lexika',
-			'page callback' => 'organism_lexika_show',
+
+	$items['organism/classification/%/classificationjson'] = array(
+			'title' => t('Classifications json'),
 			'page arguments' => array(
-					1
+					2
 			),
+			'page callback' => 'organism_show_classification_classificationjson',
 			'access arguments' => array(
 					'access content'
 			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'organism.lexika.inc',
+			'description' => t('List of subclassifications'),
+			'type' => MENU_CALLBACK,
+			'file' => 'organism.json.inc',
 	);
-	$items['organism/%/delete_file/%'] = array(
-			'title' => t('Delete file'),
-			'description' => t('Delete an existing file'),
-			'page callback' => 'drupal_get_form',
+
+	$items['organism/classification/%/organismjson'] = array(
+			'title' => t('Organisms withing a classifications json'),
 			'page arguments' => array(
-					'organism_delete_file',
-					1,
-					3
+					2
 			),
+			'page callback' => 'organism_show_classification_organismjson',
 			'access arguments' => array(
-					'organism upload'
+					'access content'
 			),
-			'file' => 'organism.edit.inc',
-			'weight' => 10,
+			'description' => t('List of organisms with this classifications'),
+			'type' => MENU_CALLBACK,
+			'file' => 'organism.json.inc',
 	);
-	$items['organism/%/edit'] = array(
-			'title' => t('File upload'),
-			'description' => t('Delete or edit files'),
-			'page callback' => 'drupal_get_form',
+
+	$items['organism/%'] = array(
+			'title' => t('Organism'),
 			'page arguments' => array(
-					'organism_edit_files_form',
 					1
 			),
+			'page callback' => 'organism_show_organism',
 			'access arguments' => array(
-					'organism upload'
+					'access content'
 			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'organism.edit.inc',
-			'weight' => 10,
+			'description' => t('Specific organism'),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'organism.overview.inc',
 	);
 
-	$items['gallery/organism_type_gallery_autocomplete/%/%'] = array(
-			'title' => 'Gallery item autocomplete',
-			'page callback' => 'organism_type_gallery_autocomplete',
+	$items['organism/%/json'] = array(
+			'title' => t('Organism json'),
 			'page arguments' => array(
-					3
+					1
 			),
-			'type' => MENU_CALLBACK,
-			'access callback' => 'gallery_edit_access_callback',
+			'page callback' => 'organism_show_organism_json',
 			'access arguments' => array(
-					2,
-					3
+					'access content'
 			),
-			'file' => 'organism.gallery.inc',
+			'description' => t('Specific organism json'),
+			'type' => MENU_CALLBACK,
+			'file' => 'organism.json.inc',
 	);
-
 	return $items;
 }
 
 function organism_permission() {
 	return array(
 			'organism upload' => array(
-					'title' => t('Upload files to organism'),
-			),
+					'title' => t('Attach media files to organisms')
+			)
 	);
 }
-
-function organism_files($organism_id) {
-	global $user;
-	$render_array = array();
-	$result = db_query(
-			'
-    SELECT * 
-	FROM organism_file_managed ofm
-	LEFT JOIN file_managed fm ON ofm.file_id = fm.fid
-	WHERE organism_id = :oid', array(':oid' => $organism_id));
-
-	foreach ($result as $record) {
-		$mimeIconMap = array(
-				'path' => drupal_get_path('module', 'inventory') . '/images/' . area_get_icon_map($record->filemime)
-						. '.png',
-				'alt' => $record->filemime,
-				'title' => $record->filemime,
-		);
-		$img_mime = theme('image', $mimeIconMap);
-
-		$description = $record->description;
-		$filename = l($record->filename,
-				'sites/default/files/naturvielfalt/organism/' . $organism_id . '/' . $record->filename);
-		$filemime = $img_mime;
-		$filesize = ($record->filesize / 1000) . " KB";
-		$timestamp = date('d.m.Y', $record->timestamp);
-		$author = $record->author;
-		$row = array();
-		$row[] = $description;
-		$row[] = $filename;
-		$row[] = $filemime;
-		$row[] = $filesize;
-		$row[] = $timestamp;
-		$row[] = $author;
-		$row[] = $user->name;
-		$rows[] = $row;
-	}
-
-	if (empty($rows))
-		return $render_array;
-
-	$tableHeader[] = t('Description');
-	$tableHeader[] = t('Filename');
-	$tableHeader[] = t('Typ');
-	$tableHeader[] = t('Size');
-	$tableHeader[] = t('Date');
-	$tableHeader[] = t('Author');
-	$tableHeader[] = t('Owner');
-
-	$render_array['files'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Files'),
-			'#weight' => 8,
-			'#collapsible' => TRUE,
-			'#collapsed' => FALSE,
-			'#attached' => array(
-					'js' => array(
-							'misc/form.js',
-							'misc/collapse.js',
-					),
-			),
-			'#attributes' => array(
-					'class' => array(
-							'collapsible'
-					),
-			),
-	);
-
-	$render_array['files']['data'] = array(
-			'#theme' => 'datatable',
-			'#header' => $tableHeader,
-			'#rows' => $rows,
-			'#id_table' => 'files',
-	);
-	return $render_array;
-}
-
 ?>

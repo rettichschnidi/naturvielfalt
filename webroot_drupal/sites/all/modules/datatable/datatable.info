@@ -1,8 +1,8 @@
-name = Datatable
-description = Custom Sortable Table with included paging
+name = datatable
+description = Sortable Table with included paging
 package = Naturvielfalt
 core = 7.x
-version = 1.0
+version = "7.x-current"
 
 <!-- scripts[] = js/lib/jquery.scrollTo-min.js -->
 <!-- scripts[] = js/custom.datatable.delay.js -->
