@@ -88,8 +88,8 @@ function organism_show_classifiers_json() {
 								oc.prime_father_id AS prime_father_id,
 								COUNT(ocs.id) AS cnt
 							FROM
-								drupal_organism_classification_subscription ocs
-								JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id 
+								{organism_classification_subscription} ocs
+								JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id 
 							GROUP BY
 								prime_father_id
 						) AS organismcount ON organismcount.prime_father_id = oc.prime_father_id";
