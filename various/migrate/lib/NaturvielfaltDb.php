@@ -183,9 +183,10 @@ class NaturvielfaltDb extends Db {
 	function haveClassificationLevel($classification_level_name, $classifier_id,
 			$parent_id) {
 		if (false) {
+			print "Checking for classification level:\n";
 			print "Name: $classification_level_name\n";
 			print "Id: $classifier_id\n";
-			print "Parent: $parent_id\n";
+			print "Parent id: $parent_id\n";
 		}
 		global $drupalprefix;
 		$table = $drupalprefix . 'organism_classification_level';
@@ -336,6 +337,75 @@ class NaturvielfaltDb extends Db {
 				$classifier_id,
 				$parent_id
 		);
+		$ids = $this->getIdArray_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert(count($ids) == 1);
+		return $ids[0];
+	}
+
+	/**
+	 * 
+	 * Make sure, that the attribute "scientific_name" exists in table
+	 * 'organism_classification-attribute'
+	 */
+	function haveClassificationAttribute($attributename) {
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_classification_attribute';
+		assert($attributename != NULL);
+		$fromQuery = 'FROM ' . $table . ' WHERE name = ?';
+		$typesArray = array(
+				'text'
+		);
+		$valuesArray = array(
+				$attributename
+		);
+		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
+		assert($num <= 1);
+		return $num;
+	}
+
+	function getClassificationAttributeId($attributename) {
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_classification_attribute';
+		$columnArray = array(
+				'name'
+		);
+		$typesArray = array(
+				'text'
+		);
+		$valuesArray = array(
+				$attributename
+		);
+		$ids = $this->getIdArray_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert(count($ids) == 1);
+		return $ids[0];
+	}
+
+	function createClassificationAttribute($attributename) {
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_classification_attribute';
+		$columnArray = array(
+				'name'
+		);
+		$typesArray = array(
+				'text'
+		);
+		$valuesArray = array(
+				$attributename
+		);
+		$numrow = $this->insert_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert($numrow == 1);
 		$ids = $this->getIdArray_query(
 				$columnArray,
 				$table,

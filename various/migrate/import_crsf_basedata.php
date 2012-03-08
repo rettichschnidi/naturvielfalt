@@ -68,10 +68,30 @@ $organism_attribute_id = 0;
 		$db->createAttribute($attribute_name, 'n');
 	}
 	$organism_attribute_id = $db->getAttributeId($attribute_name);
-	print "Attribute id for '$attribute_name': $organism_attribute_id\n";
+	print 
+		"Organism attribute id for '$attribute_name': $organism_attribute_id\n";
 	assert($organism_attribute_id != 0);
 }
 
+/**
+ * add the organism attribute 'scientific_name',
+ * set $classification_scientific_name_attribute_id
+ */
+$classification_scientific_name_attribute_id = 0;
+{
+	$attribute_name = 'scientific_name';
+	if (!$db->haveClassificationAttribute($attribute_name)) {
+		$classification_scientific_name_attribute_id = $db->createClassificationAttribute(
+				$attribute_name);
+	} else {
+		$classification_scientific_name_attribute_id = $db->getAttributeId(
+				$attribute_name);
+	}
+	print 
+		"Classification attribute id for '$attribute_name': $classification_scientific_name_attribute_id\n";
+	assert($classification_scientific_name_attribute_id != 0);
+}
+exit();
 /**
  * create organism classification level
  * set $organism_classification_level_id
@@ -85,6 +105,7 @@ $organism_attribute_id = 0;
 
 	$organism_classification_level_id = $organism_classifier_id;
 	$parent_id = $organism_classification_level_id;
+	// for each levelname, make sure it exists or add it
 	foreach ($classification_data as $classification_level_name => $moredata) {
 		if (!$db->haveClassificationLevel(
 				$classification_level_name,
@@ -104,11 +125,14 @@ $organism_attribute_id = 0;
 		}
 		print
 			("Classification level id for '$classification_level_name': $organism_classification_level_id\n");
+		// Save the relation levelname -> levelid so we do not have to look it up in the database later on
 		$classification_data[$classification_level_name]['classificationlevelid'] = $organism_classification_level_id;
+		// Created classification level will be parent for the next one
 		$parent_id = $organism_classification_level_id;
 	}
 	assert($organism_classification_level_id != NULL);
 }
+exit();
 
 {
 	if (!$db->haveClassification($classifierName, $organism_classifier_id)) {

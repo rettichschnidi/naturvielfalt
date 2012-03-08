@@ -49,13 +49,14 @@ $organism_classifier_id = 0;
 }
 
 /**
- * create organism classification level
- * create and fill hashmap $classification_data
+ * Create organism classification level
+ * 
+ * Create and fill hashmap $classification_data
  */
 {
 	$classification_data = array(
-			// My bad. Gattung actualy gets translated to genus, not to family. But for now
-			// I wont change it in the database
+			// My bad. "Gattung" actually gets translated to genus, not to family. But for now
+			// I wont change this in the database
 			'genus' => array(
 					'columnname' => 'familyname'
 			)
@@ -63,18 +64,18 @@ $organism_classifier_id = 0;
 
 	$organism_classification_level_id = $organism_classifier_id;
 	$parent_id = $organism_classification_level_id;
+	
+	// for each levelname, make sure it exists or add it
 	foreach ($classification_data as $classification_level_name => $moredata) {
 		if (!$db->haveClassificationLevel(
 				$classification_level_name,
 				$organism_classifier_id,
 				$parent_id)) {
-			print "create\n";
 			$organism_classification_level_id = $db->createClassificationLevel(
 					$classification_level_name,
 					$organism_classifier_id,
 					$parent_id);
 		} else {
-			print "got it\n";
 			$organism_classification_level_id = $db->getClassificationLevelId(
 					$classification_level_name,
 					$organism_classifier_id,
@@ -82,7 +83,9 @@ $organism_classifier_id = 0;
 		}
 		print
 			("Classification level id for '$classification_level_name': $organism_classification_level_id\n");
+		// Save the relation levelname -> levelid so we do not have to look it up in the database later on
 		$classification_data[$classification_level_name]['classificationlevelid'] = $organism_classification_level_id;
+		// Created classification level will be parent for the next one
 		$parent_id = $organism_classification_level_id;
 	}
 	assert($organism_classification_level_id != NULL);
@@ -109,6 +112,7 @@ $organism_classifier_id = 0;
 }
 $classification_root_id = $classification_id;
 print "ClassificatorId for $classifierName: $classification_id\n";
+exit();
 
 /**
  * Add all families to the classification,
