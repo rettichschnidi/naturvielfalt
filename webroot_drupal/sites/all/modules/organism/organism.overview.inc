@@ -97,7 +97,7 @@ function organism_show_classification($classificationid) {
 	);
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
-			'#title' => $classificationName,
+			'#title' => t('Subclassifications within') . " $classificationName",
 			'#header' => $classificationTableHeader,
 			'#id_table' => 'classificators',
 			'#options' => array(
@@ -119,6 +119,13 @@ function organism_show_classification($classificationid) {
 			'#markup' => '<h1>' . t('Organisms') . '</h1>',
 	);
 
+	$organismsTableHeader[] = array(
+			'name' => t('Organism id'),
+			'dbfield' => 'organism_id',
+			'idField' => true,
+			'hide' => false
+	);
+
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
 
@@ -134,15 +141,14 @@ function organism_show_classification($classificationid) {
 	}
 
 	$organismsTableHeader[] = array(
-			'name' => t('Organism id'),
-			'dbfield' => 'organism_id',
-			'idField' => true,
+			'name' => t('Latin Name'),
+			'dbfield' => 'osn_name',
 			'hide' => false
 	);
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => 'Organisms with classification ' . $classificationName,
+			'#title' => 'Organisms which are in classification ' . $classificationName,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
