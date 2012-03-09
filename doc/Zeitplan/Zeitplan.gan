@@ -33,14 +33,14 @@
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
             <taskproperty id="tpc1" name="Kommentar" type="custom" valuetype="text"/>
         </taskproperties>
-        <task id="4" name="Organism Modul" color="#8cb6ce" meeting="false" start="2012-02-29" duration="8" complete="25" expand="true">
+        <task id="4" name="Organism Modul" color="#8cb6ce" meeting="false" start="2012-02-29" duration="8" complete="37" expand="true">
             <depend id="44" type="2" difference="0" hardness="Strong"/>
             <depend id="87" type="2" difference="0" hardness="Strong"/>
             <task id="6" name="DB-Schema und Importscripte anpassen" color="#8cb6ce" meeting="false" start="2012-02-29" duration="2" complete="100" expand="true">
                 <depend id="11" type="2" difference="0" hardness="Strong"/>
                 <depend id="131" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="131" name="Autor und Erstsichtung aus Fungus-Datenbank importieren" color="#8cb6ce" meeting="false" start="2012-03-02" duration="1" complete="0" expand="true">
+            <task id="131" name="Autor und Erstsichtung aus Fungus-Datenbank importieren" color="#8cb6ce" meeting="false" start="2012-03-02" duration="1" complete="100" expand="true">
                 <depend id="11" type="2" difference="0" hardness="Strong"/>
             </task>
             <task id="11" name="Alle Sprachvarianten importieren" color="#8cb6ce" meeting="false" start="2012-03-05" duration="1" complete="0" expand="true">
@@ -145,6 +145,7 @@
         <allocation task-id="112" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="78" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="89" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="131" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="76" resource-id="2" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="36" resource-id="3" function="Default:1" responsible="true" load="10.0"/>
     </allocations>
