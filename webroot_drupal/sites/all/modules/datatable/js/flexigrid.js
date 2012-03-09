@@ -1581,7 +1581,7 @@
 								'<tr><td class="ndcol1"><input type="checkbox" '
 										+ chk + ' class="togCol" value="' + cn
 										+ '" /></td><td class="ndcol2">'
-										+ this.innerHTML + '&copy;</td></tr>');
+										+ this.innerHTML + '</td></tr>');
 						cn++;
 					});
 
