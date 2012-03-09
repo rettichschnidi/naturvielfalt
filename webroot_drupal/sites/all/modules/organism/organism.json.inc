@@ -110,31 +110,93 @@ function organism_show_classifiers_json() {
  * @todo Find a better title
  */
 function organism_show_classification_classificationjson($classificationid) {
+	/* Original example query:
+		SELECT
+			ds.id,
+			ds.name,
+			SUM(sc.cnt)
+		FROM (
+			SELECT
+				id,
+				name,
+				left_value,
+				right_value
+			FROM
+				drupal_organism_classification oc
+			WHERE
+				oc.parent_id = 2 AND oc.id != oc.parent_id
+			) ds
+			JOIN (
+				SELECT
+					oc.id AS oc_id,
+					oc.left_value AS oc_left_value,
+					oc.right_value AS oc_right_value,
+					oc.prime_father_id AS oc_prime_father_id,
+					count(ocs.id) AS cnt
+				FROM
+					drupal_organism_classification oc
+					JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+				GROUP BY
+					oc_id,
+					oc_left_value,
+					oc_right_value,
+					oc_prime_father_id
+				ORDER BY
+					oc_id
+				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value
+		GROUP BY
+			ds.id,
+			ds.name
+	 */
+
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
-			'oc.id AS oc_id',
-			'oc.name AS oc_name',
-			'oc.organism_classification_level_id AS classification_level_id',
-			'ocl.name AS levelname'
+			'ds.id AS ds_id',
+			'ds.name AS ds_name',
+			'SUM(sc.cnt) AS cnt'
 	);
 
 	$sql['dbSearchColumns'] = array(
-			'oc.id',
-			'oc.name',
-			'ocl.name'
+			'ds_name'
 	);
 
 	/* DB table to use */
-	$sql['dbTable'] = '{organism_classification} oc';
+	$sql['dbTable'] = '(
+			SELECT
+				id,
+				name,
+				left_value,
+				right_value
+			FROM
+				drupal_organism_classification oc
+			WHERE
+				oc.parent_id = :classificationid AND oc.id != oc.parent_id
+			) ds';
 	/* Joins to use */
-	$sql['dbJoins'] = 'JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id';
+	$sql['dbJoins'] = 'JOIN (
+				SELECT
+					oc.id AS oc_id,
+					oc.left_value AS oc_left_value,
+					oc.right_value AS oc_right_value,
+					oc.prime_father_id AS oc_prime_father_id,
+					count(ocs.id) AS cnt
+				FROM
+					drupal_organism_classification oc
+					JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+				GROUP BY
+					oc_id,
+					oc_left_value,
+					oc_right_value,
+					oc_prime_father_id
+				ORDER BY
+					oc_id
+				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value';
 	/* Group */
-	$sql['dbGroupBy'] = 'oc_id, oc_name, classification_level_id, levelname';
-	$sql['dbWhere'] = 'oc.parent_id != oc.id AND oc.parent_id = :ocid';
-	$sql['id'] = 'oc_id';
+	$sql['dbGroupBy'] = 'ds_id, ds_name';
+	$sql['id'] = 'ds_id';
 
 	$arguments = array(
-			':ocid' => $classificationid
+			':classificationid' => $classificationid
 	);
 
 	$output = datatable_dbRequest($sql, $arguments);

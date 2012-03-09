@@ -57,6 +57,7 @@ function organism_show_classifiers() {
  * @return array
  */
 function organism_show_classification($classificationid) {
+	assert($classificationid != false);
 	// Extract the name of the current classification
 	$classificationName = 'Classifications';
  {
@@ -82,17 +83,17 @@ function organism_show_classification($classificationid) {
 	$classificationTableHeader[] = array(
 			'name' => t('Internal id'),
 			'idField' => true,
-			'dbfield' => 'oc_id',
+			'dbfield' => 'ds_id',
 			'hide' => false
 	);
 	$classificationTableHeader[] = array(
 			'name' => t('Classificator name'),
-			'dbfield' => 'oc_name',
+			'dbfield' => 'ds_name',
 			'hide' => false
 	);
 	$classificationTableHeader[] = array(
-			'name' => t('Classification level'),
-			'dbfield' => 'classification_level_id',
+			'name' => t('Number of organism'),
+			'dbfield' => 'cnt',
 			'hide' => false
 	);
 	$render_array['classificators'] = array(
@@ -123,7 +124,7 @@ function organism_show_classification($classificationid) {
 			'name' => t('Organism id'),
 			'dbfield' => 'organism_id',
 			'idField' => true,
-			'hide' => false
+			'hide' => true
 	);
 
 	$classificationleveldata = organism_get_available_classification_levels(
@@ -147,14 +148,15 @@ function organism_show_classification($classificationid) {
 	);
 
 	$organismsTableHeader[] = array(
-				'name' => t('Localized Name'),
-				'dbfield' => 'ol_name',
-				'hide' => false
+			'name' => t('Localized Name'),
+			'dbfield' => 'ol_name',
+			'hide' => false
 	);
-	
+
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => 'Organisms which are in classification ' . $classificationName,
+			'#title' => 'Organisms which are in classification '
+					. $classificationName,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
