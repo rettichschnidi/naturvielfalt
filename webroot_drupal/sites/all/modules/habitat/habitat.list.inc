@@ -63,8 +63,7 @@ function habitat_list_ajax() {
 						LEFT JOIN gallery_image gi ON item_type = 'habitat' and gi.item_id = habitat.id";
 
 	/* Group */
-	$sql['dbGroupBy'] = "GROUP BY
-				habitat.label,
+	$sql['dbGroupBy'] = "habitat.label,
 				habitat.name_de,
 				habitat.id";
 

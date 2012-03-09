@@ -1397,6 +1397,14 @@
 					else {
 						p.newp = 1;
 						p.rp = +this.value;
+						// by mjs set cookie for page number
+						if (p.cookies) {
+							var prefs = g.prefs.load();
+							prefs.page = {};
+							prefs.page = p.newp;
+							g.prefs.data = prefs;
+							g.prefs.save();
+						}
 						g.populate();
 					}
 				});

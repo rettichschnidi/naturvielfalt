@@ -26,7 +26,7 @@ function datatable_theme() {
 							'options' => NULL,
 							'dbFields' => NULL,
 							// Table title
-							'title' => "I forgot to set the title of this table"
+							'title' => NULL
 					),
 			),
 	);
@@ -199,7 +199,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
 		for ($i = 0; $i < count($searchColumns); $i++) {
 			/**
-			 * yes, this is ia terrible hack, but I do not know how another solution to make sure 
+			 * yes, this is ia terrible hack, but I do not know how another solution to make sure
 			 * that all(?!) types can be used with LIKE
 			 */
 			$sWhere .= "LOWER(CAST(" . $searchColumns[$i]
