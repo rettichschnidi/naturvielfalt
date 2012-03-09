@@ -305,7 +305,7 @@ print "Classification done...\n";
 		$organism_subgenus = $row['subgenus'];
 		$organism_species = $row['species'];
 		$organism_subspecies = $row['subspecies'];
-		$organism_scientific_name_synonym = $row['name_latin'];
+		$organism_scientific_name = $row['name_latin'];
 		$nuesp_nr = $row['nuesp'];
 		$organism_lang_name = array(
 				'de' => $row['name_de'],
@@ -314,17 +314,19 @@ print "Classification done...\n";
 				'it' => $row['name_it']
 		);
 
-		// Craft a scientific name from genus, if available subgenus, species and if available, subspecies.
-		$organism_scientific_name = $organism_subgenus ? ucfirst(
-					$organism_subgenus) : ucfirst($organism_genus);
-		$organism_scientific_name .= " $organism_species";
-		$organism_scientific_name .= $organism_subspecies ? " $organism_subspecies"
-				: '';
+// 		// Craft a scientific name from genus, if available subgenus, species and if available, subspecies.
+// 		$organism_scientific_name = $organism_subgenus ? ucfirst(
+// 					$organism_subgenus) : ucfirst($organism_genus);
+// 		$organism_scientific_name .= " $organism_species";
+// 		$organism_scientific_name .= $organism_subspecies ? " $organism_subspecies"
+// 				: '';
 		$organism_classification_id = '';
 		if ($organism_subgenus) {
 			$organism_classification_name = $organism_subgenus;
 			// $classification_data[$classification_level_name]['classifications'][$classification_name] = $classification_id;
 			$organism_classification_id = $classification_data['subgenus']['classifications'][$organism_classification_name];
+			if(false)
+				print("GOT SUBGENUS ID: $organism_classification_id for organism '$organism_scientific_name'\n");
 		} else {
 			$organism_classification_name = $organism_genus;
 			$organism_classification_id = $classification_data['genus']['classifications'][$organism_classification_name];
@@ -355,6 +357,8 @@ print "Classification done...\n";
 						$organism_id,
 						$organism_classification_id);
 			}
+			if(false && $organism_subgenus)
+				print "Hooked up organism_id $organism_classification_id/$organism_classification_name  to organism_classification_subscription_id $organism_classification_subscription_id\n";
 			// If available: add localized texts to each organism
 			foreach ($organism_lang_name as $lang => $name) {
 				if (!empty($name)
@@ -373,19 +377,11 @@ print "Classification done...\n";
 			$organism_id = $db->getScientificNameOrganismId(
 					$organism_scientific_name);
 		}
-		if (!$db->haveScientificName($organism_scientific_name_synonym)) {
-			$organism_scientific_name_id = $db->createScientificName(
-					$organism_id,
-					$organism_scientific_name_synonym);
-		}
 		if (false) {
 			print 
 				"Scientific Classification Name: $organism_classification_name, id: $organism_classification_id\n";
-			print 
-				"Scientific Name: $organism_scientific_name + $organism_scientific_name_synonym, id: $organism_id\n";
 		}
 		$scientific_name2organism_id[$organism_scientific_name] = $organism_id;
-		$scientific_name2organism_id[$organism_scientific_name_synonym] = $organism_id;
 		assert($organism_id != 0);
 	}
 	$db->stopTransactionIfPossible();
