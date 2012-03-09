@@ -84,7 +84,7 @@
 		var g = {
 			prefs : {
 
-				cookie_name : p.tableId,
+				cookie_name : p.tableId+'_'+document.location.pathname,
 				data : {},
 
 				load : function() {
@@ -1460,7 +1460,7 @@
 						.append(
 								"<div class='sDiv2'>Quick Search <input type='text' size='30' name='q' class='qsbox' /> <select name='qtype'>"
 										+ sopt
-										+ "</select> <input type='button' id=\"flexi_search\" value='Procurar' />&nbsp;<input type='button' id=\"flexi_reset\" value='Reset' /></div>");
+										+ "</select> <input type='button' id=\"flexi_search\" value='Search' />&nbsp;<input type='button' id=\"flexi_reset\" value='Reset' /></div>");
 
 				// If cookies are set and whith value
 				// show search bar to inform users that
