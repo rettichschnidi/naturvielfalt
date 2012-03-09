@@ -67,7 +67,7 @@ function datatable_theme() {
  * 			[aaData] => Array of filtered and limited data from db as dbfields
  * @note If you do not like this, do it better and shut up.
  */
-function datatable_dbRequest($sql, $arguments = array()) {
+function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()) {
 	/* Set the db fields to select */
 	if (!$sql['dbColumns'] || !$sql['dbTable'])
 		return "Error! No dbColumns or dbTable";
@@ -77,7 +77,7 @@ function datatable_dbRequest($sql, $arguments = array()) {
 		if (false) {
 			print "<pre>" . $sql['dbPreStatement'] . "</pre>";
 		}
-		db_query($sql['dbPreStatement'], $arguments);
+		db_query($sql['dbPreStatement'], $preArguments);
 	}
 	$searchColumns = $sql['dbSearchColumns'];
 	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns']
