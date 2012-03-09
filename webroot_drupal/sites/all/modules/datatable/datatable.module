@@ -40,6 +40,7 @@ function datatable_theme() {
  * @author Ramon Gamma, 2012
  *
  * @param array sql
+ * 			'dbPreStatament'	optional: Statement which will be executed before anything else. Usefull to create temporary views.
  * 			'dbColumns' 		Array of columns
  * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
  * 			'dbSortColumns'		optional; Array of column on that can be sorted
@@ -49,6 +50,7 @@ function datatable_theme() {
  * 			'dbWhere' 			optional; the WHERE statement string
  * 			'id' 				optional: id column, default 'id'
  *
+ * 			$sql['dbPreStatament'] = "";
  * 			$sql['dbColumns'] = array();
  * 			$sql['dbSearchColumns'] = array();
  * 			$sql['dbSortColumns'] = array();
@@ -71,6 +73,9 @@ function datatable_dbRequest($sql, $arguments = array()) {
 		return "Error! No dbColumns or dbTable";
 	assert(isset($sql['dbSearchColumns']));
 	$aColumns = $sql['dbColumns'];
+	if(isset($sql['dbPreStatament'])) {
+		db_query($sql['dbPreStatament'], $arguments);
+	}
 	$searchColumns = $sql['dbSearchColumns'];
 	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns']
 			: $sql['dbColumns'];
@@ -222,13 +227,11 @@ function datatable_dbRequest($sql, $arguments = array()) {
 	 * SQL queries
 	 * Get data to display
 	 */
-	// removed SQL_CALC_FOUND_ROWS
-	$nQuery = "SELECT  " . str_replace(" , ", " ", implode(", ", $aColumns))
-			. "
-				FROM   $sTable $sWhere $sGroupBy $sOrder";
+	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
+	$nQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
 	$sQuery = $nQuery . " " . $sLimit;
 	if (false) {
-		die("sQuery: $sQuery");
+		die("<pre>sQuery: $sQuery</pre>");
 	}
 	$rResult = db_query($sQuery, $arguments);
 
@@ -237,17 +240,14 @@ function datatable_dbRequest($sql, $arguments = array()) {
 	$iFilteredTotal = $nResult->rowCount();
 
 	/* Total data set length */
-	$tQuery = "SELECT  " . str_replace(" , ", " ", implode(", ", $aColumns))
-			. "
-				FROM   $sTable $where $sGroupBy $sOrder ";
+	$tQuery = "SELECT $columnsString FROM $sTable $where $sGroupBy $sOrder";
 	$rResultTotal = db_query($tQuery, $arguments);
 	$iTotal = $rResultTotal->rowCount();
 
 	$output = array(
-			"page" => $page,
-			"total" => $iFilteredTotal,
-			// 			"iTotalDisplayRecords" => $iFilteredTotal,
-			"rows" => array()
+		"page" => $page,
+		"total" => $iFilteredTotal,
+		"rows" => array()
 	);
 
 	$data = $rResult->fetchAll();
@@ -258,7 +258,6 @@ function datatable_dbRequest($sql, $arguments = array()) {
 				'cell' => $row
 		);
 	}
-	// die(print_r($output));
 	return $output;
 }
 ?>
