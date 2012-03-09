@@ -40,7 +40,7 @@ function datatable_theme() {
  * @author Ramon Gamma, 2012
  *
  * @param array sql
- * 			'dbPreStatament'	optional: Statement which will be executed before anything else. Usefull to create temporary views.
+ * 			'dbPreStatement'	optional: Statement which will be executed before anything else. Usefull to create temporary views.
  * 			'dbColumns' 		Array of columns
  * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
  * 			'dbSortColumns'		optional; Array of column on that can be sorted
@@ -50,7 +50,7 @@ function datatable_theme() {
  * 			'dbWhere' 			optional; the WHERE statement string
  * 			'id' 				optional: id column, default 'id'
  *
- * 			$sql['dbPreStatament'] = "";
+ * 			$sql['dbPreStatement'] = "";
  * 			$sql['dbColumns'] = array();
  * 			$sql['dbSearchColumns'] = array();
  * 			$sql['dbSortColumns'] = array();
@@ -73,8 +73,11 @@ function datatable_dbRequest($sql, $arguments = array()) {
 		return "Error! No dbColumns or dbTable";
 	assert(isset($sql['dbSearchColumns']));
 	$aColumns = $sql['dbColumns'];
-	if(isset($sql['dbPreStatament'])) {
-		db_query($sql['dbPreStatament'], $arguments);
+	if (isset($sql['dbPreStatement'])) {
+		if (false) {
+			print "<pre>" . $sql['dbPreStatement'] . "</pre>";
+		}
+		db_query($sql['dbPreStatement'], $arguments);
 	}
 	$searchColumns = $sql['dbSearchColumns'];
 	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns']
@@ -245,9 +248,9 @@ function datatable_dbRequest($sql, $arguments = array()) {
 	$iTotal = $rResultTotal->rowCount();
 
 	$output = array(
-		"page" => $page,
-		"total" => $iFilteredTotal,
-		"rows" => array()
+			"page" => $page,
+			"total" => $iFilteredTotal,
+			"rows" => array()
 	);
 
 	$data = $rResult->fetchAll();
