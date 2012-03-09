@@ -46,17 +46,6 @@ function organism_menu() {
 			'file' => 'organism.overview.inc',
 	);
 
-	$items['organism/json'] = array(
-			'title' => t('Organisms JSON'),
-			'page callback' => 'organism_show_classifiers_json',
-			'access arguments' => array(
-					'access content'
-			),
-			'description' => t('Json of classifiers'),
-			'type' => MENU_CALLBACK,
-			'file' => 'organism.json.inc',
-	);
-
 	$items['organism/classification/%'] = array(
 			'title' => t('Classification'),
 			'page arguments' => array(
@@ -69,6 +58,17 @@ function organism_menu() {
 			'description' => t('List of organisms classifications'),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'organism.overview.inc',
+	);
+
+	$items['organism/json'] = array(
+			'title' => t('Organisms JSON'),
+			'page callback' => 'organism_show_classifiers_json',
+			'access arguments' => array(
+					'access content'
+			),
+			'description' => t('Json of classifiers'),
+			'type' => MENU_CALLBACK,
+			'file' => 'organism.json.inc',
 	);
 
 	$items['organism/classification/%/classificationjson'] = array(

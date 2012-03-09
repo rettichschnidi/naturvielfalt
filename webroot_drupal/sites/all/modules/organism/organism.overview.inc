@@ -119,18 +119,6 @@ function organism_show_classification($classificationid) {
 			'#markup' => '<h1>' . t('Organisms') . '</h1>',
 	);
 
-	// Set the table header
-	$organismsTableHeader[] = array(
-			'name' => t('Organism id'),
-			'dbfield' => 'o_id',
-			'idField' => true,
-			'hide' => false
-	);
-	$organismsTableHeader[] = array(
-			'name' => t('Organism scientific name id'),
-			'dbfield' => 'osn_id',
-			'hide' => false
-	);
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
 
@@ -140,20 +128,15 @@ function organism_show_classification($classificationid) {
 		}
 		$organismsTableHeader[] = array(
 				'name' => t(ucfirst($value->name)),
-				'dbfield' => $value->name,
+				'dbfield' => 'oc_' . $value->name,
 				'hide' => false
 		);
 	}
 
 	$organismsTableHeader[] = array(
-			'name' => t('Latin name'),
-			'dbfield' => 'osn_name',
-			'hide' => false
-	);
-
-	$organismsTableHeader[] = array(
-			'name' => t('Name'),
-			'dbfield' => 'ol_name',
+			'name' => t('Organism id'),
+			'dbfield' => 'organism_id',
+			'idField' => true,
 			'hide' => false
 	);
 
