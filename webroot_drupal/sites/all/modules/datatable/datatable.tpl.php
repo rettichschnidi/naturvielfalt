@@ -153,7 +153,7 @@ searchitems : [{display: Drupal.t('ALL'), name : '*', isdefault: true}],
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",
 usepager: true,
-title: '<?php echo $title ?>',
+<?php if($title) echo "title: '".$title."'," ?>
 useRp: true,
 rp: 15,
 showTableToggleBtn: true,
