@@ -146,6 +146,12 @@ function organism_show_classification($classificationid) {
 			'hide' => false
 	);
 
+	$organismsTableHeader[] = array(
+				'name' => t('Localized Name'),
+				'dbfield' => 'ol_name',
+				'hide' => false
+	);
+	
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
 			'#title' => 'Organisms which are in classification ' . $classificationName,
