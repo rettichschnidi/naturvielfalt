@@ -75,7 +75,9 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$aColumns = $sql['dbColumns'];
 	if (isset($sql['dbPreStatement'])) {
 		if (false) {
-			print "<pre>" . $sql['dbPreStatement'] . "</pre>";
+			$noopeningbrakets = str_replace('{', 'drupal_', $sql['dbPreStatement']); // FIXME
+			$noclosingbrakets = str_replace('}', '', $noopeningbrakets);
+			print "<pre>" . $noclosingbrakets . "</pre>";
 		}
 		db_query($sql['dbPreStatement'], $preArguments);
 	}
@@ -234,7 +236,9 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$nQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
 	$sQuery = $nQuery . " " . $sLimit;
 	if (false) {
-		die("<pre>sQuery: $sQuery</pre>");
+		$noopeningbrakets = str_replace('{', 'drupal_', $sQuery);  // FIXME
+		$noclosingbrakets = str_replace('}', '', $noopeningbrakets);
+		die("<pre>$noclosingbrakets</pre>");
 	}
 	$rResult = db_query($sQuery, $arguments);
 
