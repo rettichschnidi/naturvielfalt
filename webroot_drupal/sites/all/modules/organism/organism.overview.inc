@@ -17,7 +17,7 @@ function organism_show_classifiers() {
 			'name' => t('Internal Id'),
 			'idField' => true,
 			'dbfield' => 'oc_id',
-			'hide' => false,
+			'hide' => true,
 	);
 	$tableHeader[] = array(
 			'name' => t('Classificator name'),
