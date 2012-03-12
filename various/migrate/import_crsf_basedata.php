@@ -74,25 +74,6 @@ $organism_attribute_id = 0;
 }
 
 /**
- * add the organism attribute 'scientific_name',
- * set $classification_scientific_name_attribute_id
- */
-$classification_scientific_name_attribute_id = 0;
-{
-	$attribute_name = 'scientific_name';
-	if (!$db->haveClassificationAttribute($attribute_name)) {
-		$classification_scientific_name_attribute_id = $db->createClassificationAttribute(
-				$attribute_name);
-	} else {
-		$classification_scientific_name_attribute_id = $db->getAttributeId(
-				$attribute_name);
-	}
-	print 
-		"Classification attribute id for '$attribute_name': $classification_scientific_name_attribute_id\n";
-	assert($classification_scientific_name_attribute_id != 0);
-}
-exit();
-/**
  * create organism classification level
  * set $organism_classification_level_id
  */
@@ -132,7 +113,6 @@ exit();
 	}
 	assert($organism_classification_level_id != NULL);
 }
-exit();
 
 {
 	if (!$db->haveClassification($classifierName, $organism_classifier_id)) {
