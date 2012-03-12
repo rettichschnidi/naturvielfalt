@@ -26,6 +26,7 @@ function organism_show_classifiers() {
 	$tableHeader[] = array(
 			'name' => t('# of levels'),
 			'dbfield' => 'levelcount',
+			'hide' => true,
 	);
 	$tableHeader[] = array(
 			'name' => t('# of organisms'),
