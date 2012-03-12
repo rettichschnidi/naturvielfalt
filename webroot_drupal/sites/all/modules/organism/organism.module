@@ -129,11 +129,11 @@ function organism_menu() {
 	return $items;
 }
 
-function organism_permission() {
-	return array(
-			'organism upload' => array(
-					'title' => t('Attach media files to organisms')
-			)
-	);
-}
+// function organism_permission() {
+// 	return array(
+// 			'organism upload' => array(
+// 					'title' => t('Attach media files to organisms')
+// 			)
+// 	);
+// }
 ?>
