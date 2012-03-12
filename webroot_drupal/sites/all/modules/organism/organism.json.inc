@@ -110,46 +110,46 @@ function organism_show_classifiers_json() {
  */
 function organism_show_classification_classificationjson($classificationid) {
 	/* Original example query:
-		SELECT
-			ds.id,
-			ds.name,
-			SUM(sc.cnt)
-		FROM (
-			SELECT
-				id,
-				name,
-				left_value,
-				right_value,
-				prime_father_id
-			FROM
-				drupal_organism_classification oc
-			WHERE
-				oc.parent_id = 37 AND oc.id != oc.parent_id
-			) ds
-			JOIN (
-				------------------------------------------------------------
-				-- Count number of organism within each classification group
-				------------------------------------------------------------
-				SELECT
-					oc.id AS oc_id,
-					oc.left_value AS oc_left_value,
-					oc.right_value AS oc_right_value,
-					oc.prime_father_id AS oc_prime_father_id,
-					COUNT(ocs.id) AS cnt
-				FROM
-					drupal_organism_classification oc
-					JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
-				GROUP BY
-					oc_id,
-					oc_left_value,
-					oc_right_value,
-					oc_prime_father_id
-				ORDER BY
-					oc_id
-				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id
-		GROUP BY
-			ds.id,
-			ds.name
+	    SELECT
+	        ds.id,
+	        ds.name,
+	        SUM(sc.cnt)
+	    FROM (
+	        SELECT
+	            id,
+	            name,
+	            left_value,
+	            right_value,
+	            prime_father_id
+	        FROM
+	            drupal_organism_classification oc
+	        WHERE
+	            oc.parent_id = 37 AND oc.id != oc.parent_id
+	        ) ds
+	        JOIN (
+	            ------------------------------------------------------------
+	            -- Count number of organism within each classification group
+	            ------------------------------------------------------------
+	            SELECT
+	                oc.id AS oc_id,
+	                oc.left_value AS oc_left_value,
+	                oc.right_value AS oc_right_value,
+	                oc.prime_father_id AS oc_prime_father_id,
+	                COUNT(ocs.id) AS cnt
+	            FROM
+	                drupal_organism_classification oc
+	                JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+	            GROUP BY
+	                oc_id,
+	                oc_left_value,
+	                oc_right_value,
+	                oc_prime_father_id
+	            ORDER BY
+	                oc_id
+	            ) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id
+	    GROUP BY
+	        ds.id,
+	        ds.name
 	 */
 
 	/* Set the db fields to select */
@@ -172,7 +172,7 @@ function organism_show_classification_classificationjson($classificationid) {
 				right_value,
 				prime_father_id
 			FROM
-				drupal_organism_classification oc
+				{organism_classification} oc
 			WHERE
 				oc.parent_id = :classificationid AND oc.id != oc.parent_id
 			) ds';
@@ -185,8 +185,8 @@ function organism_show_classification_classificationjson($classificationid) {
 					oc.prime_father_id AS oc_prime_father_id,
 					COUNT(ocs.id) AS cnt
 				FROM
-					drupal_organism_classification oc
-					JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+					{organism_classification} oc
+					JOIN {organism_classification_subscription} ocs ON ocs.organism_classification_id = oc.id
 				GROUP BY
 					oc_id,
 					oc_left_value,
@@ -214,85 +214,154 @@ function organism_show_classification_classificationjson($classificationid) {
 function organism_show_classification_organismjson($classificationid) {
 	global $user;
 	/*
-	    CREATE TEMP VIEW mytempviewdata AS 
-	        WITH subclassification_constraints AS (
-	            -- Get the left_value and right_value
-	            -- Those values will allow us to recieve the subtree
+	    CREATE TEMP VIEW mytempviewdata AS
+	            WITH subclassification_constraints AS (
+	                -----------------------------------------------
+	                -- Get the left_value and right_value
+	                -- Those values will allow us to recieve the subtree
+	                -- Example result:
+	                --  prime_father_id | left_value | right_value 
+	                -- -----------------+------------+-------------
+	                --                1 |          4 |           7
+	                -----------------------------------------------
+	                SELECT
+	                    --id,
+	                    --name,
+	                    prime_father_id,
+	                    left_value,
+	                    right_value
+	                FROM
+	                    drupal_organism_classification oc
+	                WHERE
+	                   oc.id = 2
+	            ), included_organisms AS (
+	                -----------------------------------------------------
+	                -- Get all organisms within those subclassifications
+	                -- Example result:
+	                --  organism_id 
+	                -- -------------
+	                --        20706
+	                --        20707
+	                --        20708
+	                --        20709
+	                --        20710
+	                --        20757
+	                --        20755
+	                -----------------------------------------------------
+	                SELECT
+	                    ocs.organism_id AS organism_id
+	                FROM
+	                    drupal_organism_classification oc
+	                    JOIN subclassification_constraints scs ON oc.left_value >= scs.left_value AND oc.right_value <= scs.right_value AND oc.prime_father_id = scs.prime_father_id
+	                    JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+	                ORDER BY
+	                    oc.left_value ASC
+	            ), included_organisms_with_lowest_classification AS (
+	                ----------------------------------------------------------------------------------
+	                -- For each organism, get the classification it is subscribed to
+	                -- Examble result:
+	                --  organism_id |      oc_name       | left_value | right_value | prime_father_id 
+	                -- -------------+--------------------+------------+-------------+-----------------
+	                --        20706 | Acipenser          |          5 |           6 |               1
+	                --        20707 | Anguilla           |         11 |          12 |               1
+	                --        20708 | Alosa              |         17 |          18 |               1
+	                --        20709 | Alosa              |         17 |          18 |               1
+	                --        20710 | Alosa              |         17 |          18 |               1
+	                --        20757 | Barbatula          |         21 |          22 |               1
+	                --        20755 | Cobitis            |         23 |          24 |               1
+	                --        20756 | Misgurnus          |         25 |          26 |               1
+	                --        20726 | Abramis            |         29 |          30 |               1
+	                ----------------------------------------------------------------------------------
+	                SELECT
+	                    i_o.organism_id AS organism_id,
+	                    --ocs.id AS ocs_id,
+	                    oc.name AS oc_name,
+	                    oc.left_value,
+	                    oc.right_value,
+	                    oc.prime_father_id
+	                FROM
+	                    included_organisms i_o
+	                    JOIN drupal_organism_classification_subscription ocs ON ocs.organism_id = i_o.organism_id
+	                    JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id
+	            ), included_organisms_with_all_classifications AS (
+	                ------------------------------------------------------------------------
+	                -- Join table above (included_organisms_with_lowest_classification) to
+	                -- include all levels
+	                --  organism_id |      oc_name       | organism_classification_level_id 
+	                -- -------------+--------------------+----------------------------------
+	                --        20706 | CSCF               |                                1
+	                --        20706 | Actinopterygii     |                                2
+	                --        20706 | Acipenseriformes   |                                3
+	                --        20706 | Acipenseridae      |                                4
+	                --        20706 | Acipenser          |                                5
+	                --        20707 | CSCF               |                                1
+	                --        20707 | Actinopterygii     |                                2
+	                --        20707 | Anguilliformes     |                                3
+	                --        20707 | Anguillidae        |                                4
+	                --        20707 | Anguilla           |                                5
+	                ------------------------------------------------------------------------
+	                SELECT
+	                    inc_org_lowest_class.organism_id, oc.name AS oc_name, oc.organism_classification_level_id
+	                FROM
+	                    included_organisms_with_lowest_classification inc_org_lowest_class
+	                    JOIN drupal_organism_classification oc ON oc.left_value <= inc_org_lowest_class.left_value AND oc.right_value >= inc_org_lowest_class.right_value AND oc.prime_father_id = inc_org_lowest_class.prime_father_id
+	            )
+	            -- This select could be merged with the CTE above (included_organisms_with_all_classifications)
 	            SELECT
-	                --id,
-	                --name,
-	                prime_father_id,
-	                left_value,
-	                right_value
+	                inc_org_all_class.organism_id AS organism_id,
+	                inc_org_all_class.oc_name AS classification_name,
+	                ocl.name AS organism_classification_level_name
 	            FROM
-	                drupal_organism_classification oc
-	            WHERE
-	               oc.id = 777
-	        ), all_organisms AS (
-	            -- Get all organisms within those subclassifications
-	            SELECT
-	                ocs.organism_id AS organism_id
-	            FROM
-	                drupal_organism_classification oc
-	                JOIN subclassification_constraints scs ON oc.left_value >= scs.left_value AND oc.right_value <= scs.right_value AND oc.prime_father_id = scs.prime_father_id
-	                JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
+	                included_organisms_with_all_classifications inc_org_all_class
+	                JOIN drupal_organism_classification_level ocl ON ocl.id = inc_org_all_class.organism_classification_level_id
 	            ORDER BY
-	                oc.left_value ASC
-	        ), all_organisms_and_lowest_classification AS (
+	                organism_id,
+	                ocl.left_value;
+	            -- -------------------------------------------------
+	            -- Create a view with all classification level names
+	            -- Example result:
+	            --    name   
+	            -- ----------
+	            --  CSCF
+	            --  class
+	            --  order
+	            --  family
+	            --  genus
+	            --  subgenus
+	            -- --------------------------------------------------
+	            CREATE TEMP VIEW mytempviewlevel AS 
+	                WITH oc_level AS (SELECT
+	                        DISTINCT ocl.prime_father_id
+	                    FROM
+	                        drupal_organism_classification oc
+	                        JOIN drupal_organism_classification_level ocl ON ocl.id = oc.organism_classification_level_id
+	                    WHERE
+	                        oc.id = 2
+	                )
 	            SELECT
-	                a_o.organism_id AS organism_id,
-	                --ocs.id AS ocs_id,
-	                oc.name AS oc_name,
-	                oc.left_value,
-	                oc.right_value,
-	                oc.prime_father_id
+	                ocl.name
 	            FROM
-	                all_organisms a_o
-	                JOIN drupal_organism_classification_subscription ocs ON ocs.organism_id = a_o.organism_id
-	                JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id
-	        ), all_organisms_with_levels AS (
-	            SELECT
-	 *
-	            FROM
-	                all_organisms_and_lowest_classification a_olc
-	                JOIN drupal_organism_classification oc ON oc.left_value <= a_olc.left_value AND oc.right_value >= a_olc.right_value AND oc.prime_father_id = a_olc.prime_father_id
-	        )
-	        SELECT
-	            a_olc.organism_id AS organism_id,
-	            a_olc.name AS classification_name,
-	            ocl.name AS organism_classification_level_name
-	        FROM
-	            all_organisms_with_levels a_olc
-	            JOIN drupal_organism_classification_level ocl ON ocl.id = a_olc.organism_classification_level_id
-	        ORDER BY
-	            organism_id,
-	            ocl.left_value;
-	    -- create temporary level view
-	    CREATE TEMP VIEW mytempviewlevel AS 
-	       WITH oc_level AS (SELECT
-	               DISTINCT ocl.prime_father_id
-	           FROM
-	               drupal_organism_classification oc
-	               JOIN drupal_organism_classification_level ocl ON ocl.id = oc.organism_classification_level_id
-	           WHERE
-	               oc.id = 777
-	       )
-	    SELECT
-	       ocl.name
-	    FROM
-	       oc_level
-	       JOIN drupal_organism_classification_level ocl ON ocl.prime_father_id = oc_level.prime_father_id;
-	    -- create final datatable      
-	    SELECT osn.organism_id, osn.name, mylang.languages_language AS lang, oc_CSCF, oc_class, oc_order, oc_family, oc_genus, oc_subgenus FROM crosstab
-	            (
-	                'SELECT organism_id AS rowid, organism_classification_level_name AS category, classification_name AS values FROM mytempviewdata',
-	                'SELECT name FROM mytempviewlevel'
-	            ) AS nn(
-	                organism_id integer, oc_CSCF text, oc_class text, oc_order text, oc_family text, oc_genus text, oc_subgenus text
-	            ) JOIN drupal_organism_scientific_name osn ON osn.organism_id = nn.organism_id
-	                 LEFT JOIN (SELECT * FROM drupal_organism_lang WHERE languages_language = 'de') AS mylang ON mylang.organism_id = nn.organism_id;
+	                oc_level
+	                JOIN drupal_organism_classification_level ocl ON ocl.prime_father_id = oc_level.prime_father_id;
+	            -- And another one...
+	            CREATE TEMP VIEW mytempfinaltable AS
+	                SELECT
+	                    osn.organism_id AS organism_id,
+	                    osn.name AS osn_name,
+	                    ol_name,
+	                    oc_CSCF, oc_class, oc_order, oc_family, oc_genus, oc_subgenus
+	                FROM crosstab
+	                    (
+	                       'SELECT organism_id AS rowid, organism_classification_level_name AS category, classification_name AS values FROM mytempviewdata',
+	                       'SELECT name FROM mytempviewlevel'
+	                    ) AS nn(
+	                       organism_id integer, oc_CSCF text, oc_class text, oc_order text, oc_family text, oc_genus text, oc_subgenus text
+	                    ) JOIN drupal_organism_scientific_name osn ON osn.organism_id = nn.organism_id
+	                       LEFT JOIN (SELECT organism_id, name AS ol_name FROM drupal_organism_lang WHERE languages_language = 'de') AS mylang ON mylang.organism_id = nn.organism_id;
+	    SELECT organism_id, osn_name, ol_name, oc_CSCF, oc_class, oc_order, oc_family, oc_genus, oc_subgenus FROM mytempfinaltable;
 	    DROP VIEW mytempviewdata;
 	    DROP VIEW mytempviewlevel;
+	    DROP VIEW mytempfinaltable;
 	 */
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
@@ -303,6 +372,7 @@ function organism_show_classification_organismjson($classificationid) {
 		$levelnamearray[] = pg_escape_string('oc_' . $classificationlevel->name);
 	}
 	$levelnamesdatastring = implode(' text, ', $levelnamearray) . ' text';
+	$levelnamesstring = implode(', ', $levelnamearray);
 
 	$sql['dbPreStatement'] = "CREATE TEMP VIEW mytempviewdata AS
 		WITH subclassification_constraints AS (
@@ -433,39 +503,49 @@ function organism_show_classification_organismjson($classificationid) {
 	    FROM
 	        oc_level
 	        JOIN {organism_classification_level} ocl ON ocl.prime_father_id = oc_level.prime_father_id;
-		";
+		-- And another one...
+		CREATE TEMP VIEW finaltable AS
+			SELECT
+				osn.organism_id AS organism_id,
+				osn.name AS osn_name,
+				ol_name,
+				$levelnamesstring
+			FROM crosstab
+				(
+				   'SELECT organism_id AS rowid, organism_classification_level_name AS category, classification_name AS values FROM mytempviewdata',
+				   'SELECT name FROM mytempviewlevel'
+				) AS nn(
+				   organism_id integer, $levelnamesdatastring
+				) JOIN {organism_scientific_name} osn ON osn.organism_id = nn.organism_id
+				   LEFT JOIN (SELECT organism_id, name AS ol_name FROM {organism_lang} WHERE languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id	
+	";
 
 	/* Set the db fields to select */
-	$sql['dbColumns'] = array_merge(
-		array('osn.organism_id AS organism_id',
-				'osn.name AS osn_name',
-				'mylang.name AS ol_name'
+	$dbcolumns = array_merge(
+		array('organism_id',
+				'osn_name',
+				'ol_name'
+		),
+		$levelnamearray);
+	$sql['dbColumns'] = $dbcolumns;
+
+	$sql['dbSearchColumns'] = array_merge(
+		array('ol_name',
+				'osn_name'
 		),
 		$levelnamearray);
 
-	$sql['dbSearchColumns'] = array_merge(array('ol_name'), $levelnamearray);
-
 	/* DB table to use */
-	$sql['dbTable'] = "crosstab
-	    (
-	        'SELECT organism_id AS rowid, organism_classification_level_name AS category, classification_name AS values FROM mytempviewdata',
-	        'SELECT name FROM mytempviewlevel'
-	    ) AS nn(
-	        organism_id integer, $levelnamesdatastring
-	    )";
-	$sql['dbJoins'] = 'JOIN {organism_scientific_name} osn ON osn.organism_id = nn.organism_id
-	        LEFT JOIN (SELECT * FROM {organism_lang} WHERE languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id';
-
+	$sql['dbTable'] = "finaltable";
 	/* Group */
 	$sql['id'] = 'organism_id';
 
 	$prearguments = array(
-			':classificationid' => $classificationid
+			':classificationid' => $classificationid,
+			':language' => isset($user->language) ? $user->language : 'de' // FIXME
 	);
 
-	$arguments = array(
-			':language' => $user->language
-	);
+	$arguments = array();
 
 	$output = datatable_dbRequest($sql, $arguments, $prearguments);
 	return drupal_json_output($output);
