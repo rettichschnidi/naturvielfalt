@@ -152,22 +152,11 @@ function organism_show_classification_classificationjson($classificationid) {
 	        ds.name
 	 */
 
-	/* Set the db fields to select */
-	$sql['dbColumns'] = array(
-			'ds.id AS ds_id',
-			'ds.name AS ds_name',
-			'SUM(sc.cnt) AS cnt'
-	);
-
-	$sql['dbSearchColumns'] = array(
-			'ds_name'
-	);
-
-	/* DB table to use */
-	$sql['dbTable'] = '(
+	$sql['dbPreStatement'] = "CREATE TEMPORARY VIEW mytempclassifications AS
+		SELECT ds.id AS ds_id, ds.ds_name, SUM(sc.cnt) AS cnt FROM (
 			SELECT
 				id,
-				name,
+				name AS ds_name,
 				left_value,
 				right_value,
 				prime_father_id
@@ -175,9 +164,7 @@ function organism_show_classification_classificationjson($classificationid) {
 				{organism_classification} oc
 			WHERE
 				oc.parent_id = :classificationid AND oc.id != oc.parent_id
-			) ds';
-	/* Joins to use */
-	$sql['dbJoins'] = 'JOIN (
+			) ds JOIN (
 				SELECT
 					oc.id AS oc_id,
 					oc.left_value AS oc_left_value,
@@ -194,16 +181,33 @@ function organism_show_classification_classificationjson($classificationid) {
 					oc_prime_father_id
 				ORDER BY
 					oc_id
-				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id';
+				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id
+			GROUP BY
+				ds_id,
+				ds_name
+			ORDER BY
+				ds_id;";
+	/* Set the db fields to select */
+	$sql['dbColumns'] = array(
+			'ds_id',
+			'ds_name',
+			'cnt'
+	);
+
+	$sql['dbSearchColumns'] = array(
+			'ds_name'
+	);
+
+	/* DB table to use */
+	$sql['dbTable'] = 'mytempclassifications';
 	/* Group */
-	$sql['dbGroupBy'] = 'ds_id, ds_name';
 	$sql['id'] = 'ds_id';
 
-	$arguments = array(
+	$prearguments = array(
 			':classificationid' => $classificationid
 	);
 
-	$output = datatable_dbRequest($sql, $arguments);
+	$output = datatable_dbRequest($sql, array(), $prearguments);
 	return drupal_json_output($output);
 }
 
