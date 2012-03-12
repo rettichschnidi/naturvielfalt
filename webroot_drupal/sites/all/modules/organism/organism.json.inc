@@ -107,7 +107,6 @@ function organism_show_classifiers_json() {
 /**
  * Menu callback. This will be called for visits to /organism/classification/%/classificationjson.
  * @return array
- * @todo Find a better title
  */
 function organism_show_classification_classificationjson($classificationid) {
 	/* Original example query:
@@ -120,19 +119,23 @@ function organism_show_classification_classificationjson($classificationid) {
 				id,
 				name,
 				left_value,
-				right_value
+				right_value,
+				prime_father_id
 			FROM
 				drupal_organism_classification oc
 			WHERE
-				oc.parent_id = 2 AND oc.id != oc.parent_id
+				oc.parent_id = 37 AND oc.id != oc.parent_id
 			) ds
 			JOIN (
+				------------------------------------------------------------
+				-- Count number of organism within each classification group
+				------------------------------------------------------------
 				SELECT
 					oc.id AS oc_id,
 					oc.left_value AS oc_left_value,
 					oc.right_value AS oc_right_value,
 					oc.prime_father_id AS oc_prime_father_id,
-					count(ocs.id) AS cnt
+					COUNT(ocs.id) AS cnt
 				FROM
 					drupal_organism_classification oc
 					JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
@@ -143,7 +146,7 @@ function organism_show_classification_classificationjson($classificationid) {
 					oc_prime_father_id
 				ORDER BY
 					oc_id
-				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value
+				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id
 		GROUP BY
 			ds.id,
 			ds.name
@@ -166,7 +169,8 @@ function organism_show_classification_classificationjson($classificationid) {
 				id,
 				name,
 				left_value,
-				right_value
+				right_value,
+				prime_father_id
 			FROM
 				drupal_organism_classification oc
 			WHERE
@@ -179,7 +183,7 @@ function organism_show_classification_classificationjson($classificationid) {
 					oc.left_value AS oc_left_value,
 					oc.right_value AS oc_right_value,
 					oc.prime_father_id AS oc_prime_father_id,
-					count(ocs.id) AS cnt
+					COUNT(ocs.id) AS cnt
 				FROM
 					drupal_organism_classification oc
 					JOIN drupal_organism_classification_subscription ocs ON ocs.organism_classification_id = oc.id
@@ -190,7 +194,7 @@ function organism_show_classification_classificationjson($classificationid) {
 					oc_prime_father_id
 				ORDER BY
 					oc_id
-				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value';
+				) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id';
 	/* Group */
 	$sql['dbGroupBy'] = 'ds_id, ds_name';
 	$sql['id'] = 'ds_id';
