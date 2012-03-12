@@ -112,7 +112,6 @@ $organism_classifier_id = 0;
 }
 $classification_root_id = $classification_id;
 print "ClassificatorId for $classifierName: $classification_id\n";
-exit();
 
 /**
  * Add all families to the classification,
