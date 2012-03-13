@@ -128,6 +128,7 @@ class NaturvielfaltDb extends Db {
 
 	function createClassifier($classifier_name) { // TODO: $isScientificClassification
 		global $drupalprefix;
+		assert(preg_match('/^[a-zA-Z_]+$/', $classifier_name) == 1);
 		$table = $drupalprefix . 'organism_classification_level';
 		$newid = $this->get_nextval(
 				$drupalprefix . 'organism_classification_level_id_seq');
@@ -472,9 +473,6 @@ class NaturvielfaltDb extends Db {
 				print "Parent rightValue: $parentRightValue\n";
 				print "leftValue: $leftValue\n";
 				print "rightValue: $rightValue\n";
-				if ($changedR - 1 > $trigger || $changedL > $trigger) {
-					die("$trigger+ updates are waaaay too  much. Optimize!\n");
-				}
 			}
 		} else {
 			$leftValue = 1;
@@ -722,6 +720,25 @@ class NaturvielfaltDb extends Db {
 		return $num;
 	}
 
+	function haveAttributeValueBoolean($attribute_id, $boolean_value) {
+		assert($attribute_id != null && $attribute_id > 0);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$fromQuery = 'FROM ' . $table
+				. ' WHERE boolean_value = ? AND organism_attribute_id = ?';
+		$typesArray = array(
+				'integer',
+				'integer'
+		);
+		$valuesArray = array(
+				$boolean_value,
+				$attribute_id
+		);
+		$num = $this->getcount_query($fromQuery, $typesArray, $valuesArray);
+		assert($num <= 1);
+		return $num;
+	}
+
 	/**
 	 * @note We are screwed it $text_value should _really_ be 0
 	 */
@@ -796,6 +813,28 @@ class NaturvielfaltDb extends Db {
 		return $num[0]['id'];
 	}
 
+	/**
+	 * @return id
+	 */
+	function getAttributeValueBooleanId($attribute_id, $boolean_value) {
+		assert($attribute_id != null && $attribute_id > 0);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$query = 'SELECT id FROM ' . $table
+				. ' WHERE boolean_value = ? AND organism_attribute_id = ?';
+		$typesArray = array(
+				'integer',
+				'integer'
+		);
+		$valuesArray = array(
+				$boolean_value,
+				$attribute_id
+		);
+		$num = $this->query($query, $typesArray, $valuesArray);
+		assert(count($num) == 1);
+		return $num[0]['id'];
+	}
+
 	function createAttributeValueNumber($attribute_id, $number_value) {
 		assert($number_value != NULL);
 		assert($attribute_id != NULL);
@@ -854,6 +893,42 @@ class NaturvielfaltDb extends Db {
 				$newid,
 				$attribute_id,
 				$text_value
+		);
+		$rowcount = $this->insert_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert($rowcount == 1);
+		$ids = $this->getIdArray_query(
+				$columnArray,
+				$table,
+				$typesArray,
+				$valuesArray);
+		assert(count($ids) == 1);
+		return $ids[0];
+	}
+
+	function createAttributeValueBoolean($attribute_id, $boolean_value) {
+		assert($attribute_id != NULL);
+		global $drupalprefix;
+		$table = $drupalprefix . 'organism_attribute_value';
+		$newid = $this->get_nextval(
+				$drupalprefix . 'organism_attribute_value_id_seq');
+		$columnArray = array(
+				'id',
+				'organism_attribute_id',
+				'boolean_value'
+		);
+		$typesArray = array(
+				'integer',
+				'integer',
+				'integer'
+		);
+		$valuesArray = array(
+				$newid,
+				$attribute_id,
+				$boolean_value
 		);
 		$rowcount = $this->insert_query(
 				$columnArray,
