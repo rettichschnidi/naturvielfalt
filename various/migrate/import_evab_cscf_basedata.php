@@ -349,7 +349,7 @@ print "Classification done...\n";
 						$organism_id,
 						$organism_attribute_value_id);
 			}
-			// Add the nuesp attribute to the organism
+			// Subscribe the organism to its classification
 			if (!$db->haveOrganismClassificationSubscription(
 					$organism_id,
 					$organism_classification_id)) {
