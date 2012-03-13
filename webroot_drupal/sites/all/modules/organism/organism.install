@@ -198,7 +198,7 @@ function organism_schema() {
         'table' => 'organism_classification',
         'columns' => 
         array (
-          'prime_father_id' => 'id',
+          'parent_id' => 'id',
         ),
       ),
       'organism_classification_2_organism_classification_level' => 
