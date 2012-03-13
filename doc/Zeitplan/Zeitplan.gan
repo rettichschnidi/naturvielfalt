@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Naturvielfalt" company="www.naturwerk.info" webLink="http://www.naturvielfalt.ch" view-date="2012-02-16" view-index="0" gantt-divider-location="647" resource-divider-location="538" version="2.0">
+<project name="Naturvielfalt" company="www.naturwerk.info" webLink="http://www.naturvielfalt.ch" view-date="2012-02-12" view-index="0" gantt-divider-location="647" resource-divider-location="538" version="2.0">
     <description/>
-    <view zooming-state="default:3" id="gantt-chart"/>
+    <view zooming-state="default:6" id="gantt-chart"/>
     <view id="resource-table">
         <field id="0" name="Name" width="50" order="0"/>
         <field id="1" name="Default role" width="50" order="1"/>
@@ -33,7 +33,7 @@
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
             <taskproperty id="tpc1" name="Kommentar" type="custom" valuetype="text"/>
         </taskproperties>
-        <task id="4" name="Organism Modul" color="#8cb6ce" meeting="false" start="2012-02-29" duration="8" complete="95" expand="true">
+        <task id="4" name="Organism Modul" color="#8cb6ce" meeting="false" start="2012-02-29" duration="10" complete="90" expand="true">
             <depend id="44" type="2" difference="0" hardness="Strong"/>
             <depend id="87" type="2" difference="0" hardness="Strong"/>
             <task id="6" name="DB-Schema und Importscripte anpassen" color="#8cb6ce" meeting="false" start="2012-02-29" duration="2" complete="100" expand="true">
@@ -46,7 +46,8 @@
             <task id="11" name="Alle Sprachvarianten importieren" color="#8cb6ce" meeting="false" start="2012-03-05" duration="1" complete="100" expand="true">
                 <depend id="13" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="13" name="Classification Tabelle anpassen gemäss Wünschen Albert" color="#8cb6ce" meeting="false" start="2012-03-06" duration="4" complete="90" expand="true"/>
+            <task id="13" name="Classification Tabelle anpassen gemäss Wünschen Albert" color="#8cb6ce" meeting="false" start="2012-03-06" duration="5" complete="100" expand="true"/>
+            <task id="132" name="Datenimport - nochmals CSCF von EVAB importieren" color="#8cb6ce" meeting="false" start="2012-03-13" duration="1" complete="0" expand="true"/>
         </task>
         <task id="75" name="Rechtemodul" color="#8cb6ce" meeting="false" start="2012-02-28" duration="4" complete="100" expand="true">
             <task id="76" name="Dokumentieren, Beispiele erstellen" color="#8cb6ce" meeting="false" start="2012-02-28" duration="4" complete="100" expand="true"/>
@@ -54,23 +55,23 @@
         <task id="7" name="iPhone App" color="#8cb6ce" meeting="false" start="2012-02-28" duration="8" complete="100" expand="true">
             <task id="3" name="iPhone Crash-Bug fixen" color="#8cb6ce" meeting="false" start="2012-02-28" duration="8" complete="100" expand="true"/>
         </task>
-        <task id="46" name="Datatable" color="#8cb6ce" meeting="false" start="2012-03-09" duration="2" complete="50" expand="true">
+        <task id="46" name="Datatable" color="#8cb6ce" meeting="false" start="2012-03-09" duration="3" complete="50" expand="true">
             <depend id="45" type="2" difference="0" hardness="Strong"/>
-            <task id="51" name="Bug fixing" color="#8cb6ce" meeting="false" start="2012-03-09" duration="2" complete="50" expand="true"/>
+            <task id="51" name="Bug fixing" color="#8cb6ce" meeting="false" start="2012-03-09" duration="3" complete="50" expand="true"/>
         </task>
-        <task id="86" name="Inventory Modul" color="#8cb6ce" meeting="false" start="2012-03-12" duration="30" complete="0" expand="true">
+        <task id="86" name="Inventory Modul" color="#8cb6ce" meeting="false" start="2012-03-14" duration="30" complete="0" expand="true">
             <depend id="93" type="2" difference="0" hardness="Strong"/>
-            <task id="87" name="Einzelbeobachtungen" color="#8cb6ce" meeting="false" start="2012-03-12" duration="15" complete="0" expand="true">
+            <task id="87" name="Einzelbeobachtungen" color="#8cb6ce" meeting="false" start="2012-03-14" duration="15" complete="0" expand="true">
                 <depend id="106" type="2" difference="0" hardness="Strong"/>
                 <depend id="112" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="112" name="Inventar" color="#8cb6ce" meeting="false" start="2012-04-02" duration="15" complete="0" expand="true"/>
+            <task id="112" name="Inventar" color="#8cb6ce" meeting="false" start="2012-04-04" duration="15" complete="0" expand="true"/>
         </task>
-        <task id="106" name="Export Modul" color="#8cb6ce" meeting="false" start="2012-04-02" duration="6" complete="0" expand="true">
-            <task id="119" name="CSV" color="#8cb6ce" meeting="false" start="2012-04-02" duration="3" complete="0" expand="true">
+        <task id="106" name="Export Modul" color="#8cb6ce" meeting="false" start="2012-04-04" duration="8" complete="0" expand="true">
+            <task id="119" name="CSV" color="#8cb6ce" meeting="false" start="2012-04-04" duration="3" complete="0" expand="true">
                 <depend id="120" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="120" name="PDF" color="#8cb6ce" meeting="false" start="2012-04-03" duration="5" complete="0" expand="true"/>
+            <task id="120" name="PDF" color="#8cb6ce" meeting="false" start="2012-04-09" duration="5" complete="0" expand="true"/>
         </task>
         <task id="128" name="Theme" color="#8cb6ce" meeting="false" start="2012-03-14" duration="2" complete="0" expand="true">
             <task id="129" name="Aufräumen und installieren" color="#8cb6ce" meeting="false" start="2012-03-14" duration="2" complete="0" expand="true"/>
@@ -94,17 +95,17 @@
             </task>
             <task id="36" name="Domain umlegen" color="#8cb6ce" meeting="false" start="2012-02-29" duration="1" complete="0" expand="true"/>
         </task>
-        <task id="43" name="Produktivserver hat installiert..." color="#8cb6ce" meeting="false" start="2012-03-13" duration="43" complete="0" expand="true">
-            <task id="45" name="Datatable" color="#8cb6ce" meeting="true" start="2012-03-13" duration="1" complete="0" expand="true">
+        <task id="43" name="Produktivserver hat installiert..." color="#8cb6ce" meeting="false" start="2012-03-14" duration="42" complete="0" expand="true">
+            <task id="45" name="Datatable" color="#8cb6ce" meeting="true" start="2012-03-14" duration="1" complete="0" expand="true">
                 <depend id="44" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="44" name="Organism Modul" color="#8cb6ce" meeting="true" start="2012-03-14" duration="1" complete="0" expand="true">
+            <task id="44" name="Organism Modul" color="#8cb6ce" meeting="true" start="2012-03-15" duration="1" complete="0" expand="true">
                 <depend id="93" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="93" name="Inventory Modul" color="#8cb6ce" meeting="true" start="2012-04-23" duration="1" complete="0" expand="true">
+            <task id="93" name="Inventory Modul" color="#8cb6ce" meeting="true" start="2012-04-25" duration="1" complete="0" expand="true">
                 <depend id="94" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="94" name="Galerie Modul" color="#8cb6ce" meeting="true" start="2012-04-24" duration="1" complete="0" expand="true">
+            <task id="94" name="Galerie Modul" color="#8cb6ce" meeting="true" start="2012-04-26" duration="1" complete="0" expand="true">
                 <depend id="95" type="2" difference="0" hardness="Strong"/>
             </task>
             <task id="95" name="Area Modul" color="#8cb6ce" meeting="true" start="2012-05-07" duration="1" complete="0" expand="true">
