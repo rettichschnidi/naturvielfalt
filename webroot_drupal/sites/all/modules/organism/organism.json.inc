@@ -370,10 +370,17 @@ function organism_show_classification_organismjson($classificationid) {
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
 
+	if(empty($classificationleveldata)) {
+		return drupal_json_output(array('error' => 'No classifications found'));
+	}
+	
 	// build an array with all classification level names
 	$levelnamearray = array();
 	foreach ($classificationleveldata as $classificationlevel) {
-		$levelnamearray[] = pg_escape_string('oc_' . $classificationlevel->name);
+		$levelname = 'oc_' . $classificationlevel->name;
+		// make sure we do not have any illegal characters
+		assert(preg_match('/^[a-zA-Z_]+$/', $levelname) == 1);
+		$levelnamearray[] = $levelname;
 	}
 	$levelnamesdatastring = implode(' text, ', $levelnamearray) . ' text';
 	$levelnamesstring = implode(', ', $levelnamearray);
