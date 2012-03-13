@@ -151,7 +151,7 @@ function organism_get_attribute_values_of_organism($organismid, $attributeid,
 		if ($attributetype == 'n') {
 			$attributevalues[] = $attributevalue->number_value;
 		} else if ($attributetype == 'b') {
-			$attributevalues[] = $attributevalue->number_boolean;
+			$attributevalues[] = $attributevalue->boolean_value;
 		} else if ($attributetype == 't') {
 			$attributevalues[] = $attributevalue->text_value;
 		}
