@@ -334,7 +334,7 @@ print "Classification done...\n";
 	$sql = "FROM
 				$importTable
 			WHERE
-				nr < 1000000
+				nr < 1000000 AND status IN ('A', 'Z', 'E')
 			ORDER BY
 				nr";
 	$typesArray = array();
