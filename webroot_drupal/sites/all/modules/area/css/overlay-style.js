@@ -1,8 +1,6 @@
 /**
- * This is a Json-Stylesheet for the Geometry Overlays like Marker and Polygon
+ * This is a Json stylesheet for the geometry overlays like markers and polygons
  */
- 
-
 
 var overlayStyle = {
     'polygon' : {
