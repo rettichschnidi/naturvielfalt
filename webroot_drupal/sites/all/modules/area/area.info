@@ -1,4 +1,5 @@
-name = Area
+name = area
 description = Manage areas
-package = Swissmon
+package = Naturvielfalt
 core = 7.x
+version = "7.x-current"
