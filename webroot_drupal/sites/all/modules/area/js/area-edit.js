@@ -7,7 +7,7 @@ var applyButton;
 var resetButton;
 
 /**
- * Adds editing buttons to the google maps and handles the clicks on it, only on edit area§
+ * Adds editing buttons to the google maps and handles the clicks on it, only on edit area
  */
 function enable_map_editing() {
 	if (jQuery("#area-coords-input").length) {
@@ -94,7 +94,7 @@ function createGoogleMaps (map_id) {
 };
 
 /**
- * Pull changes from active editing tool. store them to hidden field
+ * Pull changes from active editing tool. Store them to hidden field.
  */
 function apply_edit() {		
 	var area_coords = new Array();
@@ -108,7 +108,7 @@ function apply_edit() {
 	jQuery("#area-surface").val(activeEditingTool.geometry.getArea());
 };
 
-/*load the area*/
+//load the area
 var areaselect = null;
 jQuery(document).ready(function() {
   if(jQuery('#map_canvas').size()) {
