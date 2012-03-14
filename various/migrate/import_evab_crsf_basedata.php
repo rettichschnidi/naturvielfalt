@@ -118,6 +118,36 @@ $organism_attribute_xenophyte_id = 0;
 }
 
 /**
+ * add the attribute 'Author',
+ * set $organism_attribute_author_id
+ */
+$organism_attribute_author_id = 0;
+{
+	$attribute_name = 'Author';
+	if (!$db->haveAttributeName($attribute_name)) {
+		$db->createAttribute($attribute_name, 't');
+	}
+	$organism_attribute_author_id = $db->getAttributeId($attribute_name);
+	print "Attribute id for '$attribute_name': $organism_attribute_author_id\n";
+	assert($organism_attribute_author_id != 0);
+}
+
+/**
+ * add the attribute 'Rank',
+ * set $organism_attribute_rank_id
+ */
+$organism_attribute_rank_id = 0;
+{
+	$attribute_name = 'Rank';
+	if (!$db->haveAttributeName($attribute_name)) {
+		$db->createAttribute($attribute_name, 't');
+	}
+	$organism_attribute_rank_id = $db->getAttributeId($attribute_name);
+	print "Attribute id for '$attribute_name': $organism_attribute_rank_id\n";
+	assert($organism_attribute_rank_id != 0);
+}
+
+/**
  * create organism classification level
  * set $organism_classification_level_id
  * fill hashmap $organism_classification_level_name2organism_classification_level_id
@@ -282,7 +312,7 @@ $classification_root_id = $classification_id;
 print "Classification done...\n";
 
 /**
- * add all organism
+ * add all organism with status 'A'
  * - connect with the correct classification
  * - the organism_scientific_name table,
  * - organism table,
@@ -297,7 +327,9 @@ print "Classification done...\n";
 			'italienisch',
 			'name',
 			'florahelvetica',
-			'xenophyte'
+			'xenophyte',
+			'autor',
+			'rang'
 	);
 	$sql = "FROM
 				$importTable
@@ -329,6 +361,8 @@ print "Classification done...\n";
 		$sisf_nr = $row['nr'];
 		$florahelvetica_nr = $row['florahelvetica'];
 		$xenophyte_nr = $row['xenophyte'] == NULL ? 0 : 1;
+		$author = $row['autor'];
+		$rank = $row['rang'];
 		$organism_lang_name = array(
 				'de' => $row['deutsch'],
 				'fr' => $row['franzoesisch'],
@@ -401,6 +435,42 @@ print "Classification done...\n";
 			$db->createAttributeValueSubscription(
 					$organism_id,
 					$organism_attribute_value_id);
+
+			// Set the Author attribute
+			if ($author != NULL) {
+				if (!$db->haveAttributeValueText(
+						$organism_attribute_author_id,
+						$author)) {
+					$organism_attribute_value_id = $db->createAttributeValueText(
+							$organism_attribute_author_id,
+							$author);
+				} else {
+					$organism_attribute_value_id = $db->getAttributeValueTextId(
+							$organism_attribute_author_id,
+							$author);
+				}
+				$db->createAttributeValueSubscription(
+						$organism_id,
+						$organism_attribute_value_id);
+			}
+
+			// Set the Rank attribute
+			if ($rank != NULL) {
+				if (!$db->haveAttributeValueText(
+						$organism_attribute_rank_id,
+						$rank)) {
+					$organism_attribute_value_id = $db->createAttributeValueText(
+							$organism_attribute_rank_id,
+							$rank);
+				} else {
+					$organism_attribute_value_id = $db->getAttributeValueTextId(
+							$organism_attribute_rank_id,
+							$rank);
+				}
+				$db->createAttributeValueSubscription(
+						$organism_id,
+						$organism_attribute_value_id);
+			}
 
 			// Subscribe the organism to its classification
 			if (!$db->haveOrganismClassificationSubscription(
