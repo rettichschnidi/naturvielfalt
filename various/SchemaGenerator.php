@@ -70,6 +70,22 @@ function pruneTypesAndSize(&$column) {
 		$column['type'] = 'int';
 		$column['size'] = 'small';
 		break;
+	case 'date':
+		$column['type'] = 'datetime';
+		$column['pgsql_type'] = 'date';
+		unset($column['size']);
+		break;
+	case 'timestamp':
+		$column['type'] = 'datetime';
+		$column['pgsql_type'] = 'timestamp';
+		unset($column['size']);
+		break;
+	case 'geometry':
+		unset($column['type']);
+		unset($column['size']);
+		$column['pgsql_type'] = 'geometry';
+		break;
+
 	case 'text':
 		if (isset($column['default'])) {
 			fwrite(
@@ -172,9 +188,17 @@ function handleAlterTable(&$schema, &$input, &$line) {
 		if (preg_match('/^ADD FOREIGN KEY \(([a-z0-9_]+)\)$/', $line, $matchFK)
 				== 1) {
 			$columnname = $matchFK[1];
+			
+			$line = getNextLine($input);
+		} else if (preg_match(
+			'/^ADD CONSTRAINT ([a-zA-Z0-9_]+) FOREIGN KEY \(([a-z0-9_]+)\)$/',
+			$line,
+			$matchFK)) {
+			$fkdescription  = $matchFK[1];
+			$columnname = $matchFK[2];
 			$line = getNextLine($input);
 		} else {
-			die("Unsupported statement within ALTER TABLE: '" . $line . "'");
+			die("Unsupported statement within ALTER TABLE: '" . $line . "'\n");
 		}
 		if (preg_match(
 			'/^REFERENCES ([a-z]+\.)?([a-z0-9_]+) \(([0-9a-z_]+)\)$/',
@@ -187,14 +211,16 @@ function handleAlterTable(&$schema, &$input, &$line) {
 			die("Unsupported statement within ALTER TABLE: '" . $line . "'");
 		}
 		while (preg_match(
-			'/^ON (DELETE|UPDATE) (RESTRICT|NO ACTION|CASCADE)$/',
+			'/^ON (DELETE|UPDATE) (RESTRICT|NO ACTION|CASCADE|SET NULL)$/',
 			$line) == 1) {
 			$line = getNextLine($input);
 		}
 		if (!isset($schema[$tablename]['foreign keys'])) {
 			$schema[$tablename]['foreign keys'] = array();
 		}
-		$fkdescription = $tablename . '_2_' . $foreigntablename;
+		if (!isset($fkdescription)) {
+			$fkdescription = $tablename . '_2_' . $foreigntablename;
+		}
 		$schema[$tablename]['foreign keys'][$fkdescription] = array(
 				'table' => $foreigntablename,
 				'columns' => array(
