@@ -1,5 +1,6 @@
 /**
- * @author Roger Wolfer, Roman Schaller
+ * @author Roger Wolfer
+ * @author Roman Schaller
  */
 
 function AreaSelect(map_id) {
@@ -33,7 +34,7 @@ function AreaSelect(map_id) {
     var overlayId = targ.parentNode.id.split('_');
     me.selectArea(overlayId[1], targ);
   }
-  
+
   /**
    * This is called if the user hovers over a table row
    */
