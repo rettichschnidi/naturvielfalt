@@ -16,13 +16,6 @@ module_load_include('inc', 'area', 'area.gallery');
  * @return array
  */
 function area_menu() {
-	$items['area'] = array(
-			'title' => t('testarea'),
-			'page callback' => 'area_test_table',
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-	);
 	$items['userarea'] = array(
 			'title' => t('User Areas'),
 			'description' => t('List of areas'),
@@ -273,8 +266,6 @@ function area_menu() {
 
 	return $items;
 }
-
-function area_test_table() {}
 
 /**
  * Implements hook_theme()
