@@ -81,18 +81,18 @@ function area_field_name_form($userspecified = false) {
 	if ($userspecified) {
 		$area = db_query(
 			"SELECT
-				area.id a_id,
-				field_name,
-				zip,
-				locality,
-				canton,
-				country,
-				create_time,
+				a.id a_id,
+				a.field_name,
+				a.zip,
+				a.locality,
+				a.canton,
+				a.country,
+				a.create_time,
 				u.name u_name,
-				GeometryType(area.geom) AS art_dest
+				GeometryType(a.geom) AS art_dest
 	    	FROM
-	    		area
-	    		LEFT JOIN users u ON u.uid = owner_id
+	    		{area} a
+	    		LEFT JOIN {users} u ON u.uid = owner_id
 	    	WHERE
 	    		hidden IS NOT TRUE 
 	    		AND u.uid = :userid
