@@ -108,6 +108,7 @@ function area_schema() {
         'description' => 'No description for column hidden available, please fix',
         'type' => 'int',
         'size' => 'tiny',
+        'pgsql_type' => 'boolean',
       ),
       'geom' => 
       array (

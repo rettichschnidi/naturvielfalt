@@ -54,6 +54,7 @@ function pruneTypesAndSize(&$column) {
 	case 'boolean':
 		$column['type'] = 'int';
 		$column['size'] = 'tiny';
+		$column['pgsql_type'] = 'boolean';
 		break;
 	case 'varchar':
 		$column['size'] = 'normal';
