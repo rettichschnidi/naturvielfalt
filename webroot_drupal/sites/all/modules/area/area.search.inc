@@ -139,7 +139,7 @@ function area_field_name_form($userspecified = false) {
 		} else {
 			$row[] = '';
 		}
-		$row[] = $record->name;
+		$row[] = $record->u_name;
 		$row[] = $record->art_dest;
 		$row[] = array(
 				'data' => l(
