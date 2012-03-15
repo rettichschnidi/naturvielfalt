@@ -8,7 +8,6 @@
  * @return render array
  */
 function show_area_search() {
-
 	$output['search'] = array(
 			'#theme' => 'area.search',
 	);
@@ -26,7 +25,6 @@ function show_area_search() {
  * Enter description here ...
  */
 function show_area_search_userspecified() {
-
 	$output['search'] = array(
 			'#theme' => 'area.search',
 	);

@@ -40,16 +40,18 @@ function area_menu() {
 			'file' => 'area.search.inc',
 			'weight' => 0
 	);
-	$items['area'] = array(
-			'title' => t('Areas'),
-			'description' => t('List of areas'),
-			'page callback' => 'show_area_search',
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'area.search.inc',
-	);
+
+// 	$items['area'] = array(
+// 			'title' => t('Areas'),
+// 			'description' => t('List of areas'),
+// 			'page callback' => 'show_area_search',
+// 			'access arguments' => array(
+// 					AREA_ACCESS
+// 			),
+// 			'type' => MENU_NORMAL_ITEM,
+// 			'file' => 'area.search.inc',
+// 	);
+
 	$items['area/%'] = array(
 			//'title' => t('Areadsdf'),
 			'description' => t('View an area'),
@@ -63,21 +65,21 @@ function area_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'area.inc',
 	);
-	$items['area/%/normal'] = array(
-			'title' => t('View'),
-			'description' => t('View of an area'),
-			'page callback' => 'show_area',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.inc',
-			'weight' => 1
-	);
+// 	$items['area/%/normal'] = array(
+// 			'title' => t('View'),
+// 			'description' => t('View of an area'),
+// 			'page callback' => 'show_area',
+// 			'page arguments' => array(
+// 					1
+// 			),
+// 			'access arguments' => array(
+// 					AREA_ACCESS
+// 			),
+// 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 			'file' => 'area.inc',
+// 			'weight' => 1
+// 	);
 	$items['area/%/gallery'] = array(
 			'title' => t('Gallery'),
 			'description' => t('View the area as a gallery of organisms'),
@@ -93,6 +95,7 @@ function area_menu() {
 			'file' => 'area.inc',
 			'weight' => 2
 	);
+	
 	$items['area/%/list'] = array(
 			'title' => t('List'),
 			'description' => t('View the area as a list of organisms'),
@@ -443,10 +446,13 @@ function area_edit_access($area_id) {
 	// check if this user has write access to the inventory
 	global $user;
 	$adminRecords = db_query(
-		'
-	SELECT id 
-	FROM area
-	WHERE owner_id = :uid and id = :aid',
+		'SELECT
+			id 
+		FROM
+			{area}
+		WHERE
+			owner_id = :uid
+			AND id = :aid',
 		array(':aid' => $area_id,
 				':uid' => $user->uid
 		));
