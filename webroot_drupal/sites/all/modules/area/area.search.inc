@@ -14,8 +14,6 @@ function show_area_search() {
 
 	// tlevy Hier wird die Map erstellt
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
-	//   $output['googleMaps'] = area_google_maps_form(false);
-	//   	$output['FieldName'] = drupal_get_form('area_field_name_form');
 	$output['FieldName'] = area_field_name_form(false);
 	return $output;
 }
@@ -31,8 +29,6 @@ function show_area_search_userspecified() {
 
 	// tlevy Hier wird die Map erstellt
 	$output['googleMaps'] = drupal_get_form('area_google_maps_form');
-	// 	$output['FieldName'] = drupal_get_form('area_field_name_form');
-
 	$output['FieldName'] = area_field_name_form(true);
 	return $output;
 }
@@ -176,7 +172,6 @@ function area_field_name_form($userspecified = false) {
 			'#id_table' => 'show_areas',
 			'#len' => 220,
 	);
-
 	return $form;
 }
 

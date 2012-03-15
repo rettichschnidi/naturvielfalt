@@ -41,16 +41,16 @@ function area_menu() {
 			'weight' => 0
 	);
 
-// 	$items['area'] = array(
-// 			'title' => t('Areas'),
-// 			'description' => t('List of areas'),
-// 			'page callback' => 'show_area_search',
-// 			'access arguments' => array(
-// 					AREA_ACCESS
-// 			),
-// 			'type' => MENU_NORMAL_ITEM,
-// 			'file' => 'area.search.inc',
-// 	);
+	// 	$items['area'] = array(
+	// 			'title' => t('Areas'),
+	// 			'description' => t('List of areas'),
+	// 			'page callback' => 'show_area_search',
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_NORMAL_ITEM,
+	// 			'file' => 'area.search.inc',
+	// 	);
 
 	$items['area/%'] = array(
 			//'title' => t('Areadsdf'),
@@ -65,68 +65,38 @@ function area_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'area.inc',
 	);
-// 	$items['area/%/normal'] = array(
-// 			'title' => t('View'),
-// 			'description' => t('View of an area'),
-// 			'page callback' => 'show_area',
-// 			'page arguments' => array(
-// 					1
-// 			),
-// 			'access arguments' => array(
-// 					AREA_ACCESS
-// 			),
-// 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 			'file' => 'area.inc',
-// 			'weight' => 1
-// 	);
-	$items['area/%/gallery'] = array(
-			'title' => t('Gallery'),
-			'description' => t('View the area as a gallery of organisms'),
-			'page callback' => 'area_gallery',
-			'page arguments' => array(
-					1
-			),
+
+	$items['area/getareas'] = array(
+			'title' => t('Area information in JSON format'),
+			'page callback' => 'get_areas',
 			'access arguments' => array(
 					AREA_ACCESS
 			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.inc',
-			'weight' => 2
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
 	);
-	
-	$items['area/%/list'] = array(
-			'title' => t('List'),
-			'description' => t('View the area as a list of organisms'),
-			'page callback' => 'area_list',
-			'page arguments' => array(
-					1
+
+	$items['area/new'] = array(
+			'title' => t('Create a new areas'),
+			'description' => t('Create an areas'),
+			'page callback' => 'area_new_form',
+			'access arguments' => array(
+					AREA_CREATE
 			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.new.inc',
+	);
+
+	$items['area/json'] = array(
+			'title' => t('Area information in JSON format'),
+			'page callback' => 'area_json',
 			'access arguments' => array(
 					AREA_ACCESS
 			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.inc',
-			'weight' => 3
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
 	);
-	$items['area/%/edit'] = array(
-			'title' => t('Edit'),
-			'description' => t('Edit area properties'),
-			'page callback' => 'area_edit',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					1
-			),
-			'access callback' => 'area_edit_access',
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.edit.inc',
-			'weight' => 6
-	);
+
 	$items['area/%/delete'] = array(
 			'title' => t('Delete'),
 			'description' => t('Delete area'),
@@ -144,6 +114,24 @@ function area_menu() {
 			'file' => 'area.delete.inc',
 			'weight' => 7
 	);
+
+	$items['area/%/edit'] = array(
+			'title' => t('Edit'),
+			'description' => t('Edit area properties'),
+			'page callback' => 'area_edit',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_edit_access',
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.edit.inc',
+			'weight' => 6
+	);
+
 	$items['area/%/newinv'] = array(
 			'title' => t('Add inventory'),
 			'description' => t('Create a new inventory in this area'),
@@ -157,16 +145,6 @@ function area_menu() {
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 8
-	);
-	$items['area/new'] = array(
-			'title' => t('Create a new areas'),
-			'description' => t('Create an areas'),
-			'page callback' => 'area_new_form',
-			'access arguments' => array(
-					AREA_CREATE
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'area.new.inc',
 	);
 	$items['area/choose'] = array(
 			'title' => t('Choose existing area'),
@@ -211,24 +189,7 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
-	$items['area/json'] = array(
-			'title' => t('Area information in JSON format'),
-			'page callback' => 'area_json',
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'area.ajax.inc',
-	);
-	$items['area/getareas'] = array(
-			'title' => t('Area information in JSON format'),
-			'page callback' => 'get_areas',
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'area.ajax.inc',
-	);
+
 	$items['area/getareas/%'] = array(
 			'title' => t('Area information in JSON format'),
 			'page callback' => 'get_areas',
@@ -241,6 +202,7 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
+
 	$items['area/datatable'] = array(
 			'title' => t('Area information in JSON format for datatable'),
 			'page callback' => 'area_datatable',
@@ -250,6 +212,7 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
+
 	$items['area/%/delete_file/%'] = array(
 			'title' => t('Delete file'),
 			'description' => t('Delete an existing file'),
@@ -266,6 +229,56 @@ function area_menu() {
 			'file' => 'area.edit.inc',
 			'weight' => 10,
 	);
+
+	// 	$items['area/%/normal'] = array(
+	// 			'title' => t('View'),
+	// 			'description' => t('View of an area'),
+	// 			'page callback' => 'show_area',
+	// 			'page arguments' => array(
+	// 					1
+	// 			),
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 			'file' => 'area.inc',
+	// 			'weight' => 1
+	// 	);
+
+	//  Hide till it is done
+	// 	$items['area/%/gallery'] = array(
+	// 			'title' => t('Gallery'),
+	// 			'description' => t('View the area as a gallery of organisms'),
+	// 			'page callback' => 'area_gallery',
+	// 			'page arguments' => array(
+	// 					1
+	// 			),
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 			'file' => 'area.inc',
+	// 			'weight' => 2
+	// 	);
+
+	//  Hide till it is done
+	// 	$items['area/%/list'] = array(
+	// 			'title' => t('List'),
+	// 			'description' => t('View the area as a list of organisms'),
+	// 			'page callback' => 'area_list',
+	// 			'page arguments' => array(
+	// 					1
+	// 			),
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 			'file' => 'area.inc',
+	// 			'weight' => 3
+	// 	);
 
 	return $items;
 }
@@ -1143,9 +1156,14 @@ function area_map($areaId, $map_id = 'map_canvas', $additional = '',
 	// $UserAreaInMap = $showAreas;
 	// if($showAreas)
  {
-
 		$areas = db_query(
-			'SELECT ST_AsGeoJSON(ST_Centroid(geom)) as center, ST_AsGeoJSON(geom) as geometry FROM area WHERE id = :id',
+			'SELECT
+				ST_AsGeoJSON(ST_Centroid(geom)) AS center,
+				ST_AsGeoJSON(geom) AS geometry
+			FROM
+				{area}
+			WHERE
+				id = :id',
 			array(":id" => $areaId));
 		$values = $areas->fetchAssoc();
 	}
@@ -1163,10 +1181,19 @@ function area_map($areaId, $map_id = 'map_canvas', $additional = '',
 	$zoom = $zoom ? ' data-zoom="' . $zoom . '"' : '';
 	$center = $center ? ' data-center="' . $center . '"' : '';
 
-	$inventories = db_query(
-		'select Count(*) from head_inventory where area_id = '
-				. intval($areaId));
-	$inventoryCount = $inventories->fetchColumn(0);
+	// FIXME: re-enable when inventory done
+	// 	$inventories = db_query(
+	// 		'SELECT
+	// 			COUNT(*)
+	// 		FROM
+	// 			{head_inventory}
+	// 		WHERE
+	// 			area_id = :areaid',
+	// 		array(':areaid' => $areaId));
+	// 	$inventoryCount = $inventories->fetchColumn(0);
+
+	// FIXME: delete when inventory done
+	$inventoryCount = array();
 
 	if (intval($inventoryCount) == 0) {
 		$area_json = json_decode($values["geometry"]);
@@ -1223,7 +1250,6 @@ function area_edit_map($areaId, $centerArray, $geometryJSON) {
 }
 
 /**
- * 
  * Inserts area parcels into DB.
  * @param int $area_id
  * @param aray $parcels

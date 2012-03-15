@@ -4,7 +4,6 @@
  * 
  */
 
-
 /**
  * Return JSON of the area details
  * @param string $areaId
@@ -13,65 +12,83 @@
 function area_json($areaId) {
 	// information about area
 	$area = db_query(
-			"SELECT *, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name FROM {area} 
-      LEFT JOIN users u ON u.uid = owner_id
-      LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
-      WHERE id = :id", array(':id' => $areaId))->fetch();
+		"SELECT
+				*,
+				u.name AS u_name
+			FROM {area}  a
+				LEFT JOIN {users} u ON u.uid = a.owner_id
+      WHERE id = :id",
+		array(':id' => $areaId))->fetch();
 	$output['field_name'] = $area->field_name;
 	$output['locality'] = $area->locality;
 	$output['zip'] = $area->zip;
 	$output['township'] = $area->township;
 	$output['comment'] = $area->comment;
-	$output['creator'] = t('Creator: !creator', array('!creator' => $area->u_name));
-	$output['altitude'] = t('Altitude: !alt m', array('!alt' => $area->altitude));
-	$output['surface_area'] = t('Surface area: !surface m<sup>2</sup>', array('!surface' => $area->surface_area));
+	$output['creator'] = t(
+		'Creator: !creator',
+		array('!creator' => $area->u_name));
+	$output['altitude'] = t(
+		'Altitude: !alt m',
+		array('!alt' => $area->altitude));
+	$output['surface_area'] = t(
+		'Surface area: !surface m<sup>2</sup>',
+		array('!surface' => $area->surface_area));
 
+	// FIXME: re-enable when done
 	// information about containing inventories
-	$records = db_query(
-			'SELECT hi.id AS hiid, hi.name AS hiname, i.id AS iid, it.name AS itname, u.name AS u_name, count(ie.id) AS count FROM {head_inventory} hi
-    LEFT JOIN area a ON hi.area_id = a.id
-    LEFT JOIN inventory i ON i.head_inventory_id = hi.id
-    LEFT JOIN inventory_type it ON i.inventory_type_id = it.id
-    LEFT JOIN inventory_entry ie ON ie.inventory_id = i.id
-    LEFT JOIN users u ON hi.owner_id = u.uid
-    WHERE a.id = :id AND hi.hidden IS NOT TRUE
-    GROUP BY hi.id, hi.name, i.id, it.name, u.name
-    ORDER BY hi.id', array(':id' => $areaId));
 	$countInventories = 0;
-	$output['inventories']['invs'] = array();
-	foreach ($records as $record) {
-		if ($record->hiid != $hiid) {
-			$hiid = $record->hiid;
-			$countInventories++;
-			$output['inventories']['invs'][] = array(
-					'name' => $record->hiname,
-					'id' => $record->hiid,
-					'owner' => $record->u_name
-			);
-		}
-		$type = array(
-				'name' => $record->itname,
-				'count' => $record->count
-		);
-		$output['inventories']['invs'][$countInventories - 1][types][] = $type;
-	}
+	// 			$records = db_query(
+	// 				'SELECT hi.id AS hiid, hi.name AS hiname, i.id AS iid, it.name AS itname, u.name AS u_name, count(ie.id) AS count FROM {head_inventory} hi
+	// 		    LEFT JOIN area a ON hi.area_id = a.id
+	// 		    LEFT JOIN inventory i ON i.head_inventory_id = hi.id
+	// 		    LEFT JOIN inventory_type it ON i.inventory_type_id = it.id
+	// 		    LEFT JOIN inventory_entry ie ON ie.inventory_id = i.id
+	// 		    LEFT JOIN users u ON hi.owner_id = u.uid
+	// 		    WHERE a.id = :id AND hi.hidden IS NOT TRUE
+	// 		    GROUP BY hi.id, hi.name, i.id, it.name, u.name
+	// 		    ORDER BY hi.id',
+	// 				array(':id' => $areaId));
+
+	// 			$output['inventories']['invs'] = array();
+	// 			foreach ($records as $record) {
+	// 				if ($record->hiid != $hiid) {
+	// 					$hiid = $record->hiid;
+	// 					$countInventories++;
+	// 					$output['inventories']['invs'][] = array(
+	// 							'name' => $record->hiname,
+	// 							'id' => $record->hiid,
+	// 							'owner' => $record->u_name
+	// 					);
+	// 				}
+	// 				$type = array(
+	// 						'name' => $record->itname,
+	// 						'count' => $record->count
+	// 				);
+	// 				$output['inventories']['invs'][$countInventories - 1][types][] = $type;
+	// 		}
+	//FIXME: delete when done
+	$output['inventories']['invs'] = '';
 	$invName = t('Inventories (!count)', array('!count' => $countInventories));
 	$output['inventories']['title'] = $invName;
 
-	// information about habitats
+	// 	information about habitats
 	$countHabitats = 0;
-	$habitats = db_query(
-			'SELECT h.id, h.name_de, h.label FROM area_habitat ah
-    LEFT JOIN habitat h ON ah.habitat_id = h.id
-    WHERE ah.area_id = :areaId', array(':areaId' => $areaId));
-	foreach ($habitats as $habitat) {
-		$output['habitats']['habs'][] = array(
-				'name' => '<small>' . $habitat->label . '</small> ' . $habitat->name_de,
-				'id' => $habitat->id
-		);
-		$countHabitats++;
-	}
-	$output['habitats']['title'] = t('Habitats (!count)', array('!count' => $countHabitats));
+	// 		$habitats = db_query(
+	// 			'SELECT h.id, h.name_de, h.label FROM area_habitat ah
+	// 	    LEFT JOIN habitat h ON ah.habitat_id = h.id
+	// 	    WHERE ah.area_id = :areaId',
+	// 			array(':areaId' => $areaId));
+	// 		foreach ($habitats as $habitat) {
+	// 			$output['habitats']['habs'][] = array(
+	// 					'name' => '<small>' . $habitat->label . '</small> '
+	// 							. $habitat->name_de,
+	// 					'id' => $habitat->id
+	// 			);
+	// 			$countHabitats++;
+	// 		}
+	$output['habitats']['title'] = t(
+		'Habitats (!count)',
+		array('!count' => $countHabitats));
 	$output['edit'] = area_edit_access($areaId);
 	return drupal_json_output($output);
 }
@@ -83,11 +100,13 @@ function area_json($areaId) {
  */
 function area_habitat_autocomplete($string) {
 	if (preg_match('/^[0-9]/', $string) > 0) {
-		$habitats = db_query('SELECT id, name_de, label FROM {habitat} WHERE label LIKE :s ORDER BY label',
-				array(':s' => $string . '%'));
+		$habitats = db_query(
+			'SELECT id, name_de, label FROM {habitat} WHERE label LIKE :s ORDER BY label',
+			array(':s' => $string . '%'));
 	} else {
-		$habitats = db_query('SELECT id, name_de, label FROM {habitat} WHERE name_de ILIKE :s ORDER BY label',
-				array(':s' => $string . '%'));
+		$habitats = db_query(
+			'SELECT id, name_de, label FROM {habitat} WHERE name_de ILIKE :s ORDER BY label',
+			array(':s' => $string . '%'));
 	}
 
 	$items = array();
@@ -107,17 +126,19 @@ function area_habitat_autocomplete($string) {
 function area_saved_autocomplete($string) {
 
 	$areas = db_query(
-			'
+		'
     SELECT id, field_name, zip, locality, create_time, modify_time FROM area
     WHERE (field_name ILIKE :term
       OR zip ILIKE :term
       OR locality ILIKE :term) AND hidden IS NOT TRUE
     ORDER BY field_name
-  ', array(":term" => "%" . $string . "%"));
+  ',
+		array(":term" => "%" . $string . "%"));
 
 	$items = array();
 	foreach ($areas as $record) {
-		$value = $record->field_name . ", " . $record->zip . " " . $record->locality . "<br>" . t("Created on ")
+		$value = $record->field_name . ", " . $record->zip . " "
+				. $record->locality . "<br>" . t("Created on ")
 				. date("j.m.Y H:i P", strtotime($record->create_time));
 		$key = $record->id;
 		$items[$key] = $value;
@@ -132,13 +153,26 @@ function area_saved_autocomplete($string) {
  */
 function get_areas($area_id = false) {
 	$areas = db_query(
-			'
-    SELECT id AS area_id, field_name, altitude, surface_area, locality, township, canton, ST_AsGeoJSON(area.geom) AS geom, comment
-    FROM area
-    WHERE area.hidden IS NOT TRUE
-    ' . ($area_id ? 'AND area.id = ' . $area_id : '') . '
-    ORDER BY area_id
-  ');
+		'SELECT
+				a.id AS area_id,
+				a.field_name,
+				a.altitude,
+				a.surface_area,
+				a.locality,
+				a.township,
+				a.canton,
+				ST_AsGeoJSON(a.geom) AS geom,
+				a.comment
+    		FROM
+				{area} a
+    		WHERE
+				-- let this condition always be true if no id set
+				a.hidden IS NOT TRUE AND (a.id = :areaid OR :havenoareaid)
+			ORDER BY
+				area_id',
+		array(':areaid' => $area_id,
+				':havenoareaid' => !$area_id
+		));
 
 	$items = array();
 	foreach ($areas as $entry) {
@@ -154,21 +188,28 @@ function get_areas($area_id = false) {
 		$item['comment'] = $entry->comment;
 		$item['habitats'] = array();
 
-		$habitats = db_query(
-				'
-          SELECT ah.habitat_id, h.label, h.name_de
-          FROM habitat h
-            INNER JOIN area_habitat ah ON h.id = ah.habitat_id
-          WHERE ah.area_id = ' . $entry->area_id . '
-          ORDER BY ah.id asc
-      ');
-		foreach ($habitats as $habitat) {
-			$item['habitats'][] = array(
-					'id' => (int) $habitat->habitat_id,
-					'label' => $habitat->label,
-					'name_de' => $habitat->name_de
-			);
-		}
+		// FIXME: re-enable when habitats done
+		// 		$habitats = db_query(
+		// 			'SELECT
+		// 				ah.habitat_id,
+		// 				h.label,
+		// 				h.name_de
+		//           	FROM
+		// 				{habitat} h
+		//             	INNER JOIN {area_habitat} ah ON h.id = ah.habitat_id
+		//           	WHERE
+		// 				ah.area_id = :areaid
+		// 			ORDER BY
+		// 				ah.id asc',
+		// 			array(':areaid' => $entry->area_id));
+
+		// 		foreach ($habitats as $habitat) {
+		// 			$item['habitats'][] = array(
+		// 					'id' => (int) $habitat->habitat_id,
+		// 					'label' => $habitat->label,
+		// 					'name_de' => $habitat->name_de
+		// 			);
+		// 		}
 
 		$item['type'] = '';
 		$item['area_points'] = array();
@@ -201,10 +242,6 @@ function get_areas($area_id = false) {
 		}
 
 		$item['edit'] = area_edit_access($item['id']);
-
-		//       global $UseAreaInMap;
-		//       echo $UseAreaInMap;
-		//       if($UseAreaInMap)
 		$items[] = $item;
 	}
 
@@ -215,7 +252,7 @@ function get_areas($area_id = false) {
 }
 
 /**
- * ACHTUNG: MUSS �BERARBEITET WERDEN!
+ * ACHTUNG: MUSS ÜBERARBEITET WERDEN!
  * [[http://swissmon.origo.ethz.ch/issues/17]] --> Security; SQL Injection edit Area 
  */
 function area_datatable() {
@@ -241,8 +278,10 @@ function area_datatable() {
 	 * Paging
 	 */
 	$sLimit = "";
-	if (isset($_REQUEST['iDisplayStart']) && $_REQUEST['iDisplayLength'] != '-1') {
-		$sLimit = " LIMIT " . $_REQUEST['iDisplayStart'] . ", " . $_REQUEST['iDisplayLength'];
+	if (isset($_REQUEST['iDisplayStart'])
+			&& $_REQUEST['iDisplayLength'] != '-1') {
+		$sLimit = " LIMIT " . $_REQUEST['iDisplayStart'] . ", "
+				. $_REQUEST['iDisplayLength'];
 	}
 
 	/*
@@ -251,8 +290,10 @@ function area_datatable() {
 	if (isset($_REQUEST['iSortCol_0'])) {
 		$sOrder = " ORDER BY ";
 		for ($i = 0; $i < intval($_REQUEST['iSortingCols']); $i++) {
-			if ($_REQUEST['bSortable_' . intval($_REQUEST['iSortCol_' . $i])] == "true") {
-				$sOrder .= $aColumns[intval($_REQUEST['iSortCol_' . $i])] . " " . $_REQUEST['sSortDir_' . $i] . ", ";
+			if ($_REQUEST['bSortable_' . intval($_REQUEST['iSortCol_' . $i])]
+					== "true") {
+				$sOrder .= $aColumns[intval($_REQUEST['iSortCol_' . $i])] . " "
+						. $_REQUEST['sSortDir_' . $i] . ", ";
 			}
 		}
 		$sOrder = substr_replace($sOrder, "", -2);
@@ -271,7 +312,8 @@ function area_datatable() {
 	if ($_REQUEST['sSearch'] != "") {
 		$sWhere = " WHERE (";
 		for ($i = 0; $i < count($aColumns); $i++) {
-			$sWhere .= $aColumns[$i] . " LIKE '%" . $_REQUEST['sSearch'] . "%' OR ";
+			$sWhere .= $aColumns[$i] . " LIKE '%" . $_REQUEST['sSearch']
+					. "%' OR ";
 		}
 		$sWhere = substr_replace($sWhere, "", -3);
 		$sWhere .= ')';
@@ -279,13 +321,15 @@ function area_datatable() {
 
 	/* Individual column filtering */
 	for ($i = 0; $i < count($aColumns); $i++) {
-		if ($_REQUEST['bSearchable_' . $i] == "true" && $_REQUEST['sSearch_' . $i] != '') {
+		if ($_REQUEST['bSearchable_' . $i] == "true"
+				&& $_REQUEST['sSearch_' . $i] != '') {
 			if ($sWhere == "") {
 				$sWhere = " WHERE ";
 			} else {
 				$sWhere .= " AND ";
 			}
-			$sWhere .= $aColumns[$i] . " LIKE '%" . $_REQUEST['sSearch_' . $i] . "%' ";
+			$sWhere .= $aColumns[$i] . " LIKE '%" . $_REQUEST['sSearch_' . $i]
+					. "%' ";
 		}
 	}
 
@@ -293,7 +337,8 @@ function area_datatable() {
 	 * SQL queries
 	 * Get data to display
 	 */
-	$countArea = db_query("SELECT COUNT(*) FROM area
+	$countArea = db_query(
+		"SELECT COUNT(*) FROM area
     LEFT JOIN users u ON u.uid = owner_id;");
 
 	foreach ($countArea as $record) {
@@ -302,9 +347,10 @@ function area_datatable() {
 	$iTotal = $row;
 
 	$area = db_query(
-			"SELECT area.id a_id, field_name, zip, locality, canton, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name, art.desc art_dest FROM area
+		"SELECT area.id a_id, field_name, zip, locality, canton, ua.field_address_first_name || ' ' || ua.field_address_last_name u_name, art.desc art_dest FROM area
     LEFT JOIN users u ON u.uid = owner_id
-    LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid" . $sWhere . $sOrder . $sLimit . ";");
+    LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid" . $sWhere
+				. $sOrder . $sLimit . ";");
 
 	foreach ($area as $record) {
 		$row = array();

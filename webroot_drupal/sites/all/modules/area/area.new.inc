@@ -6,25 +6,27 @@
 function area_new_form() {
 	drupal_set_title(t('Create New Area'));
 
-	drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=places', array('group' => JS_LIBRARY));
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
+	drupal_add_js(
+		'http://maps.google.com/maps/api/js?sensor=false&libraries=places',
+		array('group' => JS_LIBRARY));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
-	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/habitats.js');
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/parcels.js');
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css',
-			array(
-					'group' => CSS_DEFAULT,
-					'every_page' => TRUE
-			));
+	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
+
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-select.css');
+	drupal_add_css(
+		drupal_get_path('module', 'area') . '/css/area.css',
+		array(
+				'group' => CSS_DEFAULT,
+				'every_page' => TRUE
+		));
 
 	$output['new'] = array(
 			'#theme' => 'area.new',
 	);
 	$output['googleMaps'] = area_google_maps_form('create');
 	$output['areaNew'] = drupal_get_form('area_create_form');
-	//$output['areaNew']['#attributes']['class']='hidden';
-
 	return $output;
 }
 
@@ -88,7 +90,7 @@ function area_google_maps_form($task) {
  */
 function area_field_name_form() {
 	$area = db_query(
-			"SELECT area.id a_id, field_name, zip, locality, canton, country, u.name u_name, ST_AsGeoJSON(area.geom) AS geom FROM area
+		"SELECT area.id a_id, field_name, zip, locality, canton, country, u.name u_name, ST_AsGeoJSON(area.geom) AS geom FROM area
 		LEFT JOIN users u ON u.uid = owner_id
 		ORDER BY field_name;");
 
@@ -165,11 +167,12 @@ function area_choose_form($form, &$form_state) {
 	drupal_set_title(t('Choose existing area'));
 	drupal_add_js(drupal_get_path('module', 'area') . '/js/lib/infobubble.js');
 	//drupal_add_js(drupal_get_path('module', 'area') . '/js/autocomplete-select.js');
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css',
-			array(
-					'group' => CSS_DEFAULT,
-					'every_page' => TRUE
-			));
+	drupal_add_css(
+		drupal_get_path('module', 'area') . '/css/area.css',
+		array(
+				'group' => CSS_DEFAULT,
+				'every_page' => TRUE
+		));
 
 	$form['new'] = array(
 			'#theme' => 'area.new',
@@ -180,7 +183,7 @@ function area_choose_form($form, &$form_state) {
 	);
 	$form['AreaChooseForm']['help'] = array(
 			'#markup' => t(
-					'If you would like to create a new inventory, please select an existing area. If your desired area is not listed here, please create one first.')
+				'If you would like to create a new inventory, please select an existing area. If your desired area is not listed here, please create one first.')
 	);
 
 	$form['FieldName'] = area_field_name_form();
@@ -224,7 +227,8 @@ function area_choose_form_validate($form, &$form_state) {
  */
 function area_choose_form_submit($form, &$form_state, $area_id) {
 	// redirect to create a new inventory
-	$form_state['redirect'] = 'inventory/new/area/' . $form_state['values']['id-area'];
+	$form_state['redirect'] = 'inventory/new/area/'
+			. $form_state['values']['id-area'];
 }
 
 /**
@@ -330,7 +334,7 @@ function area_create_form($form, &$form_state) {
  * @param unknown_type $form_state
  */
 function area_create_form_submit($form, $form_state) {
-
+	global $user;
 	// get values from form
 	$field_name = $form_state['input']['field_name'];
 	$locality = $form_state['values']['locality'];
@@ -347,28 +351,25 @@ function area_create_form_submit($form, $form_state) {
 	$protectiontarget = $form_state['input']['protection_target'];
 	$safetyprecautions = $form_state['input']['safety_precautions'];
 	$tendingstrategies = $form_state['input']['tending_strategies'];
-
-	global $user;
-
 	// insert area
-	$area_id = db_insert('area')
-			->fields(
-					array('field_name' => $field_name,
-							'locality' => $locality,
-							'zip' => $zip,
-							'canton' => $canton,
-							'country' => $country,
-							'comment' => '',
-							'altitude' => $altitude,
-							'surface_area' => $surface_area,
-							'township' => $township,
-							'owner_id' => $user->uid,
-							'create_time' => 'now()',
-							'modify_time' => 'now()',
-							'protection_target' => $protectiontarget,
-							'safety_precautions' => $safetyprecautions,
-							'tending_strategies' => $tendingstrategies
-					))->execute();
+	$area_id = db_insert('area')->fields(
+			array('field_name' => $field_name,
+					'locality' => $locality,
+					'zip' => $zip,
+					'canton' => $canton,
+					'country' => $country,
+					'comment' => '',
+					'altitude' => $altitude,
+					'surface_area' => $surface_area,
+					'township' => $township,
+					'owner_id' => $user->uid,
+					'create_time' => 'now()',
+					'modify_time' => 'now()',
+					'protection_target' => $protectiontarget,
+					'safety_precautions' => $safetyprecautions,
+					'tending_strategies' => $tendingstrategies
+			))
+		->execute();
 
 	// field coordinates
 	$coords = json_decode($jsonCoords, true);
@@ -400,7 +401,9 @@ function area_create_form_submit($form, $form_state) {
 		$geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
 		break;
 	}
-	db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
+	db_update('area')->expression('geom', $geom)
+		->condition('id', $area_id)
+		->execute();
 
 	// redirect to JSON
 	drupal_goto('area/getareas/' . $area_id);
@@ -418,11 +421,23 @@ function area_create_form_submit($form, $form_state) {
 function area_new_details_form($form, $form_state) {
 	drupal_set_title(t('Enter new area details'));
 
-	$output['AreaNewForm']['basics'] = area_edit_basics_form($form, $form_state, '');
+	$output['AreaNewForm']['basics'] = area_edit_basics_form(
+		$form,
+		$form_state,
+		'');
 	$output['AreaNewForm']['map'] = area_edit_map_form($form, $form_state);
-	$output['AreaNewForm']['comment'] = area_edit_comment_form($form, $form_state, '');
-	$output['AreaNewForm']['habitats'] = area_edit_habitat_form($form, $form_state, '');
-	$output['AreaNewForm']['concept'] = area_edit_concept_form($form, $form_state, '');
+	$output['AreaNewForm']['comment'] = area_edit_comment_form(
+		$form,
+		$form_state,
+		'');
+	$output['AreaNewForm']['habitats'] = area_edit_habitat_form(
+		$form,
+		$form_state,
+		'');
+	$output['AreaNewForm']['concept'] = area_edit_concept_form(
+		$form,
+		$form_state,
+		'');
 	$output['AreaNewForm']['hidden'] = area_edit_hidden_form($form, $form_state);
 	$output['actions'] = array(
 			'#type' => 'actions'
@@ -433,6 +448,7 @@ function area_new_details_form($form, $form_state) {
 	);
 	return $output;
 }
+
 function area_new_details_form_submit($form, $form_state) {
 	// get values from form
 	$field_name = $form_state['input']['field_name'];
@@ -455,24 +471,24 @@ function area_new_details_form_submit($form, $form_state) {
 	global $user;
 
 	// insert area
-	$area_id = db_insert('area')
-			->fields(
-					array('field_name' => $field_name,
-							'locality' => $locality,
-							'zip' => $zip,
-							'canton' => $canton,
-							'country' => $country,
-							'comment' => $comment,
-							'altitude' => $altitude,
-							'surface_area' => $surface_area,
-							'township' => $township,
-							'owner_id' => $user->uid,
-							'create_time' => 'now()',
-							'modify_time' => 'now()',
-							'protection_target' => $protectiontarget,
-							'safety_precautions' => $safetyprecautions,
-							'tending_strategies' => $tendingstrategies
-					))->execute();
+	$area_id = db_insert('area')->fields(
+			array('field_name' => $field_name,
+					'locality' => $locality,
+					'zip' => $zip,
+					'canton' => $canton,
+					'country' => $country,
+					'comment' => $comment,
+					'altitude' => $altitude,
+					'surface_area' => $surface_area,
+					'township' => $township,
+					'owner_id' => $user->uid,
+					'create_time' => 'now()',
+					'modify_time' => 'now()',
+					'protection_target' => $protectiontarget,
+					'safety_precautions' => $safetyprecautions,
+					'tending_strategies' => $tendingstrategies
+			))
+		->execute();
 
 	// field coordinates
 	$coords = json_decode($jsonCoords, true);
@@ -499,14 +515,18 @@ function area_new_details_form_submit($form, $form_state) {
 
 		$geom = 'ST_GeomFromText(\'POINT(' . reset($points) . ')\', 4326)'; // SRID 4326 = WGS 84
 	}
-	db_update('area')->expression('geom', $geom)->condition('id', $area_id)->execute();
+	db_update('area')->expression('geom', $geom)
+		->condition('id', $area_id)
+		->execute();
 
 	// insert habitats
 	if (array_key_exists('habitat', $form_state['input'])) {
 		foreach (array_values($form_state['input']['habitat']) as $habitat) {
-			db_insert('area_habitat')->fields(array('area_id' => $area_id,
+			db_insert('area_habitat')->fields(
+					array('area_id' => $area_id,
 							'habitat_id' => $habitat,
-					))->execute();
+					))
+				->execute();
 		}
 	}
 
@@ -516,8 +536,8 @@ function area_new_details_form_submit($form, $form_state) {
 
 	// redirect to the new area	
 	drupal_set_message(
-			'Area successfully created. If you would like to add a new inventory in this Area please click '
-					. l('here', 'inventory/new/area/' . $area_id));
+		'Area successfully created. If you would like to add a new inventory in this Area please click '
+				. l('here', 'inventory/new/area/' . $area_id));
 	drupal_goto('area/' . $area_id);
 }
 

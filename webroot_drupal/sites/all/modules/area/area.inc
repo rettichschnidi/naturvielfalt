@@ -4,19 +4,18 @@
  */
 
 /**
- * 
  * Enter description here ...
  * @param unknown_type $areaId
  */
 function show_area($areaId) {
-
 	$areaResult = db_query(
 		"SELECT 
 				*,
 				SUBSTRING(ST_AsText(geom) from 1 for 4) AS g
 			FROM
 				{area} a
-    		WHERE
+	    		LEFT JOIN {users} u ON u.uid = a.owner_id
+			WHERE
 				id = :id",
 		array(':id' => $areaId));
 
@@ -609,22 +608,40 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 
 /**
  * Display area linked inventories
+ * @todo Adapt when inventory done
  * @param unknown_type $areaId
  */
 function area_inventories($areaId) {
 	global $user;
 	$output = array();
+
+	// FIXME: remove when inventory done
+	return $output;
 	$result = db_query(
-		"
-    SELECT distinct hi.name, hi.id, hi.shared, ua.field_address_first_name || ' ' || ua.field_address_last_name uname, hi.modify_time, hi.create_time
-    FROM area a
-    LEFT JOIN head_inventory hi on a.id = hi.area_id
-    LEFT JOIN sgroup_inventory sgi ON sgi.hiid = hi.id
-    LEFT JOIN sgroup_users sgu ON sgi.sgid = sgu.sgid
-    LEFT JOIN users u ON hi.owner_id = u.uid
-    LEFT JOIN field_data_field_address ua ON ua.entity_id = u.uid
-    LEFT JOIN sgroup sg ON sg.sgid = sgi.sgid
-    WHERE a.id = :aid AND hi.hidden IS NOT TRUE AND (hi.shared = TRUE OR hi.owner_id = :uid OR (sgu.uid = :uid AND (sgi.read != 0 OR sgi.write != 0)))",
+		"SELECT
+			distinct hi.name,
+			hi.id,
+			hi.shared,
+			ua.field_address_first_name || ' ' || ua.field_address_last_name uname,
+			hi.modify_time,
+			hi.create_time
+    	FROM
+			{area} a
+    		LEFT JOIN {head_inventory} hi on a.id = hi.area_id
+		    LEFT JOIN {sgroup_inventory} sgi ON sgi.hiid = hi.id
+		    LEFT JOIN {sgroup_users} sgu ON sgi.sgid = sgu.sgid
+		    LEFT JOIN {users} u ON hi.owner_id = u.uid
+		    LEFT JOIN {field_data_field_address} ua ON ua.entity_id = u.uid
+		    LEFT JOIN {sgroup} sg ON sg.sgid = sgi.sgid
+    	WHERE
+			a.id = :aid
+			AND hi.hidden IS NOT TRUE 
+			AND (
+				hi.shared = TRUE OR hi.owner_id = :uid
+				OR (sgu.uid = :uid
+					AND ( sgi.read != 0 OR sgi.write != 0)
+				)
+			)",
 		array(':aid' => $areaId,
 				':uid' => $user->uid
 		));
@@ -689,7 +706,9 @@ function area_inventories($areaId) {
 function area_habitats($areaId) {
 	global $user;
 	$output = array();
-	$query = db_select('area_habitat', 'ah')->condition('ah.area_id', $areaId);
+	// FIXME: delete when habitat done
+	return $output;
+	$query = db_select('{area_habitat}', 'ah')->condition('ah.area_id', $areaId);
 	$query->join('habitat', 'h', 'h.id = ah.habitat_id');
 	$query->addField('ah', 'id', 'ah_id');
 	$query->fields('h');
@@ -1020,6 +1039,8 @@ function array_unique_multi($array) {
  */
 function area_files($area_id) {
 	$render_array = array();
+	// delete when filemanager done
+	return $render_array;
 	$result = db_query(
 		'
     SELECT * 
@@ -1100,6 +1121,7 @@ function _area_parcels_table($area_id) {
 	$result = db_select('area_parcel')->fields('area_parcel')
 		->condition('area_id', $area_id)
 		->execute();
+	$parcels = array();
 	foreach ($result as $record) {
 		$parcels = $parcels . ' ' . $record->parcel . '<br>';
 	}
