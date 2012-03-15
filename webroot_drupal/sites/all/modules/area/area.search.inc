@@ -89,13 +89,10 @@ function area_field_name_form($userspecified = false) {
 				country,
 				create_time,
 				u.name u_name,
-				GeometryType(area.geom) AS art_dest,
-				fdaf.field_address_first_name fname,
-				fdaf.field_address_last_name lname  
+				GeometryType(area.geom) AS art_dest
 	    	FROM
 	    		area
 	    		LEFT JOIN users u ON u.uid = owner_id
-	    		LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
 	    	WHERE
 	    		hidden IS NOT TRUE 
 	    		AND u.uid = :userid
@@ -105,21 +102,18 @@ function area_field_name_form($userspecified = false) {
 	} else {
 		$area = db_query(
 			"SELECT 
-				area.id a_id,
-				field_name,
-				zip,
-				locality,
-				canton,
-				country,
-				create_time,
+				a.id a_id,
+				a.field_name,
+				a.zip,
+				a.locality,
+				a.canton,
+				a.country,
+				a.create_time,
 				u.name u_name,
-				GeometryType(area.geom) AS art_dest,
-				fdaf.field_address_first_name fname,
-				fdaf.field_address_last_name lname
+				GeometryType(a.geom) AS art_dest
     		FROM
-    			{area}
+    			{area} a
     			LEFT JOIN {users} u ON u.uid = owner_id
-    			LEFT JOIN {field_data_field_address} fdaf ON fdaf.entity_id = owner_id
     		WHERE
     			hidden IS NOT TRUE
     		ORDER BY
@@ -134,6 +128,7 @@ function area_field_name_form($userspecified = false) {
 				'title' => t('Details'),
 		));
 
+	$rows = array();
 	foreach ($area as $record) {
 		$row = array();
 		$row[] = $record->field_name;
@@ -146,7 +141,7 @@ function area_field_name_form($userspecified = false) {
 		} else {
 			$row[] = '';
 		}
-		$row[] = $record->fname . ' ' . $record->lname;
+		$row[] = $record->name;
 		$row[] = $record->art_dest;
 		$row[] = array(
 				'data' => l(
