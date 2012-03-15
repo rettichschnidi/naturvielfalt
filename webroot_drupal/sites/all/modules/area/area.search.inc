@@ -78,30 +78,61 @@ function area_google_maps_form() {
  */
 function area_field_name_form($userspecified = false) {
 	global $user;
-	if (!$userspecified) {
+	if ($userspecified) {
 		$area = db_query(
-				"SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, GeometryType(area.geom) AS art_dest, fdaf.field_address_first_name fname, fdaf.field_address_last_name lname  
-	    FROM area
-	    LEFT JOIN users u ON u.uid = owner_id
-	    LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
-	    WHERE hidden IS NOT TRUE
-	    ORDER BY field_name;");
+			"SELECT
+				area.id a_id,
+				field_name,
+				zip,
+				locality,
+				canton,
+				country,
+				create_time,
+				u.name u_name,
+				GeometryType(area.geom) AS art_dest,
+				fdaf.field_address_first_name fname,
+				fdaf.field_address_last_name lname  
+	    	FROM
+	    		area
+	    		LEFT JOIN users u ON u.uid = owner_id
+	    		LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
+	    	WHERE
+	    		hidden IS NOT TRUE 
+	    		AND u.uid = :userid
+	    	ORDER BY
+				field_name;",
+			array(':userid' => $user->uid));
 	} else {
 		$area = db_query(
-				"SELECT area.id a_id, field_name, zip, locality, canton,country, create_time, u.name u_name, GeometryType(area.geom) AS art_dest, fdaf.field_address_first_name fname, fdaf.field_address_last_name lname  
-		    FROM area
-		    LEFT JOIN users u ON u.uid = owner_id
-		    LEFT JOIN field_data_field_address fdaf ON fdaf.entity_id = owner_id
-		    WHERE hidden IS NOT TRUE and u.uid = " . $user->uid . "
-		    ORDER BY field_name;");
+			"SELECT 
+				area.id a_id,
+				field_name,
+				zip,
+				locality,
+				canton,
+				country,
+				create_time,
+				u.name u_name,
+				GeometryType(area.geom) AS art_dest,
+				fdaf.field_address_first_name fname,
+				fdaf.field_address_last_name lname
+    		FROM
+    			{area}
+    			LEFT JOIN {users} u ON u.uid = owner_id
+    			LEFT JOIN {field_data_field_address} fdaf ON fdaf.entity_id = owner_id
+    		WHERE
+    			hidden IS NOT TRUE
+    		ORDER BY
+				field_name;");
 	}
 
 	//Localize Image
-	$view_img_localize = theme('image',
-			array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
-					'alt' => t('Details'),
-					'title' => t('Details'),
-			));
+	$view_img_localize = theme(
+		'image',
+		array('path' => 'sites/all/modules/inventory/images/fatcow_icons/16x16/world.png',
+				'alt' => t('Details'),
+				'title' => t('Details'),
+		));
 
 	foreach ($area as $record) {
 		$row = array();
@@ -118,7 +149,10 @@ function area_field_name_form($userspecified = false) {
 		$row[] = $record->fname . ' ' . $record->lname;
 		$row[] = $record->art_dest;
 		$row[] = array(
-				'data' => l($view_img_localize, 'area/' . $record->a_id, array('html' => true)),
+				'data' => l(
+					$view_img_localize,
+					'area/' . $record->a_id,
+					array('html' => true)),
 				'class' => 'show_static_image'
 		);
 		$rows[] = array(
@@ -176,15 +210,16 @@ function area_last_used_table() {
 	global $user;
 
 	$head_inventories = db_query(
-			"SELECT * FROM area 
+		"SELECT * FROM area 
     WHERE owner_id = :owner_id AND hidden IS NOT TRUE
     ORDER BY modify_time DESC
-    LIMIT 5", array(':owner_id' => $user->uid));
+    LIMIT 5",
+		array(':owner_id' => $user->uid));
 
 	foreach ($head_inventories as $record) {
 		$row = array();
-		$row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea(' . $record->id . ')">' . $record->field_name
-				. '</a>';
+		$row[] = '<a href="#" onclick="AreaSelect.prototype.selectArea('
+				. $record->id . ')">' . $record->field_name . '</a>';
 		$row[] = $record->zip;
 		$row[] = $record->locality;
 		$row[] = $record->canton;

@@ -215,7 +215,7 @@ function get_areas($area_id = false) {
 }
 
 /**
- * ACHTUNG: MUSS †BERARBEITET WERDEN!
+ * ACHTUNG: MUSS ï¿½BERARBEITET WERDEN!
  * [[http://swissmon.origo.ethz.ch/issues/17]] --> Security; SQL Injection edit Area 
  */
 function area_datatable() {
