@@ -1,5 +1,5 @@
-name = Custom ACL
-description = Costom ACL module to handle permissions
+name = c_acl
+description = Custom ACL module to handle permissions
 package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
