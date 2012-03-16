@@ -7,22 +7,279 @@ define('AREA_CREATE', 'area create');
  *  Hook implementations
  *********************************/
 
+// Load gallery integration
+module_load_include('inc', 'area', 'area.gallery');
+
 /**
  * Implements hook_menu()
  *
  * @return array
  */
 function area_menu() {
+	$items['userarea'] = array(
+			'title' => t('User Areas'),
+			'description' => t('List of areas'),
+			'page callback' => 'show_area_search_userspecified',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.search.inc',
+			'weight' => 0
+	);
+	$items['toparea'] = array(
+			'title' => t('User Areas'),
+			'description' => t('List of areas'),
+			'page callback' => 'show_area_search',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.search.inc',
+			'weight' => 0
+	);
+
+	// 	$items['area'] = array(
+	// 			'title' => t('Areas'),
+	// 			'description' => t('List of areas'),
+	// 			'page callback' => 'show_area_search',
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_NORMAL_ITEM,
+	// 			'file' => 'area.search.inc',
+	// 	);
+
+	$items['area/%'] = array(
+			//'title' => t('Areadsdf'),
+			'description' => t('View an area'),
+			'page callback' => 'show_area',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.inc',
+	);
+
+	$items['area/getareas'] = array(
+			'title' => t('Area information in JSON format'),
+			'page callback' => 'get_areas',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+
 	$items['area/new'] = array(
-			'title' => t('Create'),
-			'description' => t('Create a new area'),
+			'title' => t('Create a new areas'),
+			'description' => t('Create an areas'),
 			'page callback' => 'area_new_form',
 			'access arguments' => array(
 					AREA_CREATE
 			),
-			'type' => MENU_NORMAL_ITEM,
+			'type' => MENU_CALLBACK,
 			'file' => 'area.new.inc',
 	);
+
+	$items['area/json'] = array(
+			'title' => t('Area information in JSON format'),
+			'page callback' => 'area_json',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+
+	$items['area/%/delete'] = array(
+			'title' => t('Delete'),
+			'description' => t('Delete area'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'area_delete_form',
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_edit_access',
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.delete.inc',
+			'weight' => 7
+	);
+
+	$items['area/%/edit'] = array(
+			'title' => t('Edit'),
+			'description' => t('Edit area properties'),
+			'page callback' => 'area_edit',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_edit_access',
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.edit.inc',
+			'weight' => 6
+	);
+
+	$items['area/%/newinv'] = array(
+			'title' => t('Add inventory'),
+			'description' => t('Create a new inventory in this area'),
+			'page callback' => 'area_new_inventory',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'weight' => 8
+	);
+	$items['area/choose'] = array(
+			'title' => t('Choose existing area'),
+			'description' => t('Choose an area'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'area_choose_form'
+			),
+			'access arguments' => array(
+					AREA_CREATE
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.new.inc',
+	);
+
+	$items['uarea'] = array(
+			'title' => t('User Areas'),
+			'description' => t('List of user areas'),
+			'page callback' => 'show_area_search_userspecified',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.search.inc',
+	);
+
+	$items['area/habitat_autocomplete'] = array(
+			'title' => t('Habitat autocomplete'),
+			'page callback' => 'area_habitat_autocomplete',
+			'access arguments' => array(
+					AREA_CREATE
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+	$items['area/area_saved_autocomplete'] = array(
+			'title' => t('Area autocomplete'),
+			'page callback' => 'area_saved_autocomplete',
+			'access arguments' => array(
+					AREA_CREATE
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+
+	$items['area/getareas/%'] = array(
+			'title' => t('Area information in JSON format'),
+			'page callback' => 'get_areas',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+
+	$items['area/datatable'] = array(
+			'title' => t('Area information in JSON format for datatable'),
+			'page callback' => 'area_datatable',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+
+	$items['area/%/delete_file/%'] = array(
+			'title' => t('Delete file'),
+			'description' => t('Delete an existing file'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'area_delete_file',
+					1,
+					3
+			),
+			'access callback' => 'area_edit_access',
+			'access arguments' => array(
+					1
+			),
+			'file' => 'area.edit.inc',
+			'weight' => 10,
+	);
+
+	// 	$items['area/%/normal'] = array(
+	// 			'title' => t('View'),
+	// 			'description' => t('View of an area'),
+	// 			'page callback' => 'show_area',
+	// 			'page arguments' => array(
+	// 					1
+	// 			),
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 			'file' => 'area.inc',
+	// 			'weight' => 1
+	// 	);
+
+	//  Hide till it is done
+	// 	$items['area/%/gallery'] = array(
+	// 			'title' => t('Gallery'),
+	// 			'description' => t('View the area as a gallery of organisms'),
+	// 			'page callback' => 'area_gallery',
+	// 			'page arguments' => array(
+	// 					1
+	// 			),
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 			'file' => 'area.inc',
+	// 			'weight' => 2
+	// 	);
+
+	//  Hide till it is done
+	// 	$items['area/%/list'] = array(
+	// 			'title' => t('List'),
+	// 			'description' => t('View the area as a list of organisms'),
+	// 			'page callback' => 'area_list',
+	// 			'page arguments' => array(
+	// 					1
+	// 			),
+	// 			'access arguments' => array(
+	// 					AREA_ACCESS
+	// 			),
+	// 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 			'file' => 'area.inc',
+	// 			'weight' => 3
+	// 	);
+
 	return $items;
 }
 
@@ -36,29 +293,164 @@ function area_theme() {
 			'area.new' => array(
 					'template' => 'area.new',
 					'variables' => array()
-			)
+			),
+			'area.search' => array(
+					'template' => 'area.search',
+					'variables' => array()
+			),
+			'area.search.byMaps' => array(
+					'template' => 'area.search.byMaps',
+					'variables' => array()
+			),
+			'area.search.byMaps.show' => array(
+					'template' => 'area.search.byMaps.show',
+					'variables' => array()
+			),
+			'area.create' => array(
+					'template' => 'area.create',
+					'variables' => array()
+			),
+			'area.choose' => array(
+					'template' => 'area.choose',
+					'variables' => array()
+			),
 	);
 }
 
-/**
- * Define permissions which can be given to different roles
- */
 function area_permission() {
 	return array(
 			AREA_ACCESS => array(
-					'title' => t('View area'),
+					'title' => t('can view areas'),
 			),
 			AREA_CREATE => array(
-					'title' => t('Create area'),
+					'title' => t('can create areas'),
 			),
-			AREA_MODERATE => array(
-					'title' => t('Moderate any area'),
-			)
 	);
 }
 
+function area_get_icon_map($filemime) {
+	switch ($filemime) {
+	// Word document types.
+	case 'application/msword':
+	case 'application/vnd.ms-word.document.macroEnabled.12':
+	case 'application/vnd.oasis.opendocument.text':
+	case 'application/vnd.oasis.opendocument.text-template':
+	case 'application/vnd.oasis.opendocument.text-master':
+	case 'application/vnd.oasis.opendocument.text-web':
+	case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+	case 'application/vnd.stardivision.writer':
+	case 'application/vnd.sun.xml.writer':
+	case 'application/vnd.sun.xml.writer.template':
+	case 'application/vnd.sun.xml.writer.global':
+	case 'application/vnd.wordperfect':
+	case 'application/x-abiword':
+	case 'application/x-applix-word':
+	case 'application/x-kword':
+	case 'application/x-kword-crypt':
+		return 'x-office-document';
+
+	// Spreadsheet document types.
+	case 'application/vnd.ms-excel':
+	case 'application/vnd.ms-excel.sheet.macroEnabled.12':
+	case 'application/vnd.oasis.opendocument.spreadsheet':
+	case 'application/vnd.oasis.opendocument.spreadsheet-template':
+	case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+	case 'application/vnd.stardivision.calc':
+	case 'application/vnd.sun.xml.calc':
+	case 'application/vnd.sun.xml.calc.template':
+	case 'application/vnd.lotus-1-2-3':
+	case 'application/x-applix-spreadsheet':
+	case 'application/x-gnumeric':
+	case 'application/x-kspread':
+	case 'application/x-kspread-crypt':
+		return 'x-office-spreadsheet';
+
+	// Presentation document types.
+	case 'application/vnd.ms-powerpoint':
+	case 'application/vnd.ms-powerpoint.presentation.macroEnabled.12':
+	case 'application/vnd.oasis.opendocument.presentation':
+	case 'application/vnd.oasis.opendocument.presentation-template':
+	case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+	case 'application/vnd.stardivision.impress':
+	case 'application/vnd.sun.xml.impress':
+	case 'application/vnd.sun.xml.impress.template':
+	case 'application/x-kpresenter':
+		return 'x-office-presentation';
+
+	// Compressed archive types.
+	case 'application/zip':
+	case 'application/x-zip':
+	case 'application/stuffit':
+	case 'application/x-stuffit':
+	case 'application/x-7z-compressed':
+	case 'application/x-ace':
+	case 'application/x-arj':
+	case 'application/x-bzip':
+	case 'application/x-bzip-compressed-tar':
+	case 'application/x-compress':
+	case 'application/x-compressed-tar':
+	case 'application/x-cpio-compressed':
+	case 'application/x-deb':
+	case 'application/x-gzip':
+	case 'application/x-java-archive':
+	case 'application/x-lha':
+	case 'application/x-lhz':
+	case 'application/x-lzop':
+	case 'application/x-rar':
+	case 'application/x-rpm':
+	case 'application/x-tzo':
+	case 'application/x-tar':
+	case 'application/x-tarz':
+	case 'application/x-tgz':
+		return 'package-x-generic';
+
+	// Script file types.
+	case 'application/ecmascript':
+	case 'application/javascript':
+	case 'application/mathematica':
+	case 'application/vnd.mozilla.xul+xml':
+	case 'application/x-asp':
+	case 'application/x-awk':
+	case 'application/x-cgi':
+	case 'application/x-csh':
+	case 'application/x-m4':
+	case 'application/x-perl':
+	case 'application/x-php':
+	case 'application/x-ruby':
+	case 'application/x-shellscript':
+	case 'text/vnd.wap.wmlscript':
+	case 'text/x-emacs-lisp':
+	case 'text/x-haskell':
+	case 'text/x-literate-haskell':
+	case 'text/x-lua':
+	case 'text/x-makefile':
+	case 'text/x-matlab':
+	case 'text/x-python':
+	case 'text/x-sql':
+	case 'text/x-tcl':
+		return 'text-x-script';
+
+	// HTML aliases.
+	case 'application/xhtml+xml':
+		return 'text-html';
+
+	// Executable types.
+	case 'application/x-macbinary':
+	case 'application/x-ms-dos-executable':
+	case 'application/x-pef-executable':
+		return 'application-x-executable';
+
+	// PDF
+	case 'application/pdf':
+		return 'application-pdf';
+
+	default:
+		return $return;
+	}
+}
+
 /**
- * Check write access to area
+ * Check write acces to area
  * 
  * @param unknown_type $area_id
  * @return true if access ok, false if not

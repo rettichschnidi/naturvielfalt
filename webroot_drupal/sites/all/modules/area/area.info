@@ -1,5 +1,8 @@
 name = area
-description = Manage areas
+description = Manage areas (generic)
 package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
+dependencies[] = areagoogle
+dependencies[] = datatable
+dependencies[] = c_acl
