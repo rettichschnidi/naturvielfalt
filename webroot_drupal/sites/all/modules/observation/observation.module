@@ -1,0 +1,50 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+module_load_include('inc', 'observation');
+
+// Load gallery integration
+//module_load_include('inc', 'inventory', 'inventory.gallery');
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function observation_menu() {
+	$items['singleobservation/new'] = array(
+			'title' => t('Add a new singleobservation'),
+			'description' => t('Display a wizard to add a new singleobservation'),
+			'page callback' => 'singleobservation_wizard',
+			'access arguments' => array(
+					'create observation'
+			),
+			'file' => 'singleobservation.inc',
+	);
+
+	return $items;
+}
+
+
+
+
+/**
+ * Default permission function
+ *
+ */
+function observation_permission() {
+	return array(
+			'access observation' => array(
+					'title' => t('can view observations'),
+			),
+			'create observation' => array(
+					'title' => t('can create observations'),
+			),
+	);
+}
+
+
+
+?>
