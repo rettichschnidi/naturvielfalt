@@ -1,6 +1,6 @@
 <?php
 /**
- * @file organism.module
+ * @file organism.inc
  * @author Marco Zimmerli, 2011
  * @author Reto Schneider, 2012
  * @copyright 2011-2012 Naturwerk, Brugg
