@@ -26,13 +26,13 @@ CREATE TABLE public.area
 	-- Name, Flurname
 	name text NOT NULL,
 	-- Meter über Meer
-	altitude int DEFAULT 0 NOT NULL,
+	altitude int DEFAULT 0,
 	-- Fläche in m²
-	surface_area bigint DEFAULT 0 NOT NULL,
-	zip text NOT NULL,
-	township text NOT NULL,
-	canton text NOT NULL,
-	country text NOT NULL,
+	surface_area bigint DEFAULT 0,
+	zip text,
+	township text,
+	canton text,
+	country text,
 	-- Kommentartext
 	commenttext text,
 	create_time timestamp,
