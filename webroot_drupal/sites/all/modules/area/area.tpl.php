@@ -27,8 +27,13 @@ drupal_add_js(
 			. $user->language,
 	array('group' => JS_LIBRARY));
 
+// include drupal support for ajax
+drupal_add_js('misc/ajax.js');
+
+drupal_add_js($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
 drupal_add_js($baseModulJsPath . 'area.js');
 drupal_add_css($baseModulCssPath . 'area.css');
+
 if ($search) {
 	drupal_add_css($baseModulCssPath . 'area-search.css');
 	drupal_add_js($baseModulJsPath . 'area-search.js');
@@ -40,7 +45,7 @@ if ($create) {
 ?>
 
 <div class="area-search-map">
-  <div id="map" style="height: 600px; width: 100%;">
+  <div id="map" style="height: 600px; width: 120%;">
     <div id="map_canvas" style="height: 100%"></div>
   </div>
 </div>

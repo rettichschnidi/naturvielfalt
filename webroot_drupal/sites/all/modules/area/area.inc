@@ -17,19 +17,122 @@ function area_new_area() {
 	$output['map'] = array(
 			'#search' => true,
 			'#create' => true,
-			'#theme' => 'area',
+			'#theme' => 'area'
 	);
 
-	// 	$output['googleMaps']['GoogleMaps'] = array(
-	// 			'#type' => 'fieldset',
-	// 			'#weight' => 3,
-	// 			'#collapsible' => FALSE,
-	// 			'searchByMaps' => array(
-	// 					'#theme' => 'area.base'
-	// 			), // map
-	// 	);
-	// $output['areaNew'] = drupal_get_form('area_create_form');
+	// 	$output['data'] = drupal_get_form('area_address_form');
+
 	return $output;
+}
+
+function area_new_areaname_form($form, &$form_state) {
+	$form = area_address_form();
+
+	$form['fieldname'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Field name/area name'),
+			'#description' => t('Please insert a custom name for this area.'),
+			'#size' => 20,
+			'#maxlength' => 80,
+			'#required' => true,
+	);
+
+	$form['button'] = array(
+			'#type' => 'submit',
+			'#value' => t('Create'),
+			'#submit' => array(
+					'area_create_new_area'
+			)
+	);
+	return $form;
+}
+
+function area_get_new_areaname_form_callback() {
+	print drupal_render(drupal_get_form('area_new_areaname_form'));
+}
+
+function area_get_new_areaname_form() {
+	return drupal_get_form('area_new_areaname_form');
+}
+
+function area_create_new_area($form, &$form_state) {
+	if (false) {
+		drupal_set_message(
+			"Creating area: <pre>" . var_export($form_state['values'], true)
+					. "</pre>");
+	}
+
+	// get values from form
+	$name = $form_state['values']['fieldname'];
+	$zip = $form_state['values']['zip'];
+	$canton = $form_state['values']['canton'];
+	$country = $form_state['values']['country'];
+	$township = $form_state['values']['township'];
+
+	$areaType = $form_state['values']['area_type'];
+	$altitude = $form_state['values']['altitude'];
+	$surface = empty($form_state['values']['surface']) ? 0
+			: floor($form_state['values']['surface'] + 0.5);
+	$jsonCoords = $form_state['values']['area-coords'];
+	$latitude = $form_state['values']['latitude'];
+	$longitude = $form_state['values']['longitude'];
+
+	$coordinates = json_decode($jsonCoords, true);
+	$points = array();
+	foreach ($coordinates as $coord) {
+		$lat = $coord[0];
+		$lng = $coord[1];
+		$points[] = $lng . ' ' . $lat;
+	}
+
+	switch ($areaType) {
+	case 'polyline':
+		$linestring = implode(', ', $points);
+		$geom = 'ST_GeomFromText(\'LINESTRING(' . $linestring . ')\', 4326)'; // SRID 4326 = WGS 84
+		break;
+	case 'polygon':
+	// make sure line is closed
+		if (end($points) != reset($points)) {
+			$points[] = reset($points);
+		}
+		$linestring = implode(', ', $points);
+		$geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+		break;
+	case 'marker':
+		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
+		break;
+	}
+
+	if (!empty($name) && !empty($altitude) && !empty($zip) && !empty($township)
+			&& !empty($canton) && !empty($country)) {
+
+		// insert area
+		$area_id = db_insert('area')->fields(
+				array('name' => $name,
+						'zip' => $zip,
+						'canton' => $canton,
+						'country' => $country,
+						'altitude' => $altitude,
+						'surface_area' => $surface,
+						'township' => $township,
+						'acl_id' => 1,
+						'geom' => $geom
+				))
+			->execute();
+
+		drupal_set_message(
+			t(
+				"Area @areaname got created.",
+				array('@areaname' => $form_state['values']['fieldname'])));
+		drupal_goto('area/' . $area_id);
+	} else {
+		drupal_set_message(
+			t(
+				"Area @areaname could not be created, missing values.",
+				array('@areaname' => $form_state['values']['fieldname'])),
+			'error');
+		drupal_goto('area/new');
+	}
 }
 
 /**
@@ -38,88 +141,89 @@ function area_new_area() {
  * @param array $form_state
  * @return form to submit area properties
  */
-function area_create_form($form, &$form_state) {
-	// 	This produces an ugyl field. Do we really need it?! 
-	$form['AreaNewForm'] = array(
+function area_address_form() {
+	$form['addressdata'] = array(
 			'#type' => 'fieldset',
-			'#weight' => 8,
+			'#prefix' => '<div id="addressdata" style="visibility: hidden; height: 0px">',
+			'#suffix' => '</div>'
 	);
-	$form['AreaNewForm']['field_name'] = array(
-			'#type' => 'hidden',
-			'#required' => true,
+	$form['addressdata']['fieldname'] = array(
+			'#type' => 'textfield',
 			'#size' => 50,
 			'#attributes' => array(
 					'id' => 'edit-name'
 			),
 	);
-	$form['AreaNewForm']['zip'] = array(
+	$form['addressdata']['zip'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-zip'
 			),
 	);
-	$form['AreaNewForm']['township'] = array(
+	$form['addressdata']['township'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-township'
 			),
 	);
-	$form['AreaNewForm']['canton'] = array(
+	$form['addressdata']['canton'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-canton'
 			),
 	);
-	$form['AreaNewForm']['altitude'] = array(
+	$form['addressdata']['altitude'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-altitude'
 			),
 	);
-	$form['AreaNewForm']['surface-area'] = array(
+	$form['addressdata']['surface'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'edit-surface-area'
+					'id' => 'edit-surface'
 			),
 	);
-	$form['AreaNewForm']['country'] = array(
+	$form['addressdata']['country'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-country'
 			),
 	);
-	$form['AreaNewForm']['latitude'] = array(
+	$form['addressdata']['latitude'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-latitude'
 			),
 	);
-	$form['AreaNewForm']['longitude'] = array(
+	$form['addressdata']['longitude'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-longitude'
 			),
 	);
-	$form['AreaNewForm']['area-coords'] = array(
+	$form['addressdata']['area-coords'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-area-coords'
 			),
 	);
-	$form['AreaNewForm']['area_type'] = array(
+	$form['addressdata']['area_type'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'edit-area-type'
 			),
 	);
-	$form['AreaNewForm']['actions-new'] = array(
-			'#type' => 'actions'
-	);
-	$form['AreaNewForm']['actions-new']['submit'] = array(
-			'#type' => 'submit',
-			'#value' => t('Continue'),
-	);
 	return $form;
+}
+
+/**
+ * Show a specific area
+ * @param integer $area_id
+ * @return renderarray
+ */
+function area_show_area($area_id) {
+	return array();
 }
 /**
  * A simple testview to demonstrate the usage of the static google maps API

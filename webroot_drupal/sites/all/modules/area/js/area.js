@@ -33,6 +33,30 @@ google.maps.Polyline.prototype.getPosition = function() {
 	return point;
 };
 
+/**
+ * Return the MVC Array of the LatLng
+ * @return
+ */
+google.maps.Marker.prototype.getAllCoordinates = function() {
+    return new google.maps.MVCArray([this.getPosition()]);
+};
+
+/**
+ * Returns polygon path
+ * @return google.maps.MVCArray<google.maps.LatLng>
+ */
+google.maps.Polygon.prototype.getAllCoordinates = function(){
+    return this.getPath();
+};
+
+/**
+ * Returns polyline path
+ * @return google.maps.MVCArray<google.maps.LatLng>
+ */
+google.maps.Polyline.prototype.getAllCoordinates = function(){
+    return this.getPath();
+};
+
 function Area(map_id) {
 	/**
 	 * Member variable initialisation
@@ -46,9 +70,11 @@ function Area(map_id) {
 	// points to the currently selected element
 	this.selectedElement = undefined;
 	// points to last created element
-	this.lastCreatedElement = undefined;
+	this.newestElement = undefined;
 	// contains all the overlays currently shown on the map
 	this.overlays = [];
+	
+	this.drawingManager = undefined;
 	/**
 	 * Creates the google maps object and attaches it to the element with the id
 	 * this.map_id.
@@ -142,12 +168,191 @@ function Area(map_id) {
 			}
 		}
 	};
+	
+	this.createDrawingTools = function() {
+		var area = this;
+		// initialize drawing overlay and tools
+		this.drawingManager = new google.maps.drawing.DrawingManager({
+			// do not select a tool yet
+			drawingMode : false,
+			// show the tools
+			drawingControl : true,
+			drawingControlOptions : {
+				// show the toolbox on the right, middle
+				position : google.maps.ControlPosition.TOP_LEFT,
+				// enable marker, polyline and polygon as drawing primitves
+				drawingModes : [ google.maps.drawing.OverlayType.MARKER,
+						google.maps.drawing.OverlayType.POLYLINE,
+						google.maps.drawing.OverlayType.POLYGON ]
+			},
+			// set options for the 3 elements
+			makerOptions : {
+				draggable : true
+			},
+			polylineOptions : {
+				strokeWeight : 3,
+				strokeColor : '#ff0000',
+				strokeOpacity : 0.5,
+				clickable : true,
+				editable : true,
+			},
+			polygonOptions : {
+				fillColor : '#ff0000',
+				fillOpacity : 0.5,
+				strokeWeight : 0,
+				clickable : true,
+				editable : true,
+			},
+			map : this.googlemap
+		});
+
+		google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(
+				overlay) {
+
+			if (overlay.type == 'marker') {
+				overlay.overlay.setDraggable(true);
+				overlay.overlay.setClickable(true);
+			} else if (overlay.overlay.type == 'polyline'
+					|| overlay.overlay.type == 'polygon') {
+				overlay.overlay.setEditable(false);
+			} else {
+				console.debug('Overlay type is unknown.');
+				console.debug('Type: ' + overlay.type);
+			}
+			area.setSelectedElement(overlay);
+
+			var contentString = "<div id='infowindowcontent'><h1>You created a " + overlay.type + "</h1></div>";
+			var infowindow = new google.maps.InfoWindow({
+				content : contentString
+			});
+			google.maps.event.addListener(infowindow, 'closeclick', function() {
+				overlay.overlay.setMap(null);
+				overlay = null;
+			});
+
+			// FIXME: Refactor this into own function
+			// -----------
+			var xhrFetcher = false;
+			var url = 'http://localhost/naturvielfalt_dev/area/getnewareanameformajax';
+
+			if (!!window.XMLHttpRequest) {
+				xhrFetcher = new window.XMLHttpRequest(); // Most browsers
+			} else if (!!window.ActiveXObject) {
+				alert("XMLHttpRequest not supportet by your browser");
+			}
+
+			if (!xhrFetcher) {
+				console.log('Unable to create XHR object');
+			} else {
+				xhrFetcher.open('GET', url, true);
+				xhrFetcher.onreadystatechange = function() {
+					if (xhrFetcher.readyState === 4) {
+						// Retrieval complete
+						if (!!xhrFetcher.timeout)
+							clearTimeout(xhrFetcher.timeout);
+						if (xhrFetcher.status >= 400) {
+							console.log('HTTP error ' + xhrFetcher.status
+									+ ' retrieving ' + url);
+						} else {
+							// Returned successfully
+							infowindow.setContent(xhrFetcher.response);
+							getAddress(overlay, function(address) {
+								console.log("Address:");
+								console.log(address);
+								jQuery('#edit-canton').val(address.canton);
+							    jQuery('#edit-township').val(address.township);
+							    jQuery('#edit-locality').val(address.locality);
+							    jQuery('#edit-zip').val(address.zip);
+							    jQuery('#edit-country').val(address.country);    
+							});
+							getAltitude(overlay, function(altitude) {
+								console.log("Altitude:");
+								console.log(altitude);
+							    jQuery('#edit-altitude').val(altitude);
+							});
+						    jQuery('#edit-latitude').val(overlay.overlay.getPosition().lat());
+						    jQuery('#edit-longitude').val(overlay.overlay.getPosition().lng());
+						    jQuery('#edit-area-type').val(overlay.type);
+						    
+							var area_coords = new Array();
+							overlay.overlay.getAllCoordinates().forEach(function (position) {
+								area_coords.push([position.lat(), position.lng()]);
+							});
+							area_coords = JSON.stringify(area_coords);
+						    jQuery('#edit-area-coords').val(area_coords);
+
+						    // not defined for points
+						    jQuery('#edit-surface').val(overlay.overlay.Area());
+						}
+					} else {
+						console.log("FORM NOT YET READY");
+					}
+				};
+				xhrFetcher.send(null);
+			}
+			// -----------
+			this.setDrawingMode(null);
+			var map = this.getMap();
+			infowindow.open(map, overlay.overlay);
+		});
+	};
+	
+	this.createSearchbar = function() {
+		var googlemap = this.googlemap;
+		// create a new div element to hold everything needed for the searchbar
+		var searchdiv = document.createElement('div');
+		// create new input field
+		var searchinput = document.createElement('input');
+		// add searchinput to searchdiv
+		searchdiv.appendChild(searchinput);
+		// set id's for both elements
+		searchdiv.setAttribute('id', 'search_container');
+		searchinput.setAttribute('id', 'search_input');
+
+		// push the search element on the google map in the top left corner
+		googlemap.controls[google.maps.ControlPosition.TOP_LEFT].push(searchdiv);
+
+		var autocomplete = new google.maps.places.Autocomplete(searchinput, {
+			// available types: 'geocode' for places, 'establishment' for
+			// companies
+			types : [ 'geocode' ]
+		});
+
+		// listen do pressed suggestions and center map on them
+		autocomplete.bindTo('bounds', googlemap);
+		google.maps.event.addListener(autocomplete, 'place_changed', function() {
+			var place = autocomplete.getPlace();
+			console.log(place);
+			if (typeof place.geometry !== 'undefined') {
+				if (place.geometry.viewport) {
+					googlemap.fitBounds(place.geometry.viewport);
+				} else {
+					console.log(googlemap);
+					googlemap.setCenter(place.geometry.location);
+					googlemap.setZoom(17);
+				}
+			} else {
+				console.error("Search by pressing enter not yet implemented.");
+			}
+		});
+
+		// remove focus from searchinput when map moved
+		google.maps.event.addListener(googlemap, 'bounds_changed', function() {
+			searchinput.blur();
+		});
+
+		// select all text when user focus the searchinput field
+		searchinput.onfocus = function() {
+			searchinput.select();
+		};
+	};
 
 	/**
 	 * Update the last selected element
 	 * @param e Selected element
 	 */
 	this.setSelectedElement = function(e) {
+		this.googlemap.setCenter(e.overlay.getPosition());
 		this.selectedElement = e;
 	};
 
@@ -163,16 +368,18 @@ function Area(map_id) {
 	 * Update the last created element
 	 * @param e Newly created element
 	 */
-	this.setSelectedElement = function(e) {
-		this.lastCreatedElement = e;
+	this.setNewestElement = function(e) {
+		overlays.push(e);
+		console.print("Have " + overlays.length + " areas.");
+		this.newestElement = e;
 	};
 
 	/**
 	 * Return the last created element
 	 * @returns last created element
 	 */
-	this.getSelectedElement = function() {
-		return this.lastCreatedElement;
+	this.getNewestElement = function() {
+		return this.newestElement;
 	};
 
 	this.overlayComplete = function(overlay) {
@@ -198,7 +405,57 @@ function Area(map_id) {
 		var map = this.getMap();
 		infowindow.open(map, overlay);
 	};
-	
+
+	/**
+	 * Get the address for the submitted element
+	 * @param e Element
+	 */
+	getAddress = function (element, callback) {
+	    var geocoder = new google.maps.Geocoder();
+	    var latlng = element.overlay.getPosition();
+	    
+	    geocoder.geocode({'latLng': latlng}, function(results, status) {
+            var address = {};
+	        if (status == google.maps.GeocoderStatus.OK) {
+	            jQuery.each(results, function(index, result) {
+	            	console.debug("Result from google:");
+	            	console.debug(result);
+	                if(result.types == 'postal_code') {
+	                    var length = result.address_components.length;
+	                    address.zip = result.address_components[0].long_name;
+	                    address.locality = result.address_components[1].long_name;
+	                    address.canton = result.address_components[length-2].short_name;
+	                    address.country = result.address_components[length-1].long_name;
+	                }
+	                if(result.types == 'locality,political') {
+	                    address.township = result.address_components[0].long_name;
+	                }
+	            });
+	            console.debug(address);
+		        callback(address);
+	        } else {
+	            console.error("Geocoder failed due to: " + status);
+	        }
+	    });
+	};
+
+	getAltitude = function (element, callback) {
+	    var elevator = new google.maps.ElevationService();
+	    var request = {locations: [element.overlay.getPosition()]};
+
+	    elevator.getElevationForLocations(request, function(results, status) {
+	        if (status == google.maps.ElevationStatus.OK) {
+	            // Retrieve the first result
+	            if (results[0]) {
+	                var altitude = parseInt(results[0].elevation + 0.5);
+	    	        callback(altitude);
+	            }
+	        } else {
+	        	console.debug("Could not get altitute. Errorstatus: " + status);
+	        }
+	    });
+	};
+
 	this.createGoogleMaps();
 	// if something bad happened during creation, just return false
 	if (!this.googlemap)
@@ -207,11 +464,11 @@ function Area(map_id) {
 
 jQuery(document).ready(
 		function() {
-			console.debug("area.js");
+			console.debug("Executing area.js");
 			canvasid = 'map_canvas';
 			if (jQuery('#' + canvasid).length) {
 				areabasic = new Area(canvasid);
-				// areabasic.initLocation();
+				//areabasic.initLocation();
 				areabasic.automaticallySaveLocation();
 			} else {
 				// display errormessage to console log

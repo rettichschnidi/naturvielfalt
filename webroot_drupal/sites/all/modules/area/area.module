@@ -19,6 +19,22 @@ define('AREA_MODERATE', 'area moderate');
  * @return array
  */
 function area_menu() {
+
+	/* Show a specific area */
+	$items['area/%'] = array(
+			'title' => t('Show area'),
+			'description' => t('Show a specific area'),
+			'page callback' => 'area_show_area',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.inc',
+	);
+
 	/* Create a new area */
 	$items['area/new'] = array(
 			'title' => t('Create new area'),
@@ -30,6 +46,29 @@ function area_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'area.inc',
 	);
+
+	$items['area/getnewareanameformajax'] = array(
+			'title' => t('New areaname.'),
+			'description' => t('Please submit a new areaname.'),
+			'page callback' => 'area_get_new_areaname_form_callback',
+			'access arguments' => array(
+					AREA_CREATE
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.inc',
+	);
+
+	$items['area/getnewareanameform'] = array(
+			'title' => t('New areaname.'),
+			'description' => t('Please submit a new areaname.'),
+			'page callback' => 'area_get_new_areaname_form',
+			'access arguments' => array(
+					AREA_CREATE
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.inc',
+	);
+	
 	/* testing stuff */
 	$items['area/naturwerkstatic'] = array(
 			'title' => t('Static View'),
