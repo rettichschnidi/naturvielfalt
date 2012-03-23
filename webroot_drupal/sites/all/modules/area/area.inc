@@ -20,21 +20,18 @@ function area_new_area() {
 			'#theme' => 'area'
 	);
 
-	// 	$output['data'] = drupal_get_form('area_address_form');
-
 	return $output;
 }
 
 function area_new_areaname_form($form, &$form_state) {
-	$form = area_address_form();
+	$form = area_address_hidden_form();
 
 	$form['fieldname'] = array(
 			'#type' => 'textfield',
 			'#title' => t('Field name/area name'),
 			'#description' => t('Please insert a custom name for this area.'),
 			'#size' => 20,
-			'#maxlength' => 80,
-			'#required' => true,
+			'#maxlength' => 80
 	);
 
 	$form['button'] = array(
@@ -63,7 +60,8 @@ function area_create_new_area($form, &$form_state) {
 	}
 
 	// get values from form
-	$name = $form_state['values']['fieldname'];
+	$name = !empty($form_state['values']['fieldname']) ? $form_state['values']['fieldname']
+			: date("r");
 	$zip = $form_state['values']['zip'];
 	$canton = $form_state['values']['canton'];
 	$country = $form_state['values']['country'];
@@ -71,8 +69,8 @@ function area_create_new_area($form, &$form_state) {
 
 	$areaType = $form_state['values']['area_type'];
 	$altitude = $form_state['values']['altitude'];
-	$surface = empty($form_state['values']['surface']) ? 0
-			: floor($form_state['values']['surface'] + 0.5);
+	$surface_area = empty($form_state['values']['surface-area']) ? 0
+			: floor($form_state['values']['surface-area'] + 0.5);
 	$jsonCoords = $form_state['values']['area-coords'];
 	$latitude = $form_state['values']['latitude'];
 	$longitude = $form_state['values']['longitude'];
@@ -88,7 +86,7 @@ function area_create_new_area($form, &$form_state) {
 	switch ($areaType) {
 	case 'polyline':
 		$linestring = implode(', ', $points);
-		$geom = 'ST_GeomFromText(\'LINESTRING(' . $linestring . ')\', 4326)'; // SRID 4326 = WGS 84
+		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
 		break;
 	case 'polygon':
 	// make sure line is closed
@@ -96,16 +94,14 @@ function area_create_new_area($form, &$form_state) {
 			$points[] = reset($points);
 		}
 		$linestring = implode(', ', $points);
-		$geom = 'ST_GeomFromText(\'POLYGON((' . $linestring . '))\', 4326)'; // SRID 4326 = WGS 84
+		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
 		break;
 	case 'marker':
 		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
 		break;
 	}
 
-	if (!empty($name) && !empty($altitude) && !empty($zip) && !empty($township)
-			&& !empty($canton) && !empty($country)) {
-
+	if (!empty($name)) {
 		// insert area
 		$area_id = db_insert('area')->fields(
 				array('name' => $name,
@@ -113,11 +109,16 @@ function area_create_new_area($form, &$form_state) {
 						'canton' => $canton,
 						'country' => $country,
 						'altitude' => $altitude,
-						'surface_area' => $surface,
+						'surface_area' => $surface_area,
 						'township' => $township,
-						'acl_id' => 1,
-						'geom' => $geom
+						'acl_id' => 1
 				))
+			->execute();
+
+		// No idea why I can not use this when I create the record
+		// FIXME: set 'geom' already at db_insert() above
+		db_update('area')->expression('geom', $geom)
+			->condition('id', $area_id)
 			->execute();
 
 		drupal_set_message(
@@ -136,19 +137,206 @@ function area_create_new_area($form, &$form_state) {
 }
 
 /**
+ * Show all existing areas.
+ * @return render array
+ */
+function area_show_all_areas() {
+	drupal_set_title(t('Show all existing areas'));
+
+	$output['map'] = array(
+			'#search' => true,
+			'#create' => false,
+			'#showall' => true,
+			'#theme' => 'area'
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Internal Id'),
+			'idField' => true,
+			'dbfield' => 'id',
+			'hide' => true,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Name'),
+			'dbfield' => 'name'
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Altitude [m]'),
+			'dbfield' => 'altitude',
+	);
+
+	// all markers have a surface of 0m² - does not look nice to the user
+	// 	$tableHeader[] = array(
+	// 			'name' => t('Surface area [m²]'),
+	// 			'dbfield' => 'surface_area',
+	// 	);
+
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Canton'),
+			'dbfield' => 'canton',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Country'),
+			'dbfield' => 'country',
+	);
+
+	$output['space'] = array(
+			'#type' => 'markup',
+			'#markup' => '<p/>'
+	);
+
+	$output['area_table'] = array(
+			'#theme' => 'datatable',
+			'#header' => $tableHeader,
+			'#title' => 'Areas',
+			'#id_table' => 'areas',
+			'#options' => array(
+					'jsonUrl' => "'" . base_path() . "area/datatablejson'",
+					'rowClick' => 'rowClick',
+					'rowClickHandler' => "function rowClick(celDiv, id) {
+						jQuery(celDiv).click(
+							function() {
+								window.location.href = Drupal.settings.basePath+'area/' + id;
+							}
+						)
+					}"
+			)
+	);
+	return $output;
+
+}
+
+/**
+ * Generate a JSON with all areas that are visible to the user
+ * @todo Include the user's nickname
+ */
+function area_all_areas_datatablejson_json() {
+	/* Set the db fields to select */
+	$sql['dbColumns'] = array(
+			'a.id AS id',
+			'a.name',
+			'a.altitude',
+			'a.surface_area',
+			'a.township',
+			'a.canton',
+			'a.country',
+			'ST_AsGeoJSON(a.geom) AS geom',
+			'a.commenttext'
+	);
+
+	$sql['dbSearchColumns'] = array(
+			'a.name',
+			'a.altitude',
+			'a.township',
+			'a.canton',
+			'a.country',
+			'a.commenttext'
+	);
+
+	$sql['dbTable'] = "{area} a";
+	$sql['id'] = 'id';
+	$output = datatable_dbRequest($sql);
+	return drupal_json_output($output);
+}
+
+/**
+ * Return all viewable areas as JSON.
+ * @note Probably could be merged with area_all_areas_datatablejson_json
+ * @return JSON
+ */
+function area_all_areas_json($area_id = false) {
+	$areas = db_query(
+		'SELECT
+			a.id AS id,
+			a.name,
+			a.altitude,
+			a.surface_area,
+			a.township,
+			a.canton,
+			a.country,
+			ST_AsGeoJSON(a.geom) AS geom,
+			a.commenttext
+			FROM
+				{area} a
+			WHERE
+				-- let this condition always be true if no id set
+				(a.id = :areaid OR :have_no_area_id)
+			ORDER BY
+				id',
+		array(':areaid' => $area_id,
+				':have_no_area_id' => !$area_id
+		));
+
+	$items = array();
+	foreach ($areas as $entry) {
+		$item = array();
+		$item['id'] = (int) $entry->id;
+		$item['name'] = $entry->name;
+		$item['parcel_nr'] = NULL;
+		$item['altitude'] = (int) $entry->altitude;
+		$item['surface_area'] = (int) $entry->surface_area;
+		$item['township'] = $entry->township;
+		$item['canton'] = $entry->canton;
+		$item['country'] = $entry->country;
+		$item['commenttext'] = $entry->commenttext;
+
+		$item['type'] = '';
+		$item['area_points'] = array();
+		$json = json_decode($entry->geom);
+		if ($json) {
+			if ('Polygon' == $json->type) {
+				$item['type'] = 'polygon';
+				foreach ($json->coordinates[0] as $coordinate) {
+					$item['area_points'][] = array(
+							'lat' => $coordinate[1],
+							'lng' => $coordinate[0]
+					);
+				}
+			} else if ($json->type == 'LineString') {
+				$item['type'] = 'polyline';
+				foreach ($json->coordinates as $coordinate) {
+					$item['area_points'][] = array(
+							'lat' => $coordinate[1],
+							'lng' => $coordinate[0]
+					);
+				}
+			} else if ($json->type == 'Point') {
+				$item['type'] = 'marker';
+				$item['area_points'][] = array(
+						'lat' => $json->coordinates[1],
+						'lng' => $json->coordinates[0]
+				);
+			} else {
+				assert(false);
+			}
+		}
+		$items[] = $item;
+	}
+	// json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and
+	// not as an array. However, we used area_id as $key, so we have to index them numerically
+	$items = array_values($items);
+	return drupal_json_output($items);
+}
+/**
  * Return a hidden form which can be used to store values handed over by Javascript
- * @param array $form
- * @param array $form_state
  * @return form to submit area properties
  */
-function area_address_form() {
+function area_address_hidden_form() {
 	$form['addressdata'] = array(
 			'#type' => 'fieldset',
 			'#prefix' => '<div id="addressdata" style="visibility: hidden; height: 0px">',
 			'#suffix' => '</div>'
 	);
 	$form['addressdata']['fieldname'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#size' => 50,
 			'#attributes' => array(
 					'id' => 'edit-name'
@@ -178,10 +366,10 @@ function area_address_form() {
 					'id' => 'edit-altitude'
 			),
 	);
-	$form['addressdata']['surface'] = array(
+	$form['addressdata']['surface-area'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'edit-surface'
+					'id' => 'edit-surface-area'
 			),
 	);
 	$form['addressdata']['country'] = array(
@@ -215,6 +403,14 @@ function area_address_form() {
 			),
 	);
 	return $form;
+}
+
+/**
+ * Return a form which shows some important facts about a given area
+ * @param integer $area_id
+ */
+function area_overview_ajax_callback($area_id) {
+	
 }
 
 /**

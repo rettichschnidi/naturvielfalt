@@ -20,18 +20,39 @@ define('AREA_MODERATE', 'area moderate');
  */
 function area_menu() {
 
-	/* Show a specific area */
-	$items['area/%'] = array(
-			'title' => t('Show area'),
-			'description' => t('Show a specific area'),
-			'page callback' => 'area_show_area',
-			'page arguments' => array(
-					1
-			),
+	/* Show all available areas */
+	$items['area'] = array(
+			'title' => t('Show all areas'),
+			'description' => t('Show all areas'),
+			'page callback' => 'area_show_all_areas',
 			'access arguments' => array(
 					AREA_ACCESS
 			),
 			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.inc',
+	);
+
+	/* Get all available areas as json*/
+	$items['area/json'] = array(
+			'title' => t('All areas json'),
+			'description' => t('Get all areas as json'),
+			'page callback' => 'area_all_areas_json',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.inc',
+	);
+
+	/* Get all available areas as datatable json*/
+	$items['area/datatablejson'] = array(
+			'title' => t('All areas datatable json'),
+			'description' => t('Get all areas as datatable json'),
+			'page callback' => 'area_all_areas_datatablejson_json',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
 			'file' => 'area.inc',
 	);
 
@@ -68,7 +89,7 @@ function area_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'area.inc',
 	);
-	
+
 	/* testing stuff */
 	$items['area/naturwerkstatic'] = array(
 			'title' => t('Static View'),
@@ -98,7 +119,9 @@ function area_theme() {
 							// include elements to edit existing areas
 							'edit' => false,
 							// include elements to create new areas
-							'create' => false
+							'create' => false,
+							// show all existing areas
+							'showall' => false
 					)
 			)
 	);

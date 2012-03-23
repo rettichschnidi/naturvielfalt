@@ -5,58 +5,8 @@
  */
 
 /**
- * Add getPosition to google.maps.Polygon - required to set a
- * google.maps.InfoWindow on a polygon
- * 
- * @returns google.maps.LatLng Arithmetic center of polygon
+ * @Class Contains all the logic to handle a map
  */
-google.maps.Polygon.prototype.getPosition = function() {
-	var lng = 0;
-	var lat = 0;
-	var i = this.getPath().length;
-	this.getPath().forEach(function(p) {
-		lat = lat + p.lat();
-		lng = lng + p.lng();
-	});
-	point = new google.maps.LatLng(lat / i, lng / i);
-	return point;
-};
-
-/**
- * Add getPosition to google.maps.Polyline - required to set a
- * google.maps.InfoWindow on a polyline
- * 
- * @returns google.maps.LatLng Last point of polyline
- */
-google.maps.Polyline.prototype.getPosition = function() {
-	var point = this.getPath().getAt(this.getPath().length - 1);
-	return point;
-};
-
-/**
- * Return the MVC Array of the LatLng
- * @return
- */
-google.maps.Marker.prototype.getAllCoordinates = function() {
-    return new google.maps.MVCArray([this.getPosition()]);
-};
-
-/**
- * Returns polygon path
- * @return google.maps.MVCArray<google.maps.LatLng>
- */
-google.maps.Polygon.prototype.getAllCoordinates = function(){
-    return this.getPath();
-};
-
-/**
- * Returns polyline path
- * @return google.maps.MVCArray<google.maps.LatLng>
- */
-google.maps.Polyline.prototype.getAllCoordinates = function(){
-    return this.getPath();
-};
-
 function Area(map_id) {
 	/**
 	 * Member variable initialisation
@@ -73,7 +23,8 @@ function Area(map_id) {
 	this.newestElement = undefined;
 	// contains all the overlays currently shown on the map
 	this.overlays = [];
-	
+	// there is just one at a time
+	this.visibleInfoWindow = undefined;
 	this.drawingManager = undefined;
 	/**
 	 * Creates the google maps object and attaches it to the element with the id
@@ -208,7 +159,6 @@ function Area(map_id) {
 
 		google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(
 				overlay) {
-
 			if (overlay.type == 'marker') {
 				overlay.overlay.setDraggable(true);
 				overlay.overlay.setClickable(true);
@@ -281,8 +231,7 @@ function Area(map_id) {
 							area_coords = JSON.stringify(area_coords);
 						    jQuery('#edit-area-coords').val(area_coords);
 
-						    // not defined for points
-						    jQuery('#edit-surface').val(overlay.overlay.Area());
+						    jQuery('#edit-surface-area').val(overlay.overlay.Area());
 						}
 					} else {
 						console.log("FORM NOT YET READY");
@@ -293,10 +242,78 @@ function Area(map_id) {
 			// -----------
 			this.setDrawingMode(null);
 			var map = this.getMap();
+			// move marker a little bit down, (approximately) center the infowindow
+			map.panBy(0, -150);
 			infowindow.open(map, overlay.overlay);
 		});
 	};
 	
+	/**
+	 * 
+	 */
+	this.clearOverlays = function() {
+		this.overlays = [];
+	};
+
+	this.addOverlayFromJsonToGoogleMap = function(currentjsonoverlay) {
+		if (currentjsonoverlay.type == 'polygon') {
+			newoverlay = new google.maps.Polygon(overlayStyle['polygon']);
+        } else if (currentjsonoverlay.type == 'polyline') {
+        	newoverlay = new google.maps.Polyline(overlayStyle['polyline']);
+        } else if (currentjsonoverlay.type == 'marker') {
+        	newoverlay = new google.maps.Marker(overlayStyle['marker']);
+        } else {
+            console.error('Unknown type of overlay!');
+            return;
+        }
+
+        var latLngs = [];
+        for (var k in currentjsonoverlay.area_points) {
+        	var currentpoint = currentjsonoverlay.area_points[k];
+            latLngs[k] = new google.maps.LatLng(currentpoint.lat, currentpoint.lng);
+        }
+
+       	newoverlay.setPath(latLngs);
+        newoverlay.setMap(this.googlemap);
+
+        this.addWindowsListener(currentjsonoverlay.id, newoverlay);
+       };
+
+    this.addWindowsListener = function(area_id, overlay) {
+		console.debug("This:");
+		console.debug(this);
+		var area = this;
+		var contentString = "<div id='infowindowcontent'><h1>You clicked area: " + area.overlays[area_id].name + "</h1></div>";
+		var infowindow = new google.maps.InfoWindow({
+			content : contentString
+		});
+		google.maps.event.addListener(overlay, 'click', function() {
+			infowindow.setPosition(this.getPosition());
+        	map = this.getMap();
+        	map.setCenter(this.getPosition());
+        	map.panBy(0, -150);
+        	if(area.visibleInfoWindow)
+        		area.visibleInfoWindow.close();
+        	area.visibleInfoWindow = infowindow;
+			infowindow.open(this.getMap(), this);
+		});
+    };
+
+	this.addOverlayFromJsonToArea = function(currentjsonoverlay) {
+		this.overlays[currentjsonoverlay.id] = currentjsonoverlay;
+	};
+	
+	/**
+	 * @param json A json object
+	 */
+	this.loadOverlaysFromJson = function(json) {
+	    for (var i in json) {
+	    	this.addOverlayFromJsonToArea(json[i]);
+	    	this.addOverlayFromJsonToGoogleMap(json[i]);
+	    }
+	    console.debug("Addded overlays from json");
+	};
+
 	this.createSearchbar = function() {
 		var googlemap = this.googlemap;
 		// create a new div element to hold everything needed for the searchbar
@@ -320,6 +337,7 @@ function Area(map_id) {
 
 		// listen do pressed suggestions and center map on them
 		autocomplete.bindTo('bounds', googlemap);
+		
 		google.maps.event.addListener(autocomplete, 'place_changed', function() {
 			var place = autocomplete.getPlace();
 			console.log(place);
@@ -382,37 +400,14 @@ function Area(map_id) {
 		return this.newestElement;
 	};
 
-	this.overlayComplete = function(overlay) {
-		console.debug(this);
-		if(overlay.type == 'marker') {
-			overlay.overlay.setDraggable(true);
-			overlay.overlay.setClickable(true);
-		} else if (overlay.overlay.type == 'polyline' || overlay.overlay.type == 'polygon'){
-			overlay.overlay.setEditable(false);
-		} else {
-			console.debug('Overlay type is unknown.');
-			console.debug('Type: ' + overlay.type);
-		}
-		contentString = "<h1>You created an overlay.</h1>";
-		var infowindow = new google.maps.InfoWindow({
-			content : contentString
-		});
-		google.maps.event.addListener(infowindow, 'closeclick', function(){
-			overlay.overlay.setMap(null);
-			overlay = null;
-		});
-		this.setDrawingMode(null);
-		var map = this.getMap();
-		infowindow.open(map, overlay);
-	};
-
 	/**
 	 * Get the address for the submitted element
-	 * @param e Element
+	 * @param overlay overlay
+	 * @param callback callback function
 	 */
-	getAddress = function (element, callback) {
+	getAddress = function (overlay, callback) {
 	    var geocoder = new google.maps.Geocoder();
-	    var latlng = element.overlay.getPosition();
+	    var latlng = overlay.overlay.getPosition();
 	    
 	    geocoder.geocode({'latLng': latlng}, function(results, status) {
             var address = {};
@@ -439,6 +434,11 @@ function Area(map_id) {
 	    });
 	};
 
+	/**
+	 * Get the altitude for the submitted overlay
+	 * @param overlay overlay
+	 * @param callback callback function
+	 */
 	getAltitude = function (element, callback) {
 	    var elevator = new google.maps.ElevationService();
 	    var request = {locations: [element.overlay.getPosition()]};
@@ -456,6 +456,7 @@ function Area(map_id) {
 	    });
 	};
 
+	// Initialize a basic map (no search functionality, no creation tools, etc)
 	this.createGoogleMaps();
 	// if something bad happened during creation, just return false
 	if (!this.googlemap)
@@ -468,8 +469,8 @@ jQuery(document).ready(
 			canvasid = 'map_canvas';
 			if (jQuery('#' + canvasid).length) {
 				areabasic = new Area(canvasid);
-				//areabasic.initLocation();
-				areabasic.automaticallySaveLocation();
+				// areabasic.initLocation();
+				// areabasic.automaticallySaveLocation();
 			} else {
 				// display errormessage to console log
 				errormsg = "HTML element with id '" + canvasid

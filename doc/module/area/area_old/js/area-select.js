@@ -558,7 +558,7 @@ function refresh_map_info(){
         jQuery('#edit-zip').val(address.zip);
         jQuery('#edit-country').val(address.country);
       });
-  
+
       var centGLatLng = areaselect.overlayControl.overlay.getCenter();
       jQuery('#edit-latitude').val(centGLatLng.lat());
       jQuery('#edit-longitude').val(centGLatLng.lng());

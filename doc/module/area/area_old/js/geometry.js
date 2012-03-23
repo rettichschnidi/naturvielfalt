@@ -154,11 +154,8 @@ function GeometryOverlays(map){
  * @param json
  */
 GeometryOverlays.prototype.addOverlaysJson = function(json){
-
     var overlay;
-
     for (var i in json) {
-
         if (json[i].type == 'polygon') {
             overlay = new Polygon(this.map, json[i]);
             this.overlays[json[i].id] = overlay;

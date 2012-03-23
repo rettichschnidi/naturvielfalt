@@ -31,14 +31,12 @@ function area_schema() {
       array (
         'description' => 'Meter über Meer',
         'type' => 'int',
-        'not null' => 'TRUE',
         'default' => '0',
       ),
       'surface_area' => 
       array (
         'description' => 'Fläche in m²',
         'type' => 'int',
-        'not null' => 'TRUE',
         'default' => '0',
         'size' => 'big',
       ),
@@ -46,25 +44,21 @@ function area_schema() {
       array (
         'description' => 'No description for column zip available, please fix',
         'type' => 'text',
-        'not null' => 'TRUE',
       ),
       'township' => 
       array (
         'description' => 'No description for column township available, please fix',
         'type' => 'text',
-        'not null' => 'TRUE',
       ),
       'canton' => 
       array (
         'description' => 'No description for column canton available, please fix',
         'type' => 'text',
-        'not null' => 'TRUE',
       ),
       'country' => 
       array (
         'description' => 'No description for column country available, please fix',
         'type' => 'text',
-        'not null' => 'TRUE',
       ),
       'commenttext' => 
       array (

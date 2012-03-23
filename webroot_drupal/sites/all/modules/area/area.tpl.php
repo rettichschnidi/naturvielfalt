@@ -8,10 +8,13 @@ global $user;
 
 /**
  * Options set:
- *  - libraries: places (search functionality) and geometry (computation of geometric data on the surface of the earth)
+ *  - libraries: 
+ *  	- geometry (computation of geometric data on the surface of the earth)
+ *  	- places (search functionality)
+ *  	- drawing (toosl to create overlays)
  *  - sensor: We do not support GPS devices on the users end - so this is always false
- *  - region: Set this manually to Switzerland (CH). All requests will be biased by swiss rules
- *  - language: Localize the google maps service to the users language
+ *  - region: Set this manually to Switzerland (CH). All requests will be biased by swiss «rules».
+ *  - language: Localize the google maps service to the desired language (most likely the users language)
  */
 $libraries = 'geometry';
 
@@ -27,11 +30,11 @@ drupal_add_js(
 			. $user->language,
 	array('group' => JS_LIBRARY));
 
-// include drupal support for ajax
-drupal_add_js('misc/ajax.js');
-
 drupal_add_js($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
+drupal_add_js($baseModulJsPath . 'area-googlemapsapi-extensions.js');
 drupal_add_js($baseModulJsPath . 'area.js');
+drupal_add_js($baseModulJsPath . 'area-overlay-style.js');
+
 drupal_add_css($baseModulCssPath . 'area.css');
 
 if ($search) {
@@ -41,6 +44,11 @@ if ($search) {
 if ($create) {
 	drupal_add_css($baseModulCssPath . 'area-create.css');
 	drupal_add_js($baseModulJsPath . 'area-create.js');
+}
+
+if ($showall) {
+	drupal_add_css($baseModulCssPath . 'area-show-all.css');
+	drupal_add_js($baseModulJsPath . 'area-show-all.js');
 }
 ?>
 
