@@ -315,14 +315,16 @@ print "Classification done...\n";
 				$organism_attribute_value_id = $db->getAttributeValueTextId(
 						$organism_attribute_author_id,
 						$author);
-				print 
-					"Author $author already exists and has value id $organism_attribute_value_id\n";
+				if (false)
+					print 
+						"Author $author already exists and has value id $organism_attribute_value_id\n";
 			} else {
 				$organism_attribute_value_id = $db->createAttributeValueText(
 						$organism_attribute_author_id,
 						$author);
-				print 
-					"Author $author created with value id $organism_attribute_value_id\n";
+				if (false)
+					print 
+						"Author $author created with value id $organism_attribute_value_id\n";
 			}
 			$db->createAttributeValueSubscription(
 					$organism_id,
@@ -335,14 +337,16 @@ print "Classification done...\n";
 				$organism_attribute_value_id = $db->getAttributeValueNumberId(
 						$organism_attribute_firstfind_id,
 						$firstfind);
-				print 
-					"Firstfind $firstfind already exists and has value id $organism_attribute_value_id\n";
+				if (false)
+					print 
+						"Firstfind $firstfind already exists and has value id $organism_attribute_value_id\n";
 			} else {
 				$organism_attribute_value_id = $db->createAttributeValueNumber(
 						$organism_attribute_firstfind_id,
 						$firstfind);
-				print 
-					"Firstfind $firstfind created with value id $organism_attribute_value_id\n";
+				if (false)
+					print 
+						"Firstfind $firstfind created with value id $organism_attribute_value_id\n";
 			}
 			$db->createAttributeValueSubscription(
 					$organism_id,
