@@ -24,7 +24,7 @@ $importTable = 'import_swisslichens_basedata';
  *
  *    Column   | Type | Modifiers
  *  -----------+------+-----------
- *  familyname | text | not null
+ *  genus | text | not null
  *  species    | text | not null
  */
 
@@ -58,7 +58,7 @@ $organism_classifier_id = 0;
 			// My bad. "Gattung" actually gets translated to genus, not to family. But for now
 			// I wont change this in the database
 			'genus' => array(
-					'columnname' => 'familyname'
+					'columnname' => 'genus'
 			)
 	);
 
@@ -119,11 +119,11 @@ print "ClassificatorId for $classifierName: $classification_id\n";
  * hashmap $classification_name2classification_id
  */
 {
-	// get all familynames
+	// get all genus
 	$columns = array(
-			'familyname'
+			'genus'
 	);
-	$sql = "FROM $importTable GROUP BY familyname ORDER BY familyname";
+	$sql = "FROM $importTable GROUP BY genus ORDER BY genus";
 	$typeArray = array();
 	$typeValue = array();
 	$rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
@@ -206,13 +206,13 @@ print "Classification done...\n";
 	$scientific_name2organism_id = array();
 	$columns = array(
 			'species',
-			'familyname'
+			'genus'
 	);
 	$sql = "FROM
 				$importTable
 			GROUP BY
 				species,
-				familyname
+				genus
 			ORDER BY
 				species";
 	$typesArray = array();
@@ -223,7 +223,8 @@ print "Classification done...\n";
 	foreach ($rows as $row) {
 		$organism_id = 0;
 		$scientific_name_name = $row['species'];
-		$organism_classification_name = $row['familyname'];
+		$organism_classification_name = $row['genus'];
+		
 		$organism_classification_id = $classification_data['genus']['classifications'][$organism_classification_name];
 
 		if (!$db->haveScientificName($scientific_name_name)) {

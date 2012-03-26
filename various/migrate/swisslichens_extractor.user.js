@@ -45,34 +45,34 @@ for ( var i in allClassificationGenus) {
 	};
 }
 
-var baseurl0 = 'http://merkur.wsl.ch/didado/swisslichens.map?';
-var regex = /<div id="Titel">\n<div class="subtitle">(.+)<\/div>\n/;
-for ( var i in allLichens) {
-	// fetch from http://merkur.wsl.ch/didado/swisslichens.map
-	// method: POST or GET
-	// parameter: fname=3&fartnr=8251
-	console.log("Done: " + i + " of " + allLichens.length + " genera");
-	var currentGenus = allLichens[i];
-	var baseurl1 = baseurl0 + 'fname=' + currentGenus.id + '&';
-	for ( var j in currentGenus.subgenus) {
-		var req = new XMLHttpRequest();
-		var currentSubgenus = currentGenus.subgenus[j];
-		var finalurl = baseurl1 + 'fartnr=' + currentSubgenus.id;
-		if (req) {
-			var answer = req.open('GET', finalurl, false);
-			req.send(null);
-			if (req.status === 200) {
-				var fullHtmlAnswer = req.responseText;
-				var extractedAnswer = regex.exec(fullHtmlAnswer)[1];
-				currentSubgenus['name'] = extractedAnswer;
-			} else {
-				console.error("Calling " + finalurl + " failed.");
-			}
-		} else {
-			alert(currentGenus.name + " failed");
-		}
-	}
-}
+//var baseurl0 = 'http://merkur.wsl.ch/didado/swisslichens.map?';
+//var regex = /<div id="Titel">\n<div class="subtitle">(.+)<\/div>\n/;
+//for ( var i in allLichens) {
+//	// fetch from http://merkur.wsl.ch/didado/swisslichens.map
+//	// method: POST or GET
+//	// parameter: fname=3&fartnr=8251
+//	console.log("Done: " + i + " of " + allLichens.length + " genera");
+//	var currentGenus = allLichens[i];
+//	var baseurl1 = baseurl0 + 'fname=' + currentGenus.id + '&';
+//	for ( var j in currentGenus.subgenus) {
+//		var req = new XMLHttpRequest();
+//		var currentSubgenus = currentGenus.subgenus[j];
+//		var finalurl = baseurl1 + 'fartnr=' + currentSubgenus.id;
+//		if (req) {
+//			var answer = req.open('GET', finalurl, false);
+//			req.send(null);
+//			if (req.status === 200) {
+//				var fullHtmlAnswer = req.responseText;
+//				var extractedAnswer = regex.exec(fullHtmlAnswer)[1];
+//				currentSubgenus['name'] = extractedAnswer;
+//			} else {
+//				console.error("Calling " + finalurl + " failed.");
+//			}
+//		} else {
+//			alert(currentGenus.name + " failed");
+//		}
+//	}
+//}
 
 var mydiv = document.createElement('div');
 mydiv.setAttribute('id', 'swisslichens');
@@ -90,16 +90,17 @@ myButton.setAttribute('onclick',
 var myTextarea = document.createElement('textarea');
 myTextarea.setAttribute('style', 'height: 90%; width: 500px');
 
-var innerHTML = 'Genus, Species\n';
+var innerHTML = 'genus, genusid, subgenusid\n';
 for ( var i in allLichens) {
-	if (allLichens[i]['genusName'] == 'unbekannte')
+	if (allLichens[i]['name'] == 'unbekannte')
 		continue;
 	var currentLichen = allLichens[i];
 	for ( var j in currentLichen['subgenus']) {
 		var currentSubgenus = currentLichen['subgenus'][j];
 
 		innerHTML += currentLichen['name'] + ', ';
-		innerHTML += currentSubgenus['name'] + '\n';
+		innerHTML += currentLichen['id'] + ', ';
+		innerHTML += currentSubgenus['id'] + '\n';
 	}
 }
 myTextarea.innerHTML = innerHTML;
