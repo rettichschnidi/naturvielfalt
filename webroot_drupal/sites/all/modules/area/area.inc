@@ -7,326 +7,216 @@
  */
 
 /**
- * Create new area.
- * @return render array
+ * Return the CH1903 coordinates of a given area.
+ * Include a link to the Wikipedia article about
+ * CH1903.
+ * @param array $areadata
  */
-function area_new_area() {
-	$output = array();
-	drupal_set_title(t('Create new area'));
+function get_ch1903_coordinates_link($areadata) {
+	assert(is_array($areadata));
+	global $user;
+	$linkCH1903 = l(
+		"CH1903",
+		'http://' . $user->language . '.wikipedia.org/wiki/CH1903');
 
-	$output['map'] = array(
-			'#search' => true,
-			'#create' => true,
-			'#theme' => 'area'
-	);
-
-	return $output;
-}
-
-function area_new_areaname_form($form, &$form_state) {
-	$form = area_address_hidden_form();
-
-	$form['fieldname'] = array(
-			'#type' => 'textfield',
-			'#title' => t('Field name/area name'),
-			'#description' => t('Please insert a custom name for this area.'),
-			'#size' => 20,
-			'#maxlength' => 80
-	);
-
-	$form['button'] = array(
-			'#type' => 'submit',
-			'#value' => t('Create'),
-			'#submit' => array(
-					'area_create_new_area'
-			)
-	);
-	return $form;
-}
-
-function area_get_new_areaname_form_callback() {
-	print drupal_render(drupal_get_form('area_new_areaname_form'));
-}
-
-function area_get_new_areaname_form() {
-	return drupal_get_form('area_new_areaname_form');
-}
-
-function area_create_new_area($form, &$form_state) {
-	if (false) {
-		drupal_set_message(
-			"Creating area: <pre>" . var_export($form_state['values'], true)
-					. "</pre>");
-	}
-
-	// get values from form
-	$name = !empty($form_state['values']['fieldname']) ? $form_state['values']['fieldname']
-			: date("r");
-	$zip = $form_state['values']['zip'];
-	$canton = $form_state['values']['canton'];
-	$country = $form_state['values']['country'];
-	$township = $form_state['values']['township'];
-
-	$areaType = $form_state['values']['area_type'];
-	$altitude = $form_state['values']['altitude'];
-	$surface_area = empty($form_state['values']['surface-area']) ? 0
-			: floor($form_state['values']['surface-area'] + 0.5);
-	$jsonCoords = $form_state['values']['area-coords'];
-	$latitude = $form_state['values']['latitude'];
-	$longitude = $form_state['values']['longitude'];
-
-	$coordinates = json_decode($jsonCoords, true);
-	$points = array();
-	foreach ($coordinates as $coord) {
-		$lat = $coord[0];
-		$lng = $coord[1];
-		$points[] = $lng . ' ' . $lat;
-	}
-
-	switch ($areaType) {
-	case 'polyline':
-		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
-		break;
-	case 'polygon':
-	// make sure line is closed
-		if (end($points) != reset($points)) {
-			$points[] = reset($points);
-		}
-		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
-		break;
-	case 'marker':
-		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
-		break;
-	}
-
-	if (!empty($name)) {
-		// insert area
-		$area_id = db_insert('area')->fields(
-				array('name' => $name,
-						'zip' => $zip,
-						'canton' => $canton,
-						'country' => $country,
-						'altitude' => $altitude,
-						'surface_area' => $surface_area,
-						'township' => $township,
-						'acl_id' => 1
-				))
-			->execute();
-
-		// No idea why I can not use this when I create the record
-		// FIXME: set 'geom' already at db_insert() above
-		db_update('area')->expression('geom', $geom)
-			->condition('id', $area_id)
-			->execute();
-
-		drupal_set_message(
-			t(
-				"Area @areaname got created.",
-				array('@areaname' => $form_state['values']['fieldname'])));
-		drupal_goto('area/' . $area_id);
-	} else {
-		drupal_set_message(
-			t(
-				"Area @areaname could not be created, missing values.",
-				array('@areaname' => $form_state['values']['fieldname'])),
-			'error');
-		drupal_goto('area/new');
-	}
+	$coordinates = (int) $areadata['ch1903_center_x'] . '/'
+			. (int) $areadata['ch1903_center_y'];
+	return $coordinates . " ($linkCH1903)";
 }
 
 /**
- * Show all existing areas.
- * @return render array
+ * Return the WGS84 coordinates of a given area.
+ * Include a link to the Wikipedia article about
+ * WGS84.
+ * @param array $areadata
  */
-function area_show_all_areas() {
-	drupal_set_title(t('Show all existing areas'));
+function get_wgs84_coordinates_link($areadata) {
+	assert(is_array($areadata));
+	global $user;
+	$linkWGS84 = l(
+		"WGS84",
+		'http://' . $user->language . '.wikipedia.org/wiki/WGS84');
 
-	$output['map'] = array(
-			'#search' => true,
-			'#create' => false,
-			'#showall' => true,
-			'#theme' => 'area'
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Internal Id'),
-			'idField' => true,
-			'dbfield' => 'id',
-			'hide' => true,
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Name'),
-			'dbfield' => 'name'
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Altitude [m]'),
-			'dbfield' => 'altitude',
-	);
-
-	// all markers have a surface of 0m² - does not look nice to the user
-	// 	$tableHeader[] = array(
-	// 			'name' => t('Surface area [m²]'),
-	// 			'dbfield' => 'surface_area',
-	// 	);
-
-	$tableHeader[] = array(
-			'name' => t('Township'),
-			'dbfield' => 'township',
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Canton'),
-			'dbfield' => 'canton',
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Country'),
-			'dbfield' => 'country',
-	);
-
-	$output['space'] = array(
-			'#type' => 'markup',
-			'#markup' => '<p/>'
-	);
-
-	$output['area_table'] = array(
-			'#theme' => 'datatable',
-			'#header' => $tableHeader,
-			'#title' => 'Areas',
-			'#id_table' => 'areas',
-			'#options' => array(
-					'jsonUrl' => "'" . base_path() . "area/datatablejson'",
-					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, id) {
-						jQuery(celDiv).click(
-							function() {
-								window.location.href = Drupal.settings.basePath+'area/' + id;
-							}
-						)
-					}"
-			)
-	);
-	return $output;
-
+	$coordinates = round($areadata['wgs84_center_lat'], 2) . '/'
+			. round($areadata['wgs84_center_lng'], 2);
+	return $coordinates . " ($linkWGS84)";
 }
 
 /**
- * Generate a JSON with all areas that are visible to the user
- * @todo Include the user's nickname
+ * Return an array with all data of a given $area_id
+ * @todo document all elements
+ * @param integer $area_id
  */
-function area_all_areas_datatablejson_json() {
-	/* Set the db fields to select */
-	$sql['dbColumns'] = array(
-			'a.id AS id',
-			'a.name',
-			'a.altitude',
-			'a.surface_area',
-			'a.township',
-			'a.canton',
-			'a.country',
-			'ST_AsGeoJSON(a.geom) AS geom',
-			'a.commenttext'
-	);
-
-	$sql['dbSearchColumns'] = array(
-			'a.name',
-			'a.altitude',
-			'a.township',
-			'a.canton',
-			'a.country',
-			'a.commenttext'
-	);
-
-	$sql['dbTable'] = "{area} a";
-	$sql['id'] = 'id';
-	$output = datatable_dbRequest($sql);
-	return drupal_json_output($output);
-}
-
-/**
- * Return all viewable areas as JSON.
- * @note Probably could be merged with area_all_areas_datatablejson_json
- * @return JSON
- */
-function area_all_areas_json($area_id = false) {
-	$areas = db_query(
+function area_get_full_dataset_of_specific_area($area_id) {
+	assert($area_id != NULL);
+	$result = db_query(
 		'SELECT
-			a.id AS id,
-			a.name,
-			a.altitude,
-			a.surface_area,
-			a.township,
-			a.canton,
-			a.country,
-			ST_AsGeoJSON(a.geom) AS geom,
-			a.commenttext
+				name,
+				altitude,
+				zip,
+				township,
+				canton,
+				country,
+				comment,
+				create_time,
+				modify_time,
+				protection_target,
+				safety_precautions,
+				tending_strategies,
+				-- either POINT, POLYGON or LINESTRING
+				GeometryType(geom) AS geometry_type,
+				-- Center of the geometry - CH1903, x value
+				ST_X(ST_Centroid(Transform(geom, 21781))) AS ch1903_center_x,
+				-- Center of the geometry - CH1903, y value
+				ST_Y(ST_Centroid(Transform(geom, 21781))) AS ch1903_center_y,
+				-- Center of the geometry - WGS84, latitude
+				ST_X(ST_Centroid(Transform(geom, 4326))) AS wgs84_center_lat,
+				-- Center of the geometry - WGS84
+				ST_Y(ST_Centroid(Transform(geom, 4326))) AS wgs84_center_lng,
+				-- Coordinates of the geometry - CH1903
+				AsText(Transform(geom, 21781)) AS ch1903_coordinates,
+				-- Coordinates of the geometry - WGS84
+				AsText(Transform(geom, 4326)) AS wgs84_coordinates,
+				-- Area surface in m^2
+				Area(Transform(geom, 21781)) AS surface_area,
+				-- Pathlength (if linestring) in meters
+				ST_Length(Transform(geom, 21781)) AS pathlength,
+				-- Geometry as JSON
+				ST_AsGeoJSON(geom) AS wgs84_geom_json
 			FROM
-				{area} a
+				{area}
 			WHERE
-				-- let this condition always be true if no id set
-				(a.id = :areaid OR :have_no_area_id)
-			ORDER BY
-				id',
-		array(':areaid' => $area_id,
-				':have_no_area_id' => !$area_id
-		));
+				id = :id',
+		array(':id' => $area_id));
 
-	$items = array();
-	foreach ($areas as $entry) {
-		$item = array();
-		$item['id'] = (int) $entry->id;
-		$item['name'] = $entry->name;
-		$item['parcel_nr'] = NULL;
-		$item['altitude'] = (int) $entry->altitude;
-		$item['surface_area'] = (int) $entry->surface_area;
-		$item['township'] = $entry->township;
-		$item['canton'] = $entry->canton;
-		$item['country'] = $entry->country;
-		$item['commenttext'] = $entry->commenttext;
-
-		$item['type'] = '';
-		$item['area_points'] = array();
-		$json = json_decode($entry->geom);
-		if ($json) {
-			if ('Polygon' == $json->type) {
-				$item['type'] = 'polygon';
-				foreach ($json->coordinates[0] as $coordinate) {
-					$item['area_points'][] = array(
-							'lat' => $coordinate[1],
-							'lng' => $coordinate[0]
-					);
-				}
-			} else if ($json->type == 'LineString') {
-				$item['type'] = 'polyline';
-				foreach ($json->coordinates as $coordinate) {
-					$item['area_points'][] = array(
-							'lat' => $coordinate[1],
-							'lng' => $coordinate[0]
-					);
-				}
-			} else if ($json->type == 'Point') {
-				$item['type'] = 'marker';
-				$item['area_points'][] = array(
-						'lat' => $json->coordinates[1],
-						'lng' => $json->coordinates[0]
-				);
-			} else {
-				assert(false);
-			}
-		}
-		$items[] = $item;
+	/*
+	 * Bail out if an non-existing area is requested,
+	 * return empty array
+	 */
+	if ($result->rowCount() == 0) {
+		drupal_set_title(t("No such area available"));
+		return array();
 	}
-	// json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and
-	// not as an array. However, we used area_id as $key, so we have to index them numerically
-	$items = array_values($items);
-	return drupal_json_output($items);
+	assert($result->rowCount() == 1);
+	$areadata = (array) $result->fetch();
+
+	/* extract the coordinates of the requested geometry */
+	if ($areadata['geometry_type'] == "POINT") {
+		$areadata['coordinatejson'] = array(
+				json_decode($areadata['wgs84_geom_json'])->coordinates
+		);
+	} else if ($areadata['geometry_type'] == "LINESTRING") {
+		$areadata['coordinatejson'] = json_decode($areadata['wgs84_geom_json'])->coordinates;
+	} else {
+		$areadata['coordinatejson'] = json_decode($areadata['wgs84_geom_json'])->coordinates[0];
+	}
+
+	/* swap the coordinates from lat/lng to lng/lat */
+	area_swap_json_lnglat($areadata['coordinatejson']);
+	return $areadata;
 }
+
+/**
+ * Return all usefull data about an area in a tabular form.
+ * Leave out datafields which are not set.
+ * 
+ * @param array An array with all needed data
+ */
+function area_get_infotable_of_specific_area($areadata = NULL) {
+	assert($areadata != NULL);
+	$rows = array();
+	if (!empty($areadata['township'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Township'),
+						'header' => true
+				),
+				$areadata['township']
+		);
+	}
+	if (!empty($areadata['zip'])) {
+		$rows[] = array(
+				array(
+						'data' => t('ZIP'),
+						'header' => true
+				),
+				$areadata['zip']
+		);
+	}
+	if (!empty($areadata['canton'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Canton'),
+						'header' => true
+				),
+				$areadata['canton']
+		);
+	}
+	if (!empty($areadata['country'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Country'),
+						'header' => true
+				),
+				$areadata['country']
+		);
+	}
+	if (!empty($areadata['altitude'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Altitude [m.a.s.l.]'),
+						'header' => true
+				),
+				$areadata['altitude']
+		);
+	}
+	if (!empty($areadata['wgs84_center_lat'])
+			&& !empty($areadata['wgs84_center_lng'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Coordinates'),
+						'header' => true
+				),
+				get_wgs84_coordinates_link($areadata) . "<br/>"
+						. get_ch1903_coordinates_link($areadata)
+		);
+	}
+
+	/* Depending on what kind of geometry is shown,
+	 * display the pathlength or the surface area.
+	 * Or none at all if geometry is a point.
+	 */
+	if ($line = $areadata['geometry_type'] == "POLYGON") {
+		$rows[] = array(
+				array(
+						'data' => t('Surface area [m²]'),
+						'header' => true
+				),
+				(int) $areadata['surface_area']
+		);
+	} else if ($line = $areadata['geometry_type'] == "LINESTRING") {
+		$rows[] = array(
+				array(
+						'data' => t('Path length [m]'),
+						'header' => true
+				),
+				(int) $areadata['pathlength']
+		);
+	}
+
+	/* add the table with the data prepared above */
+	$table = array(
+			'#theme' => 'table',
+			'#rows' => $rows,
+			'#id_table' => 'area_tabular_data',
+	);
+
+	return $table;
+}
+
 /**
  * Return a hidden form which can be used to store values handed over by Javascript
+ * @todo lets find a better way than this... please...
  * @return form to submit area properties
  */
 function area_address_hidden_form() {
@@ -366,12 +256,6 @@ function area_address_hidden_form() {
 					'id' => 'edit-altitude'
 			),
 	);
-	$form['addressdata']['surface-area'] = array(
-			'#type' => 'hidden',
-			'#attributes' => array(
-					'id' => 'edit-surface-area'
-			),
-	);
 	$form['addressdata']['country'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
@@ -409,33 +293,85 @@ function area_address_hidden_form() {
  * Return a form which shows some important facts about a given area
  * @param integer $area_id
  */
-function area_overview_ajax_callback($area_id) {
-	
-}
+function area_overview_form($area_id) {
 
-/**
- * Show a specific area
- * @param integer $area_id
- * @return renderarray
- */
-function area_show_area($area_id) {
-	return array();
-}
-/**
- * A simple testview to demonstrate the usage of the static google maps API
- */
-
-function area_naturwerkstatic() {
-	$form = array();
-	// coordinates for  a point in Brugg, near naturwerk
-	$params['latitude'] = 47.48135013015885;
-	$params['longitude'] = 8.210649490356445;
-
-	$url = area_get_static_image_url($params, 800, 800);
-	$form['naturwerk'] = array(
-			'#type' => 'markup',
-			'#markup' => "<img src='$url' alt='Naturwerk in Brugg'/>"
+	$form['addressdata'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Area')
+	);
+	$form['addressdata']['fieldname'] = array(
+			'#type' => 'item',
+			'#size' => 50,
+			'#markup' => "FIELDNAME"
 	);
 	return $form;
+}
+
+/**
+ *
+ * Converts coordinates from WGS84 to system CH1903 (ROW).
+ * For details how to convert from WGS84 to CH1903, have a loot at the
+ * Wikipedia article:
+ *  - http://de.wikipedia.org/wiki/Schweizer_Landeskoordinaten
+ *  
+ * @param array Array with two elements: ['lat'] => $lat, ['lng'] => $lng
+ * @return array Array with two elements in CH1903: ['x'] => $x, ['y'] => $y
+ */
+function area_convert_wgs84_to_ch1903($coordinates = NULL) {
+	assert($coordinates);
+	assert(count($coordinates) == 2);
+
+	// extract the given wgs84 coordinates
+	$lat = $coordinates['0'];
+	$lng = $coordinates['1'];
+
+	$latsex = $lat * 3600;
+	$lngsex = $lng * 3600;
+
+	$lathlp = ($latsex - 169028.66) / 10000;
+	$lnghlp = ($lngsex - 26782.5) / 10000;
+
+	$x = 200147.07 + 308807.95 * $lathlp + 3745.25 * pow($lnghlp, 2)
+			+ 76.63 * pow($lathlp, 2) + 119.79 * pow($lathlp, 3)
+			- 194.56 * pow($lnghlp, 2) * $lathlp;
+	$y = 600072.37 + 211455.93 * $lnghlp - 10938.51 * $lnghlp * $lathlp
+			- 0.36 * $lnghlp * pow($lathlp, 2) - 44.54 * pow($lnghlp, 3);
+
+	$result = array(
+			'x' => $x,
+			'y' => $y
+	);
+	return $result;
+}
+
+/**
+ * Swap from lat/lng to lng/lat or vice versa.
+ * This function is needed as posgis can export a json
+ * of each geometry type, but the coordinates are in a
+ * different order than what google maps expects.
+ * 
+ * @param &$json an array with coordinates, passed by reference
+ *  - Example:
+ *  		array (
+ *  		  0 => 
+ *  		  array (
+ *  			0 => 9.3715184183853,
+ *  			1 => 47.461692049315,
+ *  		  ),
+ *  		  1 => 
+ *  		  array (
+ *  		  	0 => 9.3712126465576,
+ *  			1 => 47.461755518134,
+ *  		  )
+ *  		)
+ */
+function area_swap_json_lnglat(&$json) {
+	if (false)
+		die("<pre>" . var_export($json, true) . "</pre>");
+	foreach ($json as &$currentelement) {
+		$tmp = $currentelement[0];
+		$currentelement[0] = $currentelement[1];
+		$currentelement[1] = $tmp;
+	}
 }
 ?>

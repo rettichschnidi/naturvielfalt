@@ -183,7 +183,7 @@ function Area(map_id) {
 			// FIXME: Refactor this into own function
 			// -----------
 			var xhrFetcher = false;
-			var url = 'http://localhost/naturvielfalt_dev/area/getnewareanameformajax';
+			var url = 'http://localhost/naturvielfalt_dev/area/getnewareanameajaxform';
 
 			if (!!window.XMLHttpRequest) {
 				xhrFetcher = new window.XMLHttpRequest(); // Most browsers
@@ -230,8 +230,6 @@ function Area(map_id) {
 							});
 							area_coords = JSON.stringify(area_coords);
 						    jQuery('#edit-area-coords').val(area_coords);
-
-						    jQuery('#edit-surface-area').val(overlay.overlay.Area());
 						}
 					} else {
 						console.log("FORM NOT YET READY");
@@ -255,7 +253,7 @@ function Area(map_id) {
 		this.overlays = [];
 	};
 
-	this.addOverlayFromJsonToGoogleMap = function(currentjsonoverlay) {
+	this.createOverlayFromJson = function(currentjsonoverlay) {
 		if (currentjsonoverlay.type == 'polygon') {
 			newoverlay = new google.maps.Polygon(overlayStyle['polygon']);
         } else if (currentjsonoverlay.type == 'polyline') {
@@ -266,6 +264,11 @@ function Area(map_id) {
             console.error('Unknown type of overlay!');
             return;
         }
+		return newoverlay;
+	};
+	
+	this.addOverlayFromJsonToGoogleMap = function(currentjsonoverlay) {
+		newoverlay = this.createOverlayFromJson(currentjsonoverlay);
 
         var latLngs = [];
         for (var k in currentjsonoverlay.area_points) {

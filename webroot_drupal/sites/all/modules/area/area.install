@@ -33,21 +33,14 @@ function area_schema() {
         'type' => 'int',
         'default' => '0',
       ),
-      'surface_area' => 
+      'township' => 
       array (
-        'description' => 'Fläche in m²',
-        'type' => 'int',
-        'default' => '0',
-        'size' => 'big',
+        'description' => 'No description for column township available, please fix',
+        'type' => 'text',
       ),
       'zip' => 
       array (
         'description' => 'No description for column zip available, please fix',
-        'type' => 'text',
-      ),
-      'township' => 
-      array (
-        'description' => 'No description for column township available, please fix',
         'type' => 'text',
       ),
       'canton' => 
@@ -60,7 +53,7 @@ function area_schema() {
         'description' => 'No description for column country available, please fix',
         'type' => 'text',
       ),
-      'commenttext' => 
+      'comment' => 
       array (
         'description' => 'Kommentartext',
         'type' => 'text',

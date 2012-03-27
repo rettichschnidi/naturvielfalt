@@ -1,0 +1,12 @@
+#area-edit-details {
+	float: left;
+	width: 330px;
+}
+
+#area-edit-map {
+	float: right;
+}
+
+#area-edit-comment {
+	clear: both;
+}

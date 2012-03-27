@@ -7,6 +7,7 @@
 
 define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
+define('AREA_EDIT', 'area edit');
 define('AREA_MODERATE', 'area moderate');
 
 /**********************************
@@ -15,7 +16,6 @@ define('AREA_MODERATE', 'area moderate');
 
 /**
  * Implements hook_menu()
- *
  * @return array
  */
 function area_menu() {
@@ -29,7 +29,22 @@ function area_menu() {
 					AREA_ACCESS
 			),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'area.inc',
+			'file' => 'area.show.inc',
+	);
+
+	/* Show a specific area */
+	$items['area/%'] = array(
+			'title' => t('Show all areas'),
+			'description' => t('Show all areas'),
+			'page callback' => 'area_show_specific_area',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'page arguments' => array(
+					1
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.show.inc',
 	);
 
 	/* Get all available areas as json*/
@@ -41,7 +56,7 @@ function area_menu() {
 					AREA_ACCESS
 			),
 			'type' => MENU_CALLBACK,
-			'file' => 'area.inc',
+			'file' => 'area.json.inc',
 	);
 
 	/* Get all available areas as datatable json*/
@@ -53,7 +68,7 @@ function area_menu() {
 					AREA_ACCESS
 			),
 			'type' => MENU_CALLBACK,
-			'file' => 'area.inc',
+			'file' => 'area.json.inc',
 	);
 
 	/* Create a new area */
@@ -65,41 +80,46 @@ function area_menu() {
 					AREA_CREATE
 			),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'area.inc',
+			'file' => 'area.create.inc',
 	);
 
-	$items['area/getnewareanameformajax'] = array(
+	/* Edit an area */
+	$items['area/%/edit'] = array(
+			'title' => t('Edit area'),
+			'description' => t('Edit an existing area .'),
+			'page callback' => 'area_edit',
+			'access arguments' => array(
+					AREA_EDIT
+			),
+			'page arguments' => array(
+					1
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.edit.inc',
+	);
+
+	/* Show some important information about an area. For usage in a infoWindow, ajax. */
+	$items['area/getareaoverviewajaxform'] = array(
+			'title' => t('New areaname.'),
+			'description' => t('Please submit a new areaname.'),
+			'page callback' => 'area_overview_ajax_callback',
+			'access arguments' => array(
+					AREA_CREATE
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc',
+	);
+
+	/* Present a simple textfield to insert the area name. For usage in a infoWindow, ajax. */
+	$items['area/getnewareanameajaxform'] = array(
 			'title' => t('New areaname.'),
 			'description' => t('Please submit a new areaname.'),
 			'page callback' => 'area_get_new_areaname_form_callback',
 			'access arguments' => array(
 					AREA_CREATE
 			),
-			'type' => MENU_CALLBACK,
-			'file' => 'area.inc',
-	);
-
-	$items['area/getnewareanameform'] = array(
-			'title' => t('New areaname.'),
-			'description' => t('Please submit a new areaname.'),
-			'page callback' => 'area_get_new_areaname_form',
-			'access arguments' => array(
-					AREA_CREATE
-			),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'area.inc',
-	);
-
-	/* testing stuff */
-	$items['area/naturwerkstatic'] = array(
-			'title' => t('Static View'),
-			'description' => t('Show Naturwerk in Brugg on a static map'),
-			'page callback' => 'area_naturwerkstatic',
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'area.inc',
+			'file' => 'area.ajax.inc',
 	);
 	return $items;
 }
@@ -146,82 +166,68 @@ function area_permission() {
 }
 
 /**
- * Generate an URL to a static google map image
- * @todo figure out, which coordination system is used
+ * Generate an URL to a static google map image with one element (just ONE) highlighted
  * @todo Document how the json in $params['area-coords'] looks like
- * @todo This code has yet to be tested with areas
  * 
  * @param array $params Contains all optional parameters
  * fields:
- *  - $params['latitude']		Latitude of the center
- *  - $params['longitude']		Longitudeof the center
- *  - $params['area-coords']	Area coordinates as JSON
- *  - $params['fillcolor']		Color to draw an area or a line (hex/htmlcode)
+ *  - $params['type']			Type of specified geometry type  (POINT, LINESTRING or POLYGON)
+ *  - $params['coordinates']	Area coordinates as JSON (WGS84, lng/lat order)
+ *  - $params['color']			Color to draw an area or a line (hex/htmlcode, optional)
  *  	Example for blue: 0x0000ff
- * @param integer $width of picture
- * @param integer $height of picture
- * @param integer $zoom zoomlevel -  1 to 18
+ * @param integer $width of picture in pixels, default is 320
+ * @param integer $height of picture in pixels, default is 320
  *
  * @return string URL to Google Maps static path
  */
 function area_get_static_image_url($params, $width = 320, $height = 320,
 		$zoom = false) {
+	if (false)
+		die("JSON: " . var_export($params, true));
+	assert(isset($params['coordinates']));
+	assert(isset($params['type']));
+	assert(
+		$params['type'] == 'POINT' || $params['type'] == 'LINESTRING'
+				|| $params['type'] == 'POLYGON');
+
 	assert($width);
 	assert($height);
-	assert(isset($params['latitude']) || isset($params['area-coords']));
-	assert(isset($params['longitude']) || isset($params['area-coords']));
-
-	// make sure that either a point or an area gets submitted - not both
-	assert(!(isset($params['latitude']) && isset($params['area-coords'])));
-	assert(!(isset($params['longitude']) && isset($params['area-coords'])));
 
 	/* Fill parameters with reasonable default values if none delivered */
-
 	/* Coordinates are from userinput, not from a GPS reciever */
 	$sensor = 'false';
-	/* Color of the overlay (applies only if an area is given) */
-	$fillcolor = isset($params['fillcolor']) ? $params['fillcolor'] : '0x0000ff';
-	/* Defines the thickness of the outer line. 0 for areas, 2 if shape is a line (would not be visible otherwise) */
-	$weight = 3;
-	/* Stores how many points we have (1 => point, 2 => line, 3 or more => area) */
-	$counter = 0;
-	/* If a point is requested, this string will get filled with 'center=' and its condinates, separted by a comma */
-	$center = '';
-	/* A string with all the points, crafted to the needs of the google maps api
-	 * Example for a triangle: 
-	 * 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
-	 **/
-	$points = '';
+	/* Type of geometry: POINT, LINESTRING or POLYGON */
+	$type = $params['type'];
+	/* Color of the overlay */
+	$color = isset($params['color']) ? $params['color'] : '0xff0000';
 
-	if (isset($params['latitude']) && isset($params['longitude'])) {
-		$center = 'center=' . $params['latitude'] . ',' . $params['longitude'];
-		$counter = 1;
-	} else if (isset($params['area-coords'])) {
-		$coordinates = json_decode($params['area-coords']);
+	$coordinates = json_decode($params['coordinates']);
+
+	if ($type == 'POINT') {
+		$center = $coordinates[0][0] . ',' . $coordinates[0][1];
+		return 'http://maps.google.com/maps/api/staticmap?size=' . $width . 'x'
+				. $height . '&sensor=' . $sensor
+				. '&maptype=hybrid&markers=color:' . $color . '|' . $center;
+	} else if ($type == 'LINESTRING') {
 		foreach ($coordinates as $coordinate) {
-			$points .= '|' . $coordinate['0'] . ',' . $coordinate['1'];
-			$counter++;
+			$points[] = implode(',', $coordinate);
 		}
-	}
-
-	// If we have just one point, set the zoomlevel to 18
-	if ($counter <= 1 && !$zoom)
-		$zoom = 18;
-	$zoom = $zoom ? '&zoom=' . $zoom : '';
-
-	// it could be a marker, a path or an area
-	if ($counter == 1) {
-		/* it's a point/marker */
-		return 'http://maps.google.com/maps/api/staticmap?' . $center . $zoom
-				. '&size=' . $width . 'x' . $height . '&sensor=' . $sensor
-				. '&maptype=hybrid&markers=color:blue|' . $center . '&sensor='
-				. $sensor;
-	} else if ($counter >= 2) {
-		/* it's a line or an area */
 		return 'http://maps.google.com/maps/api/staticmap?' . $zoom . '&size='
 				. $width . 'x' . $height . '&sensor=' . $sensor
-				. '&maptype=hybrid&path=fillcolor:' . $fillcolor . '|weight:'
-				. $weight . $points;
+				. '&maptype=hybrid&path=color:' . $color . '|weight:4|'
+				. implode('|', $points);
+	} else if ($type == 'POLYGON') {
+		/* A string with all the points, crafted to the needs of the google maps api
+		 * Example for a triangle:
+		* 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
+		**/
+		foreach ($coordinates as $coordinate) {
+			$points[] = implode(',', $coordinate);
+		}
+		return 'http://maps.google.com/maps/api/staticmap?' . $zoom . '&size='
+				. $width . 'x' . $height . '&sensor=' . $sensor
+				. '&maptype=hybrid&path=fillcolor:' . $color . '|color:'
+				. $color . '|' . implode('|', $points);
 	}
 }
 ?>
