@@ -27,14 +27,12 @@ CREATE TABLE public.area
 	name text NOT NULL,
 	-- Meter über Meer
 	altitude int DEFAULT 0,
-	-- Fläche in m²
-	surface_area bigint DEFAULT 0,
-	zip text,
 	township text,
+	zip text,
 	canton text,
 	country text,
 	-- Kommentartext
-	commenttext text,
+	comment text,
 	create_time timestamp,
 	modify_time timestamp,
 	-- Schutzziel
@@ -121,8 +119,7 @@ COMMENT ON COLUMN public.area.id IS 'Primary Key';
 COMMENT ON COLUMN public.area.acl_id IS 'Primary key for swissmon acl items';
 COMMENT ON COLUMN public.area.name IS 'Name, Flurname';
 COMMENT ON COLUMN public.area.altitude IS 'Meter über Meer';
-COMMENT ON COLUMN public.area.surface_area IS 'Fläche in m²';
-COMMENT ON COLUMN public.area.commenttext IS 'Kommentartext';
+COMMENT ON COLUMN public.area.comment IS 'Kommentartext';
 COMMENT ON COLUMN public.area.protection_target IS 'Schutzziel';
 COMMENT ON COLUMN public.area.safety_precautions IS 'Schutzmassnahmen';
 COMMENT ON COLUMN public.area.tending_strategies IS 'Pflege- und Gestaltungsmassnahmen';
