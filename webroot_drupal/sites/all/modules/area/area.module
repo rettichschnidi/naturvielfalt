@@ -7,7 +7,6 @@
 
 define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
-define('AREA_EDIT', 'area edit');
 define('AREA_MODERATE', 'area moderate');
 
 /**********************************
@@ -19,7 +18,6 @@ define('AREA_MODERATE', 'area moderate');
  * @return array
  */
 function area_menu() {
-
 	/* Show all available areas */
 	$items['area'] = array(
 			'title' => t('Show all areas'),
@@ -32,26 +30,41 @@ function area_menu() {
 			'file' => 'area.show.inc',
 	);
 
-	/* Show a specific area */
-	$items['area/%'] = array(
-			'title' => t('Show all areas'),
-			'description' => t('Show all areas'),
-			'page callback' => 'area_show_specific_area',
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'page arguments' => array(
-					1
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'area.show.inc',
-	);
-
 	/* Get all available areas as json*/
 	$items['area/json'] = array(
 			'title' => t('All areas json'),
 			'description' => t('Get all areas as json'),
-			'page callback' => 'area_all_areas_json',
+			'page callback' => 'area_json',
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+	/* Get all available areas as json*/
+	$items['area/%/updategeometry/json'] = array(
+			'title' => t('Update the geometry'),
+			'description' => t('Update the geometry of an area.'),
+			'page callback' => 'area_updategeometry_json',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_write_access',
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+
+	/* Get all available areas as json*/
+	$items['area/%/json'] = array(
+			'title' => t('An area json'),
+			'description' => t('Get a single area as json'),
+			'page callback' => 'area_json',
+			'page arguments' => array(
+					1
+			),
 			'access arguments' => array(
 					AREA_ACCESS
 			),
@@ -63,7 +76,7 @@ function area_menu() {
 	$items['area/datatablejson'] = array(
 			'title' => t('All areas datatable json'),
 			'description' => t('Get all areas as datatable json'),
-			'page callback' => 'area_all_areas_datatablejson_json',
+			'page callback' => 'area_all_areas_datatable_json',
 			'access arguments' => array(
 					AREA_ACCESS
 			),
@@ -83,37 +96,78 @@ function area_menu() {
 			'file' => 'area.create.inc',
 	);
 
-	/* Edit an area */
-	$items['area/%/edit'] = array(
-			'title' => t('Edit area'),
-			'description' => t('Edit an existing area .'),
-			'page callback' => 'area_edit',
-			'access arguments' => array(
-					AREA_EDIT
-			),
+	/* Show a specific area */
+	$items['area/%area/show'] = array(
+			'title' => t('Show area'),
+			'description' => t('Show a specific area'),
 			'page arguments' => array(
 					1
 			),
-			'type' => MENU_NORMAL_ITEM,
+			'page callback' => 'area_show_specific_area',
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_read_access',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.show.inc',
+	);
+
+	/* Edit an area */
+	$items['area/%area/edit'] = array(
+			'title' => t('Edit area'),
+			'description' => t('Edit an existing area .'),
+			'page callback' => 'area_edit',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_write_access',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.edit.inc',
+	);
+
+	/* Edit an area */
+	$items['area/%area/editgeometry'] = array(
+			'title' => t('Edit geometry'),
+			'description' => t('Edit an existing geometry.'),
+			'page callback' => 'area_edit_geometry',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_write_access',
+			'context' => MENU_CALLBACK,
+			'type' => MENU_CALLBACK,
 			'file' => 'area.edit.inc',
 	);
 
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
-	$items['area/getareaoverviewajaxform'] = array(
-			'title' => t('New areaname.'),
-			'description' => t('Please submit a new areaname.'),
+	$items['area/%area/areaoverview/ajaxform'] = array(
+			'title' => t('Area overview form'),
+			'description' => t(
+				'A form to show the most important facts about an area.'),
 			'page callback' => 'area_overview_ajax_callback',
-			'access arguments' => array(
-					AREA_CREATE
+			'page arguments' => array(
+					1
 			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_read_access',
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
 
 	/* Present a simple textfield to insert the area name. For usage in a infoWindow, ajax. */
 	$items['area/getnewareanameajaxform'] = array(
-			'title' => t('New areaname.'),
-			'description' => t('Please submit a new areaname.'),
+			'title' => t('New areaname form'),
+			'description' => t('A form to submit a new areaname.'),
 			'page callback' => 'area_get_new_areaname_form_callback',
 			'access arguments' => array(
 					AREA_CREATE
@@ -136,12 +190,14 @@ function area_theme() {
 					'variables' => array(
 							// enable searchbox
 							'search' => true,
-							// include elements to edit existing areas
-							'edit' => false,
 							// include elements to create new areas
 							'create' => false,
 							// show all existing areas
-							'showall' => false
+							'showall' => false,
+							// include elements to edit existing areas
+							'edit' => false,
+							// Set to an integer if an area should be highlighted
+							'area_id' => false
 					)
 			)
 	);
@@ -219,8 +275,8 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 	} else if ($type == 'POLYGON') {
 		/* A string with all the points, crafted to the needs of the google maps api
 		 * Example for a triangle:
-		* 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
-		**/
+		 * 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
+		 **/
 		foreach ($coordinates as $coordinate) {
 			$points[] = implode(',', $coordinate);
 		}
@@ -229,5 +285,56 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 				. '&maptype=hybrid&path=fillcolor:' . $color . '|color:'
 				. $color . '|' . implode('|', $points);
 	}
+}
+
+/**
+ * Check if user has write access to area
+ *
+ * @param array $areadata
+ * @return boolean true if access ok, false if not
+ * @todo Implementation
+ */
+function area_write_access($areadata = NULL) {
+	if ($areadata == NULL) {
+		return false;
+	}
+
+	if (isset($areadata['acl_id'])) {
+		return check_permission($areadata['acl_id'], variable_get('ACL_WRITE'));
+	}
+	return false;
+}
+
+/**
+ * Check if user has read access to area
+ *
+ * @param array $areadata
+ * @return boolean true if access ok, false if not
+ * @todo Implementation
+ */
+function area_read_access($areadata = NULL) {
+	if ($areadata == NULL) {
+		return false;
+	}
+
+	if (isset($areadata['acl_id'])) {
+		return check_permission($areadata['acl_id'], variable_get('ACL_READ'));
+	}
+	return false;
+}
+
+module_load_include('inc', 'area', 'area');
+
+/**
+ * Return an array with all required information about an area
+ * @param integer $arg
+ * @return array $areadata
+ */
+function area_load($arg) {
+	$areadata = array();
+	if ($arg != NULL) {
+		$areadata = area_get_full_dataset_of_specific_area($arg);
+	}
+	return $areadata;
 }
 ?>

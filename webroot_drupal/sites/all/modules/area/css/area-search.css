@@ -5,3 +5,14 @@
 #search_container {
 	margin-top: 5px;
 }
+
+#search_input {
+	background-color: transparent;
+	border: 0 none;
+	font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+	font-size: 0.9em;
+	height: 28px;
+	margin: 0 5px 0 5px;
+	padding: 2px 10px 0 20px;
+	width: 800px;
+}

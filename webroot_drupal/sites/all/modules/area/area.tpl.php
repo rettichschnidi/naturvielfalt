@@ -30,10 +30,15 @@ drupal_add_js(
 			. $user->language,
 	array('group' => JS_LIBRARY));
 
+if (is_int((int)$area_id)) {
+	// has to be included before area.js
+	drupal_add_js("areaid = $area_id;", array('type' => 'inline'));
+}
+
 drupal_add_js($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
 drupal_add_js($baseModulJsPath . 'area-googlemapsapi-extensions.js');
-drupal_add_js($baseModulJsPath . 'area.js');
 drupal_add_js($baseModulJsPath . 'area-overlay-style.js');
+drupal_add_js($baseModulJsPath . 'area.js');
 
 drupal_add_css($baseModulCssPath . 'area.css');
 
@@ -41,6 +46,7 @@ if ($search) {
 	drupal_add_css($baseModulCssPath . 'area-search.css');
 	drupal_add_js($baseModulJsPath . 'area-search.js');
 }
+
 if ($create) {
 	drupal_add_css($baseModulCssPath . 'area-create.css');
 	drupal_add_js($baseModulJsPath . 'area-create.js');
@@ -50,10 +56,15 @@ if ($showall) {
 	drupal_add_css($baseModulCssPath . 'area-show-all.css');
 	drupal_add_js($baseModulJsPath . 'area-show-all.js');
 }
+
+if ($edit) {
+	drupal_add_css($baseModulCssPath . 'area-edit.css');
+	drupal_add_js($baseModulJsPath . 'area-edit.js');
+}
 ?>
 
 <div class="area-search-map">
-  <div id="map" style="height: 600px; width: 120%;">
-    <div id="map_canvas" style="height: 100%"></div>
+  <div id="map">
+    <div id="map_canvas"></div>
   </div>
 </div>

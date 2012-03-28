@@ -21,8 +21,7 @@ function area_new_area() {
 			'#create' => true,
 			'#theme' => 'area'
 	);
-
-	return $output;
+	return drupal_render($output);
 }
 
 /**
@@ -61,19 +60,23 @@ function area_create_new_area($form, &$form_state) {
 		drupal_set_message("Creating area: <pre>$debugmessage</pre>");
 	}
 
-	// get values from form
-	$name = !empty($form_state['values']['fieldname']) ? $form_state['values']['fieldname']
-			: date("r");
-	$zip = $form_state['values']['zip'];
-	$canton = $form_state['values']['canton'];
-	$country = $form_state['values']['country'];
-	$township = $form_state['values']['township'];
+	/* 
+	 * Get submitted values and escape values before submitting
+	 * them to the database.
+	 */
+	$name = check_plain(
+		!empty($form_state['values']['fieldname']) ? $form_state['values']['fieldname']
+				: date("r"));
+	$zip = check_plain($form_state['values']['zip']);
+	$canton = check_plain($form_state['values']['canton']);
+	$country = check_plain($form_state['values']['country']);
+	$township = check_plain($form_state['values']['township']);
 
-	$areaType = $form_state['values']['area_type'];
-	$altitude = $form_state['values']['altitude'];
-	$jsonCoords = $form_state['values']['area-coords'];
-	$latitude = $form_state['values']['latitude'];
-	$longitude = $form_state['values']['longitude'];
+	$areaType = check_plain($form_state['values']['area_type']);
+	$altitude = check_plain($form_state['values']['altitude']);
+	$jsonCoords = check_plain($form_state['values']['area-coords']);
+	$latitude = check_plain($form_state['values']['latitude']);
+	$longitude = check_plain($form_state['values']['longitude']);
 
 	$coordinates = json_decode($jsonCoords, true);
 	// swap the cooridnates to the order expected by postgis
@@ -127,7 +130,7 @@ function area_create_new_area($form, &$form_state) {
 			t(
 				"Area @areaname got created.",
 				array('@areaname' => $form_state['values']['fieldname'])));
-		drupal_goto('area/' . $area_id);
+		drupal_goto('area/' . $area_id . '/show');
 	} else {
 		drupal_set_message(
 			t(

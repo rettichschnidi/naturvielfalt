@@ -6,12 +6,13 @@
  * @copyright 2012 Naturwerk, Brugg
  */
 
+module_load_include('inc', 'area', 'area');
+
 /**
  * Show all existing areas.
  * @return render array
  */
 function area_show_all_areas() {
-	drupal_set_title(t('Show all existing areas'));
 
 	$output['map'] = array(
 			'#search' => true,
@@ -29,27 +30,38 @@ function area_show_all_areas() {
 
 	$tableHeader[] = array(
 			'name' => t('Name'),
-			'dbfield' => 'name'
+			'dbfield' => 'name',
+			'width' => 225,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
+			'width' => 60
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
+			'width' => 100
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
+			'width' => 100
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
+			'width' => 230
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('User'),
+			'dbfield' => 'username',
+			'width' => 100
 	);
 
 	$output['space'] = array(
@@ -65,17 +77,18 @@ function area_show_all_areas() {
 			'#options' => array(
 					'jsonUrl' => "'" . base_path() . "area/datatablejson'",
 					'rowClick' => 'rowClick',
+					'tableWidth' => '100%',
+					'tableHeight' => '100%',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
-								window.location.href = Drupal.settings.basePath+'area/' + id;
+								areabasic.selectArea(id);
 							}
 						)
 					}"
 			)
 	);
 	return $output;
-
 }
 
 /**
@@ -83,9 +96,141 @@ function area_show_all_areas() {
  * @param integer $area_id
  * @return renderarray
  */
-function area_show_specific_area($area_id = NULL) {
-	drupal_set_title("Show area #$area_id.");
-	
-	return array();
+function area_show_specific_area($areadata = NULL) {
+	assert(!empty($areadata));
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-show.css');
+	drupal_set_title($areadata['name']);
+
+	/* call area_get_static_image_url() to get an url to the google maps visualization */
+	$staticimageurl = area_get_static_image_url(
+		array('coordinates' => json_encode($areadata['coordinatejson']),
+				'type' => $areadata['geometry_type']
+		),
+		450,
+		320);
+
+	/* Create a fieldset for the tabular data */
+	$output['area_edit'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Area details'),
+			'#weight' => 1,
+			'#attributes' => array(
+					'id' => 'area-show-details' // required for CSS
+			),
+	);
+
+	/* Create a fieldset for the static google maps */
+	$output['area_static_map'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Map'),
+			'#weight' => 3,
+			'#attributes' => array(
+					'id' => 'area-show-map' // required for CSS
+			)
+	);
+
+	/* add the picture */
+	$output['area_static_map']['image'] = array(
+			'#type' => 'markup',
+			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
+	);
+
+	/* Create a fieldset for the comment text field */
+	$output['area_description_edit'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Description'),
+			'#weight' => 10,
+			'#collapsible' => true,
+			'#collapsed' => false,
+			'#attributes' => array(
+					'id' => 'area-show-comment',
+					'disabled' => true
+			)
+	);
+
+	/* add the comments for the area as an editable textarea */
+	$output['area_description_edit']['comment'] = array(
+			'#type' => 'item',
+			'#markup' => "<pre>"
+					. (empty($areadata['comment']) ? t("None available")
+							: $areadata['comment']) . "</pre>"
+	);
+
+	/* Create a fieldset for the strategies text fields */
+	$output['area_concept_edit'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Area concept'),
+			'#weight' => 11,
+			'#collapsible' => true,
+			'#collapsed' => true
+	);
+
+	/* add the protectiont target textarea */
+	$output['area_concept_edit']['protection_target'] = array(
+			'#type' => 'item',
+			'#title' => t('Protection target'),
+			'#markup' => "<pre>"
+					. (empty($areadata['protection_target']) ? t(
+								"None available")
+							: $areadata['protection_target']) . "</pre>"
+	);
+
+	/* add the tending strategies target textarea */
+	$output['area_concept_edit']['tending_strategies'] = array(
+			'#type' => 'item',
+			'#title' => t('Tending strategies'),
+			'#markup' => "<pre>"
+					. (empty($areadata['tending_strategies']) ? t(
+								"None available")
+							: $areadata['tending_strategies']) . "</pre>"
+	);
+
+	/* add the tending strategies target textarea */
+	$output['area_concept_edit']['safety_precautions'] = array(
+			'#type' => 'item',
+			'#title' => t('Safety precautions'),
+			'#markup' => "<pre>"
+					. (empty($areadata['safety_precautions']) ? t(
+								"None available")
+							: $areadata['safety_precautions']) . "</pre>"
+	);
+
+	/* Build the content of the table, leave out empty fields */
+	$output['area_edit']['table'] = area_get_infotable_of_specific_area(
+		$areadata);
+
+	return $output;
+}
+
+/**
+ * Return a form which shows some important facts about a given area
+ * @param array $areadata
+ */
+function area_overview_form($form, &$form_state, $areadata) {
+	$form['addressdata'] = array(
+			'#type' => 'fieldset',
+			'#title' => $areadata['name'],
+	);
+	$form['addressdata']['table'] = area_get_infotable_of_specific_area(
+		$areadata,
+		array('create_time' => false,
+				'modify_time' => false,
+				'altitude' => false,
+				'coordinates' => false,
+				'surface_area' => false
+		));
+	$form['addressdata']['edit'] = array(
+			'#type' => 'markup',
+			'#markup' => l(t('Edit'), 'area/' . $areadata['id'] . '/edit')
+	);
+	$form['addressdata']['whitespace'] = array(
+			'#type' => 'markup',
+			'#markup' => '&nbsp/&nbsp;'
+	);
+	$form['addressdata']['show'] = array(
+			'#type' => 'markup',
+			'#markup' => l(t('Show'), 'area/' . $areadata['id'] . '/show')
+	);
+	return $form;
 }
 ?>

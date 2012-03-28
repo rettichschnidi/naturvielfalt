@@ -48,53 +48,62 @@ function get_wgs84_coordinates_link($areadata) {
  * @param integer $area_id
  */
 function area_get_full_dataset_of_specific_area($area_id) {
-	assert($area_id != NULL);
+	if ($area_id == NULL) {
+		drupal_set_title(t("No such area available."));
+		return array();
+	}
 	$result = db_query(
 		'SELECT
-				name,
-				altitude,
-				zip,
-				township,
-				canton,
-				country,
-				comment,
-				create_time,
-				modify_time,
-				protection_target,
-				safety_precautions,
-				tending_strategies,
+				a.id,
+				a.acl_id,
+				a.name,
+				a.altitude,
+				a.zip,
+				a.township,
+				a.canton,
+				a.country,
+				a.comment,
+				a.create_time,
+				a.modify_time,
+				a.protection_target,
+				a.safety_precautions,
+				a.tending_strategies,
 				-- either POINT, POLYGON or LINESTRING
-				GeometryType(geom) AS geometry_type,
+				GeometryType(a.geom) AS geometry_type,
 				-- Center of the geometry - CH1903, x value
-				ST_X(ST_Centroid(Transform(geom, 21781))) AS ch1903_center_x,
+				ST_X(ST_Centroid(Transform(a.geom, 21781))) AS ch1903_center_x,
 				-- Center of the geometry - CH1903, y value
-				ST_Y(ST_Centroid(Transform(geom, 21781))) AS ch1903_center_y,
+				ST_Y(ST_Centroid(Transform(a.geom, 21781))) AS ch1903_center_y,
 				-- Center of the geometry - WGS84, latitude
-				ST_X(ST_Centroid(Transform(geom, 4326))) AS wgs84_center_lat,
+				ST_X(ST_Centroid(Transform(a.geom, 4326))) AS wgs84_center_lat,
 				-- Center of the geometry - WGS84
-				ST_Y(ST_Centroid(Transform(geom, 4326))) AS wgs84_center_lng,
+				ST_Y(ST_Centroid(Transform(a.geom, 4326))) AS wgs84_center_lng,
 				-- Coordinates of the geometry - CH1903
-				AsText(Transform(geom, 21781)) AS ch1903_coordinates,
+				AsText(Transform(a.geom, 21781)) AS ch1903_coordinates,
 				-- Coordinates of the geometry - WGS84
-				AsText(Transform(geom, 4326)) AS wgs84_coordinates,
+				AsText(Transform(a.geom, 4326)) AS wgs84_coordinates,
 				-- Area surface in m^2
-				Area(Transform(geom, 21781)) AS surface_area,
+				Area(Transform(a.geom, 21781)) AS surface_area,
 				-- Pathlength (if linestring) in meters
-				ST_Length(Transform(geom, 21781)) AS pathlength,
+				ST_Length(Transform(a.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
-				ST_AsGeoJSON(geom) AS wgs84_geom_json
+				ST_AsGeoJSON(a.geom) AS wgs84_geom_json,
+				u.name AS username,
+				u.uid AS userid
 			FROM
-				{area}
+				{area} a
+				JOIN {acl} cacl ON cacl.id = a.acl_id
+				JOIN {users} u ON u.uid = cacl.users_id
 			WHERE
-				id = :id',
-		array(':id' => $area_id));
+				a.id = :area_id',
+		array(':area_id' => $area_id));
 
 	/*
 	 * Bail out if an non-existing area is requested,
 	 * return empty array
 	 */
 	if ($result->rowCount() == 0) {
-		drupal_set_title(t("No such area available"));
+		drupal_set_title(t("No such area available."));
 		return array();
 	}
 	assert($result->rowCount() == 1);
@@ -120,12 +129,45 @@ function area_get_full_dataset_of_specific_area($area_id) {
  * Return all usefull data about an area in a tabular form.
  * Leave out datafields which are not set.
  * 
- * @param array An array with all needed data
+ * @param array $areadata
+ * 		An array with all data about an area
+ * @param $options array
+ * 		Options array with true/false flags. Not set flags will be threaded as true.
+ * 		Available options:
+ * 			- 'username'
+ * 			- 'township'
+ * 			- 'zip'
+ * 			- 'canton'
+ * 			- 'country'
+ * 			- 'altitude'
+ * 			- 'coordinates'
+ * 			- 'create_time'
+ * 			- 'modify_time'
+ * 			- 'surface_area'
+ * 			- 'pathlength'
+ * 
  */
-function area_get_infotable_of_specific_area($areadata = NULL) {
+function area_get_infotable_of_specific_area($areadata = NULL,
+		$options = array()) {
 	assert($areadata != NULL);
 	$rows = array();
-	if (!empty($areadata['township'])) {
+	if (!empty($areadata['username'])
+			&& (!isset($options['pathlength']) || $options['pathlength'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Creator'),
+						'header' => true
+				),
+				l(
+					$areadata['username'],
+					base_path() . "user/" . $areadata['userid'],
+					array(
+							'external' => true
+					))
+		);
+	}
+	if (!empty($areadata['township'])
+			&& (!isset($options['township']) || $options['township'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Township'),
@@ -134,7 +176,8 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 				$areadata['township']
 		);
 	}
-	if (!empty($areadata['zip'])) {
+	if (!empty($areadata['zip'])
+			&& (!isset($options['zip']) || $options['zip'])) {
 		$rows[] = array(
 				array(
 						'data' => t('ZIP'),
@@ -143,7 +186,8 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 				$areadata['zip']
 		);
 	}
-	if (!empty($areadata['canton'])) {
+	if (!empty($areadata['canton'])
+			&& (!isset($options['canton']) || $options['canton'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Canton'),
@@ -152,7 +196,8 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 				$areadata['canton']
 		);
 	}
-	if (!empty($areadata['country'])) {
+	if (!empty($areadata['country'])
+			&& (!isset($options['country']) || $options['country'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Country'),
@@ -161,7 +206,8 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 				$areadata['country']
 		);
 	}
-	if (!empty($areadata['altitude'])) {
+	if (!empty($areadata['altitude'])
+			&& (!isset($options['altitude']) || $options['altitude'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Altitude [m.a.s.l.]'),
@@ -170,8 +216,11 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 				$areadata['altitude']
 		);
 	}
-	if (!empty($areadata['wgs84_center_lat'])
-			&& !empty($areadata['wgs84_center_lng'])) {
+	if ((!empty($areadata['wgs84_center_lat'])
+			&& !empty($areadata['wgs84_center_lng'])
+			&& !empty($areadata['ch1903_center_x'])
+			&& !empty($areadata['ch1903_center_y']))
+			&& (!isset($options['coordinates']) || $options['coordinates'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Coordinates'),
@@ -182,11 +231,34 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 		);
 	}
 
+	if (!empty($areadata['create_time'])
+			&& (!isset($options['create_time']) || $options['create_time'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Create date'),
+						'header' => true
+				),
+				date("j.m.Y", strtotime($areadata['create_time']))
+		);
+	}
+
+	if (!empty($areadata['modify_time'])
+			&& (!isset($options['modify_time']) || $options['modify_time'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Last modification'),
+						'header' => true
+				),
+				date("j.m.Y", strtotime($areadata['modify_time']))
+		);
+	}
+
 	/* Depending on what kind of geometry is shown,
 	 * display the pathlength or the surface area.
 	 * Or none at all if geometry is a point.
 	 */
-	if ($line = $areadata['geometry_type'] == "POLYGON") {
+	if ($line = $areadata['geometry_type'] == "POLYGON"
+			&& (!isset($options['surface_area']) || $options['surface_area'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Surface area [m²]'),
@@ -194,7 +266,8 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 				),
 				(int) $areadata['surface_area']
 		);
-	} else if ($line = $areadata['geometry_type'] == "LINESTRING") {
+	} else if ($line = $areadata['geometry_type'] == "LINESTRING"
+			&& (!isset($options['pathlength']) || $options['pathlength'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Path length [m]'),
@@ -205,13 +278,13 @@ function area_get_infotable_of_specific_area($areadata = NULL) {
 	}
 
 	/* add the table with the data prepared above */
-	$table = array(
+	$form = array(
 			'#theme' => 'table',
 			'#rows' => $rows,
 			'#id_table' => 'area_tabular_data',
 	);
 
-	return $table;
+	return $form;
 }
 
 /**
@@ -290,24 +363,6 @@ function area_address_hidden_form() {
 }
 
 /**
- * Return a form which shows some important facts about a given area
- * @param integer $area_id
- */
-function area_overview_form($area_id) {
-
-	$form['addressdata'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Area')
-	);
-	$form['addressdata']['fieldname'] = array(
-			'#type' => 'item',
-			'#size' => 50,
-			'#markup' => "FIELDNAME"
-	);
-	return $form;
-}
-
-/**
  *
  * Converts coordinates from WGS84 to system CH1903 (ROW).
  * For details how to convert from WGS84 to CH1903, have a loot at the
@@ -373,5 +428,16 @@ function area_swap_json_lnglat(&$json) {
 		$currentelement[0] = $currentelement[1];
 		$currentelement[1] = $tmp;
 	}
+}
+
+/**
+ * Check if user has write access to area
+ *
+ * @param integer $area_id
+ * @return true if access ok, false if not
+ * @todo Check if this user has write access to the inventory
+ */
+function area_edit_access($area_id) {
+	return true;
 }
 ?>

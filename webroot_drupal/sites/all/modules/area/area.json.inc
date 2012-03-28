@@ -12,7 +12,7 @@ module_load_include('inc', 'area', 'area');
  * Generate a JSON with all areas that are visible to the user
  * @todo Include the user's nickname
  */
-function area_all_areas_datatablejson_json() {
+function area_all_areas_datatable_json() {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
@@ -22,7 +22,8 @@ function area_all_areas_datatablejson_json() {
 			'a.canton',
 			'a.country',
 			'ST_AsGeoJSON(a.geom) AS geom',
-			'a.comment'
+			'a.comment',
+			'u.name AS username'
 	);
 
 	$sql['dbSearchColumns'] = array(
@@ -31,21 +32,23 @@ function area_all_areas_datatablejson_json() {
 			'a.township',
 			'a.canton',
 			'a.country',
-			'a.comment'
+			'a.comment',
+			'u.name'
 	);
 
 	$sql['dbTable'] = "{area} a";
+	$sql['dbJoins'] = "JOIN {acl} cacl ON cacl.id = a.acl_id
+		 JOIN {users} u ON u.uid = cacl.users_id";
 	$sql['id'] = 'id';
 	$output = datatable_dbRequest($sql);
 	return drupal_json_output($output);
 }
 
 /**
- * Return all viewable areas as JSON.
- * @note Probably could be merged with area_all_areas_datatablejson_json
+ * Return one or all viewable areas as JSON.
  * @return JSON
  */
-function area_all_areas_json($area_id = false) {
+function area_json($area_id = false) {
 	$areas = db_query(
 		'SELECT
 			a.id AS id,
@@ -115,5 +118,54 @@ function area_all_areas_json($area_id = false) {
 	// not as an array. However, we used area_id as $key, so we have to index them numerically
 	$items = array_values($items);
 	return drupal_json_output($items);
+}
+
+/**
+ * 
+ * @param unknown_type $area_id
+ */
+function area_updategeometry_json($area_id = null) {
+	assert($area_id != NULL);
+	$jsonCoords = $_POST['area_points'];
+	$areaType = $_POST['type'];
+	$coordinates = json_decode($jsonCoords, true);
+	// swap the cooridnates to the order expected by postgis
+	area_swap_json_lnglat($coordinates);
+	$points = array();
+	foreach ($coordinates as $coord) {
+		$points[] = implode(' ', $coord);
+	}
+
+	switch ($areaType) {
+	case 'polyline':
+		$linestring = implode(', ', $points);
+		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
+		break;
+	case 'polygon':
+	// make sure line is closed
+		if (end($points) != reset($points)) {
+			$points[] = reset($points);
+		}
+		$linestring = implode(', ', $points);
+		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
+		break;
+	case 'marker':
+		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
+		break;
+	}
+
+	db_update('{area}')->fields(
+			array('zip' => $_POST['zip'],
+					'canton' => $_POST['canton'],
+					'country' => $_POST['country'],
+					'township' => $_POST['township'],
+					'modify_time' => 'NOW()',
+					'altitude' => $_POST[''],
+			))
+		->condition('id', $area_id)
+		->execute();
+	db_update('area')->expression('geom', $geom)
+		->condition('id', $area_id)
+		->execute();
 }
 ?>
