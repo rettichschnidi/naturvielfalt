@@ -23,6 +23,12 @@ DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
 /* Drop Tables */
 
+DROP TABLE IF EXISTS organism_artgroup_detmethod_subscription;
+DROP TABLE IF EXISTS organism_artgroup_subscription;
+DROP TABLE IF EXISTS organism_artgroup;
+DROP TABLE IF EXISTS organism_artgroup_detmethod_values;
+DROP TABLE IF EXISTS organism_artgroup_detmethod;
+DROP TABLE IF EXISTS organism_artgroup_detmethod_type;
 DROP TABLE IF EXISTS organism_attribute_value_subscription;
 DROP TABLE IF EXISTS organism_attribute_value;
 DROP TABLE IF EXISTS organism_classification_lang;
@@ -40,6 +46,58 @@ DROP TABLE IF EXISTS public.organism_attribute;
 
 
 /* Create Tables */
+
+CREATE TABLE organism_artgroup
+(
+	id serial NOT NULL,
+	name text NOT NULL,
+	parent int DEFAULT 1,
+	pos int,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_detmethod
+(
+	id serial NOT NULL,
+	name text,
+	organism_artgroup_detmethod_type_id int NOT NULL,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_detmethod_subscription
+(
+	organism_artgroup_id int NOT NULL,
+	organism_artgroup_detmethod_id int NOT NULL
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_detmethod_type
+(
+	id serial NOT NULL,
+	name text,
+	format text,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_detmethod_values
+(
+	id serial NOT NULL,
+	value text,
+	organism_artgroup_detmethod int NOT NULL,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_subscription
+(
+	organism_artgroup_id int NOT NULL,
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	organism_id int NOT NULL
+) WITHOUT OIDS;
+
 
 CREATE TABLE organism_attribute_value
 (
@@ -223,6 +281,46 @@ CREATE TABLE public.organism_habitat_subscription
 
 /* Create Foreign Keys */
 
+ALTER TABLE organism_artgroup_detmethod_subscription
+	ADD FOREIGN KEY (organism_artgroup_id)
+	REFERENCES organism_artgroup (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_subscription
+	ADD FOREIGN KEY (organism_artgroup_id)
+	REFERENCES organism_artgroup (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_detmethod_subscription
+	ADD FOREIGN KEY (organism_artgroup_detmethod_id)
+	REFERENCES organism_artgroup_detmethod (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_detmethod_values
+	ADD FOREIGN KEY (organism_artgroup_detmethod)
+	REFERENCES organism_artgroup_detmethod (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_detmethod
+	ADD FOREIGN KEY (organism_artgroup_detmethod_type_id)
+	REFERENCES organism_artgroup_detmethod_type (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
 ALTER TABLE organism_attribute_value_subscription
 	ADD FOREIGN KEY (organism_attribute_value_id)
 	REFERENCES organism_attribute_value (id)
@@ -272,7 +370,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -280,8 +378,16 @@ ALTER TABLE organism_classification_level
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_subscription
+	ADD FOREIGN KEY (organism_id)
+	REFERENCES public.organism (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
@@ -384,6 +490,7 @@ CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscri
 
 /* Comments */
 
+COMMENT ON COLUMN organism_artgroup_subscription.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_attribute_value.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_attribute_value.organism_attribute_id IS 'Fremdschlüssel auf die Tabelle organism_attribute. ';
 COMMENT ON COLUMN organism_attribute_value.text_value IS 'Falls der valuetype = t, dann kann wird der Text hier gespeichert. ';
