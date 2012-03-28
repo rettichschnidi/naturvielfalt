@@ -249,11 +249,11 @@ function check_permission($acl_id, $min_level, $user_id = 0,
  */
 function check_permission_array($acl_ids, $min_level, $user_id = 0) {
 	global $user;
-	
+
 	if ($user_id == 0) {
 		$user_id = $user->uid;
 	}
-	
+
 	$res = array();
 	foreach ($acl_ids as $acl_id) {
 		$res[$acl_id] = check_permission($acl_id, $min_level, $user_id);

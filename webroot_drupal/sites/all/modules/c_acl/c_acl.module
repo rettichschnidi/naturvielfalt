@@ -197,7 +197,7 @@ function c_acl_menu() {
  * Enter description here ...
  * @param unknown_type $acl_id
  */
-function c_acl_access ($acl_id) {
+function c_acl_access($acl_id) {
 	return check_permission($acl_id, variable_get("ACL_ADMIN"));
 }
 
@@ -314,24 +314,24 @@ function c_acl_permission() {
  * 
  * Description of variables:
  *  - defaults:			Array with permission types and their default permission values. e.g.:
- 	 					$defaults = array(
-							array(
-									'type' => variable_get("ACL_RED_READ"),
-									'name' => t('Reduced Read'),
-									'value' => FALSE,
-							),
-						);
+                        $defaults = array(
+                            array(
+                                    'type' => variable_get("ACL_RED_READ"),
+                                    'name' => t('Reduced Read'),
+                                    'value' => FALSE,
+                            ),
+                        );
  *  - defaults_group:	Array with groups and their default permission values. e.g.:
- 						$defaults_group = array(
-							(object)array (
-									'id' => $group_id,
-									'name' => $group_name,
-									'level' => variable_get("ACL_READ"),
-							),
-						);
+                        $defaults_group = array(
+                            (object)array (
+                                    'id' => $group_id,
+                                    'name' => $group_name,
+                                    'level' => variable_get("ACL_READ"),
+                            ),
+                        );
  *  - acl_id:			acl id string of element to modify acl permissions
  *  - child_acl_ids:	Array with child acl id strings of acl_id to propagate the permisssions to. e.g.:
-	 					$child_acl_ids = array ($id_1, $id2,);
+                        $child_acl_ids = array ($id_1, $id2,);
  *  - add_element:		Boolean indicating if new users or groups may be added
  *
  * @return an array with theme template information
@@ -346,7 +346,7 @@ function c_acl_theme() {
 							'defaults_group' => NULL,
 							'acl_id' => 0,
 							'child_acl_ids' => NULL,
-							'add_element' => TRUE, 
+							'add_element' => TRUE,
 					)
 			)
 	);
