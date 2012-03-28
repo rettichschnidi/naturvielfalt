@@ -5,6 +5,215 @@
 
 function organism_schema() {
 	return array (
+  'organism_artgroup' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'parent' => 
+      array (
+        'description' => 'No description for column parent available, please fix',
+        'type' => 'int',
+        'default' => '1',
+      ),
+      'pos' => 
+      array (
+        'description' => 'No description for column pos available, please fix',
+        'type' => 'int',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'organism_artgroup_detmethod' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
+      ),
+      'organism_artgroup_detmethod_type_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_detmethod_type_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_detmethod_2_organism_artgroup_detmethod_type' => 
+      array (
+        'table' => 'organism_artgroup_detmethod_type',
+        'columns' => 
+        array (
+          'organism_artgroup_detmethod_type_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'organism_artgroup_detmethod_subscription' => 
+  array (
+    'fields' => 
+    array (
+      'organism_artgroup_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_artgroup_detmethod_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_detmethod_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_detmethod_subscription_2_organism_artgroup' => 
+      array (
+        'table' => 'organism_artgroup',
+        'columns' => 
+        array (
+          'organism_artgroup_id' => 'id',
+        ),
+      ),
+      'organism_artgroup_detmethod_subscription_2_organism_artgroup_detmethod' => 
+      array (
+        'table' => 'organism_artgroup_detmethod',
+        'columns' => 
+        array (
+          'organism_artgroup_detmethod_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'organism_artgroup_detmethod_type' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
+      ),
+      'format' => 
+      array (
+        'description' => 'No description for column format available, please fix',
+        'type' => 'text',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'organism_artgroup_detmethod_values' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'value' => 
+      array (
+        'description' => 'No description for column value available, please fix',
+        'type' => 'text',
+      ),
+      'organism_artgroup_detmethod' => 
+      array (
+        'description' => 'No description for column organism_artgroup_detmethod available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_detmethod_values_2_organism_artgroup_detmethod' => 
+      array (
+        'table' => 'organism_artgroup_detmethod',
+        'columns' => 
+        array (
+          'organism_artgroup_detmethod' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'organism_artgroup_subscription' => 
+  array (
+    'fields' => 
+    array (
+      'organism_artgroup_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_id' => 
+      array (
+        'description' => 'Die eigene Id, wird fortlaufend inkrementiert.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_subscription_2_organism_artgroup' => 
+      array (
+        'table' => 'organism_artgroup',
+        'columns' => 
+        array (
+          'organism_artgroup_id' => 'id',
+        ),
+      ),
+      'organism_artgroup_subscription_2_organism' => 
+      array (
+        'table' => 'organism',
+        'columns' => 
+        array (
+          'organism_id' => 'id',
+        ),
+      ),
+    ),
+  ),
   'organism_attribute_value' => 
   array (
     'fields' => 
@@ -31,6 +240,7 @@ function organism_schema() {
         'description' => 'Falls der valuetype = b, dann kann wird der Boolean hier gespeichert. ',
         'type' => 'int',
         'size' => 'tiny',
+        'pgsql_type' => 'boolean',
       ),
       'number_value' => 
       array (
@@ -354,7 +564,7 @@ function organism_schema() {
         'table' => 'organism_classification_level',
         'columns' => 
         array (
-          'prime_father_id' => 'id',
+          'parent_id' => 'id',
         ),
       ),
     ),
@@ -754,6 +964,7 @@ function organism_schema() {
         'type' => 'int',
         'not null' => 'TRUE',
         'size' => 'tiny',
+        'pgsql_type' => 'boolean',
       ),
     ),
     'unique keys' => 
