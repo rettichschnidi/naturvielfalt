@@ -26,7 +26,8 @@ drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(
 	drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
 
-if (isset($options['tableWidth']) && $options['tableWidth'] > 0) {
+if (isset($options['tableWidth'])
+		) {
 	$tableWidth = $options['tableWidth'];
 } else {
 	$tableWidth = 800;
@@ -38,21 +39,28 @@ if (isset($options['tableHeight']) && $options['tableHeight'] > 0) {
 	$tableHeight = 200;
 }
 
+/**
+ * Calculate the width of each column
+ */
 $allHeaders = "";
 $allWidths = 0;
 foreach ($header as $head) {
+	// jump over invisible headers
 	$visible = isset($head['hide']) ? !$head['hide'] : true;
 	if ($visible) {
-
-		if (isset($head['width'])) {
+		if (isset($head['width']) && is_int($head['width'])) {
 			$allWidths = $allWidths + $head['width'];
 		} else {
 			$allHeaders .= $head['name'];
 		}
 	}
 }
+
+/**
+ * Does something as well
+ */
 $countHeadChars = strlen($allHeaders);
-if ($countHeadChars > 0) {
+if (is_int($tableWidth) && $countHeadChars > 0) {
 	$charTableSize = ($tableWidth - $allWidths - 62) / $countHeadChars;
 } else {
 	$charTableSize = 0;
@@ -153,12 +161,13 @@ searchitems : [{display: Drupal.t('ALL'), name : '*', isdefault: true}],
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",
 usepager: true,
-<?php if($title) echo "title: '".$title."'," ?>
+<?php if ($title)
+	echo "title: '" . $title . "'," ?>
 useRp: true,
 rp: 15,
 showTableToggleBtn: true,
-width: <?php echo $tableWidth; ?>,
-height: <?php echo $tableHeight; ?>,
+width: <?php echo "'$tableWidth'"; ?>,
+height: <?php echo "'$tableHeight'"; ?>,
 tableId: '<?php echo $id_table; ?>'
 });
 <?php if (isset($options['rowClick']))
