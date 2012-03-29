@@ -23,12 +23,14 @@ DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
 /* Drop Tables */
 
+DROP TABLE IF EXISTS organism_artgroup_attr_subscription;
 DROP TABLE IF EXISTS organism_artgroup_detmethod_subscription;
 DROP TABLE IF EXISTS organism_artgroup_subscription;
 DROP TABLE IF EXISTS organism_artgroup;
-DROP TABLE IF EXISTS organism_artgroup_detmethod_values;
+DROP TABLE IF EXISTS organism_artgroup_attr_values;
+DROP TABLE IF EXISTS organism_artgroup_attr;
+DROP TABLE IF EXISTS organism_artgroup_attr_type;
 DROP TABLE IF EXISTS organism_artgroup_detmethod;
-DROP TABLE IF EXISTS organism_artgroup_detmethod_type;
 DROP TABLE IF EXISTS organism_attribute_value_subscription;
 DROP TABLE IF EXISTS organism_attribute_value;
 DROP TABLE IF EXISTS organism_classification_lang;
@@ -49,7 +51,7 @@ DROP TABLE IF EXISTS public.organism_attribute;
 
 CREATE TABLE organism_artgroup
 (
-	id serial NOT NULL,
+	id serial NOT NULL UNIQUE,
 	name text NOT NULL,
 	parent int DEFAULT 1,
 	pos int,
@@ -57,45 +59,67 @@ CREATE TABLE organism_artgroup
 ) WITHOUT OIDS;
 
 
-CREATE TABLE organism_artgroup_detmethod
+CREATE TABLE organism_artgroup_attr
 (
-	id serial NOT NULL,
+	id serial NOT NULL UNIQUE,
 	name text,
-	organism_artgroup_detmethod_type_id int NOT NULL,
+	organism_artgroup_attr_type_id int NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
 
-CREATE TABLE organism_artgroup_detmethod_subscription
+CREATE TABLE organism_artgroup_attr_subscription
 (
+	id serial NOT NULL UNIQUE,
 	organism_artgroup_id int NOT NULL,
-	organism_artgroup_detmethod_id int NOT NULL
+	organism_artgroup_attr_id int NOT NULL,
+	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
 
-CREATE TABLE organism_artgroup_detmethod_type
+CREATE TABLE organism_artgroup_attr_type
 (
-	id serial NOT NULL,
+	id serial NOT NULL UNIQUE,
 	name text,
 	format text,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
 
-CREATE TABLE organism_artgroup_detmethod_values
+CREATE TABLE organism_artgroup_attr_values
 (
-	id serial NOT NULL,
+	id serial NOT NULL UNIQUE,
 	value text,
-	organism_artgroup_detmethod int NOT NULL,
+	organism_artgroup_attr_values_id int NOT NULL,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_detmethod
+(
+	id serial NOT NULL UNIQUE,
+	name text,
+	cscf_id int,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_detmethod_subscription
+(
+	id serial NOT NULL UNIQUE,
+	organism_artgroup_id int NOT NULL,
+	organism_artgroup_detmethod_id int NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
 
 CREATE TABLE organism_artgroup_subscription
 (
+	id serial NOT NULL UNIQUE,
 	organism_artgroup_id int NOT NULL,
 	-- Die eigene Id, wird fortlaufend inkrementiert.
-	organism_id int NOT NULL
+	organism_id int NOT NULL,
+	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
 
@@ -281,6 +305,14 @@ CREATE TABLE public.organism_habitat_subscription
 
 /* Create Foreign Keys */
 
+ALTER TABLE organism_artgroup_attr_subscription
+	ADD FOREIGN KEY (organism_artgroup_id)
+	REFERENCES organism_artgroup (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
 ALTER TABLE organism_artgroup_detmethod_subscription
 	ADD FOREIGN KEY (organism_artgroup_id)
 	REFERENCES organism_artgroup (id)
@@ -297,25 +329,33 @@ ALTER TABLE organism_artgroup_subscription
 ;
 
 
+ALTER TABLE organism_artgroup_attr_subscription
+	ADD FOREIGN KEY (organism_artgroup_attr_id)
+	REFERENCES organism_artgroup_attr (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_attr_values
+	ADD FOREIGN KEY (organism_artgroup_attr_values_id)
+	REFERENCES organism_artgroup_attr (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+ALTER TABLE organism_artgroup_attr
+	ADD FOREIGN KEY (organism_artgroup_attr_type_id)
+	REFERENCES organism_artgroup_attr_type (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
 ALTER TABLE organism_artgroup_detmethod_subscription
 	ADD FOREIGN KEY (organism_artgroup_detmethod_id)
 	REFERENCES organism_artgroup_detmethod (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE organism_artgroup_detmethod_values
-	ADD FOREIGN KEY (organism_artgroup_detmethod)
-	REFERENCES organism_artgroup_detmethod (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE organism_artgroup_detmethod
-	ADD FOREIGN KEY (organism_artgroup_detmethod_type_id)
-	REFERENCES organism_artgroup_detmethod_type (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
@@ -370,7 +410,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -378,7 +418,7 @@ ALTER TABLE organism_classification_level
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT

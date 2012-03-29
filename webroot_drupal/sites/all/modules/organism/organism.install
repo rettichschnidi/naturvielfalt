@@ -33,9 +33,193 @@ function organism_schema() {
         'type' => 'int',
       ),
     ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
     'primary key' => 
     array (
       0 => 'id',
+    ),
+  ),
+  'organism_artgroup_attr' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
+      ),
+      'organism_artgroup_attr_type_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_attr_type_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_attr_2_organism_artgroup_attr_type' => 
+      array (
+        'table' => 'organism_artgroup_attr_type',
+        'columns' => 
+        array (
+          'organism_artgroup_attr_type_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'organism_artgroup_attr_subscription' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'organism_artgroup_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_artgroup_attr_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_attr_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_attr_subscription_2_organism_artgroup' => 
+      array (
+        'table' => 'organism_artgroup',
+        'columns' => 
+        array (
+          'organism_artgroup_id' => 'id',
+        ),
+      ),
+      'organism_artgroup_attr_subscription_2_organism_artgroup_attr' => 
+      array (
+        'table' => 'organism_artgroup_attr',
+        'columns' => 
+        array (
+          'organism_artgroup_attr_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'organism_artgroup_attr_type' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
+      ),
+      'format' => 
+      array (
+        'description' => 'No description for column format available, please fix',
+        'type' => 'text',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'organism_artgroup_attr_values' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'value' => 
+      array (
+        'description' => 'No description for column value available, please fix',
+        'type' => 'text',
+      ),
+      'organism_artgroup_attr_values_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_attr_values_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'organism_artgroup_attr_values_2_organism_artgroup_attr' => 
+      array (
+        'table' => 'organism_artgroup_attr',
+        'columns' => 
+        array (
+          'organism_artgroup_attr_values_id' => 'id',
+        ),
+      ),
     ),
   ),
   'organism_artgroup_detmethod' => 
@@ -53,33 +237,34 @@ function organism_schema() {
         'description' => 'No description for column name available, please fix',
         'type' => 'text',
       ),
-      'organism_artgroup_detmethod_type_id' => 
+      'cscf_id' => 
       array (
-        'description' => 'No description for column organism_artgroup_detmethod_type_id available, please fix',
+        'description' => 'No description for column cscf_id available, please fix',
         'type' => 'int',
-        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
       ),
     ),
     'primary key' => 
     array (
       0 => 'id',
     ),
-    'foreign keys' => 
-    array (
-      'organism_artgroup_detmethod_2_organism_artgroup_detmethod_type' => 
-      array (
-        'table' => 'organism_artgroup_detmethod_type',
-        'columns' => 
-        array (
-          'organism_artgroup_detmethod_type_id' => 'id',
-        ),
-      ),
-    ),
   ),
   'organism_artgroup_detmethod_subscription' => 
   array (
     'fields' => 
     array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
       'organism_artgroup_id' => 
       array (
         'description' => 'No description for column organism_artgroup_id available, please fix',
@@ -92,6 +277,17 @@ function organism_schema() {
         'type' => 'int',
         'not null' => 'TRUE',
       ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
     ),
     'foreign keys' => 
     array (
@@ -113,74 +309,16 @@ function organism_schema() {
       ),
     ),
   ),
-  'organism_artgroup_detmethod_type' => 
-  array (
-    'fields' => 
-    array (
-      'id' => 
-      array (
-        'description' => 'No description for column id available, please fix',
-        'type' => 'serial',
-        'not null' => 'TRUE',
-      ),
-      'name' => 
-      array (
-        'description' => 'No description for column name available, please fix',
-        'type' => 'text',
-      ),
-      'format' => 
-      array (
-        'description' => 'No description for column format available, please fix',
-        'type' => 'text',
-      ),
-    ),
-    'primary key' => 
-    array (
-      0 => 'id',
-    ),
-  ),
-  'organism_artgroup_detmethod_values' => 
-  array (
-    'fields' => 
-    array (
-      'id' => 
-      array (
-        'description' => 'No description for column id available, please fix',
-        'type' => 'serial',
-        'not null' => 'TRUE',
-      ),
-      'value' => 
-      array (
-        'description' => 'No description for column value available, please fix',
-        'type' => 'text',
-      ),
-      'organism_artgroup_detmethod' => 
-      array (
-        'description' => 'No description for column organism_artgroup_detmethod available, please fix',
-        'type' => 'int',
-        'not null' => 'TRUE',
-      ),
-    ),
-    'primary key' => 
-    array (
-      0 => 'id',
-    ),
-    'foreign keys' => 
-    array (
-      'organism_artgroup_detmethod_values_2_organism_artgroup_detmethod' => 
-      array (
-        'table' => 'organism_artgroup_detmethod',
-        'columns' => 
-        array (
-          'organism_artgroup_detmethod' => 'id',
-        ),
-      ),
-    ),
-  ),
   'organism_artgroup_subscription' => 
   array (
     'fields' => 
     array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
       'organism_artgroup_id' => 
       array (
         'description' => 'No description for column organism_artgroup_id available, please fix',
@@ -193,6 +331,17 @@ function organism_schema() {
         'type' => 'int',
         'not null' => 'TRUE',
       ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
     ),
     'foreign keys' => 
     array (
@@ -564,7 +713,7 @@ function organism_schema() {
         'table' => 'organism_classification_level',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
     ),
