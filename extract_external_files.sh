@@ -5,27 +5,31 @@ if [ ! -d webroot_drupal ]; then
 fi
 
 echo "Untaring modules to webroot"
-for next in `ls external/drupal/modules/*.tar.gz`
-    do
-        echo "$next"
-        tar -xzf $next -C webroot_drupal/sites/all/modules/
-    done
+for next in `ls external/drupal/modules/*.tar.gz`;do
+	echo "$next"
+	tar -xzf $next -C webroot_drupal/sites/all/modules/
+done
+
+echo "Untaring themes to webroot"
+for next in `ls external/drupal/themes/*.tar.gz`;do
+	echo "$next"
+	tar -xzf $next -C webroot_drupal/sites/all/themes/
+done
 
 #echo "Untaring files ~700MB"
 #tar -xzf external/drupal/files/files.tar.gz -C webroot_drupal/sites/default/files/
 
-for next in `ls external/drupal/core/*.tar.gz`
-	do
-		echo "Untaring drupal - $next"
-		tar -xzf $next -C external/drupal/core/
-	done
+for next in `ls external/drupal/core/*.tar.gz`;do
+	echo "Untaring drupal - $next"
+	tar -xzf $next -C external/drupal/core/
+done
 
-for next in `ls -d external/drupal/core/*/`
-	do
-		echo "Copy drupal files to webroot"
-		cp -R $next* webroot_drupal/
-		echo "Remove temp drupal files"
-		rm -rf $next
-	done
+for next in `ls -d external/drupal/core/*/`;do
+	echo "Copy drupal files to webroot"
+	cp -R $next* webroot_drupal/
+	echo "Remove temp drupal files"
+	rm -rf $next
+done
+
 cp external/drupal/translations-core/drupal-* webroot_drupal/profiles/standard/translations/
 exit 0
