@@ -11,7 +11,7 @@ module_load_include('inc', 'organism', 'organism');
  * Menu callback. This will be called for visits to /organism/json.
  * Per default it returns all classifier as a json.
  * Post-Requests from datatable are supportet as well (search, partial response, offset, etc).
- * 
+ *
  * Example JSON answer:
  * {
  *  "page":null,
@@ -61,7 +61,7 @@ function organism_show_classifiers_json() {
 	        COUNT(ocl.id) - 1 AS levelcount,
 	        organismcount.cnt
 	    FROM
-	        drupal_organism_classification oc 
+	        drupal_organism_classification oc
 	        JOIN drupal_organism_classification_level ocl ON oc.organism_classification_level_id = ocl.prime_father_id
 	        JOIN (
 	            SELECT
@@ -69,7 +69,7 @@ function organism_show_classifiers_json() {
 	                COUNT(ocs.id) AS cnt
 	            FROM
 	                drupal_organism_classification_subscription ocs
-	                JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id 
+	                JOIN drupal_organism_classification oc ON oc.id = ocs.organism_classification_id
 	            GROUP BY
 	                prime_father_id
 	        )
@@ -91,7 +91,7 @@ function organism_show_classifiers_json() {
 								COUNT(ocs.id) AS cnt
 							FROM
 								{organism_classification_subscription} ocs
-								JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id 
+								JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
 							GROUP BY
 								prime_father_id
 						) AS organismcount ON organismcount.prime_father_id = oc.prime_father_id";
@@ -224,7 +224,7 @@ function organism_show_classification_organismjson($classificationid) {
 	                -- Get the left_value and right_value
 	                -- Those values will allow us to recieve the subtree
 	                -- Example result:
-	                --  prime_father_id | left_value | right_value 
+	                --  prime_father_id | left_value | right_value
 	                -- -----------------+------------+-------------
 	                --                1 |          4 |           7
 	                -----------------------------------------------
@@ -242,7 +242,7 @@ function organism_show_classification_organismjson($classificationid) {
 	                -----------------------------------------------------
 	                -- Get all organisms within those subclassifications
 	                -- Example result:
-	                --  organism_id 
+	                --  organism_id
 	                -- -------------
 	                --        20706
 	                --        20707
@@ -264,7 +264,7 @@ function organism_show_classification_organismjson($classificationid) {
 	                ----------------------------------------------------------------------------------
 	                -- For each organism, get the classification it is subscribed to
 	                -- Examble result:
-	                --  organism_id |      oc_name       | left_value | right_value | prime_father_id 
+	                --  organism_id |      oc_name       | left_value | right_value | prime_father_id
 	                -- -------------+--------------------+------------+-------------+-----------------
 	                --        20706 | Acipenser          |          5 |           6 |               1
 	                --        20707 | Anguilla           |         11 |          12 |               1
@@ -291,7 +291,7 @@ function organism_show_classification_organismjson($classificationid) {
 	                ------------------------------------------------------------------------
 	                -- Join table above (included_organisms_with_lowest_classification) to
 	                -- include all levels
-	                --  organism_id |      oc_name       | organism_classification_level_id 
+	                --  organism_id |      oc_name       | organism_classification_level_id
 	                -- -------------+--------------------+----------------------------------
 	                --        20706 | CSCF               |                                1
 	                --        20706 | Actinopterygii     |                                2
@@ -324,7 +324,7 @@ function organism_show_classification_organismjson($classificationid) {
 	            -- -------------------------------------------------
 	            -- Create a view with all classification level names
 	            -- Example result:
-	            --    name   
+	            --    name
 	            -- ----------
 	            --  CSCF
 	            --  class
@@ -333,7 +333,7 @@ function organism_show_classification_organismjson($classificationid) {
 	            --  genus
 	            --  subgenus
 	            -- --------------------------------------------------
-	            CREATE TEMP VIEW mytempviewlevel AS 
+	            CREATE TEMP VIEW mytempviewlevel AS
 	                WITH oc_level AS (SELECT
 	                        DISTINCT ocl.prime_father_id
 	                    FROM
@@ -373,7 +373,7 @@ function organism_show_classification_organismjson($classificationid) {
 	if(empty($classificationleveldata)) {
 		return drupal_json_output(array('error' => 'No classifications found'));
 	}
-	
+
 	// build an array with all classification level names
 	$levelnamearray = array();
 	foreach ($classificationleveldata as $classificationlevel) {
@@ -391,7 +391,7 @@ function organism_show_classification_organismjson($classificationid) {
 	        -- Get the left_value and right_value
 	        -- Those values will allow us to recieve the subtree
 	        -- Example result:
-	        --  prime_father_id | left_value | right_value 
+	        --  prime_father_id | left_value | right_value
 	        -- -----------------+------------+-------------
 			--                1 |          4 |           7
 	        -----------------------------------------------
@@ -409,7 +409,7 @@ function organism_show_classification_organismjson($classificationid) {
 	        -----------------------------------------------------
 	        -- Get all organisms within those subclassifications
 	        -- Example result:
-	        --  organism_id 
+	        --  organism_id
 	        -- -------------
 	        --        20706
 	        --        20707
@@ -431,7 +431,7 @@ function organism_show_classification_organismjson($classificationid) {
 	        ----------------------------------------------------------------------------------
 	        -- For each organism, get the classification it is subscribed to
 	        -- Examble result:
-	        --  organism_id |      oc_name       | left_value | right_value | prime_father_id 
+	        --  organism_id |      oc_name       | left_value | right_value | prime_father_id
 	        -- -------------+--------------------+------------+-------------+-----------------
 	        --        20706 | Acipenser          |          5 |           6 |               1
 	        --        20707 | Anguilla           |         11 |          12 |               1
@@ -458,7 +458,7 @@ function organism_show_classification_organismjson($classificationid) {
 	        ------------------------------------------------------------------------
 	        -- Join table above (included_organisms_with_lowest_classification) to
 	        -- include all levels
-	        --  organism_id |      oc_name       | organism_classification_level_id 
+	        --  organism_id |      oc_name       | organism_classification_level_id
 	        -- -------------+--------------------+----------------------------------
 	        --        20706 | CSCF               |                                1
 	        --        20706 | Actinopterygii     |                                2
@@ -491,7 +491,7 @@ function organism_show_classification_organismjson($classificationid) {
 	    -- -------------------------------------------------
 	    -- Create a view with all classification level names
 	    -- Example result:
-	    --    name   
+	    --    name
 	    -- ----------
 	    --  CSCF
 	    --  class
@@ -500,7 +500,7 @@ function organism_show_classification_organismjson($classificationid) {
 	    --  genus
 	    --  subgenus
 	    -- --------------------------------------------------
-	    CREATE TEMP VIEW mytempviewlevel AS 
+	    CREATE TEMP VIEW mytempviewlevel AS
 	        WITH oc_level AS (SELECT
 	                DISTINCT ocl.prime_father_id
 	            FROM
@@ -528,7 +528,7 @@ function organism_show_classification_organismjson($classificationid) {
 				) AS nn(
 				   organism_id integer, $levelnamesdatastring
 				) JOIN {organism_scientific_name} osn ON osn.organism_id = nn.organism_id
-				   LEFT JOIN (SELECT organism_id, name AS ol_name FROM {organism_lang} WHERE languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id	
+				   LEFT JOIN (SELECT organism_id, name AS ol_name FROM {organism_lang} WHERE languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id
 	";
 
 	/* Set the db fields to select */
@@ -592,4 +592,105 @@ function organism_show_organism_json($organismid) {
 	$output = datatable_dbRequest($sql, $arguments);
 	return drupal_json_output($output);
 }
+
+/**
+ * Menu callback; AJAX autocomplete for selecting organisms
+ *
+ * @return array Array of organisms matching the term having the following keys:
+ *  - "id": The ID of the organism
+ *  - "label": The name of the organism
+ *  - "label_latin": The latin name of the organism
+ *  - "old_id"[Optional]: The ID of the initially found organism
+ *    (only available if the found organism has a reference to an official one)
+ *  - "old_label"[Optional]: The name of the initially found organism
+ *    (only available if the found organism has a reference to an official one)
+ *  - "old_label_latin"[Optional]: The latin name of the initially found organism
+ *    (only available if the found organism has a reference to an official one)
+ */
+function organism_search_organism_json($classification = false, $term = false, $plain = false) {
+	global $user;
+
+	module_load_include('inc', 'organism', 'organism.artgroup');
+
+	$langcode = isset($user->language) ? $user->language : 'de';
+
+	if (!$classification )
+		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id'] : $classification = false;
+	$type_id = $classification;
+
+	$fauna = ($type_id == 16 ? false : true);
+
+	if (!$term){
+		if(isset($_REQUEST['term'])){
+			$term = $_REQUEST['term'];
+		}else{
+			return drupal_json_output(array('label' => 'No search term'));
+		}
+	}
+
+	$artgroup_join = "";
+
+	if(isset($_REQUEST['artgroup'])){
+		$artgroup = $_REQUEST['artgroup'];
+		if($artgroup > 0 && $artgroup < 1000000){
+			$artgroup_ids = organism_artgroup_get_children($artgroup);
+			$artgroup_ids[] = $artgroup;
+			$artgroup_join = 'inner join organism_artgroup_subscription as oas on oas.organism_id=o.id
+								inner join organism_artgroup as oa on oa.id=oas.organism_artgroup_id
+								AND ('.organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id').')';
+		}
+	}
+
+	$term = strtolower($term);
+	$terms = explode(' ', trim($term));
+
+	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+
+	$organisms = array();
+
+	$params = array();
+	if($type_id) $params[':inventoryTypeId'] = $type_id;
+	$params[':limit'] = $limit;
+	$params[':lang'] = $langcode;
+	$params[':term'] = '%' . trim($term) . '%';
+
+
+	if(count($terms) > 2){
+		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '% ' . $terms[2] . '%';
+	}elseif(count($terms) > 1){
+		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '%';
+	}else{
+		$params[':term1'] = $terms[0] .'%';
+	}
+
+	$i = 1;
+	$query = 'SELECT ol.organism_id as organism_id, ol.name as ol_name, osn.name as osn_name
+				FROM organism AS o
+				INNER JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
+				INNER JOIN organism_scientific_name AS osn ON osn.organism_id = o.id
+				'.$artgroup_join.'
+				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
+				ORDER BY o.id
+				LIMIT :limit;';
+
+
+	$result = db_query($query, $params);
+	foreach ($result as $record) {
+		$organism = array(
+				'id' => $record -> organism_id,
+				'label' => strval($record -> ol_name),
+				'label_latin' => $record -> osn_name
+
+		);
+
+		$organisms[] = $organism;
+	}
+
+	if (!$plain)
+		$organisms = drupal_json_output($organisms);
+
+	debug($organisms, 'JSON_OUTPUT', true);
+	return $organisms;
+}
+
 ?>
