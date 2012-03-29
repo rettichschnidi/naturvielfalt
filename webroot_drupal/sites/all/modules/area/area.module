@@ -142,8 +142,8 @@ function area_menu() {
 					1
 			),
 			'access callback' => 'area_write_access',
-			'context' => MENU_CALLBACK,
 			'type' => MENU_CALLBACK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.edit.inc',
 	);
 
