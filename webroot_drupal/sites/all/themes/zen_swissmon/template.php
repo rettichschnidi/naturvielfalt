@@ -134,7 +134,7 @@ function zen_swissmon_preprocess_comment(&$variables, $hook) {
  * @param $hook
  *   The name of the template being rendered ("block" in this case.)
  */
-/*s
+/*
 function zen_swissmon_preprocess_block(&$variables, $hook) {
   // Add a count to all the blocks in the region.
   dpm($variables, "variables preprocess block");
@@ -345,9 +345,7 @@ function zen_swissmon_breadcrumb($variables) {
       $heading = '<h2' . drupal_attributes($variables['title_attributes_array']) . '>' . $variables['title'] . '</h2>';
      
       $admin = '';
-      if ($user == NULL) {
-        global $user;
-      }
+      global $user;
       if (in_array('Administratoren', array_values($user->roles))) { // Check to see if $user has the administrator role. 
         $admin .= '<span style="color:red">[Administrator] &nbsp;</span>';
       }

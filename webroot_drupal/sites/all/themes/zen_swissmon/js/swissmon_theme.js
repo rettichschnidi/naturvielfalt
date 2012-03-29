@@ -25,7 +25,7 @@
 		return this.each(function() {
 			$(this).height(tallest).css("overflow:hidden","auto");
 		});
-	}
+	};
 })(jQuery);
  
 (function ($) {
