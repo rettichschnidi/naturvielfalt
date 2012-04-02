@@ -124,8 +124,12 @@ function area_json($area_id = false) {
  * 
  * @param unknown_type $area_id
  */
-function area_updategeometry_json($area_id = null) {
-	assert($area_id != NULL);
+function area_updategeometry_json($areadata = null) {
+	assert($areadata != NULL);
+	if (!isset($_POST['area_points']) || !isset($_POST['type'])) {
+		assert(false);
+		return;
+	}
 	$jsonCoords = $_POST['area_points'];
 	$areaType = $_POST['type'];
 	$coordinates = json_decode($jsonCoords, true);
@@ -160,12 +164,12 @@ function area_updategeometry_json($area_id = null) {
 					'country' => $_POST['country'],
 					'township' => $_POST['township'],
 					'modify_time' => 'NOW()',
-					'altitude' => $_POST[''],
+					'altitude' => $_POST['altitude'],
 			))
-		->condition('id', $area_id)
+		->condition('id', $areadata['id'])
 		->execute();
 	db_update('area')->expression('geom', $geom)
-		->condition('id', $area_id)
+		->condition('id', $areadata['id'])
 		->execute();
 }
 ?>

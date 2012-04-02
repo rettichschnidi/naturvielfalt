@@ -42,7 +42,7 @@ function area_menu() {
 			'file' => 'area.json.inc',
 	);
 	/* Get all available areas as json*/
-	$items['area/%/updategeometry/json'] = array(
+	$items['area/%area/updategeometry/json'] = array(
 			'title' => t('Update the geometry'),
 			'description' => t('Update the geometry of an area.'),
 			'page callback' => 'area_updategeometry_json',
@@ -111,6 +111,7 @@ function area_menu() {
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.show.inc',
+			'weight' => 1
 	);
 
 	/* Edit an area */
@@ -128,6 +129,7 @@ function area_menu() {
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.edit.inc',
+			'weight' => 2
 	);
 
 	/* Edit an area */
@@ -145,6 +147,25 @@ function area_menu() {
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.edit.inc',
+			'weight' => 3
+	);
+
+	/* Edit an area */
+	$items['area/%area/permissions'] = array(
+			'title' => t('Edit permission'),
+			'description' => t('Edit the permission of this area.'),
+			'page callback' => 'area_edit_permission',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_admin_access',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.admin.inc',
+			'weight' => 4
 	);
 
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
@@ -175,6 +196,7 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
+
 	return $items;
 }
 
@@ -295,7 +317,25 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 }
 
 /**
- * Check if user has write access to area
+ * Check if user has admin access to this area
+ *
+ * @param array $areadata
+ * @return boolean true if access ok, false if not
+ * @todo Implementation
+ */
+function area_admin_access($areadata = NULL) {
+	if ($areadata == NULL) {
+		return false;
+	}
+
+	if (isset($areadata['acl_id'])) {
+		return check_permission($areadata['acl_id'], variable_get('ACL_ADMIN'));
+	}
+	return false;
+}
+
+/**
+ * Check if user has write access to this area
  *
  * @param array $areadata
  * @return boolean true if access ok, false if not
@@ -313,7 +353,7 @@ function area_write_access($areadata = NULL) {
 }
 
 /**
- * Check if user has read access to area
+ * Check if user has read access to this area
  *
  * @param array $areadata
  * @return boolean true if access ok, false if not
@@ -330,6 +370,7 @@ function area_read_access($areadata = NULL) {
 	return false;
 }
 
+// needed for function area_get_full_dataset_of_specific_area
 module_load_include('inc', 'area', 'area');
 
 /**
