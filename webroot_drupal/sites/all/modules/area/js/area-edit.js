@@ -26,9 +26,6 @@ jQuery(document).ready(
 				var map = areabasic.googlemap;
 				var bounds = overlayElement.getBounds();
 				map.fitBounds(bounds);
-				if(map.getZoom() > 15) {
-					map.setZoom(15);
-				}
 				overlayElement.setEditable(true);
 				google.maps.event.addListener(areabasic.googlemap,
 						'rightclick', function(mouseevent) {
