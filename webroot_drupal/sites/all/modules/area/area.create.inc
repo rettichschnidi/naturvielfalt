@@ -129,7 +129,7 @@ function area_create_new_area($form, &$form_state) {
 
 		drupal_set_message(
 			t(
-				"Area @areaname got created.",
+				'Area "@areaname" got created.',
 				array('@areaname' => $form_state['values']['fieldname'])));
 		drupal_goto('area/' . $area_id . '/show');
 	} else {
