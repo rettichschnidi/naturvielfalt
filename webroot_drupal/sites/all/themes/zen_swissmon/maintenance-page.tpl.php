@@ -64,7 +64,7 @@
       ),
     )); ?>
 
-    <?php if ($page['navigation'] || $main_menu): ?>
+    <?php if ((isset($page['navigation']) && $page['navigation']) || $main_menu): ?>
       <div id="navigation"><div class="section clearfix">
 
         <?php print theme('links__system_main_menu', array(
