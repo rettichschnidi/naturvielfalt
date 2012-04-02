@@ -159,22 +159,17 @@ function Area(map_id) {
 			map : this.googlemap
 		});
 
-		google.maps.event.addListener(this.drawingManager, 'overlaycomplete',
-				function(overlay) {
-					overlay.overlay.setEditable(false);
-
-					// google.maps.event.addListener(infowindow, 'closeclick',
-					// function() {
-					// overlay.overlay.setMap(null);
-					// overlay = null;
-					// });
-
-					var url = Drupal.settings.basePath
-							+ 'area/getnewareanameajaxform';
-					jQuery.get(url, function(data) {
-						me.showInfoWindowToCreateNewArea(overlay.overlay, data);
-						getAddress(overlay.overlay.getPosition(), function(
-								address) {
+		google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(overlay) {
+			overlay.overlay.setEditable(false);
+	
+			var url = Drupal.settings.basePath
+					+ 'area/getnewareanameajaxform';
+			jQuery.get(url, function(data) {
+				me.showInfoWindowToCreateNewArea(
+								overlay.overlay,
+								data);
+				getAddress( overlay.overlay.getPosition(),
+						function(address) {
 							console.log("Address:");
 							console.log(address);
 							jQuery('#edit-canton').val(address.canton);
@@ -182,33 +177,29 @@ function Area(map_id) {
 							jQuery('#edit-locality').val(address.locality);
 							jQuery('#edit-zip').val(address.zip);
 							jQuery('#edit-country').val(address.country);
-							
+	
 							// ugly hack...
-							jQuery('#edit-latitude').val(
-									overlay.overlay.getPosition().lat());
-							jQuery('#edit-longitude').val(
-									overlay.overlay.getPosition().lng());
+							jQuery('#edit-latitude').val(overlay.overlay.getPosition().lat());
+							jQuery('#edit-longitude').val(overlay.overlay.getPosition().lng());
 							jQuery('#edit-area-type').val(overlay.type);
-
+	
 							var area_coords = new Array();
-							overlay.overlay.getAllCoordinates().forEach(
-									function(position) {
-										area_coords.push([ position.lat(),
+							overlay.overlay.getAllCoordinates().forEach(function(position) {
+								area_coords.push([
+												position.lat(),
 												position.lng() ]);
-									});
+							});
 							area_coords = JSON.stringify(area_coords);
 							jQuery('#edit-area-coords').val(area_coords);
-
 						});
-						getAltitude(overlay.overlay.getPosition(), function(
-								altitude) {
-							console.log("Altitude:");
-							console.log(altitude);
-							jQuery('#edit-altitude').val(altitude);
-						});
-					});
-					this.setDrawingMode(null);
-				});
+				getAltitude(overlay.overlay.getPosition(), function(altitude) {
+								console.log("Altitude:");
+								console.log(altitude);
+								jQuery('#edit-altitude').val(altitude);
+							});
+			});
+			this.setDrawingMode(null);
+		});
 	};
 
 	/**
@@ -276,12 +267,20 @@ function Area(map_id) {
 			content : html
 		});
 
+		// Delete overlayElement if window closed
+		google.maps.event.addListener(infowindow, 'closeclick', function() {
+			console.debug("GONE");
+			overlayElement.setMap(null);
+			overlayElement = null;
+			overlayElement.setVisible(false)
+		});
+
 		// move marker a little bit down, (approximately)
 		// centers the infowindow
 		this.googlemap.panBy(0, -200);
 		infowindow.open(this.googlemap, overlayElement);
 	};
-	
+
 	this.createOverlayElementFromJson = function(currentjsonoverlay) {
 		var newoverlay;
 		if (currentjsonoverlay.type == 'polygon') {
@@ -392,28 +391,21 @@ function Area(map_id) {
 		// listen do pressed suggestions and center map on them
 		autocomplete.bindTo('bounds', googlemap);
 
-		google.maps.event
-				.addListener(
-						autocomplete,
-						'place_changed',
-						function() {
-							var place = autocomplete.getPlace();
-							console.log(place);
-							if (typeof place.geometry !== 'undefined') {
-								if (place.geometry.viewport) {
-									googlemap
-											.fitBounds(place.geometry.viewport);
-								} else {
-									console.log(googlemap);
-									googlemap
-											.setCenter(place.geometry.location);
-									googlemap.setZoom(17);
-								}
-							} else {
-								console
-										.error("Search by pressing enter not yet implemented.");
-							}
-						});
+		google.maps.event.addListener(autocomplete,	'place_changed', function() {
+			var place = autocomplete.getPlace();
+			console.log(place);
+			if (typeof place.geometry !== 'undefined') {
+				if (place.geometry.viewport) {
+					googlemap.fitBounds(place.geometry.viewport);
+				} else {
+					console.log(googlemap);
+					googlemap.setCenter(place.geometry.location);
+					googlemap.setZoom(17);
+				}
+			} else {
+				console.error("Search by pressing enter not yet implemented.");
+			}
+		});
 
 		// remove focus from searchinput when map moved
 		google.maps.event.addListener(googlemap, 'bounds_changed', function() {
@@ -437,41 +429,31 @@ function Area(map_id) {
 	getAddress = function(latlng, callback) {
 		var geocoder = new google.maps.Geocoder();
 
-		geocoder
-				.geocode(
-						{
-							'latLng' : latlng
-						},
-						function(results, status) {
-							var address = {};
-							if (status == google.maps.GeocoderStatus.OK) {
-								jQuery
-										.each(
-												results,
-												function(index, result) {
-													if (false) {
-														console
-																.debug("Address from google:");
-														console.debug(result);
-													}
-													if (result.types == 'postal_code') {
-														var length = result.address_components.length;
-														address.zip = result.address_components[0].long_name;
-														address.locality = result.address_components[1].long_name;
-														address.canton = result.address_components[length - 2].short_name;
-														address.country = result.address_components[length - 1].long_name;
-													}
-													if (result.types == 'locality,political') {
-														address.township = result.address_components[0].long_name;
-													}
-												});
-								console.debug(address);
-								callback(address);
-							} else {
-								console.error("Geocoder failed due to: "
-										+ status);
-							}
-						});
+		geocoder.geocode({'latLng' : latlng }, function(results, status) {
+			var address = {};
+			if (status == google.maps.GeocoderStatus.OK) {
+				jQuery.each(results, function(index, result) {
+					if (false) {
+						console.debug("Address from google:");
+						console.debug(result);
+					}
+					if (result.types == 'postal_code') {
+						var length = result.address_components.length;
+						address.zip = result.address_components[0].long_name;
+						address.locality = result.address_components[1].long_name;
+						address.canton = result.address_components[length - 2].short_name;
+						address.country = result.address_components[length - 1].long_name;
+					}
+					if (result.types == 'locality,political') {
+						address.township = result.address_components[0].long_name;
+					}
+				});
+				callback(address);
+			} else {
+				console.error("Geocoder failed due to: "
+						+ status);
+			}
+		});
 	};
 
 	/**
@@ -488,22 +470,18 @@ function Area(map_id) {
 			locations : [ latlng ]
 		};
 
-		elevator
-				.getElevationForLocations(
-						request,
-						function(results, status) {
-							if (status == google.maps.ElevationStatus.OK) {
-								// Retrieve the first result
-								if (results[0]) {
-									var altitude = parseInt(results[0].elevation + 0.5);
-									callback(altitude);
-								}
-							} else {
-								console
-										.debug("Could not get altitute. Errorstatus: "
-												+ status);
-							}
-						});
+		elevator.getElevationForLocations(request, function(results, status) {
+			if (status == google.maps.ElevationStatus.OK) {
+				// Retrieve the first result
+				if (results[0]) {
+					var altitude = parseInt(results[0].elevation + 0.5);
+					callback(altitude);
+				}
+			} else {
+				console.debug("Could not get altitute. Errorstatus: "
+								+ status);
+			}
+		});
 	};
 
 	// Initialize a basic map (no search functionality, no creation tools, etc)
