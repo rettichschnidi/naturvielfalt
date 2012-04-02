@@ -44,7 +44,8 @@ ul.primary li.active a,
 ul.secondary li.active a
 ul.secondary li.active a:hover {
   font-weight: bold;
-  color:#3D7967;
+/*  color:#3D7967; */
+  color: black;
   background-color: white;
 }
 ul.secondary a.active {

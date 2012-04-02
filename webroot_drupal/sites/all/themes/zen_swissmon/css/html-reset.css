@@ -409,22 +409,26 @@ button {
 
 a:link,
 a:visited {
-  color: #3d7967;
+/*  color: #3d7967; */
+  color: white;
   text-decoration: none;
 }
 
 a:hover {
-  color: #3d7967;
+/*  color: #3d7967; */
+  color: white;
   text-decoration: underline;
 }
 
 a:active,
 a.active {
-  color: #2c5348;
+/*  color: #2c5348; */
+  color: white;
 }
 
 li a.active {
-    color: #2c5348;
+/*  color: #2c5348; */
+  color: white;
 }
 
 /*
