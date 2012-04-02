@@ -25,6 +25,11 @@ function area_edit_geometry($areadata = NULL) {
 }
 
 function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
+	$output['helptext'] = array(
+			'#type' => 'markup',
+			'#markup' => t(
+				'<p>Please note: Changes will be saved instantly.</p>')
+	);
 	$output['map'] = array(
 			'#theme' => 'area',
 			'#search' => false,
@@ -32,11 +37,6 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 			'#showall' => false,
 			'#edit' => true,
 			'#area_id' => (int) $areadata['id']
-	);
-
-	$output['button'] = array(
-			'#type' => 'submit',
-			'#value' => t('Save')
 	);
 	return $output;
 }
