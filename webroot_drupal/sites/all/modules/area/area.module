@@ -178,6 +178,13 @@ function area_menu() {
 	return $items;
 }
 
+// function area_admin_paths_alter(&$paths) {
+// 	$paths = array(
+// 			'area/*/editgeometry' => TRUE,
+// 	);
+// 	return $paths;
+// }
+
 /**
  * Implements hook_theme()
  *
