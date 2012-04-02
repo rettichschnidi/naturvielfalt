@@ -16,7 +16,7 @@ function Area(map_id) {
 	// map holds the google maps object
 	this.googlemap = undefined;
 	// Switzerland almostly fits at this level
-	this.zoom = 8;
+	this.defaultZoom = 8;
 	// points to the currently selected element
 	this.selectedElement = undefined;
 	// points to last created element
@@ -31,6 +31,9 @@ function Area(map_id) {
 	// there is just one at a time
 	this.visibleInfoWindow = undefined;
 	this.drawingManager = undefined;
+	
+	this.automaticallySaveLocationListener = undefined;
+	
 	/**
 	 * Creates the google maps object and attaches it to the element with the id
 	 * this.map_id.
@@ -49,7 +52,7 @@ function Area(map_id) {
 
 		// set the options for a map
 		var mapsOptions = {
-			zoom : this.zoom,
+			zoom : this.defaultZoom,
 			center : center,
 			streetViewControl : false,
 			overviewMapControl : true,
@@ -64,6 +67,21 @@ function Area(map_id) {
 	};
 
 	/**
+	 * Automatically switch to 
+	 */
+	this.createLayerSwitch = function() {
+		var googlemap = this.googlemap;
+		google.maps.event.addListener(this.googlemap, 'zoom_changed', function() {
+			if(googlemap.getZoom() >= 12) {
+				googlemap.setMapTypeId(google.maps.MapTypeId.HYBRID);
+			}
+			if(googlemap.getZoom() < 12) {
+				googlemap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+			}
+		});
+	};
+
+	/**
 	 * Load the last saved location
 	 * 
 	 * @see automaticallySaveLocation(boolean)
@@ -73,12 +91,12 @@ function Area(map_id) {
 			var bounds = window.localStorage.getItem('naturvielfalt_ne_lat');
 			if (bounds != null) {
 				var ls = window.localStorage;
-				var ne = new google.maps.LatLng(ls
-						.getItem('naturvielfalt_ne_lat'), ls
-						.getItem('naturvielfalt_ne_lng'));
-				var sw = new google.maps.LatLng(ls
-						.getItem('naturvielfalt_sw_lat'), ls
-						.getItem('naturvielfalt_sw_lng'));
+				var ne = new google.maps.LatLng(
+						ls.getItem('naturvielfalt_ne_lat'),
+						ls.getItem('naturvielfalt_ne_lng'));
+				var sw = new google.maps.LatLng(
+						ls.getItem('naturvielfalt_sw_lat'),
+						ls.getItem('naturvielfalt_sw_lng'));
 				bounds = new google.maps.LatLngBounds(sw, ne);
 				this.googlemap.fitBounds(bounds);
 			}
@@ -98,7 +116,7 @@ function Area(map_id) {
 			// store location whenever bounds change
 			if (window.localStorage) {
 				var googlemap = this.googlemap;
-				automaticallySaveLocationListener = google.maps.event
+				this.automaticallySaveLocationListener = google.maps.event
 						.addListener(googlemap, 'bounds_changed', function() {
 							var b = googlemap.getBounds();
 							var ne = b.getNorthEast();
@@ -115,7 +133,7 @@ function Area(map_id) {
 			}
 		} else {
 			// remove bounds change listener
-			if (automaticallySaveLocationListener) {
+			if (this.automaticallySaveLocationListener) {
 				google.maps.event
 						.removeListener(automaticallySaveLocationListener);
 			}
@@ -496,9 +514,13 @@ jQuery(document).ready(
 			console.debug("Executing area.js");
 			canvasid = 'map_canvas';
 			if (jQuery('#' + canvasid).length) {
+				/**
+				 * @todo This is ugly (global variable), nut works for now.
+				 */
 				areabasic = new Area(canvasid);
-				// areabasic.initLocation();
-				// areabasic.automaticallySaveLocation();
+				areabasic.createLayerSwitch();
+				areabasic.initLocation();
+				areabasic.automaticallySaveLocation();
 			} else {
 				// display errormessage to console log
 				errormsg = "HTML element with id '" + canvasid
