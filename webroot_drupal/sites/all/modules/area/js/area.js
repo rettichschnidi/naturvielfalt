@@ -123,6 +123,7 @@ function Area(map_id) {
 	};
 
 	this.createDrawingTools = function() {
+		var me = this;
 		// initialize drawing overlay and tools
 		this.drawingManager = new google.maps.drawing.DrawingManager({
 			// do not select a tool yet
@@ -171,6 +172,7 @@ function Area(map_id) {
 					var url = Drupal.settings.basePath
 							+ 'area/getnewareanameajaxform';
 					jQuery.get(url, function(data) {
+						me.showInfoWindowToCreateNewArea(overlay.overlay, data);
 						getAddress(overlay.overlay.getPosition(), function(
 								address) {
 							console.log("Address:");
@@ -180,6 +182,23 @@ function Area(map_id) {
 							jQuery('#edit-locality').val(address.locality);
 							jQuery('#edit-zip').val(address.zip);
 							jQuery('#edit-country').val(address.country);
+							
+							// ugly hack...
+							jQuery('#edit-latitude').val(
+									overlay.overlay.getPosition().lat());
+							jQuery('#edit-longitude').val(
+									overlay.overlay.getPosition().lng());
+							jQuery('#edit-area-type').val(overlay.type);
+
+							var area_coords = new Array();
+							overlay.overlay.getAllCoordinates().forEach(
+									function(position) {
+										area_coords.push([ position.lat(),
+												position.lng() ]);
+									});
+							area_coords = JSON.stringify(area_coords);
+							jQuery('#edit-area-coords').val(area_coords);
+
 						});
 						getAltitude(overlay.overlay.getPosition(), function(
 								altitude) {
@@ -187,22 +206,7 @@ function Area(map_id) {
 							console.log(altitude);
 							jQuery('#edit-altitude').val(altitude);
 						});
-						jQuery('#edit-latitude').val(
-								overlay.overlay.getPosition().lat());
-						jQuery('#edit-longitude').val(
-								overlay.overlay.getPosition().lng());
-						jQuery('#edit-area-type').val(overlay.type);
-
-						var area_coords = new Array();
-						overlay.overlay.getAllCoordinates().forEach(
-								function(position) {
-									area_coords.push([ position.lat(),
-											position.lng() ]);
-								});
-						area_coords = JSON.stringify(area_coords);
-						jQuery('#edit-area-coords').val(area_coords);
 					});
-
 					this.setDrawingMode(null);
 				});
 	};
@@ -233,7 +237,7 @@ function Area(map_id) {
 	};
 
 	/**
-	 * Show a info window for a given area
+	 * Show a info window for a given, existing area
 	 * 
 	 * @param id
 	 *            integer area id
@@ -258,6 +262,26 @@ function Area(map_id) {
 		infowindow.open(this.googlemap, this.currentElement);
 	};
 
+	/**
+	 * Show a info window for a given area
+	 * 
+	 * @param id
+	 *            integer area id
+	 */
+	this.showInfoWindowToCreateNewArea = function(overlayElement, html) {
+		if (this.visibleInfoWindow != null) {
+			this.visibleInfoWindow.close();
+		}
+		var infowindow = this.visibleInfoWindow = new google.maps.InfoWindow({
+			content : html
+		});
+
+		// move marker a little bit down, (approximately)
+		// centers the infowindow
+		this.googlemap.panBy(0, -200);
+		infowindow.open(this.googlemap, overlayElement);
+	};
+	
 	this.createOverlayElementFromJson = function(currentjsonoverlay) {
 		var newoverlay;
 		if (currentjsonoverlay.type == 'polygon') {

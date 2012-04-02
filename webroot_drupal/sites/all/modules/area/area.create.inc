@@ -53,6 +53,7 @@ function area_new_areaname_form($form, &$form_state) {
  * 
  * @param array $form
  * @param array $form_state
+ * @todo Maybe use the ajax version?
  */
 function area_create_new_area($form, &$form_state) {
 	if (false) {
@@ -73,7 +74,7 @@ function area_create_new_area($form, &$form_state) {
 	$township = check_plain($form_state['values']['township']);
 
 	$areaType = check_plain($form_state['values']['area_type']);
-	$altitude = check_plain($form_state['values']['altitude']);
+	$altitude = !empty($form_state['values']['altitude']) ? check_plain($form_state['values']['altitude']) : 0;
 	$jsonCoords = check_plain($form_state['values']['area-coords']);
 	$latitude = check_plain($form_state['values']['latitude']);
 	$longitude = check_plain($form_state['values']['longitude']);

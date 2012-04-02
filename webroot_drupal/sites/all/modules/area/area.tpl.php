@@ -30,7 +30,7 @@ drupal_add_js(
 			. $user->language,
 	array('group' => JS_LIBRARY));
 
-if (is_int((int)$area_id)) {
+if ($area_id > 0) {
 	// has to be included before area.js
 	drupal_add_js("areaid = $area_id;", array('type' => 'inline'));
 }
