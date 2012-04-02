@@ -1,6 +1,11 @@
+<div class="area-search-map">
+  <div id="map">
+    <div id="map_canvas"></div>
+  </div>
+</div>
 <?php
 // include CSS and JavaScripts
-$baseModulPath = drupal_get_path('module', 'area') . '/';
+$baseModulPath = base_path() . drupal_get_path('module', 'area') . '/';
 $baseModulJsPath = $baseModulPath . 'js/';
 $baseModulCssPath = $baseModulPath . 'css/';
 
@@ -16,6 +21,15 @@ global $user;
  *  - region: Set this manually to Switzerland (CH). All requests will be biased by swiss «rules».
  *  - language: Localize the google maps service to the desired language (most likely the users language)
  */
+
+function area_add_js_url($url) {
+	print "<script type='text/javascript' src='$url'></script>";
+}
+
+function area_add_css_url($url) {
+	print "<link href='$url' type='text/css' rel='stylesheet'/>\n";
+}
+
 $libraries = 'geometry';
 
 if ($search) {
@@ -25,46 +39,39 @@ if ($create) {
 	$libraries .= ',drawing';
 }
 
-drupal_add_js(
+area_add_js_url(
 	"http://maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language="
-			. $user->language,
-	array('group' => JS_LIBRARY));
+			. $user->language);
 
 if ($area_id > 0) {
-	// has to be included before area.js
-	drupal_add_js("areaid = $area_id;", array('type' => 'inline'));
+	// should be included before area.js
+	print "<script>areaid = $area_id;</script>";
 }
 
-drupal_add_js($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
-drupal_add_js($baseModulJsPath . 'area-googlemapsapi-extensions.js');
-drupal_add_js($baseModulJsPath . 'area-overlay-style.js');
-drupal_add_js($baseModulJsPath . 'area.js');
+area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
+area_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
+area_add_js_url($baseModulJsPath . 'area-overlay-style.js');
+area_add_js_url($baseModulJsPath . 'area.js');
 
-drupal_add_css($baseModulCssPath . 'area.css');
+area_add_css_url($baseModulCssPath . 'area.css');
 
 if ($search) {
-	drupal_add_css($baseModulCssPath . 'area-search.css');
-	drupal_add_js($baseModulJsPath . 'area-search.js');
+	area_add_css_url($baseModulCssPath . 'area-search.css');
+	area_add_js_url($baseModulJsPath . 'area-search.js');
 }
 
 if ($create) {
-	drupal_add_css($baseModulCssPath . 'area-create.css');
-	drupal_add_js($baseModulJsPath . 'area-create.js');
+	area_add_css_url($baseModulCssPath . 'area-create.css');
+	area_add_js_url($baseModulJsPath . 'area-create.js');
 }
 
 if ($showall) {
-	drupal_add_css($baseModulCssPath . 'area-show-all.css');
-	drupal_add_js($baseModulJsPath . 'area-show-all.js');
+	area_add_css_url($baseModulCssPath . 'area-show-all.css');
+	area_add_js_url($baseModulJsPath . 'area-show-all.js');
 }
 
 if ($edit) {
-	drupal_add_css($baseModulCssPath . 'area-edit.css');
-	drupal_add_js($baseModulJsPath . 'area-edit.js');
+	area_add_css_url($baseModulCssPath . 'area-edit.css');
+	area_add_js_url($baseModulJsPath . 'area-edit.js');
 }
 ?>
-
-<div class="area-search-map">
-  <div id="map">
-    <div id="map_canvas"></div>
-  </div>
-</div>
