@@ -172,7 +172,7 @@ function area_menu() {
 			'access arguments' => array(
 					AREA_CREATE
 			),
-			'type' => MENU_NORMAL_ITEM,
+			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
 	return $items;
