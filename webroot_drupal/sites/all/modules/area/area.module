@@ -115,8 +115,8 @@ function area_menu() {
 
 	/* Edit an area */
 	$items['area/%area/edit'] = array(
-			'title' => t('Edit area'),
-			'description' => t('Edit an existing area .'),
+			'title' => t('Edit area details'),
+			'description' => t('Edit details of an existing area.'),
 			'page callback' => 'area_edit',
 			'page arguments' => array(
 					1
@@ -133,7 +133,7 @@ function area_menu() {
 	/* Edit an area */
 	$items['area/%area/editgeometry'] = array(
 			'title' => t('Edit geometry'),
-			'description' => t('Edit an existing geometry.'),
+			'description' => t('Edit the geometry of an existing geometry.'),
 			'page callback' => 'area_edit_geometry',
 			'page arguments' => array(
 					1
@@ -142,7 +142,7 @@ function area_menu() {
 					1
 			),
 			'access callback' => 'area_write_access',
-			'type' => MENU_CALLBACK,
+			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.edit.inc',
 	);
@@ -326,7 +326,8 @@ function area_read_access($areadata = NULL) {
 module_load_include('inc', 'area', 'area');
 
 /**
- * Return an array with all required information about an area
+ * Return an array with all required information about an area.
+ * This will be called for menuitems like this: 'area/%area/editgeometry'
  * @param integer $arg
  * @return array $areadata
  */
