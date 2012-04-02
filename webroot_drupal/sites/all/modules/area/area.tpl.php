@@ -50,7 +50,6 @@ if ($area_id > 0) {
 
 area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
 area_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
-area_add_js_url($baseModulJsPath . 'area-overlay-style.js');
 area_add_js_url($baseModulJsPath . 'area.js');
 
 area_add_css_url($baseModulCssPath . 'area.css');
