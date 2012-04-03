@@ -225,8 +225,10 @@ function area_theme() {
 							'showall' => false,
 							// include elements to edit existing areas
 							'edit' => false,
-							// Set to an integer if an area should be highlighted
-							'area_id' => false
+							// set to an integer if an area should be highlighted
+							'area_id' => false,
+							// wether to show the scale or not
+							'scalecontrol' => true
 					)
 			)
 	);

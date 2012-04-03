@@ -56,7 +56,7 @@ function Area(map_id) {
 			center : center,
 			streetViewControl : false,
 			overviewMapControl : true,
-			scaleControl : false,
+			scaleControl : scalecontrol,
 			// Select ROADMAP out of HYBRID, ROADMAP, SATELLITE, TERRAIN;
 			mapTypeId : google.maps.MapTypeId.ROADMAP,
 			scrollwheel : true

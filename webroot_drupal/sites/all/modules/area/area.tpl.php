@@ -47,6 +47,8 @@ if ($area_id > 0) {
 	print "<script>areaid = $area_id;</script>\n";
 }
 
+print "<script>scalecontrol = " . ($scalecontrol ? "true" : "false") . ";</script>\n";
+
 area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
 area_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
 area_add_js_url($baseModulJsPath . 'area.js');
