@@ -35,6 +35,7 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 			'#search' => false,
 			'#create' => false,
 			'#showall' => false,
+			'#scalecontrol' => true,
 			'#edit' => true,
 			'#area_id' => (int) $areadata['id']
 	);
@@ -43,7 +44,6 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 
 /**
  * Return a form which allows all textual data of an area to be edited
- * @note Permission checking has to be done by calling function
  * 
  * @param array $areadata
  */
