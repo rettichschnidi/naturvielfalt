@@ -151,6 +151,25 @@ function area_menu() {
 	);
 
 	/* Edit an area */
+	$items['area/%area/delete'] = array(
+			'title' => t('Delete area'),
+			'description' => t('Delete an existing area.'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'area_delete_form',
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'area_admin_access',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.delete.inc',
+			'weight' => 99
+	);
+
+	/* Edit an area */
 	$items['area/%area/permissions'] = array(
 			'title' => t('Edit permission'),
 			'description' => t('Edit the permission of this area.'),
