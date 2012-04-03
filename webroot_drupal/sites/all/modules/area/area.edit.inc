@@ -182,12 +182,12 @@ function area_edit_form_validate($form, &$form_state) {
 function area_edit_form_submit($form, &$form_state) {
 	/* Escape values before submitting them to the database */
 	$area_id = (int) $form_state['build_info']['args'][0]['id'];
-	$name = check_plain($form_state['values']['areaname']);
-	$comment = check_plain($form_state['values']['comment']);
-	$protection_target = check_plain($form_state['values']['protection_target']);
-	$tending_strategies = check_plain(
+	$name = filter_xss($form_state['values']['areaname']);
+	$comment = filter_xss($form_state['values']['comment']);
+	$protection_target = filter_xss($form_state['values']['protection_target']);
+	$tending_strategies = filter_xss(
 		$form_state['values']['tending_strategies']);
-	$safety_precautions = check_plain(
+	$safety_precautions = filter_xss(
 		$form_state['values']['safety_precautions']);
 
 	db_update('{area}')->fields(

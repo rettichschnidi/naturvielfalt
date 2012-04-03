@@ -65,19 +65,19 @@ function area_create_new_area($form, &$form_state) {
 	 * Get submitted values and escape values before submitting
 	 * them to the database.
 	 */
-	$name = check_plain(
+	$name = filter_xss(
 		!empty($form_state['values']['fieldname']) ? $form_state['values']['fieldname']
 				: date("r"));
-	$zip = check_plain($form_state['values']['zip']);
-	$canton = check_plain($form_state['values']['canton']);
-	$country = check_plain($form_state['values']['country']);
-	$township = check_plain($form_state['values']['township']);
+	$zip = filter_xss($form_state['values']['zip']);
+	$canton = filter_xss($form_state['values']['canton']);
+	$country = filter_xss($form_state['values']['country']);
+	$township = filter_xss($form_state['values']['township']);
 
-	$areaType = check_plain($form_state['values']['area_type']);
-	$altitude = !empty($form_state['values']['altitude']) ? check_plain($form_state['values']['altitude']) : 0;
-	$jsonCoords = check_plain($form_state['values']['area-coords']);
-	$latitude = check_plain($form_state['values']['latitude']);
-	$longitude = check_plain($form_state['values']['longitude']);
+	$areaType = filter_xss($form_state['values']['area_type']);
+	$altitude = !empty($form_state['values']['altitude']) ? filter_xss($form_state['values']['altitude']) : 0;
+	$jsonCoords = filter_xss($form_state['values']['area-coords']);
+	$latitude = filter_xss($form_state['values']['latitude']);
+	$longitude = filter_xss($form_state['values']['longitude']);
 
 	$coordinates = json_decode($jsonCoords, true);
 	// swap the cooridnates to the order expected by postgis
