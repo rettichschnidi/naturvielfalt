@@ -95,7 +95,10 @@ function area_create_new_area($form, &$form_state) {
 		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
 		break;
 	case 'polygon':
-	// make sure line is closed
+		/**
+		 * Make sure line is closed. PostGIS requires this.
+		 * @note: remove artificial crafted point when using with Google Maps
+		 */
 		if (end($points) != reset($points)) {
 			$points[] = reset($points);
 		}

@@ -267,7 +267,7 @@ function Area(map_id) {
 		});
 		// move marker a little bit down, (approximately)
 		// centers the infowindow
-		this.googlemap.panBy(0, -200);
+		this.googlemap.panBy(0, -150);
 		infowindow.open(this.googlemap, this.currentElement);
 	};
 
@@ -287,10 +287,9 @@ function Area(map_id) {
 
 		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
-			console.debug("GONE");
 			overlayElement.setMap(null);
 			overlayElement = null;
-			overlayElement.setVisible(false)
+			overlayElement.setVisible(false);
 		});
 
 		// move marker a little bit down, (approximately)
@@ -299,6 +298,9 @@ function Area(map_id) {
 		infowindow.open(this.googlemap, overlayElement);
 	};
 
+	/**
+	 * Create a single overlayElement from a JSON
+	 */
 	this.createOverlayElementFromJson = function(currentjsonoverlay) {
 		var newoverlay;
 		if (currentjsonoverlay.type == 'polygon') {
@@ -327,8 +329,16 @@ function Area(map_id) {
 		var latLngs = [];
 		for ( var k in currentjsonoverlay.area_points) {
 			var currentpoint = currentjsonoverlay.area_points[k];
-			latLngs[k] = new google.maps.LatLng(currentpoint.lat,
+			var newlatlng = new google.maps.LatLng(currentpoint.lat,
 					currentpoint.lng);
+			/**
+			 * PostGIS requires that the first and last point are the same value
+			 * for polygons - Google closes the map automatically.
+			 * Solution: Drop points which are equal to the first one
+			 */
+			if(k == 0 || !latLngs[0].equals(newlatlng)) {
+				latLngs[k] = newlatlng;
+			}
 		}
 
 		newoverlay.setPath(latLngs);
@@ -362,7 +372,7 @@ function Area(map_id) {
 	};
 
 	/**
-	 * Add overlayData to this map
+	 * Add overlayData to this map.
 	 * 
 	 * @param currentjsonoverlay
 	 *            overlayData to add
@@ -384,6 +394,9 @@ function Area(map_id) {
 		}
 	};
 
+	/**
+	 * Create a searchbar on top left of the google maps
+	 */
 	this.createSearchbar = function() {
 		var googlemap = this.googlemap;
 		// create a new div element to hold everything needed for the searchbar
