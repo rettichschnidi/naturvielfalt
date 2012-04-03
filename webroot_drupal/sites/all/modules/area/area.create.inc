@@ -74,7 +74,8 @@ function area_create_new_area($form, &$form_state) {
 	$township = filter_xss($form_state['values']['township']);
 
 	$areaType = filter_xss($form_state['values']['area_type']);
-	$altitude = !empty($form_state['values']['altitude']) ? filter_xss($form_state['values']['altitude']) : 0;
+	$altitude = !empty($form_state['values']['altitude']) ? filter_xss(
+				$form_state['values']['altitude']) : 0;
 	$jsonCoords = filter_xss($form_state['values']['area-coords']);
 	$latitude = filter_xss($form_state['values']['latitude']);
 	$longitude = filter_xss($form_state['values']['longitude']);

@@ -158,16 +158,17 @@ function area_updategeometry_json($areadata = null) {
 		break;
 	}
 
-	db_update('{area}')->fields(
-			array('zip' => $_POST['zip'],
-					'canton' => $_POST['canton'],
-					'country' => $_POST['country'],
-					'township' => $_POST['township'],
+	db_update('area')->fields(
+			array('zip' => filter_xss($_POST['zip']),
+					'canton' => filter_xss($_POST['canton']),
+					'country' => filter_xss($_POST['country']),
+					'township' => filter_xss($_POST['township']),
 					'modify_time' => 'NOW()',
-					'altitude' => $_POST['altitude'],
+					'altitude' => filter_xss($_POST['altitude']),
 			))
 		->condition('id', $areadata['id'])
 		->execute();
+	
 	db_update('area')->expression('geom', $geom)
 		->condition('id', $areadata['id'])
 		->execute();
