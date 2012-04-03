@@ -5,6 +5,14 @@
 </div>
 <?php
 // include CSS and JavaScripts
+function area_add_js_url($url) {
+	print "<script type='text/javascript' src='$url'></script>";
+}
+
+function area_add_css_url($url) {
+	print "<link href='$url' type='text/css' rel='stylesheet'/>\n";
+}
+// Basepaths
 $baseModulPath = base_path() . drupal_get_path('module', 'area') . '/';
 $baseModulJsPath = $baseModulPath . 'js/';
 $baseModulCssPath = $baseModulPath . 'css/';
@@ -22,16 +30,7 @@ global $user;
  *  - language: Localize the google maps service to the desired language (most likely the users language)
  */
 
-function area_add_js_url($url) {
-	print "<script type='text/javascript' src='$url'></script>";
-}
-
-function area_add_css_url($url) {
-	print "<link href='$url' type='text/css' rel='stylesheet'/>\n";
-}
-
 $libraries = 'geometry';
-
 if ($search) {
 	$libraries .= ',places';
 }
@@ -41,11 +40,11 @@ if ($create) {
 
 area_add_js_url(
 	"http://maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language="
-			. $user->language);
+			. $user->language . "\n");
 
 if ($area_id > 0) {
 	// should be included before area.js
-	print "<script>areaid = $area_id;</script>";
+	print "<script>areaid = $area_id;</script>\n";
 }
 
 area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
