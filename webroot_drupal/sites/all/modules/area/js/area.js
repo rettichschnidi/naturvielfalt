@@ -87,18 +87,33 @@ function Area(map_id) {
 	 * @see automaticallySaveLocation(boolean)
 	 */
 	this.initLocation = function() {
+		var googlemap = this.googlemap;
 		if (window.localStorage) {
 			var bounds = window.localStorage.getItem('naturvielfalt_ne_lat');
 			if (bounds != null) {
 				var ls = window.localStorage;
-				var ne = new google.maps.LatLng(
-						ls.getItem('naturvielfalt_ne_lat'),
-						ls.getItem('naturvielfalt_ne_lng'));
-				var sw = new google.maps.LatLng(
-						ls.getItem('naturvielfalt_sw_lat'),
-						ls.getItem('naturvielfalt_sw_lng'));
-				bounds = new google.maps.LatLngBounds(sw, ne);
-				this.googlemap.fitBounds(bounds);
+				var ne_lat = ls.getItem('naturvielfalt_ne_lat');
+				var ne_lng = ls.getItem('naturvielfalt_ne_lng');
+				var sw_lat = ls.getItem('naturvielfalt_sw_lat');
+				var sw_lng = ls.getItem('naturvielfalt_sw_lng');
+
+				var ne = new google.maps.LatLng(ne_lat, ne_lng);
+				var sw = new google.maps.LatLng(sw_lat,	sw_lng);
+				
+				/**
+				 * This is an ugly hack, but is needed due to the fact that Google
+				 * adds some space to fitBounds and because of this the map would
+				 * zoom out at each refresh otherwise.
+				 * 
+				 * This will probably not work in any case, but it is by far better
+				 * than nothing.
+				 */
+				var factor =  0.25;
+				var new_ne = google.maps.geometry.spherical.interpolate(ne, sw, factor);
+				var new_sw = google.maps.geometry.spherical.interpolate(ne, sw, 1 - factor);
+				
+				bounds = new google.maps.LatLngBounds(new_sw, new_ne);
+				googlemap.fitBounds(bounds);
 			}
 		}
 	};
