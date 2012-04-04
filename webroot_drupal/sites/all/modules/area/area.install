@@ -62,6 +62,7 @@ function area_schema() {
       array (
         'description' => 'No description for column create_time available, please fix',
         'type' => 'datetime',
+        'not null' => 'TRUE',
         'pgsql_type' => 'timestamp',
       ),
       'modify_time' => 
@@ -88,6 +89,7 @@ function area_schema() {
       'geom' => 
       array (
         'description' => 'No description for column geom available, please fix',
+        'not null' => 'TRUE',
         'pgsql_type' => 'geometry',
       ),
     ),

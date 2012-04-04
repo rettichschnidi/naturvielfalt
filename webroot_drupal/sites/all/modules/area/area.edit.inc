@@ -190,7 +190,7 @@ function area_edit_form_submit($form, &$form_state) {
 	$safety_precautions = filter_xss(
 		$form_state['values']['safety_precautions']);
 
-	db_update('{area}')->fields(
+	db_update('area')->fields(
 			array('name' => $name,
 					'comment' => $comment,
 					'protection_target' => $protection_target,

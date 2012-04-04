@@ -400,6 +400,58 @@ function area_convert_wgs84_to_ch1903($coordinates = NULL) {
 }
 
 /**
+ * 
+ * Return a PostGIS geometry object from a JSON
+ * 
+ * The return value can be used by the method fields() of db_update/db_insert 
+ * 
+ * @param string $areaType
+ * 	 Valid values: 'polyline', 'polygon' or 'marker'
+ * @param object $coordinatesJson
+ * @return geometry A geometry type, representing the given JSON coordinates
+ */
+function area_get_postgis_geometry_object($areaType = NULL,
+		$coordinatesJson = NULL) {
+	assert($coordinatesJson != NULL);
+	assert($areaType != NULL);
+
+	$points = array();
+	foreach ($coordinatesJson as $currentCoordinatesJson) {
+		$points[] = implode(' ', $currentCoordinatesJson);
+	}
+	assert(!empty($points));
+
+	switch ($areaType) {
+	case 'polyline':
+		$linestring = implode(', ', $points);
+		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
+		break;
+	case 'polygon':
+		if (end($points) != reset($points)) {
+			// make sure line is closed
+			$points[] = reset($points);
+		}
+		$linestring = implode(', ', $points);
+		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
+		break;
+	case 'marker':
+		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
+		break;
+	default:
+		watchdog_exception(
+			'area',
+			t(
+				'«@areatype» is not a valid area type.',
+				array('@areatype' => $areaType)));
+		return false;
+	}
+	$result = db_query("SELECT $geom AS geom");
+	assert($result->rowCount() == 1);
+	return $result->fetch()
+		->geom;
+}
+
+/**
  * Swap from lat/lng to lng/lat or vice versa.
  * This function is needed as posgis can export a json
  * of each geometry type, but the coordinates are in a

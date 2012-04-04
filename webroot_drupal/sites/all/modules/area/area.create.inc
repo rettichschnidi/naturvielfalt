@@ -81,37 +81,14 @@ function area_create_new_area($form, &$form_state) {
 	$longitude = filter_xss($form_state['values']['longitude']);
 
 	$coordinates = json_decode($jsonCoords, true);
-	// swap the cooridnates to the order expected by postgis
+	// swap the cooridnates to the order expected by PostGIS
 	area_swap_json_lnglat($coordinates);
 
-	$points = array();
-	foreach ($coordinates as $coord) {
-		$points[] = implode(' ', $coord);
-	}
-
-	switch ($areaType) {
-	case 'polyline':
-		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
-		break;
-	case 'polygon':
-		/**
-		 * Make sure line is closed. PostGIS requires this.
-		 * @note: remove artificial crafted point when using with Google Maps
-		 */
-		if (end($points) != reset($points)) {
-			$points[] = reset($points);
-		}
-		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
-		break;
-	case 'marker':
-		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
-		break;
-	}
-
-	if (!empty($name)) {
-		// insert area
+	try {
+		$geometryObject = area_get_postgis_geometry_object(
+			$areaType,
+			$coordinates);
+		assert($geometryObject);
 		$area_id = db_insert('area')->fields(
 				array('name' => $name,
 						'zip' => $zip,
@@ -121,26 +98,18 @@ function area_create_new_area($form, &$form_state) {
 						'township' => $township,
 						'create_time' => 'NOW()',
 						'modify_time' => 'NOW()',
-						'acl_id' => new_acl('Area: ' . $name)
+						'acl_id' => new_acl("Area: $name"),
+						'geom' => $geometryObject
 				))
 			->execute();
 
-		// No idea why I can not use this when I create the record
-		// FIXME: set 'geom' already at db_insert() above
-		db_update('area')->expression('geom', $geom)
-			->condition('id', $area_id)
-			->execute();
-
 		drupal_set_message(
-			t(
-				'Area "@areaname" got created.',
-				array('@areaname' => $form_state['values']['fieldname'])));
+			t('Area "@areaname" got created.', array('@areaname' => $name)));
 		drupal_goto('area/' . $area_id . '/show');
-	} else {
+	} catch (Exception $e) {
+		watchdog_exception('area', $e);
 		drupal_set_message(
-			t(
-				"Area @areaname could not be created, missing values.",
-				array('@areaname' => $form_state['values']['fieldname'])),
+			t('New area could not be saved.', array('@areaname' => $name)),
 			'error');
 		drupal_goto('area/new');
 	}

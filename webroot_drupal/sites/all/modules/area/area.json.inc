@@ -135,42 +135,30 @@ function area_updategeometry_json($areadata = null) {
 	$coordinates = json_decode($jsonCoords, true);
 	// swap the cooridnates to the order expected by postgis
 	area_swap_json_lnglat($coordinates);
-	$points = array();
-	foreach ($coordinates as $coord) {
-		$points[] = implode(' ', $coord);
-	}
 
-	switch ($areaType) {
-	case 'polyline':
-		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
-		break;
-	case 'polygon':
-	// make sure line is closed
-		if (end($points) != reset($points)) {
-			$points[] = reset($points);
-		}
-		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
-		break;
-	case 'marker':
-		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
-		break;
+	try {
+		$geometryObject = area_get_postgis_geometry_object(
+			$areaType,
+			$coordinates);
+		assert($geometryObject);
+		db_update('area')->fields(
+				array('zip' => filter_xss($_POST['zip']),
+						'canton' => filter_xss($_POST['canton']),
+						'country' => filter_xss($_POST['country']),
+						'township' => filter_xss($_POST['township']),
+						'modify_time' => 'NOW()',
+						'altitude' => filter_xss($_POST['altitude']),
+						'geom' => $geometryObject
+				))
+			->condition('id', $areadata['id'])
+			->execute();
+	} catch (Exception $e) {
+		watchdog_exception('area', $e);
+		drupal_set_message(
+			t(
+				'Changed geometry on area «@areaname» could not be saved.',
+				array('@areaname' => $areadata['name'])),
+			'error');
 	}
-
-	db_update('area')->fields(
-			array('zip' => filter_xss($_POST['zip']),
-					'canton' => filter_xss($_POST['canton']),
-					'country' => filter_xss($_POST['country']),
-					'township' => filter_xss($_POST['township']),
-					'modify_time' => 'NOW()',
-					'altitude' => filter_xss($_POST['altitude']),
-			))
-		->condition('id', $areadata['id'])
-		->execute();
-	
-	db_update('area')->expression('geom', $geom)
-		->condition('id', $areadata['id'])
-		->execute();
 }
 ?>

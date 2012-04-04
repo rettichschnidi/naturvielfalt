@@ -33,7 +33,7 @@ CREATE TABLE public.area
 	country text,
 	-- Kommentartext
 	comment text,
-	create_time timestamp,
+	create_time timestamp NOT NULL,
 	modify_time timestamp,
 	-- Schutzziel
 	protection_target text,
@@ -41,7 +41,7 @@ CREATE TABLE public.area
 	safety_precautions text,
 	-- Pflege- und Gestaltungsmassnahmen
 	tending_strategies text,
-	geom geometry,
+	geom geometry NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
