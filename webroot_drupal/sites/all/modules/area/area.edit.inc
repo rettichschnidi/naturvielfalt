@@ -32,11 +32,9 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 	);
 	$output['map'] = array(
 			'#theme' => 'area',
-			'#search' => false,
-			'#create' => false,
 			'#showall' => false,
 			'#scalecontrol' => true,
-			'#edit' => true,
+			'#action' => 'edit',
 			'#area_id' => (int) $areadata['id']
 	);
 	return $output;

@@ -18,7 +18,9 @@ function area_new_area() {
 
 	$output['map'] = array(
 			'#search' => true,
-			'#create' => true,
+			'#ch1903' => true,
+			'#showall' => true,
+			'#action' => 'create',
 			'#theme' => 'area'
 	);
 	return drupal_render($output);

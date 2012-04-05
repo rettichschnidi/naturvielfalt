@@ -16,8 +16,8 @@ function area_show_all_areas() {
 
 	$output['map'] = array(
 			'#search' => true,
-			'#create' => false,
 			'#showall' => true,
+			'#ch1903' => true,
 			'#theme' => 'area'
 	);
 

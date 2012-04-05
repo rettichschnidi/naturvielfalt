@@ -236,20 +236,20 @@ function area_theme() {
 			'area' => array(
 					'template' => 'area',
 					'variables' => array(
+							// Requested functionality:
+							//  'create': create a new area
+							//  'edit': edit an existing area ('area_id' has to be set)
+							'action' => NULL,
 							// enable searchbox
-							'search' => true,
-							// include elements to create new areas
-							'create' => false,
+							'search' => false,
 							// show all existing areas
 							'showall' => false,
-							// include elements to edit existing areas
-							'edit' => false,
-							// set to an integer if an area should be highlighted
+							// set to an integer if an (existing) area should be highlighted
 							'area_id' => false,
 							// wether to show the scale or not
 							'scalecontrol' => true,
 							// include a filed which shows/sets the CH1903 coordinates
-							'ch1903' => true
+							'ch1903' => false
 					)
 			)
 	);

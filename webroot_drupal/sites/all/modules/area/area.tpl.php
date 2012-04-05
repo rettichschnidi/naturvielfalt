@@ -41,7 +41,7 @@ $libraries = 'geometry';
 if ($search) {
 	$libraries .= ',places';
 }
-if ($create) {
+if ($action == 'create') {
 	$libraries .= ',drawing';
 }
 
@@ -73,7 +73,7 @@ if ($ch1903) {
 	area_add_js_url($baseModulJsPath . 'area-ch1903.js');
 }
 
-if ($create) {
+if ($action == 'create') {
 	area_add_js_url($baseModulJsPath . 'area-create.js');
 }
 
@@ -81,7 +81,7 @@ if ($showall) {
 	area_add_js_url($baseModulJsPath . 'area-show-all.js');
 }
 
-if ($edit) {
+if ($action == 'edit') {
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 }
 ?>
