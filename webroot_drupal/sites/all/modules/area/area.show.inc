@@ -98,7 +98,7 @@ function area_show_all_areas() {
  */
 function area_show_specific_area($areadata = NULL) {
 	assert(!empty($areadata));
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-show.css');
+	drupal_add_css( drupal_get_path('module', 'area') . '/css/area.css');
 	drupal_set_title($areadata['name']);
 
 	/* call area_get_static_image_url() to get an url to the google maps visualization */

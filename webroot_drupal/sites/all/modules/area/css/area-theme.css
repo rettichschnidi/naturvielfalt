@@ -1,0 +1,25 @@
+#map {
+	height: 100%;
+	width: 100%;
+}
+
+#map_canvas {
+	height: 500px;
+}
+
+#search_container,#search_input {
+	width: 300px;
+}
+
+#search_container {
+	margin-top: 5px;
+}
+
+#searchch1903_input {
+	width: 245px;
+}
+
+#searchch1903_container {
+	margin-top: 5px;
+	width: 250px;
+}

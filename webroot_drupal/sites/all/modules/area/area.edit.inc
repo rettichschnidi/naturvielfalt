@@ -50,7 +50,7 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 function area_edit_form($form, &$form_state, $areadata = NULL) {
 	assert(!empty($areadata));
 	drupal_set_title($areadata['name']);
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area-edit.css');
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
 
 	/* call area_get_static_image_url() to get an url to the google maps visualization */
 	$staticimageurl = area_get_static_image_url(

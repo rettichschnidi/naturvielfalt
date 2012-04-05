@@ -1,3 +1,10 @@
+<?php
+/**
+ * @author Reto Schneider, 2012
+ * @copyright Naturwerk
+ * @file area.tpl.php
+ */
+?>
 <div class="area-search-map">
   <div id="map">
     <div id="map_canvas"></div>
@@ -47,31 +54,34 @@ if ($area_id > 0) {
 	print "<script>areaid = $area_id;</script>\n";
 }
 
-print "<script>scalecontrol = " . ($scalecontrol ? "true" : "false") . ";</script>\n";
+print 
+	"<script>scalecontrol = " . ($scalecontrol ? "true" : "false")
+			. ";</script>\n";
 
 area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
 area_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
 area_add_js_url($baseModulJsPath . 'area.js');
 
-area_add_css_url($baseModulCssPath . 'area.css');
+area_add_css_url($baseModulCssPath . 'area-theme.css');
 
 if ($search) {
-	area_add_css_url($baseModulCssPath . 'area-search.css');
 	area_add_js_url($baseModulJsPath . 'area-search.js');
 }
 
+if ($ch1903) {
+	area_add_js_url($baseModulJsPath . 'contrib/wgs84_ch1903.js');
+	area_add_js_url($baseModulJsPath . 'area-ch1903.js');
+}
+
 if ($create) {
-	area_add_css_url($baseModulCssPath . 'area-create.css');
 	area_add_js_url($baseModulJsPath . 'area-create.js');
 }
 
 if ($showall) {
-	area_add_css_url($baseModulCssPath . 'area-show-all.css');
 	area_add_js_url($baseModulJsPath . 'area-show-all.js');
 }
 
 if ($edit) {
-	area_add_css_url($baseModulCssPath . 'area-edit.css');
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 }
 ?>
