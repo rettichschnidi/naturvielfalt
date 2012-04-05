@@ -6,8 +6,7 @@
  *  - Swiss national coordinates (CH1903/LV03)
  * Source: http://www.swisstopo.admin.ch/internet/swisstopo/en/home/products/software/products/skripts.html
  * 
- * @author Swisstop.ch
- * @copyright Swisstopo
+ * @copyright Bundesamt für Landestopografie swisstopo
  * @file wgs84_ch1903.js
  * @version Last updated: 02.04.2012
  */
