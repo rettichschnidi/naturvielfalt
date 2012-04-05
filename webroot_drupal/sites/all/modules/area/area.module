@@ -247,7 +247,9 @@ function area_theme() {
 							// set to an integer if an area should be highlighted
 							'area_id' => false,
 							// wether to show the scale or not
-							'scalecontrol' => true
+							'scalecontrol' => true,
+							// include a filed which shows/sets the CH1903 coordinates
+							'ch1903' => true
 					)
 			)
 	);
