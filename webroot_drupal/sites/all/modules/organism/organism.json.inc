@@ -632,6 +632,7 @@ function organism_search_organism_json($classification = false, $term = false, $
 
 	if(isset($_REQUEST['artgroup'])){
 		$artgroup = $_REQUEST['artgroup'];
+		if($artgroup == '3') $artgroup = false;
 		if($artgroup > 0 && $artgroup < 1000000){
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;

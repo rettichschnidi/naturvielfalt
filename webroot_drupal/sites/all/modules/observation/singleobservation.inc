@@ -12,5 +12,5 @@ module_load_include('inc', 'observation', 'observation.template');
  */
 function singleobservation_wizard(){
 	//return drupal_get_form('observation_new_form');
-	return observation_new_form('','');
+	return observation_new_form(base_path().'observation/save');
 }

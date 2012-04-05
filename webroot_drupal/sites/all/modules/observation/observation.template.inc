@@ -1,8 +1,10 @@
-</form>
+
 <?php
 //function observation_new_form($form, $form_state) {
-function observation_new_form($action, $name) {
+function observation_new_form($action, $name = false) {
 	global $user;
+
+	if(!$name) $name = "observation_form";
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 // 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
@@ -91,7 +93,7 @@ function observation_new_form($action, $name) {
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
-
+// 	print_r(organism_artgroup_get_attributes());
 	$imgpath= base_path().drupal_get_path('module', 'observation');
 	$formcust = "
 					<style type='text/css'>
@@ -119,7 +121,7 @@ function observation_new_form($action, $name) {
 							.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40">'
 							.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="species_autocomplete"></span>'
 							.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option().'</select>'
-							.'<input type="hidden" name="artgroup" id="artgroup" value="">'
+
 						.'</td></tr>'
 
 						.'<tr><td>&nbsp;</td></tr>'
@@ -128,13 +130,14 @@ function observation_new_form($action, $name) {
 
 							.'<table class="form-item form-type-textfield">'
 
-							.'<form action="'.$action.'" method="post" name="'.$name.'">'
+							.'<form onsubmit="javscript:observation.save();return false;" method="post" name="'.$name.'" id="'.$name.'">'
 								.'<input type="hidden" id="organismn_id" name="organismn_id" value="">'
 								.'<input type="hidden" id="observation_found_as_lang" name="observation_found_as_lang" value="false">'
 								.'<input type="hidden" id="observation_found_as_latin" name="observation_found_as_latin" value="false">'
+								.'<input type="hidden" name="artgroup" id="artgroup" value="">'
 
 									.'<tr>'
-									.'<td class="observation_title">'.t('Date').'<br><input type="text" id="date" name="date" value=""></td>'
+									.'<td class="observation_title">'.t('Date').'<br><input type="text" id="date" name="date" value="'.date('d.m.Y').'"></td>'
 									.'<td class="observation_title">'.t('Count').'<br><input type="text" name="count" value="1"></td>'
 									.'<td class="observation_title">'.t('Observer').'<br><input type="text" name="observer" value="'.$user->name.'"></td>'
 									.'</tr><tr>'
@@ -160,77 +163,34 @@ function observation_new_form($action, $name) {
 
 									.'<tr><td>&nbsp;</td></tr>'
 
-									.'<tr>'
-									.'<td colspan=3>'.t('Determination method').': <select name="determination_method_id">'
-									.'
-	<option value="000">Nicht definiert</option>
-	<option value="100">Sichtbeobachtung</option>
-	<option value="101">Fang</option>
-	<option value="102">Mit Fernglas bestimmt</option>
-	<option value="103">Ruf, Schrei, Gesang</option>
-	<option value="104">Gesang und Sichtbeobachtung</option>
-	<option value="105">Ultraschall</option>
-	<option value="106">Ruf (Ohr) und Foto</option>
-	<option value="107">Video</option>
-	<option value="108">Radiotelemetriedaten</option>
-	<option value="109">Foto</option>
-	<option value="110">Unter Binokular bestimmt</option>
-	<option value="111">genetisch bestimmt</option>
-	<option value="112">Genitalbestimmung</option>
-	<option value="113">Morphologische Bestimmung</option>
-	<option value="201">Kunstbau Biber</option>
-	<option value="202">Nest, Biberburg</option>
-	<option value="203">Puppenkammer</option>
-	<option value="204">Erdbau, H&ouml;hle, Auswurfh&uuml;gel</option>
-	<option value="205">Suhle</option>
-	<option value="206">Damm</option>
-	<option value="207">Burg eingest&uuml;rzt</option>
-	<option value="208">Schwimmende Burg</option>
-	<option value="209">Mittelbau Biber</option>
-	<option value="210">Schlupfloch, Fluchtr&ouml;hre</option>
-	<option value="300">Totfund</option>
-	<option value="301">Verunfallt (Strasse)</option>
-	<option value="302">Abschuss</option>
-	<option value="303">Sch&auml;del</option>
-	<option value="304">Knochenreste</option>
-	<option value="305">Haare</option>
-	<option value="306">Gew&ouml;lle</option>
-	<option value="307">Reste K&ouml;rpergewebe, Muskel, Blut</option>
-	<option value="308">Lebendiges Tier, frisches Geh&auml;use</option>
-	<option value="309">Wahrscheinliches Vorkommen</option>
-	<option value="310">Status unklar</option>
-	<option value="311">Vorkommen vermutlich ehemalig</option>
-	<option value="312">Subfossile Geh&auml;use</option>
-	<option value="313">Kot, Losung</option>
-	<option value="314">K&ouml;cher</option>
-	<option value="400">Ausstieg, Wechsel</option>
-	<option value="401">Kanal</option>
-	<option value="402">F&auml;llplatz</option>
-	<option value="403">Trittsiegel, Spurenfolge</option>
-	<option value="404">Sch&auml;den</option>
-	<option value="405">Nahrungsreste, Einzelfrassspuren</option>
-	<option value="406">Wintervorrat</option>
-	<option value="407">Frassplatz</option>
-	<option value="408">Raubtierriss</option>
-	<option value="409">Markierung, Bibergeil</option>'
-									.'</select></td>'
-									.'</tr>'
-
-
 									.'<script type="text/javascript">initialize_map();</script>'
 
 								.'</table>'
 
 							.'</td></tr></table>'
 
-							.'<fieldset class="form-wrapper">
+							.'<fieldset class="collapsible form-wrapper collapse-processed">
 							<legend>
 							<span class="fieldset-legend">Add more Details</span>
 							</legend>
-							<div class="fieldset-wrapper"></div>
-							</fieldset>'
+							<div class="fieldset-wrapper">'
 
+									.'<table border=1><tr>'
+									.'<td>'.t('Determination method').':</td><td> <select name="determination_method_id">'
+									.'<div id="observation_determation_options">'
+									.organism_artgroup_get_determation_methods(false, true)
+									.'</div></select></td>'
+									.'</tr>'
+
+							.'<tr><td>'.t('Attributes').'.</td></tr>.'
+							.'<div id="observation_attributes">'
+							.organism_artgroup_get_attributes(false,true,'<tr><td>','</td>', '<td>', '</td></tr>')
+							.'</div>'
+
+							.'</table></div></fieldset>'
+							.'<input type="button" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit" onclick="javscript:observation.save();return false;">'
 					.'</form>'
+					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
 			.'</div>';
 

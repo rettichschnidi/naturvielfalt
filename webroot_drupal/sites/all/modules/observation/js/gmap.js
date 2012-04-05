@@ -16,39 +16,39 @@
     google.maps.event.addListener(map, 'click', addMarkerClick, true);
     
     
-    // Try W3C Geolocation (Preferred)
-    if(navigator.geolocation) {
-      browserSupportFlag = true;
-      navigator.geolocation.getCurrentPosition(function(position) {
-        initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-        map.setCenter(initialLocation);
-      }, function() {
-        handleNoGeolocation(browserSupportFlag);
-      });
-    // Try Google Gears Geolocation
-    } else if (google.gears) {
-      browserSupportFlag = true;
-      var geo = google.gears.factory.create('beta.geolocation');
-      geo.getCurrentPosition(function(position) {
-        initialLocation = new google.maps.LatLng(position.latitude,position.longitude);
-        map.setCenter(initialLocation);
-      }, function() {
-        handleNoGeoLocation(browserSupportFlag);
-      });
-    // Browser doesn't support Geolocation
-    } else {
-      browserSupportFlag = false;
-      handleNoGeolocation(browserSupportFlag);
-    }
-    
-    function handleNoGeolocation(errorFlag) {
-      if (errorFlag == true) {
-        initialLocation = default_localisation;
-      } else {
-        initialLocation = default_localisation;
-      }
-      map.setCenter(initialLocation);
-    }
+//    // Try W3C Geolocation (Preferred)
+//    if(navigator.geolocation) {
+//      browserSupportFlag = true;
+//      navigator.geolocation.getCurrentPosition(function(position) {
+//        initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+//        map.setCenter(initialLocation);
+//      }, function() {
+//        handleNoGeolocation(browserSupportFlag);
+//      });
+//    // Try Google Gears Geolocation
+//    } else if (google.gears) {
+//      browserSupportFlag = true;
+//      var geo = google.gears.factory.create('beta.geolocation');
+//      geo.getCurrentPosition(function(position) {
+//        initialLocation = new google.maps.LatLng(position.latitude,position.longitude);
+//        map.setCenter(initialLocation);
+//      }, function() {
+//        handleNoGeoLocation(browserSupportFlag);
+//      });
+//    // Browser doesn't support Geolocation
+//    } else {
+//      browserSupportFlag = false;
+//      handleNoGeolocation(browserSupportFlag);
+//    }
+//    
+//    function handleNoGeolocation(errorFlag) {
+//      if (errorFlag == true) {
+//        initialLocation = default_localisation;
+//      } else {
+//        initialLocation = default_localisation;
+//      }
+//      map.setCenter(initialLocation);
+//    }
 
     
   }
