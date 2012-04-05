@@ -34,7 +34,7 @@ function Area(map_id) {
 
 	this.automaticSaveLocationListener = undefined;
 	this.ch1903MapChangeListener = undefined;
-	
+	this.mapTypeSwitchListener = null;
 	/**
 	 * Creates the google maps object and attaches it to the element with the id
 	 * this.map_id.
@@ -68,18 +68,27 @@ function Area(map_id) {
 	};
 
 	/**
-	 * Automatically switch to 
+	 * As requested by Albert:
+	 * 	Automatically switch to ROADMAP/HYBRID map when below/above zoomlevel 12
 	 */
-	this.createLayerSwitch = function() {
+	this.mapTypeSwitch = function(enable) {
 		var googlemap = this.googlemap;
-		google.maps.event.addListener(this.googlemap, 'zoom_changed', function() {
-			if(googlemap.getZoom() >= 12) {
-				googlemap.setMapTypeId(google.maps.MapTypeId.HYBRID);
+		if (arguments.length == 0 || enable) {
+			if(this.mapTypeSwitchListener != null) {
+				this.mapTypeSwitch(false);
 			}
-			if(googlemap.getZoom() < 12) {
-				googlemap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-			}
-		});
+			this.mapTypeSwitchListener = google.maps.event.addListener(this.googlemap, 'zoom_changed', function() {
+				if(googlemap.getZoom() >= 12) {
+					googlemap.setMapTypeId(google.maps.MapTypeId.HYBRID);
+				}
+				if(googlemap.getZoom() < 12) {
+					googlemap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+				}
+			});
+		} else {
+			google.maps.event.removeListener(this.mapTypeSwitchListener);
+			this.mapTypeSwitchListener = null;
+		}
 	};
 
 	/**
@@ -622,10 +631,10 @@ jQuery(document).ready(
 			canvasid = 'map_canvas';
 			if (jQuery('#' + canvasid).length) {
 				/**
-				 * @todo This is ugly (global variable), nut works for now.
+				 * @todo This is ugly (global variable), but works for now.
 				 */
 				areabasic = new Area(canvasid);
-				areabasic.createLayerSwitch();
+				areabasic.mapTypeSwitch(true);
 				areabasic.initLocation();
 				areabasic.automaticallySaveLocation();
 			} else {
