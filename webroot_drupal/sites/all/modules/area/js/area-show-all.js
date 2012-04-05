@@ -16,7 +16,6 @@ jQuery(document).ready(function() {
 
 	// areabasic.loadOverlaysFromJson
 	var jsonurl = Drupal.settings.basePath + 'area/json';
-	console.debug("Getting json from: " + jsonurl);
 	jQuery.getJSON(jsonurl, function(json, textStatus) {
 		if (textStatus == 'success') {
 			areabasic.loadOverlaysFromJson(json);
