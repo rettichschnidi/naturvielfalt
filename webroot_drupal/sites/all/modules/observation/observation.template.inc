@@ -7,84 +7,8 @@ function observation_new_form($action, $name = false) {
 	if(!$name) $name = "observation_form";
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
-// 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
-
-// 	$form['#id'] = 'observation_new_form';
-
-// 	$form['organismn_autocomplete'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Species'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter the name of the species'),
-// 			'#id' => 'organismn_autocomplete'
-// 	);
-
-// 	drupal_add_library('system', 'ui.autocomplete');
-// 	$areaCSSPath = drupal_get_path('module', 'observation') . '/css/';
-// 	$inventoryJsPath = drupal_get_path('module', 'observation') . '/js/';
-
-// 	drupal_add_css($areaCSSPath . 'area-select.css');
-// 	drupal_add_js('http://maps.google.com/maps/api/js?sensor=false&libraries=geometry,places',array('group' => JS_LIBRARY));
-// 	drupal_add_js($inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js',array('group' => JS_LIBRARY));
-// 	drupal_add_js($inventoryJsPath . 'geometry.js', array('group' => JS_LIBRARY));
-// 	drupal_add_js($inventoryJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js');
-// 	drupal_add_js($inventoryJsPath . 'lib/geoxml3/geoxml3.js', array('group' => JS_LIBRARY));
-// 	drupal_add_js($inventoryJsPath . 'gmap.js');
-// 	drupal_add_js($inventoryJsPath . 'observation.js');
-// 	if ($bubble)
-// 		drupal_add_js($inventoryJsPath . 'lib/infobubble.js');
-// 	drupal_add_js($areaCSSPath . 'overlay-style.js');
-// 	drupal_add_js($inventoryJsPath . 'util.js');
 
 
-	//// ORIG!!!
-
-// 	drupal_add_library('system', 'ui.autocomplete');
-
-// 	$areaJsPath = drupal_get_path('module', 'area') . '/js/';
-// 	$areaCSSPath = drupal_get_path('module', 'area') . '/css/';
-// 	$inventoryJsPath = drupal_get_path('module', 'inventory') . '/js/';
-
-// 	drupal_add_css($areaCSSPath . 'area-select.css');
-// 	drupal_add_js(
-// 			'http://maps.google.com/maps/api/js?sensor=false&libraries=geometry,places',
-// 			array('group' => JS_LIBRARY));
-// 	drupal_add_js(
-// 			$inventoryJsPath . 'lib/jquery/ui.geo_autocomplete.js',
-// 			array('group' => JS_LIBRARY));
-// 	drupal_add_js($areaJsPath . 'geometry.js', array('group' => JS_LIBRARY));
-// 	drupal_add_js($areaJsPath . 'lib/rwo_gmaps/v3_epoly_sphericalArea.js');
-// 	drupal_add_js(
-// 			$areaJsPath . 'lib/geoxml3/geoxml3.js',
-// 			array('group' => JS_LIBRARY));
-// 	if ($bubble)
-// 		drupal_add_js($areaJsPath . 'lib/infobubble.js');
-// 	drupal_add_js($areaCSSPath . 'overlay-style.js');
-// 	drupal_add_js($inventoryJsPath . 'util.js');
-// 	drupal_add_js(drupal_get_path('module', 'observation') . '/js/'. 'area-select.js');
-// 	drupal_add_library('system', 'ui.dialog');
-// 	drupal_add_library('system', 'ui.datepicker');
-// 	drupal_add_library('system', 'ui.autocomplete');
-// 	drupal_add_library('system', 'ui.sortable');
-
-// 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/sgroup.js');
-// 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/lib/jquery/jquery-texotela-numeric.js');
-
-// 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/util.js');
-// 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.js');
-
-// 	if ($usemain)
-// 		drupal_add_css(drupal_get_path('module', 'inventory') . '/css/main.css',
-// 				array(
-// 						'group' => CSS_DEFAULT,
-// 						'every_page' => TRUE
-// 				));
-// 	drupal_add_css(drupal_get_path('module', 'inventory') . '/css/sgroup.edit.css',
-// 			array(
-// 					'group' => CSS_DEFAULT,
-// 					'every_page' => TRUE
-// 			));
 	drupal_add_library('system', 'ui.autocomplete');
 	drupal_add_library('system', 'ui.datepicker');
 	$observation_path= drupal_get_path('module', 'observation');
@@ -93,7 +17,6 @@ function observation_new_form($action, $name = false) {
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
-// 	print_r(organism_artgroup_get_attributes());
 	$imgpath= base_path().drupal_get_path('module', 'observation');
 	$formcust = "
 					<style type='text/css'>
@@ -194,60 +117,7 @@ function observation_new_form($action, $name = false) {
 
 			.'</div>';
 
-// 	echo $formcust;
-
-// 	$form['organismn_hidden'] = array(
-// 			'#type' => 'container',
-// 			'#attributes' => array(
-// 					'style' => array(
-// 							//'visibility: hidden;'
-// 					))
-// 	);
-
-// 	$form['organismn_hidden']['observation_date'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Date'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter date for the observation'),
-// 			'#id' => 'organismn_date'
-// 	);
-
-// 	$form['organismn_hidden']['observation_count'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Count'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter number of found'),
-// 			'#id' => 'organismn_count'
-// 	);
-
-
-
-
-
-
-// 	$form['organismn_hidden']['details'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => t('Add more Details'),
-// 			'#collapsible' => TRUE,
-// 			'#collapsed' => TRUE,
-// 	);
-
-
-
-// 	$form['organismn_hidden']['organismn_id'] = array(
-// 			'#type' => 'hidden',
-// 			'#value' => '',
-// 			'#id' => 'organismn_id'
-// 	);
-
-// 	$form['organismn_hidden']['submit'] = array(
-// 			'#type' => 'submit',
-// 			'#value' => t('Save the Observation')
-// 	);
 
 
 	return $formcust;
-	return $form;
 }
