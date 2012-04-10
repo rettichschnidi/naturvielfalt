@@ -255,14 +255,16 @@ function area_testing_form($form, &$form_state) {
 			'#type' => 'fieldset',
 			'#title' => "Google Map",
 			'#attributes' => array(
-					'style' => 'width: 500px;'
+					'style' => 'width: 95%;'
 			)
 	);
 
 	$form['div']['map'] = array(
 			'#theme' => 'area',
 			'#action' => 'getcoordinate',
-			'#coordinate_storage_id' => 'meineid'
+			'#coordinate_storage_id' => 'meineid',
+			'#search' => true,
+			'#ch1903' => true
 	);
 	return $form;
 }
