@@ -56,7 +56,7 @@ function area_show_all_areas() {
 			'dbfield' => 'country',
 			'width' => 230
 	);
-	
+
 	$tableHeader[] = array(
 			'name' => t('User'),
 			'dbfield' => 'username',
@@ -96,7 +96,7 @@ function area_show_all_areas() {
  */
 function area_show_specific_area($areadata = NULL) {
 	assert(!empty($areadata));
-	drupal_add_css( drupal_get_path('module', 'area') . '/css/area.css');
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
 	drupal_set_title($areadata['name']);
 
 	/* call area_get_static_image_url() to get an url to the google maps visualization */
@@ -217,14 +217,16 @@ function area_overview_form($form, &$form_state, $areadata) {
 				'coordinates' => false,
 				'surface_area' => false
 		));
-	$form['addressdata']['edit'] = array(
-			'#type' => 'markup',
-			'#markup' => l(t('Edit'), 'area/' . $areadata['id'] . '/edit')
-	);
-	$form['addressdata']['whitespace'] = array(
-			'#type' => 'markup',
-			'#markup' => '&nbsp/&nbsp;'
-	);
+	if (check_permission($areadata['acl_id'], variable_get('ACL_WRITE'))) {
+		$form['addressdata']['edit'] = array(
+				'#type' => 'markup',
+				'#markup' => l(t('Edit'), 'area/' . $areadata['id'] . '/edit')
+		);
+		$form['addressdata']['whitespace'] = array(
+				'#type' => 'markup',
+				'#markup' => '&nbsp/&nbsp;'
+		);
+	}
 	$form['addressdata']['show'] = array(
 			'#type' => 'markup',
 			'#markup' => l(t('Show'), 'area/' . $areadata['id'] . '/show')
