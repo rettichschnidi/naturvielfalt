@@ -126,6 +126,18 @@ function organism_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
+
+	$items['organism/search/json'] = array(
+			'title' => t('Organism search json'),
+			'page callback' => 'organism_search_organism_json',
+			'access arguments' => array(
+					'access content'
+			),
+			'description' => t('Specific organism json'),
+			'type' => MENU_CALLBACK,
+			'file' => 'organism.json.inc',
+	);
+
 	return $items;
 }
 

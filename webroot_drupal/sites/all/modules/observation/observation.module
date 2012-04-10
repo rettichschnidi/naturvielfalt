@@ -23,7 +23,16 @@ function observation_menu() {
 			),
 			'file' => 'singleobservation.inc',
 	);
-
+	$items['observation/save'] = array(
+			'title' => t('Save a observation'),
+			'description' => t(''),
+			'page callback' => 'observation_save',
+			'access arguments' => array(
+					'create observation'
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
 	return $items;
 }
 
