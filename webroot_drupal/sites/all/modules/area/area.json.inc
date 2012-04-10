@@ -15,6 +15,7 @@ function area_all_areas_datatable_json() {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
+			'a.acl_id AS acl_id',
 			'a.name',
 			'a.comment',
 			'a_s.altitude',
