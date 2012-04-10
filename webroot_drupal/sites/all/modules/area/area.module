@@ -216,7 +216,55 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
+
+	/**
+	 * Example usage of theme area with action 'getcoordinate'
+	 * @todo Delete when module singleobservation finished
+	 */ 
+	$items['area/testing'] = array(
+			'title' => t('Example for Ramon'),
+			'description' => t('Example for Ramon about how to use my wonderful area module.'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'area_testing_form'
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'area.module',
+	);
+
 	return $items;
+}
+
+/**
+ * Example usage of theme area with action 'getcoordinate'
+ * @todo Delete when module singleobservation finished
+ */
+function area_testing_form($form, &$form_state) {
+	$form['test'] = array(
+			'#type' => 'textfield',
+			'#title' => 'Coordinates as JSON',
+			'#attributes' => array(
+					'id' => 'meineid'
+			),
+	);
+	
+	$form['div'] = array(
+			'#type' => 'fieldset',
+			'#title' => "Google Map",
+			'#attributes' => array(
+					'style' => 'width: 500px;'
+			)
+	);
+
+	$form['div']['map'] = array(
+			'#theme' => 'area',
+			'#action' => 'getcoordinate',
+			'#coordinate_storage_id' => 'meineid'
+	);
+	return $form;
 }
 
 /**
