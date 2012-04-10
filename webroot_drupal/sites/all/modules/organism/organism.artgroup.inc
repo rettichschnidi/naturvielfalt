@@ -9,12 +9,12 @@
 function organism_artgroup_get_all_as_option($parent = false, $deep = 0){
 
 	if($parent != false){
-		$parent_sql = "'".db_escape_field($parent)."' AND parent!=id";
+		$parent_sql = "'" . db_escape_field($parent) . "' AND parent != id";
 	}else{
 		$parent_sql = "id";
 	}
 
-	$top_sql = "SELECT * FROM organism_artgroup WHERE parent=".$parent_sql;
+	$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent=" . $parent_sql;
 	$top_result= db_query($top_sql);
 
 	$output = "";
@@ -40,7 +40,7 @@ function organism_artgroup_get_children($artgroup_id, $output = false){
 	if(!$artgroup_id) return false;
 	$artgroup_id_sql = "'".db_escape_field($artgroup_id)."' AND parent!=id";
 
-	$top_sql = "SELECT * FROM organism_artgroup WHERE parent=".$artgroup_id_sql;
+	$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent=".$artgroup_id_sql;
 	$top_result= db_query($top_sql);
 
 	if(!$output) $output = array();
@@ -83,12 +83,12 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 			$children_ids = organism_artgroup_get_children($artgroup_id);
 			$children_ids[] = $artgroup_id;
 			$children_sql = organism_artgroup_get_sql_from_id($children_ids, 'oads.organism_artgroup_id');
-			$artgroup_filter = "JOIN organism_artgroup_detmethod_subscription oads on ".$children_sql
+			$artgroup_filter = "JOIN {organism_artgroup_detmethod_subscription} oads on ".$children_sql
 								."WHERE oad.id=oads.organism_artgroup_detmethod_id";
 		}
 	}
 
-	$determation_sql = "SELECT oad.id, oad.name, oad.cscf_id FROM organism_artgroup_detmethod oad ".$artgroup_filter." ORDER BY oad.name asc";
+	$determation_sql = "SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad ".$artgroup_filter." ORDER BY oad.name asc";
 	$results = db_query($determation_sql);
 
 	if(!$as_html_option) return $results;
@@ -120,7 +120,7 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 			$children_ids = organism_artgroup_get_children($artgroup_id);
 			$children_ids[] = $artgroup_id;
 			$children_sql = organism_artgroup_get_sql_from_id($children_ids, 'oaas.organism_artgroup_id');
-			$artgroup_filter = " JOIN organism_artgroup_attr_subscription oaas on ".$children_sql
+			$artgroup_filter = " JOIN {organism_artgroup_attr_subscription} oaas on ".$children_sql
 			." WHERE oaa.id=oaas.organism_artgroup_attr_id";
 		}
 	}
@@ -128,15 +128,15 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 		$artgroup_filter .= " WHERE oaa.id='".db_escape_field($attribute_id)."'";
 	}
 
-	$attributes_sql = "SELECT oaa.id, oaa.name, oaat.name type_name, oaat.format type_format FROM organism_artgroup_attr oaa "
-						."JOIN organism_artgroup_attr_type oaat ON oaat.id=oaa.organism_artgroup_attr_type_id".$artgroup_filter;
+	$attributes_sql = "SELECT oaa.id, oaa.name, oaat.name type_name, oaat.format type_format FROM {organism_artgroup_attr} oaa "
+						."JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id".$artgroup_filter;
 	$attributes_results = db_query($attributes_sql);
 
 // 	if(!$as_html) return $attributes_results;
 
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result){
-		$values = db_query("SELECT * FROM organism_artgroup_attr_values WHERE organism_artgroup_attr_id='".$attributes_result->id."'");
+		$values = db_query("SELECT * FROM {organism_artgroup_attr_values} WHERE organism_artgroup_attr_id='".$attributes_result->id."'");
 		$tmp_val = false;
 		foreach ($values as $value){
 			$tmp_val[$value->id] = $value->value;
