@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file area.delete.inc
  * @author Reto Schneider, 2012

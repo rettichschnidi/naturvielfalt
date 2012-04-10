@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file area.edit.inc
  * @author Reto Schneider, 2012

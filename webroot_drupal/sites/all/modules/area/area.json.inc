@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file area.json.inc
  * @author Reto Schneider, 2012

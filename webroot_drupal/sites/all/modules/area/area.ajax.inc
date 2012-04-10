@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file area.ajax.inc
  * @author Reto Schneider, 2012
