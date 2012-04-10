@@ -10,7 +10,7 @@ module_load_include('inc', 'area', 'area');
 
 /**
  * Create new area.
- * @return render array
+ * @return string Rendered array
  */
 function area_new_area() {
 	$output = array();
@@ -32,7 +32,6 @@ function area_new_area() {
  */
 function area_new_areaname_form($form, &$form_state) {
 	$form = area_address_hidden_form();
-
 	$form['fieldname'] = array(
 			'#type' => 'textfield',
 			'#title' => t('Field name/area name'),
@@ -52,9 +51,10 @@ function area_new_areaname_form($form, &$form_state) {
 }
 
 /**
+ * Create a new area
  * 
- * @param array $form
- * @param array $form_state
+ * @param array $form Drupal form
+ * @param array $form_state Drupal form state with all data
  * @todo Maybe use the ajax version?
  */
 function area_create_new_area($form, &$form_state) {
@@ -62,7 +62,6 @@ function area_create_new_area($form, &$form_state) {
 		$debugmessage = var_export($form_state['values'], true);
 		drupal_set_message("Creating area: <pre>$debugmessage</pre>");
 	}
-
 	/* 
 	 * Get submitted values and escape values before submitting
 	 * them to the database.
@@ -78,30 +77,29 @@ function area_create_new_area($form, &$form_state) {
 	$areaType = filter_xss($form_state['values']['area_type']);
 	$altitude = !empty($form_state['values']['altitude']) ? filter_xss(
 				$form_state['values']['altitude']) : 0;
-	$jsonCoords = filter_xss($form_state['values']['area-coords']);
+	$jsonCoordinates = filter_xss($form_state['values']['area-coords']);
 	$latitude = filter_xss($form_state['values']['latitude']);
 	$longitude = filter_xss($form_state['values']['longitude']);
 
-	$coordinates = json_decode($jsonCoords, true);
-	// swap the cooridnates to the order expected by PostGIS
-	area_swap_json_lnglat($coordinates);
-
+	$transaction = db_transaction();
 	try {
-		$geometryObject = area_get_postgis_geometry_object(
-			$areaType,
-			$coordinates);
-		assert($geometryObject);
+		$geometry_id = area_create_geometry(
+			array('area_points' => $jsonCoordinates,
+					'type' => $areaType,
+					'zip' => $zip,
+					'canton' => $canton,
+					'country' => $country,
+					'township' => $township,
+					'altitude' => $altitude,
+			));
+		assert($geometry_id);
+		$acl_id = new_acl("Area: $name");
 		$area_id = db_insert('area')->fields(
 				array('name' => $name,
-						'zip' => $zip,
-						'canton' => $canton,
-						'country' => $country,
-						'altitude' => $altitude,
-						'township' => $township,
 						'create_time' => 'NOW()',
 						'modify_time' => 'NOW()',
-						'acl_id' => new_acl("Area: $name"),
-						'geom' => $geometryObject
+						'acl_id' => $acl_id,
+						'area_surface_id' => $geometry_id
 				))
 			->execute();
 
@@ -109,9 +107,10 @@ function area_create_new_area($form, &$form_state) {
 			t('Area "@areaname" got created.', array('@areaname' => $name)));
 		drupal_goto('area/' . $area_id . '/show');
 	} catch (Exception $e) {
+		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(
-			t('New area could not be saved.', array('@areaname' => $name)),
+			t('New area could not be created.', array('@areaname' => $name)),
 			'error');
 		drupal_goto('area/new');
 	}

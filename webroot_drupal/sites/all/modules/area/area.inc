@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file area.inc
  * @author Reto Schneider, 2012
@@ -54,44 +53,49 @@ function area_get_full_dataset_of_specific_area($area_id) {
 	}
 	$result = db_query(
 		'SELECT
+				-- area values
 				a.id,
+				a.area_surface_id,
 				a.acl_id,
 				a.name,
-				a.altitude,
-				a.zip,
-				a.township,
-				a.canton,
-				a.country,
 				a.comment,
 				a.create_time,
 				a.modify_time,
 				a.protection_target,
 				a.safety_precautions,
 				a.tending_strategies,
+				-- area_surface values
+				a_s.altitude,
+				a_s.zip,
+				a_s.township,
+				a_s.canton,
+				a_s.country,
 				-- either POINT, POLYGON or LINESTRING
-				GeometryType(a.geom) AS geometry_type,
+				GeometryType(a_s.geom) AS geometry_type,
 				-- Center of the geometry - CH1903, x value
-				ST_X(ST_Centroid(Transform(a.geom, 21781))) AS ch1903_center_x,
+				ST_X(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_x,
 				-- Center of the geometry - CH1903, y value
-				ST_Y(ST_Centroid(Transform(a.geom, 21781))) AS ch1903_center_y,
+				ST_Y(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_y,
 				-- Center of the geometry - WGS84, latitude
-				ST_X(ST_Centroid(Transform(a.geom, 4326))) AS wgs84_center_lat,
+				ST_X(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lat,
 				-- Center of the geometry - WGS84
-				ST_Y(ST_Centroid(Transform(a.geom, 4326))) AS wgs84_center_lng,
+				ST_Y(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lng,
 				-- Coordinates of the geometry - CH1903
-				AsText(Transform(a.geom, 21781)) AS ch1903_coordinates,
+				AsText(Transform(a_s.geom, 21781)) AS ch1903_coordinates,
 				-- Coordinates of the geometry - WGS84
-				AsText(Transform(a.geom, 4326)) AS wgs84_coordinates,
+				AsText(Transform(a_s.geom, 4326)) AS wgs84_coordinates,
 				-- Area surface in m^2
-				Area(Transform(a.geom, 21781)) AS surface_area,
+				Area(Transform(a_s.geom, 21781)) AS surface_area,
 				-- Pathlength (if linestring) in meters
-				ST_Length(Transform(a.geom, 21781)) AS pathlength,
+				ST_Length(Transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
-				ST_AsGeoJSON(a.geom) AS wgs84_geom_json,
+				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json,
+				-- users values
 				u.name AS username,
 				u.uid AS userid
 			FROM
 				{area} a
+				JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
 				JOIN {acl} cacl ON cacl.id = a.acl_id
 				JOIN {users} u ON u.uid = cacl.users_id
 			WHERE
@@ -449,6 +453,120 @@ function area_get_postgis_geometry_object($areaType = NULL,
 	assert($result->rowCount() == 1);
 	return $result->fetch()
 		->geom;
+}
+
+/**
+ * @brief Create a geometry in table area_surface.
+ * 
+ * @param array $data
+ * 	The following variables can be submitted:
+ * 	 - 'zip'
+ * 	 - 'canton'
+ * 	 - 'country'
+ * 	 - 'township'
+ * 	 - 'altitude'
+ * 	 - 'area_points' JSON with all coordinates (mandatory)
+ * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
+ * @param boolean $coordinates_are_already_lng_lat
+ * 	True if area_points are already in lng/lat format, false otherwise (default)
+ * @return integer New geometry id
+ */
+function area_create_geometry($data = array(),
+		$coordinates_are_already_lng_lat = false) {
+	assert(!empty($data));
+	$geometry_id = false;
+	// Bail out early if input stinks too hefty.
+	if (!isset($data['area_points']) || !isset($data['type'])) {
+		assert(false);
+		return;
+	}
+	$jsonCoords = filter_xss($data['area_points']);
+	$areaType = filter_xss($data['type']);
+	$coordinates = json_decode($jsonCoords, true);
+	// Swap the cooridnates to the order expected by postgis
+	if (!$coordinates_are_already_lng_lat) {
+		area_swap_json_lnglat($coordinates);
+	}
+
+	$transaction = db_transaction();
+	try {
+		$geometryObject = area_get_postgis_geometry_object(
+			$areaType,
+			$coordinates);
+		assert($geometryObject != NULL);
+		$geometry_id = db_insert('area_surface')->fields(
+				array('zip' => filter_xss($data['zip']),
+						'canton' => filter_xss($data['canton']),
+						'country' => filter_xss($data['country']),
+						'township' => filter_xss($data['township']),
+						'altitude' => filter_xss($data['altitude']),
+						'geom' => $geometryObject
+				))
+			->execute();
+	} catch (Exception $e) {
+		$transaction->rollback();
+		watchdog_exception('area', $e);
+		drupal_set_message(t('New geometry could not be created.'), 'error');
+	}
+	return $geometry_id;
+}
+
+/**
+ * @brief Update an exsting geometry in table area_surface.
+ *
+ * @param geometry_id
+ * 	- Id of the geometry to update.
+ * @param array $data
+ * 	The following variables can be submitted:
+ * 	 - 'zip'
+ * 	 - 'canton'
+ * 	 - 'country'
+ * 	 - 'township'
+ * 	 - 'altitude'
+ * 	 - 'area_points' JSON with all coordinates (mandatory)
+ * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
+ * @param boolean $coordinates_are_already_lng_lat
+ * 	True if area_points are already in lng/lat format, false otherwise (default)
+ */
+function area_update_geometry($geometry_id, $data = array(),
+		$coordinates_are_already_lng_lat = false) {
+	assert(!empty($data));
+	assert($geometry_id != NULL);
+	// Bail out early if input stinks too hefty.
+	if (!isset($data['area_points']) || !isset($data['type']) || $geometry_id == NULL) {
+		assert(false);
+		return;
+	}
+	$jsonCoords = filter_xss($data['area_points']);
+	$areaType = filter_xss($data['type']);
+	$coordinates = json_decode($jsonCoords, true);
+	// Swap the cooridnates to the order expected by postgis
+	if (!$coordinates_are_already_lng_lat) {
+		area_swap_json_lnglat($coordinates);
+	}
+
+	$transaction = db_transaction();
+	try {
+		$geometryObject = area_get_postgis_geometry_object(
+			$areaType,
+			$coordinates);
+		assert($geometryObject != NULL);
+		db_update('area_surface')->fields(
+				array('zip' => filter_xss($data['zip']),
+						'canton' => filter_xss($data['canton']),
+						'country' => filter_xss($data['country']),
+						'township' => filter_xss($data['township']),
+						'altitude' => filter_xss($data['altitude']),
+						'geom' => $geometryObject
+				))
+			->condition('id', $geometry_id)
+			->execute();
+	} catch (Exception $e) {
+		$transaction->rollback();
+		watchdog_exception('area', $e);
+		drupal_set_message(t('Geometry could not be updated.'), 'error');
+		throw $e;
+	}
 }
 
 /**

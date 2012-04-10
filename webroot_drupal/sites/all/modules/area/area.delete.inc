@@ -18,8 +18,9 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
 	drupal_set_title(
 		t("Delete @areaname.", array('@areaname' => $areadata['name'])));
 
-	$question = t('Are you sure that you want to delete «@areaname»?',
-						array('@areaname' => $areadata['name']));
+	$question = t(
+		'Are you sure that you want to delete «@areaname»?',
+		array('@areaname' => $areadata['name']));
 	/* create a fieldset for the tabular data */
 	$form['question'] = array(
 			'#type' => 'markup',
@@ -53,10 +54,16 @@ function area_delete_form_validate($form, &$form_state) {
 function area_delete_form_submit($form, &$form_state) {
 	/* Escape values before submitting them to the database */
 	$area_id = (int) $form_state['build_info']['args'][0]['id'];
-
-	$num_deleted = db_delete('{area}')->condition('id', $area_id)
+	$area_surface_id = (int) $form_state['build_info']['args'][0]['area_surface_id'];
+	$num_deleted_area = db_delete('area')->condition('id', $area_id)
+		->execute();
+	assert($num_deleted_area == 1);
+	$num_deleted_geometry = db_delete('area_surface')->condition(
+			'id',
+			$area_surface_id)
 		->execute();
 	assert($num_deleted == 1);
+
 	drupal_goto('/area');
 }
 ?>

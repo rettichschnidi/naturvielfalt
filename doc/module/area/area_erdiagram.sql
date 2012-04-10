@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS public.area_file_managed;
 DROP TABLE IF EXISTS public.area_habitat;
 DROP TABLE IF EXISTS public.area_parcel;
 DROP TABLE IF EXISTS public.area;
+DROP TABLE IF EXISTS public.area_surface;
 
 
 
@@ -21,27 +22,22 @@ CREATE TABLE public.area
 (
 	-- Primary Key
 	id serial NOT NULL,
+	-- FK
+	area_surface_id int NOT NULL,
 	-- Primary key for swissmon acl items
 	acl_id int NOT NULL,
 	-- Name, Flurname
 	name text NOT NULL,
-	-- Meter über Meer
-	altitude int DEFAULT 0,
-	township text,
-	zip text,
-	canton text,
-	country text,
 	-- Kommentartext
 	comment text,
-	create_time timestamp NOT NULL,
-	modify_time timestamp,
 	-- Schutzziel
 	protection_target text,
 	-- Schutzmassnahmen
 	safety_precautions text,
 	-- Pflege- und Gestaltungsmassnahmen
 	tending_strategies text,
-	geom geometry NOT NULL,
+	create_time timestamp NOT NULL,
+	modify_time timestamp,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -79,6 +75,21 @@ CREATE TABLE public.area_parcel
 ) WITHOUT OIDS;
 
 
+CREATE TABLE public.area_surface
+(
+	-- Primary Key
+	id serial NOT NULL,
+	-- Meter über Meer
+	altitude int DEFAULT 0,
+	township text,
+	zip text,
+	canton text,
+	country text,
+	geom geometry NOT NULL,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
 
 /* Create Foreign Keys */
 
@@ -106,6 +117,14 @@ ALTER TABLE public.area_parcel
 ;
 
 
+ALTER TABLE public.area
+	ADD FOREIGN KEY (area_surface_id)
+	REFERENCES public.area_surface (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
 
 /* Create Indexes */
 
@@ -116,9 +135,9 @@ CREATE INDEX fki_area_id ON public.area_parcel USING BTREE (area_id);
 /* Comments */
 
 COMMENT ON COLUMN public.area.id IS 'Primary Key';
+COMMENT ON COLUMN public.area.area_surface_id IS 'FK';
 COMMENT ON COLUMN public.area.acl_id IS 'Primary key for swissmon acl items';
 COMMENT ON COLUMN public.area.name IS 'Name, Flurname';
-COMMENT ON COLUMN public.area.altitude IS 'Meter über Meer';
 COMMENT ON COLUMN public.area.comment IS 'Kommentartext';
 COMMENT ON COLUMN public.area.protection_target IS 'Schutzziel';
 COMMENT ON COLUMN public.area.safety_precautions IS 'Schutzmassnahmen';
@@ -129,6 +148,8 @@ COMMENT ON COLUMN public.area_habitat.id IS 'PK';
 COMMENT ON COLUMN public.area_habitat.area_id IS 'FK to area';
 COMMENT ON COLUMN public.area_habitat.habitat_id IS 'PK';
 COMMENT ON COLUMN public.area_parcel.area_id IS 'Primary Key';
+COMMENT ON COLUMN public.area_surface.id IS 'Primary Key';
+COMMENT ON COLUMN public.area_surface.altitude IS 'Meter über Meer';
 
 
 

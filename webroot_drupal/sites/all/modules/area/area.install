@@ -15,6 +15,12 @@ function area_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
+      'area_surface_id' => 
+      array (
+        'description' => 'FK',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
       'acl_id' => 
       array (
         'description' => 'Primary key for swissmon acl items',
@@ -27,49 +33,10 @@ function area_schema() {
         'type' => 'text',
         'not null' => 'TRUE',
       ),
-      'altitude' => 
-      array (
-        'description' => 'Meter über Meer',
-        'type' => 'int',
-        'default' => '0',
-      ),
-      'township' => 
-      array (
-        'description' => 'No description for column township available, please fix',
-        'type' => 'text',
-      ),
-      'zip' => 
-      array (
-        'description' => 'No description for column zip available, please fix',
-        'type' => 'text',
-      ),
-      'canton' => 
-      array (
-        'description' => 'No description for column canton available, please fix',
-        'type' => 'text',
-      ),
-      'country' => 
-      array (
-        'description' => 'No description for column country available, please fix',
-        'type' => 'text',
-      ),
       'comment' => 
       array (
         'description' => 'Kommentartext',
         'type' => 'text',
-      ),
-      'create_time' => 
-      array (
-        'description' => 'No description for column create_time available, please fix',
-        'type' => 'datetime',
-        'not null' => 'TRUE',
-        'pgsql_type' => 'timestamp',
-      ),
-      'modify_time' => 
-      array (
-        'description' => 'No description for column modify_time available, please fix',
-        'type' => 'datetime',
-        'pgsql_type' => 'timestamp',
       ),
       'protection_target' => 
       array (
@@ -86,16 +53,34 @@ function area_schema() {
         'description' => 'Pflege- und Gestaltungsmassnahmen',
         'type' => 'text',
       ),
-      'geom' => 
+      'create_time' => 
       array (
-        'description' => 'No description for column geom available, please fix',
+        'description' => 'No description for column create_time available, please fix',
+        'type' => 'datetime',
         'not null' => 'TRUE',
-        'pgsql_type' => 'geometry',
+        'pgsql_type' => 'timestamp',
+      ),
+      'modify_time' => 
+      array (
+        'description' => 'No description for column modify_time available, please fix',
+        'type' => 'datetime',
+        'pgsql_type' => 'timestamp',
       ),
     ),
     'primary key' => 
     array (
       0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'area_2_area_surface' => 
+      array (
+        'table' => 'area_surface',
+        'columns' => 
+        array (
+          'area_surface_id' => 'id',
+        ),
+      ),
     ),
   ),
   'area_file_managed' => 
@@ -216,6 +201,54 @@ function area_schema() {
       array (
         0 => 'area_id',
       ),
+    ),
+  ),
+  'area_surface' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Primary Key',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'altitude' => 
+      array (
+        'description' => 'Meter über Meer',
+        'type' => 'int',
+        'default' => '0',
+      ),
+      'township' => 
+      array (
+        'description' => 'No description for column township available, please fix',
+        'type' => 'text',
+      ),
+      'zip' => 
+      array (
+        'description' => 'No description for column zip available, please fix',
+        'type' => 'text',
+      ),
+      'canton' => 
+      array (
+        'description' => 'No description for column canton available, please fix',
+        'type' => 'text',
+      ),
+      'country' => 
+      array (
+        'description' => 'No description for column country available, please fix',
+        'type' => 'text',
+      ),
+      'geom' => 
+      array (
+        'description' => 'No description for column geom available, please fix',
+        'not null' => 'TRUE',
+        'pgsql_type' => 'geometry',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
     ),
   ),
 );

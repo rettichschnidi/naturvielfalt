@@ -1,5 +1,5 @@
 name = area
-description = Manage areas (generic)
+description = Manage areas with Google maps
 package = Naturvielfalt
 core = 7.x
 version = "7.x-current"

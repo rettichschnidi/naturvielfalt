@@ -1,7 +1,6 @@
 <?php
-
 /**
- * @file area.show.inc
+ * @file area.admin.inc
  * @author Reto Schneider, 2012
  * @copyright 2012 Naturwerk, Brugg
  */

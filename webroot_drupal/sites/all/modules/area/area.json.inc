@@ -17,28 +17,29 @@ function area_all_areas_datatable_json() {
 	$sql['dbColumns'] = array(
 			'a.id AS id',
 			'a.name',
-			'a.altitude',
-			'a.township',
-			'a.canton',
-			'a.country',
-			'ST_AsGeoJSON(a.geom) AS geom',
 			'a.comment',
+			'a_s.altitude',
+			'a_s.township',
+			'a_s.canton',
+			'a_s.country',
+			'ST_AsGeoJSON(a_s.geom) AS geom',
 			'u.name AS username'
 	);
 
 	$sql['dbSearchColumns'] = array(
 			'a.name',
-			'a.altitude',
-			'a.township',
-			'a.canton',
-			'a.country',
 			'a.comment',
+			'a_s.altitude',
+			'a_s.township',
+			'a_s.canton',
+			'a_s.country',
 			'u.name'
 	);
 
 	$sql['dbTable'] = "{area} a";
-	$sql['dbJoins'] = "JOIN {acl} cacl ON cacl.id = a.acl_id
-		 JOIN {users} u ON u.uid = cacl.users_id";
+	$sql['dbJoins'] = "JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
+			JOIN {acl} cacl ON cacl.id = a.acl_id
+			JOIN {users} u ON u.uid = cacl.users_id";
 	$sql['id'] = 'id';
 	$output = datatable_dbRequest($sql);
 	return drupal_json_output($output);
@@ -53,14 +54,15 @@ function area_json($area_id = false) {
 		'SELECT
 			a.id AS id,
 			a.name,
-			a.altitude,
-			a.township,
-			a.canton,
-			a.country,
-			ST_AsGeoJSON(a.geom) AS geom,
-			a.comment
+			a.comment,
+			a_s.altitude,
+			a_s.township,
+			a_s.canton,
+			a_s.country,
+			ST_AsGeoJSON(a_s.geom) AS geom
 			FROM
 				{area} a
+				JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
 			WHERE
 				-- let this condition always be true if no id set
 				(a.id = :areaid OR :have_no_area_id)
@@ -121,10 +123,11 @@ function area_json($area_id = false) {
 }
 
 /**
+ * Take JSON and update area geometry
  * 
- * @param unknown_type $area_id
+ * @param array $areadata
  */
-function area_updategeometry_json($areadata = null) {
+function area_updategeometry_json($areadata = NULL) {
 	assert($areadata != NULL);
 	if (!isset($_POST['area_points']) || !isset($_POST['type'])) {
 		assert(false);
@@ -132,27 +135,25 @@ function area_updategeometry_json($areadata = null) {
 	}
 	$jsonCoords = $_POST['area_points'];
 	$areaType = $_POST['type'];
-	$coordinates = json_decode($jsonCoords, true);
-	// swap the cooridnates to the order expected by postgis
-	area_swap_json_lnglat($coordinates);
+	$geometry_id = $areadata['area_surface_id'];
 
+	$transaction = db_transaction();
 	try {
-		$geometryObject = area_get_postgis_geometry_object(
-			$areaType,
-			$coordinates);
-		assert($geometryObject);
-		db_update('area')->fields(
-				array('zip' => filter_xss($_POST['zip']),
-						'canton' => filter_xss($_POST['canton']),
-						'country' => filter_xss($_POST['country']),
-						'township' => filter_xss($_POST['township']),
-						'modify_time' => 'NOW()',
-						'altitude' => filter_xss($_POST['altitude']),
-						'geom' => $geometryObject
-				))
+		area_update_geometry(
+			$areadata['area_surface_id'],
+			array('zip' => filter_xss($_POST['zip']),
+					'canton' => filter_xss($_POST['canton']),
+					'country' => filter_xss($_POST['country']),
+					'township' => filter_xss($_POST['township']),
+					'altitude' => filter_xss($_POST['altitude']),
+					'area_points' => $jsonCoords,
+					'type' => $areaType
+			));
+		db_update('area')->fields(array('modify_time' => 'NOW()',))
 			->condition('id', $areadata['id'])
 			->execute();
 	} catch (Exception $e) {
+		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(
 			t(
