@@ -77,7 +77,6 @@ function area_show_all_areas() {
 					'jsonUrl' => "'" . base_path() . "area/datatablejson'",
 					'rowClick' => 'rowClick',
 					'tableWidth' => '100%',
-					'tableHeight' => '100%',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
