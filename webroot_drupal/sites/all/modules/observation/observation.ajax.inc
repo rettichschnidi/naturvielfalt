@@ -25,7 +25,7 @@ global $user;
 	/**
 	 * Check the determation and artgroup value
 	 */
-	$artgroup_id = intval($values['artgroup']);
+	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	$observation['organism_artgroup_id'] = NULL;
 	if($artgroup_id > 0){
 		$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
@@ -36,13 +36,12 @@ global $user;
 			foreach ($determination_methods_db as $determination_method_db){
 				if($determination_method_db->id == $determination_method_id){
 					$artgroup_id_checked = true;
-					$observation['organism_artgroup_id'] = $artgroup_id;
 				}
 			}
-		}
-		if(!$artgroup_id_checked){
-			$error = true;
-			$message[] = t('Artgroup with this determination method not allowed');
+			if(!$artgroup_id_checked){
+				$error = true;
+				$message[] = t('Artgroup with this determination method not allowed');
+			}
 		}
 	}
 
@@ -80,6 +79,7 @@ global $user;
 	foreach ($attributes as $key => $value){
 // 		$output['attro'][] = $key.': '.$value;
 		$attribute = organism_artgroup_get_attribute($key);
+		$output['org_attr'][] = $attribute;
 		$attribute = $attribute[0];
 		switch($attribute['type_format']){
 			case 'string':
@@ -90,7 +90,7 @@ global $user;
 				break;
 			case 'dropdown':
 				if($value != '0'){
-					if(array_search($value, $attribute['values'])){
+					if(array_key_exists($value, $attribute['values'])){
 						$attributes_checked[$key] = 'db_id-->'.$value;
 					}else{
 						$error = true;
@@ -164,7 +164,7 @@ global $user;
 						'organism_artgroup_attr_values_id' => $db_id,
 						'value' => $db_val,
 						);
-				drupal_write_record('observation_attribute', $entry);
+				db_insert('observation_attribute')->fields($entry)->execute();
 				$output['db_attr'][] = $entry;
 
 			}
