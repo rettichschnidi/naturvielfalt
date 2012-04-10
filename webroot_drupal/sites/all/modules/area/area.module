@@ -41,6 +41,7 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.json.inc',
 	);
+
 	/* Get all available areas as json*/
 	$items['area/%area/updategeometry/json'] = array(
 			'title' => t('Update the geometry'),
@@ -215,16 +216,8 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
-
 	return $items;
 }
-
-// function area_admin_paths_alter(&$paths) {
-// 	$paths = array(
-// 			'area/*/editgeometry' => TRUE,
-// 	);
-// 	return $paths;
-// }
 
 /**
  * Implements hook_theme()
@@ -239,6 +232,9 @@ function area_theme() {
 							// Requested functionality:
 							//  'create': create a new area
 							//  'edit': edit an existing area ('area_id' has to be set)
+							//  'getcoordinate': get a coordinate (set a marker and fill
+							//		its position into a hidden field , 'coordinate_storage_id'
+							//		needs to be set)
 							'action' => NULL,
 							// enable searchbox
 							'search' => false,
@@ -249,7 +245,9 @@ function area_theme() {
 							// wether to show the scale or not
 							'scalecontrol' => true,
 							// include a filed which shows/sets the CH1903 coordinates
-							'ch1903' => false
+							'ch1903' => false,
+							// element id for storage
+							'coordinate_storage_id' => false
 					)
 			)
 	);

@@ -210,3 +210,16 @@ google.maps.Marker.prototype.setup = function() {
 
 google.maps.Polygon.prototype.setup = google.maps.Marker.prototype.setup;
 google.maps.Polyline.prototype.setup = google.maps.Marker.prototype.setup;
+
+google.maps.Marker.prototype.getJsonCoordinates = function() {
+	var coordinates = new Array();
+	this.getAllCoordinates().forEach(
+			function(position) {
+				coordinates.push([ position.lat(),
+						position.lng() ]);
+			});
+	return coordinates;
+};
+
+google.maps.Polyline.prototype.getJsonCoordinates = google.maps.Marker.prototype.getJsonCoordinates;
+google.maps.Polygon.prototype.getJsonCoordinates = google.maps.Marker.prototype.getJsonCoordinates;

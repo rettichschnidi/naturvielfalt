@@ -13,7 +13,7 @@
 <?php
 // include CSS and JavaScripts
 function area_add_js_url($url) {
-	print "<script type='text/javascript' src='$url'></script>";
+	print "<script type='text/javascript' src='$url'></script>\n";
 }
 
 function area_add_css_url($url) {
@@ -41,7 +41,7 @@ $libraries = 'geometry';
 if ($search) {
 	$libraries .= ',places';
 }
-if ($action == 'create') {
+if ($action == 'create' || $action == 'getcoordinate') {
 	$libraries .= ',drawing';
 }
 
@@ -83,5 +83,10 @@ if ($showall) {
 
 if ($action == 'edit') {
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
+}
+
+if ($action == 'getcoordinate' && $coordinate_storage_id != false) {
+	print "<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
+	area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
 }
 ?>
