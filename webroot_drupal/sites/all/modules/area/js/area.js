@@ -35,6 +35,7 @@ function Area(map_id) {
 	this.automaticSaveLocationListener = undefined;
 	this.ch1903MapChangeListener = undefined;
 	this.mapTypeSwitchListener = null;
+	
 	/**
 	 * Creates the google maps object and attaches it to the element with the id
 	 * this.map_id.
@@ -444,6 +445,33 @@ function Area(map_id) {
 					google.maps.event.removeListener(this.ch1903MapChangeListener);
 				}
 			}
+		};
+		
+		updateHiddenfields = function(overlay) {
+			getAddress(
+					overlay.overlay.getPosition(),
+					function(address) {
+						console.log("Address:");
+						console.log(address);
+						jQuery('#hiddenfield-canton').val(address.canton);
+						jQuery('#hiddenfield-township').val(address.township);
+						jQuery('#hiddenfield-locality').val(address.locality);
+						jQuery('#hiddenfield-zip').val(address.zip);
+						jQuery('#hiddenfield-country').val(address.country);
+
+						jQuery('#hiddenfield-latitude').val(
+								overlay.overlay.getPosition().lat());
+						jQuery('#hiddenfield-longitude').val(
+								overlay.overlay.getPosition().lng());
+						jQuery('#hiddenfield-area-type').val(overlay.type);
+						jQuery('#hiddenfield-area-coordinates').val(JSON.stringify(overlay.overlay.getJsonCoordinates()));
+					});
+			getAltitude(overlay.overlay.getPosition(), function(
+					altitude) {
+				console.log("Altitude:");
+				console.log(altitude);
+				jQuery('#hiddenfield-altitude').val(altitude);
+			});
 		};
 		
 		boundsChangeListender(true);

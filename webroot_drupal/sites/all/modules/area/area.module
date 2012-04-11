@@ -259,6 +259,8 @@ function area_testing_form($form, &$form_state) {
 			)
 	);
 
+	$form['div']['hiddenfields'] = area_address_hidden_form();
+	
 	$form['div']['map'] = array(
 			'#theme' => 'area',
 			'#action' => 'getcoordinate',

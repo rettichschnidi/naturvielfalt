@@ -92,7 +92,7 @@ function area_show_all_areas() {
 /**
  * Show a specific area
  * @param integer $area_id
- * @return renderarray
+ * @return array Drupal form
  */
 function area_show_specific_area($areadata = NULL) {
 	assert(!empty($areadata));
@@ -203,6 +203,7 @@ function area_show_specific_area($areadata = NULL) {
 /**
  * Return a form which shows some important facts about a given area
  * @param array $areadata
+ * @return array Drupal form
  */
 function area_overview_form($form, &$form_state, $areadata) {
 	$form['addressdata'] = array(

@@ -5,15 +5,14 @@
  */
 
 /**
- * Create a Searchbar using autocomplete-feature by google places api
+ * Allow the user to set a marker and store the data about this
+ * point (country, township, etc) returned by Google into hidden
+ * fields.
  */
 
 jQuery(document).ready(
 		function() {
-			var elementId = coordinate_storage_id;
 			var lastOverlay = false;
-
-			console.debug("Id: " + coordinate_storage_id);
 
 			var drawingManager = new google.maps.drawing.DrawingManager({
 				drawingMode : google.maps.drawing.OverlayType.MARKER,
@@ -32,6 +31,13 @@ jQuery(document).ready(
 				map : areabasic.googlemap
 			});
 
+			var update = function() {
+				jQuery('#' + coordinate_storage_id).val(
+						JSON.stringify(lastOverlay.overlay
+								.getJsonCoordinates()));
+				updateHiddenfields(lastOverlay);
+			};
+			
 			google.maps.event.addListener(
 					drawingManager,
 					'overlaycomplete',
@@ -41,21 +47,13 @@ jQuery(document).ready(
 						}
 						lastOverlay = overlay;
 						lastOverlay.overlay.setupGeometryChangedEvent();
-						jQuery('#' + elementId).val(
-								JSON.stringify(overlay.overlay
-										.getJsonCoordinates()));
-
 						this.setDrawingMode(null);
 						overlay.overlay.setEditable(true);
-
+						update();
+						
 						google.maps.event.addListener(
 								lastOverlay.overlay,
 								'geometry_changed',
-								function() {
-									jQuery('#' + elementId).val(
-											JSON.stringify(overlay.overlay
-													.getJsonCoordinates()));
-								});
+								update);
 					});
-
 		});
