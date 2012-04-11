@@ -15,6 +15,7 @@ function area_all_areas_datatable_json() {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
+			'a.acl_id AS acl_id',
 			'a.name',
 			'a.comment',
 			'a_s.altitude',
@@ -52,6 +53,7 @@ function area_json($area_id = false) {
 	$areas = db_query(
 		'SELECT
 			a.id AS id,
+			a.acl_id AS acl_id,
 			a.name,
 			a.comment,
 			a_s.altitude,
@@ -73,47 +75,49 @@ function area_json($area_id = false) {
 
 	$items = array();
 	foreach ($areas as $entry) {
-		$item = array();
-		$item['id'] = (int) $entry->id;
-		$item['name'] = $entry->name;
-		$item['parcel_nr'] = NULL;
-		$item['altitude'] = (int) $entry->altitude;
-		$item['township'] = $entry->township;
-		$item['canton'] = $entry->canton;
-		$item['country'] = $entry->country;
-		$item['comment'] = $entry->comment;
+		if (check_permission($entry->acl_id, variable_get('ACL_READ'))) {
+			$item = array();
+			$item['id'] = (int) $entry->id;
+			$item['name'] = $entry->name;
+			$item['parcel_nr'] = NULL;
+			$item['altitude'] = (int) $entry->altitude;
+			$item['township'] = $entry->township;
+			$item['canton'] = $entry->canton;
+			$item['country'] = $entry->country;
+			$item['comment'] = $entry->comment;
 
-		$item['type'] = '';
-		$item['area_points'] = array();
-		$json = json_decode($entry->geom);
-		if ($json) {
-			if ('Polygon' == $json->type) {
-				$item['type'] = 'polygon';
-				foreach ($json->coordinates[0] as $coordinate) {
+			$item['type'] = '';
+			$item['area_points'] = array();
+			$json = json_decode($entry->geom);
+			if ($json) {
+				if ('Polygon' == $json->type) {
+					$item['type'] = 'polygon';
+					foreach ($json->coordinates[0] as $coordinate) {
+						$item['area_points'][] = array(
+								'lat' => $coordinate[1],
+								'lng' => $coordinate[0]
+						);
+					}
+				} else if ($json->type == 'LineString') {
+					$item['type'] = 'polyline';
+					foreach ($json->coordinates as $coordinate) {
+						$item['area_points'][] = array(
+								'lat' => $coordinate[1],
+								'lng' => $coordinate[0]
+						);
+					}
+				} else if ($json->type == 'Point') {
+					$item['type'] = 'marker';
 					$item['area_points'][] = array(
-							'lat' => $coordinate[1],
-							'lng' => $coordinate[0]
+							'lat' => $json->coordinates[1],
+							'lng' => $json->coordinates[0]
 					);
+				} else {
+					assert(false);
 				}
-			} else if ($json->type == 'LineString') {
-				$item['type'] = 'polyline';
-				foreach ($json->coordinates as $coordinate) {
-					$item['area_points'][] = array(
-							'lat' => $coordinate[1],
-							'lng' => $coordinate[0]
-					);
-				}
-			} else if ($json->type == 'Point') {
-				$item['type'] = 'marker';
-				$item['area_points'][] = array(
-						'lat' => $json->coordinates[1],
-						'lng' => $json->coordinates[0]
-				);
-			} else {
-				assert(false);
 			}
+			$items[] = $item;
 		}
-		$items[] = $item;
 	}
 	// json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and
 	// not as an array. However, we used area_id as $key, so we have to index them numerically

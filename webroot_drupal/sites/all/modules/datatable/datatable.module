@@ -233,18 +233,28 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	 * Get data to display
 	 */
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
-	$nQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-	$sQuery = $nQuery . " " . $sLimit;
+	$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
+	$singlePageQuery = $fullQuery . " " . $sLimit;
 	if (false) {
-		$noopeningbrakets = str_replace('{', 'drupal_', $sQuery);  // FIXME
+		$noopeningbrakets = str_replace('{', 'drupal_', $singlePageQuery);  // FIXME
 		$noclosingbrakets = str_replace('}', '', $noopeningbrakets);
 		die("<pre>$noclosingbrakets</pre>");
 	}
-	$rResult = db_query($sQuery, $arguments);
+	$rResult = db_query($singlePageQuery, $arguments);
 
 	/* Data set length after filtering */
-	$nResult = db_query($nQuery, $arguments);
-	$iFilteredTotal = $nResult->rowCount();
+	$fullResult = db_query($fullQuery, $arguments);
+	$fullRecords = $rResult->fetchAll();
+	$iFilteredTotal = 0;
+	if(isset($fullRecords[0]->acl_id)) {
+		foreach($fullRecords as $record) {
+			if(check_permission($record->acl_id, variable_get('ACL_READ'))) {
+				$iFilteredTotal++;
+			}
+		}
+	} else {
+		$iFilteredTotal = $rResult->rowCount();
+	}
 
 	/* Total data set length */
 	$tQuery = "SELECT $columnsString FROM $sTable $where $sGroupBy $sOrder";
@@ -252,18 +262,19 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$iTotal = $rResultTotal->rowCount();
 
 	$output = array(
-			"page" => $page,
-			"total" => $iFilteredTotal,
-			"rows" => array()
+			'page' => $page,
+			'total' => $iFilteredTotal,
+			'rows' => array()
 	);
 
-	$data = $rResult->fetchAll();
-	foreach ($data as $aRow) {
+	foreach ($fullRecords as $aRow) {
 		$row = get_object_vars($aRow);
-		$output['rows'][] = array(
-				'id' => $row[$idColumn],
-				'cell' => $row
-		);
+		if(!isset($row['acl_id']) || check_permission($row['acl_id'], variable_get('ACL_READ'))) {
+			$output['rows'][] = array(
+					'id' => $row[$idColumn],
+					'cell' => $row
+			);
+		}
 	}
 	return $output;
 }
