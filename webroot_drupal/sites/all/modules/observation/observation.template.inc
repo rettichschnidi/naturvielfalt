@@ -1,6 +1,6 @@
 
 <?php
-//function observation_new_form($form, $form_state) {
+// function observation_new_form($form, $form_state) {
 function observation_new_form($action, $name = false) {
 	global $user;
 
@@ -12,28 +12,43 @@ function observation_new_form($action, $name = false) {
 	drupal_add_library('system', 'ui.autocomplete');
 	drupal_add_library('system', 'ui.datepicker');
 	$observation_path= drupal_get_path('module', 'observation');
-	drupal_add_js('https://maps.google.com/maps/api/js?sensor=false');
-	drupal_add_js($observation_path . '/js/gmap.js');
+// 	drupal_add_js('https://maps.google.com/maps/api/js?sensor=false');
+// 	drupal_add_js($observation_path . '/js/gmap.js');
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
-	$imgpath= base_path().drupal_get_path('module', 'observation');
-	$formcust = "
-					<style type='text/css'>
-						.organismn_autocomplete {
-							background-image: url('".$imgpath."/img/search.gif');
-							background-repeat: no-repeat;
-							background-position: right;
-							border-width: 1px;
-							padding: 0.5em;
-						}
-						.searching {
-							background-image: url('".$imgpath."/img/searching.gif');
-						}
-						.notfound {
-							background-image: url('".$imgpath."/img/notfound.gif');
-						}
-					</style>";
+	$formcust = "";
+
+	/**
+	 * Area map include
+	 */
+	$form['observation_map'] = array(
+			'#type' => 'hidden',
+			'#attributes' => array(
+					'id' => 'coordinate',
+					'name' => 'coordinate'
+			),
+	);
+
+	$form['div'] = array(
+			'#type' => 'fieldset',
+			'#title' => "Google Map",
+			'#attributes' => array(
+					'style' => 'width: 95%;'
+			)
+	);
+
+	$form['div']['map'] = array(
+			'#theme' => 'area',
+			'#action' => 'getcoordinate',
+			'#coordinate_storage_id' => 'coordinate',
+			'#search' => true,
+			'#ch1903' => true
+	);
+
+
+
+
 
 	$formcust .= '<div class="form-item form-type-textfield">'
 
@@ -72,21 +87,22 @@ function observation_new_form($action, $name = false) {
 									.'<tr><td>&nbsp;</td></tr>'
 
 									.'<tr>'
-									.'<td class="observation_title">'.t('Coordinates').'</td>'
-									.'</tr><tr>'
-									.'<td class="observation_td" align="right" colspan=2>'
-										.'X: <input id="coordinate_x" type="text" name="coordinate_x"> Y: <input id="coordinate_y" type="text" name="coordinate_x"><input type="button" onclick="setMarker();" value="'.t('Set position').'"></td>'
-									.'</tr><tr>'
-									.'<td class="observation_td" align="right" colspan=2>'.t('Optionaly you can enter the coordinates manually').'</div></td>'
-									.'</tr><tr>'
-									.'<td colspan=1></td>'
-									.'</tr><tr>'
-									.'<td colspan=3><div id="map" style="width: 600px; height: 400px;"></div></td>'
+									.'<td colspan="3">';
+
+
+
+
+					$formcust .= drupal_render($form);
+
+
+
+
+
+					$formcust .=	'</td>'
 									.'</tr>'
 
 									.'<tr><td>&nbsp;</td></tr>'
 
-									.'<script type="text/javascript">initialize_map();</script>'
 
 								.'</table>'
 
@@ -117,7 +133,93 @@ function observation_new_form($action, $name = false) {
 
 			.'</div>';
 
+	/**
+	 * Drupal form handling, should be that
+	 */
+// 	$form['organismn_main'] = array(
+// 			'#type' => 'container',
+// 			'#attributes' => array(
+// 					'style' => array(
+// 							//'visibility: hidden;'
+// 					))
+// 	);
 
+// 	$form['organismn_main']['organismn_autocomplete'] = array(
+// 			'#type' => 'textfield',
+// 			'#title' => t('Search for organsim or species'),
+// 			'#size' => 30,
+// 			'#maxlength' => 64,
+// 			'#description' => t('Please enter a name to search in our database'),
+// 			'#id' => 'organismn_date'
+// 	);
+
+// 	$form['organismn_main']['observation_date'] = array(
+// 			'#type' => 'textfield',
+// 			'#title' => t('Date'),
+// 			'#size' => 30,
+// 			'#maxlength' => 64,
+// 			'#description' => t('Please enter date for the observation'),
+// 			'#id' => 'organismn_date'
+// 	);
+
+// 	$form['organismn_main']['observation_count'] = array(
+// 			'#type' => 'textfield',
+// 			'#title' => t('Count'),
+// 			'#size' => 30,
+// 			'#maxlength' => 64,
+// 			'#description' => t('Please enter number of found'),
+// 			'#id' => 'organismn_count'
+// 	);
+
+// 	$form['organismn_main']['details'] = array(
+// 			'#type' => 'fieldset',
+// 			'#title' => t('Add more Details'),
+// 			'#collapsible' => TRUE,
+// 			'#collapsed' => TRUE,
+// 	);
+
+
+
+// 	$form['organismn_main']['organismn_id'] = array(
+// 			'#type' => 'hidden',
+// 			'#value' => '',
+// 			'#id' => 'organismn_id'
+// 	);
+
+// 	$form['organismn_main']['submit'] = array(
+// 			'#type' => 'submit',
+// 			'#value' => t('Save the Observation')
+// 	);
+
+
+	/**
+	 * Area map include
+	 */
+	$form['test'] = array(
+			'#type' => 'textfield',
+			'#title' => 'Coordinates as JSON',
+			'#attributes' => array(
+					'id' => 'meineid'
+			),
+	);
+
+	$form['div'] = array(
+			'#type' => 'fieldset',
+			'#title' => "Google Map",
+			'#attributes' => array(
+					'style' => 'width: 95%;'
+			)
+	);
+
+	$form['div']['map'] = array(
+			'#theme' => 'area',
+			'#action' => 'getcoordinate',
+			'#coordinate_storage_id' => 'meineid',
+			'#search' => true,
+			'#ch1903' => true
+	);
+	$formcust .= drupal_render($form);
+// 	return $form;
 
 	return $formcust;
 }

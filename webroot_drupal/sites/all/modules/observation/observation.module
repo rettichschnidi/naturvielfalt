@@ -14,9 +14,18 @@ module_load_include('inc', 'observation');
  * @return array
  */
 function observation_menu() {
+	$items['singleobservation'] = array(
+			'title' => t('Show all singleobservations'),
+			'description' => t('Display a wizard to add a new singleobservation'),
+			'page callback' => 'singleobservation_view_list',
+			'access arguments' => array(
+					'access observation'
+			),
+			'file' => 'singleobservation.inc',
+	);
 	$items['singleobservation/new'] = array(
 			'title' => t('Add a new singleobservation'),
-			'description' => t('Display a wizard to add a new singleobservation'),
+			'description' => t('Display a form to add a new singleobservation'),
 			'page callback' => 'singleobservation_wizard',
 			'access arguments' => array(
 					'create observation'

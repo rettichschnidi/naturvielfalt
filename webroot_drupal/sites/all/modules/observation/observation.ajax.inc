@@ -79,7 +79,7 @@ global $user;
 	foreach ($attributes as $key => $value){
 // 		$output['attro'][] = $key.': '.$value;
 		$attribute = organism_artgroup_get_attribute($key);
-		$output['org_attr'][] = $attribute;
+// 		$output['org_attr'][] = $attribute;
 		$attribute = $attribute[0];
 		switch($attribute['type_format']){
 			case 'string':
@@ -165,7 +165,7 @@ global $user;
 						'value' => $db_val,
 						);
 				db_insert('observation_attribute')->fields($entry)->execute();
-				$output['db_attr'][] = $entry;
+// 				$output['db_attr'][] = $entry;
 
 			}
 			// Set the return statement
@@ -179,7 +179,7 @@ global $user;
 
 
 
-		$output['db_fields'] = $observation;
+// 		$output['db_fields'] = $observation;
 
 		$output['message'] = $message;
 // 	}
