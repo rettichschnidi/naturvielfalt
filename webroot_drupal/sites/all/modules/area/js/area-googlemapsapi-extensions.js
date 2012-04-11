@@ -150,6 +150,30 @@ google.maps.Marker.prototype.deleteClosestVertex = function() {
 
 google.maps.Polyline.prototype.deleteClosestVertex = function(pointToCompareTo) {
 	var points = this.getPath();
+	if (points.getLength() < 3) {
+		console.log("Element has just 2 elements- will not delete any more.");
+		return;
+	} else {
+		console.log("Number of elements: " + points.getLength());
+	}
+	var smallestDistance = Infinity;
+	var smallestDistanceIndex = 0;
+	for ( var i = 0; i < points.getLength(); i++) {
+		var currentPoint = points.getAt(i);
+		var currentDistance = google.maps.geometry.spherical
+				.computeDistanceBetween(currentPoint, pointToCompareTo);
+		console.log(currentDistance);
+		if (currentDistance < smallestDistance) {
+			smallestDistance = currentDistance;
+			smallestDistanceIndex = i;
+		}
+	}
+	points.removeAt(smallestDistanceIndex);
+	this.setPath(points);
+};
+
+google.maps.Polygon.prototype.deleteClosestVertex = function(pointToCompareTo) {
+	var points = this.getPath();
 	if ((points.getAt(0).equals(points.getAt(points.getLength() - 1)) && points
 			.getLength() < 5)) {
 		console
@@ -176,7 +200,6 @@ google.maps.Polyline.prototype.deleteClosestVertex = function(pointToCompareTo) 
 	points.removeAt(smallestDistanceIndex);
 	this.setPath(points);
 };
-google.maps.Polygon.prototype.deleteClosestVertex = google.maps.Polyline.prototype.deleteClosestVertex;
 
 /**
  * Fire the even 'geometry_changed' every time the path of this line gets
