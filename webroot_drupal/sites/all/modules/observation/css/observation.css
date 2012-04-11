@@ -30,3 +30,17 @@
 	overflow: visible;
 	position: fixed;
 }
+
+.organismn_autocomplete {
+	background-image: url('../img/search.gif');
+	background-repeat: no-repeat;
+	background-position: right;
+	border-width: 1px;
+	padding: 0.5em;
+}
+.searching {
+	background-image: url('../img/searching.gif');
+}
+.notfound {
+	background-image: url('../img/notfound.gif');
+}
