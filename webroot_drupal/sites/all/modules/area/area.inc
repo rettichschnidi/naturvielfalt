@@ -475,11 +475,12 @@ function area_get_postgis_geometry_object($areaType = NULL,
  * 	 - 'country'
  * 	 - 'township'
  * 	 - 'altitude'
- * 	 - 'area_points' JSON with all coordinates (mandatory)
+ * 	 - 'area_points' JSON-string with all coordinates (mandatory)
  * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
  * @param boolean $coordinates_are_already_lng_lat
  * 	True if area_points are already in lng/lat format, false otherwise (default)
  * @return integer New geometry id or false if a failure occurred
+ * @note For an example usage, have a look at area_create_new_area()
  */
 function area_create_geometry($data = array(),
 		$coordinates_are_already_lng_lat = false) {
