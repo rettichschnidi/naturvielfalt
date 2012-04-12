@@ -13,6 +13,10 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 		actualElement = this.element;
 		actualElement.removeClass('notfound');
 		actualElement.addClass('searching');
+		$( "#organismn_id" ).val('');
+		$( "#species_autocomplete" ).html('');
+		$( "#observation_found_as_latin" ).val('false');
+		$( "#observation_found_as_lang" ).val('false');
 		if(autocomplete.request) {
 			autocomplete.request.abort();
 		}
