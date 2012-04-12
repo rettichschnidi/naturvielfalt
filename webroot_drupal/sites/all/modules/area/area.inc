@@ -299,78 +299,78 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 function area_address_hidden_form() {
 	$form['addressdata'] = array(
 			'#type' => 'fieldset',
-			'#prefix' => '<div id="addressdata" style="visibility: hidden; height: 0px">',
+			'#prefix' => '<div id="addressdata" style="display: none; height: 0px">',
 			'#suffix' => '</div>'
 	);
 	$form['addressdata']['fieldname'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#size' => 50,
 			'#attributes' => array(
 					'id' => 'hiddenfield-name',
-					'name' => 'hiddenfield-name'
+					'name' => 'fieldname'
 			),
 	);
 	$form['addressdata']['zip'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-zip',
-					'name' => 'hiddenfield-zip'
+					'name' => 'zip'
 			),
 	);
 	$form['addressdata']['township'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-township',
-					'name' => 'hiddenfield-township'
+					'name' => 'township'
 			),
 	);
 	$form['addressdata']['canton'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-canton',
-					'name' => 'hiddenfield-canton'
+					'name' => 'canton'
 			),
 	);
 	$form['addressdata']['altitude'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-altitude',
-					'name' => 'hiddenfield-altitude'
+					'name' => 'altitude'
 			),
 	);
 	$form['addressdata']['country'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-country',
-					'name' => 'hiddenfield-country'
+					'name' => 'country'
 			),
 	);
 	$form['addressdata']['latitude'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-latitude',
-					'name' => 'hiddenfield-latitude'
+					'name' => 'latitude'
 			),
 	);
 	$form['addressdata']['longitude'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-longitude',
-					'name' => 'hiddenfield-longitude'
+					'name' => 'longitude'
 			),
 	);
 	$form['addressdata']['area-coords'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-area-coordinates',
-					'name' => 'hiddenfield-area-coordinates'
+					'name' => 'area-coords'
 			),
 	);
 	$form['addressdata']['area_type'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'hiddenfield-area-type',
-					'name' => 'hiddenfield-area-type'
+					'name' => 'area_type'
 			),
 	);
 	return $form;

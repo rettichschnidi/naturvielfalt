@@ -72,13 +72,18 @@ function area_create_new_area($form, &$form_state) {
 	$canton = filter_xss($form_state['values']['canton']);
 	$country = filter_xss($form_state['values']['country']);
 	$township = filter_xss($form_state['values']['township']);
-
 	$areaType = filter_xss($form_state['values']['area_type']);
 	$altitude = !empty($form_state['values']['altitude']) ? filter_xss(
 				$form_state['values']['altitude']) : 0;
 	$jsonCoordinates = filter_xss($form_state['values']['area-coords']);
-	$latitude = filter_xss($form_state['values']['latitude']);
-	$longitude = filter_xss($form_state['values']['longitude']);
+	
+	if (empty($jsonCoordinates) || empty($areaType)) {
+		drupal_set_message(
+			t('New area could not be created.'),
+			'error');
+		drupal_goto('area/new');
+		return;
+	}
 
 	$transaction = db_transaction();
 	try {
@@ -109,7 +114,7 @@ function area_create_new_area($form, &$form_state) {
 		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(
-			t('New area could not be created.', array('@areaname' => $name)),
+			t('New area could not be created.'),
 			'error');
 		drupal_goto('area/new');
 	}
