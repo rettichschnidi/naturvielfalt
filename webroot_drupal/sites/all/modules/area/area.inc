@@ -479,7 +479,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
  * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
  * @param boolean $coordinates_are_already_lng_lat
  * 	True if area_points are already in lng/lat format, false otherwise (default)
- * @return integer New geometry id
+ * @return integer New geometry id or false if a failure occurred
  */
 function area_create_geometry($data = array(),
 		$coordinates_are_already_lng_lat = false) {
