@@ -18,19 +18,23 @@ function organism_show_classifiers() {
 			'idField' => true,
 			'dbfield' => 'oc_id',
 			'hide' => true,
+			'width' => 100,
 	);
 	$tableHeader[] = array(
 			'name' => t('Classificator name'),
-			'dbfield' => 'oc_name'
+			'dbfield' => 'oc_name',
+			'width' => 400,
 	);
 	$tableHeader[] = array(
 			'name' => t('# of levels'),
 			'dbfield' => 'levelcount',
 			'hide' => true,
+			'width' => 100,
 	);
 	$tableHeader[] = array(
 			'name' => t('# of organisms'),
 			'dbfield' => 'cnt',
+			'width' => 100,
 	);
 
 	$render_array['classificators'] = array(
@@ -41,6 +45,8 @@ function organism_show_classifiers() {
 			'#options' => array(
 					'jsonUrl' => "'" . base_path() . "organism/json'",
 					'rowClick' => 'rowClick',
+					'tableWidth' => 900,
+					'tableHeight' => 200,
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 												jQuery(celDiv).click(
 													function() {
@@ -85,16 +91,19 @@ function organism_show_classification($classificationid) {
 			'name' => t('Internal id'),
 			'idField' => true,
 			'dbfield' => 'ds_id',
-			'hide' => false
+			'width' => 30,
+			'hide' => true
 	);
 	$classificationTableHeader[] = array(
 			'name' => t('Classificator name'),
 			'dbfield' => 'ds_name',
+			'width' => 760,
 			'hide' => false
 	);
 	$classificationTableHeader[] = array(
 			'name' => t('Number of organism'),
 			'dbfield' => 'cnt',
+			'width' => 100,
 			'hide' => false
 	);
 	$render_array['classificators'] = array(
@@ -106,6 +115,8 @@ function organism_show_classification($classificationid) {
 					'jsonUrl' => "'" . base_path()
 							. "organism/classification/$classificationid/classificationjson'",
 					'rowClick' => 'rowClick',
+					'tableWidth' => 900,
+					'tableHeight' => 220,
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 											jQuery(celDiv).click(
 												function() {
@@ -125,7 +136,8 @@ function organism_show_classification($classificationid) {
 			'name' => t('Organism id'),
 			'dbfield' => 'organism_id',
 			'idField' => true,
-			'hide' => true
+			'hide' => true,
+			'width' => 30,
 	);
 
 	$classificationleveldata = organism_get_available_classification_levels(
@@ -138,20 +150,23 @@ function organism_show_classification($classificationid) {
 		$organismsTableHeader[] = array(
 				'name' => t(ucfirst($value->name)),
 				'dbfield' => 'oc_' . $value->name,
-				'hide' => false
+				'hide' => false,
+				'width' => 200
 		);
 	}
 
 	$organismsTableHeader[] = array(
 			'name' => t('Latin Name'),
 			'dbfield' => 'osn_name',
-			'hide' => false
+			'hide' => false,
+			'width' => 300
 	);
 
 	$organismsTableHeader[] = array(
 			'name' => t('Localized Name'),
 			'dbfield' => 'ol_name',
-			'hide' => false
+			'hide' => false,
+			'width' => 200
 	);
 
 	$render_array['organisms'] = array(
@@ -164,6 +179,7 @@ function organism_show_classification($classificationid) {
 					'jsonUrl' => "'" . base_path()
 							. "organism/classification/$classificationid/organismjson'",
 					'rowClick' => 'rowClickOrganism',
+					'tableWidth' => 900,
 					'rowClickHandler' => "function rowClickOrganism(celDiv, id){
 												jQuery(celDiv).click(
 													function() {
@@ -262,19 +278,22 @@ function organism_show_organism($organismid) {
 				'name' => t('Organism id'),
 				'dbfield' => 'o_id',
 				'idField' => true,
-				'hide' => false
+				'hide' => true,
+				'width' => 30
 		);
 		$tableHeader[] = array(
 				'name' => t('Organism scientific name id'),
 				'dbfield' => 'osn_id',
 				'idField' => false,
-				'hide' => false
+				'hide' => true,
+				'width' => 30
 		);
 		$tableHeader[] = array(
 				'name' => t('Organism scientific name'),
 				'dbfield' => 'osn_name',
 				'idField' => false,
-				'hide' => false
+				'hide' => false,
+				'width' => 800
 		);
 		$render_array['organisms'] = array(
 				'#theme' => 'datatable',
