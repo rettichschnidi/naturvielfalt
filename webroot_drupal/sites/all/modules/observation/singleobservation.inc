@@ -10,9 +10,9 @@ module_load_include('inc', 'observation', 'observation.template');
 /**
  * Return the single observation form to add a observation
  */
-function singleobservation_wizard(){
+function singleobservation_new(){
 // 	return drupal_get_form('observation_new_form');
-	return observation_new_form('','');
+	return observation_form();
 }
 
 /**

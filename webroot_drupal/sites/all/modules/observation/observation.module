@@ -25,7 +25,7 @@ function observation_menu() {
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 	);
-	$items['singleobservation/s'] = array(
+	$items['singleobservation/%'] = array(
 			'title' => t('Show all singleobservations'),
 			'description' => t('Display a wizard to add a new singleobservation'),
 			'page callback' => 'singleobservation_view_list',
@@ -36,10 +36,24 @@ function observation_menu() {
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 	);
+	$items['singleobservation/%/edit'] = array(
+			'title' => t('Show all singleobservations'),
+			'description' => t('Display a wizard to add a new singleobservation'),
+			'page callback' => 'observation_edit',
+			'access arguments' => array(
+					'create observation'
+			),
+			'page arguments' => array(
+					1
+			),
+			'file' => 'observation.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	);
 	$items['singleobservation/new'] = array(
 			'title' => t('Add a new singleobservation'),
 			'description' => t('Display a form to add a new singleobservation'),
-			'page callback' => 'singleobservation_wizard',
+			'page callback' => 'singleobservation_new',
 			'access arguments' => array(
 					'create observation'
 			),
