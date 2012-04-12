@@ -636,8 +636,8 @@ function organism_search_organism_json($classification = false, $term = false, $
 		if($artgroup > 0 && $artgroup < 1000000){
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;
-			$artgroup_join = 'inner join organism_artgroup_subscription as oas on oas.organism_id=o.id
-								inner join organism_artgroup as oa on oa.id=oas.organism_artgroup_id
+			$artgroup_join = '
+								INNER JOIN organism_artgroup AS oa ON oa.id=oas.organism_artgroup_id
 								AND ('.organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id').')';
 		}
 	}
@@ -665,10 +665,11 @@ function organism_search_organism_json($classification = false, $term = false, $
 	}
 
 	$i = 1;
-	$query = 'SELECT ol.organism_id as organism_id, ol.name as ol_name, osn.name as osn_name
+	$query = 'SELECT ol.organism_id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
 				FROM organism AS o
 				INNER JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				INNER JOIN organism_scientific_name AS osn ON osn.organism_id = o.id
+				INNER JOIN organism_artgroup_subscription AS oas ON oas.organism_id=o.id
 				'.$artgroup_join.'
 				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
 				ORDER BY o.id
@@ -677,10 +678,14 @@ function organism_search_organism_json($classification = false, $term = false, $
 
 	$result = db_query($query, $params);
 	foreach ($result as $record) {
+		$artg_attr = db_query("SELECT organism_artgroup_attr_id id FROM organism_artgroup_attr_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_attr_id")->fetchCol();
+		$det_methods = db_query("SELECT organism_artgroup_detmethod_id id FROM organism_artgroup_detmethod_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_detmethod_id")->fetchCol();
 		$organism = array(
 				'id' => $record -> organism_id,
 				'label' => strval($record -> ol_name),
-				'label_latin' => $record -> osn_name
+				'label_latin' => $record -> osn_name,
+				'attributes' => $artg_attr,
+				'det_methods' => $det_methods
 
 		);
 
