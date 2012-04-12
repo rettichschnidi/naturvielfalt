@@ -1,16 +1,18 @@
 
 <?php
 // function observation_new_form($form, $form_state) {
-function observation_new_form($action, $name = false) {
+function observation_new_form($action) {
 	global $user;
 
-	if(!$name) $name = "observation_form";
+	$form_id = "observation_form";
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
 
 	drupal_add_library('system', 'ui.autocomplete');
 	drupal_add_library('system', 'ui.datepicker');
+	drupal_add_js('misc/form.js');
+	drupal_add_js('misc/collapse.js');
 	$observation_path= drupal_get_path('module', 'observation');
 // 	drupal_add_js('https://maps.google.com/maps/api/js?sensor=false');
 // 	drupal_add_js($observation_path . '/js/gmap.js');
@@ -23,10 +25,14 @@ function observation_new_form($action, $name = false) {
 	 * Area map include
 	 */
 	$form['observation_map'] = array(
-			'#type' => 'hidden',
+			'#type' => 'textfield',
 			'#attributes' => array(
 					'id' => 'coordinate',
-					'name' => 'coordinate'
+					'name' => 'coordinate',
+					'style' => array(
+							'display: none;',
+							'height: 0px;'
+					)
 			),
 	);
 
@@ -47,68 +53,45 @@ function observation_new_form($action, $name = false) {
 	);
 
 
-
+$formcust .= '<div id="message" style="display: none; height: auto;">
+<div class="messages status"></div>
+</div>';
 
 
 	$formcust .= '<div class="form-item form-type-textfield">'
+					.'<form onsubmit="javscript:observation.save();return false;" method="post" name="'.$form_id.'" id="'.$form_id.'">'
+					.'<input type="text" style="display: none; height: 0px;" id="organismn_id" name="organismn_id" value="">'
+					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="false">'
+					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="false">'
+					.'<input type="text" style="display: none; height: 0px;" name="artgroup" id="artgroup" value="">'
 
 					.'<table class="form-item form-type-textfield">'
+						.'<tr><td class="observation_td">'
+								.'<span class="observation_title">'.t('Search for organsim or species').'</span><br>'
+									.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40">'
+									.'<br><span id="species_autocomplete"></span>'
+							.'</td><td class="observation_td">'
+									.'<span class="observation_title">'.t('Filter on species group').'</span><br>'
+									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option().'</select>'
+
+					.'</td></tr></table>'
+
+					.'<table class="form-item form-type-textfield" style="width: auto !important;">'
 
 						.'<tr>'
-								.'<td class="observation_td"><span class="observation_title">'.t('Search for organsim or species').'</span><br>'
-							.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40">'
-							.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="species_autocomplete"></span>'
-							.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option().'</select>'
-
-						.'</td></tr>'
-
-						.'<tr><td>&nbsp;</td></tr>'
-
-						.'<tr><td class="observation_td">'
-
-							.'<table class="form-item form-type-textfield">'
-
-							.'<form onsubmit="javscript:observation.save();return false;" method="post" name="'.$name.'" id="'.$name.'">'
-								.'<input type="hidden" id="organismn_id" name="organismn_id" value="">'
-								.'<input type="hidden" id="observation_found_as_lang" name="observation_found_as_lang" value="false">'
-								.'<input type="hidden" id="observation_found_as_latin" name="observation_found_as_latin" value="false">'
-								.'<input type="hidden" name="artgroup" id="artgroup" value="">'
-
-									.'<tr>'
-									.'<td class="observation_title">'.t('Date').'<br><input type="text" id="date" name="date" value="'.date('d.m.Y').'"></td>'
-									.'<td class="observation_title">'.t('Count').'<br><input type="text" name="count" value="1"></td>'
-									.'<td class="observation_title">'.t('Observer').'<br><input type="text" name="observer" value="'.$user->name.'"></td>'
-									.'</tr><tr>'
-									.'<td><div class="observation_td">'.t('Please enter date for the observation').'</div></td>'
-									.'<td><div class="observation_td">'.t('Please enter number of found').'</div></td>'
-									.'<td><div class="observation_td">'.t('Please enter the username of the observer').'</div></td>'
-									.'</tr>'
-
-									.'<tr><td>&nbsp;</td></tr>'
-
-									.'<tr>'
-									.'<td colspan="3">';
-
-
-
+						.'<td class="observation_subtitle">'.t('Date').'<br><input type="text" id="date" name="date" value="'.date('d.m.Y').'"></td>'
+						.'<td class="observation_subtitle">'.t('Count').'<br><input type="text" name="count" value="1"></td>'
+						.'<td class="observation_subtitle">'.t('Observer').'<br><input type="text" name="observer" value="'.$user->name.'"></td>'
+						.'</tr><tr>'
+						.'<td class="observation_td">'.t('Please enter date for the observation').'</td>'
+						.'<td class="observation_td">'.t('Please enter number of found').'</td>'
+						.'<td class="observation_td">'.t('Please enter the username of the observer').'</td>'
+						.'</tr></table>';
 
 					$formcust .= drupal_render($form);
+					$formcust .=
 
-
-
-
-
-					$formcust .=	'</td>'
-									.'</tr>'
-
-									.'<tr><td>&nbsp;</td></tr>'
-
-
-								.'</table>'
-
-							.'</td></tr></table>'
-
-							.'<fieldset class="collapsible form-wrapper collapse-processed">
+							'<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
 							<span class="fieldset-legend">Add more Details</span>
 							</legend>
@@ -123,7 +106,7 @@ function observation_new_form($action, $name = false) {
 
 							.'<tr><td>'.t('Attributes').'.</td></tr>.'
 							.'<div id="observation_attributes">'
-							.organism_artgroup_get_attributes(false,true,'<tr><td>','</td>', '<td>', '</td></tr>')
+							.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>')
 							.'</div>'
 
 							.'</table></div></fieldset>'
