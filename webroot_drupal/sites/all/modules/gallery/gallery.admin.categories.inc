@@ -13,7 +13,9 @@ function gallery_category_list() {
 
 	$categories = gallery_categories();
 	$page['gallery_category_list'] = array(
-			'#markup' => theme('gallery_category_list', array('categories' => $categories)),
+			'#markup' => theme(
+				'gallery_category_list',
+				array('categories' => $categories)),
 	);
 
 	return $page;
@@ -62,7 +64,8 @@ function gallery_category_form($form, &$form_state, $category) {
 			'#type' => 'checkbox',
 			'#title' => t('Multiple'),
 			'#default_value' => $category['multiple'],
-			'#description' => t('Whether multiple values may be selected for this category or not.'),
+			'#description' => t(
+				'Whether multiple values may be selected for this category or not.'),
 			'#required' => FALSE,
 	);
 
@@ -120,7 +123,8 @@ function gallery_category_add_form($form, &$form_state) {
  */
 function gallery_category_add_form_submit($form, &$form_state) {
 	$category = gallery_category_save($form_state['values']);
-	drupal_set_message(t('Category %name was created.', array('%name' => $category['name'])));
+	drupal_set_message(
+		t('Category %name was created.', array('%name' => $category['name'])));
 	$form_state['redirect'] = 'admin/config/media/gallery/categories';
 }
 
@@ -136,11 +140,15 @@ function gallery_category_add_form_submit($form, &$form_state) {
 function gallery_category_delete_form($form, &$form_state, $category) {
 	$form_state['gallery_category'] = $category;
 
-	return confirm_form($form, t('Delete %name?', array('%name' => $category['name'])),
-			'admin/config/media/gallery/categories',
-			t(
-					'Are you sure you want to delete the category %name? All stored categorisation of this category will also be deleted.',
-					array('%name' => $category['name'])), t('Delete'), t('Cancel'));
+	return confirm_form(
+		$form,
+		t('Delete %name?', array('%name' => $category['name'])),
+		'admin/config/media/gallery/categories',
+		t(
+			'Are you sure you want to delete the category %name? All stored categorisation of this category will also be deleted.',
+			array('%name' => $category['name'])),
+		t('Delete'),
+		t('Cancel'));
 }
 
 /**
@@ -150,7 +158,8 @@ function gallery_category_delete_form_submit($form, &$form_state) {
 	$category = $form_state['gallery_category'];
 
 	gallery_category_delete($category);
-	drupal_set_message(t('Category %name was deleted.', array('%name' => $category['name'])));
+	drupal_set_message(
+		t('Category %name was deleted.', array('%name' => $category['name'])));
 	$form_state['redirect'] = 'admin/config/media/gallery/categories';
 }
 
@@ -182,13 +191,27 @@ function theme_gallery_category_list($variables) {
 		$conditions = array();
 		foreach ($result as $condition)
 			array_push($conditions, $condition['name']);
-		$row[] = l($category['name'], 'admin/config/media/gallery/categories/edit/' . $category['id']);
-		$row[] = l(implode(', ', $conditions),
-				'admin/config/media/gallery/categories/' . $category['id'] . '/conditions');
-		$row[] = l(t('edit'), 'admin/config/media/gallery/categories/edit/' . $category['id']);
-		$row[] = l(t('delete'), 'admin/config/media/gallery/categories/delete/' . $category['id']);
-		$row[] = l(t('options'), 'admin/config/media/gallery/categories/' . $category['id'] . '/options');
-		$row[] = l(t('conditions'), 'admin/config/media/gallery/categories/' . $category['id'] . '/conditions');
+		$row[] = l(
+			$category['name'],
+			'admin/config/media/gallery/categories/edit/' . $category['id']);
+		$row[] = l(
+			implode(', ', $conditions),
+			'admin/config/media/gallery/categories/' . $category['id']
+					. '/conditions');
+		$row[] = l(
+			t('edit'),
+			'admin/config/media/gallery/categories/edit/' . $category['id']);
+		$row[] = l(
+			t('delete'),
+			'admin/config/media/gallery/categories/delete/' . $category['id']);
+		$row[] = l(
+			t('options'),
+			'admin/config/media/gallery/categories/' . $category['id']
+					. '/options');
+		$row[] = l(
+			t('conditions'),
+			'admin/config/media/gallery/categories/' . $category['id']
+					. '/conditions');
 		$rows[] = $row;
 	}
 
@@ -196,8 +219,11 @@ function theme_gallery_category_list($variables) {
 		$rows[] = array(
 				array(
 						'colspan' => 5,
-						'data' => t('There are currently no categories. <a href="!url">Add a new one</a>.',
-								array('!url' => url('admin/config/media/gallery/categories/add'))),
+						'data' => t(
+							'There are currently no categories. <a href="!url">Add a new one</a>.',
+							array('!url' => url(
+										'admin/config/media/gallery/categories/add')
+							)),
 				)
 		);
 	}

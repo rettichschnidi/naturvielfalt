@@ -8,29 +8,40 @@
 module_load_include('inc', 'area', 'area');
 
 /**
- * Show all existing areas.
+ * Show all existing areas. Ify $onlyMyAreas is true,
+ * restrict to areas where the current user is admin.
+ * 
  * @return render array
  */
-function area_show_all_areas() {
-
-	$output['map'] = array(
-			'#search' => true,
-			'#showall' => true,
-			'#ch1903' => true,
-			'#theme' => 'area'
-	);
+function area_show_all_areas($onlyMyAreas = false) {
+	if ($onlyMyAreas) {
+		$output['map'] = array(
+				'#search' => true,
+				'#show' => 'myareas',
+				'#ch1903' => true,
+				'#theme' => 'area'
+		);
+	} else {
+		$output['map'] = array(
+				'#search' => true,
+				'#show' => 'allareas',
+				'#ch1903' => true,
+				'#theme' => 'area'
+		);
+	}
 
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
 			'dbfield' => 'id',
 			'hide' => true,
+			'width' => 30
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
-			'width' => 225,
+			'width' => 310,
 	);
 
 	$tableHeader[] = array(
@@ -42,25 +53,25 @@ function area_show_all_areas() {
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
-			'width' => 100
+			'width' => 150
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
-			'width' => 100
+			'width' => 40
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
-			'width' => 230
+			'width' => 180
 	);
 
 	$tableHeader[] = array(
 			'name' => t('User'),
 			'dbfield' => 'username',
-			'width' => 100
+			'width' => 120
 	);
 
 	$output['space'] = array(
@@ -74,9 +85,8 @@ function area_show_all_areas() {
 			'#title' => 'Areas',
 			'#id_table' => 'areas',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path() . "area/datatablejson'",
+					'jsonUrl' => "'" . base_path() . ($onlyMyAreas ? "areas/own/datatablejson'" : "areas/all/datatablejson'"),
 					'rowClick' => 'rowClick',
-					'tableWidth' => '100%',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
@@ -92,7 +102,7 @@ function area_show_all_areas() {
 /**
  * Show a specific area
  * @param integer $area_id
- * @return renderarray
+ * @return array Drupal form
  */
 function area_show_specific_area($areadata = NULL) {
 	assert(!empty($areadata));
@@ -203,6 +213,7 @@ function area_show_specific_area($areadata = NULL) {
 /**
  * Return a form which shows some important facts about a given area
  * @param array $areadata
+ * @return array Drupal form
  */
 function area_overview_form($form, &$form_state, $areadata) {
 	$form['addressdata'] = array(

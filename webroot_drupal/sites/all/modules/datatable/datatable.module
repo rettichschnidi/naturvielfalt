@@ -20,7 +20,9 @@ function datatable_theme() {
 							'header' => NULL,
 							// content of table similar to table theme
 							'rows' => NULL,
-							// height of displayed datatable in pixel
+							// height and width of displayed datatable in pixel
+							'tableWidth' => NULL,
+							'tableHeight' => NULL,
 							'len' => NULL,
 							// Array of options to be set for the jquery datatable plugin where the key is the option name and the value is the javascript value as a string
 							'options' => NULL,
@@ -39,7 +41,7 @@ function datatable_theme() {
  *
  * @author Ramon Gamma, 2012
  *
- * @param array sql
+ * @param $sql array
  * 			'dbPreStatement'	optional: Statement which will be executed before anything else. Usefull to create temporary views.
  * 			'dbColumns' 		Array of columns
  * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
@@ -49,25 +51,35 @@ function datatable_theme() {
  * 			'dbGroupBy' 		optional; the GROUP BY string
  * 			'dbWhere' 			optional; the WHERE statement string
  * 			'id' 				optional: id column, default 'id'
+ * 			'acl_level'			optional: Required acl level. For valid values, have a look at the c_acl module (file c_acl.base.inc)
  *
- * 			$sql['dbPreStatement'] = "";
+ *			Default values:
+ * 			$sql['dbPreStatement'] = '';
  * 			$sql['dbColumns'] = array();
  * 			$sql['dbSearchColumns'] = array();
  * 			$sql['dbSortColumns'] = array();
- * 			$sql['dbTable'] = "";
- * 			$sql['dbJoins'] = "";
- * 			$sql['dbGroupBy'] = "";
- * 			$sql['dbWhere'] = "";
- * 			$sql['id] = "id";
+ * 			$sql['dbTable'] = '';
+ * 			$sql['dbJoins'] = '';
+ * 			$sql['dbGroupBy'] = '';
+ * 			$sql['dbWhere'] = '';
+ * 			$sql['id] = 'id';
+ * 			$sql['acl_level'] = 'ACL_READ';
  *
+ * @param $arguments array
+ * 			Values for the query
+ * 
+ * @param $preArguments array
+ * 			Values for the dbPreStatement statement
+ * 
  * @return Array
  * 			[sEcho] => Site which is show
  * 			[iTotalRecords] => Total records without filtering
  * 			[iTotalDisplayRecords] => found records with filtering
  * 			[aaData] => Array of filtered and limited data from db as dbfields
- * @note If you do not like this, do it better and shut up.
+ * @note If you do not like this (and you wont like it), do it better and shut up.
  */
-function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()) {
+function datatable_dbRequest($sql, $arguments = array(),
+		$preArguments = array()) {
 	/* Set the db fields to select */
 	if (!$sql['dbColumns'] || !$sql['dbTable'])
 		return "Error! No dbColumns or dbTable";
@@ -75,12 +87,19 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$aColumns = $sql['dbColumns'];
 	if (isset($sql['dbPreStatement'])) {
 		if (false) {
-			$noopeningbrakets = str_replace('{', 'drupal_', $sql['dbPreStatement']); // FIXME
+			$noopeningbrakets = str_replace(
+				'{',
+				'drupal_',
+				$sql['dbPreStatement']); // FIXME
 			$noclosingbrakets = str_replace('}', '', $noopeningbrakets);
 			print "<pre>" . $noclosingbrakets . "</pre>";
 		}
 		db_query($sql['dbPreStatement'], $preArguments);
 	}
+	if(!isset($sql['acl_level'])) {
+		$sql['acl_level'] = 'ACL_READ';
+	}
+
 	$searchColumns = $sql['dbSearchColumns'];
 	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns']
 			: $sql['dbColumns'];
@@ -111,14 +130,6 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 			'desc'
 	);
 
-	// Get posted data and check the variables
-	if (isset($_POST['page'])) {
-		$page = pg_escape_string($_POST['page']);
-		if ($page < 1)
-			return "Error! Pagevalue '$page' is smaller than 1.";
-	} else {
-		$page = 1;
-	}
 	if (isset($_POST['sortname'])) {
 		$sortname = $_POST['sortname'];
 		foreach ($sortColumns as $sortColumn) {
@@ -153,19 +164,29 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 			return "Error! Query not a string";
 		$query = pg_escape_string($query);
 	}
-	if (isset($_POST['rp'])) {
-		$rp = pg_escape_string($_POST['rp']);
-		if ($rp < 1)
-			return "Error! pg < 1";
-	}
 
 	/*
 	 * Paging
 	 */
-	$sLimit = "";
-	if (isset($page) && isset($rp)) {
-		$pageStart = ($page - 1) * $rp;
-		$sLimit = " OFFSET " . $pageStart . " LIMIT " . $rp;
+	if (isset($_POST['page'])) {
+		$pageNumber = (int)$_POST['page'];
+		if ($pageNumber < 1)
+			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
+	} else {
+		$pageNumber = 1;
+	}
+
+	if (isset($_POST['rp'])) {
+		$pagesize = (int)$_POST['rp'];
+		if ($pagesize < 1)
+			return "Error! Pagesize < 1";
+	}
+
+	if (isset($pageNumber) && isset($pagesize)) {
+		$offset = ($pageNumber - 1) * $pagesize;
+	} else {
+		$offset = 0;
+		$pagesize = 100;
 	}
 
 	/*
@@ -174,20 +195,6 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$sOrder = '';
 	if (isset($sortname)) {
 		$sOrder = "ORDER BY " . $sortname . " " . $sortorder;
-		// 		for ( $i=0 ; $i<intval( $_REQUEST['iSortingCols'] ) ; $i++ )
-		// 		{
-		// 			if ( $_REQUEST[ 'bSortable_'.intval($_REQUEST['iSortCol_'.$i]) ] == "true" )
-		// 			{
-		// 				$sOrder .= $sortColumns[ intval( $_REQUEST['iSortCol_'.$i] ) ]."
-		// 						 	".pg_escape_string( $_REQUEST['sSortDir_'.$i] ) .", ";
-		// 			}
-		// 		}
-
-		// 		$sOrder = substr_replace( $sOrder, "", -2 );
-		// 		if ( $sOrder == "ORDER BY" )
-		// 		{
-		// 			$sOrder = "";
-		// 		}
 	}
 
 	/*
@@ -211,67 +218,53 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$sWhere .= ')';
 	}
 
-	/* Individual column filtering */
-	// 	for ( $i=0 ; $i<count($aColumns) ; $i++ )
-	// 	{
-	// 		if ( $_REQUEST['bSearchable_'.$i] == "true" && $_REQUEST['sSearch_'.$i] != '' )
-	// 		{
-	// 			if ( $sWhere == "" )
-	// 			{
-	// 				$sWhere = "WHERE ";
-	// 			}
-	// 			else
-	// 			{
-	// 				$sWhere .= " AND ";
-	// 			}
-	// 			$sWhere .= $aColumns[$i]." LIKE '%".pg_escape_string($_REQUEST['sSearch_'.$i])."%' ";
-	// 		}
-	// 	}
-
 	/*
 	 * SQL queries
 	 * Get data to display
 	 */
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-	$singlePageQuery = $fullQuery . " " . $sLimit;
-	if (false) {
-		$noopeningbrakets = str_replace('{', 'drupal_', $singlePageQuery);  // FIXME
-		$noclosingbrakets = str_replace('}', '', $noopeningbrakets);
-		die("<pre>$noclosingbrakets</pre>");
-	}
-	$rResult = db_query($singlePageQuery, $arguments);
 
 	/* Data set length after filtering */
 	$fullResult = db_query($fullQuery, $arguments);
-	$fullRecords = $rResult->fetchAll();
-	$iFilteredTotal = 0;
-	if(isset($fullRecords[0]->acl_id)) {
-		foreach($fullRecords as $record) {
-			if(check_permission($record->acl_id, variable_get('ACL_READ'))) {
-				$iFilteredTotal++;
+	$fullRecords = $fullResult->fetchAll();
+
+	/**
+	 * Count number of accessible elements if an acl_id available
+	 * 
+	 * @note This is an expensive operation and should be moved into the
+	 * database at some point.
+	 */
+	$numberOfAccessibleRows = 0;
+	if (isset($fullRecords[0]->acl_id)) {
+		foreach ($fullRecords as $record) {
+			if (check_permission($record->acl_id, variable_get($sql['acl_level']))) {
+				$numberOfAccessibleRows++;
 			}
 		}
 	} else {
-		$iFilteredTotal = $rResult->rowCount();
+		$numberOfAccessibleRows = $fullResult->rowCount();
 	}
 
-	/* Total data set length */
-	$tQuery = "SELECT $columnsString FROM $sTable $where $sGroupBy $sOrder";
-	$rResultTotal = db_query($tQuery, $arguments);
-	$iTotal = $rResultTotal->rowCount();
-
 	$output = array(
-			'page' => $page,
-			'total' => $iFilteredTotal,
+			'page' => $pageNumber,
+			'total' => $numberOfAccessibleRows,
 			'rows' => array()
 	);
 
+	$counter = 0;
+	$validElementsCounter = 0;
 	foreach ($fullRecords as $aRow) {
+		if(++$counter <= $offset) {
+			continue;
+		} else if(++$validElementsCounter > $pagesize) {
+			break;
+		}
 		$row = get_object_vars($aRow);
-		if(!isset($row['acl_id']) || check_permission($row['acl_id'], variable_get('ACL_READ'))) {
+		if (!isset($aRow->acl_id)
+				|| check_permission($aRow->acl_id, variable_get($sql['acl_level']))) {
 			$output['rows'][] = array(
-					'id' => $row[$idColumn],
+					'id' => $aRow->$idColumn,
 					'cell' => $row
 			);
 		}

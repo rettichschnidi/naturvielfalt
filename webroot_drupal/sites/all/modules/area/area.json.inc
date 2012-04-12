@@ -11,7 +11,7 @@ module_load_include('inc', 'area', 'area');
  * Generate a JSON with all areas that are visible to the user
  * @todo Include the user's nickname
  */
-function area_all_areas_datatable_json() {
+function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
@@ -41,15 +41,17 @@ function area_all_areas_datatable_json() {
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id";
 	$sql['id'] = 'id';
+	$sql['acl_level'] = $acl_level;
 	$output = datatable_dbRequest($sql);
 	return drupal_json_output($output);
 }
 
 /**
  * Return one or all viewable areas as JSON.
+ * 
  * @return JSON
  */
-function area_json($area_id = false) {
+function area_json($area_id = false, $acl_level = 'ACL_READ') {
 	$areas = db_query(
 		'SELECT
 			a.id AS id,
@@ -75,7 +77,7 @@ function area_json($area_id = false) {
 
 	$items = array();
 	foreach ($areas as $entry) {
-		if (check_permission($entry->acl_id, variable_get('ACL_READ'))) {
+		if (check_permission($entry->acl_id, variable_get($acl_level))) {
 			$item = array();
 			$item['id'] = (int) $entry->id;
 			$item['name'] = $entry->name;

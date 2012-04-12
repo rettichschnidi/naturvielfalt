@@ -16,7 +16,7 @@ function gallery_form() {
 			'#title' => t('Display boundry'),
 			'#default_value' => variable_get('gallery_boundry', 0),
 			'#description' => t(
-					'The minimum rating an media has to receive in order to be displayed. Whereas the rating is the product of the average ratings of a type multiplied by the weight of the type.'),
+				'The minimum rating an media has to receive in order to be displayed. Whereas the rating is the product of the average ratings of a type multiplied by the weight of the type.'),
 			'#required' => TRUE,
 	);
 	$form['gallery_image_size'] = array(
@@ -49,15 +49,29 @@ function gallery_form() {
 
 function gallery_form_validate($form, &$form_state) {
 	if (!preg_match('/^\-?[0-9]+$/', $form_state['values']['gallery_boundry'])) {
-		form_error($form['gallery_boundry'], t('Specify a valid signed integer value.'));
+		form_error(
+			$form['gallery_boundry'],
+			t('Specify a valid signed integer value.'));
 	}
-	if (!preg_match('/^\-?[0-9]+$/', $form_state['values']['gallery_image_size'])) {
-		form_error($form['gallery_image_size'], t('Specify a valid signed integer value.'));
+	if (!preg_match(
+		'/^\-?[0-9]+$/',
+		$form_state['values']['gallery_image_size'])) {
+		form_error(
+			$form['gallery_image_size'],
+			t('Specify a valid signed integer value.'));
 	}
-	if (!preg_match('/^\-?[0-9]+$/', $form_state['values']['gallery_sound_size'])) {
-		form_error($form['gallery_sound_size'], t('Specify a valid signed integer value.'));
+	if (!preg_match(
+		'/^\-?[0-9]+$/',
+		$form_state['values']['gallery_sound_size'])) {
+		form_error(
+			$form['gallery_sound_size'],
+			t('Specify a valid signed integer value.'));
 	}
-	if (!preg_match('/^\-?[0-9]+$/', $form_state['values']['gallery_video_size'])) {
-		form_error($form['gallery_video_size'], t('Specify a valid signed integer value.'));
+	if (!preg_match(
+		'/^\-?[0-9]+$/',
+		$form_state['values']['gallery_video_size'])) {
+		form_error(
+			$form['gallery_video_size'],
+			t('Specify a valid signed integer value.'));
 	}
 }

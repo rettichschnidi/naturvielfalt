@@ -35,6 +35,7 @@ function Area(map_id) {
 	this.automaticSaveLocationListener = undefined;
 	this.ch1903MapChangeListener = undefined;
 	this.mapTypeSwitchListener = null;
+	
 	/**
 	 * Creates the google maps object and attaches it to the element with the id
 	 * this.map_id.
@@ -239,7 +240,7 @@ function Area(map_id) {
 
 		// move marker a little bit down, (approximately)
 		// centers the infowindow
-		this.googlemap.panBy(0, -200);
+		this.googlemap.panBy(0, -150);
 		infowindow.open(this.googlemap, overlayElement);
 	};
 
@@ -298,11 +299,12 @@ function Area(map_id) {
 		var infowindow = new google.maps.InfoWindow({
 			content : Drupal.t("Loading...")
 		});
+		
 		google.maps.event.addListener(overlay, 'click', function() {
 			infowindow.setPosition(this.getPosition());
 			map = this.getMap();
 			map.setCenter(this.getPosition());
-			map.panBy(0, -250);
+			map.panBy(0, -200);
 			if (area.visibleInfoWindow) {
 				area.visibleInfoWindow.close();
 			}
@@ -340,144 +342,38 @@ function Area(map_id) {
 	};
 
 	/**
-	 * Create a searchbar on top left of the google maps
+	 * Update the hidden field so they can be read by drupal later on.
+	 * 
+	 * @param overlay
 	 */
-	this.createSearchbar = function() {
-		var googlemap = this.googlemap;
-		// create a new div element to hold everything needed for the searchbar
-		var searchdiv = document.createElement('div');
-		// create new input field
-		var searchinput = document.createElement('input');
-		// create new text field
-		// add searchinput to searchdiv
-		searchdiv.appendChild(searchinput);
-		// set id's for both elements
-		searchdiv.setAttribute('id', 'search_container');
-		searchinput.setAttribute('id', 'search_input');
-
-		// push the search element on the google map in the top left corner
-		googlemap.controls[google.maps.ControlPosition.TOP_LEFT]
-				.push(searchdiv);
-
-		var autocomplete = new google.maps.places.Autocomplete(searchinput, {
-			// available types: 'geocode' for places, 'establishment' for
-			// companies
-			types : [ 'geocode' ]
-		});
-
-		// listen do pressed suggestions and center map on them
-		autocomplete.bindTo('bounds', googlemap);
-
-		google.maps.event.addListener(autocomplete,	'place_changed', function() {
-			var place = autocomplete.getPlace();
-			console.log(place);
-			if (typeof place.geometry !== 'undefined') {
-				if (place.geometry.viewport) {
-					googlemap.fitBounds(place.geometry.viewport);
-				} else {
-					console.log(googlemap);
-					googlemap.setCenter(place.geometry.location);
-					googlemap.setZoom(17);
-				}
-			} else {
-				console.error("Search by pressing enter not yet implemented.");
-				console.error("Query was: " + searchinput.value);
-			}
-		});
-
-		// remove focus from searchinput when map moved
-		google.maps.event.addListener(googlemap, 'bounds_changed', function() {
-			searchinput.blur();
-		});
-
-		// select all text when user focus the searchinput field
-		searchinput.onfocus = function() {
-			searchinput.select();
-		};
-	};
-
-	/**
-	 * Create a searchbar on top left of the google maps
-	 */
-	this.createSearchbarCH1903 = function() {
-		var googlemap = this.googlemap;
-		// create a new div element to hold everything needed for the searchbarch1903
-		var searchdivch1903 = document.createElement('div');
-		// create new input field
-		var searchinputch1903 = document.createElement('input');
-		// regex to extract values
-		var regexch1903 = /^[yY:\ ]*[+-]?([0-9]+\.?[0-9]*)[\ ,]+[xX:\ ]*[+-]?([0-9]+\.?[0-9]*)$/;
-
-		// add searchdivch1903 to searchdiv
-		searchdivch1903.appendChild(searchinputch1903);
-		// set id's for both elements
-		searchdivch1903.setAttribute('id', 'searchch1903_container');
-		searchinputch1903.setAttribute('id', 'searchch1903_input');
-
-		// push the search element on the google map in the top left corner
-		googlemap.controls[google.maps.ControlPosition.TOP_RIGHT]
-				.push(searchdivch1903);
-
-		/**
-		 * When map moved:
-		 *  a) remove focus from searchinputch1930
-		 *  b) set value of searchinputch1903 to new coordinates
-		 *  
-		 *  @param enable boolean
-		 *  	If true, update searchinputch1903 when map moved
-		 *  	If false, remove listener (if existing)
-		 */ 
-		var boundsChangeListender = function(enable) {
-			if (arguments.length == 0 || enable) {
-				this.ch1903MapChangeListener = google.maps.event.addListener(googlemap, 'bounds_changed', function() {
-					searchinputch1903.blur();
-					var center = googlemap.getCenter();
-					var lng = center.lng();
-					var lat = center.lat();
-					var x = WGStoCHx(lat, lng);
-					var y = WGStoCHy(lat, lng);
-					// round to two digits
-					searchinputch1903.value = "Y: " + y.toFixed(2) + ", X: " + x.toFixed(2);
+	updateHiddenfields = function(overlay) {
+		getAddress(
+				overlay.overlay.getPosition(),
+				function(address) {
+					jQuery('#hiddenfield-canton').val(address.canton);
+					jQuery('#hiddenfield-township').val(address.township);
+					jQuery('#hiddenfield-locality').val(address.locality);
+					jQuery('#hiddenfield-zip').val(address.zip);
+					jQuery('#hiddenfield-country').val(address.country);
+					
+					jQuery('#hiddenfield-latitude').val(
+							overlay.overlay.getPosition().lat());
+					jQuery('#hiddenfield-longitude').val(
+							overlay.overlay.getPosition().lng());
+					jQuery('#hiddenfield-area-type').val(overlay.type);
+					jQuery('#hiddenfield-area-coordinates').val(JSON.stringify(overlay.overlay.getJsonCoordinates()));
 				});
-			} else {
-				if(this.ch1903MapChangeListener != undefined) {
-					google.maps.event.removeListener(this.ch1903MapChangeListener);
-				}
-			}
-		};
-		
-		boundsChangeListender(true);
-		
-		searchinputch1903.onkeypress =  function(event) {
-			if(event.keyCode != 13) {
-				console.log("KeyCode: " + event.keyCode);
-				return; // Was not enter
-			}
-			var text = searchinputch1903.value;
-			var match = regexch1903.exec(text);
-			if(match != null) {
-				var y = match[1];
-				var x = match[2];
-				wgsLat = CHtoWGSlat(y, x);
-				wgsLng = CHtoWGSlng(y, x);
-				console.log("CH1903: " + y + " / " + x);
-				console.log("WGS84: " + wgsLat + " / " + wgsLng);
-				boundsChangeListender(false);
-				googlemap.setCenter(new google.maps.LatLng(wgsLat, wgsLng));
-				searchinputch1903.value = text;
-				/**
-				 * @todo Redo this in a sane way.
-				 */
-				setTimeout(function() { boundsChangeListender(true);}, 500); 
-			}
-		};
+		getAltitude(overlay.overlay.getPosition(), function(
+				altitude) {
+			jQuery('#hiddenfield-altitude').val(altitude);
+		});
 	};
 	
 	/**
-	 * Get the address for the submitted element
+	 * Get the address for the submitted coordinate.
 	 * 
-	 * @param overlay
-	 *            overlay
+	 * @param latlng
+	 *            coordinate
 	 * @param callback
 	 *            callback function
 	 */
@@ -512,10 +408,10 @@ function Area(map_id) {
 	};
 
 	/**
-	 * Get the altitude for the submitted overlay
+	 * Get the altitude for the submitted coordinate.
 	 * 
-	 * @param overlay
-	 *            overlay
+	 * @param latlng
+	 *            coordinate
 	 * @param callback
 	 *            callback function
 	 */

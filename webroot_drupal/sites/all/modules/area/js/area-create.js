@@ -47,31 +47,7 @@ jQuery(document).ready(
 						+ 'area/getnewareanameajaxform';
 				jQuery.get(url, function(data) {
 					areabasic.showInfoWindowToCreateNewArea(overlay.overlay, data);
-					getAddress(
-							overlay.overlay.getPosition(),
-							function(address) {
-								console.log("Address:");
-								console.log(address);
-								jQuery('#edit-canton').val(address.canton);
-								jQuery('#edit-township').val(address.township);
-								jQuery('#edit-locality').val(address.locality);
-								jQuery('#edit-zip').val(address.zip);
-								jQuery('#edit-country').val(address.country);
-
-								// ugly hack...
-								jQuery('#edit-latitude').val(
-										overlay.overlay.getPosition().lat());
-								jQuery('#edit-longitude').val(
-										overlay.overlay.getPosition().lng());
-								jQuery('#edit-area-type').val(overlay.type);
-								jQuery('#edit-area-coords').val(JSON.stringify(overlay.overlay.getJsonCoordinates()));
-							});
-					getAltitude(overlay.overlay.getPosition(), function(
-							altitude) {
-						console.log("Altitude:");
-						console.log(altitude);
-						jQuery('#edit-altitude').val(altitude);
-					});
+					updateHiddenfields(overlay);
 				});
 				this.setDrawingMode(null);
 			});

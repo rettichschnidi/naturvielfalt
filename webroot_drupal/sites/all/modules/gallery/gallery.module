@@ -49,7 +49,8 @@ function gallery_menu() {
 	// Rating types
 	$items['admin/config/media/gallery/rating-types'] = array(
 			'title' => t('Rating types'),
-			'description' => t('List the current gallery rating types on the site.'),
+			'description' => t(
+				'List the current gallery rating types on the site.'),
 			'page callback' => 'gallery_rating_type_list',
 			'access arguments' => array(
 					'administer rating types'
@@ -101,7 +102,8 @@ function gallery_menu() {
 	// Categories
 	$items['admin/config/media/gallery/categories'] = array(
 			'title' => t('Categories'),
-			'description' => t('List the current gallery categories on the site.'),
+			'description' => t(
+				'List the current gallery categories on the site.'),
 			'page callback' => 'gallery_category_list',
 			'access arguments' => array(
 					'administer categories'
@@ -538,19 +540,23 @@ function gallery_permission() {
 	return array(
 			'administer rating types' => array(
 					'title' => t('Administer rating types'),
-					'description' => t('Create and modify rating types for gallery medias.'),
+					'description' => t(
+						'Create and modify rating types for gallery medias.'),
 			),
 			'administer categories' => array(
 					'title' => t('Administer categories'),
-					'description' => t('Create and modify categories for gallery medias.'),
+					'description' => t(
+						'Create and modify categories for gallery medias.'),
 			),
 			'add gallery images' => array(
 					'title' => t('Add gallery medias'),
-					'description' => t('Create and modify gallery medias of objects owned.'),
+					'description' => t(
+						'Create and modify gallery medias of objects owned.'),
 			),
 			'manage gallery medias' => array(
 					'title' => t('Manage gallery medias'),
-					'description' => t('Create and modify gallery medias everywhere.'),
+					'description' => t(
+						'Create and modify gallery medias everywhere.'),
 			),
 			'rate gallery medias' => array(
 					'title' => t('Rate gallery medias'),
@@ -563,7 +569,7 @@ function gallery_permission() {
 			'view hidden gallery images' => array(
 					'title' => t('View hidden gallery medias'),
 					'description' => t(
-							'View gallery medias with rating lower than the boundry set in the gallery settings.')
+						'View gallery medias with rating lower than the boundry set in the gallery settings.')
 			)
 	);
 }
@@ -660,43 +666,56 @@ function gallery_image_default_styles() {
  *   - "medias": Array of gallery medias
  *   - "count": Number of medias found
  */
-function gallery_images($mediatype, $type = false, $id = false, $crosslinked = true, $rating = false, $limit = false,
-		$subtype = false, $conditions = array(), $required_conditions = array(), $joins = array()) {
+function gallery_images($mediatype, $type = false, $id = false,
+		$crosslinked = true, $rating = false, $limit = false, $subtype = false,
+		$conditions = array(), $required_conditions = array(), $joins = array()) {
 	global $user;
 	if ($type && !_gallery_check_type_validity($type))
 		return array();
 	$types = _gallery_types();
 	if ($crosslinked === null) {
 		$crosslinked = true;
-		if (array_key_exists($type, $types) && array_key_exists('crosslinked', $types[$type]))
+		if (array_key_exists($type, $types)
+				&& array_key_exists('crosslinked', $types[$type]))
 			$crosslinked = $types[$type]['crosslinked'];
 	}
-	$sql = 'SELECT ' . 'gi.*, ' . 'fm.*, ' . 'gic.id AS gic_id, ' . 'gis.subtype AS gis_subtype, '
-			. 'gco.id AS gco_id, ' . 'gco.id AS gco_name, ' . 'gc.id AS gc_id, ' . 'gc.name AS gc_name, '
-			. 'gc.description AS gc_description, ' . 'COALESCE(r.overallrating, 0) AS overallrating '
+	$sql = 'SELECT ' . 'gi.*, ' . 'fm.*, ' . 'gic.id AS gic_id, '
+			. 'gis.subtype AS gis_subtype, ' . 'gco.id AS gco_id, '
+			. 'gco.id AS gco_name, ' . 'gc.id AS gc_id, '
+			. 'gc.name AS gc_name, ' . 'gc.description AS gc_description, '
+			. 'COALESCE(r.overallrating, 0) AS overallrating '
 			. ($rating ? ', (SELECT AVG(gir2.rating) FROM gallery_image_rating AS gir2 WHERE gir2.image_id = gi.id AND gir2.rating_type_id = grt.id GROUP BY gir2.rating_type_id) AS rating, '
 							. '(SELECT COUNT(gir3.rating) FROM gallery_image_rating AS gir3 WHERE gir3.image_id = gi.id AND gir3.rating_type_id = grt.id GROUP BY gir3.rating_type_id) AS rating_count, '
-							. 'grt.id AS grt_id ' : '') . 'FROM ' . 'gallery_image AS gi '
+							. 'grt.id AS grt_id ' : '') . 'FROM '
+			. 'gallery_image AS gi '
 			. 'INNER JOIN file_managed AS fm ON fm.fid = gi.fid '
 			. 'LEFT OUTER JOIN gallery_image_category AS gic ON gic.image_id = gi.id '
 			. 'LEFT OUTER JOIN gallery_image_subtype AS gis ON gis.image_id = gi.id '
 			. 'LEFT OUTER JOIN gallery_image_subtype AS gis2 ON gis2.image_id = gi.id '
 			. 'LEFT OUTER JOIN gallery_category_option AS gco ON gco.id = gic.option_id '
-			. 'LEFT OUTER JOIN gallery_category AS gc ON gc.id = gco.category_id ' . 'LEFT OUTER JOIN '
+			. 'LEFT OUTER JOIN gallery_category AS gc ON gc.id = gco.category_id '
+			. 'LEFT OUTER JOIN '
 			. '(SELECT SUM(s.rating) AS overallrating, s.image_id FROM '
-			. '(SELECT AVG(gir.rating)*AVG(grt.weight) AS rating, gir.image_id ' . 'FROM '
-			. 'gallery_image_rating AS gir ' . 'LEFT JOIN gallery_rating_type AS grt ON (gir.rating_type_id = grt.id) '
-			. 'GROUP BY grt.id, gir.image_id' . ') AS s ' . 'GROUP BY s.image_id ' . ') AS r ON r.image_id = gi.id '
-			. ($rating ? 'LEFT OUTER JOIN gallery_rating_type AS grt ON grt.id IS NOT NULL ' : '');
+			. '(SELECT AVG(gir.rating)*AVG(grt.weight) AS rating, gir.image_id '
+			. 'FROM ' . 'gallery_image_rating AS gir '
+			. 'LEFT JOIN gallery_rating_type AS grt ON (gir.rating_type_id = grt.id) '
+			. 'GROUP BY grt.id, gir.image_id' . ') AS s '
+			. 'GROUP BY s.image_id ' . ') AS r ON r.image_id = gi.id '
+			. ($rating ? 'LEFT OUTER JOIN gallery_rating_type AS grt ON grt.id IS NOT NULL '
+					: '');
 	$id_conditions = array();
 	if ($id) {
-		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id) . '\')' : '= \'' . $id . '\'';
+		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
+						. '\')' : '= \'' . $id . '\'';
 		array_push($id_conditions, 'gi.item_id ' . $id_condition);
 	}
-	if ($type && array_key_exists('condition', $types[$type]) && function_exists($types[$type]['condition'])) {
-		$cond = call_user_func_array($types[$type]['condition'], array($type,
-				$id
-		));
+	if ($type && array_key_exists('condition', $types[$type])
+			&& function_exists($types[$type]['condition'])) {
+		$cond = call_user_func_array(
+			$types[$type]['condition'],
+			array($type,
+					$id
+			));
 		if ($cond)
 			array_push($id_conditions, $cond);
 	}
@@ -705,11 +724,15 @@ function gallery_images($mediatype, $type = false, $id = false, $crosslinked = t
 	if ($id_conditions)
 		array_push($conditions, '(' . implode(' AND ', $id_conditions) . ')');
 	if (!user_access('view hidden gallery images'))
-		array_push($required_conditions,
-				'((COALESCE(r.overallrating, 0) >= ' . variable_get('gallery_boundry', 0)
-						. ' AND gi.visible = 1) OR gi.owner_id = ' . $user->uid . ')');
+		array_push(
+			$required_conditions,
+			'((COALESCE(r.overallrating, 0) >= '
+					. variable_get('gallery_boundry', 0)
+					. ' AND gi.visible = 1) OR gi.owner_id = ' . $user->uid
+					. ')');
 	if ($crosslinked && $type) {
-		$conversions = $crosslinked === 'edit' ? _gallery_type_edit_conversions() : _gallery_type_conversions();
+		$conversions = $crosslinked === 'edit' ? _gallery_type_edit_conversions()
+				: _gallery_type_conversions();
 		$n = 0;
 		foreach ($conversions as $conversion) {
 			if ($conversion[(count($conversion) - 1)]['target'] != $type)
@@ -717,35 +740,53 @@ function gallery_images($mediatype, $type = false, $id = false, $crosslinked = t
 			$n++;
 			foreach ($conversion as $i => $c) {
 				if ($i == 0)
-					array_push($joins, 'LEFT OUTER JOIN ' . $c['source'] . ' AS c' . $n . ' ON c' . $n
-							. '.id = gi.item_id');
-				array_push($joins,
-						'LEFT OUTER JOIN ' . $c['target'] . ' AS c' . $n . '_' . $i . ' ON c' . $n . '_' . $i . '."'
-								. $c['target_key'] . '" = ' . ($i == 0 ? 'c' . $n : 'c' . $n . '_' . ($i - 1)) . '."'
-								. $c['source_key'] . '"');
+					array_push(
+						$joins,
+						'LEFT OUTER JOIN ' . $c['source'] . ' AS c' . $n
+								. ' ON c' . $n . '.id = gi.item_id');
+				array_push(
+					$joins,
+					'LEFT OUTER JOIN ' . $c['target'] . ' AS c' . $n . '_' . $i
+							. ' ON c' . $n . '_' . $i . '."' . $c['target_key']
+							. '" = '
+							. ($i == 0 ? 'c' . $n : 'c' . $n . '_' . ($i - 1))
+							. '."' . $c['source_key'] . '"');
 				if ($i == count($conversion) - 1) {
 					$condition = '';
-					if (array_key_exists('condition', $types[$conversion[0]['source']])
-							&& function_exists($types[$conversion[0]['source']]['condition'])) {
-						$cond = call_user_func_array($types[$conversion[0]['source']]['condition'], array($type,
-								$id
-						));
+					if (array_key_exists(
+						'condition',
+						$types[$conversion[0]['source']])
+							&& function_exists(
+								$types[$conversion[0]['source']]['condition'])) {
+						$cond = call_user_func_array(
+							$types[$conversion[0]['source']]['condition'],
+							array($type,
+									$id
+							));
 						if ($cond)
 							$condition = ' AND ' . $cond . ' ';
 					}
-					array_push($conditions,
-							'(gi.item_type = \'' . $conversion[0]['source'] . '\' AND ' . 'c' . $n . '_' . $i . '.id '
-									. $id_condition . $condition
-									. (array_key_exists('subtype', $conversion[0]) ? ' AND ' . 'gis2.subtype = \''
-													. $conversion[0]['subtype'] . '\'' : '') . ')');
+					array_push(
+						$conditions,
+						'(gi.item_type = \'' . $conversion[0]['source']
+								. '\' AND ' . 'c' . $n . '_' . $i . '.id '
+								. $id_condition . $condition
+								. (array_key_exists('subtype', $conversion[0]) ? ' AND '
+												. 'gis2.subtype = \''
+												. $conversion[0]['subtype']
+												. '\'' : '') . ')');
 				}
 			}
 		}
 	}
 	if ($subtype)
-		array_push($required_conditions, '(gis2.subtype = \'' . $subtype . '\')');
+		array_push(
+			$required_conditions,
+			'(gis2.subtype = \'' . $subtype . '\')');
 	if ($conditions)
-		array_push($required_conditions, '(' . implode(' OR ', $conditions) . ')');
+		array_push(
+			$required_conditions,
+			'(' . implode(' OR ', $conditions) . ')');
 	$sql .= implode(' ', $joins);
 	if ($required_conditions)
 		$sql .= ' WHERE ' . implode(' AND ', $required_conditions);
@@ -785,21 +826,23 @@ function gallery_images($mediatype, $type = false, $id = false, $crosslinked = t
 				if (!preg_match('/^gi?co?_/', $key))
 					$image[$key] = $value;
 		}
-		if ($record['gis_subtype'] && !in_array($record['gis_subtype'], $image['subtypes']))
+		if ($record['gis_subtype']
+				&& !in_array($record['gis_subtype'], $image['subtypes']))
 			array_push($image['subtypes'], $record['gis_subtype']);
 		if ($record['gc_id'] !== null)
-			array_push($image['categories'],
-					array('id' => $record['gc_id'],
-							'name' => $record['gc_name'],
-							'description' => $record['gc_description'],
-							'value' => $record['gco_name'],
-							'option_id' => $record['gco_id'],
-							'value_id' => $record['gic_id'],
-							'uri' => $record['fm.uri'],
-							'filename' => $record['fm.filename'],
-							'filemime' => $record['fm.filemime'],
-							'timestamp' => $record['fm.timestamp']
-					));
+			array_push(
+				$image['categories'],
+				array('id' => $record['gc_id'],
+						'name' => $record['gc_name'],
+						'description' => $record['gc_description'],
+						'value' => $record['gco_name'],
+						'option_id' => $record['gco_id'],
+						'value_id' => $record['gic_id'],
+						'uri' => $record['fm.uri'],
+						'filename' => $record['fm.filename'],
+						'filemime' => $record['fm.filemime'],
+						'timestamp' => $record['fm.timestamp']
+				));
 		if ($rating && $record['rating'])
 			$image['ratings'][$record['grt_id']] = array(
 					'average' => $record['rating'],
@@ -849,7 +892,8 @@ function gallery_images_count($type = false, $id = false) {
 	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid  ';
 	$id_conditions = array();
 	if ($id) {
-		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id) . '\')' : '= \'' . $id . '\'';
+		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
+						. '\')' : '= \'' . $id . '\'';
 		array_push($id_conditions, 'gi.item_id ' . $id_condition);
 	}
 	if ($type) {
@@ -862,7 +906,8 @@ function gallery_images_count($type = false, $id = false) {
 	}
 	$sql .= ' LIMIT 1';
 
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
+			0);
 	return $result;
 }
 /**
@@ -879,7 +924,8 @@ function gallery_sounds_count($type = false, $id = false) {
 	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid  ';
 	$id_conditions = array();
 	if ($id) {
-		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id) . '\')' : '= \'' . $id . '\'';
+		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
+						. '\')' : '= \'' . $id . '\'';
 		array_push($id_conditions, 'gi.item_id ' . $id_condition);
 	}
 	if ($type) {
@@ -891,7 +937,8 @@ function gallery_sounds_count($type = false, $id = false) {
 		$sql .= implode(' AND ', $id_conditions);
 	}
 	$sql .= ' LIMIT 1';
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
+			0);
 	return $result;
 }
 /**
@@ -908,7 +955,8 @@ function gallery_videos_count($type = false, $id = false) {
 	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid ';
 	$id_conditions = array();
 	if ($id) {
-		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id) . '\')' : '= \'' . $id . '\'';
+		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
+						. '\')' : '= \'' . $id . '\'';
 		array_push($id_conditions, 'gi.item_id ' . $id_condition);
 	}
 	if ($type) {
@@ -920,7 +968,8 @@ function gallery_videos_count($type = false, $id = false) {
 		$sql .= implode(' AND ', $id_conditions);
 	}
 	$sql .= ' LIMIT 1';
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
+			0);
 	return $result;
 }
 /**
@@ -937,7 +986,8 @@ function gallery_medias_count($type = false, $id = false) {
 	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi ';
 	$id_conditions = array();
 	if ($id) {
-		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id) . '\')' : '= \'' . $id . '\'';
+		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
+						. '\')' : '= \'' . $id . '\'';
 		array_push($id_conditions, 'gi.item_id ' . $id_condition);
 	}
 	if ($type) {
@@ -947,7 +997,8 @@ function gallery_medias_count($type = false, $id = false) {
 		$sql .= ' WHERE ' . implode(' AND ', $id_conditions);
 	}
 	$sql .= ' LIMIT 1';
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(0);
+	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
+			0);
 	return $result;
 }
 /**
@@ -977,13 +1028,18 @@ function gallery_medias_count($type = false, $id = false) {
 function gallery_image_load($id) {
 	if (!$id)
 		return array();
-	$query = db_select('gallery_image', 'gi', array('fetch' => PDO::FETCH_ASSOC));
+	$query = db_select(
+		'gallery_image',
+		'gi',
+		array('fetch' => PDO::FETCH_ASSOC));
 	$query->join('file_managed', 'fm', 'fm.fid = gi.fid');
 	$query->leftJoin('gallery_image_category', 'gic', 'gic.image_id = gi.id');
 	$query->leftJoin('gallery_category_option', 'gco', 'gco.id = gic.option_id');
 	$query->leftJoin('gallery_category', 'gc', 'gc.id = gco.category_id');
 	$query->leftJoin('gallery_image_subtype', 'gis', 'gis.image_id = gi.id');
-	$query->condition('gi.id', $id)->fields('gi')->fields('fm');
+	$query->condition('gi.id', $id)
+		->fields('gi')
+		->fields('fm');
 	$query->addField('gic', 'id', 'gic_id');
 	$query->addField('gco', 'id', 'gco_id');
 	$query->addField('gco', 'name', 'gco_name');
@@ -991,7 +1047,8 @@ function gallery_image_load($id) {
 	$query->addField('gc', 'name', 'gc_name');
 	$query->addField('gc', 'description', 'gc_description');
 	$query->addField('gis', 'subtype', 'gis_subtype');
-	$result = $query->execute()->fetchAll();
+	$result = $query->execute()
+		->fetchAll();
 	if (!$result)
 		return array();
 	$image = array(
@@ -1039,7 +1096,10 @@ function gallery_image_save($image) {
 		drupal_write_record('gallery_image', $image);
 	if (!is_array($image['categories']))
 		return $image;
-	$query = db_delete('gallery_image_subtype')->condition('image_id', $image['id'])->execute();
+	$query = db_delete('gallery_image_subtype')->condition(
+			'image_id',
+			$image['id'])
+		->execute();
 	if ($image['subtypes'] && is_array($image['subtypes']))
 		foreach ($image['subtypes'] as $subtype) {
 			if (!$subtype)
@@ -1064,7 +1124,9 @@ function gallery_image_save($image) {
 		array_push($new_entries, $entry['id']);
 	}
 	// Delete all remaining category values
-	$query = db_delete('gallery_image_category')->condition('image_id', $image['id']);
+	$query = db_delete('gallery_image_category')->condition(
+			'image_id',
+			$image['id']);
 	if ($new_entries)
 		$query->condition('id', $new_entries, 'NOT IN');
 	$query->execute();
@@ -1083,11 +1145,16 @@ function gallery_image_delete($image) {
 	$file = (object) $image;
 	if (!file_delete($file, true))
 		return false;
-	db_delete('gallery_image')->condition('id', $image['id'])->execute();
-	db_delete('gallery_image_category')->condition('image_id', $image['id'])->execute();
-	db_delete('gallery_image_rating')->condition('image_id', $image['id'])->execute();
-	db_delete('gallery_image_subtype')->condition('image_id', $image['id'])->execute();
-	db_delete('file_managed')->condition('fid', $image['fid'])->execute();
+	db_delete('gallery_image')->condition('id', $image['id'])
+		->execute();
+	db_delete('gallery_image_category')->condition('image_id', $image['id'])
+		->execute();
+	db_delete('gallery_image_rating')->condition('image_id', $image['id'])
+		->execute();
+	db_delete('gallery_image_subtype')->condition('image_id', $image['id'])
+		->execute();
+	db_delete('file_managed')->condition('fid', $image['fid'])
+		->execute();
 	return true;
 }
 
@@ -1111,14 +1178,18 @@ function gallery_image_rating_save($image_id, $rating_type_id, $rating) {
 			'image_id' => $image_id,
 			'rating_type_id' => $rating_type_id,
 	);
-	$query = db_select('gallery_image_rating', 'gir')->condition('image_id', $image_id)
-			->condition('rating_type_id', $rating_type_id)->fields('gir', array('id'));
+	$query = db_select('gallery_image_rating', 'gir')->condition(
+			'image_id',
+			$image_id)
+		->condition('rating_type_id', $rating_type_id)
+		->fields('gir', array('id'));
 	if (!in_array('anonymous', $user->roles)) {
 		$entry['user_id'] = $user->uid;
 		$query->condition('user_id', $user->uid);
 	} else
 		$query->condition('user_ip', $user->hostname);
-	$record = $query->execute()->fetchAssoc();
+	$record = $query->execute()
+		->fetchAssoc();
 	if ($record) {
 		$entry['id'] = $record['id'];
 		drupal_write_record('gallery_image_rating', $entry, 'id');
@@ -1128,7 +1199,9 @@ function gallery_image_rating_save($image_id, $rating_type_id, $rating) {
 }
 
 function gallery_image_visibility_save($image, $visible) {
-	db_update('gallery_image')->condition('id', $image['id'])->fields(array('visible' => $visible))->execute();
+	db_update('gallery_image')->condition('id', $image['id'])
+		->fields(array('visible' => $visible))
+		->execute();
 	return true;
 }
 
@@ -1144,12 +1217,22 @@ function gallery_image_visibility_save($image, $visible) {
  */
 function gallery_available_categories($type, $id) {
 	$available = array();
-	$query = db_select('gallery_category', 'gc', array('fetch' => PDO::FETCH_ASSOC));
-	$query->leftJoin('gallery_category_condition', 'gcc', 'gcc.category_id = gc.id');
-	$categories = $query->fields('gc')->fields('gcc', array('condition',
-					'columnname',
-					'value'
-			))->orderBy('name')->execute()->fetchAll();
+	$query = db_select(
+		'gallery_category',
+		'gc',
+		array('fetch' => PDO::FETCH_ASSOC));
+	$query->leftJoin(
+			'gallery_category_condition',
+			'gcc',
+			'gcc.category_id = gc.id');
+	$categories = $query->fields('gc')
+		->fields('gcc', array('condition',
+				'columnname',
+				'value'
+		))
+		->orderBy('name')
+		->execute()
+		->fetchAll();
 	$conditions = _gallery_category_conditions();
 	$conversions = _gallery_type_conversions();
 	$seen = array();
@@ -1170,27 +1253,33 @@ function gallery_available_categories($type, $id) {
 				else
 					foreach ($conversions as $conversion)
 						if ($conversion[0]['source'] == $type
-								&& $conversion[(count($conversion) - 1)]['target'] == $condition['type'])
+								&& $conversion[(count($conversion) - 1)]['target']
+										== $condition['type'])
 							$avail = true;
 			} else {
 				$alias = is_array($condition['table']) ? 'pt' : 't';
 				$query = false;
 				if ($condition['type'] == $type)
-					$query = db_select($type, $alias)->condition($alias . '.id', $id);
+					$query = db_select($type, $alias)->condition(
+							$alias . '.id',
+							$id);
 				else {
 					foreach ($conversions as $conversion) {
 						if ($conversion[0]['source'] != $type
-								|| $conversion[(count($conversion) - 1)]['target'] != $condition['type'])
+								|| $conversion[(count($conversion) - 1)]['target']
+										!= $condition['type'])
 							continue;
 						$conversion = array_reverse($conversion);
 						foreach ($conversion as $i => $c) {
 							if ($i == 0)
 								$query = db_select($c['target'], $alias);
-							$query
-									->join($c['source'], 's' . $i,
-											's' . $i . '."' . $c['source_key'] . '" = '
-													. ($i == 0 ? $alias : 's' . ($i - 1)) . '."' . $c['target_key']
-													. '"');
+							$query->join(
+									$c['source'],
+									's' . $i,
+									's' . $i . '."' . $c['source_key'] . '" = '
+											. ($i == 0 ? $alias : 's'
+													. ($i - 1)) . '."'
+											. $c['target_key'] . '"');
 							if ($i == count($conversion) - 1)
 								$query->condition('s' . $i . '.id', $id);
 						}
@@ -1203,28 +1292,39 @@ function gallery_available_categories($type, $id) {
 					$table = $condition['table'][0];
 					$join_on = array();
 					foreach ($condition['table'][1] as $type_col => $table_col)
-						array_push($join_on, 'pt."' . $type_col . '" = ' . $table_col);
-					$query->join($table, 't', '(' . join(' AND ', $join_on) . ')');
+						array_push(
+							$join_on,
+							'pt."' . $type_col . '" = ' . $table_col);
+					$query->join(
+							$table,
+							't',
+							'(' . join(' AND ', $join_on) . ')');
 				}
 				if (is_array($condition['columns']))
-					$query->condition('t."' . $category['columnname'] . '"', $category['value']);
+					$query->condition(
+							't."' . $category['columnname'] . '"',
+							$category['value']);
 				else if ($condition['value'] && $condition['column'])
-					$query->condition('t."' . $condition['column'] . '"', $condition['value']);
-				$result = $query->fields('t')->execute();
+					$query->condition(
+							't."' . $condition['column'] . '"',
+							$condition['value']);
+				$result = $query->fields('t')
+					->execute();
 				if ($result->rowCount())
 					$avail = true;
 			}
 		}
 		if ($avail) {
 			array_push($seen, $category['id']);
-			array_push($available,
-					array('id' => $category['id'],
-							'name' => $category['name'],
-							'description' => $category['description'],
-							'required' => $category['required'],
-							'multiple' => $category['multiple'],
-							'options' => gallery_category_options($category['id'])
-					));
+			array_push(
+				$available,
+				array('id' => $category['id'],
+						'name' => $category['name'],
+						'description' => $category['description'],
+						'required' => $category['required'],
+						'multiple' => $category['multiple'],
+						'options' => gallery_category_options($category['id'])
+				));
 		}
 	}
 	return $available;
@@ -1241,7 +1341,8 @@ function gallery_available_rating_types() {
 	$types = gallery_rating_types();
 	$available = array();
 	foreach ($types as $type)
-		if (!array_key_exists('role', $type) || !$type['role'] || in_array($type['role'], $user->roles))
+		if (!array_key_exists('role', $type) || !$type['role']
+				|| in_array($type['role'], $user->roles))
 			array_push($available, $type);
 	return $available;
 }
@@ -1253,8 +1354,13 @@ function gallery_available_rating_types() {
  *   An array of categories keyed by the gallery category ID.
  */
 function gallery_categories() {
-	return db_select('gallery_category', NULL, array('fetch' => PDO::FETCH_ASSOC))->fields('gallery_category')
-			->orderBy('name')->execute()->fetchAll();
+	return db_select(
+		'gallery_category',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->fields('gallery_category')
+		->orderBy('name')
+		->execute()
+		->fetchAll();
 }
 
 /**
@@ -1274,8 +1380,13 @@ function gallery_categories() {
 function gallery_category_load($id) {
 	if (!$id)
 		return array();
-	$result = db_select('gallery_category', NULL, array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id)
-			->fields('gallery_category')->execute()->fetchAssoc();
+	$result = db_select(
+		'gallery_category',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id)
+		->fields('gallery_category')
+		->execute()
+		->fetchAssoc();
 	if (!$result)
 		return array();
 	return $result;
@@ -1306,13 +1417,22 @@ function gallery_category_save($category) {
  *   TRUE on success.
  */
 function gallery_category_delete($category) {
-	db_delete('gallery_category')->condition('id', $category['id'])->execute();
-	db_delete('gallery_category_condition')->condition('category_id', $category['id'])->execute();
-	db_delete('gallery_image_category')
-			->condition('option_id',
-					db_select('gallery_category_option')->fields('id')->condition('category_id', $category['id']),
-					'IN')->execute();
-	db_delete('gallery_category_option')->condition('category_id', $category['id'])->execute();
+	db_delete('gallery_category')->condition('id', $category['id'])
+		->execute();
+	db_delete('gallery_category_condition')->condition(
+			'category_id',
+			$category['id'])
+		->execute();
+	db_delete('gallery_image_category')->condition(
+			'option_id',
+			db_select('gallery_category_option')->fields('id')
+				->condition('category_id', $category['id']),
+			'IN')
+		->execute();
+	db_delete('gallery_category_option')->condition(
+			'category_id',
+			$category['id'])
+		->execute();
 	return TRUE;
 }
 
@@ -1325,9 +1445,14 @@ function gallery_category_delete($category) {
  *   An array of options keyed by the gallery category option ID.
  */
 function gallery_category_options($category_id) {
-	return db_select('gallery_category_option', NULL, array('fetch' => PDO::FETCH_ASSOC))
-			->fields('gallery_category_option')->condition('category_id', $category_id)->orderBy('id')->execute()
-			->fetchAll();
+	return db_select(
+		'gallery_category_option',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->fields('gallery_category_option')
+		->condition('category_id', $category_id)
+		->orderBy('id')
+		->execute()
+		->fetchAll();
 }
 
 /**
@@ -1345,8 +1470,13 @@ function gallery_category_options($category_id) {
 function gallery_category_option_load($id) {
 	if (!$id)
 		return array();
-	$result = db_select('gallery_category_option', NULL, array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id)
-			->fields('gallery_category_option')->execute()->fetchAssoc();
+	$result = db_select(
+		'gallery_category_option',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id)
+		->fields('gallery_category_option')
+		->execute()
+		->fetchAssoc();
 	if (!$result)
 		return array();
 	return $result;
@@ -1377,8 +1507,10 @@ function gallery_category_option_save($option) {
  *   TRUE on success.
  */
 function gallery_category_option_delete($option) {
-	db_delete('gallery_category_option')->condition('id', $option['id'])->execute();
-	db_delete('gallery_image_category')->condition('id', $option['id'])->execute();
+	db_delete('gallery_category_option')->condition('id', $option['id'])
+		->execute();
+	db_delete('gallery_image_category')->condition('id', $option['id'])
+		->execute();
 	return TRUE;
 }
 
@@ -1391,9 +1523,15 @@ function gallery_category_option_delete($option) {
  *   An array of conditions keyed by the gallery category condition ID.
  */
 function gallery_category_conditions($category_id) {
-	return db_select('gallery_category_condition', NULL, array('fetch' => PDO::FETCH_ASSOC))
-			->fields('gallery_category_condition')->condition('category_id', $category_id)->orderBy('name')->execute()
-			->fetchAll();
+	return db_select(
+		'gallery_category_condition',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->fields(
+			'gallery_category_condition')
+		->condition('category_id', $category_id)
+		->orderBy('name')
+		->execute()
+		->fetchAll();
 }
 
 /**
@@ -1414,8 +1552,13 @@ function gallery_category_conditions($category_id) {
 function gallery_category_condition_load($id) {
 	if (!$id)
 		return array();
-	$result = db_select('gallery_category_condition', NULL, array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id)
-			->fields('gallery_category_condition')->execute()->fetchAssoc();
+	$result = db_select(
+		'gallery_category_condition',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id)
+		->fields('gallery_category_condition')
+		->execute()
+		->fetchAssoc();
 	if (!$result)
 		return array();
 	return $result;
@@ -1446,7 +1589,8 @@ function gallery_category_condition_save($condition) {
  *   TRUE on success.
  */
 function gallery_category_condition_delete($condition) {
-	db_delete('gallery_category_condition')->condition('id', $condition['id'])->execute();
+	db_delete('gallery_category_condition')->condition('id', $condition['id'])
+		->execute();
 	return TRUE;
 }
 
@@ -1457,8 +1601,13 @@ function gallery_category_condition_delete($condition) {
  *   An array of rating types
  */
 function gallery_rating_types() {
-	return db_select('gallery_rating_type', NULL, array('fetch' => PDO::FETCH_ASSOC))->fields('gallery_rating_type')
-			->orderBy('weight')->execute()->fetchAll();
+	return db_select(
+		'gallery_rating_type',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->fields('gallery_rating_type')
+		->orderBy('weight')
+		->execute()
+		->fetchAll();
 }
 
 /**
@@ -1478,8 +1627,13 @@ function gallery_rating_types() {
 function gallery_rating_type_load($id) {
 	if (!$id)
 		return array();
-	$result = db_select('gallery_rating_type', NULL, array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id, '=')
-			->fields('gallery_rating_type')->execute()->fetchAssoc();
+	$result = db_select(
+		'gallery_rating_type',
+		NULL,
+		array('fetch' => PDO::FETCH_ASSOC))->condition('id', $id, '=')
+		->fields('gallery_rating_type')
+		->execute()
+		->fetchAssoc();
 	if (!$result)
 		return array();
 	return $result;
@@ -1510,8 +1664,10 @@ function gallery_rating_type_save($type) {
  *   TRUE on success.
  */
 function gallery_rating_type_delete($type) {
-	db_delete('gallery_rating_type')->condition('id', $type['id'])->execute();
-	db_delete('gallery_image_rating')->condition('id', $type['id'])->execute();
+	db_delete('gallery_rating_type')->condition('id', $type['id'])
+		->execute();
+	db_delete('gallery_image_rating')->condition('id', $type['id'])
+		->execute();
 	return TRUE;
 }
 
@@ -1553,13 +1709,16 @@ function gallery_edit_access_callback($type, $id, $image = false) {
 		$access_method = array_key_exists('edit_image', $types[$type]) ? $types[$type]['edit_image']
 				: 'gallery_image_owner_access_callback';
 	else
-		$access_method = array_key_exists('edit_gallery', $types[$type]) ? $types[$type]['edit_gallery'] : '';
+		$access_method = array_key_exists('edit_gallery', $types[$type]) ? $types[$type]['edit_gallery']
+				: '';
 	if (!$access_method || !function_exists($access_method))
 		return true;
-	return call_user_func_array($access_method, array($type,
-			$id,
-			$image
-	));
+	return call_user_func_array(
+		$access_method,
+		array($type,
+				$id,
+				$image
+		));
 }
 
 /**
@@ -1593,8 +1752,11 @@ function gallery_image_owner_access_callback($type, $id, $image) {
  */
 function gallery_owner_access_callback($type, $id, $image = false) {
 	global $user;
-	return db_select($type, 't')->fields('t')->condition('t.id', $id)->condition('t.owner_id', $user->uid)->execute()
-			->rowCount() > 0;
+	return db_select($type, 't')->fields('t')
+		->condition('t.id', $id)
+		->condition('t.owner_id', $user->uid)
+		->execute()
+		->rowCount() > 0;
 }
 
 function gallery_own_edit_access($owner) {
@@ -1648,28 +1810,38 @@ function _gallery_get_subtypes($type, $crosslinked = true) {
 	$types = _gallery_types();
 	if ($crosslinked === null) {
 		$crosslinked = true;
-		if (array_key_exists($type, $types) && array_key_exists('crosslinked', $types[$type]))
+		if (array_key_exists($type, $types)
+				&& array_key_exists('crosslinked', $types[$type]))
 			$crosslinked = $types[$type]['crosslinked'];
 	}
 	$subtypes = array();
-	if (array_key_exists($type, $types) && array_key_exists('subtypes', $types[$type]))
+	if (array_key_exists($type, $types)
+			&& array_key_exists('subtypes', $types[$type]))
 		$subtypes = array_merge($subtypes, $types[$type]['subtypes']);
 	if (!$crosslinked)
 		return $subtypes;
 	$conversions = _gallery_type_conversions();
 	foreach ($conversions as $conversion) {
-		if ($conversion[(count($conversion) - 1)]['target'] != $type || array_key_exists('subtype', $conversion[0]))
+		if ($conversion[(count($conversion) - 1)]['target'] != $type
+				|| array_key_exists('subtype', $conversion[0]))
 			continue;
 		if (array_key_exists($conversion[0]['source'], $types)
-				&& array_key_exists('subtypes', $types[$conversion[0]['source']]))
-			$subtypes = array_merge($subtypes, $types[$conversion[0]['source']]['subtypes']);
+				&& array_key_exists(
+					'subtypes',
+					$types[$conversion[0]['source']]))
+			$subtypes = array_merge(
+				$subtypes,
+				$types[$conversion[0]['source']]['subtypes']);
 	}
 	return $subtypes;
 }
 
 function _gallery_get_default_location($type, $id) {
 	$types = _gallery_types();
-	if (array_key_exists($type, $types) && array_key_exists('location_provider', $types[$type]))
-		return call_user_func_array($types[$type]['location_provider'], array($id));
+	if (array_key_exists($type, $types)
+			&& array_key_exists('location_provider', $types[$type]))
+		return call_user_func_array(
+			$types[$type]['location_provider'],
+			array($id));
 	return '';
 }

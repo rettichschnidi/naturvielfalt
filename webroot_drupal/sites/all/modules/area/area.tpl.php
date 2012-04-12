@@ -73,20 +73,29 @@ if ($ch1903) {
 	area_add_js_url($baseModulJsPath . 'area-ch1903.js');
 }
 
-if ($action == 'create') {
+switch ($show) {
+case 'allareas':
+	area_add_js_url($baseModulJsPath . 'area-show-allareas.js');
+	break;
+case 'myareas':
+	area_add_js_url($baseModulJsPath . 'area-show-myareas.js');
+	break;
+}
+
+switch ($action) {
+case 'create':
 	area_add_js_url($baseModulJsPath . 'area-create.js');
-}
-
-if ($showall) {
-	area_add_js_url($baseModulJsPath . 'area-show-all.js');
-}
-
-if ($action == 'edit') {
+	break;
+case 'edit':
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
-}
-
-if ($action == 'getcoordinate' && $coordinate_storage_id != false) {
-	print "<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
-	area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
+	break;
+case 'getcoordinate':
+	if ($coordinate_storage_id != false) {
+		print 
+			"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
+		area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
+	} else {
+		assert(false);
+	}
 }
 ?>

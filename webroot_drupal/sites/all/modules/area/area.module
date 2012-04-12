@@ -20,21 +20,80 @@ define('AREA_MODERATE', 'area moderate');
 function area_menu() {
 	/* Show all available areas */
 	$items['area'] = array(
-			'title' => t('Show all areas'),
+			'title' => t('All areas'),
+			'description' => t('Show all areas'),
+			'page callback' => 'drupal_goto',
+			'page arguments' => array(
+					'areas/show'
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+	);
+	
+	/* Show all available areas */
+	$items['areas/show'] = array(
+			'title' => t('All areas'),
 			'description' => t('Show all areas'),
 			'page callback' => 'area_show_all_areas',
+			'page arguments' => array(
+					false
+			),
 			'access arguments' => array(
 					AREA_ACCESS
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'area.show.inc',
 	);
+	
+	/* Show all available areas */
+	$items['areas/show/all'] = array(
+			'title' => t('All areas'),
+			'type' => MENU_DEFAULT_LOCAL_TASK,
+	);
+
+	/* Show all available areas */
+	$items['areas/show/my'] = array(
+			'title' => t('My areas'),
+			'description' => t('Show all my own areas.'),
+			'page callback' => 'area_show_all_areas',
+			'page arguments' => array(
+					true
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.show.inc',
+	);
 
 	/* Get all available areas as json*/
-	$items['area/json'] = array(
+	$items['areas/json'] = array(
 			'title' => t('All areas json'),
 			'description' => t('Get all areas as json'),
 			'page callback' => 'area_json',
+			'page arguments' => array(
+					false,
+					'ACL_READ'
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+
+	/* Get all available areas as json*/
+	$items['areas/own/json'] = array(
+			'title' => t('All areas json'),
+			'description' => t('Get all areas as json'),
+			'page callback' => 'area_json',
+			'page arguments' => array(
+					false,
+					'ACL_ADMIN'
+			),
 			'access arguments' => array(
 					AREA_ACCESS
 			),
@@ -74,10 +133,28 @@ function area_menu() {
 	);
 
 	/* Get all available areas as datatable json*/
-	$items['area/datatablejson'] = array(
+	$items['areas/all/datatablejson'] = array(
 			'title' => t('All areas datatable json'),
 			'description' => t('Get all areas as datatable json'),
 			'page callback' => 'area_all_areas_datatable_json',
+			'page arguments' => array(
+					'ACL_READ'
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+
+	/* Get own areas as datatable json*/
+	$items['areas/own/datatablejson'] = array(
+			'title' => t('Own areas datatable json'),
+			'description' => t('Get own areas as datatable json'),
+			'page callback' => 'area_all_areas_datatable_json',
+			'page arguments' => array(
+					'ACL_ADMIN'
+			),
 			'access arguments' => array(
 					AREA_ACCESS
 			),
@@ -114,7 +191,7 @@ function area_menu() {
 			'file' => 'area.show.inc',
 			'weight' => 1
 	);
-
+	
 	/* Edit an area */
 	$items['area/%area/edit'] = array(
 			'title' => t('Edit area details'),
@@ -223,7 +300,8 @@ function area_menu() {
 	 */ 
 	$items['area/testing'] = array(
 			'title' => t('Example for Ramon'),
-			'description' => t('Example for Ramon about how to use my wonderful area module.'),
+			'description' => t(
+				'Example for Ramon about how to use my wonderful area module.'),
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
 					'area_testing_form'
@@ -250,7 +328,7 @@ function area_testing_form($form, &$form_state) {
 					'id' => 'meineid'
 			),
 	);
-	
+
 	$form['div'] = array(
 			'#type' => 'fieldset',
 			'#title' => "Google Map",
@@ -258,6 +336,8 @@ function area_testing_form($form, &$form_state) {
 					'style' => 'width: 95%;'
 			)
 	);
+
+	$form['div']['hiddenfields'] = area_address_hidden_form();
 
 	$form['div']['map'] = array(
 			'#theme' => 'area',
@@ -288,8 +368,8 @@ function area_theme() {
 							'action' => NULL,
 							// enable searchbox
 							'search' => false,
-							// show all existing areas
-							'showall' => false,
+							// show all areas of ... either 'myareas' or 'allareas'
+							'show' => false,
 							// set to an integer if an (existing) area should be highlighted
 							'area_id' => false,
 							// wether to show the scale or not
@@ -413,7 +493,7 @@ function area_admin_access($areadata = NULL) {
  * @todo Implementation
  */
 function area_write_access($areadata = NULL) {
-	if ($areadata == NULL) {
+	if ($areadata == NULL || empty($areadata)) {
 		return false;
 	}
 
@@ -431,7 +511,7 @@ function area_write_access($areadata = NULL) {
  * @todo Implementation
  */
 function area_read_access($areadata = NULL) {
-	if ($areadata == NULL) {
+	if ($areadata == NULL || empty($areadata)) {
 		return false;
 	}
 
@@ -447,12 +527,13 @@ module_load_include('inc', 'area', 'area');
 /**
  * Return an array with all required information about an area.
  * This will be called for menuitems like this: 'area/%area/editgeometry'
- * @param integer $arg
+ * @param string $arg
+ * 		This string *should* acutally be an integer
  * @return array $areadata
  */
 function area_load($arg) {
 	$areadata = array();
-	if ($arg != NULL) {
+	if ($arg != NULL && ((int)$arg) > 0) {
 		$areadata = area_get_full_dataset_of_specific_area($arg);
 	}
 	return $areadata;
