@@ -306,61 +306,71 @@ function area_address_hidden_form() {
 			'#type' => 'hidden',
 			'#size' => 50,
 			'#attributes' => array(
-					'id' => 'hiddenfield-name'
+					'id' => 'hiddenfield-name',
+					'name' => 'hiddenfield-name'
 			),
 	);
 	$form['addressdata']['zip'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-zip'
+					'id' => 'hiddenfield-zip',
+					'name' => 'hiddenfield-zip'
 			),
 	);
 	$form['addressdata']['township'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-township'
+					'id' => 'hiddenfield-township',
+					'name' => 'hiddenfield-township'
 			),
 	);
 	$form['addressdata']['canton'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-canton'
+					'id' => 'hiddenfield-canton',
+					'name' => 'hiddenfield-canton'
 			),
 	);
 	$form['addressdata']['altitude'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-altitude'
+					'id' => 'hiddenfield-altitude',
+					'name' => 'hiddenfield-altitude'
 			),
 	);
 	$form['addressdata']['country'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-country'
+					'id' => 'hiddenfield-country',
+					'name' => 'hiddenfield-country'
 			),
 	);
 	$form['addressdata']['latitude'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-latitude'
+					'id' => 'hiddenfield-latitude',
+					'name' => 'hiddenfield-latitude'
 			),
 	);
 	$form['addressdata']['longitude'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-longitude'
+					'id' => 'hiddenfield-longitude',
+					'name' => 'hiddenfield-longitude'
 			),
 	);
 	$form['addressdata']['area-coords'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-area-coordinates'
+					'id' => 'hiddenfield-area-coordinates',
+					'name' => 'hiddenfield-area-coordinates'
 			),
 	);
 	$form['addressdata']['area_type'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-area-type'
+					'id' => 'hiddenfield-area-type',
+					'name' => 'hiddenfield-area-type'
 			),
 	);
 	return $form;
