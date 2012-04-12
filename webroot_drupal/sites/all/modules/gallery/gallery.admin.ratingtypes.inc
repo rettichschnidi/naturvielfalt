@@ -13,7 +13,9 @@ function gallery_rating_type_list() {
 
 	$types = gallery_rating_types();
 	$page['gallery_rating_type_list'] = array(
-			'#markup' => theme('gallery_rating_type_list', array('types' => $types)),
+			'#markup' => theme(
+				'gallery_rating_type_list',
+				array('types' => $types)),
 	);
 
 	return $page;
@@ -67,7 +69,8 @@ function gallery_rating_type_form($form, &$form_state, $type) {
 					'9' => '9',
 					'10' => '10'
 			),
-			'#description' => t('The weight of this rating type in the global rating.'),
+			'#description' => t(
+				'The weight of this rating type in the global rating.'),
 	);
 	$roles = user_roles();
 	$roles[''] = t('None');
@@ -76,7 +79,8 @@ function gallery_rating_type_form($form, &$form_state, $type) {
 			'#title' => t('Required role'),
 			'#default_value' => $type['role_id'],
 			'#options' => $roles,
-			'#description' => t('The role required to place ratings of this type.'),
+			'#description' => t(
+				'The role required to place ratings of this type.'),
 	);
 
 	// Show the Override or Submit button for this style.
@@ -116,9 +120,12 @@ function gallery_rating_type_form_submit($form, &$form_state) {
  * @see gallery_rating_type_add_form_submit()
  */
 function gallery_rating_type_add_form($form, &$form_state) {
-	$form = gallery_rating_type_form($form, &$form_state, array('weight' => 1,
-			'role_id' => ''
-	));
+	$form = gallery_rating_type_form(
+		$form,
+		&$form_state,
+		array('weight' => 1,
+				'role_id' => ''
+		));
 	$title = t('Create new rating type');
 	drupal_set_title($title, PASS_THROUGH);
 
@@ -135,7 +142,8 @@ function gallery_rating_type_add_form($form, &$form_state) {
  */
 function gallery_rating_type_add_form_submit($form, &$form_state) {
 	$type = gallery_rating_type_save($form_state['values']);
-	drupal_set_message(t('Rating type %name was created.', array('%name' => $type['name'])));
+	drupal_set_message(
+		t('Rating type %name was created.', array('%name' => $type['name'])));
 	$form_state['redirect'] = 'admin/config/media/gallery/rating-types';
 }
 
@@ -151,10 +159,15 @@ function gallery_rating_type_add_form_submit($form, &$form_state) {
 function gallery_rating_type_delete_form($form, &$form_state, $type) {
 	$form_state['gallery_rating_type'] = $type;
 
-	return confirm_form($form, t('Delete %name?', array('%name' => $type['name'])),
-			'admin/config/media/gallery/rating-types',
-			t('Are you sure you want to delete the rating type %name? All ratings of this type will also be deleted.',
-					array('%name' => $type['name'])), t('Delete'), t('Cancel'));
+	return confirm_form(
+		$form,
+		t('Delete %name?', array('%name' => $type['name'])),
+		'admin/config/media/gallery/rating-types',
+		t(
+			'Are you sure you want to delete the rating type %name? All ratings of this type will also be deleted.',
+			array('%name' => $type['name'])),
+		t('Delete'),
+		t('Cancel'));
 }
 
 /**
@@ -164,7 +177,8 @@ function gallery_rating_type_delete_form_submit($form, &$form_state) {
 	$type = $form_state['gallery_rating_type'];
 
 	gallery_rating_type_delete($type);
-	drupal_set_message(t('Rating type %name was deleted.', array('%name' => $type['name'])));
+	drupal_set_message(
+		t('Rating type %name was deleted.', array('%name' => $type['name'])));
 	$form_state['redirect'] = 'admin/config/media/gallery/rating-types';
 }
 
@@ -196,11 +210,21 @@ function theme_gallery_rating_type_list($variables) {
 		$role = 'None';
 		if ($type['role_id'] && $loaded = user_role_load($type['role_id']))
 			$role = $loaded->name;
-		$row[] = l($type['name'], 'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l($type['weight'], 'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(t($role), 'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(t('edit'), 'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(t('delete'), 'admin/config/media/gallery/rating-types/delete/' . $type['id']);
+		$row[] = l(
+			$type['name'],
+			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
+		$row[] = l(
+			$type['weight'],
+			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
+		$row[] = l(
+			t($role),
+			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
+		$row[] = l(
+			t('edit'),
+			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
+		$row[] = l(
+			t('delete'),
+			'admin/config/media/gallery/rating-types/delete/' . $type['id']);
 		$rows[] = $row;
 	}
 
@@ -208,8 +232,12 @@ function theme_gallery_rating_type_list($variables) {
 		$rows[] = array(
 				array(
 						'colspan' => 5,
-						'data' => t('There are currently no rating types. !add.',
-								array('!add' => l(t('Add a new one'), 'admin/config/media/gallery/rating-types/add'))),
+						'data' => t(
+							'There are currently no rating types. !add.',
+							array('!add' => l(
+										t('Add a new one'),
+										'admin/config/media/gallery/rating-types/add')
+							)),
 				)
 		);
 	}

@@ -144,8 +144,7 @@ function hook_gallery_type_conversions() {
  * 
  * @return array
  */
-function hook_gallery_type_edit_conversions() {
-}
+function hook_gallery_type_edit_conversions() {}
 
 /**
  * Defines conditions for image categories

@@ -3,6 +3,7 @@
 	margin: 0;
 	padding: 0;
 }
+
 #divbox {
 	background-color: #000;
 	opacity: .8;
@@ -10,11 +11,13 @@
 	padding: 0;
 	top: 0;
 }
+
 #divbox_data {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 }
+
 #divbox_ajax {
 	display: none;
 	width: 400px;
@@ -24,46 +27,57 @@
 	margin: 0;
 	padding: 0;
 }
+
 .divbox_default {
-	background: #fff url(../images/lightbox-ico-loading.gif) no-repeat center center;
+	background: #fff url(../images/lightbox-ico-loading.gif) no-repeat
+		center center;
 	border: 5px solid #fff;
 }
+
 .divbox_default.white {
 	background: none;
 	background-color: white;
 }
+
 .divbox_default .closed {
 	position: absolute;
-	z-index: 80;//1006;
-	background: url(../images/lightbox-btn-close.gif) no-repeat center center;
+	z-index: 80; //1006;
+	background: url(../images/lightbox-btn-close.gif) no-repeat center
+		center;
 	width: 24px;
 	height: 24px;
 	right: -20px;
 	top: -20px;
 	cursor: pointer;
 }
-.divbox_default .prev, .divbox_default .next, .divbox_default .number {
+
+.divbox_default .prev,.divbox_default .next,.divbox_default .number {
 	position: absolute;
 	z-index: 1006;
 	width: 30px;
 	height: 24px;
 	cursor: pointer;
 }
-.divbox_default .prev, .divbox_default .prevDisabled {
+
+.divbox_default .prev,.divbox_default .prevDisabled {
 	background: url(../images/lightbox-btn-prev.gif) no-repeat top center;
 	left: 0;
 }
+
 .divbox_default .prevDisabled {
 	background: url(../images/lightbox-blank.gif) no-repeat top center;
 }
-.divbox_default .next, .divbox_default .nextDisabled {
+
+.divbox_default .next,.divbox_default .nextDisabled {
 	background: url(../images/lightbox-btn-next.gif) no-repeat top right;
 	right: 2px;
 }
+
 .divbox_default .number {
 	right: 30px;
 	width: 20px;
 }
+
 .divbox_default .nextDisabled {
 	background: url(../images/lightbox-blank.gif) no-repeat top right;
 }
@@ -83,29 +97,34 @@
 /* IE6 FixPNG */
 * html .divbox_default .closed {
 	background-image: none;
-	filter: progid :DXImageTransform.Microsoft.AlphaImageLoader(src=../images/lightbox-btn-close.gif
-	);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../images/lightbox-btn-close.gif
+		);
 }
+
 * html .divbox_default .prev {
 	background-image: none;
-	filter: progid :DXImageTransform.Microsoft.AlphaImageLoader(src=images/lightbox-btn-prev.gif
-	);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=images/lightbox-btn-prev.gif
+		);
 }
+
 * html .divbox_default .prevDisabled {
 	background-image: none;
-	filter: progid :DXImageTransform.Microsoft.AlphaImageLoader(src=images/leftDisabled.gif
-	);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=images/leftDisabled.gif
+		);
 }
+
 * html .divbox_default .next {
 	background-image: none;
-	filter: progid :DXImageTransform.Microsoft.AlphaImageLoader(src=images/lightbox-btn-next.gif
-	);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=images/lightbox-btn-next.gif
+		);
 }
+
 * html .divbox_default .nextDisabled {
 	background-image: none;
-	filter: progid :DXImageTransform.Microsoft.AlphaImageLoader(src=images/lightbox-blank.gif
-	);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=images/lightbox-blank.gif
+		);
 }
+
 div.divbox_media_details {
 	font: 10px Verdana, Helvetica, sans-serif;
 	background-color: #fff;
@@ -116,48 +135,59 @@ div.divbox_media_details {
 	padding: -10px -10px -10px -10px;
 	border: 5px solid #fff;
 }
+
 div.divbox_media_details p {
 	margin: 1em 0 0 0;
 }
+
 div.divbox_media_details p .title {
 	display: block;
 	margin: 0 0 1em 0;
 	padding: 0 0 0.5em 0;
 }
+
 div.divbox_media_details p .title small {
 	display: block;
 }
+
 div.divbox_media_details .author {
 	float: left;
 	padding: 0.5em 0;
 	margin: 1px 0 0 0;
 }
+
 div.divbox_media_details .author-msg .author {
 	padding: 0;
 	margin: 0;
 }
+
 div.divbox_media_details .author-msg {
 	overflow: hidden;
 }
-div.divbox_media_details em.msg, div.divbox_media_details p em {
+
+div.divbox_media_details em.msg,div.divbox_media_details p em {
 	display: block;
 	font-style: normal;
 	font-size: 1em;
 }
-div.divbox_media_details .author-msg, div.divbox_media_details p em {
+
+div.divbox_media_details .author-msg,div.divbox_media_details p em {
 	text-align: right;
 	border-top: 1px solid #eee;
 	border-bottom: 1px solid #eee;
 	margin: 0 0 1em 0;
 	padding: 0.5em 0;
 }
+
 div.divbox_media_details h5 {
 	margin-bottom: 1em;
 }
+
 div.divbox_media_details p em small {
 	font-style: italic;
 	font-size: 1em;
 }
+
 div.divbox_media_details .rating form {
 	float: left;
 	width: 150px;

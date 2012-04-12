@@ -10,15 +10,18 @@
  */
 function gallery_category_condition_list($category) {
 	$page = array();
-	$title = t('Edit category conditions of %name', array('%name' => $category['name']));
+	$title = t(
+		'Edit category conditions of %name',
+		array('%name' => $category['name']));
 	drupal_set_title($title, PASS_THROUGH);
 
 	$conditions = gallery_category_conditions($category['id']);
 	$page['gallery_category_condition_list'] = array(
-			'#markup' => theme('gallery_category_condition_list',
-					array('conditions' => $conditions,
-							'category' => $category
-					)),
+			'#markup' => theme(
+				'gallery_category_condition_list',
+				array('conditions' => $conditions,
+						'category' => $category
+				)),
 	);
 
 	$page['back'] = array(
@@ -47,7 +50,8 @@ function gallery_category_condition_list($category) {
  * @ingroup forms
  * @see gallery_category_condition_form_submit()
  */
-function gallery_category_condition_form($form, &$form_state, $category, $condition) {
+function gallery_category_condition_form($form, &$form_state, $category,
+		$condition) {
 	$title = t('Edit %name', array('%name' => $condition['name']));
 	drupal_set_title($title, PASS_THROUGH);
 
@@ -79,7 +83,8 @@ function gallery_category_condition_form($form, &$form_state, $category, $condit
 		$form['column_value'] = array(
 				'#type' => 'select',
 				'#title' => t('Column'),
-				'#default_value' => $condition['columnname'] . '___' . $condition['value'],
+				'#default_value' => $condition['columnname'] . '___'
+						. $condition['value'],
 				'#options' => $options,
 				'#description' => t('The column the value is checked against.'),
 				'#required' => TRUE,
@@ -115,8 +120,10 @@ function _gallery_column_options($cond) {
 			}
 		} else {
 			$results = db_query(
-					'SELECT DISTINCT ' . $table . '."' . $column . '" FROM ' . $table . ' WHERE ' . $table . '."'
-							. $column . '" IS NOT NULL ORDER BY ' . $table . '."' . $column . '";')->fetchCol($column);
+				'SELECT DISTINCT ' . $table . '."' . $column . '" FROM '
+						. $table . ' WHERE ' . $table . '."' . $column
+						. '" IS NOT NULL ORDER BY ' . $table . '."' . $column
+						. '";')->fetchCol($column);
 			$options[$group] = array();
 			// Boolean column
 			if (count($results) == 2 && $results[0] == 0 && $results[1] == 1) {
@@ -154,9 +161,11 @@ function gallery_category_condition_form_submit($form, &$form_state) {
 	$condition = _create_condition_from_form($form_state);
 	gallery_category_condition_save($condition);
 	if ($form_state['values']['op'] == t('Update category condition')) {
-		drupal_set_message(t('Changes to the category condition have been saved.'));
+		drupal_set_message(
+			t('Changes to the category condition have been saved.'));
 	}
-	$form_state['redirect'] = 'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions';
+	$form_state['redirect'] = 'admin/config/media/gallery/categories/'
+			. $condition['category_id'] . '/conditions';
 }
 
 /**
@@ -170,7 +179,8 @@ function gallery_category_condition_add_form($form, &$form_state, $category) {
 	if ($_POST['condition']) {
 		if (!array_key_exists($_POST['condition'], $conds)) {
 			drupal_set_message(t('Condition not found.'), 'error');
-			$form_state['redirect'] = 'admin/config/media/gallery/categories/' . $category['id'] . '/conditions';
+			$form_state['redirect'] = 'admin/config/media/gallery/categories/'
+					. $category['id'] . '/conditions';
 			return $form;
 		}
 		$cond = $conds[$_POST['condition']];
@@ -179,9 +189,15 @@ function gallery_category_condition_add_form($form, &$form_state, $category) {
 				'condition' => $_POST['condition'],
 				'category_id' => $category['id']
 		);
-		$form = gallery_category_condition_form($form, &$form_state, $category, $condition);
+		$form = gallery_category_condition_form(
+			$form,
+			&$form_state,
+			$category,
+			$condition);
 	}
-	$title = t('Create new category condition of type %name', array('%name' => $condition['name']));
+	$title = t(
+		'Create new category condition of type %name',
+		array('%name' => $condition['name']));
 	drupal_set_title($title, PASS_THROUGH);
 
 	$form['actions']['submit'] = array(
@@ -198,9 +214,13 @@ function gallery_category_condition_add_form($form, &$form_state, $category) {
 function gallery_category_condition_add_form_submit($form, &$form_state) {
 	$condition = _create_condition_from_form($form_state);
 	$condition = gallery_category_condition_save($condition);
-	drupal_set_message(t('Category condition %name was created.', array('%name' => $condition['name'])));
+	drupal_set_message(
+		t(
+			'Category condition %name was created.',
+			array('%name' => $condition['name'])));
 	$form_state['values']['op'] = false;
-	$form_state['redirect'] = 'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions';
+	$form_state['redirect'] = 'admin/config/media/gallery/categories/'
+			. $condition['category_id'] . '/conditions';
 }
 
 /**
@@ -212,13 +232,20 @@ function gallery_category_condition_add_form_submit($form, &$form_state) {
  * @ingroup forms
  * @see gallery_category_condition_delete_form_submit()
  */
-function gallery_category_condition_delete_form($form, &$form_state, $category, $condition) {
+function gallery_category_condition_delete_form($form, &$form_state, $category,
+		$condition) {
 	$form_state['gallery_category_condition'] = $condition;
 
-	return confirm_form($form, t('Delete %name?', array('%name' => $condition['name'])),
-			'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions',
-			t('Are you sure you want to delete the category condition %name?', array('%name' => $condition['name'])),
-			t('Delete'), t('Cancel'));
+	return confirm_form(
+		$form,
+		t('Delete %name?', array('%name' => $condition['name'])),
+		'admin/config/media/gallery/categories/' . $condition['category_id']
+				. '/conditions',
+		t(
+			'Are you sure you want to delete the category condition %name?',
+			array('%name' => $condition['name'])),
+		t('Delete'),
+		t('Cancel'));
 }
 
 /**
@@ -228,8 +255,12 @@ function gallery_category_condition_delete_form_submit($form, &$form_state) {
 	$condition = $form_state['gallery_category_condition'];
 
 	gallery_category_condition_delete($condition);
-	drupal_set_message(t('Category condition %name was deleted.', array('%name' => $condition['name'])));
-	$form_state['redirect'] = 'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions';
+	drupal_set_message(
+		t(
+			'Category condition %name was deleted.',
+			array('%name' => $condition['name'])));
+	$form_state['redirect'] = 'admin/config/media/gallery/categories/'
+			. $condition['category_id'] . '/conditions';
 }
 
 /**
@@ -263,29 +294,40 @@ function theme_gallery_category_condition_list($variables) {
 	$rows = array();
 	foreach ($conditions as $condition) {
 		$cond = $conds[$condition['condition']];
-		if (is_array($cond['columns']) && is_array($cond['columns'][$condition['columnname']])) {
+		if (is_array($cond['columns'])
+				&& is_array($cond['columns'][$condition['columnname']])) {
 			$options = _gallery_column_options(
-					array('columns' => array($condition['columnname'] => $cond['columns'][$condition['columnname']])));
+				array('columns' => array($condition['columnname'] => $cond['columns'][$condition['columnname']])));
 			$condition['value'] = $options[$cond['columns'][$condition['columnname']][0]][$condition['columnname']
 					. '___' . $condition['value']];
 			$condition['columnname'] = $cond['columns'][$condition['columnname']][0];
 		}
 		$row = array();
-		$row[] = l($condition['name'],
-				'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions/edit/'
-						. $condition['id']);
-		$row[] = l($condition['columnname'],
-				'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions/edit/'
-						. $condition['id']);
-		$row[] = l($condition['value'],
-				'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions/edit/'
-						. $condition['id']);
-		$row[] = array_key_exists('columns', $cond) ? l(t('edit'),
-						'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions/edit/'
-								. $condition['id']) : '';
-		$row[] = l(t('delete'),
-				'admin/config/media/gallery/categories/' . $condition['category_id'] . '/conditions/delete/'
-						. $condition['id']);
+		$row[] = l(
+			$condition['name'],
+			'admin/config/media/gallery/categories/'
+					. $condition['category_id'] . '/conditions/edit/'
+					. $condition['id']);
+		$row[] = l(
+			$condition['columnname'],
+			'admin/config/media/gallery/categories/'
+					. $condition['category_id'] . '/conditions/edit/'
+					. $condition['id']);
+		$row[] = l(
+			$condition['value'],
+			'admin/config/media/gallery/categories/'
+					. $condition['category_id'] . '/conditions/edit/'
+					. $condition['id']);
+		$row[] = array_key_exists('columns', $cond) ? l(
+					t('edit'),
+					'admin/config/media/gallery/categories/'
+							. $condition['category_id'] . '/conditions/edit/'
+							. $condition['id']) : '';
+		$row[] = l(
+			t('delete'),
+			'admin/config/media/gallery/categories/'
+					. $condition['category_id'] . '/conditions/delete/'
+					. $condition['id']);
 		$rows[] = $row;
 	}
 
@@ -293,18 +335,27 @@ function theme_gallery_category_condition_list($variables) {
 		$rows[] = array(
 				array(
 						'colspan' => 6,
-						'data' => t('There are currently no conditions for this category.')
+						'data' => t(
+							'There are currently no conditions for this category.')
 				)
 		);
 	}
 
 	$options = '';
 	foreach ($conds as $value => $cond)
-		$options .= '<option value="' . $value . '">' . $cond['name'] . '</option>';
-	$add_form = '<form action="' . url('admin/config/media/gallery/categories/' . $category['id'] . '/conditions/add')
-			. '" method="post">' . '<select name="condition" size="1">' . $options . '</select>'
-			. '<input type="submit" value="' . t('Create condition') . '" name="submit" />' . '</form>';
-	return $add_form . theme('table', array('header' => $header,
-					'rows' => $rows
-			));
+		$options .= '<option value="' . $value . '">' . $cond['name']
+				. '</option>';
+	$add_form = '<form action="'
+			. url(
+				'admin/config/media/gallery/categories/' . $category['id']
+						. '/conditions/add') . '" method="post">'
+			. '<select name="condition" size="1">' . $options . '</select>'
+			. '<input type="submit" value="' . t('Create condition')
+			. '" name="submit" />' . '</form>';
+	return $add_form
+			. theme(
+				'table',
+				array('header' => $header,
+						'rows' => $rows
+				));
 }
