@@ -303,7 +303,7 @@ function area_address_hidden_form() {
 			'#suffix' => '</div>'
 	);
 	$form['addressdata']['fieldname'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#size' => 50,
 			'#attributes' => array(
 					'id' => 'hiddenfield-name',
@@ -318,56 +318,56 @@ function area_address_hidden_form() {
 			),
 	);
 	$form['addressdata']['township'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-township',
 					'name' => 'township'
 			),
 	);
 	$form['addressdata']['canton'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-canton',
 					'name' => 'canton'
 			),
 	);
 	$form['addressdata']['altitude'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-altitude',
 					'name' => 'altitude'
 			),
 	);
 	$form['addressdata']['country'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-country',
 					'name' => 'country'
 			),
 	);
 	$form['addressdata']['latitude'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-latitude',
 					'name' => 'latitude'
 			),
 	);
 	$form['addressdata']['longitude'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-longitude',
 					'name' => 'longitude'
 			),
 	);
 	$form['addressdata']['area-coords'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-area-coordinates',
 					'name' => 'area-coords'
 			),
 	);
 	$form['addressdata']['area_type'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-area-type',
 					'name' => 'area_type'
