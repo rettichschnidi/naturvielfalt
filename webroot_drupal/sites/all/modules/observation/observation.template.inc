@@ -1,8 +1,12 @@
 
 <?php
 // function observation_new_form($form, $form_state) {
-function observation_new_form($action) {
+function observation_form($observation_id = false) {
 	global $user;
+
+	if($observation_id){
+
+	}
 
 	$form_id = "observation_form";
 
@@ -43,6 +47,8 @@ function observation_new_form($action) {
 					'style' => 'width: 95%;'
 			)
 	);
+
+	$form['div']['hiddenfields'] = area_address_hidden_form();
 
 	$form['div']['map'] = array(
 			'#theme' => 'area',
