@@ -97,7 +97,7 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 	foreach ($results as $result){
 		$selected = "";
 		if($selected_id && $selected_id == $result->id) $selected = " selected";
-		$html .= '<option value="'.$result->id.'"'.$selected.'>'.t($result->name).'</option>';
+		$html .= '<option value="'.$result->id.'" id="artgroup_detmethod_value_'.$result->id.'" style="display: none;" '.$selected.'>'.t($result->name).'</option>';
 	}
 	return $html;
 }
@@ -178,10 +178,10 @@ function organism_artgroup_get_attribute($attribute_id){
  */
 function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $html_after_desc = false, $html_before_form = false, $html_after_form = false){
 	$output = "";
-	if($html_before_desc) $output .= $html_before_desc;
-	$output .= t($form['name'].':');
 	$name_trimd = str_replace(' ', '', $form['name']);
 	$form_name = 'id="attributes_'.$name_trimd.'" name="attributes['.$form['id'].']"';
+	if($html_before_desc) $output .= str_replace('#id#', 'id="attributes_'.$name_trimd.'_bf', $html_before_desc);
+	$output .= t($form['name'].':');
 	if($html_after_desc) $output .= $html_after_desc;
 	if($html_before_form) $output .= $html_before_form;
 
