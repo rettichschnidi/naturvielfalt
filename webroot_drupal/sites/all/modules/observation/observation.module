@@ -22,6 +22,19 @@ function observation_menu() {
 					'access observation'
 			),
 			'file' => 'singleobservation.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	);
+	$items['singleobservation/s'] = array(
+			'title' => t('Show all singleobservations'),
+			'description' => t('Display a wizard to add a new singleobservation'),
+			'page callback' => 'singleobservation_view_list',
+			'access arguments' => array(
+					'access observation'
+			),
+			'file' => 'singleobservation.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 	);
 	$items['singleobservation/new'] = array(
 			'title' => t('Add a new singleobservation'),
@@ -30,6 +43,8 @@ function observation_menu() {
 			'access arguments' => array(
 					'create observation'
 			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'singleobservation.inc',
 	);
 	$items['observation/save'] = array(
