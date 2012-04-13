@@ -93,7 +93,7 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 
 	if(!$as_html_option) return $results;
 
-	$html = '<option value="0">'.t('Not definied').'</option>';
+	$html = '<option value="0" id="artgroup_detmethod_value_0">'.t('Not definied').'</option>';
 	foreach ($results as $result){
 		$selected = "";
 		if($selected_id && $selected_id == $result->id) $selected = " selected";
@@ -180,7 +180,7 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
 	$output = "";
 	$name_trimd = str_replace(' ', '', $form['name']);
 	$form_name = 'id="attributes_'.$name_trimd.'" name="attributes['.$form['id'].']"';
-	if($html_before_desc) $output .= str_replace('#id#', 'id="attributes_'.$name_trimd.'_bf', $html_before_desc);
+	if($html_before_desc) $output .= str_replace('#id#', 'attributes_tr_'.$form['id'], $html_before_desc);
 	$output .= t($form['name'].':');
 	if($html_after_desc) $output .= $html_after_desc;
 	if($html_before_form) $output .= $html_before_form;
