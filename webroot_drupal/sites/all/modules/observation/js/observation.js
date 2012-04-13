@@ -91,18 +91,21 @@ jQuery(document).ready(function() {
 		};
 
 		observation.hideDetMethods = function(){
-			$("determination_method_id").each(function () {
-                alert($(this).text());
+			$("#determination_method_id option").each(function () {
+                $(this).css('display','none');
               });
+			observation.showDetMethod('0');
 		};
 		observation.showDetMethod = function(id){
 			$('#artgroup_detmethod_value_'+id).css('display','block');
 		};
 		observation.hideAttributes = function(){
-			
+			$("tr[id^='attributes_tr_']").each(function () {
+                $(this).css('display','none');
+              });
 		};
 		observation.showAttribute = function(id){
-			
+			$('#attributes_tr_'+id).css('display','table-row');
 		};
 
 

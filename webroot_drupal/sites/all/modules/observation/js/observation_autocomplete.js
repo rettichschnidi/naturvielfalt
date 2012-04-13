@@ -17,6 +17,8 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 		$( "#species_autocomplete" ).html('');
 		$( "#observation_found_as_latin" ).val('false');
 		$( "#observation_found_as_lang" ).val('false');
+		observation.hideDetMethods();
+		observation.hideAttributes();
 		if(autocomplete.request) {
 			autocomplete.request.abort();
 		}
@@ -61,6 +63,13 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 			$( "#organismn_id" ).val(ui.item.id);
 //			$( "#organismn_autocomplete" ).val(ui.item.label_latin);
 			$( "#species_autocomplete" ).html(ui.item.label_latin);
+		}
+		
+		for (var i in ui.item.attributes){
+			observation.showAttribute(ui.item.attributes[i]);
+		}
+		for (var i in ui.item.det_methods){
+			observation.showDetMethod(ui.item.det_methods[i]);
 		}
 		
 //		alert('lang:' + ui.item.langfounded + ' latin:' + ui.item.latinfounded);
