@@ -669,7 +669,7 @@ function organism_search_organism_json($classification = false, $term = false, $
 				FROM organism AS o
 				INNER JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				INNER JOIN organism_scientific_name AS osn ON osn.organism_id = o.id
-				INNER JOIN organism_artgroup_subscription AS oas ON oas.organism_id=o.id
+				LEFT JOIN organism_artgroup_subscription AS oas ON oas.organism_id=o.id
 				'.$artgroup_join.'
 				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
 				ORDER BY o.id
@@ -678,8 +678,11 @@ function organism_search_organism_json($classification = false, $term = false, $
 
 	$result = db_query($query, $params);
 	foreach ($result as $record) {
-		$artg_attr = db_query("SELECT organism_artgroup_attr_id id FROM organism_artgroup_attr_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_attr_id")->fetchCol();
-		$det_methods = db_query("SELECT organism_artgroup_detmethod_id id FROM organism_artgroup_detmethod_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_detmethod_id")->fetchCol();
+		$artg_attr = ''; $det_methods = '';
+		if($record->artg_id){
+			$artg_attr = db_query("SELECT organism_artgroup_attr_id id FROM organism_artgroup_attr_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_attr_id")->fetchCol();
+			$det_methods = db_query("SELECT organism_artgroup_detmethod_id id FROM organism_artgroup_detmethod_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_detmethod_id")->fetchCol();
+		}
 		$organism = array(
 				'id' => $record -> organism_id,
 				'label' => strval($record -> ol_name),
