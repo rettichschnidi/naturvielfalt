@@ -14,6 +14,9 @@ global $user;
 	$observation = array();
 	$observation['m_time'] = time();
 
+	/**
+	 * check the organism id
+	 */
 	$organismn_id = $observation['organism_id'] = $values['organismn_id'];
 	if($organismn_id < 1 || empty($organismn_id)){
 		$error = true;
@@ -122,6 +125,25 @@ global $user;
 // 		$output['attr'][] = $attribute;
 	}
 
+
+	/**
+	 * check the map data
+	 */
+
+	if(filter_xss($values['coordinate']) == ""){
+		$error = true;
+		$message[] = t('Please mark a point on the map');
+	}
+
+	$geometry['zip'] = intval(filter_xss($values['zip']));
+	$geometry['canton'] = filter_xss($values['canton']);
+	$geometry['country'] = filter_xss($values['country']);
+	$geometry['township'] = filter_xss($values['township']);
+	$geometry['altitude'] = intval(filter_xss($values['altitude']));
+	$geometry['area_points'] = filter_xss($values['coordinate']);
+	$geometry['type'] = 'marker';
+	
+
 // 	check_plain($text)
 
 	if(!$error){
@@ -134,6 +156,7 @@ global $user;
 		 * Save the geometry and get the id
 		 */
 		// $geometry_id = area_save_geometry_blablablab();
+		$observation['area_geometry_id'] = area_create_geometry($geometry);
 
 		/**
 		 * save the observation
