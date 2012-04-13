@@ -20,7 +20,7 @@ function Area(map_id) {
 	// points to the currently selected element
 	this.selectedElement = undefined;
 	// points to last created element
-	this.newestElement = undefined;
+	this.newestElement = null;
 	// contains all the overlays currently shown on the map
 	this.overlayData = [];
 	this.overlayElements = [];
@@ -213,7 +213,7 @@ function Area(map_id) {
 		});
 		// move marker a little bit down, (approximately)
 		// centers the infowindow
-		this.googlemap.panBy(0, -150);
+		this.googlemap.panBy(0, -250);
 		infowindow.open(this.googlemap, this.currentElement);
 	};
 
@@ -240,7 +240,7 @@ function Area(map_id) {
 
 		// move marker a little bit down, (approximately)
 		// centers the infowindow
-		this.googlemap.panBy(0, -150);
+		this.googlemap.panBy(0, -250);
 		infowindow.open(this.googlemap, overlayElement);
 	};
 
@@ -304,7 +304,7 @@ function Area(map_id) {
 			infowindow.setPosition(this.getPosition());
 			map = this.getMap();
 			map.setCenter(this.getPosition());
-			map.panBy(0, -200);
+			map.panBy(0, -250);
 			if (area.visibleInfoWindow) {
 				area.visibleInfoWindow.close();
 			}

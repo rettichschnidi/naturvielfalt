@@ -303,7 +303,7 @@ function area_address_hidden_form() {
 			'#suffix' => '</div>'
 	);
 	$form['addressdata']['fieldname'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#size' => 50,
 			'#attributes' => array(
 					'id' => 'hiddenfield-name',
@@ -318,56 +318,56 @@ function area_address_hidden_form() {
 			),
 	);
 	$form['addressdata']['township'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-township',
 					'name' => 'township'
 			),
 	);
 	$form['addressdata']['canton'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-canton',
 					'name' => 'canton'
 			),
 	);
 	$form['addressdata']['altitude'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-altitude',
 					'name' => 'altitude'
 			),
 	);
 	$form['addressdata']['country'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-country',
 					'name' => 'country'
 			),
 	);
 	$form['addressdata']['latitude'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-latitude',
 					'name' => 'latitude'
 			),
 	);
 	$form['addressdata']['longitude'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-longitude',
 					'name' => 'longitude'
 			),
 	);
 	$form['addressdata']['area-coords'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-area-coordinates',
 					'name' => 'area-coords'
 			),
 	);
 	$form['addressdata']['area_type'] = array(
-			'#type' => 'textfield',
+			'#type' => 'hidden',
 			'#attributes' => array(
 					'id' => 'hiddenfield-area-type',
 					'name' => 'area_type'
@@ -475,11 +475,12 @@ function area_get_postgis_geometry_object($areaType = NULL,
  * 	 - 'country'
  * 	 - 'township'
  * 	 - 'altitude'
- * 	 - 'area_points' JSON with all coordinates (mandatory)
+ * 	 - 'area_points' JSON-string with all coordinates (mandatory)
  * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
  * @param boolean $coordinates_are_already_lng_lat
  * 	True if area_points are already in lng/lat format, false otherwise (default)
- * @return integer New geometry id
+ * @return integer New geometry id or false if a failure occurred
+ * @note For an example usage, have a look at area_create_new_area()
  */
 function area_create_geometry($data = array(),
 		$coordinates_are_already_lng_lat = false) {
