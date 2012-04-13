@@ -12,9 +12,7 @@
 
 jQuery(document).ready(
 		function() {
-			var lastOverlay = false;
-
-			var drawingManager = new google.maps.drawing.DrawingManager({
+			areabasic.drawingManager = new google.maps.drawing.DrawingManager({
 				drawingMode : google.maps.drawing.OverlayType.MARKER,
 				// show the tools
 				drawingControl : true,
@@ -33,26 +31,41 @@ jQuery(document).ready(
 
 			var update = function() {
 				jQuery('#' + coordinate_storage_id).val(
-						JSON.stringify(lastOverlay.overlay
+						JSON.stringify(areabasic.newestElement.overlay
 								.getJsonCoordinates()));
-				updateHiddenfields(lastOverlay);
+				updateHiddenfields(areabasic.newestElement);
 			};
 			
 			google.maps.event.addListener(
-					drawingManager,
+					areabasic.drawingManager,
 					'overlaycomplete',
 					function(overlay) {
-						if (lastOverlay) {
-							lastOverlay.overlay.setMap(null);
+						if (areabasic.newestElement) {
+							areabasic.newestElement.overlay.setMap(null);
 						}
-						lastOverlay = overlay;
-						lastOverlay.overlay.setupGeometryChangedEvent();
+						areabasic.newestElement = overlay;
+						areabasic.newestElement.overlay.setupGeometryChangedEvent();
 						this.setDrawingMode(null);
 						overlay.overlay.setEditable(true);
 						update();
 						
 						google.maps.event.addListener(
-								lastOverlay.overlay,
+								areabasic.newestElement.overlay,
+								'geometry_changed',
+								update);
+					});
+			google.maps.event.addListener(
+					areabasic,
+					'overlaycomplete',
+					function() {
+						this.newestElement.overlay.setupGeometryChangedEvent();
+						this.newestElement.overlay.setMap(areabasic.googlemap);
+						this.drawingManager.setDrawingMode(null);
+						this.newestElement.overlay.setEditable(true);
+						update();
+						
+						google.maps.event.addListener(
+								this.newestElement.overlay,
 								'geometry_changed',
 								update);
 					});
