@@ -2,6 +2,14 @@
 // Load all content functions for Gallery.
 module_load_include('inc', 'gallery', 'gallery.content');
 
+define('ADMINISTER_RATING_TYPES', 'administer rating types');
+define('ADMINISTER_CATEGORIES', 'administer categories');
+define('ADD_GALLERY_IMAGES', 'add gallery images');
+define('MANAGE_GALLERY_MEDIAS', 'manage gallery medias');
+define('RATE_GALLERY_MEDIAS', 'rate gallery medias');
+define('VIEW_GALLERY_IMAGES', 'view gallery images');
+define('VIEW_HIDDEN_GALLERY_IMAGES', 'view hidden gallery images');
+
 /**
  * Implements hook_block_info().
  */
@@ -17,6 +25,7 @@ function gallery_block_info() {
  */
 function gallery_menu() {
 	$items = array();
+	/* Set filesize and minimum ranking for pics to show up */
 	$items['admin/config/media/gallery'] = array(
 			'title' => t('Gallery'),
 			'description' => t('Configuration for Gallery module'),
@@ -25,7 +34,7 @@ function gallery_menu() {
 					'gallery_form'
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.inc',
@@ -38,7 +47,7 @@ function gallery_menu() {
 					'gallery_form'
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -52,7 +61,7 @@ function gallery_menu() {
 				'List the current gallery rating types on the site.'),
 			'page callback' => 'gallery_rating_type_list',
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -66,7 +75,7 @@ function gallery_menu() {
 					'gallery_rating_type_add_form'
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.ratingtypes.inc',
@@ -80,7 +89,7 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
@@ -93,7 +102,7 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
@@ -105,7 +114,7 @@ function gallery_menu() {
 				'List the current gallery categories on the site.'),
 			'page callback' => 'gallery_category_list',
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -119,7 +128,7 @@ function gallery_menu() {
 					'gallery_category_add_form'
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.categories.inc',
@@ -133,7 +142,7 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categories.inc',
 	);
@@ -146,7 +155,7 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categories.inc',
 	);
@@ -159,7 +168,7 @@ function gallery_menu() {
 					5
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.categoryoptions.inc',
@@ -173,7 +182,7 @@ function gallery_menu() {
 					5
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.categoryoptions.inc',
@@ -188,7 +197,7 @@ function gallery_menu() {
 					8
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
@@ -202,7 +211,7 @@ function gallery_menu() {
 					8
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
@@ -216,7 +225,7 @@ function gallery_menu() {
 					5
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.categoryconditions.inc',
@@ -230,7 +239,7 @@ function gallery_menu() {
 					5
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => 0,
 			'file' => 'gallery.admin.categoryconditions.inc',
@@ -245,7 +254,7 @@ function gallery_menu() {
 					8
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categoryconditions.inc',
 	);
@@ -259,7 +268,7 @@ function gallery_menu() {
 					8
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categoryconditions.inc',
 	);
@@ -406,7 +415,7 @@ function gallery_menu() {
 			'access callback' => 'gallery_access_callback',
 			'access arguments' => array(
 					1,
-					'rate gallery medias'
+					RATE_GALLERY_MEDIAS
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -418,7 +427,7 @@ function gallery_menu() {
 					4
 			),
 			'access arguments' => array(
-					'manage gallery medias'
+					MANAGE_GALLERY_MEDIAS
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -430,7 +439,7 @@ function gallery_menu() {
 					4
 			),
 			'access arguments' => array(
-					'manage gallery medias'
+					MANAGE_GALLERY_MEDIAS
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -447,7 +456,7 @@ function gallery_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 2,
 			'access arguments' => array(
-					'add gallery images'
+					ADD_GALLERY_IMAGES
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -461,7 +470,7 @@ function gallery_menu() {
 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'access arguments' => array(
-					'add gallery images'
+					ADD_GALLERY_IMAGES
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -537,35 +546,35 @@ function gallery_theme() {
  */
 function gallery_permission() {
 	return array(
-			'administer rating types' => array(
+			ADMINISTER_RATING_TYPES => array(
 					'title' => t('Administer rating types'),
 					'description' => t(
 						'Create and modify rating types for gallery medias.'),
 			),
-			'administer categories' => array(
+			ADMINISTER_CATEGORIES => array(
 					'title' => t('Administer categories'),
 					'description' => t(
 						'Create and modify categories for gallery medias.'),
 			),
-			'add gallery images' => array(
+			ADD_GALLERY_IMAGES => array(
 					'title' => t('Add gallery medias'),
 					'description' => t(
 						'Create and modify gallery medias of objects owned.'),
 			),
-			'manage gallery medias' => array(
+			MANAGE_GALLERY_MEDIAS => array(
 					'title' => t('Manage gallery medias'),
 					'description' => t(
 						'Create and modify gallery medias everywhere.'),
 			),
-			'rate gallery medias' => array(
+			RATE_GALLERY_MEDIAS => array(
 					'title' => t('Rate gallery medias'),
 					'description' => t('Place ratings for gallery medias.')
 			),
-			'view gallery images' => array(
+			VIEW_GALLERY_IMAGES => array(
 					'title' => t('View gallery medias'),
 					'description' => t('View gallery medias.')
 			),
-			'view hidden gallery images' => array(
+			VIEW_HIDDEN_GALLERY_IMAGES => array(
 					'title' => t('View hidden gallery medias'),
 					'description' => t(
 						'View gallery medias with rating lower than the boundary set in the gallery settings.')
@@ -722,7 +731,7 @@ function gallery_images($mediatype, $type = false, $id = false,
 		array_push($id_conditions, 'gi.item_type = \'' . $type . '\'');
 	if ($id_conditions)
 		array_push($conditions, '(' . implode(' AND ', $id_conditions) . ')');
-	if (!user_access('view hidden gallery images'))
+	if (!user_access(VIEW_HIDDEN_GALLERY_IMAGES))
 		array_push(
 			$required_conditions,
 			'((COALESCE(r.overallrating, 0) >= '
@@ -1678,7 +1687,7 @@ function gallery_rating_type_delete($type) {
  * @param string $type
  *   The type of object to be accessed
  */
-function gallery_access_callback($type, $permission = 'view gallery images') {
+function gallery_access_callback($type, $permission = VIEW_GALLERY_IMAGES) {
 	if (!_gallery_check_type_validity($type))
 		return false;
 	return user_access($permission);
@@ -1699,9 +1708,9 @@ function gallery_access_callback($type, $permission = 'view gallery images') {
 function gallery_edit_access_callback($type, $id, $image = false) {
 	if (!_gallery_check_type_validity($type))
 		return false;
-	if (user_access('manage gallery medias'))
+	if (user_access(MANAGE_GALLERY_MEDIAS))
 		return true;
-	if (!user_access('add gallery images'))
+	if (!user_access(ADD_GALLERY_IMAGES))
 		return false;
 	$types = _gallery_types();
 	if ($image) // check image ownership
@@ -1760,7 +1769,7 @@ function gallery_owner_access_callback($type, $id, $image = false) {
 
 function gallery_own_edit_access($owner) {
 	global $user;
-	return $user->uid == $owner->uid && user_access('add gallery images');
+	return $user->uid == $owner->uid && user_access(ADD_GALLERY_IMAGES);
 }
 
 /**
