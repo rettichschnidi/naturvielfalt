@@ -426,8 +426,8 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 		$params['type'] == 'POINT' || $params['type'] == 'LINESTRING'
 				|| $params['type'] == 'POLYGON');
 
-	assert($width);
-	assert($height);
+	assert($width > 0);
+	assert($height > 0);
 
 	/* Fill parameters with reasonable default values if none delivered */
 	/* Coordinates are from userinput, not from a GPS reciever */

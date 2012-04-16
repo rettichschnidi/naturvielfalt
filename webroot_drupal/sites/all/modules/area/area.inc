@@ -387,7 +387,7 @@ function area_address_hidden_form() {
  * @return array Array with two elements in CH1903: ['x'] => $x, ['y'] => $y
  */
 function area_convert_wgs84_to_ch1903($coordinates = NULL) {
-	assert($coordinates);
+	assert(is_array($coordinates));
 	assert(count($coordinates) == 2);
 
 	// extract the given wgs84 coordinates
