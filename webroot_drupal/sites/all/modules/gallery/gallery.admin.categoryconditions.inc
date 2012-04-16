@@ -191,7 +191,7 @@ function gallery_category_condition_add_form($form, &$form_state, $category) {
 		);
 		$form = gallery_category_condition_form(
 			$form,
-			&$form_state,
+			$form_state,
 			$category,
 			$condition);
 	}

@@ -7,6 +7,9 @@
 
 /**
  * Menu callback; Listing of all current gallery rating types.
+ * 
+ * @return
+ *   A form array
  */
 function gallery_rating_type_list() {
 	$page = array();
@@ -122,7 +125,7 @@ function gallery_rating_type_form_submit($form, &$form_state) {
 function gallery_rating_type_add_form($form, &$form_state) {
 	$form = gallery_rating_type_form(
 		$form,
-		&$form_state,
+		$form_state,
 		array('weight' => 1,
 				'role_id' => ''
 		));

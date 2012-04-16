@@ -106,7 +106,7 @@ function gallery_category_form_submit($form, &$form_state) {
  * @see gallery_category_add_form_submit()
  */
 function gallery_category_add_form($form, &$form_state) {
-	$form = gallery_category_form($form, &$form_state, array());
+	$form = gallery_category_form($form, $form_state, array());
 	$title = t('Create new category');
 	drupal_set_title($title, PASS_THROUGH);
 

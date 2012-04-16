@@ -103,7 +103,7 @@ function gallery_category_option_form_submit($form, &$form_state) {
 function gallery_category_option_add_form($form, &$form_state, $category) {
 	$form = gallery_category_option_form(
 		$form,
-		&$form_state,
+		$form_state,
 		$category,
 		array('category_id' => $category['id']));
 	$title = t('Create new category option');
