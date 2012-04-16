@@ -30,11 +30,11 @@ function area_new_area() {
  * The submitted results will be passed to area_create_new_area();
  * 
  * @param array $form
- * 	Drupal from
+ * 	Drupal form
  * @param array &$form_state
  *  An associative array containing the current state of the form.
  * @return array
- *  Drupal from
+ *  Drupal form
  */
 function area_new_areaname_form($form, &$form_state) {
 	$form = area_address_hidden_form();
