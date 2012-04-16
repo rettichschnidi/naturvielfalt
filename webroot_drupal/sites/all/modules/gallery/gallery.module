@@ -39,22 +39,12 @@ function gallery_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.inc',
 	);
+	/* Alias for 'admin/config/media/gallery' */
 	$items['admin/config/media/gallery/settings'] = array(
 			'title' => t('Global settings'),
-			'description' => t('Global configuration for the Gallery module'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'gallery_form'
-			),
-			'access arguments' => array(
-					ADMINISTER_RATING_TYPES
-			),
-			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'gallery.admin.inc',
+			'type' => MENU_DEFAULT_LOCAL_TASK
 	);
-
-	// Rating types
+	/* List all existing rating types */
 	$items['admin/config/media/gallery/rating-types'] = array(
 			'title' => t('Rating types'),
 			'description' => t(
@@ -67,6 +57,7 @@ function gallery_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
+	/* Create a new rating type */
 	$items['admin/config/media/gallery/rating-types/add'] = array(
 			'title' => t('Add rating type'),
 			'description' => t('Add a new rating type.'),
@@ -80,6 +71,7 @@ function gallery_menu() {
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
+	/* Edit an existing rating type */
 	$items['admin/config/media/gallery/rating-types/edit/%gallery_rating_type'] = array(
 			'title' => t('Edit rating type'),
 			'description' => t('Configure a rating type.'),
@@ -93,6 +85,7 @@ function gallery_menu() {
 			),
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
+	/* Delete an existing rating type */
 	$items['admin/config/media/gallery/rating-types/delete/%gallery_rating_type'] = array(
 			'title' => t('Delete rating type'),
 			'description' => t('Delete a rating type.'),
@@ -107,7 +100,7 @@ function gallery_menu() {
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
 
-	// Categories
+	/* Show all existing categories */
 	$items['admin/config/media/gallery/categories'] = array(
 			'title' => t('Categories'),
 			'description' => t(
@@ -120,6 +113,7 @@ function gallery_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'gallery.admin.categories.inc',
 	);
+	/* Create a new category */
 	$items['admin/config/media/gallery/categories/add'] = array(
 			'title' => t('Add category'),
 			'description' => t('Add a new category.'),
@@ -133,6 +127,7 @@ function gallery_menu() {
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.categories.inc',
 	);
+	/* Edit an existing category */
 	$items['admin/config/media/gallery/categories/edit/%gallery_category'] = array(
 			'title' => t('Edit category'),
 			'description' => t('Configure a category.'),
@@ -146,6 +141,7 @@ function gallery_menu() {
 			),
 			'file' => 'gallery.admin.categories.inc',
 	);
+	/* Delete an existing category */
 	$items['admin/config/media/gallery/categories/delete/%gallery_category'] = array(
 			'title' => t('Delete category'),
 			'description' => t('Delete a category.'),
@@ -159,7 +155,7 @@ function gallery_menu() {
 			),
 			'file' => 'gallery.admin.categories.inc',
 	);
-	// Category options
+	/* Show all options of a category */
 	$items['admin/config/media/gallery/categories/%gallery_category/options'] = array(
 			'title' => t('Edit category options'),
 			'description' => t('Configure a category\'s options.'),
@@ -173,6 +169,7 @@ function gallery_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
+	/* Create a new menu entry and add it to the option */
 	$items['admin/config/media/gallery/categories/%gallery_category/options/add'] = array(
 			'title' => t('Add category option'),
 			'description' => t('Add a new category option.'),
@@ -187,6 +184,7 @@ function gallery_menu() {
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
+	/* Edit an existing menu entry */
 	$items['admin/config/media/gallery/categories/%gallery_category/options/edit/%gallery_category_option'] = array(
 			'title' => t('Edit category option'),
 			'description' => t('Configure a category option.'),
@@ -201,6 +199,7 @@ function gallery_menu() {
 			),
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
+	/* Deleta an existing menu entry */
 	$items['admin/config/media/gallery/categories/%gallery_category/options/delete/%gallery_category_option'] = array(
 			'title' => t('Delete category option'),
 			'description' => t('Delete a category option.'),
@@ -216,7 +215,7 @@ function gallery_menu() {
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
 
-	// Category conditions
+	/* Category options */
 	$items['admin/config/media/gallery/categories/%gallery_category/conditions'] = array(
 			'title' => t('Edit category conditions'),
 			'description' => t('Configure a category\'s conditions.'),
@@ -273,7 +272,7 @@ function gallery_menu() {
 			'file' => 'gallery.admin.categoryconditions.inc',
 	);
 
-	// Generic gallery menu
+	/* Generic gallery menu */
 	$items['gallery/%/%/%'] = array(
 			'title' => t('Gallery'),
 			'page callback' => 'gallery_list',
@@ -1285,8 +1284,8 @@ function gallery_available_categories($type, $id) {
 									$c['source'],
 									's' . $i,
 									's' . $i . '."' . $c['source_key'] . '" = '
-											. ($i == 0 ? $alias
-													: 's' . ($i - 1)) . '."'
+											. ($i == 0 ? $alias : 's'
+													. ($i - 1)) . '."'
 											. $c['target_key'] . '"');
 							if ($i == count($conversion) - 1)
 								$query->condition('s' . $i . '.id', $id);
@@ -1423,6 +1422,7 @@ function gallery_category_save($category) {
  *   A category array.
  * @return
  *   TRUE on success.
+ * @todo If we just hat foreign key dependencies... :/
  */
 function gallery_category_delete($category) {
 	db_delete('gallery_category')->condition('id', $category['id'])
@@ -1625,11 +1625,11 @@ function gallery_rating_types() {
  *   The ID of the rating type.
  * @return
  *   A rating type array containing the following keys:
- *   - "grtid": The unique gallery rating type ID.
- *   - "name": The name of the rating type.
- *   - "description": The description of the rating type.
- *   - "weight": The weight of the rating type.
- *   - "role": The role required for the rating type.
+ *   - 'grtid': The unique gallery rating type ID.
+ *   - 'name': The name of the rating type.
+ *   - 'description': The description of the rating type.
+ *   - 'weight': The weight of the rating type.
+ *   - 'role': The role required for the rating type.
  *   If the rating type ID is not valid, an empty array is returned.
  */
 function gallery_rating_type_load($id) {
@@ -1656,10 +1656,11 @@ function gallery_rating_type_load($id) {
  *   A rating type array. In the case of a new rating type, 'id' will be populated.
  */
 function gallery_rating_type_save($type) {
-	if (isset($type['id']) && is_numeric($type['id']))
+	if (isset($type['id']) && is_numeric($type['id'])) {
 		drupal_write_record('gallery_rating_type', $type, 'id');
-	else
+	} else {
 		drupal_write_record('gallery_rating_type', $type);
+	}
 	return $type;
 }
 
