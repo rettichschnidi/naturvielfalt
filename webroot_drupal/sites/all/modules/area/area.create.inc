@@ -90,7 +90,7 @@ function area_create_new_area($form, &$form_state) {
 		drupal_set_message(
 			t('New area could not be created.'),
 			'error');
-		drupal_goto('area/new');
+		$form_state['redirect'] = 'area/new';
 		return;
 	}
 
@@ -118,14 +118,14 @@ function area_create_new_area($form, &$form_state) {
 
 		drupal_set_message(
 			t('Area "@areaname" got created.', array('@areaname' => $name)));
-		drupal_goto('area/' . $area_id . '/show');
+		$form_state['redirect'] =  'area/' . $area_id . '/show';
 	} catch (Exception $e) {
 		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(
 			t('New area could not be created.'),
 			'error');
-		drupal_goto('area/new');
+		$form_state['redirect'] = 'area/new';
 	}
 }
 ?>
