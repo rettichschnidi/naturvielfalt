@@ -680,8 +680,8 @@ function organism_search_organism_json($classification = false, $term = false, $
 	foreach ($result as $record) {
 		$artg_attr = ''; $det_methods = '';
 		if($record->artg_id){
-			$artg_attr = db_query("SELECT organism_artgroup_attr_id id FROM organism_artgroup_attr_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_attr_id")->fetchCol();
-			$det_methods = db_query("SELECT organism_artgroup_detmethod_id id FROM organism_artgroup_detmethod_subscription WHERE organism_artgroup_id='".$record->artg_id."' GROUP BY organism_artgroup_detmethod_id")->fetchCol();
+			$artg_attr = organism_artgroup_get_attributes_ids($record->artg_id);
+			$det_methods = organism_artgroup_get_detmethods_ids($record->artg_id);
 		}
 		$organism = array(
 				'id' => $record -> organism_id,
