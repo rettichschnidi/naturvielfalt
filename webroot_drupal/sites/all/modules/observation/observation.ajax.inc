@@ -30,8 +30,8 @@ global $user;
 	 */
 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	$observation['organism_artgroup_id'] = NULL;
+	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 	if($artgroup_id > 0){
-		$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 		$determination_methods_db = organism_artgroup_get_determation_methods($artgroup_id);
 		$artgroup_id_checked = false;
 
@@ -142,7 +142,7 @@ global $user;
 	$geometry['altitude'] = intval(filter_xss($values['altitude']));
 	$geometry['area_points'] = filter_xss($values['coordinate']);
 	$geometry['type'] = 'marker';
-	
+
 
 // 	check_plain($text)
 
