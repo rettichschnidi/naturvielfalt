@@ -17,7 +17,6 @@ function gallery_block_info() {
  */
 function gallery_menu() {
 	$items = array();
-	// ADMIN MENU
 	$items['admin/config/media/gallery'] = array(
 			'title' => t('Gallery'),
 			'description' => t('Configuration for Gallery module'),
@@ -569,7 +568,7 @@ function gallery_permission() {
 			'view hidden gallery images' => array(
 					'title' => t('View hidden gallery medias'),
 					'description' => t(
-						'View gallery medias with rating lower than the boundry set in the gallery settings.')
+						'View gallery medias with rating lower than the boundary set in the gallery settings.')
 			)
 	);
 }
@@ -727,7 +726,7 @@ function gallery_images($mediatype, $type = false, $id = false,
 		array_push(
 			$required_conditions,
 			'((COALESCE(r.overallrating, 0) >= '
-					. variable_get('gallery_boundry', 0)
+					. variable_get('gallery_boundary', 0)
 					. ' AND gi.visible = 1) OR gi.owner_id = ' . $user->uid
 					. ')');
 	if ($crosslinked && $type) {
@@ -1277,8 +1276,8 @@ function gallery_available_categories($type, $id) {
 									$c['source'],
 									's' . $i,
 									's' . $i . '."' . $c['source_key'] . '" = '
-											. ($i == 0 ? $alias : 's'
-													. ($i - 1)) . '."'
+											. ($i == 0 ? $alias
+													: 's' . ($i - 1)) . '."'
 											. $c['target_key'] . '"');
 							if ($i == count($conversion) - 1)
 								$query->condition('s' . $i . '.id', $id);

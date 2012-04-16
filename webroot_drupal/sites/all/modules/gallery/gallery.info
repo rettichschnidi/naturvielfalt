@@ -6,7 +6,7 @@ version = "7.0-dev"
 dependencies[] = image
 dependencies[] = user
 dependencies[] = organism
-dependencies[] = inventory
+#dependencies[] = inventory
 dependencies[] = area
 
 configure = admin/config/media/gallery
