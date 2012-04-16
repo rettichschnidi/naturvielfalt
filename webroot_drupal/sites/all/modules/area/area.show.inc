@@ -215,8 +215,10 @@ function area_show_specific_area($areadata = NULL) {
  * Return a form which shows some important facts about a given area.
  * Intended for usage in a infowindow on a map.
  * 
- * @param array $form Drupal from
- * @param array $form Drupal form state
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @param array $areadata Area data
  * @return array Drupal form
  */

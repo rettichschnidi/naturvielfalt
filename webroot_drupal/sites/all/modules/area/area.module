@@ -117,7 +117,7 @@ function area_menu() {
 			'file' => 'area.json.inc',
 	);
 
-	/* Get a single area as json*/
+	/* Get a single area as json */
 	$items['area/%/json'] = array(
 			'title' => t('An area json'),
 			'description' => t('Get a single area as json'),
@@ -319,6 +319,10 @@ function area_menu() {
 /**
  * Example usage of theme area with action 'getcoordinate'
  * 
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @todo Delete when module singleobservation finished
  */
 function area_testing_form($form, &$form_state) {

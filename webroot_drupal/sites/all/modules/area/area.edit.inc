@@ -23,6 +23,15 @@ function area_edit_geometry($areadata = NULL) {
 	return drupal_get_form('area_edit_geometry_form', $areadata);
 }
 
+/**
+ * Create a form which lets the user edit the geometry of an area.
+ * 
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @param array $areadata Area data
+ */
 function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 	$output['helptext'] = array(
 			'#type' => 'markup',
@@ -42,6 +51,10 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 /**
  * Return a form which allows all textual data of an area to be edited
  * 
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @param array $areadata
  */
 function area_edit_form($form, &$form_state, $areadata = NULL) {
@@ -171,10 +184,12 @@ function area_edit_form_validate($form, &$form_state) {
 }
 
 /**
- * Save changes to the area texts
+ * Save changes to the area texts.
  *
  * @param array $form
+ *  Drupal form
  * @param array $form_state
+ *  An associative array containing the current state of the form.
  */
 function area_edit_form_submit($form, &$form_state) {
 	/* Escape values before submitting them to the database */

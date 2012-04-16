@@ -32,7 +32,7 @@ function area_new_area() {
  * @param array $form
  * 	Drupal from
  * @param array &$form_state
- *  Drupal form state
+ *  An associative array containing the current state of the form.
  * @return array
  *  Drupal from
  */
@@ -59,8 +59,10 @@ function area_new_areaname_form($form, &$form_state) {
 /**
  * Create a new area.
  * 
- * @param array $form Drupal form
- * @param array $form_state Drupal form state with all data
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @todo Maybe use the ajax version?
  */
 function area_create_new_area($form, &$form_state) {

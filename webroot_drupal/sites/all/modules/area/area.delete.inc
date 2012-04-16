@@ -10,6 +10,10 @@ module_load_include('inc', 'area', 'area');
 /**
  * Return a form which asks the user if he really wants to delete the area.
  * 
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @param array $areadata
  * @return array Drupal form
  */
@@ -38,7 +42,9 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
  * Delete area.
  *
  * @param array $form
+ *  Drupal form
  * @param array $form_state
+ *  An associative array containing the current state of the form.
  */
 function area_delete_form_submit($form, &$form_state) {
 	/* Escape values before submitting them to the database */
