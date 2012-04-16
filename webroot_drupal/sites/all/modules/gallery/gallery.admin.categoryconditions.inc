@@ -176,7 +176,7 @@ function gallery_category_condition_form_submit($form, &$form_state) {
  */
 function gallery_category_condition_add_form($form, &$form_state, $category) {
 	$conds = _gallery_category_conditions();
-	if ($_POST['condition']) {
+	if (isset($_POST['condition'])) {
 		if (!array_key_exists($_POST['condition'], $conds)) {
 			drupal_set_message(t('Condition not found.'), 'error');
 			$form_state['redirect'] = 'admin/config/media/gallery/categories/'
@@ -194,16 +194,20 @@ function gallery_category_condition_add_form($form, &$form_state, $category) {
 			$form_state,
 			$category,
 			$condition);
+		$title = t(
+			'Create new category condition of type %name',
+			array('%name' => $condition['name']));
+		drupal_set_title($title, PASS_THROUGH);
+		$form['actions']['submit'] = array(
+				'#type' => 'submit',
+				'#value' => t('Create new category condition'),
+		);
+	} else {
+		drupal_set_title(t('Create new category condition'));
+		drupal_set_message(t('Condition not found.'), 'error');
+			$form_state['redirect'] = 'admin/config/media/gallery/categories/'
+					. $category['id'] . '/conditions';
 	}
-	$title = t(
-		'Create new category condition of type %name',
-		array('%name' => $condition['name']));
-	drupal_set_title($title, PASS_THROUGH);
-
-	$form['actions']['submit'] = array(
-			'#type' => 'submit',
-			'#value' => t('Create new category condition'),
-	);
 
 	return $form;
 }
@@ -276,7 +280,6 @@ function gallery_category_condition_delete_form_submit($form, &$form_state) {
  * @ingroup themeable
  */
 function theme_gallery_category_condition_list($variables) {
-	$condition_types = $variables['condition_types'];
 	$conditions = $variables['conditions'];
 	$category = $variables['category'];
 

@@ -20,7 +20,6 @@ function gallery_rating_type_list() {
 				'gallery_rating_type_list',
 				array('types' => $types)),
 	);
-
 	return $page;
 }
 
@@ -35,8 +34,12 @@ function gallery_rating_type_list() {
  * @see gallery_rating_type_form_submit()
  */
 function gallery_rating_type_form($form, &$form_state, $type) {
-	$title = t('Edit %name', array('%name' => $type['name']));
-	drupal_set_title($title, PASS_THROUGH);
+	if(isset($type['name'])) {
+		$title = t('Edit %name', array('%name' => $type['name']));
+	}
+	if(isset($title)) {
+		drupal_set_title($title, PASS_THROUGH);
+	}
 
 	$form_state['gallery_rating_type'] = $type;
 	$form['#tree'] = TRUE;
@@ -45,14 +48,14 @@ function gallery_rating_type_form($form, &$form_state, $type) {
 			'#type' => 'textfield',
 			'#size' => '128',
 			'#title' => t('Name'),
-			'#default_value' => $type['name'],
+			'#default_value' => isset($type['name']) ? $type['name'] : '',
 			'#description' => t('The name of the rating type.'),
 			'#required' => TRUE,
 	);
 	$form['description'] = array(
 			'#type' => 'textarea',
 			'#title' => t('Description'),
-			'#default_value' => $type['description'],
+			'#default_value' => isset($type['description']) ? $type['description'] : '',
 			'#description' => t('The description of the rating type.'),
 			'#required' => FALSE,
 	);
@@ -92,15 +95,14 @@ function gallery_rating_type_form($form, &$form_state, $type) {
 	);
 	$form['actions']['submit'] = array(
 			'#type' => 'submit',
-			'#value' => t('Update rating type'),
-			'#access' => $editable,
+			'#value' => t('Update rating type')
 	);
-
 	return $form;
 }
 
 /**
  * Submit handler for saving a rating type.
+ * @see gallery_rating_type_form()
  */
 function gallery_rating_type_form_submit($form, &$form_state) {
 	$type = $form_state['gallery_rating_type'];
@@ -211,23 +213,18 @@ function theme_gallery_rating_type_list($variables) {
 	foreach ($types as $type) {
 		$row = array();
 		$role = 'None';
-		if ($type['role_id'] && $loaded = user_role_load($type['role_id']))
+		if ($type['role_id'] && $loaded = user_role_load($type['role_id'])) {
 			$role = $loaded->name;
-		$row[] = l(
-			$type['name'],
-			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(
-			$type['weight'],
-			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(
-			t($role),
-			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(
-			t('edit'),
-			'admin/config/media/gallery/rating-types/edit/' . $type['id']);
-		$row[] = l(
-			t('delete'),
-			'admin/config/media/gallery/rating-types/delete/' . $type['id']);
+		}
+		$editURL = 'admin/config/media/gallery/rating-types/edit/'
+				. $type['id'];
+		$deleteURL = 'admin/config/media/gallery/rating-types/delete/'
+				. $type['id'];
+		$row[] = l($type['name'], $editURL);
+		$row[] = l($type['weight'], $editURL);
+		$row[] = l(t($role), $editURL);
+		$row[] = l(t('edit'), $editURL);
+		$row[] = l(t('delete'), $deleteURL);
 		$rows[] = $row;
 	}
 

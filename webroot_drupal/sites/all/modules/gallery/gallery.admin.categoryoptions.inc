@@ -51,17 +51,18 @@ function gallery_category_option_list($category) {
  * @see gallery_category_option_form_submit()
  */
 function gallery_category_option_form($form, &$form_state, $category, $option) {
-	$title = t('Edit %name', array('%name' => $option['name']));
-	drupal_set_title($title, PASS_THROUGH);
-
-	$form_state['gallery_category_option'] = $option;
+	if (isset($option['name'])) {
+		$title = t('Edit %name', array('%name' => $option['name']));
+		drupal_set_title($title, PASS_THROUGH);
+	}
+	$form_state['gallery_category_option'] = isset($option) ? $option : NULL;
 	$form['#tree'] = TRUE;
 
 	$form['name'] = array(
 			'#type' => 'textfield',
 			'#size' => '128',
 			'#title' => t('Name'),
-			'#default_value' => $option['name'],
+			'#default_value' => isset($option['name']) ? $option['name'] : '',
 			'#description' => t('The name of the category option.'),
 			'#required' => TRUE,
 	);
@@ -73,7 +74,6 @@ function gallery_category_option_form($form, &$form_state, $category, $option) {
 	$form['actions']['submit'] = array(
 			'#type' => 'submit',
 			'#value' => t('Update category option'),
-			'#access' => $editable,
 	);
 
 	return $form;
