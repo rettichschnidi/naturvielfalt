@@ -61,6 +61,17 @@ function observation_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'singleobservation.inc',
 	);
+	$items['singleobservation/new/multiple'] = array(
+			'title' => t('Add new singleobservations'),
+			'description' => t('Display a form to add multiple singleobservations'),
+			'page callback' => 'singleobservation_new_multiple',
+			'access arguments' => array(
+					'create observation'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'singleobservation.inc',
+	);
 	$items['observation/save'] = array(
 			'title' => t('Save a observation'),
 			'description' => t(''),
