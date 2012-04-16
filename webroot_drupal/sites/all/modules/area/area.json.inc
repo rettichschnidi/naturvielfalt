@@ -8,7 +8,9 @@
 module_load_include('inc', 'area', 'area');
 
 /**
- * Generate a JSON with all areas that are visible to the user
+ * Generate a JSON with all areas which are available to the user.
+ * 
+ * @param $acl_level Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
  * @todo Include the user's nickname
  */
 function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
@@ -49,7 +51,11 @@ function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
 /**
  * Return one or all viewable areas as JSON.
  * 
- * @return JSON
+ * @param integer $area_id 
+ * 	Id of requested area
+ * @param integer $acl_level
+ * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
+ * @return string JSON
  */
 function area_json($area_id = false, $acl_level = 'ACL_READ') {
 	$areas = db_query(
@@ -128,9 +134,9 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 }
 
 /**
- * Take JSON and update area geometry
+ * Take JSON and update existing area geometry.
  * 
- * @param array $areadata
+ * @param array $areadata Area data
  */
 function area_updategeometry_json($areadata = NULL) {
 	assert($areadata != NULL);

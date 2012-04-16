@@ -27,7 +27,14 @@ function area_new_area() {
 
 /**
  * Return a form which allows the user to submit an area name.
- * The submitted results will pass area_create_new_area();
+ * The submitted results will be passed to area_create_new_area();
+ * 
+ * @param array $form
+ * 	Drupal from
+ * @param array &$form_state
+ *  Drupal form state
+ * @return array
+ *  Drupal from
  */
 function area_new_areaname_form($form, &$form_state) {
 	$form = area_address_hidden_form();
@@ -50,7 +57,7 @@ function area_new_areaname_form($form, &$form_state) {
 }
 
 /**
- * Create a new area
+ * Create a new area.
  * 
  * @param array $form Drupal form
  * @param array $form_state Drupal form state with all data

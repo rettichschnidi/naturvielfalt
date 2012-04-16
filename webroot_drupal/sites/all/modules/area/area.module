@@ -117,7 +117,7 @@ function area_menu() {
 			'file' => 'area.json.inc',
 	);
 
-	/* Get all available areas as json*/
+	/* Get a single area as json*/
 	$items['area/%/json'] = array(
 			'title' => t('An area json'),
 			'description' => t('Get a single area as json'),
@@ -318,6 +318,7 @@ function area_menu() {
 
 /**
  * Example usage of theme area with action 'getcoordinate'
+ * 
  * @todo Delete when module singleobservation finished
  */
 function area_testing_form($form, &$form_state) {
@@ -361,10 +362,10 @@ function area_theme() {
 					'variables' => array(
 							// Requested functionality:
 							//  'create': create a new area
-							//  'edit': edit an existing area ('area_id' has to be set)
-							//  'getcoordinate': get a coordinate (set a marker and fill
-							//		its position into a hidden field , 'coordinate_storage_id'
-							//		needs to be set)
+							//  'edit': edit an existing area geometry ('area_surface_id' has to be set)
+							//  'getcoordinate': get a position (set a marker and fill
+							//		its data into the hidden fields provided by area_address_hidden_form().
+							//		If 'coordinate_storage_id' given, this field will be updated as well.
 							'action' => NULL,
 							// enable searchbox
 							'search' => false,
@@ -372,6 +373,8 @@ function area_theme() {
 							'show' => false,
 							// set to an integer if an (existing) area should be highlighted
 							'area_id' => false,
+							// set to an integer if an area_surface should be edited
+							'area_surface_id' => false,
 							// wether to show the scale or not
 							'scalecontrol' => true,
 							// include a filed which shows/sets the CH1903 coordinates
@@ -384,7 +387,8 @@ function area_theme() {
 }
 
 /**
- * Define permissions which can be given to different roles
+ * Define permissions which can be given to different roles.
+ * 
  * @note Those permissions still have to obey to the acl permissions
  */
 function area_permission() {
@@ -439,6 +443,10 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 
 	$coordinates = json_decode($params['coordinates']);
 
+	/* A string with all the points, crafted to the needs of the google maps api
+	 * Example for a triangle:
+	* 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
+	**/
 	if ($type == 'POINT') {
 		$center = $coordinates[0][0] . ',' . $coordinates[0][1];
 		return 'http://maps.google.com/maps/api/staticmap?size=' . $width . 'x'
@@ -453,10 +461,6 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 				. '&maptype=hybrid&path=color:' . $color . '|weight:4|'
 				. implode('|', $points);
 	} else if ($type == 'POLYGON') {
-		/* A string with all the points, crafted to the needs of the google maps api
-		 * Example for a triangle:
-		 * 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
-		 **/
 		foreach ($coordinates as $coordinate) {
 			$points[] = implode(',', $coordinate);
 		}
@@ -468,11 +472,10 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 }
 
 /**
- * Check if user has admin access to this area
+ * Check if user has admin access to this area.
  *
- * @param array $areadata
+ * @param array $areadata Area data
  * @return boolean true if access ok, false if not
- * @todo Implementation
  */
 function area_admin_access($areadata = NULL) {
 	if ($areadata == NULL) {
@@ -486,11 +489,10 @@ function area_admin_access($areadata = NULL) {
 }
 
 /**
- * Check if user has write access to this area
+ * Check if user has write access to this area,
  *
- * @param array $areadata
+ * @param array $areadata Area data
  * @return boolean true if access ok, false if not
- * @todo Implementation
  */
 function area_write_access($areadata = NULL) {
 	if ($areadata == NULL || empty($areadata)) {
@@ -504,11 +506,10 @@ function area_write_access($areadata = NULL) {
 }
 
 /**
- * Check if user has read access to this area
+ * Check if user has read access to this area,
  *
- * @param array $areadata
+ * @param array $areadata Area data
  * @return boolean true if access ok, false if not
- * @todo Implementation
  */
 function area_read_access($areadata = NULL) {
 	if ($areadata == NULL || empty($areadata)) {
@@ -528,7 +529,7 @@ module_load_include('inc', 'area', 'area');
  * Return an array with all required information about an area.
  * This will be called for menuitems like this: 'area/%area/editgeometry'
  * @param string $arg
- * 		This string *should* acutally be an integer
+ * 		This string *should* actually be an integer
  * @return array $areadata
  */
 function area_load($arg) {

@@ -100,7 +100,8 @@ function area_show_all_areas($onlyMyAreas = false) {
 }
 
 /**
- * Show a specific area
+ * Show a specific area.
+ * 
  * @param integer $area_id
  * @return array Drupal form
  */
@@ -211,8 +212,12 @@ function area_show_specific_area($areadata = NULL) {
 }
 
 /**
- * Return a form which shows some important facts about a given area
- * @param array $areadata
+ * Return a form which shows some important facts about a given area.
+ * Intended for usage in a infowindow on a map.
+ * 
+ * @param array $form Drupal from
+ * @param array $form Drupal form state
+ * @param array $areadata Area data
  * @return array Drupal form
  */
 function area_overview_form($form, &$form_state, $areadata) {
@@ -228,6 +233,9 @@ function area_overview_form($form, &$form_state, $areadata) {
 				'coordinates' => false,
 				'surface_area' => false
 		));
+	/**
+	 * Display the "edit" button only if user has write permission to this area
+	 */
 	if (check_permission($areadata['acl_id'], variable_get('ACL_WRITE'))) {
 		$form['addressdata']['edit'] = array(
 				'#type' => 'markup',

@@ -8,9 +8,10 @@
 module_load_include('inc', 'area', 'area');
 
 /**
- * Return a form which asks the user if he really wants to delete the area
+ * Return a form which asks the user if he really wants to delete the area.
  * 
  * @param array $areadata
+ * @return array Drupal form
  */
 function area_delete_form($form, &$form_state, $areadata = NULL) {
 	assert(!empty($areadata));
@@ -34,18 +35,7 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
 }
 
 /**
- * Check if area can be deleted
- *
- * @param array $form
- * @param array $form_state
- */
-function area_delete_form_validate($form, &$form_state) {
-	// foobar does not exists
-	// drupal_set_message(t('This area is still in use.'), 'error');
-}
-
-/**
- * Delete area
+ * Delete area.
  *
  * @param array $form
  * @param array $form_state
