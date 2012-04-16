@@ -5,8 +5,20 @@ function observation_form($observation_id = false) {
 	global $user;
 
 	if($observation_id){
-
+		$observation = observation_get($observation_id);
+		print_r($observation);
 	}
+
+	if(!isset($observation['observation']['found_as_lang'])) $observation['observation']['found_as_lang'] = 'false';
+	if(!isset($observation['observation']['found_as_lat'])) $observation['observation']['found_as_lat'] = 'false';
+	if(!isset($observation['observation']['organism_artgroup_id'])) $observation['observation']['organism_artgroup_id'] = '';
+	if(!isset($observation['observation']['organism_id'])) $observation['observation']['organism_id'] = '';
+	if(!isset($observation['organism']['name_lat'])) $observation['organism']['name_lat'] = '';
+	if(!isset($observation['organism']['name_lang'])) $observation['organism']['name_lang'] = '';
+	isset($observation['observation']['date']) ? $timestamp = $observation['observation']['date'] : $timestamp = time();
+	if(!isset($observation['observation']['count'])) $observation['observation']['count'] = '1';
+	if(!isset($observation['observation']['observer'])) $observation['observation']['observer'] = $user->name;
+	if(!isset($observation['observation']['organism_artgroup_detmethod_id'])) $observation['observation']['organism_artgroup_detmethod_id'] = false;
 
 	$form_id = "observation_form";
 
@@ -66,28 +78,28 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 	$formcust .= '<div class="form-item form-type-textfield">'
 					.'<form onsubmit="javscript:observation.save();return false;" method="post" name="'.$form_id.'" id="'.$form_id.'">'
-					.'<input type="text" style="display: none; height: 0px;" id="organismn_id" name="organismn_id" value="">'
-					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="false">'
-					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="false">'
-					.'<input type="text" style="display: none; height: 0px;" name="artgroup" id="artgroup" value="">'
+					.'<input type="text" style="display: none; height: 0px;" id="organismn_id" name="organismn_id" value="'.$observation['observation']['organism_id'].'">'
+					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="'.$observation['observation']['found_as_lang'].'">'
+					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="'.$observation['observation']['found_as_lat'].'">'
+					.'<input type="text" style="display: none; height: 0px;" name="artgroup" id="artgroup" value="'.$observation['observation']['organism_artgroup_id'].'">'
 
 					.'<table class="form-item form-type-textfield">'
 						.'<tr><td class="observation_td">'
 								.'<span class="observation_title">'.t('Search for organsim or species').'</span><br>'
-									.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40">'
-									.'<br><span id="species_autocomplete"></span>'
+									.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="'.$observation['organism']['name_lang'].'">'
+									.'<br><span id="species_autocomplete">'.$observation['organism']['name_lat'].'</span>'
 							.'</td><td class="observation_td">'
 									.'<span class="observation_title">'.t('Filter on species group').'</span><br>'
-									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option().'</select>'
+									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option(false, 0, $observation['observation']['organism_artgroup_id']).'</select>'
 
 					.'</td></tr></table>'
 
 					.'<table class="form-item form-type-textfield" style="width: auto !important;">'
 
 						.'<tr>'
-						.'<td class="observation_subtitle">'.t('Date').'<br><input type="text" id="date" name="date" value="'.date('d.m.Y').'"></td>'
-						.'<td class="observation_subtitle">'.t('Count').'<br><input type="text" name="count" value="1"></td>'
-						.'<td class="observation_subtitle">'.t('Observer').'<br><input type="text" name="observer" value="'.$user->name.'"></td>'
+						.'<td class="observation_subtitle">'.t('Date').'<br><input type="text" id="date" name="date" value="'.date('d.m.Y',$timestamp).'"></td>'
+						.'<td class="observation_subtitle">'.t('Count').'<br><input type="text" name="count" value="'.$observation['observation']['count'].'"></td>'
+						.'<td class="observation_subtitle">'.t('Observer').'<br><input type="text" name="observer" value="'.$observation['observation']['observer'].'"></td>'
 						.'</tr><tr>'
 						.'<td class="observation_td">'.t('Please enter date for the observation').'</td>'
 						.'<td class="observation_td">'.t('Please enter number of found').'</td>'
@@ -103,14 +115,12 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 							</legend>
 							<div class="fieldset-wrapper">'
 
-									.'<table border=1><tr>'
-									.'<td>'.t('Determination method').':</td><td> <select name="determination_method_id">'
-									.'<div id="observation_determation_options">'
-									.organism_artgroup_get_determation_methods(false, true)
-									.'</div></select></td>'
+									.'<table><tr>'
+									.'<td>'.t('Determination method').':</td><td> <select name="determination_method_id" id="determination_method_id">'
+									.organism_artgroup_get_determation_methods(false, true, $observation['observation']['organism_artgroup_detmethod_id'])
+									.'</select></td>'
 									.'</tr>'
 
-							.'<tr><td>'.t('Attributes').'.</td></tr>.'
 							.'<div id="observation_attributes">'
 							.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>')
 							.'</div>'
