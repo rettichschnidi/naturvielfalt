@@ -1,14 +1,23 @@
-
 <?php
 // function observation_new_form($form, $form_state) {
-function observation_form($observation_id = false) {
-	global $user;
 
-	if($observation_id){
-		$observation = observation_get($observation_id);
-		print_r($observation);
+/**
+ * Show the form to add or edit a observation
+ * @param array $observation
+ */
+function observation_form($observation = false) {
+	global $user;
+	$hidden_fields_arr = array();
+// 	die(print_r($observationdata));
+	if($observation){
+// 		$observation = observation_get($observation_id);
+// 		print_r($observation);
+
+		$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
+		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 	}
 
+	// if not edit, set standart vlaues
 	if(!isset($observation['observation']['found_as_lang'])) $observation['observation']['found_as_lang'] = 'false';
 	if(!isset($observation['observation']['found_as_lat'])) $observation['observation']['found_as_lat'] = 'false';
 	if(!isset($observation['observation']['organism_artgroup_id'])) $observation['observation']['organism_artgroup_id'] = '';
@@ -21,6 +30,8 @@ function observation_form($observation_id = false) {
 	if(!isset($observation['observation']['organism_artgroup_detmethod_id'])) $observation['observation']['organism_artgroup_detmethod_id'] = false;
 
 	$form_id = "observation_form";
+
+	foreach ($hidden_fields_arr as $key => $value) $hidden_fields .= '<input type="text" style="display: none; height: 0px;" id="'.$key.'" name="'.$key.'" value="'.$value.'">';
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
@@ -82,7 +93,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="'.$observation['observation']['found_as_lang'].'">'
 					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="'.$observation['observation']['found_as_lat'].'">'
 					.'<input type="text" style="display: none; height: 0px;" name="artgroup" id="artgroup" value="'.$observation['observation']['organism_artgroup_id'].'">'
-
+					.@$hidden_fields
 					.'<table class="form-item form-type-textfield">'
 						.'<tr><td class="observation_td">'
 								.'<span class="observation_title">'.t('Search for organsim or species').'</span><br>'
@@ -117,12 +128,12 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 									.'<table><tr>'
 									.'<td>'.t('Determination method').':</td><td> <select name="determination_method_id" id="determination_method_id">'
-									.organism_artgroup_get_determation_methods(false, true, $observation['observation']['organism_artgroup_detmethod_id'])
+									.organism_artgroup_get_determation_methods(false, true, $observation['observation']['organism_artgroup_detmethod_id'], $observation['detmethods_vis'])
 									.'</select></td>'
 									.'</tr>'
 
 							.'<div id="observation_attributes">'
-							.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>')
+							.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>', false, $observation['attributes'])
 							.'</div>'
 
 							.'</table></div></fieldset>'
@@ -131,6 +142,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
 			.'</div>';
+
 
 	/**
 	 * Drupal form handling, should be that
@@ -191,34 +203,64 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 // 	);
 
 
-	/**
-	 * Area map include
-	 */
-	$form['test'] = array(
-			'#type' => 'textfield',
-			'#title' => 'Coordinates as JSON',
-			'#attributes' => array(
-					'id' => 'meineid'
-			),
-	);
+// 	/**
+// 	 * Area map include
+// 	 */
+// 	$form['test'] = array(
+// 			'#type' => 'textfield',
+// 			'#title' => 'Coordinates as JSON',
+// 			'#attributes' => array(
+// 					'id' => 'meineid'
+// 			),
+// 	);
 
-	$form['div'] = array(
-			'#type' => 'fieldset',
-			'#title' => "Google Map",
-			'#attributes' => array(
-					'style' => 'width: 95%;'
-			)
-	);
+// 	$form['div'] = array(
+// 			'#type' => 'fieldset',
+// 			'#title' => "Google Map",
+// 			'#attributes' => array(
+// 					'style' => 'width: 95%;'
+// 			)
+// 	);
 
-	$form['div']['map'] = array(
-			'#theme' => 'area',
-			'#action' => 'getcoordinate',
-			'#coordinate_storage_id' => 'meineid',
-			'#search' => true,
-			'#ch1903' => true
-	);
-	$formcust .= drupal_render($form);
+// 	$form['div']['map'] = array(
+// 			'#theme' => 'area',
+// 			'#action' => 'getcoordinate',
+// 			'#coordinate_storage_id' => 'meineid',
+// 			'#search' => true,
+// 			'#ch1903' => true
+// 	);
+// 	$formcust .= drupal_render($form);
 // 	return $form;
 
 	return $formcust;
+}
+
+
+function observation_acl_template($observation = NULL){
+	$output = array();
+	$defaults = array(
+			array(
+					'type' => variable_get("ACL_READ"),
+					'name' => t('Read'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_WRITE"),
+					'name' => t('Write'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_ADMIN"),
+					'name' => t('Administration'),
+					'value' => FALSE,
+			)
+	);
+
+	$output['acl'] = array(
+			'#theme' => 'c_acl',
+			'#defaults' => $defaults,
+			'#acl_id' => $observation['observation']['acl_id'],
+			'#add_element' => true,
+	);
+	return $output;
 }
