@@ -65,7 +65,7 @@ class Db {
 	 * @return array
 	 */
 
-	public function query($query, $typesArray, $valuesArray, $isSelect = true, $assoziativeResult = true) {
+	public function query($query, $typesArray = array(), $valuesArray = array(), $isSelect = true, $assoziativeResult = true) {
 		global $errors;
 		$results = false;
 		if ($isSelect) {
