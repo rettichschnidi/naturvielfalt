@@ -86,9 +86,11 @@ function organism_artgroup_get_sql_from_id($ids_as_array, $col_name, $and_or_or 
  * optionally as html <option>
  * @param int $artgroup_id
  * @param boolean $as_html_option
+ * @param int selected_id
+ * @param array visisible_arr id's as value
  * @return object or string
  */
-function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false, $selected_id = false){
+function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false, $selected_id = false, $visisible_arr = false){
 	$artgroup_filter = "";
 	if($artgroup_id){
 		if($artgroup_id > 0 && $artgroup_id < 1000000){
@@ -109,7 +111,9 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 	foreach ($results as $result){
 		$selected = "";
 		if($selected_id && $selected_id == $result->id) $selected = ' selected="selected"';
-		$html .= '<option value="'.$result->id.'" id="artgroup_detmethod_value_'.$result->id.'" style="display: none;" '.$selected.'>'.t($result->name).'</option>';
+		$style = 'style="display: none;" ';
+		if($visisible_arr && array_search($result->id, $visisible_arr)) $style = 'style="display: block;" ';
+		$html .= '<option value="'.$result->id.'" id="artgroup_detmethod_value_'.$result->id.'"  '.$style.$selected.'>'.t($result->name).'</option>';
 	}
 	return $html;
 }
@@ -125,7 +129,7 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
  * @return array OR string
  */
 function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false, $html_before_desc = false
-		, $html_after_desc = false, $html_before_form = false, $html_after_form = false, $attribute_id = false){
+		, $html_after_desc = false, $html_before_form = false, $html_after_form = false, $attribute_id = false, $attributes_selected = false){
 	$artgroup_filter = "";
 	if($artgroup_id){
 		if($artgroup_id > 0 && $artgroup_id < 1000000){
@@ -166,7 +170,7 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 
 	$attributes_with_values_html = "";
 	foreach ($attributes_with_values as $tmp){
-		$attributes_with_values_html .= organism_artgroup_parse_html_forms($tmp, $html_before_desc, $html_after_desc, $html_before_form, $html_after_form);
+		$attributes_with_values_html .= organism_artgroup_parse_html_forms($tmp, $html_before_desc, $html_after_desc, $html_before_form, $html_after_form, $attributes_selected);
 	}
 	return $attributes_with_values_html;
 
@@ -190,11 +194,18 @@ function organism_artgroup_get_attribute($attribute_id){
  * @param string $html_after_form
  * @return string
  */
-function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $html_after_desc = false, $html_before_form = false, $html_after_form = false){
+function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $html_after_desc = false,
+		$html_before_form = false, $html_after_form = false, $attributes_selected = false){
 	$output = "";
+	$predefinied_value = '';
 	$name_trimd = str_replace(' ', '', $form['name']);
 	$form_name = 'id="attributes_'.$name_trimd.'" name="attributes['.$form['id'].']"';
 	if($html_before_desc) $output .= str_replace('#id#', 'attributes_tr_'.$form['id'], $html_before_desc);
+	if($attributes_selected && array_key_exists($form['id'], $attributes_selected)){
+		$output = str_replace('display: none;', 'display: table-row;', $output);
+		$predefinied_value = $attributes_selected[$form['id']]['value'];
+		$predefinied_value_id = $attributes_selected[$form['id']]['value_id'];
+	}
 	$output .= t($form['name'].':');
 	if($html_after_desc) $output .= $html_after_desc;
 	if($html_before_form) $output .= $html_before_form;
@@ -202,24 +213,26 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
 	switch ($form['type_format']){
 
 		case 'string':
-			$output .= '<input type="text" '.$form_name.'>';
+			$output .= '<input type="text" '.$form_name.' value="'.$predefinied_value.'">';
 			break;
 
 		case 'dropdown':
 			$output .= '
 			<select '.$form_name.'><option value="0">'.t('Nicht definiert').'</option>';
 			foreach ($form['values'] as $key => $value){
-				$output .= '<option value="'.$key.'">'.$value.'</option>';
+				$selected = '';
+				if($predefinied_value_id && $predefinied_value_id == $key) $selected = ' selected="selected"';
+				$output .= '<option value="'.$key.'" '.$selected.'>'.$value.'</option>';
 			}
 			$output .= '</select>';
 			break;
 
 		case 'date':
-			$output .= '<input type="date" '.$form_name.'>';
+			$output .= '<input type="date" '.$form_name.' value="'.$predefinied_value.'">';
 			break;
 
 		case 'int':
-			$output .= '<input type="number" '.$form_name.'>';
+			$output .= '<input type="number" '.$form_name.' value="'.$predefinied_value.'">';
 			break;
 
 	}
