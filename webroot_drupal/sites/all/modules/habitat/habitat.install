@@ -1,0 +1,54 @@
+<?php
+/**
+ * do not modify habitat_schema, it is generated! 
+ */
+function habitat_schema() {
+	return array (
+  'habitat' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'PK',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'label' => 
+      array (
+        'description' => 'Label inkl. Hierarchie',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'name',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'notes' => 
+      array (
+        'description' => 'Bemerkungen zum Lebensraumtyp',
+        'type' => 'text',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'label' => 
+      array (
+        0 => 'label',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+);
+}
+
+function habitat_install() {
+	$dataInserts = file_get_contents(dirname(__FILE__) . '/habitat.sql');
+	db_query($dataInserts);
+}
+?>
