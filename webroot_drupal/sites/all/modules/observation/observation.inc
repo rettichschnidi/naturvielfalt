@@ -11,9 +11,10 @@ module_load_include('inc', 'organism', 'organism');
 
 /**
  * Return the single observation form to add a observation
+ * @param array $observationdata
  */
-function observation_edit($observation_id){
-	return observation_form($observation_id);
+function observation_edit($observationdata = NULL){
+	return observation_form($observationdata);
 }
 
 /**
@@ -25,7 +26,6 @@ function observation_get($observation_id){
 	$observation_id = db_escape_field(filter_xss($observation_id));
 	if($observation_id > 0){
 		$sql = "SELECT * FROM {observation} o
-				LEFT JOIN observation_attribute oa ON oa.observation_id=o.id
 				WHERE o.id=:observation_id";
 		$result['observation'] = db_query($sql,array('observation_id' => $observation_id))->fetchAssoc();
 		// If no artgroup, try to find a artgroup
@@ -33,10 +33,16 @@ function observation_get($observation_id){
 			$artgroups = organism_artgroup_get_organsim_in_artgroup($result['observation']['organism_id']);
 			foreach ($artgroups as $artgroup) $result['observation']['organism_artgroup_id'] = $artgroup;
 		}
-		$result['attributes'] = organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']);
-		$result['detmethods'] = organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']);
+		$result['detmethods_vis'] = organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']);
 		$result['geometry'] = observation_get_geometry($result['observation']['area_geometry_id']);
 		$result['organism'] = organism_get($result['observation']['organism_id']);
+		$attributes = db_query("SELECT * FROM observation_attribute oa WHERE oa.observation_id=:observation_id", array(':observation_id' => $observation_id))->fetchAllAssoc('organism_artgroup_attr_id');
+		$attributes_vis = organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']);
+		$result['attributes'] = array();
+		foreach ($attributes_vis as $attribute_vis)
+			$result['attributes'][$attribute_vis] = array(
+					'value_id' => $attributes[$attribute_vis]->organism_artgroup_attr_values_id,
+					'value' => $attributes[$attribute_vis]->value);
 
 		return $result;
 	}
@@ -73,4 +79,8 @@ function observation_get_geometry($geometry_id){
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {area_surface} a_s WHERE a_s.id=:geometry_id";
 	return db_query($sql,array(':geometry_id' => $geometry_id))->fetchAssoc();
+}
+
+function observation_edit_acl($observation = NULL){
+	observation_acl_template($observation);
 }
