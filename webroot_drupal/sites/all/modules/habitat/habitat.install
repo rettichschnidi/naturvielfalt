@@ -1,6 +1,14 @@
 <?php
 /**
- * do not modify habitat_schema, it is generated! 
+ * @file habitat.json.inc
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
+ 
+/**
+ * Implement hook_schema()
+ *
+ * @note Do not modify habitat_schema, it is generated code!
  */
 function habitat_schema() {
 	return array (
@@ -47,6 +55,11 @@ function habitat_schema() {
 );
 }
 
+/**
+ * Implement hook_install()
+ *
+ * Include all Delarze habitats.
+ */
 function habitat_install() {
 	$dataInserts = file_get_contents(dirname(__FILE__) . '/habitat.sql');
 	db_query($dataInserts);
