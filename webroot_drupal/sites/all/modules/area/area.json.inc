@@ -38,10 +38,10 @@ function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
 			'u.name'
 	);
 
-	$sql['dbTable'] = "{area} a";
-	$sql['dbJoins'] = "JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
+	$sql['dbTable'] = '{area} a';
+	$sql['dbJoins'] = 'JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
-			JOIN {users} u ON u.uid = cacl.users_id";
+			JOIN {users} u ON u.uid = cacl.users_id';
 	$sql['id'] = 'id';
 	$sql['acl_level'] = $acl_level;
 	$output = datatable_dbRequest($sql);
