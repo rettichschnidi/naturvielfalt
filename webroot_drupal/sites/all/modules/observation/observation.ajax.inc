@@ -13,6 +13,9 @@ global $user;
 // 	$output['post'] = $values;
 	$observation = array();
 	$observation['m_time'] = time();
+	if(isset($values['observation_id'] )) $observation['id'] = $values['observation_id'];
+	if(isset($values['area_geometry_id'] )) $observation['area_geometry_id'] = $values['area_geometry_id'];
+
 
 	/**
 	 * check the organism id
@@ -155,22 +158,45 @@ global $user;
 		/**
 		 * Save the geometry and get the id
 		 */
-		// $geometry_id = area_save_geometry_blablablab();
-		$observation['area_geometry_id'] = area_create_geometry($geometry);
+
 
 		/**
 		 * save the observation
 		 */
 
-		if($observation_id){
+		if($observation['id']){
 			// do update
+			area_update_geometry($observation['area_geometry_id'], $geometry);
+			db_update('observation')->fields($observation)->execute();
+			// save each attributes
+			foreach ($attributes_checked as $key => $value){
+				$val = explode('-->', $value);
+				$db_id = NULL; $db_val = NULL;
+				if($val[0] == 'db_id'){
+					$db_id = $val[1];
+				}else{
+					$db_val = $value;
+				}
+				$entry = array(
+						'organism_artgroup_attr_values_id' => $db_id,
+						'value' => $db_val,
+				);
+				db_update('observation_attribute')
+					->fields($entry)
+					->condition('observation_id', $observation['id'])
+					->condition('organism_artgroup_attr_id', $key)
+					->execute();
+			}
+
 		}else{
+			// $geometry_id = area_save_geometry_blablablab();
+			$observation['area_geometry_id'] = area_create_geometry($geometry);
+
+			//save the observation
 			$observation_id = $observation['id'] = db_query("SELECT nextval('observation_id_seq') as nextval")->fetchField();
 			$observation['c_time'] = $observation['m_time'];
 			$observation['acl_id'] = new_acl('singleobservation');
 			db_insert('observation')->fields($observation)->execute();
-		}
-
 
 			// save each attributes
 			foreach ($attributes_checked as $key => $value){
@@ -186,13 +212,15 @@ global $user;
 						'organism_artgroup_attr_id' => $key,
 						'organism_artgroup_attr_values_id' => $db_id,
 						'value' => $db_val,
-						);
+				);
 				db_insert('observation_attribute')->fields($entry)->execute();
-// 				$output['db_attr'][] = $entry;
-
 			}
-			// Set the return statement
-			$output['success'] = true;
+
+		}
+		// Set the return statement
+		$output['success'] = true;
+
+
 
 
 
