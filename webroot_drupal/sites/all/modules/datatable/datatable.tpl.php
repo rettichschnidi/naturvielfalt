@@ -29,15 +29,11 @@ drupal_add_js(
 /**
  * Figure out width/height of table or set default values
  */
-if (isset($options['tableWidth']) && is_int($options['tableWidth'])) {
-	$tableWidth = $options['tableWidth'];
-} else {
+if (!isset($tableWidth) || !is_int($tableWidth)) {
 	$tableWidth = 950;
 }
-if (isset($options['tableHeight']) && is_int($options['tableHeight'])
-		&& $options['tableHeight'] > 0) {
-	$tableHeight = $options['tableHeight'];
-} else {
+
+if (!isset($tableHeight) || !is_int($tableHeight)) {
 	$tableHeight = 200;
 }
 
