@@ -77,10 +77,21 @@ if ($header) {
 	// remove trailing comma
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
+
+	if($rows){
+		foreach ($header as $head) $table_headers[] = $head['name'];
+	}
 }
+$table[$id_table] = array(
+		'#theme' => 'table',
+		'#header' => $table_headers,
+		'#rows' => $rows,
+		'#sticky' => false,
+		'#attributes' => array('id' => $id_table),
+);
+print drupal_render($table);
 ?>
 
-<table id="<?php echo $id_table; ?>" class="<?php echo $id_table; ?>"></table>
 <script type="text/javascript" charset="utf-8">
 <!--
 
@@ -89,9 +100,13 @@ jQuery(document).ready(function() {
 jQuery("#<?php echo $id_table; ?>").flexigrid
 (
 {
-url: <?php echo $options['jsonUrl']; ?>,
-dataType: 'json',
-<?php echo $aoColumns; ?>
+<?php
+if($options['jsonUrl']){
+	echo "url: ".$options['jsonUrl'].", dataType: 'json',";
+}
+echo $aoColumns;
+?>
+
 searchitems : [{display: Drupal.t('ALL'), name : '*', isdefault: true}],
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",

@@ -22,8 +22,7 @@ function observation_menu() {
 					'access observation'
 			),
 			'file' => 'singleobservation.inc',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'type' => MENU_NORMAL_ITEM
 	);
 	$items['singleobservation/%'] = array(
 			'title' => t('Show all singleobservations'),
@@ -33,22 +32,54 @@ function observation_menu() {
 					'access observation'
 			),
 			'file' => 'singleobservation.inc',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'type' => MENU_NORMAL_ITEM
 	);
-	$items['singleobservation/%/edit'] = array(
-			'title' => t('Show all singleobservations'),
+	$items['singleobservation/%observation/edit'] = array(
+			'title' => t('Edit'),
 			'description' => t('Display a wizard to add a new singleobservation'),
 			'page callback' => 'observation_edit',
 			'access arguments' => array(
-					'create observation'
+					1
 			),
 			'page arguments' => array(
 					1
 			),
+			'access callback' => 'observation_write_access',
 			'file' => 'observation.inc',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	);
+	$items['singleobservation/%observation/permissions'] = array(
+			'title' => t('Permission'),
+			'description' => t('Edit the permission of this observation.'),
+			'page callback' => 'observation_edit_acl',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_admin_access',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'observation.inc'
+	);
+	$items['singleobservation/%observation/delete'] = array(
+			'title' => t('Delete observation'),
+			'description' => t('Delete an existing observation.'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'observation_delete_form',
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_admin_access',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'observation.delete.inc',
+			'weight' => 99
 	);
 	$items['singleobservation/new'] = array(
 			'title' => t('Add a new singleobservation'),
@@ -57,8 +88,7 @@ function observation_menu() {
 			'access arguments' => array(
 					'create observation'
 			),
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'type' => MENU_NORMAL_ITEM,
 			'file' => 'singleobservation.inc',
 	);
 	$items['singleobservation/new/multiple'] = array(
@@ -68,8 +98,7 @@ function observation_menu() {
 			'access arguments' => array(
 					'create observation'
 			),
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'type' => MENU_NORMAL_ITEM,
 			'file' => 'singleobservation.inc',
 	);
 	$items['observation/save'] = array(
@@ -103,6 +132,70 @@ function observation_permission() {
 	);
 }
 
+/**
+ * Check if user has admin access to this observation
+ *
+ * @param array $observationdata
+ * @return boolean true if access ok, false if not
+ * @todo Implementation
+ */
+function observation_admin_access($observationdata = NULL) {
+	if ($observationdata == NULL) {
+		return false;
+	}
+	if (isset($observationdata['observation']['acl_id'])) {
+		return check_permission($observationdata['observation']['acl_id'], variable_get('ACL_ADMIN'));
+	}
+	return false;
+}
 
+/**
+ * Check if user has write access to this observation
+ *
+ * @param array $observationdata
+ * @return boolean true if access ok, false if not
+ * @todo Implementation
+ */
+function observation_write_access($observationdata = NULL) {
+	if ($observationdata == NULL || empty($observationdata)) {
+		return false;
+	}
+	if (isset($observationdata['observation']['acl_id'])) {
+		return check_permission($observationdata['observation']['acl_id'], variable_get('ACL_WRITE'));
+	}
+	return false;
+}
+
+/**
+ * Check if user has read access to this observation
+ *
+ * @param array $observationdata
+ * @return boolean true if access ok, false if not
+ * @todo Implementation
+ */
+function observation_read_access($observationdata = NULL) {
+	if ($observationdata == NULL || empty($observationdata)) {
+		return false;
+	}
+	if (isset($observationdata['observation']['acl_id'])) {
+		return check_permission($observationdata['observation']['acl_id'], variable_get('ACL_READ'));
+	}
+	return false;
+}
+
+/**
+ * Return an array with all required information about an observation.
+ * This will be called for menuitems like this: 'observation/%observation/editgeometry'
+ * @param string $arg
+ * 		This string *should* acutally be an integer
+ * @return array $observationdata
+ */
+function observation_load($arg) {
+	$observationdata = array();
+	if ($arg != NULL && ((int)$arg) > 0) {
+		$observationdata = observation_get($arg);
+	}
+	return $observationdata;
+}
 
 ?>
