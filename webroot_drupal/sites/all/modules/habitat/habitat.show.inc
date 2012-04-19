@@ -22,17 +22,20 @@ function habitat_show_all() {
 	$tableHeader[] = array(
 			'name' => t('Linked Areas'),
 			'dbfield' => 'area_count',
+			'align' => 'center',
 			'width' => 80
 	);
 	$tableHeader[] = array(
 			'name' => t('ID'),
 			'dbfield' => 'id',
+			'align' => 'center',
 			'hide' => true,
 			'width' => 40
 	);
 	$tableHeader[] = array(
 			'name' => t('Image'),
 			'dbfield' => 'image_link',
+			'align' => 'center',
 			'width' => 50
 	);
 
