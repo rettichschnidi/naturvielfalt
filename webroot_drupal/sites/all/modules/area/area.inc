@@ -137,7 +137,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
 /**
  * Return all usefull data about an area in a tabular form.
  * Leave out datafields which are not set.
- * 
+ *
  * @param array $areadata
  * 		An array with all data about an area
  * @param $options array
@@ -154,7 +154,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
  * 			- 'modify_time'
  * 			- 'surface_area'
  * 			- 'pathlength'
- * @return array Drupal form
+ *
  */
 function area_get_infotable_of_specific_area($areadata = NULL,
 		$options = array()) {
@@ -388,7 +388,7 @@ function area_address_hidden_form() {
  * For details how to convert from WGS84 to CH1903, have a loot at the
  * Wikipedia article:
  *  - http://de.wikipedia.org/wiki/Schweizer_Landeskoordinaten
- *  
+ *
  * @param array Array with two elements: ['lat'] => $lat, ['lng'] => $lng
  * @return array Array with two elements in CH1903: ['x'] => $x, ['y'] => $y
  */
@@ -420,11 +420,11 @@ function area_convert_wgs84_to_ch1903($coordinates = NULL) {
 }
 
 /**
- * 
- * Return a PostGIS geometry object from a JSON object
- * 
- * The return value can be used by the method fields() of db_update/db_insert 
- * 
+ *
+ * Return a PostGIS geometry object from a JSON
+ *
+ * The return value can be used by the method fields() of db_update/db_insert
+ *
  * @param string $areaType
  * 	 Valid values: 'polyline', 'polygon' or 'marker'
  * @param object $coordinatesJson
@@ -472,8 +472,8 @@ function area_get_postgis_geometry_object($areaType = NULL,
 }
 
 /**
- * Create a geometry in table area_surface.
- * 
+ * @brief Create a geometry in table area_surface.
+ *
  * @param array $data
  * 	The following variables can be submitted:
  * 	 - 'zip'
@@ -588,20 +588,31 @@ function area_update_geometry($geometry_id, $data = array(),
 }
 
 /**
+ * Delete a geometry with given id
+ * @param int $geometry_id
+ * @return true on success, false on fail
+ */
+function area_delete_geometry($geometry_id){
+	$num_delted = db_delete('area_surface')->condition('id',$geometry_id)->execute();
+	if($num_delted == 1) return true;
+	return false;
+}
+
+/**
  * Swap from lat/lng to lng/lat or vice versa.
  * This function is needed as posgis can export a json
  * of each geometry type, but the coordinates are in a
  * different order than what google maps expects.
- * 
+ *
  * @param &$json an array with coordinates, passed by reference
  *  - Example:
  *  		array (
- *  		  0 => 
+ *  		  0 =>
  *  		  array (
  *  			0 => 9.3715184183853,
  *  			1 => 47.461692049315,
  *  		  ),
- *  		  1 => 
+ *  		  1 =>
  *  		  array (
  *  		  	0 => 9.3712126465576,
  *  			1 => 47.461755518134,

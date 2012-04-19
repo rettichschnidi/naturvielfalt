@@ -14,13 +14,62 @@ module_load_include('inc', 'observation');
  * @return array
  */
 function observation_menu() {
-	$items['singleobservation/new'] = array(
-			'title' => t('Add a new singleobservation'),
+	$items['singleobservation'] = array(
+			'title' => t('Show all singleobservations'),
 			'description' => t('Display a wizard to add a new singleobservation'),
-			'page callback' => 'singleobservation_wizard',
+			'page callback' => 'singleobservation_view_list',
+			'access arguments' => array(
+					'access observation'
+			),
+			'file' => 'singleobservation.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	);
+	$items['singleobservation/%'] = array(
+			'title' => t('Show all singleobservations'),
+			'description' => t('Display a wizard to add a new singleobservation'),
+			'page callback' => 'singleobservation_view_list',
+			'access arguments' => array(
+					'access observation'
+			),
+			'file' => 'singleobservation.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	);
+	$items['singleobservation/%/edit'] = array(
+			'title' => t('Show all singleobservations'),
+			'description' => t('Display a wizard to add a new singleobservation'),
+			'page callback' => 'observation_edit',
 			'access arguments' => array(
 					'create observation'
 			),
+			'page arguments' => array(
+					1
+			),
+			'file' => 'observation.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	);
+	$items['singleobservation/new'] = array(
+			'title' => t('Add a new singleobservation'),
+			'description' => t('Display a form to add a new singleobservation'),
+			'page callback' => 'singleobservation_new',
+			'access arguments' => array(
+					'create observation'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'singleobservation.inc',
+	);
+	$items['singleobservation/new/multiple'] = array(
+			'title' => t('Add new singleobservations'),
+			'description' => t('Display a form to add multiple singleobservations'),
+			'page callback' => 'singleobservation_new_multiple',
+			'access arguments' => array(
+					'create observation'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'singleobservation.inc',
 	);
 	$items['observation/save'] = array(

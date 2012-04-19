@@ -1,5 +1,6 @@
 jQuery(document).ready(function() {
  observation = {};
+ observation.message = $('#message');
  
 	jQuery( "#date" ).datepicker({
 		dateFormat: 'dd.mm.yy',
@@ -9,12 +10,12 @@ jQuery(document).ready(function() {
 			observation.last_date = date;
 		}
 	}).width(80);
-	if(observation.last_date) jQuery( "#date" ).val(observation.last_date)
+	if(observation.last_date) jQuery( "#date" ).val(observation.last_date);
 	jQuery( "#organismn_autocomplete" ).focus();
 	
 	
 	function changeArtGroup(id){
-		alert('not implemented')
+		alert('not implemented');
 	}
 	  
 	  
@@ -39,19 +40,31 @@ jQuery(document).ready(function() {
 //				  $("#log").html( msg );
 				
 				if(msg.success == true){
-					alert('success');
+//					alert('success');
+					observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 5000);
+					$('#observation_form').trigger('reset');
+					$( "#species_autocomplete" ).html('');
 				}else{
-					alert('fail');
+//					alert('fail');
+					observation.setMessage('<br><br>&bull;&nbsp;'+msg.message.join("<br>&bull;&nbsp;"),'error', 15000);
 				}
 				});
 
 				observation.ajax.fail(function(jqXHR, textStatus) {
-				  alert( "Request failed: " + textStatus );
+//				  alert( "Request failed: " +  );
+				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
 				});
 			return false;
 		};
 		
-
+		observation.setMessage = function (message, type, time) {
+			if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
+			observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
+			observation.message.stop().css('height', 'auto').slideDown('fast');
+			if(time) observation.messageTimer = window.setTimeout(function () {
+				observation.message.slideUp('fast');
+			}, time);
+		};
 	  
 		observation.showLoading = function () {
 			if(!observation.loading) {
@@ -76,4 +89,24 @@ jQuery(document).ready(function() {
 			if(!observation.loading) return;
 			observation.loading.dialog('close');
 		};
+
+		observation.hideDetMethods = function(){
+			$("#determination_method_id option").each(function () {
+                $(this).css('display','none');
+              });
+			observation.showDetMethod('0');
+		};
+		observation.showDetMethod = function(id){
+			$('#artgroup_detmethod_value_'+id).css('display','block');
+		};
+		observation.hideAttributes = function(){
+			$("tr[id^='attributes_tr_']").each(function () {
+                $(this).css('display','none');
+              });
+		};
+		observation.showAttribute = function(id){
+			$('#attributes_tr_'+id).css('display','table-row');
+		};
+
+
 });

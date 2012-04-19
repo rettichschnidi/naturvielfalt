@@ -46,6 +46,25 @@ function organism_get_names_of_organism($organismid) {
 }
 
 /**
+ * Return an organism, just lat&lang name
+ * maybe later we need more fields
+ *
+ * @return array
+ */
+function organism_get($organismid) {
+	global $user;
+	$resultarray = array();
+	return db_query(
+			'SELECT osn.name name_lat, ol.name name_lang
+			FROM
+			{organism_scientific_name} osn
+			LEFT JOIN {organism_lang} ol ON ol.organism_id=:oid AND ol.languages_language=:lang_code
+			WHERE
+			osn.organism_id = :oid',
+			array(':oid' => $organismid, ':lang_code' => $user->language))->fetchAssoc();
+}
+
+/**
  * Return a single scientific name of an organism, even if there are many synonyms
  *
  * @return array
@@ -73,10 +92,10 @@ function organism_get_single_name_of_organism($organismid) {
 
 /**
  * Return an array with all classifiers of this organism
- * 
+ *
  * @return array
  * Example:
- * 	array ( 
+ * 	array (
  * 		0 => array (
  * 				'name' => 'Fungus-Nr.',
  * 				'valuetype' => 'n',

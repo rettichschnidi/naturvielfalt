@@ -13,7 +13,13 @@ global $user;
 // 	$output['post'] = $values;
 	$observation = array();
 	$observation['m_time'] = time();
+	if(isset($values['observation_id'] )) $observation['id'] = $values['observation_id'];
+	if(isset($values['area_geometry_id'] )) $observation['area_geometry_id'] = $values['area_geometry_id'];
 
+
+	/**
+	 * check the organism id
+	 */
 	$organismn_id = $observation['organism_id'] = $values['organismn_id'];
 	if($organismn_id < 1 || empty($organismn_id)){
 		$error = true;
@@ -25,10 +31,10 @@ global $user;
 	/**
 	 * Check the determation and artgroup value
 	 */
-	$artgroup_id = intval($values['artgroup']);
+	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	$observation['organism_artgroup_id'] = NULL;
+	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 	if($artgroup_id > 0){
-		$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 		$determination_methods_db = organism_artgroup_get_determation_methods($artgroup_id);
 		$artgroup_id_checked = false;
 
@@ -36,13 +42,12 @@ global $user;
 			foreach ($determination_methods_db as $determination_method_db){
 				if($determination_method_db->id == $determination_method_id){
 					$artgroup_id_checked = true;
-					$observation['organism_artgroup_id'] = $artgroup_id;
 				}
 			}
-		}
-		if(!$artgroup_id_checked){
-			$error = true;
-			$message[] = t('Artgroup with this determination method not allowed');
+			if(!$artgroup_id_checked){
+				$error = true;
+				$message[] = t('Artgroup with this determination method not allowed');
+			}
 		}
 	}
 
@@ -80,6 +85,7 @@ global $user;
 	foreach ($attributes as $key => $value){
 // 		$output['attro'][] = $key.': '.$value;
 		$attribute = organism_artgroup_get_attribute($key);
+// 		$output['org_attr'][] = $attribute;
 		$attribute = $attribute[0];
 		switch($attribute['type_format']){
 			case 'string':
@@ -90,7 +96,7 @@ global $user;
 				break;
 			case 'dropdown':
 				if($value != '0'){
-					if(array_search($value, $attribute['values'])){
+					if(array_key_exists($value, $attribute['values'])){
 						$attributes_checked[$key] = 'db_id-->'.$value;
 					}else{
 						$error = true;
@@ -122,6 +128,25 @@ global $user;
 // 		$output['attr'][] = $attribute;
 	}
 
+
+	/**
+	 * check the map data
+	 */
+
+	if(filter_xss($values['coordinate']) == ""){
+		$error = true;
+		$message[] = t('Please mark a point on the map');
+	}
+
+	$geometry['zip'] = intval(filter_xss($values['zip']));
+	$geometry['canton'] = filter_xss($values['canton']);
+	$geometry['country'] = filter_xss($values['country']);
+	$geometry['township'] = filter_xss($values['township']);
+	$geometry['altitude'] = intval(filter_xss($values['altitude']));
+	$geometry['area_points'] = filter_xss($values['coordinate']);
+	$geometry['type'] = 'marker';
+
+
 // 	check_plain($text)
 
 	if(!$error){
@@ -133,21 +158,45 @@ global $user;
 		/**
 		 * Save the geometry and get the id
 		 */
-		// $geometry_id = area_save_geometry_blablablab();
+
 
 		/**
 		 * save the observation
 		 */
 
-		if($observation_id){
+		if($observation['id']){
 			// do update
+			area_update_geometry($observation['area_geometry_id'], $geometry);
+			db_update('observation')->fields($observation)->execute();
+			// save each attributes
+			foreach ($attributes_checked as $key => $value){
+				$val = explode('-->', $value);
+				$db_id = NULL; $db_val = NULL;
+				if($val[0] == 'db_id'){
+					$db_id = $val[1];
+				}else{
+					$db_val = $value;
+				}
+				$entry = array(
+						'organism_artgroup_attr_values_id' => $db_id,
+						'value' => $db_val,
+				);
+				db_update('observation_attribute')
+					->fields($entry)
+					->condition('observation_id', $observation['id'])
+					->condition('organism_artgroup_attr_id', $key)
+					->execute();
+			}
+
 		}else{
+			// $geometry_id = area_save_geometry_blablablab();
+			$observation['area_geometry_id'] = area_create_geometry($geometry);
+
+			//save the observation
 			$observation_id = $observation['id'] = db_query("SELECT nextval('observation_id_seq') as nextval")->fetchField();
 			$observation['c_time'] = $observation['m_time'];
 			$observation['acl_id'] = new_acl('singleobservation');
 			db_insert('observation')->fields($observation)->execute();
-		}
-
 
 			// save each attributes
 			foreach ($attributes_checked as $key => $value){
@@ -163,13 +212,15 @@ global $user;
 						'organism_artgroup_attr_id' => $key,
 						'organism_artgroup_attr_values_id' => $db_id,
 						'value' => $db_val,
-						);
-				drupal_write_record('observation_attribute', $entry);
-				$output['db_attr'][] = $entry;
-
+				);
+				db_insert('observation_attribute')->fields($entry)->execute();
 			}
-			// Set the return statement
-			$output['success'] = true;
+
+		}
+		// Set the return statement
+		$output['success'] = true;
+
+
 
 
 
@@ -179,7 +230,7 @@ global $user;
 
 
 
-		$output['db_fields'] = $observation;
+// 		$output['db_fields'] = $observation;
 
 		$output['message'] = $message;
 // 	}

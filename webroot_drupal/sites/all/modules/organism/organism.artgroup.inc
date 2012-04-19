@@ -6,13 +6,14 @@
  * @param int $deep
  * @return string
  */
-function organism_artgroup_get_all_as_option($parent = false, $deep = 0){
+function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false){
 
 	if($parent != false){
 		$parent_sql = "'" . db_escape_field($parent) . "' AND parent != id";
 	}else{
 		$parent_sql = "id";
 	}
+	if($selected_id == '') $selected_id = false;
 
 	$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent=" . $parent_sql;
 	$top_result= db_query($top_sql);
@@ -22,8 +23,10 @@ function organism_artgroup_get_all_as_option($parent = false, $deep = 0){
 	for($i=0; $i < $deep; $i++) $spacer = $spacer."&nbsp;&nbsp;&nbsp;";
 
 	foreach ($top_result as $top){
-		$output .= '<option value="'.$top->id.'">'.$spacer.t($top->name).'</option>';
-		$output .= organism_artgroup_get_all_as_option($top->id, $deep+1);
+		$sel = '';
+		if($selected_id && $selected_id == $top->id) $sel = ' selected="selected"';
+		$output .= '<option value="'.$top->id.'"'.$sel.'>'.$spacer.t($top->name).'</option>';
+		$output .= organism_artgroup_get_all_as_option($top->id, $deep+1, $selected_id);
 	}
 
 	return $output;
@@ -35,19 +38,28 @@ function organism_artgroup_get_all_as_option($parent = false, $deep = 0){
  * @param array $output (internal needed)
  * @return array of int
  */
-function organism_artgroup_get_children($artgroup_id, $output = false){
+function organism_artgroup_get_children($artgroup_id = false, $output = false, $organism_id = false){
+	$join = '';
+	if(!$artgroup_id) $artgroup_id = 3;
+	if($organism_id) $join = "LEFT JOIN {organism_artgroup_subscription} oas "
+							."ON oas.organism_artgroup_id = oa.id "
+							."AND oas.organism_id = '".db_escape_field($organism_id)."' ";
 
-	if(!$artgroup_id) return false;
-	$artgroup_id_sql = "'".db_escape_field($artgroup_id)."' AND parent!=id";
+	$artgroup_id_sql = "'".db_escape_field($artgroup_id)."' AND oa.parent!=id";
 
-	$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent=".$artgroup_id_sql;
+	$top_sql = "SELECT * FROM {organism_artgroup} oa ".$join." WHERE oa.parent=".$artgroup_id_sql;
+// 	die($top_sql);
 	$top_result= db_query($top_sql);
 
 	if(!$output) $output = array();
 
 	foreach ($top_result as $top){
-		$output[] = $top->id;
-		$output = organism_artgroup_get_children($top->id, $output);
+		if($organism_id){
+			if($top->organism_id != "") $output[] = $top->id;
+		}else{
+			$output[] = $top->id;
+		}
+		$output = organism_artgroup_get_children($top->id, $output, $organism_id);
 	}
 
 	return $output;
@@ -74,9 +86,11 @@ function organism_artgroup_get_sql_from_id($ids_as_array, $col_name, $and_or_or 
  * optionally as html <option>
  * @param int $artgroup_id
  * @param boolean $as_html_option
+ * @param int selected_id
+ * @param array visisible_arr id's as value
  * @return object or string
  */
-function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false, $selected_id = false){
+function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false, $selected_id = false, $visisible_arr = false){
 	$artgroup_filter = "";
 	if($artgroup_id){
 		if($artgroup_id > 0 && $artgroup_id < 1000000){
@@ -93,27 +107,29 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 
 	if(!$as_html_option) return $results;
 
-	$html = '<option value="0">'.t('Not definied').'</option>';
+	$html = '<option value="0" id="artgroup_detmethod_value_0">'.t('Not definied').'</option>';
 	foreach ($results as $result){
 		$selected = "";
-		if($selected_id && $selected_id == $result->id) $selected = " selected";
-		$html .= '<option value="'.$result->id.'"'.$selected.'>'.t($result->name).'</option>';
+		if($selected_id && $selected_id == $result->id) $selected = ' selected="selected"';
+		$style = 'style="display: none;" ';
+		if($visisible_arr && array_search($result->id, $visisible_arr)) $style = 'style="display: block;" ';
+		$html .= '<option value="'.$result->id.'" id="artgroup_detmethod_value_'.$result->id.'"  '.$style.$selected.'>'.t($result->name).'</option>';
 	}
 	return $html;
 }
 
 /**
- *
+ * Return all or a single artgroup as array or as html tags
  * @param int $artgroup_id
  * @param boolean $as_html
  * @param string $html_before_desc
  * @param string $html_after_desc
  * @param string $html_before_form
  * @param string $html_after_form
- * @return
+ * @return array OR string
  */
 function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false, $html_before_desc = false
-		, $html_after_desc = false, $html_before_form = false, $html_after_form = false, $attribute_id = false){
+		, $html_after_desc = false, $html_before_form = false, $html_after_form = false, $attribute_id = false, $attributes_selected = false){
 	$artgroup_filter = "";
 	if($artgroup_id){
 		if($artgroup_id > 0 && $artgroup_id < 1000000){
@@ -154,58 +170,69 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 
 	$attributes_with_values_html = "";
 	foreach ($attributes_with_values as $tmp){
-		$attributes_with_values_html .= organism_artgroup_parse_html_forms($tmp, $html_before_desc, $html_after_desc, $html_before_form, $html_after_form);
+		$attributes_with_values_html .= organism_artgroup_parse_html_forms($tmp, $html_before_desc, $html_after_desc, $html_before_form, $html_after_form, $attributes_selected);
 	}
 	return $attributes_with_values_html;
 
 }
 
 /**
- *
+ * Returns a single attribute as array
  * @param int $attribute_id
+ * @return array
  */
 function organism_artgroup_get_attribute($attribute_id){
 	return organism_artgroup_get_attributes(false, false, false, false, false, false, $attribute_id);
 }
 
 /**
- *
+ * parse a given array of attributes to html form elements
  * @param array $form
  * @param string $html_before_desc
  * @param string $html_after_desc
  * @param string $html_before_form
  * @param string $html_after_form
+ * @return string
  */
-function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $html_after_desc = false, $html_before_form = false, $html_after_form = false){
+function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $html_after_desc = false,
+		$html_before_form = false, $html_after_form = false, $attributes_selected = false){
 	$output = "";
-	if($html_before_desc) $output .= $html_before_desc;
-	$output .= t($form['name'].':');
+	$predefinied_value = '';
 	$name_trimd = str_replace(' ', '', $form['name']);
 	$form_name = 'id="attributes_'.$name_trimd.'" name="attributes['.$form['id'].']"';
+	if($html_before_desc) $output .= str_replace('#id#', 'attributes_tr_'.$form['id'], $html_before_desc);
+	if($attributes_selected && array_key_exists($form['id'], $attributes_selected)){
+		$output = str_replace('display: none;', 'display: table-row;', $output);
+		$predefinied_value = $attributes_selected[$form['id']]['value'];
+		$predefinied_value_id = $attributes_selected[$form['id']]['value_id'];
+	}
+	$output .= t($form['name'].':');
 	if($html_after_desc) $output .= $html_after_desc;
 	if($html_before_form) $output .= $html_before_form;
 
 	switch ($form['type_format']){
 
 		case 'string':
-			$output .= '<input type="text" '.$form_name.'>';
+			$output .= '<input type="text" '.$form_name.' value="'.$predefinied_value.'">';
 			break;
 
 		case 'dropdown':
 			$output .= '
 			<select '.$form_name.'><option value="0">'.t('Nicht definiert').'</option>';
 			foreach ($form['values'] as $key => $value){
-				$output .= '<option value="'.$key.'">'.$value.'</option>';
+				$selected = '';
+				if($predefinied_value_id && $predefinied_value_id == $key) $selected = ' selected="selected"';
+				$output .= '<option value="'.$key.'" '.$selected.'>'.$value.'</option>';
 			}
 			$output .= '</select>';
 			break;
 
 		case 'date':
-			$output .= '<input type="date" '.$form_name.'>';
+			$output .= '<input type="date" '.$form_name.' value="'.$predefinied_value.'">';
 			break;
 
 		case 'int':
-			$output .= '<input type="number" '.$form_name.'>';
+			$output .= '<input type="number" '.$form_name.' value="'.$predefinied_value.'">';
 			break;
 
 	}
@@ -213,6 +240,33 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
 	if($html_after_form) $output .= $html_after_form;
 	return $output;
 }
+
+/**
+ * Return a array of all attributes id for an artgroup
+ * @param int $artgroup_id
+ * @return array
+ */
+function organism_artgroup_get_attributes_ids($artgroup_id){
+	return db_query("SELECT organism_artgroup_attr_id id FROM {organism_artgroup_attr_subscription} "
+					."WHERE organism_artgroup_id='".db_escape_field($artgroup_id)."' GROUP BY organism_artgroup_attr_id")
+					->fetchCol();
+}
+
+/**
+ * Return a array of all determination methods id for an artgroup
+ * @param int $artgroup_id
+ * @return array
+ */
+function organism_artgroup_get_detmethods_ids($artgroup_id){
+	return db_query("SELECT organism_artgroup_detmethod_id id FROM {organism_artgroup_detmethod_subscription} "
+					."WHERE organism_artgroup_id='".db_escape_field($artgroup_id)."' GROUP BY organism_artgroup_detmethod_id")
+					->fetchCol();
+}
+
+function organism_artgroup_get_organsim_in_artgroup($organism_id){
+	return organism_artgroup_get_children(3, false, $organism_id);
+}
+
 
 
 ?>

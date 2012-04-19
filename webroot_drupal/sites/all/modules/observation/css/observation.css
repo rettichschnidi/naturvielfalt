@@ -1,14 +1,15 @@
-.observation_td{
-	font-size: 11px;
-	background-color: #F6F5F3;
-	padding: 5px;
-	-moz-border-radius: 10px !important;
+.observation_td {
+    font-size: 11px;
+    padding: 7px;
 }
-.observation_title{
-	font-size: 14px;
-	font-weight: bold;
+.observation_title {
+    font-size: 14px;
+    font-weight: bold;
 }
-
+.observation_subtitle {
+    font-size: 12px;
+    font-weight: bold;
+}
 .form-submit {
     background-color: #659560;
     border: 1px solid #457540;
@@ -23,10 +24,43 @@
     right: 10px;
     z-index: 5;
 }
-
-.loading{
-	display: none;
-	padding: 5px;
-	overflow: visible;
-	position: fixed;
+.loading {
+    display: none;
+    overflow: visible;
+    padding: 5px;
+    position: fixed;
+}
+.organismn_autocomplete {
+    background-image: url("../img/search.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    border-width: 1px;
+}
+.searching {
+    background-image: url("../img/searching.gif");
+}
+.notfound {
+    background-image: url("../img/notfound.gif");
+}
+#message {
+    background-repeat: no-repeat;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 5;
+}
+#message .messages {
+    border-radius: 0 0 0 0;
+    border-width: 0 0 1px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+#artgroup_select, #organismn_autocomplete {
+    padding: 0.3em;
+    font-size: 13px;
+}
+input, select {
+    border: 1px solid black;
+    font-size: 12px;
 }
