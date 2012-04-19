@@ -58,7 +58,7 @@ if ($header) {
 		$aoColumns .= ", width : '" . $head['width'] . "'";
 
 		(isset($head['align']) && $head['align']) ? $aoColumns .= ",  align : '"
-						. 9333 . "'"
+						. $head['align'] . "'"
 				: $aoColumns .= ",  align : 'left'";
 
 		if (isset($head['hide']) && $head['hide'] == true)
