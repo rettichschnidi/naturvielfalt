@@ -24,7 +24,7 @@ function habitat_show_all() {
 	$tableHeader[] = array(
 			'name' => t('Habitat name'),
 			'dbfield' => 'name',
-			'width' => 900,
+			'width' => 620,
 	);
 	$tableHeader[] = array(
 			'name' => t('Linked Areas'),
@@ -43,6 +43,7 @@ function habitat_show_all() {
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
 			'#id_table' => 'habitats',
+			'#tableWidth' => 900,
 			'#options' => array(
 					'jsonUrl' => "'habitat/datatablejson'",
 					'rowClick' => 'rowClick',
