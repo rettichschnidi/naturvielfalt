@@ -8,7 +8,7 @@
 function observation_form($observation = false) {
 	global $user;
 	$hidden_fields_arr = array();
-// 	die(print_r($observationdata));
+// 	die(print_r($observation));
 	if($observation){
 // 		$observation = observation_get($observation_id);
 // 		print_r($observation);
@@ -235,8 +235,12 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 	return $formcust;
 }
 
-
+/**
+ * ACL permission template
+ * @param array $observation
+ */
 function observation_acl_template($observation = NULL){
+// 	die(print_r($observation));
 	$output = array();
 	$defaults = array(
 			array(
