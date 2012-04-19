@@ -40,7 +40,7 @@ function habitat_menu() {
 					ACCESS_CONTENT
 			),
 			'page arguments' => array(
-					habitat_show_form,
+					'habitat_show_form',
 					1
 			),
 			'type' => MENU_NORMAL_ITEM,
