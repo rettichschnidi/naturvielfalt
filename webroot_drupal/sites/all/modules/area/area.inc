@@ -9,7 +9,9 @@
  * Return the CH1903 coordinates of a given area.
  * Include a link to the Wikipedia article about
  * CH1903.
+ * 
  * @param array $areadata
+ * @return string Coordinates with link to wikipedia article
  */
 function get_ch1903_coordinates_link($areadata) {
 	assert(is_array($areadata));
@@ -27,7 +29,9 @@ function get_ch1903_coordinates_link($areadata) {
  * Return the WGS84 coordinates of a given area.
  * Include a link to the Wikipedia article about
  * WGS84.
+ * 
  * @param array $areadata
+ * @return string Coordinates with link to wikipedia article
  */
 function get_wgs84_coordinates_link($areadata) {
 	assert(is_array($areadata));
@@ -42,7 +46,8 @@ function get_wgs84_coordinates_link($areadata) {
 }
 
 /**
- * Return an array with all data of a given $area_id
+ * Return an array with all data of a given $area_id.
+ * 
  * @todo document all elements
  * @param integer $area_id
  */
@@ -292,9 +297,10 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 }
 
 /**
- * Return a hidden form which can be used to store values handed over by Javascript
+ * Return a hidden form which can be used to store values handed over by Javascript.
+ * 
  * @todo lets find a better way than this... please...
- * @return form to submit area properties
+ * @return array Drupal form to submit area properties
  */
 function area_address_hidden_form() {
 	$form['addressdata'] = array(
@@ -387,7 +393,7 @@ function area_address_hidden_form() {
  * @return array Array with two elements in CH1903: ['x'] => $x, ['y'] => $y
  */
 function area_convert_wgs84_to_ch1903($coordinates = NULL) {
-	assert($coordinates);
+	assert(is_array($coordinates));
 	assert(count($coordinates) == 2);
 
 	// extract the given wgs84 coordinates
@@ -479,7 +485,8 @@ function area_get_postgis_geometry_object($areaType = NULL,
  * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
  * @param boolean $coordinates_are_already_lng_lat
  * 	True if area_points are already in lng/lat format, false otherwise (default)
- * @return integer New geometry id or false if a failure occurred
+ * @return integer
+ *  New geometry id or false if a failure occurred
  * @note For an example usage, have a look at area_create_new_area()
  */
 function area_create_geometry($data = array(),
@@ -523,7 +530,7 @@ function area_create_geometry($data = array(),
 }
 
 /**
- * @brief Update an exsting geometry in table area_surface.
+ * Update an exsting geometry in table area_surface.
  *
  * @param geometry_id
  * 	- Id of the geometry to update.
@@ -620,16 +627,5 @@ function area_swap_json_lnglat(&$json) {
 		$currentelement[0] = $currentelement[1];
 		$currentelement[1] = $tmp;
 	}
-}
-
-/**
- * Check if user has write access to area
- *
- * @param integer $area_id
- * @return true if access ok, false if not
- * @todo Check if this user has write access to the inventory
- */
-function area_edit_access($area_id) {
-	return true;
 }
 ?>

@@ -2,6 +2,14 @@
 // Load all content functions for Gallery.
 module_load_include('inc', 'gallery', 'gallery.content');
 
+define('ADMINISTER_RATING_TYPES', 'administer rating types');
+define('ADMINISTER_CATEGORIES', 'administer categories');
+define('ADD_GALLERY_IMAGES', 'add gallery images');
+define('MANAGE_GALLERY_MEDIAS', 'manage gallery medias');
+define('RATE_GALLERY_MEDIAS', 'rate gallery medias');
+define('VIEW_GALLERY_IMAGES', 'view gallery images');
+define('VIEW_HIDDEN_GALLERY_IMAGES', 'view hidden gallery images');
+
 /**
  * Implements hook_block_info().
  */
@@ -17,7 +25,7 @@ function gallery_block_info() {
  */
 function gallery_menu() {
 	$items = array();
-	// ADMIN MENU
+	/* Set filesize and minimum ranking for pics to show up */
 	$items['admin/config/media/gallery'] = array(
 			'title' => t('Gallery'),
 			'description' => t('Configuration for Gallery module'),
@@ -26,39 +34,30 @@ function gallery_menu() {
 					'gallery_form'
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.inc',
 	);
+	/* Alias for 'admin/config/media/gallery' */
 	$items['admin/config/media/gallery/settings'] = array(
 			'title' => t('Global settings'),
-			'description' => t('Global configuration for the Gallery module'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'gallery_form'
-			),
-			'access arguments' => array(
-					'administer rating types'
-			),
-			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'gallery.admin.inc',
+			'type' => MENU_DEFAULT_LOCAL_TASK
 	);
-
-	// Rating types
+	/* List all existing rating types */
 	$items['admin/config/media/gallery/rating-types'] = array(
 			'title' => t('Rating types'),
 			'description' => t(
 				'List the current gallery rating types on the site.'),
 			'page callback' => 'gallery_rating_type_list',
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
+	/* Create a new rating type */
 	$items['admin/config/media/gallery/rating-types/add'] = array(
 			'title' => t('Add rating type'),
 			'description' => t('Add a new rating type.'),
@@ -67,11 +66,12 @@ function gallery_menu() {
 					'gallery_rating_type_add_form'
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
+	/* Edit an existing rating type */
 	$items['admin/config/media/gallery/rating-types/edit/%gallery_rating_type'] = array(
 			'title' => t('Edit rating type'),
 			'description' => t('Configure a rating type.'),
@@ -81,10 +81,11 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
+	/* Delete an existing rating type */
 	$items['admin/config/media/gallery/rating-types/delete/%gallery_rating_type'] = array(
 			'title' => t('Delete rating type'),
 			'description' => t('Delete a rating type.'),
@@ -94,24 +95,25 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer rating types'
+					ADMINISTER_RATING_TYPES
 			),
 			'file' => 'gallery.admin.ratingtypes.inc',
 	);
 
-	// Categories
+	/* Show all existing categories */
 	$items['admin/config/media/gallery/categories'] = array(
 			'title' => t('Categories'),
 			'description' => t(
 				'List the current gallery categories on the site.'),
 			'page callback' => 'gallery_category_list',
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'gallery.admin.categories.inc',
 	);
+	/* Create a new category */
 	$items['admin/config/media/gallery/categories/add'] = array(
 			'title' => t('Add category'),
 			'description' => t('Add a new category.'),
@@ -120,11 +122,12 @@ function gallery_menu() {
 					'gallery_category_add_form'
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.categories.inc',
 	);
+	/* Edit an existing category */
 	$items['admin/config/media/gallery/categories/edit/%gallery_category'] = array(
 			'title' => t('Edit category'),
 			'description' => t('Configure a category.'),
@@ -134,10 +137,11 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categories.inc',
 	);
+	/* Delete an existing category */
 	$items['admin/config/media/gallery/categories/delete/%gallery_category'] = array(
 			'title' => t('Delete category'),
 			'description' => t('Delete a category.'),
@@ -147,11 +151,11 @@ function gallery_menu() {
 					6
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categories.inc',
 	);
-	// Category options
+	/* Show all options of a category */
 	$items['admin/config/media/gallery/categories/%gallery_category/options'] = array(
 			'title' => t('Edit category options'),
 			'description' => t('Configure a category\'s options.'),
@@ -160,11 +164,12 @@ function gallery_menu() {
 					5
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
+	/* Create a new menu entry and add it to the option */
 	$items['admin/config/media/gallery/categories/%gallery_category/options/add'] = array(
 			'title' => t('Add category option'),
 			'description' => t('Add a new category option.'),
@@ -174,11 +179,12 @@ function gallery_menu() {
 					5
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'type' => MENU_LOCAL_ACTION,
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
+	/* Edit an existing menu entry */
 	$items['admin/config/media/gallery/categories/%gallery_category/options/edit/%gallery_category_option'] = array(
 			'title' => t('Edit category option'),
 			'description' => t('Configure a category option.'),
@@ -189,10 +195,11 @@ function gallery_menu() {
 					8
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
+	/* Deleta an existing menu entry */
 	$items['admin/config/media/gallery/categories/%gallery_category/options/delete/%gallery_category_option'] = array(
 			'title' => t('Delete category option'),
 			'description' => t('Delete a category option.'),
@@ -203,239 +210,242 @@ function gallery_menu() {
 					8
 			),
 			'access arguments' => array(
-					'administer categories'
+					ADMINISTER_CATEGORIES
 			),
 			'file' => 'gallery.admin.categoryoptions.inc',
 	);
 
-	// Category conditions
-	$items['admin/config/media/gallery/categories/%gallery_category/conditions'] = array(
-			'title' => t('Edit category conditions'),
-			'description' => t('Configure a category\'s conditions.'),
-			'page callback' => 'gallery_category_condition_list',
-			'page arguments' => array(
-					5
-			),
-			'access arguments' => array(
-					'administer categories'
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'gallery.admin.categoryconditions.inc',
-	);
-	$items['admin/config/media/gallery/categories/%gallery_category/conditions/add'] = array(
-			'title' => t('Add category condition'),
-			'description' => t('Add a new category condition.'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'gallery_category_condition_add_form',
-					5
-			),
-			'access arguments' => array(
-					'administer categories'
-			),
-			'type' => 0,
-			'file' => 'gallery.admin.categoryconditions.inc',
-	);
-	$items['admin/config/media/gallery/categories/%gallery_category/conditions/edit/%gallery_category_condition'] = array(
-			'title' => t('Edit category condition'),
-			'description' => t('Configure a category condition.'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'gallery_category_condition_form',
-					5,
-					8
-			),
-			'access arguments' => array(
-					'administer categories'
-			),
-			'file' => 'gallery.admin.categoryconditions.inc',
-	);
-	$items['admin/config/media/gallery/categories/%gallery_category/conditions/delete/%gallery_category_condition'] = array(
-			'title' => t('Delete category condition'),
-			'description' => t('Delete a category condition.'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'gallery_category_condition_delete_form',
-					5,
-					8
-			),
-			'access arguments' => array(
-					'administer categories'
-			),
-			'file' => 'gallery.admin.categoryconditions.inc',
-	);
-
-	// Generic gallery menu
-	$items['gallery/%/%/%'] = array(
-			'title' => t('Gallery'),
-			'page callback' => 'gallery_list',
-			'page arguments' => array(
-					1,
-					2,
-					true,
-					true,
-					3
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'access callback' => 'gallery_access_callback',
-			'access arguments' => array(
-					1
-			),
-			'file' => 'gallery.content.inc',
-	);
-	$items['gallery/%/%/%/list'] = array(
-			'title' => t('Gallery'),
-			'page callback' => 'gallery_list',
-			'page arguments' => array(
-					1,
-					2,
-					true,
-					true,
-					'images'
-			),
-			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'access callback' => 'gallery_access_callback',
-			'access arguments' => array(
-					1
-			),
-			'file' => 'gallery.content.inc',
-	);
-	$items['gallery/%/%/image/%gallery_image'] = array(
-			'page callback' => 'gallery_image',
-			'page arguments' => array(
-					1,
-					2,
-					4
-			),
-			'access callback' => 'gallery_access_callback',
-			'access arguments' => array(
-					1
-			),
-			'file' => 'gallery.content.inc',
-			'type' => MENU_CALLBACK,
-	);
-	$items['gallery/%/%/thumb/%gallery_image/%'] = array(
-			'page callback' => 'gallery_thumb',
-			'page arguments' => array(
-					1,
-					2,
-					4,
-					5
-			),
-			'access callback' => 'gallery_access_callback',
-			'access arguments' => array(
-					1
-			),
-			'file' => 'gallery.content.inc',
-			'type' => MENU_CALLBACK,
-	);
-	/*$items['gallery/%/%/edit'] = array(
-	  'title' => t('Manage images'),
-	  'description' => t('Add and edit gallery images.'),
-	  'page callback' => 'gallery_images_edit',
-	  'page arguments' => array(1, 2),
-	  'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-	  'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-	  'weight' => 2,
-	  'access callback' => 'gallery_edit_access_callback',
-	  'access arguments' => array(1, 2),
-	  'file' => 'gallery.content.inc',
-	);*/
-	$items['gallery/%/%/%/edit'] = array(
-			'title' => 'Manage @mediatype',
-			'title arguments' => array(
-					'@mediatype' => 3
-			),
-			'description' => 'Add and edit gallery medias.',
-			'page callback' => 'gallery_images_edit',
-			'page arguments' => array(
-					1,
-					2,
-					3
-			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'weight' => 2,
-			'access callback' => 'gallery_edit_access_callback',
-			'access arguments' => array(
-					1,
-					2
-			),
-			'file' => 'gallery.content.inc',
-	);
-	$items['gallery/%/%/edit_categories'] = array(
-			'page callback' => 'gallery_image_form_categories',
-			'page arguments' => array(
-					1,
-					2
-			),
-			'access callback' => 'gallery_edit_access_callback',
-			'access arguments' => array(
-					1,
-					2
-			),
-			'file' => 'gallery.content.inc',
-			'type' => MENU_CALLBACK,
-	);
-	$items['gallery/%/%/%/edit/%gallery_image'] = array(
-			'title' => t('Edit a gallery image'),
-			'description' => t('Edit a single gallery image.'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'gallery_image_form',
-					1,
-					2,
-					3,
-					5
-			),
-			'access callback' => 'gallery_edit_access_callback',
-			'access arguments' => array(
-					1,
-					2,
-					5
-			),
-			'file' => 'gallery.content.inc',
-	);
-	$items['gallery/%/%/rate/%gallery_image'] = array(
-			'title' => t('Rate a gallery image'),
-			'description' => t('Rate a gallery image.'),
-			'page callback' => 'gallery_image_rate',
-			'page arguments' => array(
-					4
-			),
-			'access callback' => 'gallery_access_callback',
-			'access arguments' => array(
-					1,
-					'rate gallery medias'
-			),
-			'file' => 'gallery.content.inc',
-	);
-	$items['gallery/%/%/hide/%gallery_image'] = array(
-			'title' => t('Hide a gallery image'),
-			'description' => t('Hide a gallery image.'),
-			'page callback' => 'gallery_image_hide',
-			'page arguments' => array(
-					4
-			),
-			'access arguments' => array(
-					'manage gallery medias'
-			),
-			'file' => 'gallery.content.inc',
-	);
-	$items['gallery/%/%/show/%gallery_image'] = array(
-			'title' => t('Show a gallery image'),
-			'description' => t('Show a gallery image.'),
-			'page callback' => 'gallery_image_show',
-			'page arguments' => array(
-					4
-			),
-			'access arguments' => array(
-					'manage gallery medias'
-			),
-			'file' => 'gallery.content.inc',
-	);
-
+	/* Category options */
+ {
+		$items['admin/config/media/gallery/categories/%gallery_category/conditions'] = array(
+				'title' => t('Edit category conditions'),
+				'description' => t('Configure a category\'s conditions.'),
+				'page callback' => 'gallery_category_condition_list',
+				'page arguments' => array(
+						5
+				),
+				'access arguments' => array(
+						ADMINISTER_CATEGORIES
+				),
+				'type' => MENU_NORMAL_ITEM,
+				'file' => 'gallery.admin.categoryconditions.inc',
+		);
+		$items['admin/config/media/gallery/categories/%gallery_category/conditions/add'] = array(
+				'title' => t('Add category condition'),
+				'description' => t('Add a new category condition.'),
+				'page callback' => 'drupal_get_form',
+				'page arguments' => array(
+						'gallery_category_condition_add_form',
+						5
+				),
+				'access arguments' => array(
+						ADMINISTER_CATEGORIES
+				),
+				'type' => 0,
+				'file' => 'gallery.admin.categoryconditions.inc',
+		);
+		$items['admin/config/media/gallery/categories/%gallery_category/conditions/edit/%gallery_category_condition'] = array(
+				'title' => t('Edit category condition'),
+				'description' => t('Configure a category condition.'),
+				'page callback' => 'drupal_get_form',
+				'page arguments' => array(
+						'gallery_category_condition_form',
+						5,
+						8
+				),
+				'access arguments' => array(
+						ADMINISTER_CATEGORIES
+				),
+				'file' => 'gallery.admin.categoryconditions.inc',
+		);
+		$items['admin/config/media/gallery/categories/%gallery_category/conditions/delete/%gallery_category_condition'] = array(
+				'title' => t('Delete category condition'),
+				'description' => t('Delete a category condition.'),
+				'page callback' => 'drupal_get_form',
+				'page arguments' => array(
+						'gallery_category_condition_delete_form',
+						5,
+						8
+				),
+				'access arguments' => array(
+						ADMINISTER_CATEGORIES
+				),
+				'file' => 'gallery.admin.categoryconditions.inc',
+		);
+	}
+	/* Generic gallery menu */
+ {
+		$items['gallery/%/%/%'] = array(
+				'title' => t('Gallery'),
+				'page callback' => 'gallery_list',
+				'page arguments' => array(
+						1,
+						2,
+						true,
+						true,
+						3
+				),
+				'type' => MENU_NORMAL_ITEM,
+				'access callback' => 'gallery_access_callback',
+				'access arguments' => array(
+						1
+				),
+				'file' => 'gallery.content.inc',
+		);
+		$items['gallery/%/%/%/list'] = array(
+				'title' => t('Gallery'),
+				'page callback' => 'gallery_list',
+				'page arguments' => array(
+						1,
+						2,
+						true,
+						true,
+						'images'
+				),
+				'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+				'access callback' => 'gallery_access_callback',
+				'access arguments' => array(
+						1
+				),
+				'file' => 'gallery.content.inc',
+		);
+		$items['gallery/%/%/image/%gallery_image'] = array(
+				'page callback' => 'gallery_image',
+				'page arguments' => array(
+						1,
+						2,
+						4
+				),
+				'access callback' => 'gallery_access_callback',
+				'access arguments' => array(
+						1
+				),
+				'file' => 'gallery.content.inc',
+				'type' => MENU_CALLBACK,
+		);
+		$items['gallery/%/%/thumb/%gallery_image/%'] = array(
+				'page callback' => 'gallery_thumb',
+				'page arguments' => array(
+						1,
+						2,
+						4,
+						5
+				),
+				'access callback' => 'gallery_access_callback',
+				'access arguments' => array(
+						1
+				),
+				'file' => 'gallery.content.inc',
+				'type' => MENU_CALLBACK,
+		);
+		/*$items['gallery/%/%/edit'] = array(
+		  'title' => t('Manage images'),
+		  'description' => t('Add and edit gallery images.'),
+		  'page callback' => 'gallery_images_edit',
+		  'page arguments' => array(1, 2),
+		  'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+		  'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+		  'weight' => 2,
+		  'access callback' => 'gallery_edit_access_callback',
+		  'access arguments' => array(1, 2),
+		  'file' => 'gallery.content.inc',
+		);*/
+		$items['gallery/%/%/%/edit'] = array(
+				'title' => 'Manage @mediatype',
+				'title arguments' => array(
+						'@mediatype' => 3
+				),
+				'description' => 'Add and edit gallery medias.',
+				'page callback' => 'gallery_images_edit',
+				'page arguments' => array(
+						1,
+						2,
+						3
+				),
+				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+				'weight' => 2,
+				'access callback' => 'gallery_edit_access_callback',
+				'access arguments' => array(
+						1,
+						2
+				),
+				'file' => 'gallery.content.inc',
+		);
+		$items['gallery/%/%/edit_categories'] = array(
+				'page callback' => 'gallery_image_form_categories',
+				'page arguments' => array(
+						1,
+						2
+				),
+				'access callback' => 'gallery_edit_access_callback',
+				'access arguments' => array(
+						1,
+						2
+				),
+				'file' => 'gallery.content.inc',
+				'type' => MENU_CALLBACK,
+		);
+		$items['gallery/%/%/%/edit/%gallery_image'] = array(
+				'title' => t('Edit a gallery image'),
+				'description' => t('Edit a single gallery image.'),
+				'page callback' => 'drupal_get_form',
+				'page arguments' => array(
+						'gallery_image_form',
+						1,
+						2,
+						3,
+						5
+				),
+				'access callback' => 'gallery_edit_access_callback',
+				'access arguments' => array(
+						1,
+						2,
+						5
+				),
+				'file' => 'gallery.content.inc',
+		);
+		$items['gallery/%/%/rate/%gallery_image'] = array(
+				'title' => t('Rate a gallery image'),
+				'description' => t('Rate a gallery image.'),
+				'page callback' => 'gallery_image_rate',
+				'page arguments' => array(
+						4
+				),
+				'access callback' => 'gallery_access_callback',
+				'access arguments' => array(
+						1,
+						RATE_GALLERY_MEDIAS
+				),
+				'file' => 'gallery.content.inc',
+		);
+		$items['gallery/%/%/hide/%gallery_image'] = array(
+				'title' => t('Hide a gallery image'),
+				'description' => t('Hide a gallery image.'),
+				'page callback' => 'gallery_image_hide',
+				'page arguments' => array(
+						4
+				),
+				'access arguments' => array(
+						MANAGE_GALLERY_MEDIAS
+				),
+				'file' => 'gallery.content.inc',
+		);
+		$items['gallery/%/%/show/%gallery_image'] = array(
+				'title' => t('Show a gallery image'),
+				'description' => t('Show a gallery image.'),
+				'page callback' => 'gallery_image_show',
+				'page arguments' => array(
+						4
+				),
+				'access arguments' => array(
+						MANAGE_GALLERY_MEDIAS
+				),
+				'file' => 'gallery.content.inc',
+		);
+	}
+	/* */
 	$items['user/%user/gallery'] = array(
 			'title' => t('Medien'),
 			'description' => t('Images added by a given user.'),
@@ -448,7 +458,7 @@ function gallery_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 2,
 			'access arguments' => array(
-					'add gallery images'
+					ADD_GALLERY_IMAGES
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -462,7 +472,7 @@ function gallery_menu() {
 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'access arguments' => array(
-					'add gallery images'
+					ADD_GALLERY_IMAGES
 			),
 			'file' => 'gallery.content.inc',
 	);
@@ -484,6 +494,17 @@ function gallery_menu() {
 			'file' => 'gallery.content.inc',
 	);
 	return $items;
+}
+
+/**
+ * Implements hook_admin_paths_alter().
+ * 
+ * Enable overlay for certain paths
+ */
+function gallery_admin_paths_alter(&$paths) {
+	$paths['user/*/gallery/edit'] = TRUE;
+	$paths['user/*/gallery/list'] = TRUE;
+	$paths['user/*/gallery'] = TRUE;
 }
 
 /**
@@ -538,38 +559,38 @@ function gallery_theme() {
  */
 function gallery_permission() {
 	return array(
-			'administer rating types' => array(
+			ADMINISTER_RATING_TYPES => array(
 					'title' => t('Administer rating types'),
 					'description' => t(
 						'Create and modify rating types for gallery medias.'),
 			),
-			'administer categories' => array(
+			ADMINISTER_CATEGORIES => array(
 					'title' => t('Administer categories'),
 					'description' => t(
 						'Create and modify categories for gallery medias.'),
 			),
-			'add gallery images' => array(
+			ADD_GALLERY_IMAGES => array(
 					'title' => t('Add gallery medias'),
 					'description' => t(
 						'Create and modify gallery medias of objects owned.'),
 			),
-			'manage gallery medias' => array(
+			MANAGE_GALLERY_MEDIAS => array(
 					'title' => t('Manage gallery medias'),
 					'description' => t(
 						'Create and modify gallery medias everywhere.'),
 			),
-			'rate gallery medias' => array(
+			RATE_GALLERY_MEDIAS => array(
 					'title' => t('Rate gallery medias'),
 					'description' => t('Place ratings for gallery medias.')
 			),
-			'view gallery images' => array(
+			VIEW_GALLERY_IMAGES => array(
 					'title' => t('View gallery medias'),
 					'description' => t('View gallery medias.')
 			),
-			'view hidden gallery images' => array(
+			VIEW_HIDDEN_GALLERY_IMAGES => array(
 					'title' => t('View hidden gallery medias'),
 					'description' => t(
-						'View gallery medias with rating lower than the boundry set in the gallery settings.')
+						'View gallery medias with rating lower than the boundary set in the gallery settings.')
 			)
 	);
 }
@@ -679,30 +700,48 @@ function gallery_images($mediatype, $type = false, $id = false,
 				&& array_key_exists('crosslinked', $types[$type]))
 			$crosslinked = $types[$type]['crosslinked'];
 	}
-	$sql = 'SELECT ' . 'gi.*, ' . 'fm.*, ' . 'gic.id AS gic_id, '
-			. 'gis.subtype AS gis_subtype, ' . 'gco.id AS gco_id, '
-			. 'gco.id AS gco_name, ' . 'gc.id AS gc_id, '
-			. 'gc.name AS gc_name, ' . 'gc.description AS gc_description, '
-			. 'COALESCE(r.overallrating, 0) AS overallrating '
-			. ($rating ? ', (SELECT AVG(gir2.rating) FROM gallery_image_rating AS gir2 WHERE gir2.image_id = gi.id AND gir2.rating_type_id = grt.id GROUP BY gir2.rating_type_id) AS rating, '
-							. '(SELECT COUNT(gir3.rating) FROM gallery_image_rating AS gir3 WHERE gir3.image_id = gi.id AND gir3.rating_type_id = grt.id GROUP BY gir3.rating_type_id) AS rating_count, '
-							. 'grt.id AS grt_id ' : '') . 'FROM '
-			. 'gallery_image AS gi '
-			. 'INNER JOIN file_managed AS fm ON fm.fid = gi.fid '
-			. 'LEFT OUTER JOIN gallery_image_category AS gic ON gic.image_id = gi.id '
-			. 'LEFT OUTER JOIN gallery_image_subtype AS gis ON gis.image_id = gi.id '
-			. 'LEFT OUTER JOIN gallery_image_subtype AS gis2 ON gis2.image_id = gi.id '
-			. 'LEFT OUTER JOIN gallery_category_option AS gco ON gco.id = gic.option_id '
-			. 'LEFT OUTER JOIN gallery_category AS gc ON gc.id = gco.category_id '
-			. 'LEFT OUTER JOIN '
-			. '(SELECT SUM(s.rating) AS overallrating, s.image_id FROM '
-			. '(SELECT AVG(gir.rating)*AVG(grt.weight) AS rating, gir.image_id '
-			. 'FROM ' . 'gallery_image_rating AS gir '
-			. 'LEFT JOIN gallery_rating_type AS grt ON (gir.rating_type_id = grt.id) '
-			. 'GROUP BY grt.id, gir.image_id' . ') AS s '
-			. 'GROUP BY s.image_id ' . ') AS r ON r.image_id = gi.id '
-			. ($rating ? 'LEFT OUTER JOIN gallery_rating_type AS grt ON grt.id IS NOT NULL '
+	
+	$ratingSQL = ($rating ? ', (SELECT AVG(gir2.rating) FROM {gallery_image_rating} AS gir2 WHERE gir2.image_id = gi.id AND gir2.rating_type_id = grt.id GROUP BY gir2.rating_type_id) AS rating, '
+							. '(SELECT COUNT(gir3.rating) FROM {gallery_image_rating} AS gir3 WHERE gir3.image_id = gi.id AND gir3.rating_type_id = grt.id GROUP BY gir3.rating_type_id) AS rating_count, '
+							. 'grt.id AS grt_id ' : '');
+	$ratingSQL2 = ($rating ? 'LEFT OUTER JOIN {gallery_rating_type} AS grt ON grt.id IS NOT NULL '
 					: '');
+	$sql = "SELECT
+				gi.*,
+				fm.*,
+				gic.id AS gic_id,
+				gis.subtype AS gis_subtype,
+				gco.id AS gco_id,
+				gco.id AS gco_name,
+				gc.id AS gc_id,
+				gc.name AS gc_name,
+				gc.description AS gc_description,
+				COALESCE(r.overallrating, 0) AS overallrating 
+				$ratingSQL
+			FROM
+				{gallery_image} AS gi
+				INNER JOIN {file_managed} AS fm ON fm.fid = gi.fid
+				LEFT OUTER JOIN {gallery_image_category} AS gic ON gic.image_id = gi.id
+				LEFT OUTER JOIN {gallery_image_subtype} AS gis ON gis.image_id = gi.id
+				LEFT OUTER JOIN {gallery_image_subtype} AS gis2 ON gis2.image_id = gi.id
+				LEFT OUTER JOIN {gallery_category_option} AS gco ON gco.id = gic.option_id
+				LEFT OUTER JOIN {gallery_category} AS gc ON gc.id = gco.category_id
+				LEFT OUTER JOIN (
+					SELECT
+						SUM(s.rating) AS overallrating,
+						s.image_id
+					FROM (
+						SELECT
+							AVG(gir.rating) * AVG(grt.weight) AS rating,
+							gir.image_id
+						FROM
+							{gallery_image_rating} AS gir
+							LEFT JOIN {gallery_rating_type} AS grt ON (gir.rating_type_id = grt.id)
+						GROUP BY grt.id, gir.image_id
+					) AS s
+				GROUP BY s.image_id
+				) AS r ON r.image_id = gi.id
+				$ratingSQL2";
 	$id_conditions = array();
 	if ($id) {
 		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
@@ -723,11 +762,11 @@ function gallery_images($mediatype, $type = false, $id = false,
 		array_push($id_conditions, 'gi.item_type = \'' . $type . '\'');
 	if ($id_conditions)
 		array_push($conditions, '(' . implode(' AND ', $id_conditions) . ')');
-	if (!user_access('view hidden gallery images'))
+	if (!user_access(VIEW_HIDDEN_GALLERY_IMAGES))
 		array_push(
 			$required_conditions,
 			'((COALESCE(r.overallrating, 0) >= '
-					. variable_get('gallery_boundry', 0)
+					. variable_get('gallery_boundary', 0)
 					. ' AND gi.visible = 1) OR gi.owner_id = ' . $user->uid
 					. ')');
 	if ($crosslinked && $type) {
@@ -742,11 +781,11 @@ function gallery_images($mediatype, $type = false, $id = false,
 				if ($i == 0)
 					array_push(
 						$joins,
-						'LEFT OUTER JOIN ' . $c['source'] . ' AS c' . $n
+						'LEFT OUTER JOIN {' . $c['source'] . '} AS c' . $n
 								. ' ON c' . $n . '.id = gi.item_id');
 				array_push(
 					$joins,
-					'LEFT OUTER JOIN ' . $c['target'] . ' AS c' . $n . '_' . $i
+					'LEFT OUTER JOIN {' . $c['target'] . '} AS c' . $n . '_' . $i
 							. ' ON c' . $n . '_' . $i . '."' . $c['target_key']
 							. '" = '
 							. ($i == 0 ? 'c' . $n : 'c' . $n . '_' . ($i - 1))
@@ -889,7 +928,7 @@ function gallery_images($mediatype, $type = false, $id = false,
  *   Number of images
  */
 function gallery_images_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid  ';
+	$sql = 'SELECT COUNT(gi.id) FROM {gallery_image} AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid  ';
 	$id_conditions = array();
 	if ($id) {
 		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
@@ -952,7 +991,7 @@ function gallery_sounds_count($type = false, $id = false) {
  *   Number of videos
  */
 function gallery_videos_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid ';
+	$sql = 'SELECT COUNT(gi.id) FROM {gallery_image} AS gi INNER JOIN file_managed as fm ON fm.fid = gi.fid ';
 	$id_conditions = array();
 	if ($id) {
 		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
@@ -983,7 +1022,7 @@ function gallery_videos_count($type = false, $id = false) {
  *   Number of medias
  */
 function gallery_medias_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi ';
+	$sql = 'SELECT COUNT(gi.id) FROM {gallery_image} AS gi ';
 	$id_conditions = array();
 	if ($id) {
 		$id_condition = is_array($id) ? 'IN (\'' . implode('\', \'', $id)
@@ -1029,7 +1068,7 @@ function gallery_image_load($id) {
 	if (!$id)
 		return array();
 	$query = db_select(
-		'gallery_image',
+		'gallery_image}',
 		'gi',
 		array('fetch' => PDO::FETCH_ASSOC));
 	$query->join('file_managed', 'fm', 'fm.fid = gi.fid');
@@ -1145,6 +1184,8 @@ function gallery_image_delete($image) {
 	$file = (object) $image;
 	if (!file_delete($file, true))
 		return false;
+	$transaction = db_transaction();
+	try {
 	db_delete('gallery_image')->condition('id', $image['id'])
 		->execute();
 	db_delete('gallery_image_category')->condition('image_id', $image['id'])
@@ -1155,6 +1196,10 @@ function gallery_image_delete($image) {
 		->execute();
 	db_delete('file_managed')->condition('fid', $image['fid'])
 		->execute();
+	} catch (Exception $e) {
+		$transaction->rollback();
+		drupal_set_message($e->getMessage(), 'error');
+	}
 	return true;
 }
 
@@ -1415,6 +1460,7 @@ function gallery_category_save($category) {
  *   A category array.
  * @return
  *   TRUE on success.
+ * @todo If we just hat foreign key dependencies... :/
  */
 function gallery_category_delete($category) {
 	db_delete('gallery_category')->condition('id', $category['id'])
@@ -1617,11 +1663,11 @@ function gallery_rating_types() {
  *   The ID of the rating type.
  * @return
  *   A rating type array containing the following keys:
- *   - "grtid": The unique gallery rating type ID.
- *   - "name": The name of the rating type.
- *   - "description": The description of the rating type.
- *   - "weight": The weight of the rating type.
- *   - "role": The role required for the rating type.
+ *   - 'grtid': The unique gallery rating type ID.
+ *   - 'name': The name of the rating type.
+ *   - 'description': The description of the rating type.
+ *   - 'weight': The weight of the rating type.
+ *   - 'role': The role required for the rating type.
  *   If the rating type ID is not valid, an empty array is returned.
  */
 function gallery_rating_type_load($id) {
@@ -1648,10 +1694,11 @@ function gallery_rating_type_load($id) {
  *   A rating type array. In the case of a new rating type, 'id' will be populated.
  */
 function gallery_rating_type_save($type) {
-	if (isset($type['id']) && is_numeric($type['id']))
+	if (isset($type['id']) && is_numeric($type['id'])) {
 		drupal_write_record('gallery_rating_type', $type, 'id');
-	else
+	} else {
 		drupal_write_record('gallery_rating_type', $type);
+	}
 	return $type;
 }
 
@@ -1679,7 +1726,7 @@ function gallery_rating_type_delete($type) {
  * @param string $type
  *   The type of object to be accessed
  */
-function gallery_access_callback($type, $permission = 'view gallery images') {
+function gallery_access_callback($type, $permission = VIEW_GALLERY_IMAGES) {
 	if (!_gallery_check_type_validity($type))
 		return false;
 	return user_access($permission);
@@ -1700,9 +1747,9 @@ function gallery_access_callback($type, $permission = 'view gallery images') {
 function gallery_edit_access_callback($type, $id, $image = false) {
 	if (!_gallery_check_type_validity($type))
 		return false;
-	if (user_access('manage gallery medias'))
+	if (user_access(MANAGE_GALLERY_MEDIAS))
 		return true;
-	if (!user_access('add gallery images'))
+	if (!user_access(ADD_GALLERY_IMAGES))
 		return false;
 	$types = _gallery_types();
 	if ($image) // check image ownership
@@ -1761,7 +1808,7 @@ function gallery_owner_access_callback($type, $id, $image = false) {
 
 function gallery_own_edit_access($owner) {
 	global $user;
-	return $user->uid == $owner->uid && user_access('add gallery images');
+	return $user->uid == $owner->uid && user_access(ADD_GALLERY_IMAGES);
 }
 
 /**

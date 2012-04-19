@@ -16,6 +16,10 @@ function area_get_new_areaname_form_callback() {
 	print drupal_render(drupal_get_form('area_new_areaname_form'));
 }
 
+/**
+ * Renders a form which allows the user to submit an area name.
+ * For usage with ajax.
+ */
 function area_overview_ajax_callback($areadata = NULL) {
 	print drupal_render(drupal_get_form('area_overview_form', $areadata));
 }

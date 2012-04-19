@@ -8,21 +8,15 @@
 module_load_include('inc', 'area', 'area');
 
 /**
- * Returns the area edit site
- * @param array $areadata
+ * Create a form which lets the user edit the geometry of an area.
+ * 
+ * @param array $form
+ *  Drupal form
+ * @param $form_state
+ *  An associative array containing the current state of the form.
+ * @param $areadata
+ * 	Array with area data
  */
-function area_edit($areadata = NULL) {
-	return drupal_get_form('area_edit_form', $areadata);
-}
-
-/**
- * Returns the area geometry edit site
- * @param array $areadata
- */
-function area_edit_geometry($areadata = NULL) {
-	return drupal_get_form('area_edit_geometry_form', $areadata);
-}
-
 function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 	$output['helptext'] = array(
 			'#type' => 'markup',
@@ -42,6 +36,10 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 /**
  * Return a form which allows all textual data of an area to be edited
  * 
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @param array $areadata
  */
 function area_edit_form($form, &$form_state, $areadata = NULL) {
@@ -132,6 +130,18 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 			'#default_value' => $areadata['safety_precautions']
 	);
 
+	/* create a fieldset for the strategies text fields */
+	$form['area_habitats_edit'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Linked habitats'),
+			'#weight' => 12,
+			'#collapsible' => true,
+			'#collapsed' => true,
+	);
+
+	/* add the habitats table */
+	$form['area_habitats_edit']['table'] = area_edit_habitat($areadata);
+
 	/* create a fieldset for the static google maps */
 	$form['area_static_map'] = array(
 			'#type' => 'fieldset',
@@ -171,10 +181,80 @@ function area_edit_form_validate($form, &$form_state) {
 }
 
 /**
- * Save changes to the area texts
+ * Return a drupal render array with the habitats linked to the given area.
+ * 
+ * @param $areadata
+ * 	Array with all data about an area
+ */
+function area_edit_habitat($areadata = NULL) {
+	$results = db_query(
+		'SELECT
+			h.id AS id,
+			h.label AS label,
+			h.name AS name,
+			CASE
+				WHEN ah.id IS NOT NULL
+					THEN 1
+					ELSE 0
+				END
+			AS selected
+		FROM
+			{habitat} h
+			LEFT JOIN (
+				SELECT
+					id,
+					habitat_id,
+					area_id
+				FROM
+					{area_habitat}
+				WHERE
+					area_id = :areaid
+			) AS ah ON h.id = ah.habitat_id;',
+		array('areaid' => $areadata['id']));
+
+	$habitats = array();
+	foreach ($results->fetchAll() as $habitatAsObject) {
+		$row = array();
+		$id = $habitatAsObject->id;
+		$checkText = $habitatAsObject->selected ? "checked='true'" : '';
+		$checkbox = "<input type='checkbox' name='selectedhabitats[]' value='"
+				. $habitatAsObject->id . "' $checkText />";
+		$row[] = $checkbox;
+		$row[] = $habitatAsObject->label;
+		$row[] = $habitatAsObject->name;
+		$habitats[] = $row;
+	}
+
+	$form = array(
+			'#theme' => 'datatable',
+			'#header' => array(
+					array(
+							'name' => t('Select'),
+							'width' => 40
+					),
+					array(
+							'name' => t('Label'),
+							'width' => 200
+					),
+					array(
+							'name' => t('Name'),
+							'width' => 600
+					)
+			),
+			'#tableWidth' => 900,
+			'#rows' => $habitats,
+			'#id_table' => 'habitats'
+	);
+	return $form;
+}
+
+/**
+ * Save changes to the area texts.
  *
  * @param array $form
+ *  Drupal form
  * @param array $form_state
+ *  An associative array containing the current state of the form.
  */
 function area_edit_form_submit($form, &$form_state) {
 	/* Escape values before submitting them to the database */
@@ -186,6 +266,23 @@ function area_edit_form_submit($form, &$form_state) {
 		$form_state['values']['tending_strategies']);
 	$safety_precautions = filter_xss(
 		$form_state['values']['safety_precautions']);
+	$selectedhabitatIds = isset($_POST['selectedhabitats']) ? $_POST['selectedhabitats']
+			: array();
+	// flush all existing area_habitat records for this area...
+	db_delete('area_habitat')->condition('area_id', $area_id)
+		->execute();
+	// ...and populate them with the current new ones
+	$values = array();
+	$insert = db_insert('area_habitat')->fields(array('area_id',
+				'habitat_id'
+		));
+	foreach ($selectedhabitatIds as $habitatId) {
+		$insert->values(
+				array('area_id' => $area_id,
+						'habitat_id' => $habitatId
+				));
+	}
+	$insert->execute();
 
 	db_update('area')->fields(
 			array('name' => $name,

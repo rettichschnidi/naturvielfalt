@@ -27,7 +27,14 @@ function area_new_area() {
 
 /**
  * Return a form which allows the user to submit an area name.
- * The submitted results will pass area_create_new_area();
+ * The submitted results will be passed to area_create_new_area();
+ * 
+ * @param array $form
+ * 	Drupal form
+ * @param array &$form_state
+ *  An associative array containing the current state of the form.
+ * @return array
+ *  Drupal form
  */
 function area_new_areaname_form($form, &$form_state) {
 	$form = area_address_hidden_form();
@@ -50,10 +57,12 @@ function area_new_areaname_form($form, &$form_state) {
 }
 
 /**
- * Create a new area
+ * Create a new area.
  * 
- * @param array $form Drupal form
- * @param array $form_state Drupal form state with all data
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @todo Maybe use the ajax version?
  */
 function area_create_new_area($form, &$form_state) {
@@ -81,7 +90,7 @@ function area_create_new_area($form, &$form_state) {
 		drupal_set_message(
 			t('New area could not be created.'),
 			'error');
-		drupal_goto('area/new');
+		$form_state['redirect'] = 'area/new';
 		return;
 	}
 
@@ -109,14 +118,14 @@ function area_create_new_area($form, &$form_state) {
 
 		drupal_set_message(
 			t('Area "@areaname" got created.', array('@areaname' => $name)));
-		drupal_goto('area/' . $area_id . '/show');
+		$form_state['redirect'] =  'area/' . $area_id . '/show';
 	} catch (Exception $e) {
 		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(
 			t('New area could not be created.'),
 			'error');
-		drupal_goto('area/new');
+		$form_state['redirect'] = 'area/new';
 	}
 }
 ?>

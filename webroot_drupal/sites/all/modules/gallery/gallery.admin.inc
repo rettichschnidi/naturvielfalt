@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Administration pages for gallery settings.
@@ -7,14 +6,22 @@
 
 /**
  * Menu callback; Edit gallery settings
+ * 
+ * Show an admin menu where user can set...
+ *  - The minimum rating level for pics to show up
+ *  - Max size of image file in KByte
+ *  - Max size of sound file in KByte
+ *  - Max size of video file in KByte
+ * @return array
+ * 	Drupal form
  */
 function gallery_form() {
 	$form = array();
-	$form['gallery_boundry'] = array(
+	$form['gallery_boundary'] = array(
 			'#type' => 'textfield',
 			'#size' => '8',
-			'#title' => t('Display boundry'),
-			'#default_value' => variable_get('gallery_boundry', 0),
+			'#title' => t('Display boundary'),
+			'#default_value' => variable_get('gallery_boundary', 0),
 			'#description' => t(
 				'The minimum rating an media has to receive in order to be displayed. Whereas the rating is the product of the average ratings of a type multiplied by the weight of the type.'),
 			'#required' => TRUE,
@@ -47,10 +54,18 @@ function gallery_form() {
 	return system_settings_form($form);
 }
 
+/**
+ * Restrict the inserted values to valid integers.
+ * 
+ * @param array $form
+ * 	Drupal form
+ * @param array &$form_state
+ *  An associative array containing the current state of the form.
+ */
 function gallery_form_validate($form, &$form_state) {
-	if (!preg_match('/^\-?[0-9]+$/', $form_state['values']['gallery_boundry'])) {
+	if (!preg_match('/^\-?[0-9]+$/', $form_state['values']['gallery_boundary'])) {
 		form_error(
-			$form['gallery_boundry'],
+			$form['gallery_boundary'],
 			t('Specify a valid signed integer value.'));
 	}
 	if (!preg_match(

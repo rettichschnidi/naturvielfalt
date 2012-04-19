@@ -32,8 +32,10 @@ function gallery_category_list() {
  * @see gallery_category_form_submit()
  */
 function gallery_category_form($form, &$form_state, $category) {
-	$title = t('Edit %name', array('%name' => $category['name']));
-	drupal_set_title($title, PASS_THROUGH);
+	if (isset($category['name'])) {
+		$title = t('Edit %name', array('%name' => $category['name']));
+		drupal_set_title($title, PASS_THROUGH);
+	}
 
 	$form_state['gallery_category'] = $category;
 	$form['#tree'] = TRUE;
@@ -42,28 +44,28 @@ function gallery_category_form($form, &$form_state, $category) {
 			'#type' => 'textfield',
 			'#size' => '128',
 			'#title' => t('Name'),
-			'#default_value' => $category['name'],
+			'#default_value' => isset($category['name']) ? $category['name'] : '',
 			'#description' => t('The name of the category.'),
 			'#required' => TRUE,
 	);
 	$form['description'] = array(
 			'#type' => 'textarea',
 			'#title' => t('Description'),
-			'#default_value' => $category['description'],
+			'#default_value' => isset($category['description']) ? $category['description'] : '',
 			'#description' => t('The description of the category.'),
 			'#required' => FALSE,
 	);
 	$form['required'] = array(
 			'#type' => 'checkbox',
 			'#title' => t('Required'),
-			'#default_value' => $category['required'],
+			'#default_value' => isset($category['required']) ? $category['required'] : '',
 			'#description' => t('Whether this category is required or not.'),
 			'#required' => FALSE,
 	);
 	$form['multiple'] = array(
 			'#type' => 'checkbox',
 			'#title' => t('Multiple'),
-			'#default_value' => $category['multiple'],
+			'#default_value' => isset($category['multiple']) ? $category['multiple'] : '',
 			'#description' => t(
 				'Whether multiple values may be selected for this category or not.'),
 			'#required' => FALSE,
@@ -76,7 +78,6 @@ function gallery_category_form($form, &$form_state, $category) {
 	$form['actions']['submit'] = array(
 			'#type' => 'submit',
 			'#value' => t('Update category'),
-			'#access' => $editable,
 	);
 
 	return $form;
@@ -106,7 +107,7 @@ function gallery_category_form_submit($form, &$form_state) {
  * @see gallery_category_add_form_submit()
  */
 function gallery_category_add_form($form, &$form_state) {
-	$form = gallery_category_form($form, &$form_state, array());
+	$form = gallery_category_form($form, $form_state, array());
 	$title = t('Create new category');
 	drupal_set_title($title, PASS_THROUGH);
 

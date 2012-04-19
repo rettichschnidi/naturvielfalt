@@ -8,7 +8,10 @@
 module_load_include('inc', 'area', 'area');
 
 /**
- * Generate a JSON with all areas that are visible to the user
+ * Generate a JSON with all areas which are available to the user.
+ * 
+ * @param $acl_level
+ * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
  * @todo Include the user's nickname
  */
 function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
@@ -36,10 +39,10 @@ function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
 			'u.name'
 	);
 
-	$sql['dbTable'] = "{area} a";
-	$sql['dbJoins'] = "JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
+	$sql['dbTable'] = '{area} a';
+	$sql['dbJoins'] = 'JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
-			JOIN {users} u ON u.uid = cacl.users_id";
+			JOIN {users} u ON u.uid = cacl.users_id';
 	$sql['id'] = 'id';
 	$sql['acl_level'] = $acl_level;
 	$output = datatable_dbRequest($sql);
@@ -49,6 +52,10 @@ function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
 /**
  * Return one or all viewable areas as JSON.
  * 
+ * @param $area_id 
+ * 	Id of requested area
+ * @param $acl_level
+ * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
  * @return JSON
  */
 function area_json($area_id = false, $acl_level = 'ACL_READ') {
@@ -128,9 +135,10 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 }
 
 /**
- * Take JSON and update area geometry
+ * Take JSON and update existing area geometry.
  * 
- * @param array $areadata
+ * @param $areadata
+ * 	Array with required area data
  */
 function area_updategeometry_json($areadata = NULL) {
 	assert($areadata != NULL);
@@ -166,5 +174,26 @@ function area_updategeometry_json($areadata = NULL) {
 				array('@areaname' => $areadata['name'])),
 			'error');
 	}
+}
+
+function area_habitat_datatable_json($areadata = NULL) {
+	assert($areadata != NULL);
+	// SELECT label, name FROM drupal_area_habitat ah JOIN drupal_habitat h ON ah.habitat_id = h.id WHERE ah.area_id = 1;
+	/* Set the db fields to select */
+	$sql['dbColumns'] = array(
+			'label',
+			'name'
+	);
+
+	$sql['dbSearchColumns'] = array(
+			'label',
+			'name'
+	);
+
+	$sql['dbTable'] = '{area_habitat} ah';
+	$sql['dbJoins'] = 'JOIN {habitat} h ON ah.habitat_id = h.id';
+	$sql['id'] = 'id';
+	$output = datatable_dbRequest($sql);
+	return drupal_json_output($output);
 }
 ?>

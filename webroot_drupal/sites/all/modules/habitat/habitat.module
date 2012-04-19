@@ -1,19 +1,16 @@
 <?php
 /**
-* @file habitat.module
-* @author ?, 2011
-* @author Ramon Gamma, 2012
-* @copyright 2011-2012 Naturwerk, Brugg
-*/
+ * @file habitat.module
+ * @author Reto Schneider, 2012
+ * @author Ramon Gamma, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
 
-//define('HABITAT_ACCESS', 'area access');
-//define('AREA_CREATE', 'area create');
+define('ACCESS_CONTENT', 'access habitat');
 
 /**********************************
  *  Hook implementations
  *********************************/
-
-//module_load_include('inc', 'habitat');
 
 // Load gallery integration
 module_load_include('inc', 'habitat', 'habitat.gallery');
@@ -27,47 +24,48 @@ function habitat_menu() {
 	$items['habitat'] = array(
 			'title' => t('Habitats'),
 			'description' => t('Show all habitats'),
-			'page callback' => 'habitat_list',
+			'page callback' => 'habitat_show_all',
 			'access arguments' => array(
-					'access content'
+					ACCESS_CONTENT
 			),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'habitat.list.inc',
+			'file' => 'habitat.show.inc',
 	);
 
 	$items['habitat/%'] = array(
 			'title' => 'Show Habitat Areas',
 			'description' => 'View existing Habitat Areas',
-			'page callback' => 'habitat_show',
+			'page callback' => 'drupal_get_form',
 			'access arguments' => array(
-					'access content'
+					ACCESS_CONTENT
 			),
 			'page arguments' => array(
+					'habitat_show_form',
 					1
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'habitat.show.inc',
 	);
 	$items['habitat/%/json'] = array(
-					'title' => t('existing Habitat Areas in JSON format'),
-					'page callback' => 'habitat_show_ajax',
-					'access arguments' => array(
-							'access content'
-					),
-					'page arguments' => array(
-							1
-					),
-					'type' => MENU_CALLBACK,
-						'file' => 'habitat.show.inc',
+			'title' => t('existing Habitat Areas in JSON format'),
+			'page callback' => 'habitat_json',
+			'access arguments' => array(
+					ACCESS_CONTENT
+			),
+			'page arguments' => array(
+					1
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'habitat.json.inc',
 	);
-	$items['habitat/json'] = array(
-					'title' => t('Habitat list information in JSON format'),
-					'page callback' => 'habitat_list_ajax',
-					'access arguments' => array(
-							'access content'
-					),
-					'type' => MENU_CALLBACK,
-						'file' => 'habitat.list.inc',
+	$items['habitat/datatablejson'] = array(
+			'title' => t('Habitat list information in JSON format'),
+			'page callback' => 'habitat_list_datatablejson',
+			'access arguments' => array(
+					ACCESS_CONTENT
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'habitat.json.inc',
 	);
 	return $items;
 }

@@ -1,5 +1,6 @@
 name = habitat
-description = Manage Habitats
+description = Manage habitats
 package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
+dependencies[] = datatable

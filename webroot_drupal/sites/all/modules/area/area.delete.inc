@@ -8,61 +8,49 @@
 module_load_include('inc', 'area', 'area');
 
 /**
- * Return a form which asks the user if he really wants to delete the area
+ * Return a form which asks the user if he really wants to delete the area.
  * 
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
  * @param array $areadata
+ * @return array Drupal form
  */
 function area_delete_form($form, &$form_state, $areadata = NULL) {
 	assert(!empty($areadata));
-	drupal_set_title(
-		t("Delete @areaname.", array('@areaname' => $areadata['name'])));
+	$form_state['area_data'] = $areadata;
 
-	$question = t(
-		'Are you sure that you want to delete «@areaname»?',
-		array('@areaname' => $areadata['name']));
-	/* create a fieldset for the tabular data */
-	$form['question'] = array(
-			'#type' => 'markup',
-			'#markup' => "<p>$question</p>"
-	);
-
-	$form['button'] = array(
-			'#type' => 'submit',
-			'#value' => t('Delete')
-	);
-	return $form;
+	return confirm_form(
+		$form,
+		t('Delete @areaname?', array('@areaname' => $areadata['name'])),
+		'area/' . $areadata['id'] . '/show',
+		t(
+			'Are you sure you want to delete the area @areaname?',
+			array('@areaname' => $areadata['name'])),
+		t('Delete'),
+		t('Cancel'));
 }
 
 /**
- * Check if area can be deleted
+ * Delete area and its area_surface.
  *
  * @param array $form
+ *  Drupal form
  * @param array $form_state
- */
-function area_delete_form_validate($form, &$form_state) {
-	// foobar does not exists
-	// drupal_set_message(t('This area is still in use.'), 'error');
-}
-
-/**
- * Delete area
- *
- * @param array $form
- * @param array $form_state
+ *  An associative array containing the current state of the form.
  */
 function area_delete_form_submit($form, &$form_state) {
-	/* Escape values before submitting them to the database */
-	$area_id = (int) $form_state['build_info']['args'][0]['id'];
-	$area_surface_id = (int) $form_state['build_info']['args'][0]['area_surface_id'];
-	$num_deleted_area = db_delete('area')->condition('id', $area_id)
+	$areadata = $form_state['area_data'];
+	$num_deleted_area = db_delete('area')->condition('id', $areadata['id'])
 		->execute();
 	assert($num_deleted_area == 1);
 	$num_deleted_geometry = db_delete('area_surface')->condition(
 			'id',
-			$area_surface_id)
+			$areadata['area_surface_id'])
 		->execute();
-	assert($num_deleted == 1);
+	assert($num_deleted_geometry == 1);
 
-	drupal_goto('/area');
+	$form_state['redirect'] = 'areas/show';
 }
 ?>

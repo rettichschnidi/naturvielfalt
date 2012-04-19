@@ -1,12 +1,12 @@
 name = Gallery
 description = Provides functionality for rated image galleries bound to inventory entries, areas, habitants or organisms
-package = Swissmon
+package = Naturvielfalt
 core = 7.x
 version = "7.0-dev"
 dependencies[] = image
 dependencies[] = user
 dependencies[] = organism
-dependencies[] = inventory
+#dependencies[] = inventory
 dependencies[] = area
 
 configure = admin/config/media/gallery

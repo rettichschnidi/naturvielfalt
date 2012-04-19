@@ -1,477 +1,505 @@
 <?php
 /**
- * @file
- * Install, update and uninstall functions for gallery module.
+ * do not modify this file, it is generated! 
  */
 
-/**
- * Implements hook_schema().
- * 
- * Defining different DB schemas required for the gallery module
- * 
- */
 function gallery_schema() {
-	$schema['gallery_image'] = array(
-			'description' => 'Mapping of a managed file to an inventory_entry, area, habitant or organism.',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a gallery image.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'item_type' => array(
-							'description' => 'The type of object this image belongs to (inventory_entry, area, habitant, organism)',
-							'type' => 'varchar',
-							'length' => 64,
-							'not null' => TRUE
-					),
-					'item_id' => array(
-							'description' => 'The id of the object this image belongs to',
-							'type' => 'int',
-							'unsigned' => TRUE,
-							'not null' => TRUE
-					),
-					'fid' => array(
-							'description' => 'The {file_managed}.fid being referenced in this field.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'title' => array(
-							'description' => 'The title of the image.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => FALSE,
-					),
-					'description' => array(
-							'description' => 'Long description of the image.',
-							'type' => 'text',
-							'not null' => FALSE,
-					),
-					'author' => array(
-							'description' => 'The author of the image',
-							'type' => 'varchar',
-							'length' => 255,
-							'not null' => FALSE,
-					),
-					'location' => array(
-							'description' => 'The location of the image',
-							'type' => 'varchar',
-							'length' => 255,
-							'not null' => FALSE,
-					),
-					'visible' => array(
-							'description' => 'Whether this image is visible for the public or not.',
-							'type' => 'int',
-							'not null' => FALSE,
-							'unsigned' => TRUE,
-							'default' => '1',
-					),
-					'owner_id' => array(
-							'description' => 'The {users}.uid of this image',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'created_date' => array(
-							'description' => 'The date this image was created',
-							'pgsql_type' => 'timestamp with time zone',
-							'not null' => TRUE,
-					),
-					'modified_date' => array(
-							'description' => 'The date this image was last modified',
-							'pgsql_type' => 'timestamp with time zone',
-							'not null' => TRUE,
-					),
-			),
-			'indexes' => array(
-					'fid' => array(
-							'fid'
-					),
-					'item_id' => array(
-							'item_id'
-					),
-					'item_type' => array(
-							'item_type'
-					),
-					'owner_id' => array(
-							'owner_id'
-					),
-					'visible' => array(
-							'visible'
-					),
-			),
-			'foreign keys' => array(
-					'fid' => array(
-							'table' => 'file_managed',
-							'columns' => array(
-									'fid' => 'fid'
-							),
-					),
-					'owner_id' => array(
-							'table' => 'users',
-							'columns' => array(
-									'owner_id' => 'uid'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_category'] = array(
-			'description' => 'The available categories.',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a gallery category.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'name' => array(
-							'description' => 'The name of the category.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => FALSE,
-					),
-					'description' => array(
-							'description' => 'Long description of the categories.',
-							'type' => 'text',
-							'not null' => FALSE,
-					),
-					'required' => array(
-							'description' => 'Whether this category is required or not.',
-							'type' => 'int',
-							'not null' => FALSE,
-							'unsigned' => TRUE,
-							'size' => 'tiny',
-					),
-					'multiple' => array(
-							'description' => 'Whether multiple values may be selected for this category or not.',
-							'type' => 'int',
-							'not null' => FALSE,
-							'unsigned' => TRUE,
-							'size' => 'tiny',
-					)
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_category_option'] = array(
-			'description' => 'The available options of a category.',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a category option.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'category_id' => array(
-							'description' => 'The {gallery_category}.id this option belongs to.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'name' => array(
-							'description' => 'The name of the option.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => FALSE,
-					),
-			),
-			'indexes' => array(
-					'category_id' => array(
-							'category_id'
-					),
-			),
-			'foreign keys' => array(
-					'category_id' => array(
-							'table' => 'gallery_category',
-							'columns' => array(
-									'category_id' => 'id'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_category_condition'] = array(
-			'description' => 'The conditions for a category to be available.',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a category condition.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'category_id' => array(
-							'description' => 'The {gallery_category}.id this condition belongs to.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'name' => array(
-							'description' => 'The name of the condition.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => FALSE,
-					),
-					'condition' => array(
-							'description' => 'The name of the condition.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => TRUE,
-					),
-					'columnname' => array(
-							'description' => 'The name of the column the value is checked against.',
-							'type' => 'varchar',
-							'length' => 255,
-							'not null' => FALSE,
-					),
-					'value' => array(
-							'description' => 'The value the required by the condition.',
-							'type' => 'varchar',
-							'length' => 255,
-							'not null' => FALSE,
-					),
-			),
-			'indexes' => array(
-					'category_id' => array(
-							'category_id'
-					),
-			),
-			'foreign keys' => array(
-					'category_id' => array(
-							'table' => 'gallery_category',
-							'columns' => array(
-									'category_id' => 'id'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_image_category'] = array(
-			'description' => 'The category values for a specific gallery image',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a gallery image category.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'image_id' => array(
-							'description' => 'The {gallery_image}.id being referenced in this field.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'option_id' => array(
-							'description' => 'The {gallery_category_option}.id of this rating.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-			),
-			'indexes' => array(
-					'image_id' => array(
-							'image_id'
-					),
-					'option_id' => array(
-							'option_id'
-					),
-			),
-			'foreign keys' => array(
-					'image_id' => array(
-							'table' => 'gallery_image',
-							'columns' => array(
-									'image_id' => 'id'
-							),
-					),
-					'option_id' => array(
-							'table' => 'gallery_category_option',
-							'columns' => array(
-									'option_id' => 'id'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_image_subtype'] = array(
-			'description' => 'The subtype of a specific gallery image',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a gallery images subtype category.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'image_id' => array(
-							'description' => 'The {gallery_image}.id being referenced in this field.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'subtype' => array(
-							'description' => 'The subtype of the image.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => FALSE,
-					),
-			),
-			'indexes' => array(
-					'image_id' => array(
-							'image_id'
-					),
-					'subtype' => array(
-							'subtype'
-					),
-			),
-			'foreign keys' => array(
-					'image_id' => array(
-							'table' => 'gallery_image',
-							'columns' => array(
-									'image_id' => 'id'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_image_rating'] = array(
-			'description' => 'The ratings placed for a specific gallery image',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a gallery image rating.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'image_id' => array(
-							'description' => 'The {gallery_image}.id being referenced in this field.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => TRUE,
-					),
-					'rating_type_id' => array(
-							'description' => 'The {gallery_rating_type}.id of this rating.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'unsigned' => FALSE,
-					),
-					'rating' => array(
-							'description' => 'The actual rating value.',
-							'type' => 'int',
-							'not null' => FALSE,
-							'unsigned' => FALSE,
-					),
-					'user_id' => array(
-							'description' => 'The {user}.uid who placed this rating.',
-							'type' => 'int',
-							'not null' => FALSE,
-							'unsigned' => TRUE,
-					),
-					'user_ip' => array(
-							'description' => 'The IP address of the user who placed this rating.',
-							'type' => 'varchar',
-							'length' => 15,
-							'not null' => TRUE,
-					)
-			),
-			'indexes' => array(
-					'image_id' => array(
-							'image_id'
-					),
-					'rating_type_id' => array(
-							'rating_type_id'
-					),
-					'rating' => array(
-							'rating'
-					),
-			),
-			'foreign keys' => array(
-					'rating_type_id' => array(
-							'table' => 'gallery_rating_type',
-							'columns' => array(
-									'rating_type_id' => 'id'
-							),
-					),
-					'image_id' => array(
-							'table' => 'gallery_image',
-							'columns' => array(
-									'image_id' => 'id'
-							),
-					),
-					'user_id' => array(
-							'table' => 'user',
-							'columns' => array(
-									'user_id' => 'uid'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	$schema['gallery_rating_type'] = array(
-			'description' => 'The available types of rating.',
-			'fields' => array(
-					'id' => array(
-							'description' => 'The primary identifier for a gallery image rating.',
-							'type' => 'serial',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-					),
-					'name' => array(
-							'description' => 'The name of the rating type.',
-							'type' => 'varchar',
-							'length' => 128,
-							'not null' => FALSE,
-					),
-					'description' => array(
-							'description' => 'Long description of the rating type.',
-							'type' => 'text',
-							'not null' => FALSE,
-					),
-					'role_id' => array(
-							'description' => 'The {role}.rid required for placing ratings of this type.',
-							'type' => 'int',
-							'not null' => FALSE,
-							'unsigned' => TRUE,
-					),
-					'weight' => array(
-							'description' => 'The weight of this rating type in the global rating.',
-							'type' => 'int',
-							'not null' => TRUE,
-							'default' => '1',
-					),
-			),
-			'indexes' => array(
-					'role_id' => array(
-							'role_id'
-					),
-					'weight' => array(
-							'weight'
-					),
-			),
-			'foreign keys' => array(
-					'role_id' => array(
-							'table' => 'role',
-							'columns' => array(
-									'role_id' => 'rid'
-							),
-					),
-			),
-			'primary key' => array(
-					'id'
-			),
-	);
-	return $schema;
+	return array (
+  'gallery_category' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a gallery category.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'The name of the category.',
+        'type' => 'text',
+      ),
+      'description' => 
+      array (
+        'description' => 'Long description of the categories.',
+        'type' => 'text',
+      ),
+      'required' => 
+      array (
+        'description' => 'Whether this category is required or not.',
+        'type' => 'int',
+      ),
+      'multiple' => 
+      array (
+        'description' => 'Whether multiple values may be selected for this category or not.',
+        'type' => 'int',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'gallery_category_condition' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a category condition.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'category_id' => 
+      array (
+        'description' => 'The primary identifier for a gallery category.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'The name of the condition.',
+        'type' => 'text',
+      ),
+      'condition' => 
+      array (
+        'description' => 'The name of the condition.',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'columnname' => 
+      array (
+        'description' => 'The name of the column the value is checked against.',
+        'type' => 'text',
+      ),
+      'value' => 
+      array (
+        'description' => 'The value the required by the condition.',
+        'type' => 'text',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'category_id' => 
+      array (
+        0 => 'category_id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'gallery_category_condition_2_gallery_category' => 
+      array (
+        'table' => 'gallery_category',
+        'columns' => 
+        array (
+          'category_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'gallery_category_option' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a category option.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'gallery_category_id' => 
+      array (
+        'description' => 'The primary identifier for a gallery category.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'The name of the option.',
+        'type' => 'text',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'gallery_category_id' => 
+      array (
+        0 => 'gallery_category_id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'gallery_category_option_2_gallery_category' => 
+      array (
+        'table' => 'gallery_category',
+        'columns' => 
+        array (
+          'gallery_category_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'gallery_image' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'file_managed_fid' => 
+      array (
+        'description' => 'File ID.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'users_uid' => 
+      array (
+        'description' => 'Primary Key: Unique user ID.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '0',
+        'size' => 'big',
+      ),
+      'item_type' => 
+      array (
+        'description' => 'The type of object this image belongs to (inventory_entry, area, habitant, organism)',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'title' => 
+      array (
+        'description' => 'The title of the image.',
+        'type' => 'text',
+      ),
+      'description' => 
+      array (
+        'description' => 'Long description of the image.',
+        'type' => 'text',
+      ),
+      'author' => 
+      array (
+        'description' => 'The author of the image',
+        'type' => 'text',
+      ),
+      'location' => 
+      array (
+        'description' => 'The location of the image',
+        'type' => 'text',
+      ),
+      'visible' => 
+      array (
+        'description' => 'Whether this image is visible for the public or not.',
+        'type' => 'int',
+        'default' => '1',
+      ),
+      'created_date' => 
+      array (
+        'description' => 'The date this image was created',
+        'type' => 'datetime',
+        'not null' => 'TRUE',
+        'pgsql_type' => 'timestamp',
+      ),
+      'modified_date' => 
+      array (
+        'description' => 'The date this image was last modified',
+        'type' => 'datetime',
+        'not null' => 'TRUE',
+        'pgsql_type' => 'timestamp',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'gallery_image_category' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image category.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'gallery_image_id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'category_option_id' => 
+      array (
+        'description' => 'The primary identifier for a category option.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'gallery_image_id' => 
+      array (
+        0 => 'gallery_image_id',
+      ),
+      'category_option_id' => 
+      array (
+        0 => 'category_option_id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'gallery_image_category_2_gallery_category_option' => 
+      array (
+        'table' => 'gallery_category_option',
+        'columns' => 
+        array (
+          'category_option_id' => 'id',
+        ),
+      ),
+      'gallery_image_category_2_gallery_image' => 
+      array (
+        'table' => 'gallery_image',
+        'columns' => 
+        array (
+          'gallery_image_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'gallery_image_rating' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image rating.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'gallery_image_id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'gallery_rating_type_id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image rating.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'user_uid' => 
+      array (
+        'description' => 'Primary Key: Unique user ID.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '0',
+        'size' => 'big',
+      ),
+      'rating' => 
+      array (
+        'description' => 'The actual rating value.',
+        'type' => 'int',
+      ),
+      'user_ip' => 
+      array (
+        'description' => 'The IP address of the user who placed this rating.',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'gallery_image_id' => 
+      array (
+        0 => 'gallery_image_id',
+      ),
+      'gallery_rating_type_id' => 
+      array (
+        0 => 'gallery_rating_type_id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'gallery_image_rating_2_gallery_image' => 
+      array (
+        'table' => 'gallery_image',
+        'columns' => 
+        array (
+          'gallery_image_id' => 'id',
+        ),
+      ),
+      'gallery_image_rating_2_gallery_rating_type' => 
+      array (
+        'table' => 'gallery_rating_type',
+        'columns' => 
+        array (
+          'gallery_rating_type_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'gallery_image_subtype' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a gallery images subtype category.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'gallery_image_id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'subtype' => 
+      array (
+        'description' => 'The subtype of the image.',
+        'type' => 'text',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+      'gallery_image_id' => 
+      array (
+        0 => 'gallery_image_id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'gallery_image_subtype_2_gallery_image' => 
+      array (
+        'table' => 'gallery_image',
+        'columns' => 
+        array (
+          'gallery_image_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'gallery_rating_type' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a gallery image rating.',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'rid' => 
+      array (
+        'description' => 'Primary Key: Unique role ID.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'The name of the rating type.',
+        'type' => 'text',
+      ),
+      'description' => 
+      array (
+        'description' => 'Long description of the rating type.',
+        'type' => 'text',
+      ),
+      'role_id' => 
+      array (
+        'description' => 'The role.rid required for placing ratings of this type.',
+        'type' => 'int',
+        'size' => 'big',
+      ),
+      'weight' => 
+      array (
+        'description' => 'The weight of this rating type in the global rating.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '1',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'id' => 
+      array (
+        0 => 'id',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'indexes' => 
+    array (
+      'gallery_rating_type_role_id_idx' => 
+      array (
+        0 => 'role_id',
+      ),
+      'gallery_rating_type_weight_idx' => 
+      array (
+        0 => 'weight',
+      ),
+    ),
+  ),
+);
 }
+?>

@@ -1,0 +1,67 @@
+<?php
+/**
+ * @file habitat.json.inc
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
+ */
+ 
+/**
+ * Implement hook_schema()
+ *
+ * @note Do not modify habitat_schema, it is generated code!
+ */
+function habitat_schema() {
+	return array (
+  'habitat' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'PK',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'label' => 
+      array (
+        'description' => 'Label inkl. Hierarchie',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'name',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'notes' => 
+      array (
+        'description' => 'Bemerkungen zum Lebensraumtyp',
+        'type' => 'text',
+      ),
+    ),
+    'unique keys' => 
+    array (
+      'label' => 
+      array (
+        0 => 'label',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+);
+}
+
+/**
+ * Implement hook_install()
+ *
+ * Include all Delarze habitats.
+ */
+function habitat_install() {
+	$dataInserts = file_get_contents(dirname(__FILE__) . '/habitat.sql');
+	db_query($dataInserts);
+}
+?>

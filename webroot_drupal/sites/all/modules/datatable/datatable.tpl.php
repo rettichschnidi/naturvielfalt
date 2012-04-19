@@ -29,15 +29,11 @@ drupal_add_js(
 /**
  * Figure out width/height of table or set default values
  */
-if (isset($options['tableWidth']) && is_int($options['tableWidth'])) {
-	$tableWidth = $options['tableWidth'];
-} else {
+if (!isset($tableWidth) || !is_int($tableWidth)) {
 	$tableWidth = 950;
 }
-if (isset($options['tableHeight']) && is_int($options['tableHeight'])
-		&& $options['tableHeight'] > 0) {
-	$tableHeight = $options['tableHeight'];
-} else {
+
+if (!isset($tableHeight) || !is_int($tableHeight)) {
 	$tableHeight = 200;
 }
 
@@ -47,12 +43,12 @@ if (isset($options['tableHeight']) && is_int($options['tableHeight'])
 if ($header) {
 	$aoColumns = "colModel : [";
 	$headers = array();
-	$sortField = $header[0]['dbfield'];
+	$sortField = isset($header[0]['dbfield']) ? $header[0]['dbfield'] : '';
 	$sortOrder = "asc";
 
 	foreach ($header as $head) {
 		$aoColumns .= "{ display: '" . $head['name'] . "'";
-		$aoColumns .= ", name : '" . $head['dbfield'] . "'";
+		if(isset($head['dbfield'])) $aoColumns .= ", name : '" . $head['dbfield'] . "'";
 		if (isset($head['noSort']) && $head['noSort'] == true) {
 			$aoColumns .= ", sortable : false";
 		} else {
@@ -82,13 +78,14 @@ if ($header) {
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
 
-	if($rows){
-		foreach ($header as $head) $table_headers[] = $head['name'];
-	}
+// 	if($rows) {
+// 		foreach ($header as $head) {
+// 			$table_headers[] = $head['name'];
+// 		}
+// 	}
 }
 $table[$id_table] = array(
 		'#theme' => 'table',
-		'#header' => $table_headers,
 		'#rows' => $rows,
 		'#sticky' => false,
 		'#attributes' => array('id' => $id_table),
