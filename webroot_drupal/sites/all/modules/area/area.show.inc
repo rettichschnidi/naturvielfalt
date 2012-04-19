@@ -85,7 +85,9 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'#title' => 'Areas',
 			'#id_table' => 'areas',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path() . ($onlyMyAreas ? "areas/own/datatablejson'" : "areas/all/datatablejson'"),
+					'jsonUrl' => "'" . base_path()
+							. ($onlyMyAreas ? "areas/own/datatablejson'"
+									: "areas/all/datatablejson'"),
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
@@ -119,7 +121,7 @@ function area_show_specific_area($areadata = NULL) {
 		320);
 
 	/* Create a fieldset for the tabular data */
-	$output['area_edit'] = array(
+	$output['area'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Area details'),
 			'#weight' => 1,
@@ -145,7 +147,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* Create a fieldset for the comment text field */
-	$output['area_description_edit'] = array(
+	$output['area_description'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Description'),
 			'#weight' => 10,
@@ -158,7 +160,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* add the comments for the area as an editable textarea */
-	$output['area_description_edit']['comment'] = array(
+	$output['area_description']['comment'] = array(
 			'#type' => 'item',
 			'#markup' => "<pre>"
 					. (empty($areadata['comment']) ? t("None available")
@@ -166,7 +168,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* Create a fieldset for the strategies text fields */
-	$output['area_concept_edit'] = array(
+	$output['area_concept'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Area concept'),
 			'#weight' => 11,
@@ -175,7 +177,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* add the protectiont target textarea */
-	$output['area_concept_edit']['protection_target'] = array(
+	$output['area_concept']['protection_target'] = array(
 			'#type' => 'item',
 			'#title' => t('Protection target'),
 			'#markup' => "<pre>"
@@ -185,7 +187,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* add the tending strategies target textarea */
-	$output['area_concept_edit']['tending_strategies'] = array(
+	$output['area_concept']['tending_strategies'] = array(
 			'#type' => 'item',
 			'#title' => t('Tending strategies'),
 			'#markup' => "<pre>"
@@ -195,7 +197,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* add the tending strategies target textarea */
-	$output['area_concept_edit']['safety_precautions'] = array(
+	$output['area_concept']['safety_precautions'] = array(
 			'#type' => 'item',
 			'#title' => t('Safety precautions'),
 			'#markup' => "<pre>"
@@ -204,9 +206,44 @@ function area_show_specific_area($areadata = NULL) {
 							: $areadata['safety_precautions']) . "</pre>"
 	);
 
+	/* Create a fieldset for the linked habitats */
+	$output['area_habitats'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Linked habitats'),
+			'#weight' => 12,
+			'#collapsible' => true
+	);
+
+	/* add the linked habitats */
+	$results = db_query(
+		'SELECT
+			label,
+			name
+		FROM
+			{area_habitat} ah
+			JOIN {habitat} h ON ah.habitat_id = h.id
+		WHERE
+			ah.area_id = ?;',
+		array($areadata['id']));
+
+	$habitats = array();
+	foreach($results->fetchAll() as $habitat) {
+		$habitats[] = (array) $habitat;
+	}
+	
+	$output['area_habitats']['habtiats'] = array(
+			'#theme' => 'datatable',
+			'#header' => array(
+					array('name' => t('Label'), 'width' => 300),
+					array('name' => t('Name'), 'width' => 300)
+			),
+			'#tableWidth' => 900,
+			'#rows' => $habitats,
+			'#id_table' => 'habitats'
+	);
+
 	/* Build the content of the table, leave out empty fields */
-	$output['area_edit']['table'] = area_get_infotable_of_specific_area(
-		$areadata);
+	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
 	return $output;
 }

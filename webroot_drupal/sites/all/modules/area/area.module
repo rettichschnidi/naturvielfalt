@@ -9,6 +9,9 @@ define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
 define('AREA_MODERATE', 'area moderate');
 
+// needed for function area_get_full_dataset_of_specific_area
+module_load_include('inc', 'area', 'area');
+
 /**********************************
  *  Hook implementations
  *********************************/
@@ -110,9 +113,10 @@ function area_menu() {
 					1
 			),
 			'access arguments' => array(
-					1
+					1,
+					'ACL_WRITE'
 			),
-			'access callback' => 'area_write_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_CALLBACK,
 			'file' => 'area.json.inc',
 	);
@@ -132,6 +136,21 @@ function area_menu() {
 			'file' => 'area.json.inc',
 	);
 
+	/* Get a all habitats within an area as datatable json */
+	$items['area/%area/habitat/datatablejson'] = array(
+			'title' => t('Habitats of area'),
+			'description' => t('Get all habitats of a an area.'),
+			'page callback' => 'area_habitat_datatable_json',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+	
 	/* Get all available areas as datatable json*/
 	$items['areas/all/datatablejson'] = array(
 			'title' => t('All areas datatable json'),
@@ -183,9 +202,10 @@ function area_menu() {
 			),
 			'page callback' => 'area_show_specific_area',
 			'access arguments' => array(
-					1
+					1,
+					'ACL_READ'
 			),
-			'access callback' => 'area_read_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.show.inc',
@@ -196,14 +216,16 @@ function area_menu() {
 	$items['area/%area/edit'] = array(
 			'title' => t('Edit area details'),
 			'description' => t('Edit details of an existing area.'),
-			'page callback' => 'area_edit',
+			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
+					'area_edit_form',
 					1
 			),
 			'access arguments' => array(
-					1
+					1,
+					'ACL_WRITE'
 			),
-			'access callback' => 'area_write_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.edit.inc',
@@ -214,14 +236,16 @@ function area_menu() {
 	$items['area/%area/editgeometry'] = array(
 			'title' => t('Edit geometry'),
 			'description' => t('Edit the geometry of an existing geometry.'),
-			'page callback' => 'area_edit_geometry',
+			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
+					'area_edit_geometry_form',
 					1
 			),
 			'access arguments' => array(
-					1
+					1,
+					'ACL_WRITE'
 			),
-			'access callback' => 'area_write_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.edit.inc',
@@ -238,9 +262,10 @@ function area_menu() {
 					1
 			),
 			'access arguments' => array(
-					1
+					1,
+					'ACL_ADMIN'
 			),
-			'access callback' => 'area_admin_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.delete.inc',
@@ -256,9 +281,10 @@ function area_menu() {
 					1
 			),
 			'access arguments' => array(
-					1
+					1,
+					'ACL_ADMIN'
 			),
-			'access callback' => 'area_admin_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'area.admin.inc',
@@ -275,9 +301,10 @@ function area_menu() {
 					1
 			),
 			'access arguments' => array(
-					1
+					1,
+					'ACL_READ'
 			),
-			'access callback' => 'area_read_access',
+			'access callback' => 'area_check_access',
 			'type' => MENU_CALLBACK,
 			'file' => 'area.ajax.inc',
 	);
@@ -410,17 +437,21 @@ function area_permission() {
 }
 
 /**
- * Generate an URL to a static google map image with one element (just ONE) highlighted
+ * Generate an URL to a static google map image with one element (just ONE) highlighted.
+ * 
  * @todo Document how the json in $params['area-coords'] looks like
  * 
- * @param array $params Contains all optional parameters
- * fields:
- *  - $params['type']			Type of specified geometry type  (POINT, LINESTRING or POLYGON)
- *  - $params['coordinates']	Area coordinates as JSON (WGS84, lng/lat order)
- *  - $params['color']			Color to draw an area or a line (hex/htmlcode, optional)
- *  	Example for blue: 0x0000ff
- * @param integer $width of picture in pixels, default is 320
- * @param integer $height of picture in pixels, default is 320
+ * @param $params
+ * 	Array wich contains all optional parameters
+ * 	fields:
+ *  	- $params['type']			Type of specified geometry type  (POINT, LINESTRING or POLYGON)
+ *  	- $params['coordinates']	Area coordinates as JSON (WGS84, lng/lat order)
+ *  	- $params['color']			Color to draw an area or a line (hex/htmlcode, optional)
+ *  		Example for blue: 0x0000ff
+ * @param $width
+ *  Width of picture in pixels, default is 320
+ * @param $height
+ * 	Height of picture in pixels, default is 320
  *
  * @return string URL to Google Maps static path
  */
@@ -476,65 +507,34 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 }
 
 /**
- * Check if user has admin access to this area.
+ * Check if user has access to this area.
  *
- * @param array $areadata Area data
- * @return boolean true if access ok, false if not
+ * @param $areadata
+ * 	Array with all required area data
+ * @param $acl_level
+ * 	String with required ACL permission
+ * @return
+ * 	True if access granted, false if not
  */
-function area_admin_access($areadata = NULL) {
+function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
 	if ($areadata == NULL) {
 		return false;
 	}
 
-	if (isset($areadata['acl_id'])) {
-		return check_permission($areadata['acl_id'], variable_get('ACL_ADMIN'));
+	$acl_number = variable_get($acl_level, -1);
+	if (isset($areadata['acl_id']) && $acl_number  != -1) {
+		return check_permission($areadata['acl_id'], $acl_number);
 	}
 	return false;
 }
-
-/**
- * Check if user has write access to this area,
- *
- * @param array $areadata Area data
- * @return boolean true if access ok, false if not
- */
-function area_write_access($areadata = NULL) {
-	if ($areadata == NULL || empty($areadata)) {
-		return false;
-	}
-
-	if (isset($areadata['acl_id'])) {
-		return check_permission($areadata['acl_id'], variable_get('ACL_WRITE'));
-	}
-	return false;
-}
-
-/**
- * Check if user has read access to this area,
- *
- * @param array $areadata Area data
- * @return boolean true if access ok, false if not
- */
-function area_read_access($areadata = NULL) {
-	if ($areadata == NULL || empty($areadata)) {
-		return false;
-	}
-
-	if (isset($areadata['acl_id'])) {
-		return check_permission($areadata['acl_id'], variable_get('ACL_READ'));
-	}
-	return false;
-}
-
-// needed for function area_get_full_dataset_of_specific_area
-module_load_include('inc', 'area', 'area');
 
 /**
  * Return an array with all required information about an area.
  * This will be called for menuitems like this: 'area/%area/editgeometry'
- * @param string $arg
- * 		This string *should* actually be an integer
- * @return array $areadata
+ * @param $arg
+ *	This string *should* actually be an integer
+ * @return
+ * 	Array with all area data
  */
 function area_load($arg) {
 	$areadata = array();

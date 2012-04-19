@@ -10,7 +10,8 @@ module_load_include('inc', 'area', 'area');
 /**
  * Generate a JSON with all areas which are available to the user.
  * 
- * @param $acl_level Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
+ * @param $acl_level
+ * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
  * @todo Include the user's nickname
  */
 function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
@@ -51,11 +52,11 @@ function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
 /**
  * Return one or all viewable areas as JSON.
  * 
- * @param integer $area_id 
+ * @param $area_id 
  * 	Id of requested area
- * @param integer $acl_level
+ * @param $acl_level
  * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
- * @return string JSON
+ * @return JSON
  */
 function area_json($area_id = false, $acl_level = 'ACL_READ') {
 	$areas = db_query(
@@ -136,7 +137,8 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 /**
  * Take JSON and update existing area geometry.
  * 
- * @param array $areadata Area data
+ * @param $areadata
+ * 	Array with required area data
  */
 function area_updategeometry_json($areadata = NULL) {
 	assert($areadata != NULL);
@@ -172,5 +174,26 @@ function area_updategeometry_json($areadata = NULL) {
 				array('@areaname' => $areadata['name'])),
 			'error');
 	}
+}
+
+function area_habitat_datatable_json($areadata = NULL) {
+	assert($areadata != NULL);
+	// SELECT label, name FROM drupal_area_habitat ah JOIN drupal_habitat h ON ah.habitat_id = h.id WHERE ah.area_id = 1;
+	/* Set the db fields to select */
+	$sql['dbColumns'] = array(
+			'label',
+			'name'
+	);
+
+	$sql['dbSearchColumns'] = array(
+			'label',
+			'name'
+	);
+
+	$sql['dbTable'] = '{area_habitat} ah';
+	$sql['dbJoins'] = 'JOIN {habitat} h ON ah.habitat_id = h.id';
+	$sql['id'] = 'id';
+	$output = datatable_dbRequest($sql);
+	return drupal_json_output($output);
 }
 ?>
