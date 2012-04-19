@@ -49,6 +49,13 @@ function observation_get($observation_id){
 	return false;
 }
 
+
+
+/**
+ * Return the geometry array for a observation
+ * @param int $geometry_id
+ * @return array
+ */
 function observation_get_geometry($geometry_id){
 // 	die($geometry_id);
 	$sql = "SELECT
@@ -81,6 +88,10 @@ function observation_get_geometry($geometry_id){
 	return db_query($sql,array(':geometry_id' => $geometry_id))->fetchAssoc();
 }
 
+/**
+ * Return the acl permission form for a observation
+ * @param array $observation
+ */
 function observation_edit_acl($observation = NULL){
-	observation_acl_template($observation);
+	return observation_acl_template($observation);
 }
