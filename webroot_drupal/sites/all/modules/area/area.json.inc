@@ -14,7 +14,7 @@ module_load_include('inc', 'area', 'area');
  * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
  * @todo Include the user's nickname
  */
-function area_all_areas_datatable_json($acl_level = 'ACL_READ') {
+function area_datatable_json($acl_level = 'ACL_READ') {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
@@ -176,9 +176,14 @@ function area_updategeometry_json($areadata = NULL) {
 	}
 }
 
-function area_habitat_datatable_json($areadata = NULL) {
+/**
+ * Get a all habitats within an area as datatable json.
+ * 
+ * @param $areadata
+ * 	Array with all data about the area
+ */
+function area_habitat_within_area_datatable_json($areadata = NULL) {
 	assert($areadata != NULL);
-	// SELECT label, name FROM drupal_area_habitat ah JOIN drupal_habitat h ON ah.habitat_id = h.id WHERE ah.area_id = 1;
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'label',
@@ -194,6 +199,55 @@ function area_habitat_datatable_json($areadata = NULL) {
 	$sql['dbJoins'] = 'JOIN {habitat} h ON ah.habitat_id = h.id';
 	$sql['id'] = 'id';
 	$output = datatable_dbRequest($sql);
+	return drupal_json_output($output);
+}
+
+/**
+ * Get a all areas which area linked to a habitat.
+ *
+ * @param $areadata
+ * 	Array with all data about the area
+ */
+function area_linked_to_habitat_datatable_json($habitatId) {
+	assert($habitatId != NULL);
+	/* Create a temporary view to avoid the shortcommings of the datatable module */
+	$sql['dbPreStatement'] = 'CREATE TEMPORARY VIEW linkedareas AS (
+		SELECT
+			DISTINCT ON (a.id)
+			a.id,
+			a.name AS areaname,
+			a_s.township AS township,
+			a_s.zip AS zip,
+			u.name AS username
+		FROM
+			{area_habitat} AS a_h
+			JOIN {area} AS a ON a_h.area_id = a.id
+			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id 
+			JOIN {acl} cacl ON cacl.id = a.acl_id
+			JOIN {users} u ON u.uid = cacl.users_id
+		WHERE
+			a_h.habitat_id=:habitatId )';
+
+	$sql['dbColumns'] = array(
+			'id',
+			'areaname',
+			'township',
+			'zip',
+			'username'
+	);
+	$sql['dbSearchColumns'] = array(
+			'areaname',
+			'township',
+			'zip',
+			'username'
+	);
+
+	$sql['dbTable'] = 'linkedareas';
+	$sql['id'] = 'id';
+	$output = datatable_dbRequest(
+		$sql,
+		array(),
+		array(':habitatId' => $habitatId));
 	return drupal_json_output($output);
 }
 ?>

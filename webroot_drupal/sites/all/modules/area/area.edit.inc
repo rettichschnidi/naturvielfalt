@@ -266,16 +266,17 @@ function area_edit_form_submit($form, &$form_state) {
 		$form_state['values']['tending_strategies']);
 	$safety_precautions = filter_xss(
 		$form_state['values']['safety_precautions']);
-	$selectedhabitatIds = isset($_POST['selectedhabitats']) ? $_POST['selectedhabitats']
-			: array();
+	$selectedhabitatIds = isset($_POST['selectedhabitats'])
+			? $_POST['selectedhabitats'] : array();
 	// flush all existing area_habitat records for this area...
 	db_delete('area_habitat')->condition('area_id', $area_id)
 		->execute();
 	// ...and populate them with the current new ones
 	$values = array();
-	$insert = db_insert('area_habitat')->fields(array('area_id',
-				'habitat_id'
-		));
+	$insert = db_insert('area_habitat')->fields(
+			array('area_id',
+					'habitat_id'
+			));
 	foreach ($selectedhabitatIds as $habitatId) {
 		$insert->values(
 				array('area_id' => $area_id,

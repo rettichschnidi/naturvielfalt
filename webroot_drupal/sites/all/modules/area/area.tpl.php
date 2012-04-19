@@ -90,16 +90,14 @@ if ($ch1903) {
  * If existing area should be shown...
  */
 switch ($show) {
-case 'allareas':
-	/**
-	 * Display all of them
-	 */
+case 'allareas': /**
+				  * Display all of them
+				  */
 	area_add_js_url($baseModulJsPath . 'area-show-allareas.js');
 	break;
-case 'myareas':
-	/**
-	 * Display just the ones the user owns.
-	 */
+case 'myareas': /**
+				 * Display just the ones the user owns.
+				 */
 	area_add_js_url($baseModulJsPath . 'area-show-myareas.js');
 	break;
 }
@@ -108,23 +106,20 @@ case 'myareas':
  * Decide which actions should be exectured...
  */
 switch ($action) {
-case 'create':
-	/**
-	 * Create a new area
-	 */
+case 'create': /**
+			    * Create a new area
+			    */
 	area_add_js_url($baseModulJsPath . 'area-create.js');
 	break;
-case 'edit':
-	/**
-	 * Create an existing area geometry
-	 */
+case 'edit': /**
+			  * Create an existing area geometry
+			  */
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 	break;
-case 'getcoordinate':
-	/**
-	 * Allow the user of this theme to set a hidden filed to store the coordinates
-	 * (encoded as JSON string)
-	 */
+case 'getcoordinate': /**
+					   * Allow the user of this theme to set a hidden filed to store the coordinates
+					   * (encoded as JSON string)
+					   */
 	if ($coordinate_storage_id != false) {
 		print 
 			"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
