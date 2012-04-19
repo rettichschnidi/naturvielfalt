@@ -24,7 +24,7 @@ function habitat_show_all() {
 	$tableHeader[] = array(
 			'name' => t('Habitat name'),
 			'dbfield' => 'name',
-			'width' => 620,
+			'width' => 550,
 	);
 	$tableHeader[] = array(
 			'name' => t('Linked Areas'),
