@@ -232,7 +232,7 @@ function check_permission($acl_id, $min_level, $user_id = 0,
 			}
 		}
 	}
-	if ($min_level <= $level) {
+	if (isset($min_level) && $min_level <= $level) {
 		$res = TRUE;
 	}
 	return $res;
