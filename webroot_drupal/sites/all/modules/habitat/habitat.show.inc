@@ -54,6 +54,8 @@ function habitat_show_all() {
 	return $render_array;
 }
 
+module_load_include('inc', 'area', 'area.show');
+
 /**
  * Show an image gallery and a tabel with all areas that use this habitat.
  *
