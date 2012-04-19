@@ -43,12 +43,12 @@ if (!isset($tableHeight) || !is_int($tableHeight)) {
 if ($header) {
 	$aoColumns = "colModel : [";
 	$headers = array();
-	$sortField = $header[0]['dbfield'];
+	$sortField = isset($header[0]['dbfield']) ? $header[0]['dbfield'] : '';
 	$sortOrder = "asc";
 
 	foreach ($header as $head) {
 		$aoColumns .= "{ display: '" . $head['name'] . "'";
-		$aoColumns .= ", name : '" . $head['dbfield'] . "'";
+		if(isset($head['dbfield'])) $aoColumns .= ", name : '" . $head['dbfield'] . "'";
 		if (isset($head['noSort']) && $head['noSort'] == true) {
 			$aoColumns .= ", sortable : false";
 		} else {
@@ -78,13 +78,14 @@ if ($header) {
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
 
-	if($rows){
-		foreach ($header as $head) $table_headers[] = $head['name'];
-	}
+// 	if($rows) {
+// 		foreach ($header as $head) {
+// 			$table_headers[] = $head['name'];
+// 		}
+// 	}
 }
 $table[$id_table] = array(
 		'#theme' => 'table',
-		'#header' => $table_headers,
 		'#rows' => $rows,
 		'#sticky' => false,
 		'#attributes' => array('id' => $id_table),
