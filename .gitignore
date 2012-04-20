@@ -13,3 +13,4 @@ various/migrate/import_crsf_basedata-test.php
 .DS_Store
 external/drupal/themes/
 webroot_drupal/sites/all/themes/zen/
+.htaccess
