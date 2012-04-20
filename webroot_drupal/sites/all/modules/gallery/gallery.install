@@ -192,6 +192,12 @@ function gallery_schema() {
         'type' => 'text',
         'not null' => 'TRUE',
       ),
+      'item_id' => 
+      array (
+        'description' => 'No description for column item_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
       'title' => 
       array (
         'description' => 'The title of the image.',

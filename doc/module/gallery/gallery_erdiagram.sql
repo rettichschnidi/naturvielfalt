@@ -78,6 +78,7 @@ CREATE TABLE public.gallery_image
 	users_uid bigint DEFAULT 0 NOT NULL,
 	-- The type of object this image belongs to (inventory_entry, area, habitant, organism)
 	item_type text NOT NULL,
+	item_id int NOT NULL,
 	-- The title of the image.
 	title text,
 	-- Long description of the image.
