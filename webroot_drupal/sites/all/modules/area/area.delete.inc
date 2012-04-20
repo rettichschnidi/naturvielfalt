@@ -42,14 +42,31 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
  */
 function area_delete_form_submit($form, &$form_state) {
 	$areadata = $form_state['area_data'];
-	$num_deleted_area = db_delete('area')->condition('id', $areadata['id'])
-		->execute();
-	assert($num_deleted_area == 1);
-	$num_deleted_geometry = db_delete('area_surface')->condition(
-			'id',
-			$areadata['area_surface_id'])
-		->execute();
-	assert($num_deleted_geometry == 1);
+	$transaction = db_transaction();
+	try {
+		$num_deleted_area = db_delete('area')->condition('id', $areadata['id'])
+			->execute();
+		assert($num_deleted_area == 1);
+		$num_deleted_surfaces = db_delete('area_surface')->condition(
+				'id',
+				$areadata['area_surface_id'])
+			->execute();
+		assert($num_deleted_surfaces == 1);
+
+		$num_deleted_habitats = db_delete('area_habitat')->condition(
+				'area_id',
+				$areadata['id'])
+			->execute();
+
+	} catch (Exception $e) {
+		$transaction->rollback();
+		drupal_set_message(
+			t(
+				'Could not delete @areaname.',
+				array('@areaname' => $areadata['name'])),
+			'error');
+		watchdog('area', $e->getMessage());
+	}
 
 	$form_state['redirect'] = 'areas/show';
 }

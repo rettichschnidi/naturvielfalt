@@ -32,9 +32,9 @@ function habitat_menu() {
 			'file' => 'habitat.show.inc',
 	);
 
-	$items['habitat/%'] = array(
-			'title' => 'Show Habitat Areas',
-			'description' => 'View existing Habitat Areas',
+	$items['habitat/%habitat'] = array(
+			'title' => 'Show habitat',
+			'description' => 'View an existing habitat',
 			'page callback' => 'drupal_get_form',
 			'access arguments' => array(
 					ACCESS_CONTENT
@@ -45,18 +45,6 @@ function habitat_menu() {
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'habitat.show.inc',
-	);
-	$items['habitat/%/json'] = array(
-			'title' => t('existing Habitat Areas in JSON format'),
-			'page callback' => 'habitat_json',
-			'access arguments' => array(
-					ACCESS_CONTENT
-			),
-			'page arguments' => array(
-					1
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'habitat.json.inc',
 	);
 	$items['habitat/datatablejson'] = array(
 			'title' => t('Habitat list information in JSON format'),
@@ -70,4 +58,30 @@ function habitat_menu() {
 	return $items;
 }
 
+/**
+ * Return an array with all required information about a habitat.
+ * This will be called for menuitems like this: 'habitat/%habitat'
+ * @param $arg
+ *	This string *should* actually be an integer
+ * @return
+ * 	Array with all habitat data
+ */
+function habitat_load($arg) {
+	try {
+		$result = db_query(
+			"SELECT * FROM {habitat} WHERE id = :habitatId",
+			array('habitatId' => $arg));
+	} catch (Exception $e) {
+		drupal_set_message($e->getMessage(), 'error');
+		watchdog('habitat', $e->getMessage());
+		return array();
+	}
+	if ($result->rowCount() == 0) {
+		drupal_set_title(t("No such habitat available."));
+		return array();
+	}
+	assert($result->rowCount() == 1);
+	$habitatdata = (array) $result->fetch();
+	return $habitatdata;
+}
 ?>

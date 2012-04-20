@@ -181,8 +181,8 @@ function area_show_specific_area($areadata = NULL) {
 			'#type' => 'item',
 			'#title' => t('Protection target'),
 			'#markup' => "<pre>"
-					. (empty($areadata['protection_target']) ? t(
-								"None available")
+					. (empty($areadata['protection_target'])
+							? t("None available")
 							: $areadata['protection_target']) . "</pre>"
 	);
 
@@ -191,8 +191,8 @@ function area_show_specific_area($areadata = NULL) {
 			'#type' => 'item',
 			'#title' => t('Tending strategies'),
 			'#markup' => "<pre>"
-					. (empty($areadata['tending_strategies']) ? t(
-								"None available")
+					. (empty($areadata['tending_strategies'])
+							? t("None available")
 							: $areadata['tending_strategies']) . "</pre>"
 	);
 
@@ -201,8 +201,8 @@ function area_show_specific_area($areadata = NULL) {
 			'#type' => 'item',
 			'#title' => t('Safety precautions'),
 			'#markup' => "<pre>"
-					. (empty($areadata['safety_precautions']) ? t(
-								"None available")
+					. (empty($areadata['safety_precautions'])
+							? t("None available")
 							: $areadata['safety_precautions']) . "</pre>"
 	);
 
@@ -227,15 +227,21 @@ function area_show_specific_area($areadata = NULL) {
 		array($areadata['id']));
 
 	$habitats = array();
-	foreach($results->fetchAll() as $habitat) {
+	foreach ($results->fetchAll() as $habitat) {
 		$habitats[] = (array) $habitat;
 	}
-	
+
 	$output['area_habitats']['habtiats'] = array(
 			'#theme' => 'datatable',
 			'#header' => array(
-					array('name' => t('Label'), 'width' => 300),
-					array('name' => t('Name'), 'width' => 300)
+					array(
+							'name' => t('Label'),
+							'width' => 300
+					),
+					array(
+							'name' => t('Name'),
+							'width' => 300
+					)
 			),
 			'#tableWidth' => 900,
 			'#rows' => $habitats,
@@ -290,5 +296,106 @@ function area_overview_form($form, &$form_state, $areadata) {
 			'#markup' => l(t('Show'), 'area/' . $areadata['id'] . '/show')
 	);
 	return $form;
+}
+
+function area_habitat_table($habitatId) {
+	// Set the table header
+	$tableHeader[] = array(
+			'name' => t('ID'),
+			'dbfield' => 'id',
+			'align' => 'center',
+			'hide' => true,
+			'width' => 40
+	);
+	$tableHeader[] = array(
+			'name' => t('Area'),
+			'dbfield' => 'areaname',
+			'width' => 300
+	);
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+			'width' => 200,
+	);
+	$tableHeader[] = array(
+			'name' => t('ZIP'),
+			'dbfield' => 'zip',
+			'align' => 'center',
+			'width' => 40
+	);
+	$tableHeader[] = array(
+			'name' => t('Creator'),
+			'dbfield' => 'username',
+			'width' => 220
+	);
+
+	$render_array['habitats'] = array(
+			'#theme' => 'datatable',
+			'#header' => $tableHeader,
+			'#id_table' => 'habitats',
+			'#tableWidth' => 900,
+			'#options' => array(
+					'jsonUrl' => "'" . base_path() . '/area/habitat/'
+							. $habitatId . "/datatablejson'",
+					'rowClick' => 'rowClick',
+					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+					window.location.href = Drupal.settings.basePath+'area/'+id + '/show';})}"
+			)
+	);
+	return $render_array;
+
+	$results = db_query(
+		'SELECT
+			DISTINCT ON (a.id)
+			a.id,
+			a.name AS areaname,
+			a_s.township AS township,
+			a_s.zip AS zip,
+			u.name AS username
+		FROM
+			{area_habitat} AS a_h
+			JOIN {area} AS a ON a_h.area_id = a.id
+			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id 
+			JOIN {acl} cacl ON cacl.id = a.acl_id
+			JOIN {users} u ON u.uid = cacl.users_id
+		WHERE
+			a_h.habitat_id=:habitatId',
+		array(':habitatId' => $habitatId));
+
+	$habitats = array();
+	foreach ($results->fetchAll() as $habitatObject) {
+		$habitatArray = array();
+		$habitatArray[] = $habitatObject->areaname;
+		$habitatArray[] = $habitatObject->township;
+		$habitatArray[] = $habitatObject->zip;
+		$habitatArray[] = $habitatObject->username;
+		$habitats[] = $habitatArray;
+	}
+
+	$output = array(
+			'#theme' => 'datatable',
+			'#header' => array(
+					array(
+							'name' => t('Area'),
+							'width' => 300
+					),
+					array(
+							'name' => t('Township'),
+							'width' => 200
+					),
+					array(
+							'name' => t('ZIP'),
+							'width' => 80
+					),
+					array(
+							'name' => t('Creator'),
+							'width' => 220
+					)
+			),
+			'#tableWidth' => 900,
+			'#rows' => $habitats,
+			'#id_table' => 'habitats'
+	);
+	return $output;
 }
 ?>

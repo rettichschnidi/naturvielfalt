@@ -75,21 +75,19 @@ function area_create_new_area($form, &$form_state) {
 	 * them to the database.
 	 */
 	$name = filter_xss(
-		!empty($form_state['values']['fieldname']) ? $form_state['values']['fieldname']
-				: date("r"));
+		!empty($form_state['values']['fieldname'])
+				? $form_state['values']['fieldname'] : date("r"));
 	$zip = filter_xss($form_state['values']['zip']);
 	$canton = filter_xss($form_state['values']['canton']);
 	$country = filter_xss($form_state['values']['country']);
 	$township = filter_xss($form_state['values']['township']);
 	$areaType = filter_xss($form_state['values']['area_type']);
-	$altitude = !empty($form_state['values']['altitude']) ? filter_xss(
-				$form_state['values']['altitude']) : 0;
+	$altitude = !empty($form_state['values']['altitude'])
+			? filter_xss($form_state['values']['altitude']) : 0;
 	$jsonCoordinates = filter_xss($form_state['values']['area-coords']);
-	
+
 	if (empty($jsonCoordinates) || empty($areaType)) {
-		drupal_set_message(
-			t('New area could not be created.'),
-			'error');
+		drupal_set_message(t('New area could not be created.'), 'error');
 		$form_state['redirect'] = 'area/new';
 		return;
 	}
@@ -118,13 +116,11 @@ function area_create_new_area($form, &$form_state) {
 
 		drupal_set_message(
 			t('Area "@areaname" got created.', array('@areaname' => $name)));
-		$form_state['redirect'] =  'area/' . $area_id . '/show';
+		$form_state['redirect'] = 'area/' . $area_id . '/show';
 	} catch (Exception $e) {
 		$transaction->rollback();
 		watchdog_exception('area', $e);
-		drupal_set_message(
-			t('New area could not be created.'),
-			'error');
+		drupal_set_message(t('New area could not be created.'), 'error');
 		$form_state['redirect'] = 'area/new';
 	}
 }

@@ -34,7 +34,7 @@ function area_menu() {
 			),
 			'type' => MENU_CALLBACK,
 	);
-	
+
 	/* Show all available areas */
 	$items['areas/show'] = array(
 			'title' => t('All areas'),
@@ -49,7 +49,7 @@ function area_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'area.show.inc',
 	);
-	
+
 	/* Show all available areas */
 	$items['areas/show/all'] = array(
 			'title' => t('All areas'),
@@ -140,7 +140,7 @@ function area_menu() {
 	$items['area/%area/habitat/datatablejson'] = array(
 			'title' => t('Habitats of area'),
 			'description' => t('Get all habitats of a an area.'),
-			'page callback' => 'area_habitat_datatable_json',
+			'page callback' => 'area_habitat_within_area_datatable_json',
 			'page arguments' => array(
 					1
 			),
@@ -150,12 +150,27 @@ function area_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'area.json.inc',
 	);
-	
+
+	/* Get a all areas linked to a habitat as datatable json */
+	$items['area/habitat/%/datatablejson'] = array(
+			'title' => t('Habitats of area'),
+			'description' => t('Get all habitats of a an area.'),
+			'page callback' => 'area_linked_to_habitat_datatable_json',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+
 	/* Get all available areas as datatable json*/
 	$items['areas/all/datatablejson'] = array(
 			'title' => t('All areas datatable json'),
 			'description' => t('Get all areas as datatable json'),
-			'page callback' => 'area_all_areas_datatable_json',
+			'page callback' => 'area_datatable_json',
 			'page arguments' => array(
 					'ACL_READ'
 			),
@@ -170,7 +185,7 @@ function area_menu() {
 	$items['areas/own/datatablejson'] = array(
 			'title' => t('Own areas datatable json'),
 			'description' => t('Get own areas as datatable json'),
-			'page callback' => 'area_all_areas_datatable_json',
+			'page callback' => 'area_datatable_json',
 			'page arguments' => array(
 					'ACL_ADMIN'
 			),
@@ -211,7 +226,7 @@ function area_menu() {
 			'file' => 'area.show.inc',
 			'weight' => 1
 	);
-	
+
 	/* Edit an area */
 	$items['area/%area/edit'] = array(
 			'title' => t('Edit area details'),
@@ -480,8 +495,8 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 
 	/* A string with all the points, crafted to the needs of the google maps api
 	 * Example for a triangle:
-	* 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
-	**/
+	 * 		'|47.420596,8.238826|46.566354,7.063289|46.027422,8.87054'
+	 **/
 	if ($type == 'POINT') {
 		$center = $coordinates[0][0] . ',' . $coordinates[0][1];
 		return 'http://maps.google.com/maps/api/staticmap?size=' . $width . 'x'
@@ -522,7 +537,7 @@ function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
 	}
 
 	$acl_number = variable_get($acl_level, -1);
-	if (isset($areadata['acl_id']) && $acl_number  != -1) {
+	if (isset($areadata['acl_id']) && $acl_number != -1) {
 		return check_permission($areadata['acl_id'], $acl_number);
 	}
 	return false;
@@ -538,7 +553,7 @@ function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
  */
 function area_load($arg) {
 	$areadata = array();
-	if ($arg != NULL && ((int)$arg) > 0) {
+	if ($arg != NULL && ((int) $arg) > 0) {
 		$areadata = area_get_full_dataset_of_specific_area($arg);
 	}
 	return $areadata;

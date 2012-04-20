@@ -9,6 +9,13 @@
 function habitat_show_all() {
 	// Set the table header
 	$tableHeader[] = array(
+			'name' => t('ID'),
+			'dbfield' => 'id',
+			'align' => 'center',
+			'hide' => true,
+			'width' => 40
+	);
+	$tableHeader[] = array(
 			'name' => t('Label'),
 			'dbfield' => 'label',
 			'initSort' => true,
@@ -17,22 +24,18 @@ function habitat_show_all() {
 	$tableHeader[] = array(
 			'name' => t('Habitat name'),
 			'dbfield' => 'name',
-			'width' => 900,
+			'width' => 550,
 	);
 	$tableHeader[] = array(
 			'name' => t('Linked Areas'),
 			'dbfield' => 'area_count',
+			'align' => 'center',
 			'width' => 80
-	);
-	$tableHeader[] = array(
-			'name' => t('ID'),
-			'dbfield' => 'id',
-			'hide' => true,
-			'width' => 40
 	);
 	$tableHeader[] = array(
 			'name' => t('Image'),
 			'dbfield' => 'image_link',
+			'align' => 'center',
 			'width' => 50
 	);
 
@@ -40,6 +43,7 @@ function habitat_show_all() {
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
 			'#id_table' => 'habitats',
+			'#tableWidth' => 900,
 			'#options' => array(
 					'jsonUrl' => "'habitat/datatablejson'",
 					'rowClick' => 'rowClick',
@@ -50,100 +54,39 @@ function habitat_show_all() {
 	return $render_array;
 }
 
+module_load_include('inc', 'area', 'area.show');
+
 /**
- * Return linked areas array
+ * Show an image gallery and a tabel with all areas that use this habitat.
  *
- * @author Naturwerk, 2011
- * @author Ramon Gamma, 2012
- *
- * @param int $habitatGroupId
+ * @param $form
+ * 	Array Drupal Form
+ * @param $form_state
+ * 	Array with Drupal form state
+ * @param $habitatdata
+ * 	Array with all data about this habitat
  * @return
  */
-function habitat_show_form($form, &$form_state, $habitatId) {
-	// set the page title
-	// 	$habitat = db_select('habitat', 'h')->condition('h.id', $habitatId)
-	// 		->fields('h')
-	// 		->execute()
-	// 		->fetch();
-	// 	$title = $habitat->label . ' ' . t($habitat->name);
-	// 	drupal_set_title($title);
+function habitat_show_form($form, &$form_state, $habitatdata = array()) {
+	$render_array = array();
+	if (!empty($habitatdata)) {
+		$title = $habitatdata['label'] . ' ' . t($habitatdata['name']);
+		drupal_set_title($title);
 
-	// 	// Linked Areas
-	// 	$tableHeader[] = array(
-	// 			'name' => t('Area name'),
-	// 			'dbfield' => 'field_name'
-	// 	);
-	// 	$tableHeader[] = array(
-	// 			'name' => t('Locality'),
-	// 			'dbfield' => 'locality',
-	// 			'width' => 80
-	// 	);
-	// 	$tableHeader[] = array(
-	// 			'name' => t('ZIP'),
-	// 			'dbfield' => 'zip',
-	// 			'width' => 60
-	// 	);
-	// 	$tableHeader[] = array(
-	// 			'name' => t('Canton'),
-	// 			'dbfield' => 'canton',
-	// 			'width' => 40
-	// 	);
-	// 	$tableHeader[] = array(
-	// 			'name' => t('Linked inventories'),
-	// 			'dbfield' => 'count',
-	// 			'width' => 120
-	// 	);
-	// 	$tableHeader[] = array(
-	// 			'name' => t('Author'),
-	// 			'dbfield' => 'u_name',
-	// 			'width' => 80
-	// 	);
-	// 	$tableHeader[] = array(
-	// 			'name' => t('ID'),
-	// 			'dbfield' => 'area_id',
-	// 			'hide' => true,
-	// 			'width' => 30
-	// 	);
+		if (function_exists('area_habitat_table')) {
+			$render_array['areas'] = array(
+					'#type' => 'fieldset',
+					'#title' => t('Linked areas'),
+					'#collapsible' => true
+			);
+			$render_array['areas']['areatable'] = area_habitat_table($habitatdata['id']);
+		}
 
-	// 	$render_array['linked_areas'] = array(
-	// 			'#type' => 'fieldset',
-	// 			'#title' => t('Linked Areas'),
-	// 			'#weight' => 11,
-	// 			'#collapsible' => TRUE,
-	// 			'#collapsed' => FALSE,
-	// 			'#attached' => array(
-	// 					'js' => array(
-	// 							'misc/form.js',
-	// 							'misc/collapse.js',
-	// 					),
-	// 			),
-	// 			'#attributes' => array(
-	// 					'class' => array(
-	// 							'collapsible'
-	// 					),
-	// 			),
-	// 	);
-
-	// 	$render_array['linked_areas']['areas'] = array(
-	// 			'#theme' => 'datatable',
-	// 			'#header' => $tableHeader,
-	// 			// 				'#dbFields' => $dbFields,
-	// 			// 			'#rows' => $rows,
-	// 			'#id_table' => 'areas',
-	// 			'#options' => array(
-	// 					'jsonUrl' => "'" . $habitatGroupId . "/json'",
-	// 					'rowClick' => 'rowClick',
-	// 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-	// 												window.location.href = Drupal.settings.basePath+'area/'+id;})}"
-	// 			)
-	// 	);
-
-	if (function_exists('gallery_list_renderer'))
-		$render_array['Gallery'] = gallery_list_renderer(
-			'images',
-			'habitat',
-			$habitatId);
-
+		if (function_exists('gallery_list_renderer'))
+			$render_array['gallery'] = gallery_list_renderer('images',
+				'habitat',
+				$habitatdata['id']);
+	}
 	return $render_array;
 }
 ?>

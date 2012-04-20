@@ -551,7 +551,8 @@ function area_update_geometry($geometry_id, $data = array(),
 	assert(!empty($data));
 	assert($geometry_id != NULL);
 	// Bail out early if input stinks too hefty.
-	if (!isset($data['area_points']) || !isset($data['type']) || $geometry_id == NULL) {
+	if (!isset($data['area_points']) || !isset($data['type'])
+			|| $geometry_id == NULL) {
 		assert(false);
 		return;
 	}
@@ -592,9 +593,11 @@ function area_update_geometry($geometry_id, $data = array(),
  * @param int $geometry_id
  * @return true on success, false on fail
  */
-function area_delete_geometry($geometry_id){
-	$num_delted = db_delete('area_surface')->condition('id',$geometry_id)->execute();
-	if($num_delted == 1) return true;
+function area_delete_geometry($geometry_id) {
+	$num_delted = db_delete('area_surface')->condition('id', $geometry_id)
+		->execute();
+	if ($num_delted == 1)
+		return true;
 	return false;
 }
 
