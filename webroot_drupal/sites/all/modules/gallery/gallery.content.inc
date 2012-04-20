@@ -166,20 +166,20 @@ function _gallery_list_parameters($type, $id) {
 	$key = md5($type . (is_array($id) ? implode('.', $id) : $id));
 	if (array_key_exists($key . '_show_all', $_GET))
 		$_SESSION[$key . '_show_all'] = $_GET[$key . '_show_all'] ? true : false;
-	$params['show_all'] = array_key_exists($key . '_show_all', $_SESSION) ? $_SESSION[$key
-					. '_show_all'] : false;
+	$params['show_all'] = array_key_exists($key . '_show_all', $_SESSION)
+			? $_SESSION[$key . '_show_all'] : false;
 	$params['crosslinking'] = array_key_exists('crosslinked', $types[$type]);
 	if ($params['crosslinking']
 			&& array_key_exists($key . '_crosslinked', $_GET))
 		$_SESSION[$key . '_crosslinked'] = $_GET[$key . '_crosslinked'] ? true
 				: false;
-	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION) ? $_SESSION[$key
-					. '_crosslinked'] : null;
+	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION)
+			? $_SESSION[$key . '_crosslinked'] : null;
 	$params['subtypes'] = _gallery_get_subtypes($type, $params['crosslinked']);
 	if ($params['subtypes'] && array_key_exists($key . '_subtype', $_GET))
 		$_SESSION[$key . '_subtype'] = $_GET[$key . '_subtype'];
-	$params['subtype'] = array_key_exists($key . '_subtype', $_SESSION) ? $_SESSION[$key
-					. '_subtype'] : '';
+	$params['subtype'] = array_key_exists($key . '_subtype', $_SESSION)
+			? $_SESSION[$key . '_subtype'] : '';
 	$params['key'] = $key;
 	return $params;
 }
@@ -614,7 +614,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 			'#attributes' => array(
 					'class' => array(
 							'collapsible'
-									. ($_GET['saved'] ? '' : ' collapsed')
+									. (isset($_GET['saved']) ? '' : ' collapsed')
 					),
 			),
 	);
@@ -783,17 +783,20 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 		$row[] = $image['author'];
 		$row[] = $image['location'];
 		$row[] = $caption;
-		$row[] = $editable ? l(
+		$row[] = $editable
+				? l(
 					t('edit'),
 					'gallery/' . $image['item_type'] . '/' . $image['item_id']
 							. '/' . $mediatype . '/edit/' . $image['id'],
-					$camefrom ? array(
+					$camefrom
+							? array(
 									'query' => array(
 											'camefrom' => $camefrom
 									)
 							) : array()) : '&nbsp;';
-		$row[] = $editable ? '<input type="checkbox" name="delete['
-						. $image['id'] . ']" value="1" />' : '&nbsp;';
+		$row[] = $editable
+				? '<input type="checkbox" name="delete[' . $image['id']
+						. ']" value="1" />' : '&nbsp;';
 		$rows[] = $row;
 	}
 
@@ -883,7 +886,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$validate_function = '_gallery_medias_form_upload_validate';
 
 	}
-	if ($image['id']) {
+	if (isset($image['id'])) {
 		$title = t(
 			'Edit %name',
 			array('%name' => ($image['title'] ? $image['title']
@@ -895,8 +898,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	drupal_set_title($title, PASS_THROUGH);
 
 	$types = _gallery_types();
-	$item_provider = array_key_exists('item_provider', $types[$type]) ? $types[$type]['item_provider']
-			: false;
+	$item_provider = array_key_exists('item_provider', $types[$type])
+			? $types[$type]['item_provider'] : false;
 	$form_state['item_provider'] = $item_provider;
 	$item_provider_autocomplete = array_key_exists(
 		'item_provider_autocomplete',
@@ -906,7 +909,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	else
 		$items = call_user_func_array($item_provider, array($id));
 	$subtypes = _gallery_get_subtypes($type, false);
-	if ($_REQUEST['camefrom'])
+	if (isset($_REQUEST['camefrom']))
 		$_SESSION[md5('camefrom_' . $type . '_' . $id)] = $_REQUEST['camefrom'];
 	$form_state['gallery_type'] = $type;
 	$form_state['gallery_id'] = $id;
@@ -917,7 +920,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	$form_state['camefrom'] = $url['path'];
 	$form['#tree'] = TRUE;
 
-	if ($image['fid']) {
+	if (isset($image['fid'])) {
 		$form['thumb'] = array(
 				'#markup' => '<a class="user-picture" rel="lightbox" href="'
 						. url(
@@ -934,9 +937,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	if (!$new_open_identification)
 		$form_state['mode'] = 'edit';
 
-	if (!$image['item_type'])
+	if (!isset($image['item_type']))
 		$image['item_type'] = $type;
-	if (!$image['item_id'])
+	if (!isset($image['item_id']))
 		$image['item_id'] = $id;
 
 	$default_location = _gallery_get_default_location($type, $id);
@@ -975,8 +978,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 					));
 				$form[$prefix]['item'] = array(
 						'#type' => 'hidden',
-						'#default_value' => $search ? $image['item_type'] . ':'
-										. $image['item_id'] : '',
+						'#default_value' => $search
+								? $image['item_type'] . ':' . $image['item_id']
+								: '',
 						'#attributes' => array(
 								'class' => array(
 										'item'
@@ -1013,7 +1017,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				);
 			}
 		}
-		if ($image['id'])
+		if (isset($image['id']))
 			$collapsed = false;
 		elseif ($type == "open_identification")
 			$collapsed = true;
@@ -1043,14 +1047,16 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Title'),
 				'#size' => 100,
 				'#maxlength' => 128,
-				'#default_value' => $image['title'],
+				'#default_value' => isset($image['title']) ? $image['title']
+						: '',
 				'#description' => t('The title of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
 		$form[$prefix]['metadata']['description'] = array(
 				'#type' => 'textarea',
 				'#title' => t('Description'),
-				'#default_value' => $image['description'],
+				'#default_value' => isset($image['description'])
+						? $image['description'] : '',
 				'#description' => t('The description of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
@@ -1059,7 +1065,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Location'),
 				'#size' => 100,
 				'#maxlength' => 255,
-				'#default_value' => $image['location'] ? $image['location']
+				'#default_value' => isset($image['location']) ? $image['location']
 						: $default_location,
 				'#description' => t(
 					'The location the ' . $label . ' was taken at.'),
@@ -1070,7 +1076,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Author'),
 				'#size' => 100,
 				'#maxlength' => 255,
-				'#default_value' => $image['author'] ? $image['author']
+				'#default_value' => isset($image['author']) ? $image['author']
 						: $user->name,
 				'#description' => t('The author of the ' . $label . '.'),
 				'#required' => FALSE,
@@ -1123,7 +1129,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 			);
 		}
 
-		if ($form_state['input'][$prefix]['item']) {
+		if (isset($form_state['input'][$prefix]['item'])) {
 			$item = explode(':', $form_state['input'][$prefix]['item']);
 			$categories = _gallery_image_form_categories(
 				$mediatype,
@@ -1141,7 +1147,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Categories'),
 				'#weight' => 2,
 				'#collapsible' => true,
-				'#collapsed' => $image['id'] ? false : true,
+				'#collapsed' => isset($image['id']) ? false : true,
 				'#attached' => array(
 						'js' => array(
 								'misc/form.js',
@@ -1169,12 +1175,12 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	);
 	$form['actions']['upload_submit'] = array(
 			'#type' => 'submit',
-			'#value' => $image['id'] ? t('Change ' . $label . '')
+			'#value' => isset($image['id']) ? t('Change ' . $label . '')
 					: t('Upload ' . $label . ''),
 			'#submit' => array(
 					'gallery_images_form_upload_submit'
 			),
-			'#attributes' => $image['id'] ? array()
+			'#attributes' => isset($image['id']) ? array()
 					: array(
 							'data-add' => t('Add another ' . $label . ''),
 							'data-remove' => t('Remove ' . $label . '')
@@ -1271,7 +1277,7 @@ function _gallery_image_form_categories($mediatype, $type, $id, $image) {
 		if ($category['multiple'])
 			$categories['cat_' . $category['id']]['#default_value'] = array();
 		foreach ($options as $value => $option) {
-			if (is_array($image['categories'])
+			if (isset($image['categories']) && is_array($image['categories'])
 					&& array_key_exists(substr($value, 4), $image['categories']))
 				if ($category['multiple'])
 					array_push(
@@ -2043,7 +2049,8 @@ function theme_gallery_list($variables) {
 					. '<a ' . $extras . ' href="' . $url_href . '">'
 					. '<img src="' . $url_image . '" alt="' . $image['title']
 					. '" />' . $media_label . '</a>'
-					. (user_access('manage gallery medias') ? '<form class="show_hide" method="post" action="'
+					. (user_access('manage gallery medias')
+							? '<form class="show_hide" method="post" action="'
 									. url(
 										'gallery/' . $image['item_type'] . '/'
 												. $image['item_id'] . '/'
@@ -2058,7 +2065,8 @@ function theme_gallery_list($variables) {
 					. $captionclass . '">'
 					. ($caption ? '<p class="captionText">' . $caption . '</p>'
 							: '')
-					. ($rating_types ? theme(
+					. ($rating_types
+							? theme(
 								'gallery_image_rating',
 								array('image' => $image,
 										'rating_types' => $rating_types
@@ -2122,7 +2130,6 @@ function theme_gallery_image_rating($variables) {
 		array(
 				'weight' => 111
 		));
-	//drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js', array('weight' => 112));
 	drupal_add_js(
 		drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
 		array(
@@ -2139,7 +2146,8 @@ function theme_gallery_image_rating($variables) {
 	$ratings = '';
 	foreach ($rating_types as $rating_type) {
 		$rating = is_array($image['ratings'])
-				&& array_key_exists($rating_type['id'], $image['ratings']) ? $image['ratings'][$rating_type['id']]
+				&& array_key_exists($rating_type['id'], $image['ratings'])
+				? $image['ratings'][$rating_type['id']]
 				: array(
 						'count' => 0,
 						'average' => 0
@@ -2169,28 +2177,43 @@ function theme_gallery_image_rating($variables) {
 				. '</option>' . '<option value="1">' . t('Good') . '</option>'
 				. '<option value="2">' . t('Perfect') . '</option>'
 				. '</select>'
-				. ($allowed ? '<input type="submit" name="rate" value="'
+				. ($allowed
+						? '<input type="submit" name="rate" value="'
 								. t('Rate') . '" />' : '') . '</form>';
 	}
 	return '<div class="rating">' . $ratings . '</div>';
 }
 
+/**
+ * If $_SERVER['HTTP_REFERER'] available and valid, generate an array with the elements
+ *  'title' => t('Back')
+ *  'href' => $lastVisitedPage
+ * 
+ * 
+ * @param $type
+ * 	String with the type of the gallery: 'images', 'videos', etc.
+ * @param $id
+ * 	Integer with the Id of the managed object (Habitat Id, Organism Id, etc.)
+ * @return
+ * 	On success, return an array with the elements 'title' and 'href'
+ */
 function _gallery_back_link($type, $id) {
 	global $base_url;
+	$gallery_back_url_key = 'gallery_back_url_' . $type . '_' . $id;
 	if ((strlen($_SERVER['HTTP_REFERER']) < strlen($base_url) + 8
 			|| substr($_SERVER['HTTP_REFERER'], strlen($base_url) + 1, 7)
 					!= 'gallery')
 			&& substr($_SERVER['HTTP_REFERER'], 0, strlen($base_url))
 					== $base_url)
-		$_SESSION['gallery_back_url_' . $type . '_' . $id] = substr(
+		$_SESSION[$gallery_back_url_key] = substr(
 			$_SERVER['HTTP_REFERER'],
 			strlen($base_url) + 1);
-	$url = drupal_parse_url($_SESSION['gallery_back_url_' . $type . '_' . $id]);
-	$_SESSION['gallery_back_url_' . $type . '_' . $id] = $url['path'];
-	if ($_SESSION['gallery_back_url_' . $type . '_' . $id])
+	$url = drupal_parse_url($_SESSION[$gallery_back_url_key]);
+	$_SESSION[$gallery_back_url_key] = $url['path'];
+	if ($_SESSION[$gallery_back_url_key])
 		return array(
 				'title' => t('Back'),
-				'href' => $_SESSION['gallery_back_url_' . $type . '_' . $id]
+				'href' => $_SESSION[$gallery_back_url_key]
 		);
 	return false;
 }
