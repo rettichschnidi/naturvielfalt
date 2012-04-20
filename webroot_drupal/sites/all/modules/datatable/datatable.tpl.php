@@ -29,13 +29,37 @@ drupal_add_js(
 /**
  * Figure out width/height of table or set default values
  */
-if (!isset($tableWidth) || !is_int($tableWidth)) {
+if (!isset($tableWidth) || $tableWidth < 0) {
 	$tableWidth = 950;
 }
 
-if (!isset($tableHeight) || !is_int($tableHeight)) {
+/**
+ * calculate the width of the cols
+ */
+if (!isset($tableHeight) || tableHeight < 0) {
 	$tableHeight = 200;
 }
+
+$allHeaders = "";
+$allWidths = 0;
+foreach ($header as $head) {
+	$visible = isset($head['hide']) ? !$head['hide'] : true;
+	if ($visible) {
+
+		if (isset($head['width'])) {
+			$allWidths = $allWidths + $head['width'];
+		} else {
+			$allHeaders .= $head['name'];
+		}
+	}
+}
+$countHeadChars = strlen($allHeaders);
+if ($countHeadChars > 0) {
+	$charTableSize = ($tableWidth - $allWidths - 62) / $countHeadChars;
+} else {
+	$charTableSize = 0;
+}
+$colsized = (7 > $charTableSize) ? 8 : $charTableSize;
 
 /**
  * Render the headers and columns
@@ -49,21 +73,19 @@ if ($header) {
 	foreach ($header as $head) {
 		$aoColumns .= "{ display: '" . $head['name'] . "'";
 		if(isset($head['dbfield'])) $aoColumns .= ", name : '" . $head['dbfield'] . "'";
-		if (isset($head['noSort']) && $head['noSort'] == true) {
-			$aoColumns .= ", sortable : false";
-		} else {
-			$aoColumns .= ", sortable : true";
-		}
-		assert($head['width']);
-		$aoColumns .= ", width : '" . $head['width'] . "'";
 
+
+		(isset($head['noSort']) && $head['noSort'] == true) ? $aoColumns .= ",sortable : false"
+				: $aoColumns .= ",sortable : true";
+		(isset($head['width']) && $head['width']) ? $aoColumns .= ",  width : "
+						. $head['width']
+				: $aoColumns .= ",  width : "
+						. (strlen($head['name']) * $colsized);
 		(isset($head['align']) && $head['align']) ? $aoColumns .= ",  align : '"
 						. $head['align'] . "'"
 				: $aoColumns .= ",  align : 'left'";
-
 		if (isset($head['hide']) && $head['hide'] == true)
 			$aoColumns .= ", hide : true";
-
 		if (isset($options['rowClick']))
 			$aoColumns .= ", process : " . $options['rowClick'];
 		$aoColumns .= "},";
@@ -88,7 +110,7 @@ $table[$id_table] = array(
 		'#theme' => 'table',
 		'#rows' => $rows,
 		'#sticky' => false,
-		'#attributes' => array('id' => $id_table),
+		'#attributes' => array('id' => $id_table, 'class' => $id_table),
 );
 print drupal_render($table);
 ?>
@@ -118,8 +140,8 @@ usepager: true,
 useRp: true,
 rp: 15,
 showTableToggleBtn: true,
-width: <?php echo "'$tableWidth'"; ?>,
-height: <?php echo "'$tableHeight'"; ?>,
+width: <?php echo $tableWidth; ?>,
+height: <?php echo $tableHeight; ?>,
 tableId: '<?php echo $id_table; ?>'
 });
 <?php if (isset($options['rowClick']))
