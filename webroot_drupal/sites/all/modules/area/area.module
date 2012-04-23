@@ -9,12 +9,15 @@ define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
 define('AREA_MODERATE', 'area moderate');
 
-// needed for function area_get_full_dataset_of_specific_area
-module_load_include('inc', 'area', 'area');
-
 /**********************************
  *  Hook implementations
  *********************************/
+
+// needed for function area_get_full_dataset_of_specific_area
+module_load_include('inc', 'area', 'area');
+
+// Load gallery integration
+module_load_include('inc', 'area', 'area.gallery');
 
 /**
  * Implements hook_menu()
