@@ -22,15 +22,20 @@ function habitat_show_all() {
 			'width' => 150
 	);
 	$tableHeader[] = array(
-			'name' => t('Habitat name'),
+			'name' => t('Name'),
 			'dbfield' => 'name',
-			'width' => 550,
+			'width' => 350,
+	);
+	$tableHeader[] = array(
+			'name' => t('Latin name'),
+			'dbfield' => 'name_scientific',
+			'width' => 200,
 	);
 	$tableHeader[] = array(
 			'name' => t('Linked Areas'),
 			'dbfield' => 'area_count',
 			'align' => 'center',
-			'width' => 80
+			'width' => 75
 	);
 	$tableHeader[] = array(
 			'name' => t('Image'),

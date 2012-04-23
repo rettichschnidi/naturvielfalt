@@ -15,12 +15,14 @@ function habitat_list_datatablejson() {
 			'h.id AS id',
 			'h.label AS label',
 			'h.name AS name',
+			'h.name_scientific AS name_scientific',
 			'COUNT(ah) AS area_count',
 	);
 
 	$sql['dbSearchColumns'] = array(
 			'h.label',
-			'h.name'
+			'h.name',
+			'h.name_scientific'
 	);
 
 	$sql['dbTable'] = '{habitat} h';

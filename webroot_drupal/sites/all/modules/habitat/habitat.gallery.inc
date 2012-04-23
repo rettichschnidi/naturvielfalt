@@ -64,8 +64,9 @@ function habitat_gallery_caption($id) {
 		->fields('h')
 		->execute()
 		->fetch();
-	// 	return $result->name_de . ' <small>' . $result->name_lt . '</small>';
-		return $result->name;
+	return $result->name_de
+			. (!empty($result->name_scientific)
+					? ' <small>[' . $result->name_scientific . ']</small>' : '');
 }
 
 /**
