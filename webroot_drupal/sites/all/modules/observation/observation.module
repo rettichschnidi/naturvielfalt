@@ -17,26 +17,31 @@ function observation_menu() {
 	$items['singleobservation'] = array(
 			'title' => t('Show all singleobservations'),
 			'description' => t('Display a wizard to add a new singleobservation'),
-			'page callback' => 'singleobservation_view_list',
+			'page callback' => 'observation_show_all_singleobservations',
 			'access arguments' => array(
 					'access observation'
 			),
-			'file' => 'singleobservation.inc',
-			'type' => MENU_NORMAL_ITEM
+			'file' => 'observation.show.inc',
 	);
-	$items['singleobservation/%'] = array(
-			'title' => t('Show all singleobservations'),
-			'description' => t('Display a wizard to add a new singleobservation'),
-			'page callback' => 'singleobservation_view_list',
-			'access arguments' => array(
-					'access observation'
+	$items['singleobservation/%observation/show'] = array(
+			'title' => t('Show'),
+			'description' => t('Display a singleobservation'),
+			'page callback' => 'singleobservation_show_observation',
+			'page arguments' => array(
+					1
 			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_read_access',
 			'file' => 'singleobservation.inc',
-			'type' => MENU_NORMAL_ITEM
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'weight' => 1
 	);
 	$items['singleobservation/%observation/edit'] = array(
 			'title' => t('Edit'),
-			'description' => t('Display a wizard to add a new singleobservation'),
+			'description' => t('Edit a singleobservation'),
 			'page callback' => 'observation_edit',
 			'access arguments' => array(
 					1
@@ -48,6 +53,7 @@ function observation_menu() {
 			'file' => 'observation.inc',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'weight' => 2
 	);
 	$items['singleobservation/%observation/permissions'] = array(
 			'title' => t('Permission'),
@@ -62,7 +68,8 @@ function observation_menu() {
 			'access callback' => 'observation_admin_access',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'observation.inc'
+			'file' => 'observation.inc',
+			'weight' => 3
 	);
 	$items['singleobservation/%observation/delete'] = array(
 			'title' => t('Delete observation'),
@@ -105,6 +112,16 @@ function observation_menu() {
 			'title' => t('Save a observation'),
 			'description' => t(''),
 			'page callback' => 'observation_save',
+			'access arguments' => array(
+					'create observation'
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	$items['observation/get/all'] = array(
+			'title' => t('Get all observations'),
+			'description' => t(''),
+			'page callback' => 'observation_get_all_json',
 			'access arguments' => array(
 					'create observation'
 			),
