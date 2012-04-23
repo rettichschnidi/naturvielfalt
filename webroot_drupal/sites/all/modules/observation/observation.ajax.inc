@@ -32,6 +32,10 @@ global $user;
 	 * Check the determation and artgroup value
 	 */
 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
+	if($observation['organism_artgroup_id'] == 0){
+		$artgroups = organism_artgroup_get_organsim_in_artgroup($observation['organism_id']);
+		foreach ($artgroups as $artgroup) $observation['organism_artgroup_id'] = $artgroup;
+	}
 // 	$observation['organism_artgroup_id'] = NULL;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 	if($artgroup_id > 0){
@@ -237,6 +241,77 @@ global $user;
 
 	return drupal_json_output($output);
 	return print_r($output);
+}
+
+
+function observation_get_all_json(){
+	global $user;
+
+	// if the search is for a date, convert it to timestamp to find the results in the db
+	if(isset($_REQUEST['query'])){
+		$date_split = explode('.', $_REQUEST['query']);
+		if(count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])){
+			$_REQUEST['query'] = mktime(null,null,null,$date_split[1], $date_split[0], $date_split[2]);
+		}
+	}
+
+
+	$sql['dbColumns'] = array(
+			'o.id AS id',
+			'o.observer AS observer',
+			'o.date AS date',
+			'o.count AS count',
+			'a_s.altitude AS altitude',
+			'a_s.township AS township',
+			'a_s.zip AS zip',
+			'a_s.canton AS canton',
+			'a_s.country AS country',
+			'a_s.geom AS geom',
+			'osn.name AS organism_sc',
+			'ol.name AS organism_l',
+			'oa.name AS artgroup_n'
+	);
+
+	$sql['dbSearchColumns'] = array(
+			'o.id',
+			'o.observer',
+			'o.date',
+			'o.count',
+			'a_s.altitude',
+			'a_s.township',
+			'a_s.zip',
+			'a_s.canton',
+			'a_s.country',
+			'a_s.geom',
+			'osn.name',
+			'ol.name',
+			'oa.name',
+	);
+
+	$sql['dbTable'] = '{observation} o';
+	$sql['dbJoins'] = 'INNER JOIN {area_surface} a_s ON a_s.id = o.area_geometry_id '
+						.'INNER JOIN {organism_scientific_name} osn ON osn.organism_id = o.organism_id '
+						."LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='".db_escape_field($user->language)."' "
+						.'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
+	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
+	$sql['id'] = 'id';
+	$output = datatable_dbRequest($sql);
+
+// 	// Add a link to the gallery of each habitat
+// 	global $base_url;
+// 	$imageUrl = $base_url . '/' . drupal_get_path('module', 'habitat') . '/images/image.png';
+	foreach ($output['rows'] as &$row) {
+// 		$link = l(
+// 				"<img src='$imageUrl' />",
+// 				base_path() . 'gallery/' . $row['id'] . '/images',
+// 				array(
+// 						'html' => true
+// 				));
+// 		$row['cell']['image_link'] = $link;
+		if($row['cell']['organism_l'] == "") $row['cell']['organism_l'] = t('No translation available');
+	}
+	return drupal_json_output($output);
+
 }
 
 
