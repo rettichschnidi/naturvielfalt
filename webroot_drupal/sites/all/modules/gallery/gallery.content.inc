@@ -364,9 +364,9 @@ function gallery_presentation_renderer($mediatype, $items,
 			true,
 			false,
 			1,
-			$item['subtype']);
+			isset($item['subtype']) ? $item['subtype'] : false);
 		$msg = $msgPrimary;
-		if (!$image['images'] && $item['alternatives']) {
+		if (!$image['images'] && isset($item['alternatives']) && $item['alternatives']) {
 			$msg = $msgAlternative;
 			foreach ($item['alternatives'] as $alternative) {
 				$image = gallery_images(
@@ -924,7 +924,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$types[$type]) ? $types[$type]['item_provider_autocomplete'] : false;
 	if ($item_provider_autocomplete) {
 		drupal_add_library('system', 'ui.autocomplete');
-	} else if($item_provider) {
+	} else if ($item_provider) {
 		$items = call_user_func_array($item_provider, array($id));
 	}
 	$subtypes = _gallery_get_subtypes($type, false);
@@ -1573,8 +1573,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 		$name = $prefix . '_file';
 		if ((!isset($orig_image['id']) || !$orig_image['id'])
 				&& (!array_key_exists($name, $_FILES['files']['name'])
-						|| !$_FILES['files']['name'][$name])) {
-		}
+						|| !$_FILES['files']['name'][$name])) {}
 
 		if ($item_provider) {
 			assert(isset($values['item']));
