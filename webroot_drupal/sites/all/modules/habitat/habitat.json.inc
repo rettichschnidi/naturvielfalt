@@ -35,7 +35,7 @@ function habitat_list_datatablejson() {
 	foreach ($output['rows'] as &$row) {
 		$link = l(
 			"<img src='$imageUrl' />",
-			base_path() . 'gallery/' . $row['id'] . '/images',
+			'gallery/habitat/' . $row['id'] . '/images',
 			array(
 					'html' => true
 			));
