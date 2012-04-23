@@ -645,7 +645,9 @@ function organism_search_organism_json($classification = false, $term = false, $
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
 
-	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+	// why limit result with the length of the search term??
+// 	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+	$limit = 30;
 
 	$organisms = array();
 
