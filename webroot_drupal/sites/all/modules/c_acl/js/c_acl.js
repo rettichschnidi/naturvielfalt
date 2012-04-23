@@ -12,9 +12,9 @@ jQuery(document).ready( function () {
 			 */
 			Drupal.jsAC.prototype.select = function (node) {
 				this.input.value = $(node).data('autocompleteValue');
-				// !! INSERTED BY SWISSMON PROJECT!! START
+				// !! INSERTED BY NATURVIELFALT PROJECT!! START
 				$(this.input).trigger('autocomplete_select', [node]);
-				// !! INSERTED BY SWISSMON PROJECT!! END
+				// !! INSERTED BY NATURVIELFALT PROJECT!! END
 			};
 
 			/**
@@ -25,12 +25,12 @@ jQuery(document).ready( function () {
 					e = window.event;
 				}
 				switch (e.keyCode) {
-				// !! INSERTED BY SWISSMON PROJECT!! START
+				// !! INSERTED BY NATURVIELFALT PROJECT!! START
 				case 13: // Enter.
 					this.hidePopup(e.keyCode);
 					$(this.input).trigger('autocomplete_select');
 					return true;
-					// !! INSERTED BY SWISSMON PROJECT!! END
+					// !! INSERTED BY NATURVIELFALT PROJECT!! END
 				case 40: // down arrow.
 					this.selectDown();
 					return false;

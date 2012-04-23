@@ -24,7 +24,7 @@ CREATE TABLE public.area
 	id serial NOT NULL,
 	-- FK
 	area_surface_id int NOT NULL,
-	-- Primary key for swissmon acl items
+	-- Primary key for naturvielfalt acl items
 	acl_id int NOT NULL,
 	-- Name, Flurname
 	name text NOT NULL,
@@ -60,7 +60,8 @@ CREATE TABLE public.area_habitat
 	area_id int NOT NULL,
 	-- PK
 	habitat_id int NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (area_id, habitat_id)
 ) WITHOUT OIDS;
 
 
@@ -136,7 +137,7 @@ CREATE INDEX fki_area_id ON public.area_parcel USING BTREE (area_id);
 
 COMMENT ON COLUMN public.area.id IS 'Primary Key';
 COMMENT ON COLUMN public.area.area_surface_id IS 'FK';
-COMMENT ON COLUMN public.area.acl_id IS 'Primary key for swissmon acl items';
+COMMENT ON COLUMN public.area.acl_id IS 'Primary key for naturvielfalt acl items';
 COMMENT ON COLUMN public.area.name IS 'Name, Flurname';
 COMMENT ON COLUMN public.area.comment IS 'Kommentartext';
 COMMENT ON COLUMN public.area.protection_target IS 'Schutzziel';

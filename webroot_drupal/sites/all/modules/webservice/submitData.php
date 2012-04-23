@@ -178,7 +178,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 			echo 'SUCCESS';
 			if($debug) webservice_log('SUCCESS');
 		} else {
-			echo 'Some went wrong.. Please check the submitData.php file on the Swissmon Webserver.';
+			echo 'Some went wrong.. Please check the submitData.php file on the Naturvielfalt Webserver.';
 			if($debug) webservice_log('FAIL');
 		}
 
@@ -197,8 +197,8 @@ if($debug) webservice_log('-----------------------------------------------------
 function storeImage($entry, $uid, $author) {
 	global $debug;
 	$filename = "iphoneprovepicture.png";
-	$folder = $_SERVER["DOCUMENT_ROOT"] . "/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/'; // FIXME: Dateipfad soll aus der DB stammen
-	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
+	$folder = $_SERVER["DOCUMENT_ROOT"] . "/sites/default/files/naturvielfalt/gallery/inventory_entry/" . $entry . '/'; // FIXME: Dateipfad soll aus der DB stammen
+	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/naturvielfalt/application/sites/default/files/naturvielfalt/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 
 	if($debug) webservice_log('try to store image: '. $target_path);
@@ -215,7 +215,7 @@ function storeImage($entry, $uid, $author) {
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
 		if($debug) webservice_log('move file success');
-		$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
+		$uri = 'public://naturvielfalt/gallery/inventory_entry/' . $entry . '/' . $filename;
 		$filesize = filesize($target_path);
 		$timestamp = time();
 

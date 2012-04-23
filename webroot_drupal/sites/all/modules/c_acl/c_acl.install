@@ -13,7 +13,7 @@ function c_acl_schema() {
 			'acl' => array(
 					'fields' => array(
 							'id' => array(
-									'description' => 'Primary key for swissmon acl items',
+									'description' => 'Primary key for naturvielfalt acl items',
 									'type' => 'serial',
 									'not null' => 'TRUE',
 									'size' => 'big',
@@ -23,7 +23,7 @@ function c_acl_schema() {
 									'type' => 'text',
 							),
 							'users_id' => array(
-									'description' => 'foreign key for swissmon user id who created acl item',
+									'description' => 'foreign key for naturvielfalt user id who created acl item',
 									'type' => 'int',
 									'default' => '0',
 									'size' => 'big',
@@ -58,7 +58,7 @@ function c_acl_schema() {
 									'size' => 'big',
 							),
 							'sgroup_id' => array(
-									'description' => 'Foreign key of swissmon sgroup',
+									'description' => 'Foreign key of naturvielfalt sgroup',
 									'type' => 'int',
 									'not null' => 'TRUE',
 									'size' => 'big',
@@ -108,7 +108,7 @@ function c_acl_schema() {
 									'size' => 'big',
 							),
 							'users_id' => array(
-									'description' => 'foreign key for swissmon user id',
+									'description' => 'foreign key for naturvielfalt user id',
 									'type' => 'int',
 									'default' => '0',
 									'size' => 'big',
@@ -134,13 +134,13 @@ function c_acl_schema() {
 			'sgroup' => array(
 					'fields' => array(
 							'id' => array(
-									'description' => 'Primary key for swissmon groups',
+									'description' => 'Primary key for naturvielfalt groups',
 									'type' => 'serial',
 									'not null' => 'TRUE',
 									'size' => 'big',
 							),
 							'name' => array(
-									'description' => 'The name of the swissmon group',
+									'description' => 'The name of the naturvielfalt group',
 									'type' => 'varchar',
 									'size' => 'normal',
 									'not null' => 'TRUE',

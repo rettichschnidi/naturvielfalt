@@ -23,7 +23,7 @@ function area_schema() {
       ),
       'acl_id' => 
       array (
-        'description' => 'Primary key for swissmon acl items',
+        'description' => 'Primary key for naturvielfalt acl items',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
@@ -141,6 +141,14 @@ function area_schema() {
     'primary key' => 
     array (
       0 => 'id',
+    ),
+    'unique keys' => 
+    array (
+      'area_id_AND_habitat_id' => 
+      array (
+        0 => 'area_id',
+        1 => ' habitat_id',
+      ),
     ),
     'foreign keys' => 
     array (

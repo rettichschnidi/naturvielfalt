@@ -494,12 +494,12 @@ function AreaSelect(map_id) {
   
   AreaSelect.prototype.initLocation = function() {
 	  if (window.localStorage) {
-		  var bounds = window.localStorage.getItem('swissmon_ne_lat');
+		  var bounds = window.localStorage.getItem('naturvielfalt_ne_lat');
 		  if (bounds != null) {
 			  this.mapOverlays.fitBoundsOnLoad = false;
 			  var ls = window.localStorage;
-			  var ne = new google.maps.LatLng(ls.getItem('swissmon_ne_lat'), ls.getItem('swissmon_ne_lng'));
-			  var sw = new google.maps.LatLng(ls.getItem('swissmon_sw_lat'), ls.getItem('swissmon_sw_lng'));
+			  var ne = new google.maps.LatLng(ls.getItem('naturvielfalt_ne_lat'), ls.getItem('naturvielfalt_ne_lng'));
+			  var sw = new google.maps.LatLng(ls.getItem('naturvielfalt_sw_lat'), ls.getItem('naturvielfalt_sw_lng'));
 			  bounds = new google.maps.LatLngBounds(sw,ne);
 			  this.map.fitBounds(bounds);
 		  }
@@ -536,10 +536,10 @@ function AreaSelect(map_id) {
 		  var b = me.map.getBounds();
 		  var ne = b.getNorthEast();
 		  var sw = b.getSouthWest();
-		  window.localStorage.setItem('swissmon_ne_lat', ne.lat());
-		  window.localStorage.setItem('swissmon_ne_lng', ne.lng());
-		  window.localStorage.setItem('swissmon_sw_lat', sw.lat());
-		  window.localStorage.setItem('swissmon_sw_lng', sw.lng());
+		  window.localStorage.setItem('naturvielfalt_ne_lat', ne.lat());
+		  window.localStorage.setItem('naturvielfalt_ne_lng', ne.lng());
+		  window.localStorage.setItem('naturvielfalt_sw_lat', sw.lat());
+		  window.localStorage.setItem('naturvielfalt_sw_lng', sw.lng());
 	  });  
   }
 };
