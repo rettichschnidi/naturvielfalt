@@ -631,4 +631,319 @@ function area_swap_json_lnglat(&$json) {
 		$currentelement[1] = $tmp;
 	}
 }
+
+function area_gallery($areaId) {
+	return _area_presentation($areaId);
+}
+
+function area_list($areaId) {
+	return _area_presentation(
+		$areaId,
+		'gallery_presentation_list',
+		'presentation-list',
+		1000000);
+}
+
+function _area_presentation($areaId, $size = 'gallery_presentation',
+		$cssClass = false, $columns = GALLERY_COLUMNS) {
+	if (!function_exists('gallery_presentation_renderer'))
+		return;
+	// 	drupal_add_css(
+	// 		drupal_get_path('module', 'inventory') . '/css/main.css',
+	// 		array(
+	// 				'group' => CSS_DEFAULT,
+	// 				'every_page' => TRUE
+	// 		));
+	$area = db_select('area', 'a')->condition('id', $areaId)
+		->fields('a')
+		->execute()
+		->fetch();
+	drupal_set_title($area->name);
+	// 	$query = db_select(
+	// 		'head_inventory',
+	// 		'hi',
+	// 		array('fetch' => PDO::FETCH_ASSOC))->condition('area_id', $areaId)
+	// 		->where('hi.hidden IS NOT TRUE');
+	// 	$query->join('inventory', 'i', 'i.head_inventory_id = hi.id');
+	// 	$query->join('inventory_type', 'it', 'it.id = i.inventory_type_id');
+	// 	$query->addField('hi', 'id', 'head_inventory_id');
+	// 	$query->addField('i', 'id', 'inventory_id');
+	// 	$query->addField('it', 'id', 'inventory_type_id');
+	// 	$query->addField('it', 'name', 'inventory_type_name');
+	// 	$inventories = $query->execute()
+	// 		->fetchAll();
+
+	$sorting = array(
+			'default',
+			'latin',
+			'german',
+			'family'
+	);
+	$sources = array(
+			'default',
+			'inventory',
+			'presentation',
+			'best'
+	);
+
+	$key = md5('area_presentation' . $areaId);
+	if (isset($_GET[$key . '_source'])
+			&& in_array($_GET[$key . '_source'], $sources)) {
+		$_SESSION[$key . '_source'] = $_GET[$key . '_source'];
+	}
+	$source = isset($_SESSION[$key . '_source']) ? $_SESSION[$key . '_source']
+			: false;
+
+	$order = false;
+	if (isset($_GET[$key . '_order'])
+			&& in_array($_GET[$key . '_order'], $sorting)) {
+		$_SESSION[$key . '_order'] = $_GET[$key . '_order'];
+	}
+	if (isset($_SESSION[$key . '_order'])) {
+		$order = $_SESSION[$key . '_order'];
+	}
+
+	// 	switch ($order) {
+	// 	case 'latin':
+	// 		$sort = 'fauna.genus, fauna.species, flora."Gattung", flora."Art", e.id ASC';
+	// 		break;
+	// 	case 'german':
+	// 		$sort = 'fauna.name_de, flora.name_de, e.id ASC';
+	// 		break;
+	// 	case 'family':
+	// 		$sort = 'fauna.family, flora."Familie", e.id ASC';
+	// 		break;
+	// 	default:
+	// 		$sort = 'e.position, e.id ASC';
+	// 		break;
+	// 	}
+
+	// 	$page = array();
+	// 	$seen = array();
+	$groups = array();
+	// 	$protected = inventory_redlisted_entries();
+	$weight = 1;
+	// 	foreach ($inventories as $inventory) {
+	// 		$sql = 'SELECT e.id, e.organism_id, fauna.name_de faunanamede, fauna.genus, fauna.species, fauna.family, o.organism_type, flora.name_de floranamede, flora."Gattung" floragattung, flora."Art" floraart, flora."Familie" florafamilie
+	// 		FROM inventory_entry e
+	// 		LEFT JOIN organism o on e.organism_id = o.id
+	// 		LEFT JOIN fauna_organism fauna ON o.organism_id = fauna.id
+	// 		LEFT JOIN flora_organism flora ON o.organism_id = flora.id
+	// 		WHERE e.inventory_id = :id '
+	// 				. ($protected
+	// 						? 'AND NOT e.id IN (' . implode(', ', $protected) . ')'
+	// 						: '') . 'ORDER BY ' . $sort . ';';
+	// 		$entries = db_query($sql, array(':id' => $inventory['inventory_id']))->fetchAll();
+	// 		if (!$entries)
+	// 			continue;
+	// 		if (!array_key_exists($inventory['inventory_type_name'], $groups))
+	// 			$groups[$inventory['inventory_type_name']] = array();
+
+	// 		foreach ($entries as $entry) {
+	// 			if (!array_key_exists($entry->organism_id, $seen)) {
+	// 				$seen[$entry->organism_id] = count(
+	// 					$groups[$inventory['inventory_type_name']]);
+	// 				if ($entry->organism_type == 1) {
+	// 					// organism_type 1 is Fauna
+	// 					$label = $entry->faunanamede;
+	// 					$label_latin = $entry->genus . " " . $entry->species;
+	// 					$label_family = $entry->family;
+	// 				} else {
+	// 					// organism_type 2 is Flora
+	// 					$label = $entry->floranamede;
+	// 					$label_latin = $entry->floragattung . " "
+	// 							. $entry->floraart;
+	// 					$label_family = $entry->florafamilie;
+	// 				}
+	// 				$item = array(
+	// 						'content' => array(
+	// 								'label_family' => array(
+	// 										'#markup' => '<h3>' . $label_family
+	// 												. '</h3>'
+	// 								),
+	// 								'label_latin' => array(
+	// 										'#markup' => '<h4>'
+	// 												. l(
+	// 													$label_latin,
+	// 													'organism/'
+	// 															. $entry->organism_id)
+	// 												. '</h4>'
+	// 								),
+	// 								'label' => array(
+	// 										'#markup' => '<h5>'
+	// 												. l(
+	// 													$label,
+	// 													'organism/'
+	// 															. $entry->organism_id)
+	// 												. '</h5>'
+	// 								)
+	// 						)
+	// 				);
+	// 				switch ($source) {
+	// 				case 'best':
+	// 					$item['type'] = 'organism';
+	// 					$item['id'] = $entry->organism_id;
+	// 					break;
+	// 				case 'inventory':
+	// 					$item['type'] = 'inventory_entry';
+	// 					$item['id'] = $entry->id;
+	// 					break;
+	// 				case 'presentation':
+	// 					$item['type'] = 'inventory_entry';
+	// 					$item['id'] = $entry->id;
+	// 					$item['subtype'] = 'presentation';
+	// 					break;
+	// 				default:
+	// 					$item['type'] = 'inventory_entry';
+	// 					$item['id'] = $entry->id;
+	// 					$item['alternatives'] = array(
+	// 							array(
+	// 									'type' => 'organism',
+	// 									'id' => $entry->organism_id
+	// 							)
+	// 					);
+	// 					break;
+	// 				}
+	// 				$groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]] = $item;
+	// 			} else if ($source == 'best')
+	// 				continue;
+	// 			array_push(
+	// 				$groups[$inventory['inventory_type_name']][$seen[$entry->organism_id]]['id'],
+	// 				$entry->id);
+	// 		}
+	// 	}
+
+	$query = db_select('area_habitat', 'ah', array('fetch' => PDO::FETCH_ASSOC))->condition(
+			'area_id',
+			$areaId);
+	$query->join('habitat', 'h', 'h.id = ah.habitat_id');
+	$query->fields('h');
+	$query->addField('ah', 'id', 'ah_id');
+	switch ($order) {
+	case 'latin':
+		$query->orderBy('h.name, h.label', 'ASC');
+		break;
+	case 'german':
+		$query->orderBy('h.name, h.label', 'ASC');
+		break;
+	case 'family':
+		$query->orderBy('h.label', 'ASC');
+		break;
+	default:
+		$query->orderBy('h.label', 'ASC');
+		break;
+	}
+
+	$habitats = $query->execute()
+		->fetchAll();
+
+	foreach ($habitats as $habitat) {
+		if (!array_key_exists(t('Habitats'), $groups))
+			$groups[t('Habitats')] = array();
+		array_push(
+			$groups[t('Habitats')],
+			array(
+					'type' => 'area_habitat',
+					'id' => $habitat['ah_id'],
+					'alternative' => array(
+							'type' => 'habitat',
+							'id' => $habitat['id']
+					),
+					'content' => array(
+							'label' => array(
+									'#prefix' => '<h3>',
+									'#suffix' => '</h3>',
+									'#markup' => $habitat['label'],
+							),
+							'name_de' => array(
+									'#prefix' => '<h4>',
+									'#suffix' => '</h4>',
+									'#markup' => l(
+										$habitat['name_de'],
+										'habitat/' . $habitat['id'])
+							),
+							'name_scientific' => array(
+									'#prefix' => '<h5>',
+									'#suffix' => '</h5>',
+									'#markup' => $habitat['name_scientific']
+											? l(
+												$habitat['name_scientific'],
+												'habitat/' . $habitat['id'])
+											: ''
+							)
+					)
+			));
+	}
+
+	foreach ($groups as $group => $items) {
+		if ($items) {
+			$page[$group] = array(
+					'#weight' => $weight++
+			);
+			$page[$group]['title'] = array(
+					'#prefix' => '<h2>',
+					'#suffix' => '</h2>',
+					'#markup' => $group
+			);
+			$page[$group]['galleryImages'] = gallery_presentation_renderer(
+				'images',
+				$items,
+				$size,
+				$cssClass,
+				$columns);
+		}
+	}
+
+	if (!$page)
+		$page['empty'] = array(
+				'#prefix' => '<p>',
+				'#suffix' => '<p>',
+				'#markup' => t(
+					'There are no organisms and no habitats available in this area.')
+		);
+	else {
+		$url = drupal_get_destination();
+		$url = drupal_parse_url($url['destination']);
+		$url = $url['path'];
+
+		$sselected = array();
+		foreach ($sources as $s) {
+			$sselected[$s] = $source == $s ? ' selected="selected"' : '';
+		}
+		$oselected = array();
+		foreach ($sorting as $o)
+			$oselected[$o] = $order == $o ? ' selected="selected"' : '';
+		$page['form'] = array(
+				'#markup' => '<form class="presentation-settings" method="get" action="'
+						. url($url) . '">' . '<select size="1" name="' . $key
+						. '_source">' . '<option value="default"'
+						. $sselected['default'] . '>'
+						. t('Prefer images from inventories') . '</option>'
+						. '<option value="inventory"' . $sselected['inventory']
+						. '>' . t('Show only images from inventories')
+						. '</option>' . '<option value="presentation"'
+						. $sselected['presentation'] . '>'
+						. t('Show only presentation images from inventories')
+						. '</option>' . '<option value="best"'
+						. $sselected['best'] . '>'
+						. t('Show the highest rated images of the site')
+						. '</option>' . '</select> '
+						. '<select size="1" name="' . $key . '_order">'
+						. '<option value="default"' . $oselected['default']
+						. '>' . t('Sort by position in inventory')
+						. '</option>' . '<option value="german"'
+						. $oselected['german'] . '>' . t('Sort by german name')
+						. '</option>' . '<option value="latin"'
+						. $oselected['latin'] . '>' . t('Sort by latin name')
+						. '</option>' . '<option value="family"'
+						. $oselected['family'] . '>' . t('Sort by family')
+						. '</option>' . '</select> '
+						. '<input type="submit" name="submit" value="'
+						. t('apply') . '" />' . '</form>',
+				'weight' => -1
+		);
+	}
+
+	return $page;
+}
 ?>

@@ -339,6 +339,38 @@ function area_menu() {
 			'file' => 'area.ajax.inc',
 	);
 
+	$items['area/%/gallery'] = array(
+			'title' => t('Gallery'),
+			'description' => t('View the area as a gallery of organisms'),
+			'page callback' => 'area_gallery',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.inc',
+			'weight' => 2
+	);
+
+	$items['area/%/list'] = array(
+			'title' => t('List'),
+			'description' => t('View the area as a list of organisms'),
+			'page callback' => 'area_list',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'area.inc',
+			'weight' => 3
+	);
+
 	/**
 	 * Example usage of theme area with action 'getcoordinate'
 	 * @todo Delete when module singleobservation finished
