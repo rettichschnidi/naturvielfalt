@@ -10,7 +10,7 @@ module_load_include('inc', 'area', 'area');
 /**
  * Show all existing areas. Ify $onlyMyAreas is true,
  * restrict to areas where the current user is admin.
- * 
+ *
  * @return render array
  */
 function area_show_all_areas($onlyMyAreas = false) {
@@ -103,13 +103,15 @@ function area_show_all_areas($onlyMyAreas = false) {
 
 /**
  * Show a specific area.
- * 
+ *
  * @param integer $area_id
  * @return array Drupal form
  */
 function area_show_specific_area($areadata = NULL) {
 	assert(!empty($areadata));
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
+	drupal_add_js('misc/form.js');
+	drupal_add_js('misc/collapse.js');
 	drupal_set_title($areadata['name']);
 
 	/* call area_get_static_image_url() to get an url to the google maps visualization */
@@ -155,7 +157,7 @@ function area_show_specific_area($areadata = NULL) {
 			'#collapsed' => false,
 			'#attributes' => array(
 					'id' => 'area-show-comment',
-					'disabled' => true
+					'class' => array('collapsible', 'collapsed'),
 			)
 	);
 
@@ -173,7 +175,10 @@ function area_show_specific_area($areadata = NULL) {
 			'#title' => t('Area concept'),
 			'#weight' => 11,
 			'#collapsible' => true,
-			'#collapsed' => true
+			'#collapsed' => true,
+			'#attributes' => array(
+					'class' => array('collapsible', 'collapsed'),
+			)
 	);
 
 	/* add the protectiont target textarea */
@@ -211,7 +216,10 @@ function area_show_specific_area($areadata = NULL) {
 			'#type' => 'fieldset',
 			'#title' => t('Linked habitats'),
 			'#weight' => 12,
-			'#collapsible' => true
+			'#collapsible' => true,
+			'#attributes' => array(
+					'class' => array('collapsible', 'collapsed'),
+			)
 	);
 
 	/* add the linked habitats */
@@ -257,7 +265,7 @@ function area_show_specific_area($areadata = NULL) {
 /**
  * Return a form which shows some important facts about a given area.
  * Intended for usage in a infowindow on a map.
- * 
+ *
  * @param array $form
  *  Drupal form
  * @param array $form_state
@@ -355,7 +363,7 @@ function area_habitat_table($habitatId) {
 		FROM
 			{area_habitat} AS a_h
 			JOIN {area} AS a ON a_h.area_id = a.id
-			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id 
+			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id
 		WHERE
