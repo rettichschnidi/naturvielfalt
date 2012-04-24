@@ -249,7 +249,7 @@ function area_menu() {
 			'weight' => 2
 	);
 
-	/* Edit an area */
+	/* Edit an area geometry */
 	$items['area/%area/editgeometry'] = array(
 			'title' => t('Edit geometry'),
 			'description' => t('Edit the geometry of an existing geometry.'),
@@ -269,7 +269,7 @@ function area_menu() {
 			'weight' => 3
 	);
 
-	/* Edit an area */
+	/* Delete an area */
 	$items['area/%area/delete'] = array(
 			'title' => t('Delete area'),
 			'description' => t('Delete an existing area.'),
