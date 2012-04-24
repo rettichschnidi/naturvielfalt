@@ -8,13 +8,15 @@
 function observation_form($observation = false) {
 	global $user;
 	$hidden_fields_arr = array();
+	drupal_set_title('Capture a new observation');
 // 	die(print_r($observation));
 	if($observation){
 // 		$observation = observation_get($observation_id);
-// 		print_r($observation);
+		print_r($observation);
 
 		$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
+		drupal_set_title('Edit a observation');
 	}
 
 	// if not edit, set standart vlaues
@@ -242,6 +244,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
  */
 function observation_acl_template($observation = NULL){
 // 	die(print_r($observation));
+	drupal_set_title('Set permissions on a observation');
 	$output = array();
 	$defaults = array(
 			array(
@@ -269,3 +272,98 @@ function observation_acl_template($observation = NULL){
 	);
 	return $output;
 }
+
+/**
+ * Show an observation
+ * @param array $observationdata
+ */
+function observation_show_observation($observationdata = NULL){
+
+	$observation_path= drupal_get_path('module', 'observation');
+// 	drupal_add_js($observation_path . '/js/observation.js');
+	drupal_add_css($observation_path . '/css/observation.css');
+	drupal_add_js('misc/form.js');
+	drupal_add_js('misc/collapse.js');
+	drupal_set_title('Show a observation');
+
+	/* call area_get_static_image_url() to get an url to the google maps visualization */
+	$staticimageurl = area_get_static_image_url(
+			array('coordinates' => json_encode($observationdata['geometry']['coordinatejson']),
+					'type' => $observationdata['geometry']['geometry_type']
+			),
+			450,
+			320);
+
+	/* Create a fieldset for the tabular data */
+	$output['observation'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Observation'),
+			'#weight' => 1,
+			'#attributes' => array(
+					'id' => 'observation-show-details' // required for CSS
+			)
+	);
+
+	$output['observation']['table'] = observation_get_table($observationdata);
+
+	/* Create a fieldset for the static google maps */
+	$output['observation_static_map'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Map'),
+			'#weight' => 3,
+			'#attributes' => array(
+					'id' => 'observation-show-details-map' // required for CSS
+			)
+	);
+
+	/* add the picture */
+	$output['observation_static_map']['image'] = array(
+			'#type' => 'markup',
+			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
+	);
+
+	/* Create a fieldset for the comment text field */
+	$output['observation_geometry'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Position data'),
+			'#weight' => 9,
+			'#collapsible' => true,
+			'#collapsed' => false,
+			'#attributes' => array(
+					'id' => 'observation-clear',
+					'class' => array('collapsible', 'collapsed'),
+			)
+	);
+
+	$output['observation_geometry']['table'] = observation_get_geometry_table($observationdata);
+
+	/* Create a fieldset for the comment text field */
+	$output['observation_attributes'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Details'),
+			'#weight' => 10,
+			'#collapsible' => true,
+			'#collapsed' => false,
+			'#attributes' => array(
+					'id' => 'observation-clear',
+					'class' => array('collapsible', 'collapsed')
+			)
+	);
+
+	$output['observation_attributes']['table'] = observation_get_details_table($observationdata);
+
+
+
+
+
+	/* Build the content of the table, leave out empty fields */
+// 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
+
+	return $output;
+}
+
+
+
+
+
+
