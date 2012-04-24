@@ -55,16 +55,16 @@ function organism_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
-      'name' => 
-      array (
-        'description' => 'No description for column name available, please fix',
-        'type' => 'text',
-      ),
       'organism_artgroup_attr_type_id' => 
       array (
         'description' => 'No description for column organism_artgroup_attr_type_id available, please fix',
         'type' => 'int',
         'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
       ),
     ),
     'unique keys' => 
@@ -187,16 +187,16 @@ function organism_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
+      'organism_artgroup_attr_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_attr_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
       'value' => 
       array (
         'description' => 'No description for column value available, please fix',
         'type' => 'text',
-      ),
-      'organism_artgroup_attr_values_id' => 
-      array (
-        'description' => 'No description for column organism_artgroup_attr_values_id available, please fix',
-        'type' => 'int',
-        'not null' => 'TRUE',
       ),
     ),
     'unique keys' => 
@@ -217,7 +217,7 @@ function organism_schema() {
         'table' => 'organism_artgroup_attr',
         'columns' => 
         array (
-          'organism_artgroup_attr_values_id' => 'id',
+          'organism_artgroup_attr_id' => 'id',
         ),
       ),
     ),
@@ -557,7 +557,7 @@ function organism_schema() {
         'table' => 'organism_classification',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
       'organism_classification_2_organism_classification_level' => 

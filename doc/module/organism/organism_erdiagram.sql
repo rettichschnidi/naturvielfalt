@@ -62,8 +62,8 @@ CREATE TABLE organism_artgroup
 CREATE TABLE organism_artgroup_attr
 (
 	id serial NOT NULL UNIQUE,
-	name text,
 	organism_artgroup_attr_type_id int NOT NULL,
+	name text,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -89,8 +89,8 @@ CREATE TABLE organism_artgroup_attr_type
 CREATE TABLE organism_artgroup_attr_values
 (
 	id serial NOT NULL UNIQUE,
+	organism_artgroup_attr_id int NOT NULL,
 	value text,
-	organism_artgroup_attr_values_id int NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -338,7 +338,7 @@ ALTER TABLE organism_artgroup_attr_subscription
 
 
 ALTER TABLE organism_artgroup_attr_values
-	ADD FOREIGN KEY (organism_artgroup_attr_values_id)
+	ADD FOREIGN KEY (organism_artgroup_attr_id)
 	REFERENCES organism_artgroup_attr (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -370,17 +370,17 @@ ALTER TABLE organism_attribute_value_subscription
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE CASCADE
+	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
 
