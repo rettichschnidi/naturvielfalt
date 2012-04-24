@@ -8,11 +8,12 @@
 
 module_load_include('inc', 'organism', 'organism');
 
-
 /**
- * Queries Wikipedia for organism entry and displays content on local page
- * @param organism_id
+ * Queries Wikipedia for organism entry and displays content on local page.
+ * @param $organism_id
+ * 	String with an integer-Id of requested organism.
  * @return
+ * 	Drupal render array
  */
 function organism_lexika_show($organism_id) {
 	drupal_add_css(
@@ -23,16 +24,16 @@ function organism_lexika_show($organism_id) {
 		));
 	$organism_name_array = organism_get_single_name_of_organism($organism_id);
 	$organism_name = $organism_name_array['name'];
-	if(preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {
+	if (preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {
 		$organism_name = $matches[1];
 	}
-	
+
 	drupal_set_title($organism_name);
 	$organism_name = str_replace(' ', '_', $organism_name);
 	global $user;
 	global $language;
 	$langcode = isset($user->language) ? $user->language : $language->language;
-	
+
 	$host = $langcode . '.wikipedia.org';
 	$url = '/w/api.php?';
 	$postdata = 'action=query&prop=revisions&titles=' . $organism_name
