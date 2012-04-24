@@ -81,6 +81,7 @@ function observation_form($observation = false) {
 			'#ch1903' => true
 	);
 
+	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
 
 $formcust .= '<div id="message" style="display: none; height: auto;">
 <div class="messages status"></div>
@@ -98,7 +99,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 						.'<tr><td class="observation_td">'
 								.'<span class="observation_title">'.t('Search for organsim or species').'</span><br>'
 									.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="'.$observation['organism']['name_lang'].'">'
-									.'<br><span id="species_autocomplete">'.$observation['organism']['name_lat'].'</span>'
+									.'<br><span id="species_autocomplete">'.$species_autocomplete.'</span>'
 							.'</td><td class="observation_td">'
 									.'<span class="observation_title">'.t('Filter on species group').'</span><br>'
 									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option(false, 0, $observation['observation']['organism_artgroup_id']).'</select>'

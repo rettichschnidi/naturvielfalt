@@ -645,7 +645,9 @@ function organism_search_organism_json($classification = false, $term = false, $
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
 
-	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+	// why limit result with the length of the search term??
+// 	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+	$limit = 30;
 
 	$organisms = array();
 
@@ -667,7 +669,7 @@ function organism_search_organism_json($classification = false, $term = false, $
 	$i = 1;
 	$query = 'SELECT ol.organism_id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
 				FROM organism AS o
-				INNER JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
+				LEFT JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				INNER JOIN organism_scientific_name AS osn ON osn.organism_id = o.id
 				LEFT JOIN organism_artgroup_subscription AS oas ON oas.organism_id=o.id
 				'.$artgroup_join.'

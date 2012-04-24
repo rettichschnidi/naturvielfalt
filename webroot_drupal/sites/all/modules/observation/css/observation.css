@@ -36,6 +36,13 @@
     background-repeat: no-repeat;
     border-width: 1px;
 }
+.organism_autocomplete_list{
+	font-size: 11px;
+}
+.organism_autocomplete_list_s{
+	font-size: 11px;
+    font-style: italic;
+}
 .searching {
     background-image: url("../img/searching.gif");
 }

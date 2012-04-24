@@ -179,10 +179,13 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 /**
  * Returns a single attribute as array
  * @param int $attribute_id
- * @return array
+ * @param bool $just_the_name
+ * @return array OR String
  */
-function organism_artgroup_get_attribute($attribute_id){
-	return organism_artgroup_get_attributes(false, false, false, false, false, false, $attribute_id);
+function organism_artgroup_get_attribute($attribute_id, $just_the_name = false){
+	$attr = organism_artgroup_get_attributes(false, false, false, false, false, false, $attribute_id);
+	if($just_the_name) return $attr[0]['name'];
+	return $attr;
 }
 
 /**
@@ -248,8 +251,21 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
  */
 function organism_artgroup_get_attributes_ids($artgroup_id){
 	return db_query("SELECT organism_artgroup_attr_id id FROM {organism_artgroup_attr_subscription} "
-					."WHERE organism_artgroup_id='".db_escape_field($artgroup_id)."' GROUP BY organism_artgroup_attr_id")
-					->fetchCol();
+			."WHERE organism_artgroup_id='".db_escape_field($artgroup_id)."' GROUP BY organism_artgroup_attr_id")
+			->fetchCol();
+}
+
+
+/**
+ * Return the name of a attribute value
+ * @param int $value_id
+ * @return String
+ */
+function organism_artgroup_get_attributes_value_name($value_id = false){
+	if(!$value_id) return;
+	$attr_val=  db_query("SELECT * FROM {organism_artgroup_attr_values} "
+				."WHERE id=:value_id", array(':value_id', $value_id))->fetchAssoc();
+	return $attr_val['value'];
 }
 
 /**

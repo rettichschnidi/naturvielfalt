@@ -108,6 +108,7 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 //			return hash[m];
 //		});
 		// highlighting of matches
+		spacer = '';
 		var label = item.label;
 		var label_latin = item.label_latin;
 		var re = new RegExp($.trim(term), 'ig');
@@ -136,7 +137,8 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 //		}
 //		var old = '';
 //		if(old_label || old_label_latin) old = '<small>' + old_label + '<em>' + old_label_latin + '</em></small>';
-		return $('<li></li>').data('item.autocomplete', item).append('<a>' + label + '<em>' + label_latin + '</em></a>').appendTo(ul);
+		if(label_latin != '' && label != '') spacer = '<br>';
+		return $('<li></li>').data('item.autocomplete', item).append('<a class="organism_autocomplete_list">' + label + spacer +'<em class="organism_autocomplete_list_s">' + label_latin + '</em></a>').appendTo(ul);
 	};
 });
 
