@@ -100,7 +100,7 @@ function area_gallery_caption($id) {
 			a_s.country AS country
 		FROM
 			{area} AS a
-			JOIN {area_surface} AS a_s ON a.area_surface_id = a_s.id
+			JOIN {area_geometry} AS a_s ON a.area_geometry_id = a_s.id
 		WHERE
 			a_s.id = :id',
 		array(':id' => $id))->fetch();
@@ -138,7 +138,7 @@ function area_gallery_location_provider($id) {
 			a_s.country AS country
 		FROM
 			{area} AS a
-			JOIN {area_surface} AS a_s ON a.area_surface_id = a_s.id
+			JOIN {area_geometry} AS a_s ON a.area_geometry_id = a_s.id
 		WHERE
 			a.id = :id',
 		array(':id' => $id))->fetch();

@@ -1352,8 +1352,8 @@
 			</color>
 			<connections>
 			</connections>
-			<physical_name>area_surface</physical_name>
-			<logical_name>area_surface</logical_name>
+			<physical_name>area_geometry</physical_name>
+			<logical_name>area_geometry</logical_name>
 			<description></description>
 			<constraint></constraint>
 			<primary_key_name></primary_key_name>
@@ -2220,8 +2220,8 @@
 					<relation>4</relation>
 					<description>FK</description>
 					<unique_key_name></unique_key_name>
-					<logical_name>area_surface_id</logical_name>
-					<physical_name>area_surface_id</physical_name>
+					<logical_name>area_geometry_id</logical_name>
+					<physical_name>area_geometry_id</physical_name>
 					<type>integer</type>
 					<constraint></constraint>
 					<default_value></default_value>

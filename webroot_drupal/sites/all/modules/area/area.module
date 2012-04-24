@@ -462,7 +462,7 @@ function area_theme() {
 					'variables' => array(
 							// Requested functionality:
 							//  'create': create a new area
-							//  'edit': edit an existing area geometry ('area_surface_id' has to be set)
+							//  'edit': edit an existing area geometry ('area_geometry_id' has to be set)
 							//  'getcoordinate': get a position (set a marker and fill
 							//		its data into the hidden fields provided by area_address_hidden_form().
 							//		If 'coordinate_storage_id' given, this field will be updated as well.
@@ -473,8 +473,8 @@ function area_theme() {
 							'show' => false,
 							// set to an integer if an (existing) area should be highlighted
 							'area_id' => false,
-							// set to an integer if an area_surface should be edited
-							'area_surface_id' => false,
+							// set to an integer if an area_geometry should be edited
+							'area_geometry_id' => false,
 							// wether to show the scale or not
 							'scalecontrol' => true,
 							// include a filed which shows/sets the CH1903 coordinates

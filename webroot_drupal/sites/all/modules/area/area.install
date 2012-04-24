@@ -15,7 +15,7 @@ function area_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
-      'area_surface_id' => 
+      'area_geometry_id' => 
       array (
         'description' => 'FK',
         'type' => 'int',
@@ -73,12 +73,12 @@ function area_schema() {
     ),
     'foreign keys' => 
     array (
-      'area_2_area_surface' => 
+      'area_2_area_geometry' => 
       array (
-        'table' => 'area_surface',
+        'table' => 'area_geometry',
         'columns' => 
         array (
-          'area_surface_id' => 'id',
+          'area_geometry_id' => 'id',
         ),
       ),
     ),
@@ -211,7 +211,7 @@ function area_schema() {
       ),
     ),
   ),
-  'area_surface' => 
+  'area_geometry' => 
   array (
     'fields' => 
     array (

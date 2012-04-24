@@ -40,7 +40,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	);
 
 	$sql['dbTable'] = '{area} a';
-	$sql['dbJoins'] = 'JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
+	$sql['dbJoins'] = 'JOIN {area_geometry} a_s ON a.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id';
 	$sql['id'] = 'id';
@@ -72,7 +72,7 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 			ST_AsGeoJSON(a_s.geom) AS geom
 			FROM
 				{area} a
-				JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
+				JOIN {area_geometry} a_s ON a.area_geometry_id = a_s.id
 			WHERE
 				-- let this condition always be true if no id set
 				(a.id = :areaid OR :have_no_area_id)
@@ -148,12 +148,12 @@ function area_updategeometry_json($areadata = NULL) {
 	}
 	$jsonCoords = $_POST['area_points'];
 	$areaType = $_POST['type'];
-	$geometry_id = $areadata['area_surface_id'];
+	$geometry_id = $areadata['area_geometry_id'];
 
 	$transaction = db_transaction();
 	try {
 		area_update_geometry(
-			$areadata['area_surface_id'],
+			$areadata['area_geometry_id'],
 			array('zip' => filter_xss($_POST['zip']),
 					'canton' => filter_xss($_POST['canton']),
 					'country' => filter_xss($_POST['country']),
@@ -222,7 +222,7 @@ function area_linked_to_habitat_datatable_json($habitatId) {
 		FROM
 			{area_habitat} AS a_h
 			JOIN {area} AS a ON a_h.area_id = a.id
-			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id 
+			JOIN {area_geometry} AS a_s ON a_s.id = a.area_geometry_id 
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id
 		WHERE

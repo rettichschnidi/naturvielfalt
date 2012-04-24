@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS public.area_file_managed;
 DROP TABLE IF EXISTS public.area_habitat;
 DROP TABLE IF EXISTS public.area_parcel;
 DROP TABLE IF EXISTS public.area;
-DROP TABLE IF EXISTS public.area_surface;
+DROP TABLE IF EXISTS public.area_geometry;
 
 
 
@@ -23,7 +23,7 @@ CREATE TABLE public.area
 	-- Primary Key
 	id serial NOT NULL,
 	-- FK
-	area_surface_id int NOT NULL,
+	area_geometry_id int NOT NULL,
 	-- Primary key for naturvielfalt acl items
 	acl_id int NOT NULL,
 	-- Name, Flurname
@@ -52,6 +52,21 @@ CREATE TABLE public.area_file_managed
 ) WITHOUT OIDS;
 
 
+CREATE TABLE public.area_geometry
+(
+	-- Primary Key
+	id serial NOT NULL,
+	-- Meter über Meer
+	altitude int DEFAULT 0,
+	township text,
+	zip text,
+	canton text,
+	country text,
+	geom geometry NOT NULL,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
 CREATE TABLE public.area_habitat
 (
 	-- PK
@@ -72,21 +87,6 @@ CREATE TABLE public.area_parcel
 	area_id int,
 	parcel_owner_name text,
 	parcel text,
-	PRIMARY KEY (id)
-) WITHOUT OIDS;
-
-
-CREATE TABLE public.area_surface
-(
-	-- Primary Key
-	id serial NOT NULL,
-	-- Meter über Meer
-	altitude int DEFAULT 0,
-	township text,
-	zip text,
-	canton text,
-	country text,
-	geom geometry NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -119,8 +119,8 @@ ALTER TABLE public.area_parcel
 
 
 ALTER TABLE public.area
-	ADD FOREIGN KEY (area_surface_id)
-	REFERENCES public.area_surface (id)
+	ADD FOREIGN KEY (area_geometry_id)
+	REFERENCES public.area_geometry (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
@@ -136,7 +136,7 @@ CREATE INDEX fki_area_id ON public.area_parcel USING BTREE (area_id);
 /* Comments */
 
 COMMENT ON COLUMN public.area.id IS 'Primary Key';
-COMMENT ON COLUMN public.area.area_surface_id IS 'FK';
+COMMENT ON COLUMN public.area.area_geometry_id IS 'FK';
 COMMENT ON COLUMN public.area.acl_id IS 'Primary key for naturvielfalt acl items';
 COMMENT ON COLUMN public.area.name IS 'Name, Flurname';
 COMMENT ON COLUMN public.area.comment IS 'Kommentartext';
@@ -145,12 +145,12 @@ COMMENT ON COLUMN public.area.safety_precautions IS 'Schutzmassnahmen';
 COMMENT ON COLUMN public.area.tending_strategies IS 'Pflege- und Gestaltungsmassnahmen';
 COMMENT ON COLUMN public.area_file_managed.area_id IS 'Primary Key';
 COMMENT ON COLUMN public.area_file_managed.file_managed_fid IS 'File ID.';
+COMMENT ON COLUMN public.area_geometry.id IS 'Primary Key';
+COMMENT ON COLUMN public.area_geometry.altitude IS 'Meter über Meer';
 COMMENT ON COLUMN public.area_habitat.id IS 'PK';
 COMMENT ON COLUMN public.area_habitat.area_id IS 'FK to area';
 COMMENT ON COLUMN public.area_habitat.habitat_id IS 'PK';
 COMMENT ON COLUMN public.area_parcel.area_id IS 'Primary Key';
-COMMENT ON COLUMN public.area_surface.id IS 'Primary Key';
-COMMENT ON COLUMN public.area_surface.altitude IS 'Meter über Meer';
 
 
 

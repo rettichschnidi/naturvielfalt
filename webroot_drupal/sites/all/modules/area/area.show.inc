@@ -279,26 +279,28 @@ function area_show_specific_area($areadata = NULL) {
 	/* Build the content of the table, leave out empty fields */
 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
-	$output['area_files'] = array(
-			'#type' => 'fieldset',
-			'#weight' => 20,
-			'#title' => t('Files'),
-			'#collapsible' => true,
-			'#collapsed' => false,
-			'#attached' => array(
-					'js' => array(
-							'misc/form.js',
-							'misc/collapse.js',
-					),
-			),
-			'#attributes' => array(
-					'class' => array(
-							'collapsible'
-					),
-			),
-	);
-
-	$output['area_files']['table'] = area_files($areadata);
+	$areafiles = area_files($areadata);
+	if (!empty($areafiles)) {
+		$output['area_files'] = array(
+				'#type' => 'fieldset',
+				'#weight' => 20,
+				'#title' => t('Files'),
+				'#collapsible' => true,
+				'#collapsed' => false,
+				'#attached' => array(
+						'js' => array(
+								'misc/form.js',
+								'misc/collapse.js',
+						),
+				),
+				'#attributes' => array(
+						'class' => array(
+								'collapsible'
+						),
+				),
+		);
+		$output['area_files']['table'] = $areafiles;
+	}
 
 	return $output;
 }
@@ -404,7 +406,7 @@ function area_habitat_table($habitatId) {
 		FROM
 			{area_habitat} AS a_h
 			JOIN {area} AS a ON a_h.area_id = a.id
-			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id
+			JOIN {area_geometry} AS a_s ON a_s.id = a.area_geometry_id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id
 		WHERE

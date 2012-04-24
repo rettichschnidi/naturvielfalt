@@ -60,7 +60,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
 		'SELECT
 				-- area values
 				a.id,
-				a.area_surface_id,
+				a.area_geometry_id,
 				a.acl_id,
 				a.name,
 				a.comment,
@@ -69,7 +69,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
 				a.protection_target,
 				a.safety_precautions,
 				a.tending_strategies,
-				-- area_surface values
+				-- area_geometry values
 				a_s.altitude,
 				a_s.zip,
 				a_s.township,
@@ -100,7 +100,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
 				u.uid AS userid
 			FROM
 				{area} a
-				JOIN {area_surface} a_s ON a.area_surface_id = a_s.id
+				JOIN {area_geometry} a_s ON a.area_geometry_id = a_s.id
 				JOIN {acl} cacl ON cacl.id = a.acl_id
 				JOIN {users} u ON u.uid = cacl.users_id
 			WHERE
@@ -472,7 +472,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
 }
 
 /**
- * @brief Create a geometry in table area_surface.
+ * @brief Create a geometry in table area_geometry.
  *
  * @param array $data
  * 	The following variables can be submitted:
@@ -512,7 +512,7 @@ function area_create_geometry($data = array(),
 			$areaType,
 			$coordinates);
 		assert($geometryObject != NULL);
-		$geometry_id = db_insert('area_surface')->fields(
+		$geometry_id = db_insert('area_geometry')->fields(
 				array('zip' => filter_xss($data['zip']),
 						'canton' => filter_xss($data['canton']),
 						'country' => filter_xss($data['country']),
@@ -530,7 +530,7 @@ function area_create_geometry($data = array(),
 }
 
 /**
- * Update an exsting geometry in table area_surface.
+ * Update an exsting geometry in table area_geometry.
  *
  * @param geometry_id
  * 	- Id of the geometry to update.
@@ -570,7 +570,7 @@ function area_update_geometry($geometry_id, $data = array(),
 			$areaType,
 			$coordinates);
 		assert($geometryObject != NULL);
-		db_update('area_surface')->fields(
+		db_update('area_geometry')->fields(
 				array('zip' => filter_xss($data['zip']),
 						'canton' => filter_xss($data['canton']),
 						'country' => filter_xss($data['country']),
@@ -594,7 +594,7 @@ function area_update_geometry($geometry_id, $data = array(),
  * @return true on success, false on fail
  */
 function area_delete_geometry($geometry_id) {
-	$num_delted = db_delete('area_surface')->condition('id', $geometry_id)
+	$num_delted = db_delete('area_geometry')->condition('id', $geometry_id)
 		->execute();
 	if ($num_delted == 1)
 		return true;

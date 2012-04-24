@@ -35,7 +35,7 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
 }
 
 /**
- * Delete area and its area_surface.
+ * Delete area and its area_geometry.
  *
  * @param $form
  *  Drupal form
@@ -49,9 +49,9 @@ function area_delete_form_submit($form, &$form_state) {
 		$num_deleted_area = db_delete('area')->condition('id', $areadata['id'])
 			->execute();
 		assert($num_deleted_area == 1);
-		$num_deleted_surfaces = db_delete('area_surface')->condition(
+		$num_deleted_surfaces = db_delete('area_geometry')->condition(
 				'id',
-				$areadata['area_surface_id'])
+				$areadata['area_geometry_id'])
 			->execute();
 		assert($num_deleted_surfaces == 1);
 

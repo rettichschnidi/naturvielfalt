@@ -110,7 +110,7 @@ function area_create_new_area($form, &$form_state) {
 						'create_time' => 'NOW()',
 						'modify_time' => 'NOW()',
 						'acl_id' => $acl_id,
-						'area_surface_id' => $geometry_id
+						'area_geometry_id' => $geometry_id
 				))
 			->execute();
 
