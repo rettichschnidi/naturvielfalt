@@ -279,13 +279,30 @@ function organism_artgroup_get_detmethods_ids($artgroup_id){
 					->fetchCol();
 }
 
+/**
+ * Returns artgroup where an organism is in
+ * @param int $organism_id
+ * @return
+ */
 function organism_artgroup_get_organsim_in_artgroup($organism_id){
 	return organism_artgroup_get_children(3, false, $organism_id);
 }
 
+/**
+ * Return a determination method
+ * @param int $detmethod_id
+ * @param bool $just_the_name
+ * @return array|string
+ */
+function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false){
+	if(!$detmethod_id || $detmethod_id == 0) return '';
+	$detmethod = db_query("SELECT * FROM {organism_artgroup_detmethod} "
+			."WHERE id=:id", array(':id' => $detmethod_id))->fetchAssoc();
+	if($just_the_name) return $detmethod['name'];
+	return $detmethod;
+}
 
 
-?>
 
 
 
