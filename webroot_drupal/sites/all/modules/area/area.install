@@ -92,7 +92,7 @@ function area_schema() {
         'description' => 'Primary Key',
         'type' => 'int',
       ),
-      'file_id' => 
+      'file_managed_fid' => 
       array (
         'description' => 'File ID.',
         'type' => 'int',

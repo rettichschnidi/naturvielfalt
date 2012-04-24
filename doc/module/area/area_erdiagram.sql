@@ -47,7 +47,7 @@ CREATE TABLE public.area_file_managed
 	-- Primary Key
 	area_id int,
 	-- File ID.
-	file_id int,
+	file_managed_fid int,
 	description text
 ) WITHOUT OIDS;
 
@@ -144,7 +144,7 @@ COMMENT ON COLUMN public.area.protection_target IS 'Schutzziel';
 COMMENT ON COLUMN public.area.safety_precautions IS 'Schutzmassnahmen';
 COMMENT ON COLUMN public.area.tending_strategies IS 'Pflege- und Gestaltungsmassnahmen';
 COMMENT ON COLUMN public.area_file_managed.area_id IS 'Primary Key';
-COMMENT ON COLUMN public.area_file_managed.file_id IS 'File ID.';
+COMMENT ON COLUMN public.area_file_managed.file_managed_fid IS 'File ID.';
 COMMENT ON COLUMN public.area_habitat.id IS 'PK';
 COMMENT ON COLUMN public.area_habitat.area_id IS 'FK to area';
 COMMENT ON COLUMN public.area_habitat.habitat_id IS 'PK';
