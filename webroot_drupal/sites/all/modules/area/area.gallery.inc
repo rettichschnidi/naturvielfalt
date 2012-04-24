@@ -92,11 +92,18 @@ function area_gallery_manage_title($id) {
  * @return string
  */
 function area_gallery_caption($id) {
-	$result = db_select('area', 'a')->condition('id', $id)
-		->fields('a')
-		->join('area_surface', 'a_s', 'a.area_surface_id = a_s.id')
-		->execute()
-		->fetch();
+	$result = db_query(
+		'SELECT
+			a.name As name,
+			a_s.township AS township,
+			a_s.canton AS canton,
+			a_s.country AS country
+		FROM
+			{area} AS a
+			JOIN {area_surface} AS a_s ON a.area_surface_id = a_s.id
+		WHERE
+			a_s.id = :id',
+		array(':id' => $id))->fetch();
 	return $result->name . ' <small>' . $result->township . ' '
 			. $result->canton . ', ' . $result->country . '</small>';
 }
@@ -117,18 +124,24 @@ function area_gallery_manage_description($id, $mediatype) {
 
 /**
  * Helper function referenced in area_gallery_types providing the default location
- * for images added to an area
+ * for images added to an area.
  * 
  * @param int $id
  *   The ID of the area
  * @return string
  */
 function area_gallery_location_provider($id) {
-	$result = db_select('area', 'a')->condition('id', $id)
-		->fields('a')
-		->join('area_surface', 'a_s', 'a.area_surface_id = a_s.id')
-		->execute()
-		->fetch();
+	$result = db_query(
+		'SELECT
+			a_s.township AS township,
+			a_s.canton AS canton,
+			a_s.country AS country
+		FROM
+			{area} AS a
+			JOIN {area_surface} AS a_s ON a.area_surface_id = a_s.id
+		WHERE
+			a.id = :id',
+		array(':id' => $id))->fetch();
 	return $result->township . ' ' . $result->canton . ', ' . $result->country;
 }
 

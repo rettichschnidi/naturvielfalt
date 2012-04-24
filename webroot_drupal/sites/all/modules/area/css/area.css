@@ -23,3 +23,18 @@
 #area-edit-comment {
 	clear: both;
 }
+
+#edit-actions input, #edit-actions-new input {
+    background-color: #659560;
+    border: 1px solid #457540;
+    border-radius: 5px 5px 5px 5px;
+    bottom: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    color: #FFFFFF;
+    cursor: pointer;
+    font-size: 2em;
+    padding: 0.3em 1em;
+    position: fixed;
+    right: 10px;
+    z-index: 5;
+}
