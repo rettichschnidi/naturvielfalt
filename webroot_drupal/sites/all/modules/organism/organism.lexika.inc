@@ -6,6 +6,9 @@
  * @copyright 2011-2012 Naturwerk, Brugg
  */
 
+module_load_include('inc', 'organism', 'organism');
+
+
 /**
  * Queries Wikipedia for organism entry and displays content on local page
  * @param organism_id
@@ -18,52 +21,27 @@ function organism_lexika_show($organism_id) {
 				'group' => CSS_DEFAULT,
 				'every_page' => TRUE
 		));
-	$organism = db_query(
-		'SELECT
-			o.organism_type,
-			fo."Gattung" gattung,
-			fo."Art" art,
-			fa.genus,
-			fa.species,
-			fo.name_de
-			floraname,
-			fa.name_de
-			faunaname
-		FROM
-			organism o
-			LEFT JOIN flora_organism fo ON o.organism_id = fo.id
-			LEFT JOIN fauna_organism fa ON o.organism_id = fa.id
-		WHERE
-			o.id = :id',
-		array(':id' => $organism_id));
-
-	$organism = $organism->fetch();
-	if ($organism->organism_type == '1') {
-		$organism_name = $organism->genus . '_' . $organism->species;
-		$organism_name_de = $organism->faunaname;
-		$title = $organism_name_de . ' [' . $organism->genus . ' '
-				. $organism->species . ']';
+	$organism_name_array = organism_get_single_name_of_organism($organism_id);
+	$organism_name = $organism_name_array['name'];
+	if(preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {
+		$organism_name = $matches[1];
 	}
-	if ($organism->organism_type == '2') {
-		$organism_name = $organism->gattung . '_' . $organism->art;
-		$organism_name_de = $organism->floraname;
-		$title = $organism_name_de . ' [' . $organism->gattung . ' '
-				. $organism->art . ']';
-	}
-
-	//drupal_set_title($title);
-	drupal_set_title("TITLE");
-	$host = 'de.wikipedia.org'; // FIXME: Add support for other languages
+	
+	drupal_set_title($organism_name);
+	$organism_name = str_replace(' ', '_', $organism_name);
+	global $user;
+	global $language;
+	$langcode = isset($user->language) ? $user->language : $language->language;
+	
+	$host = $langcode . '.wikipedia.org';
 	$url = '/w/api.php?';
-	//$postdata = 'action=query&prop=revisions&titles=' . $organism_name
-	// . '&rvprop=content&rvparse&format=json&redirects';
-	$postdata = 'action=query&prop=revisions&titles=' . 'Rupicapra rupicapra'
+	$postdata = 'action=query&prop=revisions&titles=' . $organism_name
 			. '&rvprop=content&rvparse&format=json&redirects';
 
 	$fp = pfsockopen($host, 80, &$errno, &$errstr, 60);
 	if (!$fp)
 		return "$errstr ($errno)<br>\n";
-	fputs($fp, "POST $url.$postdata HTTP/1.1\n");
+	fputs($fp, "POST $url$postdata HTTP/1.1\n");
 	fputs($fp, "Host: $host\n");
 	fputs($fp, "User-Agent: Post\n");
 	fputs($fp, "Accept: */*\n");
@@ -81,7 +59,7 @@ function organism_lexika_show($organism_id) {
 	$rev_key = key($lexika['query']['pages']);
 	$content = str_replace(
 		'/wiki/',
-		'http://de.wikipedia.org/wiki/',
+		"http://$langcode.wikipedia.org/wiki/",
 		$lexika['query']['pages'][$rev_key]['revisions']['0']['*']);
 	$content = str_replace('h2', 'h3', $content);
 	$content = str_replace(
@@ -89,8 +67,8 @@ function organism_lexika_show($organism_id) {
 		'h3',
 		$lexika['query']['pages'][$rev_key]['revisions']['0']['*']);
 	$content = str_replace(
-		'<a href="http://de.wikipedia.org/wiki',
-		'<a target="blank" href="http://de.wikipedia.org/wiki',
+		"<a href=\"http://de.wikipedia.org/wiki",
+		"<a target=\"blank\" href=\"http://$langcode.wikipedia.org/wiki",
 		$content);
 
 	$pattern = array();
@@ -105,19 +83,20 @@ function organism_lexika_show($organism_id) {
 		$content = '<div class="wikientry">' . $content
 				. '</div><div  class="wiki_source">'
 				. t('The article above is based on')
-				. '<a target="_blank" href="http://de.wikipedia.org/wiki/'
+				. "<a target=\"_blank\" href=\"http://$langcode.wikipedia.org/wiki/"
 				. $organism_name . '"> ' . t('this article') . '</a>'
 				. t(' of the free encyclopedia')
-				. '<a target="_blank" href="http://de.wikipedia.org"> Wikipedia</a> '
+				. "<a target=\"_blank\" href=\"http://$langcode.wikipedia.org\"> Wikipedia</a> "
 				. t('and it is licensed under')
 				. ' <a target="_blank" href="http://de.wikipedia.org/wiki/Wikipedia:Lizenzbestimmungen_Commons_Attribution-ShareAlike_3.0_Unported">„Creative Commons Attribution/Share Alike“</a>. '
 				. t('Here you find')
-				. ' <a target="_blank" href="http://de.wikipedia.org/w/index.php?title='
+				. " <a target=\"_blank\" href=\"http://$langcode.wikipedia.org/w/index.php?title="
 				. $organism_name . '&action=history">' . t('versions/authors')
 				. '</a>.</div>';
 	} else {
 		$content = t(
-			'Wikipedia does not have any German information about this organism.');
+			'Wikipedia does not have any @langcode information about the organism.',
+			array('@langcode' => $langcode));
 	}
 
 	return array(

@@ -1,6 +1,6 @@
 <?php
 /**
- * @file organism.overview.inc
+ * @file organism.show.inc
  * @author Reto Schneider, 2012
  * @copyright 2012 Naturwerk, Brugg
  */
@@ -211,27 +211,6 @@ function organism_show_organism($organismid) {
 	$render_array = array();
 
 	$attributes = organism_get_attributes_of_organism($organismid);
-
-	$render_array['externallinks'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('External links'),
-			'#tree' => TRUE
-	);
-
-	$render_array['externallinks']['wikipediascientificname'] = array(
-			'#type' => 'markup',
-			'#markup' => '<b>' . t('English Wikipedia entry')
-					. '</b>: <a href="http://en.wikipedia.org/wiki/'
-					. $organism['name'] . '">' . $organism['name']
-					. '</a><br/>'
-	);
-
-	$render_array['externallinks']['wikipediascientificnamesearch'] = array(
-			'#type' => 'markup',
-			'#markup' => '<b>' . t('Search in English Wikipedia')
-					. '</b>: <a href="http://en.wikipedia.org/wiki/Special:Search/'
-					. $organism['name'] . '">' . $organism['name'] . '</a>'
-	);
 
 	$render_array['attributes'] = array(
 			'#type' => 'fieldset',

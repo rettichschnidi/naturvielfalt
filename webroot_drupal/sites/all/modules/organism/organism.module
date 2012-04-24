@@ -9,6 +9,8 @@
  *  Hook implementations
  *********************************/
 
+define('ACCESS_ORGANISMS', 'access content');
+
 /**
  * Implements hook_theme()
  *
@@ -39,11 +41,11 @@ function organism_menu() {
 			'title' => t('Classifiers'),
 			'page callback' => 'organism_show_classifiers',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of classifiers'),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
+			'file' => 'organism.show.inc',
 	);
 
 	$items['organism/classification/%'] = array(
@@ -53,18 +55,18 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of organisms classifications'),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
+			'file' => 'organism.show.inc',
 	);
 
 	$items['organism/json'] = array(
 			'title' => t('Organisms JSON'),
 			'page callback' => 'organism_show_classifiers_json',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Json of classifiers'),
 			'type' => MENU_CALLBACK,
@@ -78,7 +80,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification_classificationjson',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of subclassifications'),
 			'type' => MENU_CALLBACK,
@@ -92,7 +94,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification_organismjson',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of organisms with this classifications'),
 			'type' => MENU_CALLBACK,
@@ -100,17 +102,47 @@ function organism_menu() {
 	);
 
 	$items['organism/%'] = array(
-			'title' => t('Organism'),
+			'title' => t('Basisinfo'),
+			'page callback' => 'organism_show_organism',
 			'page arguments' => array(
 					1
 			),
-			'page callback' => 'organism_show_organism',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Specific organism'),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
+			'file' => 'organism.show.inc',
+	);
+
+	$items['organism/%/normal'] = array(
+			'title' => 'Basisinfo',
+			'description' => 'Show organism',
+			'page callback' => 'organism_show',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					ACCESS_ORGANISMS
+			),
+			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'organism.show.inc',
+	);
+
+	$items['organism/%/lexikon'] = array(
+			'title' => t('Lexikon'),
+			'description' => 'Show organism lexika',
+			'page callback' => 'organism_lexika_show',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					ACCESS_ORGANISMS
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'organism.lexika.inc',
 	);
 
 	$items['organism/%/json'] = array(
@@ -120,7 +152,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_organism_json',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Specific organism json'),
 			'type' => MENU_CALLBACK,
@@ -131,7 +163,7 @@ function organism_menu() {
 			'title' => t('Organism search json'),
 			'page callback' => 'organism_search_organism_json',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Specific organism json'),
 			'type' => MENU_CALLBACK,

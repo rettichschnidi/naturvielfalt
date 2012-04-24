@@ -1,6 +1,6 @@
 <?php
 /**
- * @file organism.overview.inc
+ * @file organism.json.inc
  * @author Reto Schneider, 2012
  * @copyright 2012 Naturwerk, Brugg
  */
@@ -217,6 +217,7 @@ function organism_show_classification_classificationjson($classificationid) {
  */
 function organism_show_classification_organismjson($classificationid) {
 	global $user;
+	global $language;
 	/*
 	    CREATE TEMP VIEW mytempviewdata AS
 	            WITH subclassification_constraints AS (
@@ -553,7 +554,7 @@ function organism_show_classification_organismjson($classificationid) {
 
 	$prearguments = array(
 			':classificationid' => $classificationid,
-			':language' => isset($user->language) ? $user->language : 'de' // FIXME
+			':language' => isset($user->language) ? $user->language : $language->language
 	);
 
 	$arguments = array();
