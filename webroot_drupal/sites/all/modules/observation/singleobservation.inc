@@ -18,6 +18,6 @@ function singleobservation_new(){
 /**
  * Return a list with all singleobservations which the user has read access
  */
-function singleobservation_view_list(){
-
+function singleobservation_show_observation($observationdata = NULL){
+	return observation_show_observation($observationdata);
 }
