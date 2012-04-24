@@ -264,7 +264,7 @@ function organism_artgroup_get_attributes_ids($artgroup_id){
 function organism_artgroup_get_attributes_value_name($value_id = false){
 	if(!$value_id) return;
 	$attr_val=  db_query("SELECT * FROM {organism_artgroup_attr_values} "
-				."WHERE id=:value_id", array(':value_id', $value_id))->fetchAssoc();
+				."WHERE id=:value_id", array(':value_id' => $value_id))->fetchAssoc();
 	return $attr_val['value'];
 }
 
@@ -286,6 +286,14 @@ function organism_artgroup_get_detmethods_ids($artgroup_id){
  */
 function organism_artgroup_get_organsim_in_artgroup($organism_id){
 	return organism_artgroup_get_children(3, false, $organism_id);
+}
+
+function organism_artgroup_get_artgroup($artgroup_id, $just_the_name = false){
+	if(!$artgroup_id) return;
+	$artg =  db_query("SELECT * FROM {organism_artgroup} "
+			."WHERE id=:id", array(':id' => $artgroup_id))->fetchAssoc();
+	if($just_the_name) return $artg['name'];
+	return $artg;
 }
 
 /**
