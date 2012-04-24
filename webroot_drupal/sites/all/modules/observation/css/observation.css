@@ -71,3 +71,17 @@ input, select {
     border: 1px solid black;
     font-size: 12px;
 }
+
+#observation-show-details {
+	float: left;
+	width: 400px;
+}
+
+#observation-show-details-map {
+	float: right;
+	width: 400px;
+}
+
+#observation-clear {
+	clear: both;
+}
