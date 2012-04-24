@@ -8,6 +8,7 @@
 module_load_include('inc', 'observation', 'observation.template');
 module_load_include('inc', 'organism', 'organism.artgroup');
 module_load_include('inc', 'organism', 'organism');
+module_load_include('inc', 'area', 'area');
 
 /**
  * Return the single observation form to add a observation
@@ -33,15 +34,31 @@ function observation_get($observation_id){
 			$artgroups = organism_artgroup_get_organsim_in_artgroup($result['observation']['organism_id']);
 			foreach ($artgroups as $artgroup) $result['observation']['organism_artgroup_id'] = $artgroup;
 		}
+		$result['observation']['organism_artgroup_detmethod_name'] = organism_artgroup_get_detmethod($result['observation']['organism_artgroup_detmethod_id'], true);
+		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup($result['observation']['organism_artgroup_id'], true);
 		$result['detmethods_vis'] = organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']);
 		$result['geometry'] = observation_get_geometry($result['observation']['area_geometry_id']);
+
+		/**
+		 * cheap hack to work with the very special weard
+		 * 'json' format from area, don't ask and don't change it!
+		 */
+		$tmp = (json_decode($result['geometry']['wgs84_geom_json'])->coordinates);
+		$result['geometry']['coordinatejson'][0][0] = $tmp[1];
+		$result['geometry']['coordinatejson'][0][1] = $tmp[0];
+		/**
+		 * hack end
+		 */
+
 		$result['organism'] = organism_get($result['observation']['organism_id']);
 		$attributes = db_query("SELECT * FROM observation_attribute oa WHERE oa.observation_id=:observation_id", array(':observation_id' => $observation_id))->fetchAllAssoc('organism_artgroup_attr_id');
 		$attributes_vis = organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']);
 		$result['attributes'] = array();
 		foreach ($attributes_vis as $attribute_vis)
 			$result['attributes'][$attribute_vis] = array(
+					'attribute_name' => organism_artgroup_get_attribute($attribute_vis, true),
 					'value_id' => $attributes[$attribute_vis]->organism_artgroup_attr_values_id,
+					'value_id_name' => organism_artgroup_get_attributes_value_name($attributes[$attribute_vis]->organism_artgroup_attr_values_id),
 					'value' => $attributes[$attribute_vis]->value);
 
 		return $result;
@@ -95,3 +112,177 @@ function observation_get_geometry($geometry_id){
 function observation_edit_acl($observation = NULL){
 	return observation_acl_template($observation);
 }
+
+/**
+ * Return a formated table with the observation details
+ * @param array $observationdata
+ */
+function observation_get_table($observationdata = NULL){
+
+	if($observationdata == NULL || !is_array($observationdata)) return false;
+	$rows = array();
+
+	if (!empty($observationdata['organism']['name_lang'])) {
+		$rows[] = array(
+				array('data' => t('Organism Name'),'header' => true),
+				$observationdata['organism']['name_lang'],
+		);
+	}
+
+	if (!empty($observationdata['organism']['name_lat'])) {
+		$rows[] = array(
+				array('data' => t('Scientific name'),'header' => true),
+				$observationdata['organism']['name_lat'],
+		);
+	}
+
+
+	if (!empty($observationdata['observation']['organism_artgroup_name'])) {
+		$rows[] = array(
+				array('data' => t('Artgroup'),'header' => true),
+				t($observationdata['observation']['organism_artgroup_name']),
+		);
+	}
+
+	if (!empty($observationdata['observation']['observer'])) {
+		$rows[] = array(
+				array('data' => t('Observer'),'header' => true),
+				$observationdata['observation']['observer'],
+		);
+	}
+
+	if (!empty($observationdata['observation']['date'])) {
+		$rows[] = array(
+				array('data' => t('Date'),'header' => true),
+				date("j.m.Y", $observationdata['observation']['date'])
+		);
+	}
+
+	if (!empty($observationdata['observation']['m_time'])) {
+		$rows[] = array(
+				array('data' => t('Last modification'),'header' => true),
+				date("j.m.Y", $observationdata['observation']['m_time'])
+		);
+	}
+
+	if (!empty($observationdata['observation']['count'])) {
+		$rows[] = array(
+				array('data' => t('Count'),'header' => true),
+				date("j.m.Y", $observationdata['observation']['count'])
+		);
+	}
+
+	/* add the table with the data prepared above */
+	$form = array(
+			'#theme' => 'table',
+			'#rows' => $rows,
+			'#id_table' => 'observation_table_wd',
+	);
+
+	return $form;
+}
+
+
+/**
+ * Return a formated table with the observation details
+ * @param array $observationdata
+ */
+function observation_get_details_table($observationdata = NULL){
+	if($observationdata == NULL || !is_array($observationdata)) return false;
+	$rows = array();
+
+// 	if (!empty($observationdata['observation']['organism_artgroup_detmethod_name'])) {
+		$rows[] = array(
+				array('data' => t('Determination method'),'header' => true),
+				($observationdata['observation']['organism_artgroup_detmethod_name'] == '') ?
+					t('Not definied') :
+					t($observationdata['observation']['organism_artgroup_detmethod_name']),
+
+		);
+// 	}
+
+	foreach ($observationdata['attributes'] as $attribute){
+		$rows[] = array(
+				array('data' => t($attribute['attribute_name']),'header' => true),
+				($attribute['value_id'] == '') ?
+					$attribute['value'] : t($attribute['value_id_name']),
+
+		);
+	}
+
+
+	/* add the table with the data prepared above */
+	$form = array(
+			'#theme' => 'table',
+			'#rows' => $rows,
+			'#id_table' => 'observation_table_wd',
+	);
+
+	return $form;
+}
+
+
+
+function observation_get_geometry_table($observationdata = NULL){
+	/**
+	 * Geometry Details
+	 */
+	if (!empty($observationdata['geometry']['township'])) {
+		$rows[] = array(
+				array('data' => t('Township'),'header' => true),
+				$observationdata['geometry']['township']
+		);
+	}
+	if (!empty($observationdata['geometry']['zip'])) {
+		$rows[] = array(
+				array('data' => t('ZIP'),'header' => true),
+				$observationdata['geometry']['zip']
+		);
+	}
+	if (!empty($observationdata['geometry']['canton'])) {
+		$rows[] = array(
+				array('data' => t('Canton'),'header' => true),
+				$observationdata['geometry']['canton']
+		);
+	}
+	if (!empty($observationdata['geometry']['country'])) {
+		$rows[] = array(
+				array('data' => t('Country'),'header' => true),
+				$observationdata['geometry']['country']
+		);
+	}
+	if (!empty($observationdata['geometry']['altitude'])) {
+		$rows[] = array(
+				array('data' => t('Altitude [m.a.s.l.]'),'header' => true),
+				$observationdata['geometry']['altitude']
+		);
+	}
+	if ((!empty($observationdata['geometry']['wgs84_center_lat'])
+			&& !empty($observationdata['geometry']['wgs84_center_lng'])
+			&& !empty($observationdata['geometry']['ch1903_center_x'])
+			&& !empty($observationdata['geometry']['ch1903_center_y']))) {
+		$rows[] = array(
+				array('data' => t('Coordinates'),'header' => true),
+				get_wgs84_coordinates_link($observationdata['geometry']) . "<br/>"
+				. get_ch1903_coordinates_link($observationdata['geometry'])
+		);
+	}
+
+
+	/* add the table with the data prepared above */
+	$form = array(
+			'#theme' => 'table',
+			'#rows' => $rows,
+			'#id_table' => 'observation_table_wd',
+	);
+
+	return $form;
+}
+
+
+
+
+
+
+
+
