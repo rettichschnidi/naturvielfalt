@@ -26,7 +26,7 @@ function observation_menu() {
 	$items['singleobservation/%observation/show'] = array(
 			'title' => t('Show'),
 			'description' => t('Display a singleobservation'),
-			'page callback' => 'singleobservation_show_observation',
+			'page callback' => 'observation_show_observation',
 			'page arguments' => array(
 					1
 			),
