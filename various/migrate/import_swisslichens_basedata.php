@@ -22,10 +22,11 @@ $importTable = 'import_swisslichens_basedata';
 /**
  * Copy all SwissLichens into naturvielfalt DB
  *
- *    Column   | Type | Modifiers
- *  -----------+------+-----------
- *  genus | text | not null
- *  species    | text | not null
+ *    Column        | Type | Modifiers
+ *  ----------------+------+-----------
+ *  genus           | text | not null
+ *  species         | text | not null
+ *  scientific_name | text | not null
  */
 
 /**
