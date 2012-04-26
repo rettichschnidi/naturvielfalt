@@ -6,13 +6,13 @@
 
 require_once('MDB2.php');
 require_once(dirname(__FILE__) . '/Db.php');
-require_once($configdir . '/databases.php');
 
 /**
  * A simple class to do an initial import of organisms to the naturvielfalt db.
  * 
  * Example:
  * $organism = array(
+ * 		'classificator' => 'CSCF-xy',
  * 		'classifications' => array(
  * 				array(
  * 						'classificationlevelname' => 'family',
@@ -53,15 +53,15 @@ require_once($configdir . '/databases.php');
  * 		),
  * );
  * 
- * $importer = new Classification('CSCF');
+ * $importer = new Classification($driver, $name, $user, $password, $host);
  * $importer->addOrganism($organism);
  */
 class Classification {
-	var $db;
+	var $db = NULL;
 	var $drupalprefix = '';
 	var $attributes = array();
 	var $classifier_name = false;
-	var $classifier_id = false;
+	var $classifier_id = NULL;
 	var $classifier_level_id = false;
 	var $classification_table = '';
 	var $classification_level_table = '';
@@ -77,20 +77,25 @@ class Classification {
 	var $tree;
 	var $scientific_names = array();
 
-	public function __construct($classifier_name) {
-		global $config;
+	public function selectDb($driver, $name, $user, $password, $host) {
+		if ($this->db != NULL) {
+			$this->db = NULL;
+		}
 		$this->db = new Db(
-			$config['naturvielfalt_dev']['driver'],
-			$config['naturvielfalt_dev']['name'],
-			$config['naturvielfalt_dev']['user'],
-			$config['naturvielfalt_dev']['password'],
-			$config['naturvielfalt_dev']['host']);
+			$driver,
+			$name,
+			$user,
+			$password,
+			$host);
+	}
+
+	public function __construct($driver, $name, $user, $password, $host) {
+		$this->selectDb($driver, $name, $user, $password, $host);
 		global $drupalprefix;
 		$this->drupalprefix = $drupalprefix;
 		$this->classification_table = $drupalprefix . 'organism_classification';
 		$this->classification_level_table = $drupalprefix
 				. 'organism_classification_level';
-		$this->classifier_name = $classifier_name;
 		$this->scientific_name_table = $drupalprefix
 				. 'organism_scientific_name';
 		$this->organism_table = $drupalprefix . 'organism';
@@ -102,7 +107,6 @@ class Classification {
 				. 'organism_attribute_value';
 		$this->organism_attribute_value_subscription_table = $drupalprefix
 				. 'organism_attribute_value_subscription';
-		$this->classifiers = array();
 		$this->tree = array();
 	}
 
@@ -116,33 +120,58 @@ class Classification {
 			->stopTransactionIfPossible();
 	}
 
+	public function addOrganisms(array $organisms) {
+		$i = 0;
+		$start = microtime(true);
+		$this->db->startTransactionIfPossible();
+		foreach ($organisms as $organism) {
+			if (++$i % 100 == 0) {
+				$current = microtime(true);
+				print "$i of " . count($organisms) . ", ";
+				print "Time: " . ($current - $start) . "s\n";
+				$start = $current;
+				if ($i % 1000 == 0) {
+// 					print "Committing to db.\n";
+					$this->db->stopTransactionIfPossible();
+					$this->db->startTransactionIfPossible();
+				}
+			}
+			$this->addOrganism($organism);
+		}
+		$this->db->stopTransactionIfPossible();
+	}
+
 	public function addOrganism(array $organism) {
 		global $errors;
-		if (key_exists($this->classifier_name, $this->tree)) {
-			$classifierLevelId = $this->tree[$this->classifier_name]['classificationlevelid'];
-			$classifierId = $this->tree[$this->classifier_name]['classificationid'];
+		$this->classifier_id = NULL;
+		$this->classifier_name = $organism['classificator'];
+		$classifierName = $this->classifier_name;
+		if (key_exists($classifierName, $this->tree)) {
+			$classifierLevelId = $this->tree[$classifierName]['classificationlevelid'];
+			$classifierId = $this->tree[$classifierName]['classificationid'];
 		} else {
 			$classifierLevelId = $this->getOrCreateClassifierLevel(
-					$this->classifier_name);
+					$classifierName);
 			$classifierId = $this->getOrCreateClassifier(
-					$this->classifier_name,
+					$classifierName,
 					$classifierLevelId);
-			$this->tree[$this->classifier_name] = array(
+			$this->tree[$classifierName] = array(
 					'classificationlevelid' => $classifierLevelId,
 					'classificationid' => $classifierId,
 					'classificationlevelvalues' => array(),
 					'classificationvalues' => array()
 			);
-			$this->classifier_level_id = $classifierLevelId;
-			$this->classifier_id = $classifierId;
 		}
-
+		$this->classifier_level_id = $classifierLevelId;
+		$this->classifier_id = $classifierId;
+		assert($this->classifier_id != NULL);
 		assert(empty($errors));
+
 		// add all levels
 		$parentClassificationLevelId = $classifierLevelId;
 		$parentClassificationId = $classifierId;
-		$classificationLevels = &$this->tree[$this->classifier_name]['classificationlevelvalues'];
-		$currentClassifications = &$this->tree[$this->classifier_name]['classificationvalues'];
+		$classificationLevels = &$this->tree[$classifierName]['classificationlevelvalues'];
+		$currentClassifications = &$this->tree[$classifierName]['classificationvalues'];
 		$classificationId = NULL;
 
 		//create classifications

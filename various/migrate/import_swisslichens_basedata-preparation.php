@@ -32,10 +32,8 @@ $columns = array(
 		'speciesid'
 );
 $sql = "FROM $importTable";
-$typeArray = array();
-$typeValue = array();
 
-$rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
+$rows = $db->select_query($columns, $sql, array(), array());
 
 print "Got " . count($rows) . " to fetch.\n";
 $counter = 0;
@@ -67,13 +65,14 @@ foreach ($rows as $row) {
 	}
 	$found = $match[1];
 	$foundClean = str_replace('</div>', '', $found);
-	$finallichens[] = array(
+	$finallichen = array(
 			'genus' => $genus,
 			'species' => $species,
 			'scientific_name' => $foundClean
 	);
+	$finallichens[] = $finallichen;
 }
-print "Got " . count($finallichens) . "\n";
+print "Fetched " . count($finallichens) . "\n";
 
 foreach ($finallichens as $finallichen) {
 	$columns = array(
@@ -81,7 +80,7 @@ foreach ($finallichens as $finallichen) {
 			'species',
 			'scientific_name'
 	);
-	$query = "INSERT INTO $exportTable(genus, species) VALUES(?, ?)";
+	$query = "INSERT INTO $exportTable (genus, species, scientific_name) VALUES(?, ?, ?)";
 	$typesArray = array(
 			'text',
 			'text',
@@ -94,7 +93,11 @@ foreach ($finallichens as $finallichen) {
 	);
 
 	$rows = $db->query($query, $typesArray, $valuesArray);
-	assert(count($rows) == 1);
+	if($rows == 0) {
+			print "Failed, probably already existing: " . var_export($finallichen, true) . "\n";
+			continue;
+	}
+	assert($rows == 1);
 }
 //-----------------------------
 

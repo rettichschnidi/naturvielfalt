@@ -494,15 +494,22 @@ class Db {
 					->in_transaction) {
 			$this->connection
 				->beginTransaction();
+// 			print "Started transaction sucessfully.\n";
+		} else {
+			print "Starting transaction failed.\n";
 		}
 	}
 
 	public function stopTransactionIfPossible() {
 		if ($this->connection
-			->supports('transactions') && $this->connection
+			->supports('transactions')
+				&& $this->connection
 					->in_transaction) {
 			$this->connection
 				->commit();
+// 			print "Stopped transaction sucessfully.\n";
+		} else {
+			print "Stopping transaction failed.\n";
 		}
 	}
 
