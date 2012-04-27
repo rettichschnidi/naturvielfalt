@@ -186,7 +186,6 @@ foreach ($rows as $row) {
 				)
 		);
 	}
-
 	$organisms[] = $organism;
 }
 
