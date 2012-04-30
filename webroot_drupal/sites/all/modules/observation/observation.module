@@ -142,6 +142,19 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	$items['observation/deleteCustomAttribute/%'] = array(
+			'title' => t('Delete a custom attributt'),
+			'description' => t(''),
+			'page callback' => 'observation_delete_custom_attribute',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					'create observation'
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc',
+	);
 	return $items;
 }
 
