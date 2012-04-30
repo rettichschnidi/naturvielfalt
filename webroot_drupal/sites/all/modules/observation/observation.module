@@ -109,12 +109,26 @@ function observation_menu() {
 			'file' => 'singleobservation.inc',
 	);
 	$items['observation/save'] = array(
-			'title' => t('Save a observation'),
+			'title' => t('Save a new observation'),
 			'description' => t(''),
 			'page callback' => 'observation_save',
 			'access arguments' => array(
 					'create observation'
 			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	$items['observation/%observation/save'] = array(
+			'title' => t('Save a existing observation'),
+			'description' => t(''),
+			'page callback' => 'observation_save',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_write_access',
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
