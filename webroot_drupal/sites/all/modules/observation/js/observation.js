@@ -29,9 +29,13 @@ jQuery(document).ready(function() {
 	  observation.save = function (event, callback) {
 //			observation.showLoading();
 //			observation.callback = callback;
+		  var ajaxurl = Drupal.settings.basePath + '/observation/save';
+		  if($('#observation_id').val() != ''){
+			  ajaxurl = Drupal.settings.basePath + '/observation/'+ $('#observation_id').val() +'/save';
+		  }
 		  observation.ajax = $.ajax({
 				  type: 'POST',
-				  url: Drupal.settings.basePath + '/observation/save',
+				  url: ajaxurl,
 				  data: $("#observation_form").serialize(),
 				  dataType: 'json',
 				  type: 'POST',
@@ -107,6 +111,31 @@ jQuery(document).ready(function() {
 		observation.showAttribute = function(id){
 			$('#attributes_tr_'+id).css('display','table-row');
 		};
+		
+		observation.addCustomAttribute = function(){
+			$('#attributes_table > tbody:last').append(
+					'<tr><td><input type="text" name="attributes_custom_names[]" onFocus="javascript:if($(this).val()==\''
+					+Drupal.t('Please enter a name')+'\'){$(this).val(\'\');}" maxlength="40" value="'+ Drupal.t('Please enter a name')
+					+'"></td>'+'<td><input type="text" name="attributes_custom_values[]" onFocus="javascript:if($(this).val()==\''
+					+Drupal.t('Please enter a value')+'\'){$(this).val(\'\');}" maxlength="40" value="'+ Drupal.t('Please enter a value')
+					+'"></td></tr>');
+		};
+		
+		observation.resetOrganism = function(){
+			$( "#organismn_id" ).val('');
+			$( "#species_autocomplete" ).html('');
+			$( "#observation_found_as_latin" ).val('false');
+			$( "#observation_found_as_lang" ).val('false');
+			observation.hideAttributes();
+			observation.hideDetMethods();
+		};
+		
+		observation.resetOrganismAutomcomplete = function(){
+			$( "#organismn_autocomplete" ).val('');
+			observation.resetOrganism();
+		};
+		
+		
 
 
 });
