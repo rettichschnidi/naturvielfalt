@@ -279,8 +279,71 @@ function observation_get_geometry_table($observationdata = NULL){
 	return $form;
 }
 
+/**
+ * save all attributes for a observation
+ * @param array $attributes_checked
+ * @param int $observation_id
+ */
+function observation_save_attribute_values($attributes_checked, $observation_id){
+	// save each attributes
+	foreach ($attributes_checked as $key => $value){
+		$val = explode('-->', $value);
+		$db_id = NULL; $db_val = NULL;
+		if($val[0] == 'db_id'){
+			$db_id = $val[1];
+		}else{
+			$db_val = $value;
+		}
+		$entry = array(
+				'observation_id' => $observation_id,
+				'organism_artgroup_attr_id' => $key,
+				'organism_artgroup_attr_values_id' => $db_id,
+				'value' => $db_val,
+		);
+		if(observation_attribute_value_exist($observation_id, $key)){
+			observation_update_attribute_value($entry);
+		}else{
+			observation_add_attribute_value($entry);
+		}
 
+	}
+}
 
+/**
+ * checks if a attribute for an observation already exists
+ * @param int $observation_id
+ * @param int $attr_id
+ * @return boolean true on success|false on fails
+ */
+function observation_attribute_value_exist($observation_id, $attr_id){
+	$result = db_query("SELECT * FROM observation_attribute oa
+			WHERE oa.observation_id=:observation_id AND
+			oa.organism_artgroup_attr_id=:attr_id",
+			array(':observation_id' => $observation_id, ':attr_id' => $attr_id))
+			->rowCount();
+	if($result == 1) return true;
+	return false;
+}
+
+/**
+ * update a observation attribute
+ * @param array $entry
+ */
+function observation_update_attribute_value($entry){
+	db_update('observation_attribute')
+	->fields($entry)
+	->condition('observation_id', $entry['observation_id'])
+	->condition('organism_artgroup_attr_id', $entry['organism_artgroup_attr_id'])
+	->execute();
+}
+
+/**
+ * add a observation attribute
+ * @param array $entry
+ */
+function observation_add_attribute_value($entry){
+	db_insert('observation_attribute')->fields($entry)->execute();
+}
 
 
 
