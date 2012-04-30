@@ -14,12 +14,13 @@ function observation_form($observation = false) {
 // 		$observation = observation_get($observation_id);
 		print_r($observation);
 
-		$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 		drupal_set_title('Edit a observation');
 	}
 
-	// if not edit, set standart vlaues
+	// if not edit, set standart values
+	if(!isset($observation['observation']['id'])) $observation['observation']['id'] = '';
+	$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 	if(!isset($observation['observation']['found_as_lang'])) $observation['observation']['found_as_lang'] = 'false';
 	if(!isset($observation['observation']['found_as_lat'])) $observation['observation']['found_as_lat'] = 'false';
 	if(!isset($observation['observation']['organism_artgroup_id'])) $observation['observation']['organism_artgroup_id'] = '';
@@ -104,7 +105,9 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 									.'<br><span id="species_autocomplete">'.$species_autocomplete.'</span>'
 							.'</td><td class="observation_td">'
 									.'<span class="observation_title">'.t('Filter on species group').'</span><br>'
-									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option(false, 0, $observation['observation']['organism_artgroup_id']).'</select>'
+									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();">'
+										.organism_artgroup_get_all_as_option(false, 0, $observation['observation']['organism_artgroup_id'])
+									.'</select>'
 
 					.'</td></tr></table>'
 
@@ -129,112 +132,25 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 							</legend>
 							<div class="fieldset-wrapper">'
 
-									.'<table><tr>'
+									.'<div><table id="attributes_table"><tr>'
 									.'<td>'.t('Determination method').':</td><td> <select name="determination_method_id" id="determination_method_id">'
 									.organism_artgroup_get_determation_methods(false, true, $observation['observation']['organism_artgroup_detmethod_id'], $observation['detmethods_vis'])
 									.'</select></td>'
 									.'</tr>'
 
-							.'<div id="observation_attributes">'
-							.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>', false, $observation['attributes'])
-							.'</div>'
+									.'<div id="observation_attributes">'
+									.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>', false, $observation['attributes'])
+									.'</div>'
 
-							.'</table></div></fieldset>'
+									.'<div id="observation_attributes_cust_add">'
+									.'<a href="#" onclick="observation.addCustomAttribute(); return false;">'.t('Add custom details').'</a></div>'
+
+							.'</table></div></div></fieldset>'
 							.'<input type="button" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit" onclick="javscript:observation.save();return false;">'
 					.'</form>'
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
 			.'</div>';
-
-
-	/**
-	 * Drupal form handling, should be that
-	 */
-// 	$form['organismn_main'] = array(
-// 			'#type' => 'container',
-// 			'#attributes' => array(
-// 					'style' => array(
-// 							//'visibility: hidden;'
-// 					))
-// 	);
-
-// 	$form['organismn_main']['organismn_autocomplete'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Search for organsim or species'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter a name to search in our database'),
-// 			'#id' => 'organismn_date'
-// 	);
-
-// 	$form['organismn_main']['observation_date'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Date'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter date for the observation'),
-// 			'#id' => 'organismn_date'
-// 	);
-
-// 	$form['organismn_main']['observation_count'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Count'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter number of found'),
-// 			'#id' => 'organismn_count'
-// 	);
-
-// 	$form['organismn_main']['details'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => t('Add more Details'),
-// 			'#collapsible' => TRUE,
-// 			'#collapsed' => TRUE,
-// 	);
-
-
-
-// 	$form['organismn_main']['organismn_id'] = array(
-// 			'#type' => 'hidden',
-// 			'#value' => '',
-// 			'#id' => 'organismn_id'
-// 	);
-
-// 	$form['organismn_main']['submit'] = array(
-// 			'#type' => 'submit',
-// 			'#value' => t('Save the Observation')
-// 	);
-
-
-// 	/**
-// 	 * Area map include
-// 	 */
-// 	$form['test'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => 'Coordinates as JSON',
-// 			'#attributes' => array(
-// 					'id' => 'meineid'
-// 			),
-// 	);
-
-// 	$form['div'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => "Google Map",
-// 			'#attributes' => array(
-// 					'style' => 'width: 95%;'
-// 			)
-// 	);
-
-// 	$form['div']['map'] = array(
-// 			'#theme' => 'area',
-// 			'#action' => 'getcoordinate',
-// 			'#coordinate_storage_id' => 'meineid',
-// 			'#search' => true,
-// 			'#ch1903' => true
-// 	);
-// 	$formcust .= drupal_render($form);
-// 	return $form;
-
 	return $formcust;
 }
 
