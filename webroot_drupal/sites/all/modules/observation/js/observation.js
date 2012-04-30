@@ -134,7 +134,34 @@ jQuery(document).ready(function() {
 			$( "#organismn_autocomplete" ).val('');
 			observation.resetOrganism();
 		};
-		
+
+	customAttributeDelete = function (attribute_id) {
+		tmp = attribute_id.split('_');
+		var id = tmp[2];
+//		alert(id); return;
+		if (confirm(Drupal.t('This attribute will be deleted in all existing observations, are you sure?'))==false) return false;
+		  var ajaxurl = Drupal.settings.basePath + '/observation/deleteCustomAttribute/'+id;
+		  observation.ajax = $.ajax({
+				  type: 'POST',
+				  url: ajaxurl,
+				  dataType: 'json',
+				  type: 'POST',
+				});
+			observation.ajax.done(function(msg) {
+				if(msg.success == true){
+					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
+					$('#attributes_tr_'+id).remove();
+				}else{
+					observation.setMessage('<br><br>&bull;&nbsp;'+Drupal.t('Custom attribute not deleted'),'error', 15000);
+				}
+				});
+
+				observation.ajax.fail(function(jqXHR, textStatus) {
+//					  alert( "Request failed: " +  );
+				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
+				});
+			return false;
+		};
 		
 
 
