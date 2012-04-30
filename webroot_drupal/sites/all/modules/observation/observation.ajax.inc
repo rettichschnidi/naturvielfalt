@@ -1,9 +1,11 @@
 <?php
 
+module_load_include('inc', 'observation');
+
 /**
  *
  */
-function observation_save(){
+function observation_save($observation_data = false){
 global $user;
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
@@ -31,11 +33,13 @@ global $user;
 	/**
 	 * Check the determation and artgroup value
 	 */
-	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
-	if($observation['organism_artgroup_id'] == 0){
+	// prevent wrong artgroup, set it each time automatically
+	// set the last value as artgroup
+// 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
+// 	if($observation['organism_artgroup_id'] == 0){
 		$artgroups = organism_artgroup_get_organsim_in_artgroup($observation['organism_id']);
 		foreach ($artgroups as $artgroup) $observation['organism_artgroup_id'] = $artgroup;
-	}
+// 	}
 // 	$observation['organism_artgroup_id'] = NULL;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 	if($artgroup_id > 0){
@@ -133,6 +137,7 @@ global $user;
 	}
 
 
+
 	/**
 	 * check the map data
 	 */
@@ -151,6 +156,25 @@ global $user;
 	$geometry['type'] = 'marker';
 
 
+
+	/**
+	 * Check custom attributes
+	 */
+	$custom_names = $values['attributes_custom_names'];
+	$custom_values = $values['attributes_custom_values'];
+	foreach ($custom_names as $key => $val){
+
+		if($val == t('Please enter a name') && $custom_values[$key] == t('Please enter a value')) continue;
+		if(empty($val) && empty($custom_values[$key])) continue;
+		if($val == t('Please enter a name') || empty($val) ||
+				$custom_values[$key] == t('Please enter a value')){
+			$error = true;
+			$message[] = t('Please enter for each custom attribute a text, leave both empty to ignore it');
+		}
+	}
+
+
+
 // 	check_plain($text)
 
 	if(!$error){
@@ -160,37 +184,21 @@ global $user;
 
 
 		/**
-		 * Save the geometry and get the id
+		 * add the new custom attributes to the db and the values to the attr check array
 		 */
-
+		foreach ($custom_names as $key => $val){
+			$attr_id = organism_artgroup_add_custom_attribute($val, $observation['organism_artgroup_id']);
+			$attributes_checked[$attr_id] = $custom_values[$key];
+		}
 
 		/**
 		 * save the observation
 		 */
-
 		if($observation['id']){
 			// do update
 			area_update_geometry($observation['area_geometry_id'], $geometry);
+			observation_save_attribute_values($attributes_checked, $observation['id']);
 			db_update('observation')->fields($observation)->execute();
-			// save each attributes
-			foreach ($attributes_checked as $key => $value){
-				$val = explode('-->', $value);
-				$db_id = NULL; $db_val = NULL;
-				if($val[0] == 'db_id'){
-					$db_id = $val[1];
-				}else{
-					$db_val = $value;
-				}
-				$entry = array(
-						'organism_artgroup_attr_values_id' => $db_id,
-						'value' => $db_val,
-				);
-				db_update('observation_attribute')
-					->fields($entry)
-					->condition('observation_id', $observation['id'])
-					->condition('organism_artgroup_attr_id', $key)
-					->execute();
-			}
 
 		}else{
 			// $geometry_id = area_save_geometry_blablablab();
@@ -201,24 +209,7 @@ global $user;
 			$observation['c_time'] = $observation['m_time'];
 			$observation['acl_id'] = new_acl('singleobservation');
 			db_insert('observation')->fields($observation)->execute();
-
-			// save each attributes
-			foreach ($attributes_checked as $key => $value){
-				$val = explode('-->', $value);
-				$db_id = NULL; $db_val = NULL;
-				if($val[0] == 'db_id'){
-					$db_id = $val[1];
-				}else{
-					$db_val = $value;
-				}
-				$entry = array(
-						'observation_id' => $observation_id,
-						'organism_artgroup_attr_id' => $key,
-						'organism_artgroup_attr_values_id' => $db_id,
-						'value' => $db_val,
-				);
-				db_insert('observation_attribute')->fields($entry)->execute();
-			}
+			observation_save_attribute_values($attributes_checked, $observation['id']);
 
 		}
 		// Set the return statement
@@ -312,6 +303,16 @@ function observation_get_all_json(){
 	}
 	return drupal_json_output($output);
 
+}
+
+
+function observation_delete_custom_attribute($attribute_id){
+	if(!organism_artgroup_custom_attribute_exist($attribute_id))
+		return drupal_json_output(array('success' => false));
+	db_delete('observation_attribute')->condition('organism_artgroup_attr_id', $attribute_id)->execute();
+	if(organism_artgroup_delete_custom_attribute($attribute_id))
+		return drupal_json_output(array('success' => true));
+	return drupal_json_output(array('success' => false));
 }
 
 
