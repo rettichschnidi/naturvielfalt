@@ -334,7 +334,7 @@ function area_update_file($form, &$form_state) {
 	// File upload
 	$validators = array(
 			'file_validate_extensions' => array(
-					'doc txt pdf docx'
+					'doc txt pdf docx xls xlsx'
 			),
 			'file_validate_size' => array(
 					1000000,
