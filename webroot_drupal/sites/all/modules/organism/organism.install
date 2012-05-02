@@ -983,7 +983,7 @@ return array (
         'table' => 'organism',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
     ),
@@ -1088,7 +1088,7 @@ return array (
     ),
     'foreign keys' => 
     array (
-      'organism_file_managed_2_organism' => 
+      'organism2file' => 
       array (
         'table' => 'organism',
         'columns' => 

@@ -470,14 +470,6 @@ ALTER TABLE organism_scientific_name
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (prime_father_id)
-	REFERENCES public.organism (id)
-	ON UPDATE CASCADE
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE public.organism
 	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
@@ -485,8 +477,16 @@ ALTER TABLE public.organism
 ;
 
 
+ALTER TABLE public.organism
+	ADD FOREIGN KEY (prime_father_id)
+	REFERENCES public.organism (id)
+	ON UPDATE CASCADE
+	ON DELETE RESTRICT
+;
+
+
 ALTER TABLE public.organism_file_managed
-	ADD FOREIGN KEY (organism_id)
+	ADD CONSTRAINT organism2file FOREIGN KEY (organism_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE
