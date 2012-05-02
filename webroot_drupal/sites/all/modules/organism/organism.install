@@ -1097,17 +1097,6 @@ return array (
         ),
       ),
     ),
-    'indexes' => 
-    array (
-      'fki_organism_file_managed_ibfk_1' => 
-      array (
-        0 => 'organism_id',
-      ),
-      'fki_organism_file_managed_ibfk_2' => 
-      array (
-        0 => 'file_managed_id',
-      ),
-    ),
   ),
   'organism_habitat_subscription' => 
   array (
@@ -1167,7 +1156,6 @@ return array (
     ),
   ),
 );
-
 }
 
 /**

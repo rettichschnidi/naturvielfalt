@@ -14,8 +14,6 @@ DROP INDEX IF EXISTS FK_organism_11;
 DROP INDEX IF EXISTS FK_organism_2;
 DROP INDEX IF EXISTS idx_name_de;
 DROP INDEX IF EXISTS parent_id_index;
-DROP INDEX IF EXISTS fki_organism_file_managed_ibfk_1;
-DROP INDEX IF EXISTS fki_organism_file_managed_ibfk_2;
 DROP INDEX IF EXISTS organism_habitat_habitat_id_idx;
 DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
@@ -525,8 +523,6 @@ CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);
 CREATE INDEX FK_organism_2 ON public.organism USING BTREE (left_value);
 CREATE INDEX idx_name_de ON public.organism USING BTREE (right_value);
 CREATE INDEX parent_id_index ON public.organism (parent_id);
-CREATE INDEX fki_organism_file_managed_ibfk_1 ON public.organism_file_managed (organism_id);
-CREATE INDEX fki_organism_file_managed_ibfk_2 ON public.organism_file_managed (file_managed_id);
 CREATE INDEX organism_habitat_habitat_id_idx ON public.organism_habitat_subscription (habitat_id);
 CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscription (organism_id);
 
