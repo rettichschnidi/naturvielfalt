@@ -73,7 +73,7 @@ if (false) {
 
 $rows = $db->query($sql, array(), array());
 
-if(count($rows) <= 1) {
+if (count($rows) <= 1) {
 	die(print_r($rows));
 }
 $classificator = 'Fungus';
@@ -105,12 +105,14 @@ foreach ($rows as $row) {
 			),
 			'attributes' => array(
 					'Fungus number' => array(
+							'comment' => 'Number which got assigned to this organism by the WSL.',
 							'valuetype' => 'n',
 							'values' => array(
 									$row['fungus_artnr']
 							)
 					),
 					'First find' => array(
+							'comment' => 'The year of the first documented sight of this organism.',
 							'valuetype' => 't',
 							'values' => array(
 									$row['erstnachweis']
@@ -121,6 +123,7 @@ foreach ($rows as $row) {
 
 	if ($row['author'] != '(null)') {
 		$organism['attributes']['Author'] = array(
+				'comment' => 'Name of the scientist who classified this organism.',
 				'valuetype' => 't',
 				'values' => array(
 						$row['author']

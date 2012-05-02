@@ -371,7 +371,7 @@ function organism_show_classification_organismjson($classificationid) {
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
 
-	if(empty($classificationleveldata)) {
+	if (empty($classificationleveldata)) {
 		return drupal_json_output(array('error' => 'No classifications found'));
 	}
 
@@ -554,7 +554,8 @@ function organism_show_classification_organismjson($classificationid) {
 
 	$prearguments = array(
 			':classificationid' => $classificationid,
-			':language' => isset($user->language) ? $user->language : $language->language
+			':language' => isset($user->language) ? $user->language
+					: $language->language
 	);
 
 	$arguments = array();
@@ -562,11 +563,18 @@ function organism_show_classification_organismjson($classificationid) {
 	$output = datatable_dbRequest($sql, $arguments, $prearguments);
 	return drupal_json_output($output);
 }
+
 /**
- * Menu callback. This will be called for visits to /organism/%/organismjson.
+ * Menu callback. This will be called for visits to /organism/%organism/organismjson.
+ * @param $organismdata
+ * 	Array with all data about an organism.
  * @return array
  */
-function organism_show_organism_json($organismid) {
+function organism_show_organism_json($organism) {
+	if (empty($organismdata)) {
+		drupal_set_message(t('No such organism available.'), 'error');
+		return;
+	}
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'osn.id AS osn_id',
@@ -587,7 +595,7 @@ function organism_show_organism_json($organismid) {
 	$sql['id'] = 'osn_id';
 
 	$arguments = array(
-			':oid' => $organismid
+			':oid' => $organism['id']
 	);
 
 	$output = datatable_dbRequest($sql, $arguments);
@@ -608,38 +616,43 @@ function organism_show_organism_json($organismid) {
  *  - "old_label_latin"[Optional]: The latin name of the initially found organism
  *    (only available if the found organism has a reference to an official one)
  */
-function organism_search_organism_json($classification = false, $term = false, $plain = false) {
+function organism_search_organism_json($classification = false, $term = false,
+		$plain = false) {
 	global $user;
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
 	$langcode = isset($user->language) ? $user->language : 'de';
 
-	if (!$classification )
-		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id'] : $classification = false;
+	if (!$classification)
+		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id']
+				: $classification = false;
 	$type_id = $classification;
 
 	$fauna = ($type_id == 16 ? false : true);
 
-	if (!$term){
-		if(isset($_REQUEST['term'])){
+	if (!$term) {
+		if (isset($_REQUEST['term'])) {
 			$term = $_REQUEST['term'];
-		}else{
+		} else {
 			return drupal_json_output(array('label' => 'No search term'));
 		}
 	}
 
 	$artgroup_join = "";
 
-	if(isset($_REQUEST['artgroup'])){
+	if (isset($_REQUEST['artgroup'])) {
 		$artgroup = $_REQUEST['artgroup'];
-		if($artgroup == '3') $artgroup = false;
-		if($artgroup > 0 && $artgroup < 1000000){
+		if ($artgroup == '3')
+			$artgroup = false;
+		if ($artgroup > 0 && $artgroup < 1000000) {
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;
 			$artgroup_join = '
 								INNER JOIN organism_artgroup AS oa ON oa.id=oas.organism_artgroup_id
-								AND ('.organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id').')';
+								AND ('
+					. organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id')
+					. ')';
 		}
 	}
 
@@ -647,24 +660,25 @@ function organism_search_organism_json($classification = false, $term = false, $
 	$terms = explode(' ', trim($term));
 
 	// why limit result with the length of the search term??
-// 	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+	// 	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
 	$limit = 30;
 
 	$organisms = array();
 
 	$params = array();
-	if($type_id) $params[':inventoryTypeId'] = $type_id;
+	if ($type_id)
+		$params[':inventoryTypeId'] = $type_id;
 	$params[':limit'] = $limit;
 	$params[':lang'] = $langcode;
 	$params[':term'] = '%' . trim($term) . '%';
 
-
-	if(count($terms) > 2){
-		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '% ' . $terms[2] . '%';
-	}elseif(count($terms) > 1){
+	if (count($terms) > 2) {
+		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '% ' . $terms[2]
+				. '%';
+	} elseif (count($terms) > 1) {
 		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '%';
-	}else{
-		$params[':term1'] = $terms[0] .'%';
+	} else {
+		$params[':term1'] = $terms[0] . '%';
 	}
 
 	$i = 1;
@@ -673,26 +687,27 @@ function organism_search_organism_json($classification = false, $term = false, $
 				LEFT JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				INNER JOIN organism_scientific_name AS osn ON osn.organism_id = o.id
 				LEFT JOIN organism_artgroup_subscription AS oas ON oas.organism_id=o.id
-				'.$artgroup_join.'
+				' . $artgroup_join
+			. '
 				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
 				ORDER BY o.id
 				LIMIT :limit;';
 
-
 	$result = db_query($query, $params);
 	foreach ($result as $record) {
-		$artg_attr = ''; $det_methods = '';
-		if($record->artg_id){
+		$artg_attr = '';
+		$det_methods = '';
+		if ($record->artg_id) {
 			$artg_attr = organism_artgroup_get_attributes_ids($record->artg_id);
-			$det_methods = organism_artgroup_get_detmethods_ids($record->artg_id);
+			$det_methods = organism_artgroup_get_detmethods_ids(
+				$record->artg_id);
 		}
 		$organism = array(
-				'id' => $record -> organism_id,
-				'label' => strval($record -> ol_name),
-				'label_latin' => $record -> osn_name,
+				'id' => $record->organism_id,
+				'label' => strval($record->ol_name),
+				'label_latin' => $record->osn_name,
 				'attributes' => $artg_attr,
 				'det_methods' => $det_methods
-
 		);
 
 		$organisms[] = $organism;

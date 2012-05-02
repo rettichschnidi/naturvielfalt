@@ -102,12 +102,10 @@ foreach ($rows as $row) {
 			'classifications' => $classifications,
 			'scientific_names' => array(
 					$row['scientific_name']
-			),
+			)
 	);
 
 	$organisms[] = $organism;
 }
-
 $classifier->addOrganisms($organisms);
-
 ?>

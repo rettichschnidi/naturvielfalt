@@ -144,18 +144,21 @@ foreach ($rows as $row) {
 			'classification_name_translations' => array(),
 			'attributes' => array(
 					'CRSF number' => array(
+							'comment' => 'Number which got assigned to this organism by the CRSF.',
 							'valuetype' => 'n',
 							'values' => array(
 									$row['nr']
 							)
 					),
 					'Author' => array(
+							'comment' => 'Name of the scientist who classified this organism.',
 							'valuetype' => 't',
 							'values' => array(
 									$row['autor']
 							)
 					),
 					'Xenophyte' => array(
+							'comment' => 'Wether this organism is imported or not.',
 							'valuetype' => 'b',
 							'values' => array(
 									$row['xenophyte'] ? 1 : 0
@@ -180,14 +183,53 @@ foreach ($rows as $row) {
 	}
 	if ($row['florahelvetica'] != NULL) {
 		$organism['attributes']['Flora Helvetica'] = array(
+				'comment' => 'Number which got assigned to this organism by the Flora Helvetica.',
 				'valuetype' => 't',
 				'values' => array(
 						$row['florahelvetica']
 				)
 		);
 	}
-	$organisms[] = $organism;
+	$organisms[$row['nr']] = $organism;
 }
+
+$sql = "SELECT
+			nr,
+			deutsch,
+			franzoesisch,
+			italienisch,
+			name,
+			offizielleart
+		FROM
+			$importTable
+		WHERE
+			nr < 1000000 AND status = 'S'
+		ORDER BY
+			$columnstring";
+
+$rows = $dbevab->query($sql, array(), array());
+
+foreach ($rows as $row) {
+// 	print "Old:\n";
+// 	print_r($organisms[$row['offizielleart']]);
+	
+	$organism = &$organisms[$row['offizielleart']];
+	$organism['scientific_names'][] = $row['name'];
+
+	if ($row['deutsch'] != NULL) {
+		$organism['classification_name_translations']['de'][] = $row['deutsch'];
+	}
+	if ($row['franzoesisch'] != NULL) {
+		$organism['classification_name_translations']['fr'][] = $row['franzoesisch'];
+	}
+	if ($row['italienisch'] != NULL) {
+		$organism['classification_name_translations']['it'][] = $row['italienisch'];
+	}
+// 	print "New:\n";
+// 	print_r($organisms[$row['offizielleart']]);
+}
+
+assert(!empty($rows));
 
 $classifier->addOrganisms($organisms);
 ?>

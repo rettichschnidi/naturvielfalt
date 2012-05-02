@@ -10,20 +10,19 @@ module_load_include('inc', 'organism', 'organism');
 
 /**
  * Queries Wikipedia for organism entry and displays content on local page.
- * @param $organism_id
- * 	String with an integer-Id of requested organism.
+ * @param $organism
+ * 	Array with all data about an organism.
  * @return
  * 	Drupal render array
  */
-function organism_lexika_show($organism_id) {
+function organism_lexika_show($organism) {
 	drupal_add_css(
 		drupal_get_path('module', 'organism') . '/css/organism.css',
 		array(
 				'group' => CSS_DEFAULT,
 				'every_page' => TRUE
 		));
-	$organism_name_array = organism_get_single_name_of_organism($organism_id);
-	$organism_name = $organism_name_array['name'];
+	$organism_name = $organism['scientific_names'][0];
 	if (preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {
 		$organism_name = $matches[1];
 	}
@@ -56,6 +55,15 @@ function organism_lexika_show($organism_id) {
 
 	$pos = strpos($o, '{"query":');
 	$o = substr($o, $pos);
+	// Value choosen by accident, will work. Mostly.
+	if (strlen($o) < 300) {
+		$content = t(
+			'Wikipedia does not have any @langcode information about the organism.',
+			array('@langcode' => $langcode));
+		return array(
+				'#markup' => $content
+		);
+	}
 	$lexika = drupal_json_decode($o);
 	$rev_key = key($lexika['query']['pages']);
 	$content = str_replace(

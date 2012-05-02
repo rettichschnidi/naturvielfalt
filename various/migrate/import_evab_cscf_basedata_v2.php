@@ -18,13 +18,12 @@ $dbevab = new Db(
 	$config['evab']['password'],
 	$config['evab']['host']);
 
-
 $classifier = new Classification(
-		$config['naturvielfalt_dev']['driver'],
-		$config['naturvielfalt_dev']['name'],
-		$config['naturvielfalt_dev']['user'],
-		$config['naturvielfalt_dev']['password'],
-		$config['naturvielfalt_dev']['host']);
+	$config['naturvielfalt_dev']['driver'],
+	$config['naturvielfalt_dev']['name'],
+	$config['naturvielfalt_dev']['user'],
+	$config['naturvielfalt_dev']['password'],
+	$config['naturvielfalt_dev']['host']);
 
 /**
  * Copy all cscf organisms including metadata into naturvielfalt DB.
@@ -164,6 +163,7 @@ foreach ($rows as $row) {
 			'classification_name_translations' => array(),
 			'attributes' => array(
 					'NUESP' => array(
+							'comment' => 'Number which got assigned to this organism by the CSCF.',
 							'valuetype' => 'n',
 							'values' => array(
 									$row['nuesp']

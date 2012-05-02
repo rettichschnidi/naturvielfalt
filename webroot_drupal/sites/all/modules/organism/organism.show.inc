@@ -196,21 +196,18 @@ function organism_show_classification($classificationid) {
  * Menu callback. This will be called for visits to /organism/%.
  * @return array
  */
-function organism_show_organism($organismid) {
-	$organism = organism_get_single_name_of_organism($organismid);
+function organism_show_organism($organism) {
 	if (empty($organism)) {
 		drupal_set_title(t('No such organism available'));
 		$render_array['nosuchorganism'] = null;
 		return $render_array;
 	}
-	drupal_set_title(t('Show attributes and synonyms of ' . $organism['name']));
+	drupal_set_title(
+		t('Show attributes and synonyms of ' . $organism['scientific_names'][0]));
 	// include the datatable javascript
-	drupal_add_js(
-		drupal_get_path('module', 'organism')
-				. '/js/organism.datatable.select.js');
 	$render_array = array();
 
-	$attributes = organism_get_attributes_of_organism($organismid);
+	$attributes = $organism['attributes'];
 
 	$render_array['attributes'] = array(
 			'#type' => 'fieldset',
@@ -219,19 +216,15 @@ function organism_show_organism($organismid) {
 	);
 
 	if (!empty($attributes)) {
-		foreach ($attributes as $attribute) {
-			$attributevaluetype = $attribute['valuetype'];
-			$attributeid = $attribute['id'];
-			$attributename = $attribute['name'];
+		foreach ($attributes as $attribute_name => $data) {
+			$attributevaluetype = $data['valuetype'];
+			$attributename = $attribute_name;
 
 			$render_array['attributes'][$attributename] = array(
 					'#type' => 'markup',
 					'#markup' => "<b>$attributename</b>: ",
 			);
-			$attributevalues = organism_get_attribute_values_of_organism(
-				$organismid,
-				$attributeid,
-				$attributevaluetype);
+			$attributevalues = $data['values'];
 			/**
 			 * This is untested, but should generate a reasonable output 
 			 * even if there is more than a single value
@@ -249,21 +242,14 @@ function organism_show_organism($organismid) {
 	}
 
 	/**
-	 * Show all synonyms of this organism
+	 * Show all synonyms of this organism.
 	 */
- {
+	if (count($organism['scientific_names']) > 1) {
 		// Set the table header
 		$tableHeader[] = array(
 				'name' => t('Organism id'),
 				'dbfield' => 'o_id',
 				'idField' => true,
-				'hide' => true,
-				'width' => 30
-		);
-		$tableHeader[] = array(
-				'name' => t('Organism scientific name id'),
-				'dbfield' => 'osn_id',
-				'idField' => false,
 				'hide' => true,
 				'width' => 30
 		);
@@ -274,15 +260,21 @@ function organism_show_organism($organismid) {
 				'hide' => false,
 				'width' => 800
 		);
+
+		foreach ($organism['scientific_names'] as $synonym) {
+			$row = array();
+			$row[] = $organism['id'];
+			$row[] = $synonym;
+			$rows[] = $row;
+		}
+
 		$render_array['organisms'] = array(
 				'#theme' => 'datatable',
-				'#title' => t('Synonyms for') . ' ' . $organism['name'],
+				'#title' => t('Synonyms for') . ' '
+						. $organism['scientific_names'][0],
 				'#header' => $tableHeader,
-				'#id_table' => 'organisms',
-				'#options' => array(
-						'jsonUrl' => "'" . base_path()
-								. "organism/$organismid/json'"
-				)
+				'#id_table' => 'organism_synonyms',
+				'#rows' => $rows
 		);
 	}
 	return $render_array;
