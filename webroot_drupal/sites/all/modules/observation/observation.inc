@@ -38,6 +38,8 @@ function observation_get($observation_id){
 		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup($result['observation']['organism_artgroup_id'], true);
 		$result['detmethods_vis'] = organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']);
 		$result['geometry'] = observation_get_geometry($result['observation']['area_geometry_id']);
+		($result['observation']['found_as_lang'] == 1) ? $result['observation']['found_as_lang'] = 'true' : $result['observation']['found_as_lang'] = 'false';
+		($result['observation']['found_as_lat'] == 1) ? $result['observation']['found_as_lat'] = 'true' : $result['observation']['found_as_lat'] = 'false';
 
 		/**
 		 * cheap hack to work with the very special weard
