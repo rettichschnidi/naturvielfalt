@@ -36,7 +36,7 @@ function observation_get($observation_id){
 		}
 		$result['observation']['organism_artgroup_detmethod_name'] = organism_artgroup_get_detmethod($result['observation']['organism_artgroup_detmethod_id'], true);
 		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup($result['observation']['organism_artgroup_id'], true);
-		$result['detmethods_vis'] = organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']);
+		$result['detmethods_vis'] = ($result['observation']['organism_artgroup_id'] != '') ? organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']) : array();
 		$result['geometry'] = observation_get_geometry($result['observation']['area_geometry_id']);
 		($result['observation']['found_as_lang'] == 1) ? $result['observation']['found_as_lang'] = 'true' : $result['observation']['found_as_lang'] = 'false';
 		($result['observation']['found_as_lat'] == 1) ? $result['observation']['found_as_lat'] = 'true' : $result['observation']['found_as_lat'] = 'false';
@@ -54,7 +54,7 @@ function observation_get($observation_id){
 
 		$result['organism'] = organism_get($result['observation']['organism_id']);
 		$attributes = db_query("SELECT * FROM observation_attribute oa WHERE oa.observation_id=:observation_id", array(':observation_id' => $observation_id))->fetchAllAssoc('organism_artgroup_attr_id');
-		$attributes_vis = organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']);
+		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '') ? organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']): array();
 		$result['attributes'] = array();
 		foreach ($attributes_vis as $attribute_vis)
 			$result['attributes'][$attribute_vis] = array(

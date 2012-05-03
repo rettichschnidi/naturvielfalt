@@ -82,8 +82,8 @@ function observation_form($observation = false) {
 			'#search' => true,
 			'#ch1903' => true
 	);
-	$form['div']['map']['#action'] = ($observation == false) ? 'getcoordinate' : 'custom-edit';
-	if($observation != false) $form['div']['map']['#json_url'] = 'observation/'.$observation['observation']['id'].'/geometry/json';
+	$form['div']['map']['#action'] = ($observation['observation']['id'] == '') ? 'getcoordinate' : 'custom-edit';
+	if($observation['observation']['id'] != '') $form['div']['map']['#json_url'] = 'observation/'.$observation['observation']['id'].'/geometry/json';
 
 	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
 

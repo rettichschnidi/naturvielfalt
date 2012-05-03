@@ -94,7 +94,7 @@ function observation_show_all_singleobservations() {
 					'jsonUrl' => "'" . base_path()."observation/get/all'",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'show';})}"
+					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/show';})}"
 			)
 	);
 	return $output;
