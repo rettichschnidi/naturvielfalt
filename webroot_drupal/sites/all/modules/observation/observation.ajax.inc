@@ -300,6 +300,7 @@ function observation_get_all_json(){
 // 				));
 // 		$row['cell']['image_link'] = $link;
 		if($row['cell']['organism_l'] == "") $row['cell']['organism_l'] = t('No translation available');
+		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
 	}
 	return drupal_json_output($output);
 

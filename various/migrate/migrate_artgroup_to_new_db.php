@@ -6,6 +6,57 @@ $limit = '';
 $olddb = pg_connect("host=localhost port=5432 dbname=iphone_db user=postgres password=postgres");
 $newdb = pg_connect("host=localhost port=5432 dbname=naturvielfalt_dev user=postgres password=postgres");
 
+
+/**
+ * Drop existing tables & create it
+ */
+
+$sql_create = "
+
+
+DROP TABLE IF EXISTS organism_artgroup_subscription;
+DROP TABLE IF EXISTS organism_artgroup;
+
+
+CREATE TABLE organism_artgroup
+(
+	id serial NOT NULL UNIQUE,
+	name text NOT NULL,
+	parent int DEFAULT 1,
+	pos int,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+
+CREATE TABLE organism_artgroup_subscription
+(
+	id serial NOT NULL UNIQUE,
+	organism_artgroup_id int NOT NULL,
+	-- Die eigene Id, wird fortlaufend inkrementiert.
+	organism_id int NOT NULL,
+	PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+ALTER TABLE organism_artgroup_subscription
+	ADD FOREIGN KEY (organism_artgroup_id)
+	REFERENCES organism_artgroup (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+ALTER TABLE organism_artgroup_subscription
+	ADD FOREIGN KEY (organism_id)
+	REFERENCES public.organism (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
+";
+// pg_query($newdb, $sql_create);
+
+
+
 $res1 = pg_query($olddb, 'select * from classification');
 $data_old = pg_fetch_all($res1);
 
@@ -16,10 +67,10 @@ foreach ($data_old as $temp){
 	";
 }
 
-// pg_query($newdb, "update organism_artgroup set name='".pg_escape_string('SŠugetiere')."' where name='".pg_escape_string('SŠugetiere (ohne FledermŠuse)')."'");
+// pg_query($newdb, "update organism_artgroup set name='".pg_escape_string('Sï¿½ugetiere')."' where name='".pg_escape_string('Sï¿½ugetiere (ohne Fledermï¿½use)')."'");
 // pg_query($newdb, "update organism_artgroup set name='".pg_escape_string('Wirbeltiere')."' where name='".pg_escape_string('andere Wirbeltiere')."'");
 
-// bereits abgefŸllt
+// bereits abgefï¿½llt
 //pg_query($newdb, $insert_artgroup);
 
 

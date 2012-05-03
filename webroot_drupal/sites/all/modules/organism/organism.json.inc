@@ -649,7 +649,7 @@ function organism_search_organism_json($classification = false, $term = false,
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;
 			$artgroup_join = '
-								INNER JOIN organism_artgroup AS oa ON oa.id=oas.organism_artgroup_id
+								LEFT JOIN organism_artgroup AS oa ON oa.id=oas.organism_artgroup_id
 								AND ('
 					. organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id')
 					. ')';
@@ -683,10 +683,10 @@ function organism_search_organism_json($classification = false, $term = false,
 
 	$i = 1;
 	$query = 'SELECT ol.organism_id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
-				FROM organism AS o
-				LEFT JOIN organism_lang AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
-				INNER JOIN organism_scientific_name AS osn ON osn.organism_id = o.id
-				LEFT JOIN organism_artgroup_subscription AS oas ON oas.organism_id=o.id
+				FROM {organism} AS o
+				LEFT JOIN {organism_lang} AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
+				INNER JOIN {organism_scientific_name} AS osn ON osn.organism_id = o.id
+				LEFT JOIN {organism_artgroup_subscription} AS oas ON oas.organism_id=o.id
 				' . $artgroup_join
 			. '
 				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1

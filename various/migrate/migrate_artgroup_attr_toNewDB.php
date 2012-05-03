@@ -4,7 +4,7 @@ $newdb = pg_connect("host=localhost port=5432 dbname=naturvielfalt_dev user=post
 
 
 // echo pg_last_oid(pg_query($newdb, "insert into organism_artgroup_detmethod_type (name, format) values ('test', 'test')"));
-// pg_query($newdb, "update organism_artgroup set name='".pg_escape_string("SŠugetiere")."' where name='".pg_escape_string("SŠugetiere (ohne FledermŠuse)")."'");
+// pg_query($newdb, "update organism_artgroup set name='".pg_escape_string("Sï¿½ugetiere")."' where name='".pg_escape_string("Sï¿½ugetiere (ohne Fledermï¿½use)")."'");
 // pg_query($newdb, "update organism_artgroup set name='".pg_escape_string('Wirbeltiere')."' where name='".pg_escape_string('andere Wirbeltiere')."'");
 // die();
 
@@ -96,7 +96,7 @@ ALTER TABLE organism_artgroup_attr
 
 
 ";
-pg_query($newdb, $sql_create);
+// pg_query($newdb, $sql_create);
 
 //data for organism_artgroup_detmethod_type
 $data_detmet_type = "select * from attribute_format";

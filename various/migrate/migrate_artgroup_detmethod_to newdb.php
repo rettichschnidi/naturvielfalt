@@ -46,7 +46,7 @@ ALTER TABLE organism_artgroup_detmethod_subscription
 
 ";
 
-pg_query($sql_create);
+// pg_query($sql_create);
 
 /**
  * Data to import
