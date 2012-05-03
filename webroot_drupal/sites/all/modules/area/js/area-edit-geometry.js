@@ -26,9 +26,12 @@ jQuery(document).ready(
 				var bounds = overlayElement.getBounds();
 				map.fitBounds(bounds);
 				overlayElement.setEditable(true);
+				
 				jQuery('#' + coordinate_storage_id).val(
 						JSON.stringify(overlayElement.getJsonCoordinates()));
+				overlayElement.overlay = overlayElement;
 				updateHiddenfields(overlayElement);
+				
 				google.maps.event.addListener(areabasic.googlemap,
 						'rightclick', function(mouseevent) {
 							console.log(mouseevent.latLng);
@@ -40,6 +43,7 @@ jQuery(document).ready(
 						'geometry_changed', function() {
 					jQuery('#' + coordinate_storage_id).val(
 							JSON.stringify(overlayElement.getJsonCoordinates()));
+					overlayElement.overlay = overlayElement;
 					updateHiddenfields(overlayElement);
 						});
 			});
