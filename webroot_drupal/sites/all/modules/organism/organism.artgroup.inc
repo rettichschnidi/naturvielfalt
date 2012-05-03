@@ -41,15 +41,17 @@ function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $select
 function organism_artgroup_get_children($artgroup_id = false, $output = false, $organism_id = false){
 	$join = '';
 	if(!$artgroup_id) $artgroup_id = 3;
-	if($organism_id) $join = "LEFT JOIN {organism_artgroup_subscription} oas "
-							."ON oas.organism_artgroup_id = oa.id "
-							."AND oas.organism_id = '".db_escape_field($organism_id)."' ";
+	$wooor = array(':parent' => $artgroup_id);
 
-	$artgroup_id_sql = "'".db_escape_field($artgroup_id)."' AND oa.parent!=id";
-
-	$top_sql = "SELECT * FROM {organism_artgroup} oa ".$join." WHERE oa.parent=".$artgroup_id_sql;
+// 	if($organism_id){
+		$join = "JOIN {organism_artgroup_subscription} oas "
+				."ON oas.organism_artgroup_id = oa.id "
+				."AND oas.organism_id=:organism_id ";
+		$wooor[':organism_id'] = $organism_id;
+// 	}
+	$top_sql = "SELECT oa.id id, oas.organism_id organism_id FROM {organism_artgroup} oa ".$join." WHERE oa.parent=:parent AND oa.parent!=oa.id";
 // 	die($top_sql);
-	$top_result= db_query($top_sql);
+	$top_result= db_query($top_sql, $wooor);
 
 	if(!$output) $output = array();
 
@@ -57,8 +59,10 @@ function organism_artgroup_get_children($artgroup_id = false, $output = false, $
 		if($organism_id){
 			if($top->organism_id != "") $output[] = $top->id;
 		}else{
+			if($top->id == '') continue;
 			$output[] = $top->id;
 		}
+// 		die(print_r($top));
 		$output = organism_artgroup_get_children($top->id, $output, $organism_id);
 	}
 
