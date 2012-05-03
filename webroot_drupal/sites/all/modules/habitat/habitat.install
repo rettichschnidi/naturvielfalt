@@ -81,7 +81,21 @@ return array (
  * Include all Delarze habitats.
  */
 function habitat_install() {
-	$dataInserts = file_get_contents(dirname(__FILE__) . '/habitat.sql');
-	db_query($dataInserts);
+	$filenames = array(
+			'habitat.sql'
+	);
+	try {
+		foreach ($filenames as $filename) {
+			$fullPath = dirname(__FILE__) . '/sql/' . $filename;
+			$dataInserts = file_get_contents($fullPath);
+			if(!$dataInserts) {
+				throw new Exception('Could not read file ' . $fullPath);
+			}
+			db_query($dataInserts);
+		}
+	} catch (Exception $e) {
+		watchdog('organism', $filename . ': ' . $e->getMessage());
+		drupal_set_message($filename . ': ' . $e->getMessage(), 'error');
+	}
 }
 ?>
