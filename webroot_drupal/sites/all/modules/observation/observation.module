@@ -6,7 +6,7 @@
 module_load_include('inc', 'observation');
 
 // Load gallery integration
-//module_load_include('inc', 'inventory', 'inventory.gallery');
+module_load_include('inc', 'observation', 'observation.gallery');
 
 /**
  * Implements hook_menu()
