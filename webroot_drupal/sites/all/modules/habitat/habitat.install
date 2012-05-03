@@ -1,6 +1,6 @@
 <?php
 /**
- * @file habitat.json.inc
+ * @file habitat.install
  * @author Reto Schneider, 2012
  * @copyright 2011-2012 Naturwerk, Brugg
  */
@@ -11,7 +11,7 @@
  * @note Do not modify habitat_schema, it is generated code!
  */
 function habitat_schema() {
-	return array (
+return array (
   'habitat' => 
   array (
     'fields' => 
@@ -34,9 +34,29 @@ function habitat_schema() {
         'type' => 'text',
         'not null' => 'TRUE',
       ),
+      'name_scientific' => 
+      array (
+        'description' => 'No description for column name_scientific available, please fix',
+        'type' => 'text',
+      ),
       'notes' => 
       array (
         'description' => 'Bemerkungen zum Lebensraumtyp',
+        'type' => 'text',
+      ),
+      'name_de' => 
+      array (
+        'description' => 'Not used so far - just in case we ever need this data again.',
+        'type' => 'text',
+      ),
+      'name_it' => 
+      array (
+        'description' => 'Not used so far - just in case we ever need this data again.',
+        'type' => 'text',
+      ),
+      'name_fr' => 
+      array (
+        'description' => 'Not used so far - just in case we ever need this data again.',
         'type' => 'text',
       ),
     ),

@@ -9,6 +9,8 @@
  *  Hook implementations
  *********************************/
 
+define('ACCESS_ORGANISMS', 'access content');
+
 /**
  * Implements hook_theme()
  *
@@ -39,11 +41,11 @@ function organism_menu() {
 			'title' => t('Classifiers'),
 			'page callback' => 'organism_show_classifiers',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of classifiers'),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
+			'file' => 'organism.show.inc',
 	);
 
 	$items['organism/classification/%'] = array(
@@ -53,18 +55,18 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of organisms classifications'),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
+			'file' => 'organism.show.inc',
 	);
 
 	$items['organism/json'] = array(
 			'title' => t('Organisms JSON'),
 			'page callback' => 'organism_show_classifiers_json',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Json of classifiers'),
 			'type' => MENU_CALLBACK,
@@ -78,7 +80,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification_classificationjson',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of subclassifications'),
 			'type' => MENU_CALLBACK,
@@ -92,35 +94,65 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification_organismjson',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('List of organisms with this classifications'),
 			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
 
-	$items['organism/%'] = array(
-			'title' => t('Organism'),
+	$items['organism/%organism'] = array(
+			'title' => t('Basisinfo'),
+			'page callback' => 'organism_show_organism',
 			'page arguments' => array(
 					1
 			),
-			'page callback' => 'organism_show_organism',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Specific organism'),
 			'type' => MENU_NORMAL_ITEM,
-			'file' => 'organism.overview.inc',
+			'file' => 'organism.show.inc',
 	);
 
-	$items['organism/%/json'] = array(
+	$items['organism/%organism/normal'] = array(
+			'title' => 'Basisinfo',
+			'description' => 'Show organism',
+			'page callback' => 'organism_show',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					ACCESS_ORGANISMS
+			),
+			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'organism.show.inc',
+	);
+
+	$items['organism/%organism/lexikon'] = array(
+			'title' => t('Lexikon'),
+			'description' => 'Show organism lexika',
+			'page callback' => 'organism_lexika_show',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					ACCESS_ORGANISMS
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'organism.lexika.inc',
+	);
+
+	$items['organism/%organism/json'] = array(
 			'title' => t('Organism json'),
 			'page arguments' => array(
 					1
 			),
 			'page callback' => 'organism_show_organism_json',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Specific organism json'),
 			'type' => MENU_CALLBACK,
@@ -131,7 +163,7 @@ function organism_menu() {
 			'title' => t('Organism search json'),
 			'page callback' => 'organism_search_organism_json',
 			'access arguments' => array(
-					'access content'
+					ACCESS_ORGANISMS
 			),
 			'description' => t('Specific organism json'),
 			'type' => MENU_CALLBACK,
@@ -141,11 +173,94 @@ function organism_menu() {
 	return $items;
 }
 
-// function organism_permission() {
-// 	return array(
-// 			'organism upload' => array(
-// 					'title' => t('Attach media files to organisms')
-// 			)
-// 	);
-// }
+/**
+ * Create an organism object with all data about an organism.
+ * @note Does not include the classification data.
+ *
+ * Example:
+ * $organism = array(
+ * 		'scientific_names' => array(
+ * 				'Acantholycosa pedestris',
+ * 				'Acantholycosa pedestris v2'
+ * 		),
+ * 		'id' => 123,
+ * 		'classification_name_translations' => array(
+ * 				'de' => array(
+ * 						'Schattenkraut',
+ * 				),
+ * 				'en' => array(
+ * 						'Shadowherb'
+ * 				)
+ * 		),
+ * 		'attributes' => array(
+ * 				'author' => array(
+ * 						'valuetype' => 't',
+ * 						'values' => array(
+ * 								'Reto'
+ * 						),
+ * 				),
+ * 				'NUESP' => array(
+ * 						'valuetype' => 'n',
+ * 						'values' => array(
+ * 								1234
+ * 						),
+ * 				)
+ * 		),
+ * );
+ * @param $organismId
+ * 	String which should contain an integer and represents the Id of the requested organism.
+ */
+function organism_load($organismId) {
+	$result = db_query(
+		"SELECT
+			osn.name AS scientific_name,
+			o.id AS organism_id,
+			CASE
+				WHEN oa.valuetype = 'b' THEN oav.boolean_value::text
+				WHEN oa.valuetype = 't' THEN oav.text_value
+				WHEN oa.valuetype = 'n' THEN oav.number_value::text
+			END AS attribute_value,
+			oa.name AS attribute_name,
+			oa.comment AS attribute_comment,
+			oa.valuetype AS attribute_valuetype,
+			oa.id AS attribute_id,
+			ol.name AS localized_name,
+			ol.languages_language AS language
+		FROM (
+			SELECT
+				id
+			FROM
+				drupal_organism
+			WHERE
+				id = :organismId) AS o
+		JOIN drupal_organism_scientific_name osn ON osn.organism_id=o.id
+		LEFT JOIN drupal_organism_attribute_value_subscription oavs ON oavs.organism_id = o.id
+		LEFT JOIN drupal_organism_attribute_value oav ON oav.id=oavs.organism_attribute_value_id
+		LEFT JOIN drupal_organism_attribute oa ON oa.id = oav.organism_attribute_id
+		LEFT JOIN drupal_organism_lang ol ON ol.organism_id = o.id;",
+		array(':organismId' => $organismId),
+		array('fetch' => PDO::FETCH_ASSOC));
+	$rows = $result->fetchAll();
+	$organism = array();
+	if (isset($rows[0]['scientific_name'])) {
+		$organism['scientific_names'] = array();
+	}
+
+	foreach ($rows as $row) {
+		if (!in_array($row['scientific_name'], $organism['scientific_names'])) {
+			$organism['scientific_names'][] = $row['scientific_name'];
+		}
+		$organism['id'] = $row['organism_id'];
+		// fetch all translations
+		if (isset($row['localized_name'])) {
+			$organism['classification_name_translations'][$row['language']][$row['localized_name']] = $row['localized_name'];
+		}
+		if (isset($row['attribute_name'])) {
+			$organism['attributes'][$row['attribute_name']]['values'][$row['attribute_value']] = $row['attribute_value'];
+			$organism['attributes'][$row['attribute_name']]['valuetype'] = $row['attribute_valuetype'];
+			$organism['attributes'][$row['attribute_name']]['comment'] = $row['attribute_comment'];
+		}
+	}
+	return $organism;
+}
 ?>

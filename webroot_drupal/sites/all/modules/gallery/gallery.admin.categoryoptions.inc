@@ -91,7 +91,7 @@ function gallery_category_option_form_submit($form, &$form_state) {
 		drupal_set_message('Changes to the category option have been saved.');
 	}
 	$form_state['redirect'] = 'admin/config/media/gallery/categories/'
-			. $option['category_id'] . '/options';
+			. $option['gallery_category_id'] . '/options';
 }
 
 /**
@@ -105,7 +105,7 @@ function gallery_category_option_add_form($form, &$form_state, $category) {
 		$form,
 		$form_state,
 		$category,
-		array('category_id' => $category['id']));
+		array('gallery_category_id' => $category['id']));
 	$title = t('Create new category option');
 	drupal_set_title($title, PASS_THROUGH);
 
@@ -122,14 +122,14 @@ function gallery_category_option_add_form($form, &$form_state, $category) {
  */
 function gallery_category_option_add_form_submit($form, &$form_state) {
 	$option = $form_state['values'];
-	$option['category_id'] = $form_state['gallery_category_option']['category_id'];
+	$option['gallery_category_id'] = $form_state['gallery_category_option']['gallery_category_id'];
 	$option = gallery_category_option_save($option);
 	drupal_set_message(
 		t(
 			'Category option %name was created.',
 			array('%name' => $option['name'])));
 	$form_state['redirect'] = 'admin/config/media/gallery/categories/'
-			. $option['category_id'] . '/options';
+			. $option['gallery_category_id'] . '/options';
 }
 
 /**
@@ -148,7 +148,7 @@ function gallery_category_option_delete_form($form, &$form_state, $category,
 	return confirm_form(
 		$form,
 		t('Delete %name?', array('%name' => $option['name'])),
-		'admin/config/media/gallery/categories/' . $option['category_id']
+		'admin/config/media/gallery/categories/' . $option['gallery_category_id']
 				. '/options',
 		t(
 			'Are you sure you want to delete the category option %name? All stored categorisation of this option will also be deleted.',
@@ -169,7 +169,7 @@ function gallery_category_option_delete_form_submit($form, &$form_state) {
 			'Category option %name was deleted.',
 			array('%name' => $option['name'])));
 	$form_state['redirect'] = 'admin/config/media/gallery/categories/'
-			. $option['category_id'] . '/options';
+			. $option['gallery_category_id'] . '/options';
 }
 
 /**
@@ -199,15 +199,15 @@ function theme_gallery_category_option_list($variables) {
 		$row = array();
 		$row[] = l(
 			$option['name'],
-			'admin/config/media/gallery/categories/' . $option['category_id']
+			'admin/config/media/gallery/categories/' . $option['gallery_category_id']
 					. '/options/edit/' . $option['id']);
 		$row[] = l(
 			t('edit'),
-			'admin/config/media/gallery/categories/' . $option['category_id']
+			'admin/config/media/gallery/categories/' . $option['gallery_category_id']
 					. '/options/edit/' . $option['id']);
 		$row[] = l(
 			t('delete'),
-			'admin/config/media/gallery/categories/' . $option['category_id']
+			'admin/config/media/gallery/categories/' . $option['gallery_category_id']
 					. '/options/delete/' . $option['id']);
 		$rows[] = $row;
 	}

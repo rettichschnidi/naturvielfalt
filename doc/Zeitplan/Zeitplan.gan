@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Naturvielfalt" company="www.naturwerk.info" webLink="http://www.naturvielfalt.ch" view-date="2012-03-04" view-index="0" gantt-divider-location="583" resource-divider-location="538" version="2.0">
+<project name="Naturvielfalt" company="www.naturwerk.info" webLink="http://www.naturvielfalt.ch" view-date="2012-02-26" view-index="0" gantt-divider-location="466" resource-divider-location="538" version="2.0">
     <description/>
-    <view zooming-state="default:6" id="gantt-chart"/>
+    <view zooming-state="default:7" id="gantt-chart"/>
     <view id="resource-table">
         <field id="0" name="Name" width="50" order="0"/>
         <field id="1" name="Default role" width="50" order="1"/>
@@ -52,21 +52,22 @@
         <task id="75" name="Rechtemodul" color="#8cb6ce" meeting="false" start="2012-02-28" duration="4" complete="100" expand="false">
             <task id="76" name="Dokumentieren, Beispiele erstellen" color="#8cb6ce" meeting="false" start="2012-02-28" duration="4" complete="100" expand="true"/>
         </task>
-        <task id="7" name="iPhone App" color="#8cb6ce" meeting="false" start="2012-02-28" duration="60" complete="100" expand="false">
+        <task id="7" name="iPhone App" color="#8cb6ce" meeting="false" start="2012-02-28" duration="68" complete="100" expand="false">
             <task id="3" name="iPhone Crash-Bug fixen" color="#8cb6ce" meeting="false" start="2012-02-28" duration="8" complete="100" expand="true"/>
-            <task id="181" name="iPhone-App an neue Webseite anpassen" color="#8cb6ce" meeting="false" start="2012-05-08" duration="10" complete="0" expand="true"/>
+            <task id="181" name="iPhone-App an neue Webseite anpassen" color="#8cb6ce" meeting="false" start="2012-05-18" duration="10" complete="0" expand="true"/>
         </task>
+        <task id="182" name="Android App" color="#8cb6ce" meeting="false" start="2012-04-30" duration="56" complete="0" expand="true"/>
         <task id="46" name="Datatable" color="#8cb6ce" meeting="false" start="2012-03-09" duration="3" complete="100" expand="false">
             <depend id="45" type="2" difference="0" hardness="Strong"/>
             <task id="51" name="Bug fixing" color="#8cb6ce" meeting="false" start="2012-03-09" duration="3" complete="100" expand="true"/>
         </task>
-        <task id="112" name="Inventar" color="#8cb6ce" meeting="false" start="2012-04-17" duration="15" complete="0" expand="true">
+        <task id="112" name="Inventar" color="#8cb6ce" meeting="false" start="2012-04-27" duration="15" complete="0" expand="true">
             <depend id="181" type="2" difference="0" hardness="Strong"/>
         </task>
-        <task id="87" name="Einzelbeobachtungen" color="#8cb6ce" meeting="false" start="2012-03-14" duration="24" complete="0" expand="false">
+        <task id="87" name="Einzelbeobachtungen" color="#8cb6ce" meeting="false" start="2012-03-14" duration="32" complete="0" expand="false">
             <depend id="106" type="2" difference="0" hardness="Strong"/>
             <depend id="112" type="2" difference="0" hardness="Strong"/>
-            <task id="134" name="Artgruppen" color="#8cb6ce" meeting="false" start="2012-03-14" duration="7" complete="0" expand="false">
+            <task id="134" name="Artgruppen" color="#8cb6ce" meeting="false" start="2012-03-14" duration="7" complete="0" expand="true">
                 <task id="139" name="Zuordnung Beobachtungsattribute" color="#8cb6ce" meeting="false" start="2012-03-21" duration="2" complete="0" expand="true">
                     <depend id="138" type="2" difference="0" hardness="Strong"/>
                 </task>
@@ -77,13 +78,13 @@
                     <depend id="140" type="2" difference="0" hardness="Strong"/>
                 </task>
             </task>
-            <task id="138" name="Eintragung Einzelbeobachtung" color="#8cb6ce" meeting="false" start="2012-03-23" duration="17" complete="0" expand="true"/>
+            <task id="138" name="Eintragung Einzelbeobachtung" color="#8cb6ce" meeting="false" start="2012-03-23" duration="25" complete="0" expand="true"/>
         </task>
-        <task id="106" name="Export Modul" color="#8cb6ce" meeting="false" start="2012-04-17" duration="10" complete="0" expand="false">
-            <task id="119" name="CSV" color="#8cb6ce" meeting="false" start="2012-04-17" duration="5" complete="0" expand="true">
+        <task id="106" name="Export Modul" color="#8cb6ce" meeting="false" start="2012-04-27" duration="10" complete="0" expand="false">
+            <task id="119" name="CSV" color="#8cb6ce" meeting="false" start="2012-04-27" duration="5" complete="0" expand="true">
                 <depend id="120" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="120" name="PDF" color="#8cb6ce" meeting="false" start="2012-04-24" duration="5" complete="0" expand="true"/>
+            <task id="120" name="PDF" color="#8cb6ce" meeting="false" start="2012-05-04" duration="5" complete="0" expand="true"/>
         </task>
         <task id="128" name="Theme" color="#8cb6ce" meeting="false" start="2012-03-13" duration="2" complete="100" expand="false">
             <task id="129" name="Aufräumen und installieren" color="#8cb6ce" meeting="false" start="2012-03-13" duration="2" complete="100" expand="true"/>
@@ -162,6 +163,7 @@
         <resource id="2" name="Simon" function="Default:1" contacts="" phone=""/>
         <resource id="3" name="Cyrill" function="Default:1" contacts="" phone=""/>
         <resource id="4" name="Albert" function="Default:1" contacts="" phone=""/>
+        <resource id="5" name="Jonny" function="Default:0" contacts="" phone=""/>
     </resources>
     <allocations>
         <allocation task-id="3" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
@@ -182,6 +184,7 @@
         <allocation task-id="106" resource-id="1" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="76" resource-id="2" function="Default:1" responsible="true" load="100.0"/>
         <allocation task-id="36" resource-id="3" function="Default:1" responsible="true" load="10.0"/>
+        <allocation task-id="182" resource-id="5" function="Default:0" responsible="true" load="100.0"/>
     </allocations>
     <vacations>
         <vacation start="2012-04-06" end="2012-04-09" resourceid="0"/>
@@ -197,10 +200,10 @@
         <displaycolumn property-id="tpd9" order="-1" width="75" visible="false"/>
         <displaycolumn property-id="tpd1" order="-1" width="75" visible="false"/>
         <displaycolumn property-id="tpd0" order="-1" width="75" visible="false"/>
-        <displaycolumn property-id="tpd3" order="0" width="339" visible="true"/>
-        <displaycolumn property-id="tpd4" order="1" width="69" visible="true"/>
-        <displaycolumn property-id="tpd5" order="2" width="64" visible="true"/>
-        <displaycolumn property-id="tpc1" order="3" width="107" visible="true"/>
+        <displaycolumn property-id="tpd3" order="0" width="220" visible="true"/>
+        <displaycolumn property-id="tpd4" order="1" width="121" visible="true"/>
+        <displaycolumn property-id="tpd5" order="2" width="35" visible="true"/>
+        <displaycolumn property-id="tpc1" order="3" width="86" visible="true"/>
     </taskdisplaycolumns>
     <previous/>
     <roles roleset-name="Default"/>

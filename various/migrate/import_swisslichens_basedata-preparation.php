@@ -28,13 +28,12 @@ $finallichens = array();
 $columns = array(
 		'genus',
 		'genusid',
-		'subgenusid'
+		'species',
+		'speciesid'
 );
 $sql = "FROM $importTable";
-$typeArray = array();
-$typeValue = array();
 
-$rows = $db->select_query($columns, $sql, $typeArray, $typeValue);
+$rows = $db->select_query($columns, $sql, array(), array());
 
 print "Got " . count($rows) . " to fetch.\n";
 $counter = 0;
@@ -47,8 +46,9 @@ foreach ($rows as $row) {
 	}
 	$genus = $row['genus'];
 	$genusid = $row['genusid'];
-	$subgenusid = $row['subgenusid'];
-	$url = "http://merkur.wsl.ch/didado/swisslichens.map?fname=$genusid&fartnr=$subgenusid";
+	$speciesid = $row['speciesid'];
+	$species = $row['species'];
+	$url = "http://merkur.wsl.ch/didado/swisslichens.map?fname=$genusid&fartnr=$speciesid";
 	$fh = fopen($url, "r");
 	$sData = '';
 	while (!feof($fh))
@@ -65,30 +65,39 @@ foreach ($rows as $row) {
 	}
 	$found = $match[1];
 	$foundClean = str_replace('</div>', '', $found);
-	$finallichens[] = array(
+	$finallichen = array(
 			'genus' => $genus,
-			'species' => $foundClean
+			'species' => $species,
+			'scientific_name' => $foundClean
 	);
+	$finallichens[] = $finallichen;
 }
-print "Got " . count($finallichens) . "\n";
+print "Fetched " . count($finallichens) . "\n";
 
 foreach ($finallichens as $finallichen) {
 	$columns = array(
 			'genus',
-			'species'
+			'species',
+			'scientific_name'
 	);
-	$query = "INSERT INTO $exportTable(genus, species) VALUES(?, ?)";
+	$query = "INSERT INTO $exportTable (genus, species, scientific_name) VALUES(?, ?, ?)";
 	$typesArray = array(
+			'text',
 			'text',
 			'text'
 	);
 	$valuesArray = array(
 			$finallichen['genus'],
-			$finallichen['species']
+			$finallichen['species'],
+			$finallichen['scientific_name']
 	);
 
 	$rows = $db->query($query, $typesArray, $valuesArray);
-	assert(count($rows) == 1);
+	if($rows == 0) {
+			print "Failed, probably already existing: " . var_export($finallichen, true) . "\n";
+			continue;
+	}
+	assert($rows == 1);
 }
 //-----------------------------
 

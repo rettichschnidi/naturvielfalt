@@ -14,8 +14,6 @@ DROP INDEX IF EXISTS FK_organism_11;
 DROP INDEX IF EXISTS FK_organism_2;
 DROP INDEX IF EXISTS idx_name_de;
 DROP INDEX IF EXISTS parent_id_index;
-DROP INDEX IF EXISTS fki_organism_file_managed_ibfk_1;
-DROP INDEX IF EXISTS fki_organism_file_managed_ibfk_2;
 DROP INDEX IF EXISTS organism_habitat_habitat_id_idx;
 DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
@@ -62,8 +60,10 @@ CREATE TABLE organism_artgroup
 CREATE TABLE organism_artgroup_attr
 (
 	id serial NOT NULL UNIQUE,
-	name text,
 	organism_artgroup_attr_type_id int NOT NULL,
+	-- Primary Key: Unique user ID.
+	users_uid bigint DEFAULT 0,
+	name text,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -89,8 +89,8 @@ CREATE TABLE organism_artgroup_attr_type
 CREATE TABLE organism_artgroup_attr_values
 (
 	id serial NOT NULL UNIQUE,
+	organism_artgroup_attr_id int NOT NULL,
 	value text,
-	organism_artgroup_attr_values_id int NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -273,6 +273,8 @@ CREATE TABLE public.organism_attribute
 	valuetype char NOT NULL,
 	-- Der Name des Klassifizierungslevels in Latein.
 	name text NOT NULL UNIQUE,
+	-- An information text about the aim of this attribute.
+	comment text,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -338,7 +340,7 @@ ALTER TABLE organism_artgroup_attr_subscription
 
 
 ALTER TABLE organism_artgroup_attr_values
-	ADD FOREIGN KEY (organism_artgroup_attr_values_id)
+	ADD FOREIGN KEY (organism_artgroup_attr_id)
 	REFERENCES organism_artgroup_attr (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -370,17 +372,17 @@ ALTER TABLE organism_attribute_value_subscription
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE CASCADE
+	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
 
@@ -410,7 +412,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -418,7 +420,7 @@ ALTER TABLE organism_classification_level
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -466,14 +468,6 @@ ALTER TABLE organism_scientific_name
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (prime_father_id)
-	REFERENCES public.organism (id)
-	ON UPDATE CASCADE
-	ON DELETE RESTRICT
-;
-
-
-ALTER TABLE public.organism
 	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
@@ -481,8 +475,16 @@ ALTER TABLE public.organism
 ;
 
 
+ALTER TABLE public.organism
+	ADD FOREIGN KEY (prime_father_id)
+	REFERENCES public.organism (id)
+	ON UPDATE CASCADE
+	ON DELETE RESTRICT
+;
+
+
 ALTER TABLE public.organism_file_managed
-	ADD FOREIGN KEY (organism_id)
+	ADD CONSTRAINT organism2file FOREIGN KEY (organism_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE CASCADE
@@ -521,8 +523,6 @@ CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);
 CREATE INDEX FK_organism_2 ON public.organism USING BTREE (left_value);
 CREATE INDEX idx_name_de ON public.organism USING BTREE (right_value);
 CREATE INDEX parent_id_index ON public.organism (parent_id);
-CREATE INDEX fki_organism_file_managed_ibfk_1 ON public.organism_file_managed (organism_id);
-CREATE INDEX fki_organism_file_managed_ibfk_2 ON public.organism_file_managed (file_managed_id);
 CREATE INDEX organism_habitat_habitat_id_idx ON public.organism_habitat_subscription (habitat_id);
 CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscription (organism_id);
 
@@ -530,6 +530,7 @@ CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscri
 
 /* Comments */
 
+COMMENT ON COLUMN organism_artgroup_attr.users_uid IS 'Primary Key: Unique user ID.';
 COMMENT ON COLUMN organism_artgroup_subscription.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_attribute_value.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_attribute_value.organism_attribute_id IS 'Fremdschlüssel auf die Tabelle organism_attribute. ';
@@ -574,6 +575,7 @@ COMMENT ON COLUMN public.organism.right_value IS 'Nötig zur Strukturierung, sie
 COMMENT ON COLUMN public.organism_attribute.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Gibt den Typ an, welcher in den dazugehörigen organism_attribute_value gespeichert wird. Zuordnung: n=number, b=boolean, t=text.';
 COMMENT ON COLUMN public.organism_attribute.name IS 'Der Name des Klassifizierungslevels in Latein.';
+COMMENT ON COLUMN public.organism_attribute.comment IS 'An information text about the aim of this attribute.';
 COMMENT ON COLUMN public.organism_file_managed.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN public.organism_file_managed.file_managed_id IS 'file_managed_id';
 COMMENT ON COLUMN public.organism_file_managed.author IS 'Stores information about the author of the document';

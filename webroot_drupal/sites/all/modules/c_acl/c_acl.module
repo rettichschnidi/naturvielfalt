@@ -301,7 +301,7 @@ function c_acl_sgroup_invite_access($sgroup_id) {
 function c_acl_permission() {
 	return array(
 			'access c_acl sgroup' => array(
-					'title' => t('Can view, create and manage swissmon groups')
+					'title' => t('Can view, create and manage naturvielfalt groups')
 			),
 			'access c_acl test' => array(
 					'title' => t('Can run ACL tests (use to debug only)')

@@ -24,7 +24,7 @@
 			btn_prev : '#divbox_frame .prev',
 			btn_next : '#divbox_frame .next',
 			btn_number : '#divbox_frame .number',
-			path : Drupal.settings.basePath + '/modules/gallery/players/',
+			path : Drupal.settings.basePath + 'sites/all/modules/gallery/players/',
 			full_drag_handle : false,
 			resize_large_image : true,
 			click_full_image : true,

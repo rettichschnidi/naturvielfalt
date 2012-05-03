@@ -157,7 +157,10 @@ function area_show_specific_area($areadata = NULL) {
 			'#collapsed' => false,
 			'#attributes' => array(
 					'id' => 'area-show-comment',
-					'class' => array('collapsible', 'collapsed'),
+					'class' => array(
+							'collapsible',
+							'collapsed'
+					),
 			)
 	);
 
@@ -175,9 +178,12 @@ function area_show_specific_area($areadata = NULL) {
 			'#title' => t('Area concept'),
 			'#weight' => 11,
 			'#collapsible' => true,
-			'#collapsed' => true,
+			'#collapsed' => false,
 			'#attributes' => array(
-					'class' => array('collapsible', 'collapsed'),
+					'class' => array(
+							'collapsible',
+							'collapsed'
+					),
 			)
 	);
 
@@ -218,9 +224,23 @@ function area_show_specific_area($areadata = NULL) {
 			'#weight' => 12,
 			'#collapsible' => true,
 			'#attributes' => array(
-					'class' => array('collapsible', 'collapsed'),
+					'class' => array(
+							'collapsible',
+							'collapsed'
+					),
 			)
 	);
+
+	if (function_exists('gallery_list_renderer')) {
+		$output['area_videos'] = gallery_list_renderer(
+			'videos',
+			'area',
+			$areadata['id']);
+		$output['area_images'] = gallery_list_renderer(
+			'images',
+			'area',
+			$areadata['id']);
+	}
 
 	/* add the linked habitats */
 	$results = db_query(
@@ -258,6 +278,29 @@ function area_show_specific_area($areadata = NULL) {
 
 	/* Build the content of the table, leave out empty fields */
 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
+
+	$areafiles = area_files($areadata);
+	if (!empty($areafiles)) {
+		$output['area_files'] = array(
+				'#type' => 'fieldset',
+				'#weight' => 20,
+				'#title' => t('Files'),
+				'#collapsible' => true,
+				'#collapsed' => false,
+				'#attached' => array(
+						'js' => array(
+								'misc/form.js',
+								'misc/collapse.js',
+						),
+				),
+				'#attributes' => array(
+						'class' => array(
+								'collapsible'
+						),
+				),
+		);
+		$output['area_files']['table'] = $areafiles;
+	}
 
 	return $output;
 }
@@ -363,7 +406,7 @@ function area_habitat_table($habitatId) {
 		FROM
 			{area_habitat} AS a_h
 			JOIN {area} AS a ON a_h.area_id = a.id
-			JOIN {area_surface} AS a_s ON a_s.id = a.area_surface_id
+			JOIN {area_geometry} AS a_s ON a_s.id = a.area_geometry_id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id
 		WHERE
@@ -405,5 +448,76 @@ function area_habitat_table($habitatId) {
 			'#id_table' => 'habitats'
 	);
 	return $output;
+}
+
+function area_files($areadata = NULL) {
+	assert($areadata != NULL);
+	$area_id = $areadata['id'];
+	$render_array = array();
+	$result = db_query(
+		'SELECT
+				*
+			FROM
+				{area_file_managed} AS afm
+				JOIN {file_managed} fm ON afm.file_managed_fid = fm.fid
+			WHERE
+				area_id = :aid',
+		array(':aid' => $area_id));
+
+	$rows = array();
+	foreach ($result as $record) {
+		$mimeIconMap = array(
+				'path' => drupal_get_path('module', 'inventory') . '/images/'
+						. area_get_icon_map($record->filemime) . '.png',
+				'alt' => $record->filemime,
+				'title' => $record->filemime,
+		);
+		$img_mime = theme('image', $mimeIconMap);
+
+		$description = $record->description;
+		$downloadUrl = 'sites/default/files/naturvielfalt/area/' . $area_id
+				. '/' . $record->filename;
+		$filename = l($record->filename, $downloadUrl);
+		$filemime = $img_mime;
+		$filesize = ($record->filesize / 1000) . " KB";
+		$timestamp = date('d.m.Y', $record->timestamp);
+		$row = array();
+		$row[] = $description;
+		$row[] = $filename;
+		$row[] = $filemime;
+		$row[] = $filesize;
+		$row[] = $timestamp;
+		$rows[] = $row;
+	}
+
+	if (empty($rows))
+		return $render_array;
+
+	$tableHeaders = array(
+			array(
+					'name' => t('Description')
+			),
+			array(
+					'name' => t('Filename')
+			),
+			array(
+					'name' => t('Typ')
+			),
+			array(
+					'name' => t('Size')
+			),
+			array(
+					'name' => t('Date')
+			)
+	);
+
+	$render_array = array(
+			'#theme' => 'datatable',
+			'#header' => $tableHeaders,
+			'#rows' => $rows,
+			'#tableWidth' => 900,
+			'#id_table' => 'files',
+	);
+	return $render_array;
 }
 ?>

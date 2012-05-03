@@ -1768,7 +1768,7 @@ function inventory_edit_files($form, &$form_state, $head_inventory_id) {
 	if (!empty($result)) {
 		foreach ($result as $record) {
 			$description = $record -> description;
-			$filename = l($record -> filename, 'sites/default/files/swissmon/inventory/' . $head_inventory_id . '/' . $record -> filename);
+			$filename = l($record -> filename, 'sites/default/files/naturvielfalt/inventory/' . $head_inventory_id . '/' . $record -> filename);
 			$filemime = '<img class="file-icon" alt="" title="' . $record -> filemime . '" src="../../sites/all/modules/inventory/images/' . inventory_icon_map($record -> filemime) . '.png" />';
 			$filesize = ($record -> filesize / 1000) . " KB";
 			$timestamp = date('d.m.Y', $record -> timestamp);
@@ -2015,7 +2015,7 @@ function inventory_update_file($form, &$form_state) {
 			),
 	);
 
-	$destination = 'public://swissmon/inventory/' . $head_inventory_id;
+	$destination = 'public://naturvielfalt/inventory/' . $head_inventory_id;
 
 	file_prepare_directory($destination, FILE_CREATE_DIRECTORY);
 

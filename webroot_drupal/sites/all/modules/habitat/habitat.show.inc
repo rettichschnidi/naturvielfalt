@@ -22,15 +22,20 @@ function habitat_show_all() {
 			'width' => 150
 	);
 	$tableHeader[] = array(
-			'name' => t('Habitat name'),
+			'name' => t('Name'),
 			'dbfield' => 'name',
-			'width' => 550,
+			'width' => 350,
+	);
+	$tableHeader[] = array(
+			'name' => t('Latin name'),
+			'dbfield' => 'name_scientific',
+			'width' => 200,
 	);
 	$tableHeader[] = array(
 			'name' => t('Linked Areas'),
 			'dbfield' => 'area_count',
 			'align' => 'center',
-			'width' => 80
+			'width' => 75
 	);
 	$tableHeader[] = array(
 			'name' => t('Image'),
@@ -73,19 +78,22 @@ function habitat_show_form($form, &$form_state, $habitatdata = array()) {
 		$title = $habitatdata['label'] . ' ' . t($habitatdata['name']);
 		drupal_set_title($title);
 
+		if (function_exists('gallery_list_renderer')) {
+			$render_array['gallery'] = gallery_list_renderer(
+				'images',
+				'habitat',
+				$habitatdata['id']);
+		}
+
 		if (function_exists('area_habitat_table')) {
 			$render_array['areas'] = array(
 					'#type' => 'fieldset',
 					'#title' => t('Linked areas'),
 					'#collapsible' => true
 			);
-			$render_array['areas']['areatable'] = area_habitat_table($habitatdata['id']);
-		}
-
-		if (function_exists('gallery_list_renderer'))
-			$render_array['gallery'] = gallery_list_renderer('images',
-				'habitat',
+			$render_array['areas']['areatable'] = area_habitat_table(
 				$habitatdata['id']);
+		}
 	}
 	return $render_array;
 }

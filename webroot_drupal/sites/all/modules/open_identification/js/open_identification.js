@@ -7,7 +7,7 @@
 				var optionSelectedValue = $('#edit-organismgroupid option:selected').val();
 				if(optionSelectedValue > 0) {
 					// $('.search').attr('rel',
-					// 'http://localhost/swissmon/application/gallery/organism_type_gallery_autocomplete/inventory_type/'+optionSelectedValue);
+					// 'http://localhost/naturvielfalt/application/gallery/organism_type_gallery_autocomplete/inventory_type/'+optionSelectedValue);
 					$('.search').attr('rel', Drupal.settings.basePath + '/open_identification/autocomplete/organisms/' + optionSelectedValue);
 					$('.search').removeAttr('style');
 					form = $('#open-identification-details');

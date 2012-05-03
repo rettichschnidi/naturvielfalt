@@ -3,27 +3,35 @@
  * @author Reto Schneider, 2011, github@reto-schneider.ch
  */
 
-require_once ('MDB2.php');
-require_once (dirname(__FILE__) . '/bootstrap.php');
-require_once ($configdir . '/databases.php');
+require_once('MDB2.php');
+require_once(dirname(__FILE__) . '/bootstrap.php');
+require_once($configdir . '/databases.php');
 
 class Db {
 	private $connectionUrl = false;
 	private $connection = false;
 
 	public function __construct($dbdriver, $dbname, $user, $password, $host) {
-		Db::updateDBConnectionSettings($dbdriver, $dbname, $user, $password, $host);
+		Db::updateDBConnectionSettings(
+			$dbdriver,
+			$dbname,
+			$user,
+			$password,
+			$host);
 		Db::connectDbLazy();
-		$this -> connection -> loadModule('Extended');
-
+		$this->connection
+			->loadModule('Extended');
 	}
 
 	public function __destruct() {
-		$this -> connection -> disconnect();
+		$this->connection
+			->disconnect();
 	}
 
-	private function updateDBConnectionSettings($dbdriver, $dbname, $user, $password, $host) {
-		$this -> connectionUrl = $dbdriver . '://' . $user . ':' . $password . '@' . $host . '/' . $dbname;
+	private function updateDBConnectionSettings($dbdriver, $dbname, $user,
+			$password, $host) {
+		$this->connectionUrl = $dbdriver . '://' . $user . ':' . $password
+				. '@' . $host . '/' . $dbname;
 	}
 
 	/**
@@ -31,9 +39,13 @@ class Db {
 	 * Connect to databases, but create instance just when used the first time
 	 */
 	private function connectDbLazy() {
-		$this -> connection = MDB2::factory($this -> connectionUrl);
-		if (PEAR::isError($this -> connection)) {
-			die("Error while lazy connecting\n" . $this -> connection -> getMessage() . "\n" . "ConnectionURL was: \"" . $this -> connectionUrl . "\"\n");
+		$this->connection = MDB2::factory($this->connectionUrl);
+		if (PEAR::isError($this->connection)) {
+			die(
+				"Error while lazy connecting\n"
+						. $this->connection
+							->getMessage() . "\n" . "ConnectionURL was: \""
+						. $this->connectionUrl . "\"\n");
 		}
 	}
 
@@ -42,9 +54,13 @@ class Db {
 	 * Connect do singleton database
 	 */
 	private function connectDBSingleton() {
-		$this -> connection = MDB2::singleton($this -> connectionUrl);
-		if (PEAR::isError($this -> connection)) {
-			die("Error while singleton connecting\n: " . $this -> connection -> getMessage() . "\n" . "ConnectionURL was: \"" . $this -> connectionUrl . "\"\n");
+		$this->connection = MDB2::singleton($this->connectionUrl);
+		if (PEAR::isError($this->connection)) {
+			die(
+				"Error while singleton connecting\n: "
+						. $this->connection
+							->getMessage() . "\n" . "ConnectionURL was: \""
+						. $this->connectionUrl . "\"\n");
 		}
 	}
 
@@ -65,40 +81,45 @@ class Db {
 	 * @return array
 	 */
 
-	public function query($query, $typesArray = array(), $valuesArray = array(), $isSelect = true, $assoziativeResult = true) {
+	public function query($query, $typesArray = array(), $valuesArray = array(),
+			$isSelect = true, $assoziativeResult = true) {
 		global $errors;
 		$results = false;
 		if ($isSelect) {
-			$statement = &$this -> connection -> prepare($query, $typesArray);
+			$statement = &$this->connection
+				->prepare($query, $typesArray);
 		} else {
-			$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
+			$statement = &$this->connection
+				->prepare($query, $typesArray, MDB2_PREPARE_MANIP);
 		}
 		if (PEAR::isError($statement)) {
-			$errors[] = $statement -> getMessage();
-			$errors[] = $statement -> getUserInfo();
+			$errors[] = $statement->getMessage();
+			$errors[] = $statement->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			$errors[] = "Values : " . var_export($valuesArray, true);
 			return $results;
 		}
-		$res = $statement -> execute($valuesArray);
+		$res = $statement->execute($valuesArray);
 		if (PEAR::isError($res)) {
-			$errors[] = $res -> getMessage();
-			$errors[] = $res -> getUserInfo();
+			$errors[] = $res->getMessage();
+			$errors[] = $res->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			$errors[] = "Values : " . var_export($valuesArray, true);
 			return $results;
 		}
-		$statement -> free();
+		$statement->free();
 		if ($isSelect) {
 			if ($assoziativeResult) {
-				$this -> connection -> setFetchMode(MDB2_FETCHMODE_ASSOC);
+				$this->connection
+					->setFetchMode(MDB2_FETCHMODE_ASSOC);
 			} else {
-				$this -> connection -> setFetchMode(MDB2_FETCHMODE_ORDERED);
+				$this->connection
+					->setFetchMode(MDB2_FETCHMODE_ORDERED);
 			}
-
-			while ($row = $res -> fetchRow()) {
+			$results = array();
+			while ($row = $res->fetchRow()) {
 				$results[] = $row;
 			}
 			return $results;
@@ -136,7 +157,8 @@ class Db {
 	 * @param string If defined, this statement will be used instead of a plain 'SELECT'
 	 * @return array
 	 */
-	public function select_query($columnNameArray, $fromQuery, $typesArray, $valuesArray, $assoziative = true, $ownselect = 'SELECT ') {
+	public function select_query($columnNameArray, $fromQuery, $typesArray,
+			$valuesArray, $assoziative = true, $ownselect = 'SELECT ') {
 		global $errors;
 		$finalArray = array();
 		assert(count($typesArray) == count($valuesArray));
@@ -150,33 +172,36 @@ class Db {
 			print "SELECTTYPES:  " . var_export($typesArray, true) . "\n";
 			print "SELECTVALUES: " . var_export($valuesArray, true) . "\n";
 		}
-		$statement = &$this -> connection -> prepare($query, $typesArray);
+		$statement = &$this->connection
+			->prepare($query, $typesArray);
 		if (PEAR::isError($statement)) {
-			$errors[] = $statement -> getMessage();
-			$errors[] = $statement -> getUserInfo();
+			$errors[] = $statement->getMessage();
+			$errors[] = $statement->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
-		$rows = $statement -> execute($valuesArray);
+		$rows = $statement->execute($valuesArray);
 		if (PEAR::isError($rows)) {
-			$errors[] = $rows -> getMessage();
-			$errors[] = $rows -> getUserInfo();
+			$errors[] = $rows->getMessage();
+			$errors[] = $rows->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			$errors[] = "Values : " . var_export($valuesArray, true);
 			return false;
 		}
 		if ($assoziative) {
-			$this -> connection -> setFetchMode(MDB2_FETCHMODE_ASSOC);
+			$this->connection
+				->setFetchMode(MDB2_FETCHMODE_ASSOC);
 		} else {
-			$this -> connection -> setFetchMode(MDB2_FETCHMODE_ORDERED);
+			$this->connection
+				->setFetchMode(MDB2_FETCHMODE_ORDERED);
 		}
-		$statement -> free();
-		while ($row = $rows -> fetchRow()) {
+		$statement->free();
+		while ($row = $rows->fetchRow()) {
 			$finalArray[] = $row;
 		}
-		$statement -> free();
+		$statement->free();
 		return $finalArray;
 	}
 
@@ -194,7 +219,12 @@ class Db {
 		}
 		global $errors;
 		assert(count($typesArray) == count($valuesArray));
-		$rows = $this -> select_query(array('COUNT(*)'), $query, $typesArray, $valuesArray, false);
+		$rows = $this->select_query(
+				array('COUNT(*)'),
+				$query,
+				$typesArray,
+				$valuesArray,
+				false);
 		return $rows[0][0];
 	}
 
@@ -204,7 +234,8 @@ class Db {
 	 * @param array of values $valuesArray
 	 * @return array
 	 */
-	public function insert_query($columnArray, $table, $typesArray, $valuesArray) {
+	public function insert_query($columnArray, $table, $typesArray,
+			$valuesArray) {
 		global $errors;
 		$finalArray = array();
 		assert(count($typesArray) == count($valuesArray));
@@ -213,32 +244,34 @@ class Db {
 		for ($i = 0; $i < count($columnArray) - 1; $i++) {
 			$questionmarks .= ', ?';
 		}
-		$query = 'INSERT INTO ' . $table . ' (' . $columns . ')' . ' VALUES(' . $questionmarks . ')';
+		$query = 'INSERT INTO ' . $table . ' (' . $columns . ')' . ' VALUES('
+				. $questionmarks . ')';
 		if (FALSE) {
 			print "QUERY: $query\n";
 			print "TYPES: " . var_export($typesArray, true) . "\n";
 			print "VALUES:" . var_export($valuesArray, true) . "\n";
 		}
-		$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
+		$statement = &$this->connection
+			->prepare($query, $typesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
-			$errors[] = $statement -> getMessage();
-			$errors[] = $statement -> getUserInfo();
+			$errors[] = $statement->getMessage();
+			$errors[] = $statement->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			assert(false);
 			return false;
 		}
-		$rows = $statement -> execute($valuesArray);
+		$rows = $statement->execute($valuesArray);
 		if (PEAR::isError($rows)) {
-			$errors[] = $rows -> getMessage();
-			$errors[] = $rows -> getUserInfo();
+			$errors[] = $rows->getMessage();
+			$errors[] = $rows->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			$errors[] = "Values : " . var_export($valuesArray, true);
 			assert(false);
 			return false;
 		}
-		$statement -> free();
+		$statement->free();
 		return $rows;
 	}
 
@@ -248,7 +281,8 @@ class Db {
 	 * @param array of values $valuesArray
 	 * @return array
 	 */
-	public function multiinsert_query($columnArray, $table, $typesArray, $valuesArrayArray) {
+	public function multiinsert_query($columnArray, $table, $typesArray,
+			$valuesArrayArray) {
 		global $errors;
 		$finalArray = array();
 		assert(count($typesArray) == count($typesArray));
@@ -257,36 +291,46 @@ class Db {
 		for ($i = 0; $i < count($columnArray) - 1; $i++) {
 			$questionmarks .= ',?';
 		}
-		$query = 'INSERT INTO ' . $table . ' (' . $columns . ')' . ' VALUES(' . $questionmarks . ')';
+		$query = 'INSERT INTO ' . $table . ' (' . $columns . ')' . ' VALUES('
+				. $questionmarks . ')';
 		// print "multiinsert_query: $query\n";
-		$statement = &$this -> connection -> prepare($query, $typesArray, MDB2_PREPARE_MANIP);
+		$statement = &$this->connection
+			->prepare($query, $typesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
-			$errors[] = $statement -> getMessage();
-			$errors[] = $statement -> getUserInfo();
+			$errors[] = $statement->getMessage();
+			$errors[] = $statement->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
-		if ($this -> connection -> supports('transactions')) {
-			$this -> connection -> beginTransaction();
+		if ($this->connection
+			->supports('transactions')) {
+			$this->connection
+				->beginTransaction();
 		}
-		$rows = $this -> connection -> extended -> executeMultiple($statement, $valuesArrayArray);
-		if ($this -> connection -> in_transaction) {
-			$this -> connection -> commit();
+		$rows = $this->connection
+			->extended
+			->executeMultiple($statement, $valuesArrayArray);
+		if ($this->connection
+			->in_transaction) {
+			$this->connection
+				->commit();
 		}
 		if (PEAR::isError($rows)) {
-			$errors[] = $rows -> getMessage();
-			$errors[] = $rows -> getUserInfo();
+			$errors[] = $rows->getMessage();
+			$errors[] = $rows->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			$errors[] = "Values : " . var_export($valuesArray, true);
 			return false;
 		}
-		$statement -> free();
+		$statement->free();
 		return $rows;
 	}
 
-	public function update_query($table, $updateColumnArray, $updateTypesArray, $updateValuesArray, $whereColumnArray, $whereTypesArray, $whereValuesArray) {
+	public function update_query($table, $updateColumnArray, $updateTypesArray,
+			$updateValuesArray, $whereColumnArray, $whereTypesArray,
+			$whereValuesArray) {
 		global $errors;
 		assert(count($updateColumnArray) == count($updateTypesArray));
 		assert(count($updateColumnArray) == count($updateValuesArray));
@@ -304,28 +348,30 @@ class Db {
 		if (count($whereColumnArray)) {
 			$query .= ' WHERE ' . $whereColumns;
 		}
-		$statement = &$this -> connection -> prepare($query, $unifiedTypesArray, MDB2_PREPARE_MANIP);
+		$statement = &$this->connection
+			->prepare($query, $unifiedTypesArray, MDB2_PREPARE_MANIP);
 		if (PEAR::isError($statement)) {
-			$errors[] = $statement -> getMessage();
-			$errors[] = $statement -> getUserInfo();
+			$errors[] = $statement->getMessage();
+			$errors[] = $statement->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
-		$numrows = $statement -> execute($unifiedValuesArray);
+		$numrows = $statement->execute($unifiedValuesArray);
 		if (PEAR::isError($numrows)) {
-			$errors[] = $numrows -> getMessage();
-			$errors[] = $numrows -> getUserInfo();
+			$errors[] = $numrows->getMessage();
+			$errors[] = $numrows->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			$errors[] = "Values : " . var_export($valuesArray, true);
 			return false;
 		}
-		$statement -> free();
+		$statement->free();
 		return $numrows;
 	}
 
-	public function getIdArray_query($columnArray, $table, $typesArray, $valuesArray) {
+	public function getIdArray_query($columnArray, $table, $typesArray,
+			$valuesArray) {
 		assert(count($columnArray) == count($columnArray));
 		assert(count($columnArray) > 0);
 		$whereColumns = implode(' = ? AND ', $columnArray);
@@ -336,31 +382,34 @@ class Db {
 			print "TYPES: " . var_export($typesArray, true) . "\n";
 			print "VALUES:" . var_export($valuesArray, true) . "\n";
 		}
-		$statement = &$this -> connection -> prepare($query, $typesArray);
+		$statement = &$this->connection
+			->prepare($query, $typesArray);
 		if (PEAR::isError($statement)) {
-			$errors[] = $statement -> getMessage();
-			$errors[] = $statement -> getUserInfo();
+			$errors[] = $statement->getMessage();
+			$errors[] = $statement->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
-		$rows = $statement -> execute($valuesArray);
+		$rows = $statement->execute($valuesArray);
 		if (PEAR::isError($rows)) {
-			$errors[] = $rows -> getMessage();
-			$errors[] = $rows -> getUserInfo();
+			$errors[] = $rows->getMessage();
+			$errors[] = $rows->getUserInfo();
 			$errors[] = "Query : " . $query;
 			$errors[] = "Types : " . var_export($typesArray, true);
 			return false;
 		}
 		$ids = array();
-		while ($row = $rows -> fetchRow(MDB2_FETCHMODE_ASSOC)) {
+		while ($row = $rows->fetchRow(MDB2_FETCHMODE_ASSOC)) {
 			$ids[] = $row['id'];
 		}
-		$statement -> free();
+		$statement->free();
 		return $ids;
 	}
 
-	public function upsert_query($table, $updateColumnArray, $updateTypesArray, $updateValuesArray, $whereColumnArray, $whereTypesArray, $whereValuesArray) {
+	public function upsert_query($table, $updateColumnArray, $updateTypesArray,
+			$updateValuesArray, $whereColumnArray, $whereTypesArray,
+			$whereValuesArray) {
 		global $errors;
 		assert(count($updateColumnArray) == count($updateTypesArray));
 		assert(count($updateColumnArray) == count($updateValuesArray));
@@ -372,7 +421,14 @@ class Db {
 		$unifiedTypesArray = array_merge($updateTypesArray, $whereTypesArray);
 		$whereColumns = implode(' = ? AND ', $updateColumnArray);
 		$whereColumns .= ' = ?';
-		$numrowsupdate = $this -> update_query($table, $updateColumnArray, $updateTypesArray, $updateValuesArray, $whereColumnArray, $whereTypesArray, $whereValuesArray);
+		$numrowsupdate = $this->update_query(
+				$table,
+				$updateColumnArray,
+				$updateTypesArray,
+				$updateValuesArray,
+				$whereColumnArray,
+				$whereTypesArray,
+				$whereValuesArray);
 		$numrowsinsert = 0;
 		$count = 0;
 		if ($numrowsupdate == 0) {
@@ -381,9 +437,16 @@ class Db {
 			if (count($updateColumnArray) > 0) {
 				$fromQuery .= ' WHERE ' . $whereColumns;
 			}
-			$num = $this -> getcount_query($fromQuery, $updateTypesArray, $updateValuesArray);
+			$num = $this->getcount_query(
+					$fromQuery,
+					$updateTypesArray,
+					$updateValuesArray);
 			if ($num == 0) {
-				$numrowsinsert = $this -> insert_query($updateColumnArray, $table, $updateTypesArray, $updateValuesArray);
+				$numrowsinsert = $this->insert_query(
+						$updateColumnArray,
+						$table,
+						$updateTypesArray,
+						$updateValuesArray);
 				// print "Affected: " . var_export($numrowsinsert, true) . "\n";
 				assert($numrowsinsert == 1 || $numrowsinsert == false);
 			} else {
@@ -391,7 +454,11 @@ class Db {
 				assert($num == 1);
 			}
 		}
-		$ids = $this -> getIdArray_query($updateColumnArray, $table, $updateTypesArray, $updateValuesArray);
+		$ids = $this->getIdArray_query(
+				$updateColumnArray,
+				$table,
+				$updateTypesArray,
+				$updateValuesArray);
 		if (count($ids) != 1) {
 			print "Table: $table\n";
 			print "VARDUMP: " . var_export($updateTypesArray, true) . "\n";
@@ -404,7 +471,12 @@ class Db {
 	public function get_nextval($sequenceId) {
 		global $errors;
 		$sql = "SELECT nextval(?) as nextval";
-		$nextval = $this -> query($sql, array('text'), array($sequenceId), true, true);
+		$nextval = $this->query(
+				$sql,
+				array('text'),
+				array($sequenceId),
+				true,
+				true);
 		if ($nextval && count($nextval) == 1) {
 			return $nextval[0]['nextval'];
 		}
@@ -416,14 +488,28 @@ class Db {
 	}
 
 	public function startTransactionIfPossible() {
-		if ($this -> connection -> supports('transactions') && !$this -> connection -> in_transaction) {
-			$this -> connection -> beginTransaction();
+		if ($this->connection
+			->supports('transactions')
+				&& !$this->connection
+					->in_transaction) {
+			$this->connection
+				->beginTransaction();
+// 			print "Started transaction sucessfully.\n";
+		} else {
+			print "Starting transaction failed.\n";
 		}
 	}
 
 	public function stopTransactionIfPossible() {
-		if ($this -> connection -> supports('transactions') && $this -> connection -> in_transaction) {
-			$this -> connection -> commit();
+		if ($this->connection
+			->supports('transactions')
+				&& $this->connection
+					->in_transaction) {
+			$this->connection
+				->commit();
+// 			print "Stopped transaction sucessfully.\n";
+		} else {
+			print "Stopping transaction failed.\n";
 		}
 	}
 

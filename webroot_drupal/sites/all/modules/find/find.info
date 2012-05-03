@@ -1,5 +1,5 @@
 name = Find
 description = Find everything
-package = Swissmon
+package = Naturvielfalt
 core = 7.x
 files[] = find.inc.php

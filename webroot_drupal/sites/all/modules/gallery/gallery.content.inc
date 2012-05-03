@@ -166,20 +166,20 @@ function _gallery_list_parameters($type, $id) {
 	$key = md5($type . (is_array($id) ? implode('.', $id) : $id));
 	if (array_key_exists($key . '_show_all', $_GET))
 		$_SESSION[$key . '_show_all'] = $_GET[$key . '_show_all'] ? true : false;
-	$params['show_all'] = array_key_exists($key . '_show_all', $_SESSION) ? $_SESSION[$key
-					. '_show_all'] : false;
+	$params['show_all'] = array_key_exists($key . '_show_all', $_SESSION)
+			? $_SESSION[$key . '_show_all'] : false;
 	$params['crosslinking'] = array_key_exists('crosslinked', $types[$type]);
 	if ($params['crosslinking']
 			&& array_key_exists($key . '_crosslinked', $_GET))
 		$_SESSION[$key . '_crosslinked'] = $_GET[$key . '_crosslinked'] ? true
 				: false;
-	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION) ? $_SESSION[$key
-					. '_crosslinked'] : null;
+	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION)
+			? $_SESSION[$key . '_crosslinked'] : null;
 	$params['subtypes'] = _gallery_get_subtypes($type, $params['crosslinked']);
 	if ($params['subtypes'] && array_key_exists($key . '_subtype', $_GET))
 		$_SESSION[$key . '_subtype'] = $_GET[$key . '_subtype'];
-	$params['subtype'] = array_key_exists($key . '_subtype', $_SESSION) ? $_SESSION[$key
-					. '_subtype'] : '';
+	$params['subtype'] = array_key_exists($key . '_subtype', $_SESSION)
+			? $_SESSION[$key . '_subtype'] : '';
 	$params['key'] = $key;
 	return $params;
 }
@@ -364,9 +364,9 @@ function gallery_presentation_renderer($mediatype, $items,
 			true,
 			false,
 			1,
-			$item['subtype']);
+			isset($item['subtype']) ? $item['subtype'] : false);
 		$msg = $msgPrimary;
-		if (!$image['images'] && $item['alternatives']) {
+		if (!$image['images'] && isset($item['alternatives']) && $item['alternatives']) {
 			$msg = $msgAlternative;
 			foreach ($item['alternatives'] as $alternative) {
 				$image = gallery_images(
@@ -559,6 +559,12 @@ function gallery_thumb($type, $id, $image, $size) {
 
 /**
  * Menu callback; Gallery edit view
+ * @param $mediatype
+ * 	 String which represents the media type ('images', 'sounds', 'videos', 'medias'
+ * @param $type
+ *   The type of the object the medias are to be edited.
+ * @param $id
+ *   The id of the object the medias are to be edited
  */
 function gallery_images_edit($type, $id, $mediatype) {
 
@@ -614,7 +620,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 			'#attributes' => array(
 					'class' => array(
 							'collapsible'
-									. ($_GET['saved'] ? '' : ' collapsed')
+									. (isset($_GET['saved']) ? '' : ' collapsed')
 					),
 			),
 	);
@@ -668,6 +674,10 @@ function _gallery_get_title_description($type, $id, $mediatype) {
  *
  * @param $form_state
  *   An associative array containing the current state of the form.
+ * @param $mediatype
+ * 	 String which represents the media type ('images', 'sounds', 'videos', 'medias'
+ * @param $image
+ *   Array with all data in an image
  * @param $type
  *   The type of the object the medias are to be edited.
  * @param $id
@@ -677,6 +687,10 @@ function _gallery_get_title_description($type, $id, $mediatype) {
  */
 function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 		$id = false, $images = false, $camefrom = false) {
+	assert(is_string($type));
+	assert($id == false || $id > 0);
+	assert(is_string($mediatype));
+
 	drupal_add_css(
 		drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
 		array(
@@ -783,17 +797,20 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 		$row[] = $image['author'];
 		$row[] = $image['location'];
 		$row[] = $caption;
-		$row[] = $editable ? l(
+		$row[] = $editable
+				? l(
 					t('edit'),
 					'gallery/' . $image['item_type'] . '/' . $image['item_id']
 							. '/' . $mediatype . '/edit/' . $image['id'],
-					$camefrom ? array(
+					$camefrom
+							? array(
 									'query' => array(
 											'camefrom' => $camefrom
 									)
 							) : array()) : '&nbsp;';
-		$row[] = $editable ? '<input type="checkbox" name="delete['
-						. $image['id'] . ']" value="1" />' : '&nbsp;';
+		$row[] = $editable
+				? '<input type="checkbox" name="delete[' . $image['id']
+						. ']" value="1" />' : '&nbsp;';
 		$rows[] = $row;
 	}
 
@@ -833,13 +850,17 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
  * @param $form_state
  *   An associative array containing the current state of the form.
  * @param $type
- *   The type of the object the medias are to be edited.
+ *   String: The type of the object the medias are to be edited.
  * @param $id
  *   The id of the object the medias are to be edited
  * @param $media
  *   An media array.
+ * @param $mediatype
+ * 	 String which represents the media type ('images', 'sounds', 'videos', 'medias'
+ * @param $image
+ *   Array with all data in an image
  * @param $i
- *   Integer to mark the fields with
+ *   Integer to mark the fields with... what!?
  * @ingroup forms
  * @see gallery_media_form_submit()
  */
@@ -883,7 +904,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$validate_function = '_gallery_medias_form_upload_validate';
 
 	}
-	if ($image['id']) {
+	if (isset($image['id'])) {
 		$title = t(
 			'Edit %name',
 			array('%name' => ($image['title'] ? $image['title']
@@ -895,19 +916,23 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	drupal_set_title($title, PASS_THROUGH);
 
 	$types = _gallery_types();
-	$item_provider = array_key_exists('item_provider', $types[$type]) ? $types[$type]['item_provider']
-			: false;
+	$item_provider = array_key_exists('item_provider', $types[$type])
+			? $types[$type]['item_provider'] : false;
 	$form_state['item_provider'] = $item_provider;
 	$item_provider_autocomplete = array_key_exists(
 		'item_provider_autocomplete',
 		$types[$type]) ? $types[$type]['item_provider_autocomplete'] : false;
-	if ($item_provider_autocomplete)
+	if ($item_provider_autocomplete) {
 		drupal_add_library('system', 'ui.autocomplete');
-	else
+	} else if ($item_provider) {
 		$items = call_user_func_array($item_provider, array($id));
+	}
 	$subtypes = _gallery_get_subtypes($type, false);
-	if ($_REQUEST['camefrom'])
+
+	if (isset($_REQUEST['camefrom'])) {
 		$_SESSION[md5('camefrom_' . $type . '_' . $id)] = $_REQUEST['camefrom'];
+	}
+
 	$form_state['gallery_type'] = $type;
 	$form_state['gallery_id'] = $id;
 	$form_state['gallery_image'] = $image;
@@ -917,7 +942,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	$form_state['camefrom'] = $url['path'];
 	$form['#tree'] = TRUE;
 
-	if ($image['fid']) {
+	if (isset($image['file_managed_fid'])) {
 		$form['thumb'] = array(
 				'#markup' => '<a class="user-picture" rel="lightbox" href="'
 						. url(
@@ -934,9 +959,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	if (!$new_open_identification)
 		$form_state['mode'] = 'edit';
 
-	if (!$image['item_type'])
+	if (!isset($image['item_type']))
 		$image['item_type'] = $type;
-	if (!$image['item_id'])
+	if (!isset($image['item_id']))
 		$image['item_id'] = $id;
 
 	$default_location = _gallery_get_default_location($type, $id);
@@ -975,8 +1000,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 					));
 				$form[$prefix]['item'] = array(
 						'#type' => 'hidden',
-						'#default_value' => $search ? $image['item_type'] . ':'
-										. $image['item_id'] : '',
+						'#default_value' => $search
+								? $image['item_type'] . ':' . $image['item_id']
+								: '',
 						'#attributes' => array(
 								'class' => array(
 										'item'
@@ -1013,12 +1039,13 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				);
 			}
 		}
-		if ($image['id'])
+		if (isset($image['id'])) {
 			$collapsed = false;
-		elseif ($type == "open_identification")
+		} else if ($type == "open_identification") {
 			$collapsed = true;
-		else
+		} else {
 			$collapsed = true;
+		}
 
 		$form[$prefix]['metadata'] = array(
 				'#type' => 'fieldset',
@@ -1043,14 +1070,16 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Title'),
 				'#size' => 100,
 				'#maxlength' => 128,
-				'#default_value' => $image['title'],
+				'#default_value' => isset($image['title']) ? $image['title']
+						: '',
 				'#description' => t('The title of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
 		$form[$prefix]['metadata']['description'] = array(
 				'#type' => 'textarea',
 				'#title' => t('Description'),
-				'#default_value' => $image['description'],
+				'#default_value' => isset($image['description'])
+						? $image['description'] : '',
 				'#description' => t('The description of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
@@ -1059,8 +1088,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Location'),
 				'#size' => 100,
 				'#maxlength' => 255,
-				'#default_value' => $image['location'] ? $image['location']
-						: $default_location,
+				'#default_value' => isset($image['location'])
+						? $image['location'] : $default_location,
 				'#description' => t(
 					'The location the ' . $label . ' was taken at.'),
 				'#required' => FALSE,
@@ -1070,11 +1099,13 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Author'),
 				'#size' => 100,
 				'#maxlength' => 255,
-				'#default_value' => $image['author'] ? $image['author']
+				'#default_value' => isset($image['author']) ? $image['author']
 						: $user->name,
 				'#description' => t('The author of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
+
+		// Openidentifiaction stuff, irrelevant for everytthing else
 		if ($new_open_identification) {
 
 			$form['description'] = array(
@@ -1122,8 +1153,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 					'#required' => false,
 			);
 		}
+		// End of: Openidentifiaction stuff, irrelevant for everytthing else
 
-		if ($form_state['input'][$prefix]['item']) {
+		if (isset($form_state['input'][$prefix]['item'])) {
 			$item = explode(':', $form_state['input'][$prefix]['item']);
 			$categories = _gallery_image_form_categories(
 				$mediatype,
@@ -1141,7 +1173,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Categories'),
 				'#weight' => 2,
 				'#collapsible' => true,
-				'#collapsed' => $image['id'] ? false : true,
+				'#collapsed' => isset($image['id']) ? false : true,
 				'#attached' => array(
 						'js' => array(
 								'misc/form.js',
@@ -1154,7 +1186,6 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 						),
 				),
 		);
-		debug($categories, 'Kategorien', true);
 		if ($categories)
 			$form[$prefix]['categories'] = array_merge(
 				$form[$prefix]['categories'],
@@ -1169,12 +1200,12 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	);
 	$form['actions']['upload_submit'] = array(
 			'#type' => 'submit',
-			'#value' => $image['id'] ? t('Change ' . $label . '')
+			'#value' => isset($image['id']) ? t('Change ' . $label . '')
 					: t('Upload ' . $label . ''),
 			'#submit' => array(
 					'gallery_images_form_upload_submit'
 			),
-			'#attributes' => $image['id'] ? array()
+			'#attributes' => isset($image['id']) ? array()
 					: array(
 							'data-add' => t('Add another ' . $label . ''),
 							'data-remove' => t('Remove ' . $label . '')
@@ -1271,7 +1302,7 @@ function _gallery_image_form_categories($mediatype, $type, $id, $image) {
 		if ($category['multiple'])
 			$categories['cat_' . $category['id']]['#default_value'] = array();
 		foreach ($options as $value => $option) {
-			if (is_array($image['categories'])
+			if (isset($image['categories']) && is_array($image['categories'])
 					&& array_key_exists(substr($value, 4), $image['categories']))
 				if ($category['multiple'])
 					array_push(
@@ -1460,6 +1491,7 @@ function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
 						'!type' => $_FILES['files']['type'][$name]
 				)));
 }
+
 function _gallery_images_form_upload_category_validate($element, &$form_state,
 		$form) {
 	$value = $element['#value'];
@@ -1517,8 +1549,9 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 	$categories = array();
 
 	$saved = false;
+
+	// Openidentifiaction stuff, irrelevant for everytthing else
 	if ($type == "open_identification" && ($mode != 'edit')) {
-		debug($form_state, 'FROM_STATE', true);
 		$open_identification_description = $form_state['values']['description'];
 		$open_identification_type = $form_state['values']['type'];
 		$open_identification_organismgroup = $form_state['values']['organismgroup'];
@@ -1530,16 +1563,22 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 			$open_identification_organismgroup,
 			$open_identification_organismgroupid);
 	}
-	foreach ($form_state['values'] as $prefix => $values) {
+	// End of: Openidentifiaction stuff, irrelevant for everytthing else
 
-		if (!is_array($values['metadata']))
+	foreach ($form_state['values'] as $prefix => $values) {
+		if (!isset($values['metadata']) || !is_array($values['metadata'])) {
 			continue;
+		}
+
 		$name = $prefix . '_file';
-		if (!$orig_image['id']
+		if ((!isset($orig_image['id']) || !$orig_image['id'])
 				&& (!array_key_exists($name, $_FILES['files']['name'])
-						|| !$_FILES['files']['name'][$name]))
-			continue;
-		$item = explode(':', $values['item']);
+						|| !$_FILES['files']['name'][$name])) {}
+
+		if ($item_provider) {
+			assert(isset($values['item']));
+			$item = explode(':', $values['item']);
+		}
 		$image = array(
 				'item_type' => $item_provider ? $item[0] : $type,
 				'item_id' => $item_provider ? $item[1] : $id,
@@ -1548,11 +1587,12 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 				'author' => $values['metadata']['author'],
 				'location' => $values['metadata']['location'],
 				'categories' => array(),
-				'subtypes' => $values['subtypes']
+				'subtypes' => isset($values['subtypes']) ? $values['subtypes']
+						: array()
 		);
 		$key = $image['item_type'] . ':' . $image['item_id'];
 		if (!array_key_exists($key, $destination)) {
-			$destination[$key] = 'public://swissmon/gallery/'
+			$destination[$key] = 'public://naturvielfalt/gallery/'
 					. $image['item_type'] . '/' . $image['item_id'];
 			file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
 		}
@@ -1560,8 +1600,11 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 			$categories[$key] = gallery_available_categories(
 				$image['item_type'],
 				$image['item_id']);
-		if ($orig_image['id'])
+
+		if (isset($orig_image['id']) && $orig_image['id']) {
 			$image['id'] = $orig_image['id'];
+		}
+
 		foreach ($categories[$key] as $category) {
 			if (!$category['options']) // no options available for this category
 				continue;
@@ -1590,7 +1633,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 		if ($file) {
 			$file->status |= FILE_STATUS_PERMANENT;
 			$file = file_save($file);
-			$image['fid'] = $file->fid;
+			$image['file_managed_fid'] = $file->fid;
 		} else if (!$orig_image['id'])
 			return drupal_set_message(
 				t(
@@ -1601,24 +1644,26 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 		drupal_set_message(
 			t('Image %file saved', array('%file' => $file->filename)));
 
-		if ($type == "open_identification")
+		if ($type == "open_identification") {
 			open_identification_link_media_with_open_identification($id, $image);
-
+		}
 		$saved = true;
 		$orig_image = array();
 	}
-	if ($type == "open_identification") {
 
+	if ($type == "open_identification") {
+		$camefrom_md5_key = md5('camefrom_' . $type . '_' . 'new');
 		$camefrom = 'open_identification';
-		if ($_SESSION[md5('camefrom_' . $type . '_' . 'new')]) {
-			$camefrom = $_SESSION[md5('camefrom_' . $type . '_' . 'new')];
-			unset($_SESSION[md5('camefrom_' . $type . '_' . 'new')]);
+		if ($_SESSION[$camefrom_md5_key]) {
+			$camefrom = $_SESSION[$camefrom_md5_key];
+			unset($_SESSION[$camefrom_md5_key]);
 		}
 	} else {
+		$camefrom_md5_key = md5('camefrom_' . $type . '_' . $id);
 		$camefrom = 'gallery/' . $type . '/' . $id . '/' . $mediatype . '/edit';
-		if ($_SESSION[md5('camefrom_' . $type . '_' . $id)]) {
-			$camefrom = $_SESSION[md5('camefrom_' . $type . '_' . $id)];
-			unset($_SESSION[md5('camefrom_' . $type . '_' . $id)]);
+		if (isset($_SESSION[$camefrom_md5_key]) && $_SESSION[$camefrom_md5_key]) {
+			$camefrom = $_SESSION[$camefrom_md5_key];
+			unset($_SESSION[$camefrom_md5_key]);
 		}
 	}
 	drupal_goto(
@@ -1713,11 +1758,12 @@ function gallery_image_rate($image) {
 		break;
 	}
 	if ($_REQUEST['ajax']) {
-		$sql = 'SELECT ' . 'gir.rating_type_id AS id, '
+		$sql = 'SELECT ' . 'gir.gallery_rating_type_id AS id, '
 				. 'AVG(gir.rating) AS average, '
 				. 'COUNT(gir.rating) AS number '
 				. 'FROM gallery_image_rating AS gir ' . 'WHERE '
-				. 'gir.image_id = :id ' . 'GROUP BY gir.rating_type_id';
+				. 'gir.gallery_image_id = :id '
+				. 'GROUP BY gir.gallery_rating_type_id';
 		$result = db_query($sql, array(':id' => $image['id']));
 		$image['ratings'] = array();
 		foreach ($result as $record) {
@@ -1765,7 +1811,7 @@ function gallery_own_list($user, $mediatype = "images") {
 			false,
 			false,
 			array(),
-			array('gi.owner_id = ' . $user->uid));
+			array('gi.users_uid = ' . $user->uid));
 	if ($mediatype == "sounds" || $mediatype == "medias")
 		$sounds = gallery_images(
 			"sounds",
@@ -1776,7 +1822,7 @@ function gallery_own_list($user, $mediatype = "images") {
 			false,
 			false,
 			array(),
-			array('gi.owner_id = ' . $user->uid));
+			array('gi.users_uid = ' . $user->uid));
 	if ($mediatype == "videos" || $mediatype == "medias")
 		$videos = gallery_images(
 			"videos",
@@ -1787,7 +1833,7 @@ function gallery_own_list($user, $mediatype = "images") {
 			false,
 			false,
 			array(),
-			array('gi.owner_id = ' . $user->uid));
+			array('gi.users_uid = ' . $user->uid));
 
 	$links = array();
 	if ($images['count'] || $sounds['count'] || $videos['count']) {
@@ -1863,7 +1909,7 @@ function gallery_own_edit($user, $mediatype = "images") {
 		false,
 		false,
 		array(),
-		array('gi.owner_id = ' . $user->uid));
+		array('gi.users_uid = ' . $user->uid));
 	$form = drupal_get_form(
 		'gallery_images_form',
 		$mediatype,
@@ -2043,7 +2089,8 @@ function theme_gallery_list($variables) {
 					. '<a ' . $extras . ' href="' . $url_href . '">'
 					. '<img src="' . $url_image . '" alt="' . $image['title']
 					. '" />' . $media_label . '</a>'
-					. (user_access('manage gallery medias') ? '<form class="show_hide" method="post" action="'
+					. (user_access('manage gallery medias')
+							? '<form class="show_hide" method="post" action="'
 									. url(
 										'gallery/' . $image['item_type'] . '/'
 												. $image['item_id'] . '/'
@@ -2058,7 +2105,8 @@ function theme_gallery_list($variables) {
 					. $captionclass . '">'
 					. ($caption ? '<p class="captionText">' . $caption . '</p>'
 							: '')
-					. ($rating_types ? theme(
+					. ($rating_types
+							? theme(
 								'gallery_image_rating',
 								array('image' => $image,
 										'rating_types' => $rating_types
@@ -2122,7 +2170,6 @@ function theme_gallery_image_rating($variables) {
 		array(
 				'weight' => 111
 		));
-	//drupal_add_js(drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js', array('weight' => 112));
 	drupal_add_js(
 		drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
 		array(
@@ -2139,7 +2186,8 @@ function theme_gallery_image_rating($variables) {
 	$ratings = '';
 	foreach ($rating_types as $rating_type) {
 		$rating = is_array($image['ratings'])
-				&& array_key_exists($rating_type['id'], $image['ratings']) ? $image['ratings'][$rating_type['id']]
+				&& array_key_exists($rating_type['id'], $image['ratings'])
+				? $image['ratings'][$rating_type['id']]
 				: array(
 						'count' => 0,
 						'average' => 0
@@ -2169,28 +2217,43 @@ function theme_gallery_image_rating($variables) {
 				. '</option>' . '<option value="1">' . t('Good') . '</option>'
 				. '<option value="2">' . t('Perfect') . '</option>'
 				. '</select>'
-				. ($allowed ? '<input type="submit" name="rate" value="'
+				. ($allowed
+						? '<input type="submit" name="rate" value="'
 								. t('Rate') . '" />' : '') . '</form>';
 	}
 	return '<div class="rating">' . $ratings . '</div>';
 }
 
+/**
+ * If $_SERVER['HTTP_REFERER'] available and valid, generate an array with the elements
+ *  'title' => t('Back')
+ *  'href' => $lastVisitedPage
+ * 
+ * 
+ * @param $type
+ * 	String with the type of the gallery: 'images', 'videos', etc.
+ * @param $id
+ * 	Integer with the Id of the managed object (Habitat Id, Organism Id, etc.)
+ * @return
+ * 	On success, return an array with the elements 'title' and 'href'
+ */
 function _gallery_back_link($type, $id) {
 	global $base_url;
+	$gallery_back_url_key = 'gallery_back_url_' . $type . '_' . $id;
 	if ((strlen($_SERVER['HTTP_REFERER']) < strlen($base_url) + 8
 			|| substr($_SERVER['HTTP_REFERER'], strlen($base_url) + 1, 7)
 					!= 'gallery')
 			&& substr($_SERVER['HTTP_REFERER'], 0, strlen($base_url))
 					== $base_url)
-		$_SESSION['gallery_back_url_' . $type . '_' . $id] = substr(
+		$_SESSION[$gallery_back_url_key] = substr(
 			$_SERVER['HTTP_REFERER'],
 			strlen($base_url) + 1);
-	$url = drupal_parse_url($_SESSION['gallery_back_url_' . $type . '_' . $id]);
-	$_SESSION['gallery_back_url_' . $type . '_' . $id] = $url['path'];
-	if ($_SESSION['gallery_back_url_' . $type . '_' . $id])
+	$url = drupal_parse_url($_SESSION[$gallery_back_url_key]);
+	$_SESSION[$gallery_back_url_key] = $url['path'];
+	if ($_SESSION[$gallery_back_url_key])
 		return array(
 				'title' => t('Back'),
-				'href' => $_SESSION['gallery_back_url_' . $type . '_' . $id]
+				'href' => $_SESSION[$gallery_back_url_key]
 		);
 	return false;
 }

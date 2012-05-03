@@ -1,10 +1,17 @@
 <?php
 /**
- * do not modify this file, it is generated! 
+ * @file organism.install
+ * @author Reto Schneider, 2012
+ * @copyright 2011-2012 Naturwerk, Brugg
  */
 
+/**
+ * Implement hook_schema()
+ *
+ * @note Do not modify habitat_schema, it is generated code!
+ */
 function organism_schema() {
-	return array (
+return array (
   'organism_artgroup' => 
   array (
     'fields' => 
@@ -55,16 +62,23 @@ function organism_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
-      'name' => 
-      array (
-        'description' => 'No description for column name available, please fix',
-        'type' => 'text',
-      ),
       'organism_artgroup_attr_type_id' => 
       array (
         'description' => 'No description for column organism_artgroup_attr_type_id available, please fix',
         'type' => 'int',
         'not null' => 'TRUE',
+      ),
+      'users_uid' => 
+      array (
+        'description' => 'Primary Key: Unique user ID.',
+        'type' => 'int',
+        'default' => '0',
+        'size' => 'big',
+      ),
+      'name' => 
+      array (
+        'description' => 'No description for column name available, please fix',
+        'type' => 'text',
       ),
     ),
     'unique keys' => 
@@ -187,16 +201,16 @@ function organism_schema() {
         'type' => 'serial',
         'not null' => 'TRUE',
       ),
+      'organism_artgroup_attr_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_attr_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
       'value' => 
       array (
         'description' => 'No description for column value available, please fix',
         'type' => 'text',
-      ),
-      'organism_artgroup_attr_values_id' => 
-      array (
-        'description' => 'No description for column organism_artgroup_attr_values_id available, please fix',
-        'type' => 'int',
-        'not null' => 'TRUE',
       ),
     ),
     'unique keys' => 
@@ -217,7 +231,7 @@ function organism_schema() {
         'table' => 'organism_artgroup_attr',
         'columns' => 
         array (
-          'organism_artgroup_attr_values_id' => 'id',
+          'organism_artgroup_attr_id' => 'id',
         ),
       ),
     ),
@@ -557,7 +571,7 @@ function organism_schema() {
         'table' => 'organism_classification',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
       'organism_classification_2_organism_classification_level' => 
@@ -713,7 +727,7 @@ function organism_schema() {
         'table' => 'organism_classification_level',
         'columns' => 
         array (
-          'prime_father_id' => 'id',
+          'parent_id' => 'id',
         ),
       ),
     ),
@@ -969,7 +983,7 @@ function organism_schema() {
         'table' => 'organism',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
     ),
@@ -1014,6 +1028,11 @@ function organism_schema() {
         'description' => 'Der Name des Klassifizierungslevels in Latein.',
         'type' => 'text',
         'not null' => 'TRUE',
+      ),
+      'comment' => 
+      array (
+        'description' => 'An information text about the aim of this attribute.',
+        'type' => 'text',
       ),
     ),
     'unique keys' => 
@@ -1069,24 +1088,13 @@ function organism_schema() {
     ),
     'foreign keys' => 
     array (
-      'organism_file_managed_2_organism' => 
+      'organism2file' => 
       array (
         'table' => 'organism',
         'columns' => 
         array (
           'organism_id' => 'id',
         ),
-      ),
-    ),
-    'indexes' => 
-    array (
-      'fki_organism_file_managed_ibfk_1' => 
-      array (
-        0 => 'organism_id',
-      ),
-      'fki_organism_file_managed_ibfk_2' => 
-      array (
-        0 => 'file_managed_id',
       ),
     ),
   ),
@@ -1148,5 +1156,37 @@ function organism_schema() {
     ),
   ),
 );
+}
+
+/**
+ * Implement hook_install()
+ *
+ * Include all organisms.
+ */
+function organism_install() {
+	$filenames = array(
+			'organism.sql',
+			'organism_lang.sql',
+			'organism_scientific_name.sql',
+			'organism_classification.sql',
+			'organism_classification_level.sql',
+			'organism_classification_subscription.sql',
+			'organism_attribute.sql',
+			'organism_attribute_value.sql',
+			'organism_attribute_value_subscription.sql'
+	);
+	try {
+		foreach ($filenames as $filename) {
+			$fullPath = dirname(__FILE__) . '/sql/' . $filename;
+			$dataInserts = file_get_contents($fullPath);
+			if(!$dataInserts) {
+				throw new Exception('Could not read file ' . $fullPath);
+			}
+			db_query($dataInserts);
+		}
+	} catch (Exception $e) {
+		watchdog('organism', $filename . ': ' . $e->getMessage());
+		drupal_set_message($filename . ': ' . $e->getMessage(), 'error');
+	}
 }
 ?>

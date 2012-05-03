@@ -888,7 +888,7 @@ function inventory_files($head_inventory_id) {
 
 		$description = $record->description;
 		$filename = l($record->filename,
-				'sites/default/files/swissmon/inventory/' . $head_inventory_id . '/' . $record->filename);
+				'sites/default/files/naturvielfalt/inventory/' . $head_inventory_id . '/' . $record->filename);
 		$filemime = $img_mime;
 		$filesize = ($record->filesize / 1000) . " KB";
 		$timestamp = date('d.m.Y', $record->timestamp);
