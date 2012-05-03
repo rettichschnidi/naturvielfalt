@@ -8,16 +8,19 @@
 function observation_form($observation = false) {
 	global $user;
 	$hidden_fields_arr = array();
+	drupal_set_title('Capture a new observation');
 // 	die(print_r($observation));
 	if($observation){
 // 		$observation = observation_get($observation_id);
-// 		print_r($observation);
+		print_r($observation);
 
-		$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
+		drupal_set_title('Edit a observation');
 	}
 
-	// if not edit, set standart vlaues
+	// if not edit, set standart values
+	if(!isset($observation['observation']['id'])) $observation['observation']['id'] = '';
+	$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 	if(!isset($observation['observation']['found_as_lang'])) $observation['observation']['found_as_lang'] = 'false';
 	if(!isset($observation['observation']['found_as_lat'])) $observation['observation']['found_as_lat'] = 'false';
 	if(!isset($observation['observation']['organism_artgroup_id'])) $observation['observation']['organism_artgroup_id'] = '';
@@ -102,7 +105,9 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 									.'<br><span id="species_autocomplete">'.$species_autocomplete.'</span>'
 							.'</td><td class="observation_td">'
 									.'<span class="observation_title">'.t('Filter on species group').'</span><br>'
-									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);">'.organism_artgroup_get_all_as_option(false, 0, $observation['observation']['organism_artgroup_id']).'</select>'
+									.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();">'
+										.organism_artgroup_get_all_as_option(false, 0, $observation['observation']['organism_artgroup_id'])
+									.'</select>'
 
 					.'</td></tr></table>'
 
@@ -127,112 +132,25 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 							</legend>
 							<div class="fieldset-wrapper">'
 
-									.'<table><tr>'
+									.'<div><table id="attributes_table"><tr>'
 									.'<td>'.t('Determination method').':</td><td> <select name="determination_method_id" id="determination_method_id">'
 									.organism_artgroup_get_determation_methods(false, true, $observation['observation']['organism_artgroup_detmethod_id'], $observation['detmethods_vis'])
 									.'</select></td>'
 									.'</tr>'
 
-							.'<div id="observation_attributes">'
-							.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>', false, $observation['attributes'])
-							.'</div>'
+									.'<div id="observation_attributes">'
+									.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>', false, $observation['attributes'])
+									.'</div>'
 
-							.'</table></div></fieldset>'
+									.'<div id="observation_attributes_cust_add">'
+									.'<a href="#" onclick="observation.addCustomAttribute(); return false;">'.t('Add custom details').'</a></div>'
+
+							.'</table></div></div></fieldset>'
 							.'<input type="button" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit" onclick="javscript:observation.save();return false;">'
 					.'</form>'
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
 			.'</div>';
-
-
-	/**
-	 * Drupal form handling, should be that
-	 */
-// 	$form['organismn_main'] = array(
-// 			'#type' => 'container',
-// 			'#attributes' => array(
-// 					'style' => array(
-// 							//'visibility: hidden;'
-// 					))
-// 	);
-
-// 	$form['organismn_main']['organismn_autocomplete'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Search for organsim or species'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter a name to search in our database'),
-// 			'#id' => 'organismn_date'
-// 	);
-
-// 	$form['organismn_main']['observation_date'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Date'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter date for the observation'),
-// 			'#id' => 'organismn_date'
-// 	);
-
-// 	$form['organismn_main']['observation_count'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => t('Count'),
-// 			'#size' => 30,
-// 			'#maxlength' => 64,
-// 			'#description' => t('Please enter number of found'),
-// 			'#id' => 'organismn_count'
-// 	);
-
-// 	$form['organismn_main']['details'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => t('Add more Details'),
-// 			'#collapsible' => TRUE,
-// 			'#collapsed' => TRUE,
-// 	);
-
-
-
-// 	$form['organismn_main']['organismn_id'] = array(
-// 			'#type' => 'hidden',
-// 			'#value' => '',
-// 			'#id' => 'organismn_id'
-// 	);
-
-// 	$form['organismn_main']['submit'] = array(
-// 			'#type' => 'submit',
-// 			'#value' => t('Save the Observation')
-// 	);
-
-
-// 	/**
-// 	 * Area map include
-// 	 */
-// 	$form['test'] = array(
-// 			'#type' => 'textfield',
-// 			'#title' => 'Coordinates as JSON',
-// 			'#attributes' => array(
-// 					'id' => 'meineid'
-// 			),
-// 	);
-
-// 	$form['div'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => "Google Map",
-// 			'#attributes' => array(
-// 					'style' => 'width: 95%;'
-// 			)
-// 	);
-
-// 	$form['div']['map'] = array(
-// 			'#theme' => 'area',
-// 			'#action' => 'getcoordinate',
-// 			'#coordinate_storage_id' => 'meineid',
-// 			'#search' => true,
-// 			'#ch1903' => true
-// 	);
-// 	$formcust .= drupal_render($form);
-// 	return $form;
-
 	return $formcust;
 }
 
@@ -242,6 +160,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
  */
 function observation_acl_template($observation = NULL){
 // 	die(print_r($observation));
+	drupal_set_title('Set permissions on a observation');
 	$output = array();
 	$defaults = array(
 			array(
@@ -269,3 +188,98 @@ function observation_acl_template($observation = NULL){
 	);
 	return $output;
 }
+
+/**
+ * Show an observation
+ * @param array $observationdata
+ */
+function observation_show_observation($observationdata = NULL){
+
+	$observation_path= drupal_get_path('module', 'observation');
+// 	drupal_add_js($observation_path . '/js/observation.js');
+	drupal_add_css($observation_path . '/css/observation.css');
+	drupal_add_js('misc/form.js');
+	drupal_add_js('misc/collapse.js');
+	drupal_set_title('Show a observation');
+
+	/* call area_get_static_image_url() to get an url to the google maps visualization */
+	$staticimageurl = area_get_static_image_url(
+			array('coordinates' => json_encode($observationdata['geometry']['coordinatejson']),
+					'type' => $observationdata['geometry']['geometry_type']
+			),
+			450,
+			320);
+
+	/* Create a fieldset for the tabular data */
+	$output['observation'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Observation'),
+			'#weight' => 1,
+			'#attributes' => array(
+					'id' => 'observation-show-details' // required for CSS
+			)
+	);
+
+	$output['observation']['table'] = observation_get_table($observationdata);
+
+	/* Create a fieldset for the static google maps */
+	$output['observation_static_map'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Map'),
+			'#weight' => 3,
+			'#attributes' => array(
+					'id' => 'observation-show-details-map' // required for CSS
+			)
+	);
+
+	/* add the picture */
+	$output['observation_static_map']['image'] = array(
+			'#type' => 'markup',
+			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
+	);
+
+	/* Create a fieldset for the comment text field */
+	$output['observation_geometry'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Position data'),
+			'#weight' => 9,
+			'#collapsible' => true,
+			'#collapsed' => false,
+			'#attributes' => array(
+					'id' => 'observation-clear',
+					'class' => array('collapsible', 'collapsed'),
+			)
+	);
+
+	$output['observation_geometry']['table'] = observation_get_geometry_table($observationdata);
+
+	/* Create a fieldset for the comment text field */
+	$output['observation_attributes'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Details'),
+			'#weight' => 10,
+			'#collapsible' => true,
+			'#collapsed' => false,
+			'#attributes' => array(
+					'id' => 'observation-clear',
+					'class' => array('collapsible', 'collapsed')
+			)
+	);
+
+	$output['observation_attributes']['table'] = observation_get_details_table($observationdata);
+
+
+
+
+
+	/* Build the content of the table, leave out empty fields */
+// 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
+
+	return $output;
+}
+
+
+
+
+
+

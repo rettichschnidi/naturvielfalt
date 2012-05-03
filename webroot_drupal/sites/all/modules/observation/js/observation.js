@@ -29,9 +29,13 @@ jQuery(document).ready(function() {
 	  observation.save = function (event, callback) {
 //			observation.showLoading();
 //			observation.callback = callback;
+		  var ajaxurl = Drupal.settings.basePath + '/observation/save';
+		  if($('#observation_id').val() != ''){
+			  ajaxurl = Drupal.settings.basePath + '/observation/'+ $('#observation_id').val() +'/save';
+		  }
 		  observation.ajax = $.ajax({
 				  type: 'POST',
-				  url: Drupal.settings.basePath + '/observation/save',
+				  url: ajaxurl,
 				  data: $("#observation_form").serialize(),
 				  dataType: 'json',
 				  type: 'POST',
@@ -107,6 +111,58 @@ jQuery(document).ready(function() {
 		observation.showAttribute = function(id){
 			$('#attributes_tr_'+id).css('display','table-row');
 		};
+		
+		observation.addCustomAttribute = function(){
+			$('#attributes_table > tbody:last').append(
+					'<tr><td><input type="text" name="attributes_custom_names[]" onFocus="javascript:if($(this).val()==\''
+					+Drupal.t('Please enter a name')+'\'){$(this).val(\'\');}" maxlength="40" value="'+ Drupal.t('Please enter a name')
+					+'"></td>'+'<td><input type="text" name="attributes_custom_values[]" onFocus="javascript:if($(this).val()==\''
+					+Drupal.t('Please enter a value')+'\'){$(this).val(\'\');}" maxlength="40" value="'+ Drupal.t('Please enter a value')
+					+'"></td></tr>');
+		};
+		
+		observation.resetOrganism = function(){
+			$( "#organismn_id" ).val('');
+			$( "#species_autocomplete" ).html('');
+			$( "#observation_found_as_latin" ).val('false');
+			$( "#observation_found_as_lang" ).val('false');
+			observation.hideAttributes();
+			observation.hideDetMethods();
+		};
+		
+		observation.resetOrganismAutomcomplete = function(){
+			$( "#organismn_autocomplete" ).val('');
+			observation.resetOrganism();
+		};
+
+	customAttributeDelete = function (attribute_id) {
+		tmp = attribute_id.split('_');
+		var id = tmp[2];
+//		alert(id); return;
+		if (confirm(Drupal.t('This attribute will be deleted in all existing observations, are you sure?'))==false) return false;
+		  var ajaxurl = Drupal.settings.basePath + '/observation/deleteCustomAttribute/'+id;
+		  observation.ajax = $.ajax({
+				  type: 'POST',
+				  url: ajaxurl,
+				  dataType: 'json',
+				  type: 'POST',
+				});
+			observation.ajax.done(function(msg) {
+				if(msg.success == true){
+					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
+					$('#attributes_tr_'+id).remove();
+				}else{
+					observation.setMessage('<br><br>&bull;&nbsp;'+Drupal.t('Custom attribute not deleted'),'error', 15000);
+				}
+				});
+
+				observation.ajax.fail(function(jqXHR, textStatus) {
+//					  alert( "Request failed: " +  );
+				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
+				});
+			return false;
+		};
+		
 
 
 });

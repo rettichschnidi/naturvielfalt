@@ -26,7 +26,7 @@ function observation_menu() {
 	$items['singleobservation/%observation/show'] = array(
 			'title' => t('Show'),
 			'description' => t('Display a singleobservation'),
-			'page callback' => 'singleobservation_show_observation',
+			'page callback' => 'observation_show_observation',
 			'page arguments' => array(
 					1
 			),
@@ -109,12 +109,26 @@ function observation_menu() {
 			'file' => 'singleobservation.inc',
 	);
 	$items['observation/save'] = array(
-			'title' => t('Save a observation'),
+			'title' => t('Save a new observation'),
 			'description' => t(''),
 			'page callback' => 'observation_save',
 			'access arguments' => array(
 					'create observation'
 			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	$items['observation/%observation/save'] = array(
+			'title' => t('Save a existing observation'),
+			'description' => t(''),
+			'page callback' => 'observation_save',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_write_access',
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
@@ -127,6 +141,19 @@ function observation_menu() {
 			),
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
+	);
+	$items['observation/deleteCustomAttribute/%'] = array(
+			'title' => t('Delete a custom attributt'),
+			'description' => t(''),
+			'page callback' => 'observation_delete_custom_attribute',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					'create observation'
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc',
 	);
 	return $items;
 }
