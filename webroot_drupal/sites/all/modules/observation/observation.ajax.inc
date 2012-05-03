@@ -198,7 +198,7 @@ global $user;
 			// do update
 			area_update_geometry($observation['area_geometry_id'], $geometry);
 			observation_save_attribute_values($attributes_checked, $observation['id']);
-			db_update('observation')->fields($observation)->execute();
+			db_update('observation')->fields($observation)->condition('id', $observation['id'])->execute();
 
 		}else{
 			// $geometry_id = area_save_geometry_blablablab();
@@ -305,7 +305,10 @@ function observation_get_all_json(){
 
 }
 
-
+/**
+ * Delete a custom attribute and all entries in all own observations
+ * @param int $attribute_id
+ */
 function observation_delete_custom_attribute($attribute_id){
 	if(!organism_artgroup_custom_attribute_exist($attribute_id))
 		return drupal_json_output(array('success' => false));
@@ -315,5 +318,52 @@ function observation_delete_custom_attribute($attribute_id){
 	return drupal_json_output(array('success' => false));
 }
 
+function observation_get_geometry_json($observation_data = false){
 
-?>
+	$item['altitude'] = (int) $observation_data['geometry']['altitude'];
+	$item['township'] = $observation_data['geometry']['township'];
+	$item['canton'] = $observation_data['geometry']['canton'];
+	$item['country'] = $observation_data['geometry']['country'];
+	$item['comment'] = $observation_data['geometry']['comment'];
+
+	$item['type'] = '';
+	$item['area_points'] = array();
+	$json = json_decode($observation_data['geometry']['wgs84_geom_json']);
+	if ($json) {
+		if ($json->type == 'Point') {
+			$item['type'] = 'marker';
+			$item['area_points'][] = array(
+					'lat' => $json->coordinates[1],
+					'lng' => $json->coordinates[0]
+			);
+		} else {
+			assert(false);
+		}
+	}
+	$items[] = $item;
+
+	$items = array_values($items);
+	return drupal_json_output($items);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

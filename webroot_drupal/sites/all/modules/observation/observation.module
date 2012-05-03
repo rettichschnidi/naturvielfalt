@@ -132,6 +132,20 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	$items['observation/%observation/geometry/json'] = array(
+			'title' => t('get geometry data for editing'),
+			'description' => t(''),
+			'page callback' => 'observation_get_geometry_json',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_write_access',
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
 	$items['observation/get/all'] = array(
 			'title' => t('Get all observations'),
 			'description' => t(''),

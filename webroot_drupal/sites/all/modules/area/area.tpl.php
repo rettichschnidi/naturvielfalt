@@ -29,7 +29,7 @@ global $user;
 
 /**
  * Options set for the google maps api:
- *  - libraries: 
+ *  - libraries:
  *  	- geometry (computation of geometric data on the surface of the earth)
  *  	- places (search functionality)
  *  	- drawing (tools to create overlays)
@@ -57,11 +57,18 @@ if ($area_id > 0) {
 	// should be included before area.js
 	print "<script>areaid = $area_id;</script>\n";
 }
+/**
+ * To edit a geometry, the area_id has to be set in javascript.
+ */
+if ($json_url) {
+	// should be included before area.js
+	print "<script>json_url = '$json_url';</script>\n";
+}
 
 /**
  * If requested, include an scale on the map.
  */
-print 
+print
 	"<script>scalecontrol = " . ($scalecontrol ? "true" : "false")
 			. ";</script>\n";
 
@@ -103,6 +110,15 @@ case 'myareas': /**
 }
 
 /**
+ * Allow the user of this theme to set a hidden filed to store the coordinates
+ * (encoded as JSON string)
+ */
+if ($coordinate_storage_id != false) {
+	print
+	"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
+}
+
+/**
  * Decide which actions should be exectured...
  */
 switch ($action) {
@@ -116,14 +132,12 @@ case 'edit': /**
 			  */
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 	break;
-case 'getcoordinate': /**
-					   * Allow the user of this theme to set a hidden filed to store the coordinates
-					   * (encoded as JSON string)
-					   */
-	if ($coordinate_storage_id != false) {
-		print 
-			"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
-	}
+case 'custom-edit': /**
+			  * Create an existing area geometry
+			  */
+	area_add_js_url($baseModulJsPath . 'area-edit-geometry.js');
+	break;
+case 'getcoordinate':
 	/**
 	 * Set a marker and update the hidden fields (provided by the user of this theme)
 	 */

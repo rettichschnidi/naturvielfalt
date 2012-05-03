@@ -393,7 +393,7 @@ function area_menu() {
 	/**
 	 * Example usage of theme area with action 'getcoordinate'
 	 * @todo Delete when module singleobservation finished
-	 */ 
+	 */
 	$items['area/testing'] = array(
 			'title' => t('Example for Ramon'),
 			'description' => t(
@@ -414,7 +414,7 @@ function area_menu() {
 
 /**
  * Example usage of theme area with action 'getcoordinate'
- * 
+ *
  * @param array $form
  *  Drupal form
  * @param array $form_state
@@ -480,7 +480,9 @@ function area_theme() {
 							// include a filed which shows/sets the CH1903 coordinates
 							'ch1903' => false,
 							// element id for storage
-							'coordinate_storage_id' => false
+							'coordinate_storage_id' => false,
+							// the geometry array
+							'json_url' => false,
 					)
 			)
 	);
@@ -488,7 +490,7 @@ function area_theme() {
 
 /**
  * Define permissions which can be given to different roles.
- * 
+ *
  * @note Those permissions still have to obey to the acl permissions
  */
 function area_permission() {
@@ -507,9 +509,9 @@ function area_permission() {
 
 /**
  * Generate an URL to a static google map image with one element (just ONE) highlighted.
- * 
+ *
  * @todo Document how the json in $params['area-coords'] looks like
- * 
+ *
  * @param $params
  * 	Array wich contains all optional parameters
  * 	fields:
