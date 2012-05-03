@@ -146,7 +146,7 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 		$artgroup_filter = " WHERE oaa.id='".db_escape_field($attribute_id)."'";
 	}
 	($artgroup_filter == "") ? $artgroup_filter = ' WHERE ' : $artgroup_filter .= ' AND ';
-	$artgroup_filter .= '(oaa.users_uid=:users_uid OR oaa.users_uid IS NULL)';
+	$artgroup_filter .= "(oaa.users_uid=:users_uid OR oaa.users_uid = '0')";
 
 	$attributes_sql = "SELECT oaa.id, oaa.name, oaat.name type_name, oaat.format type_format, oaa.users_uid FROM {organism_artgroup_attr} oaa "
 						."JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id".$artgroup_filter;
