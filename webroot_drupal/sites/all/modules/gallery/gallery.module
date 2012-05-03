@@ -1767,12 +1767,15 @@ function gallery_access_callback($type, $permission = VIEW_GALLERY_IMAGES) {
  *   The image to be accessed.
  */
 function gallery_edit_access_callback($type, $id, $image = false) {
-	if (!_gallery_check_type_validity($type))
+	if (!_gallery_check_type_validity($type)) {
 		return false;
-	if (user_access(MANAGE_GALLERY_MEDIAS))
+	}
+	if (user_access(MANAGE_GALLERY_MEDIAS)) {
 		return true;
-	if (!user_access(ADD_GALLERY_IMAGES))
+	}
+	if (!user_access(ADD_GALLERY_IMAGES)) {
 		return false;
+	}
 	$types = _gallery_types();
 	if ($image) // check image ownership
 		$access_method = array_key_exists('edit_image', $types[$type])
