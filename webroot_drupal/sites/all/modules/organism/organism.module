@@ -11,6 +11,9 @@
 
 define('ACCESS_ORGANISMS', 'access content');
 
+// Load gallery integration
+module_load_include('inc', 'organism', 'organism.gallery');
+
 /**
  * Implements hook_theme()
  *
@@ -32,7 +35,8 @@ function organism_theme() {
  * Implements hook_menu()
  *
  * This makes it possible to visit the link example.com/organism.
- * It is also possible to create an URL like example.com/organism/42. This would show the element with the ID 42.
+ * It is also possible to create an URL like example.com/organism/42.
+ * This would show the element with the ID 42.
  *
  * @return array
  */
