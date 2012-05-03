@@ -6,5 +6,4 @@ version = "7.0-dev"
 dependencies[] = image
 dependencies[] = user
 dependencies[] = locale
-dependencies[] = organism
 configure = admin/config/media/gallery
