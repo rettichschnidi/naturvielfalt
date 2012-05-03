@@ -649,7 +649,7 @@ function organism_search_organism_json($classification = false, $term = false,
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;
 			$artgroup_join = '
-								INNER JOIN organism_artgroup AS oa ON oa.id=oas.organism_artgroup_id
+								LEFT JOIN organism_artgroup AS oa ON oa.id=oas.organism_artgroup_id
 								AND ('
 					. organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id')
 					. ')';
