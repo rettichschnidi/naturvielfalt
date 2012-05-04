@@ -11,6 +11,9 @@
 
 define('ACCESS_ORGANISMS', 'access content');
 
+// Load gallery integration
+module_load_include('inc', 'organism', 'organism.gallery');
+
 /**
  * Implements hook_theme()
  *
@@ -32,7 +35,8 @@ function organism_theme() {
  * Implements hook_menu()
  *
  * This makes it possible to visit the link example.com/organism.
- * It is also possible to create an URL like example.com/organism/42. This would show the element with the ID 42.
+ * It is also possible to create an URL like example.com/organism/42.
+ * This would show the element with the ID 42.
  *
  * @return array
  */
@@ -170,6 +174,59 @@ function organism_menu() {
 			'file' => 'organism.json.inc',
 	);
 
+	$items['organism/%/edit'] = array(
+			'title' => t('File upload'),
+			'description' => t('Delete or edit files'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'organism_edit_files_form',
+					1
+			),
+			'access arguments' => array(
+					'organism upload'
+			),
+			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'organism.edit.inc',
+			'weight' => 10,
+	);
+
+// 	if (function_exists('gallery_list_renderer')) {
+// 		$items['organism/%organism/reference/gallery'] = array(
+// 				'title' => t('Gallery'),
+// 				'description' => t(
+// 					'View the organism as a gallery of organism pictures'),
+// 				'page callback' => 'organism_reference_gallery',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'organism.inc',
+// 				'weight' => 6
+// 		);
+
+// 		$items['organism/%organism/reference/list'] = array(
+// 				'title' => t('List'),
+// 				'description' => t(
+// 					'View the organism as a list of organism pictures'),
+// 				'page callback' => 'organism_reference_list',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'organism.inc',
+// 				'weight' => 7
+// 		);
+// 	}
+
 	return $items;
 }
 
@@ -230,14 +287,14 @@ function organism_load($organismId) {
 			SELECT
 				id
 			FROM
-				drupal_organism
+				{organism}
 			WHERE
 				id = :organismId) AS o
-		JOIN drupal_organism_scientific_name osn ON osn.organism_id=o.id
-		LEFT JOIN drupal_organism_attribute_value_subscription oavs ON oavs.organism_id = o.id
-		LEFT JOIN drupal_organism_attribute_value oav ON oav.id=oavs.organism_attribute_value_id
-		LEFT JOIN drupal_organism_attribute oa ON oa.id = oav.organism_attribute_id
-		LEFT JOIN drupal_organism_lang ol ON ol.organism_id = o.id;",
+		JOIN {organism_scientific_name} osn ON osn.organism_id=o.id
+		LEFT JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_id = o.id
+		LEFT JOIN {organism_attribute_value} oav ON oav.id=oavs.organism_attribute_value_id
+		LEFT JOIN {organism_attribute} oa ON oa.id = oav.organism_attribute_id
+		LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id;",
 		array(':organismId' => $organismId),
 		array('fetch' => PDO::FETCH_ASSOC));
 	$rows = $result->fetchAll();
@@ -262,5 +319,86 @@ function organism_load($organismId) {
 		}
 	}
 	return $organism;
+}
+
+function organism_files($organism_id) {
+	global $user;
+	$render_array = array();
+	$result = db_query(
+		'SELECT
+			*
+		FROM
+			{organism_file_managed} ofm
+			LEFT JOIN {file_managed} fm ON ofm.file_managed_fid = fm.fid
+		WHERE
+			organism_id = :oid',
+		array(':oid' => $organism_id));
+
+	foreach ($result as $record) {
+		$mimeIconMap = array(
+				'path' => drupal_get_path('module', 'inventory') . '/images/'
+						. commonstuff_get_icon_map($record->filemime) . '.png',
+				'alt' => $record->filemime,
+				'title' => $record->filemime,
+		);
+		$img_mime = theme('image', $mimeIconMap);
+
+		$description = $record->description;
+		$filename = l(
+			$record->filename,
+			'sites/default/files/naturvielfalt/organism/' . $organism_id . '/'
+					. $record->filename);
+		$filemime = $img_mime;
+		$filesize = ($record->filesize / 1000) . " KB";
+		$timestamp = date('d.m.Y', $record->timestamp);
+		$author = $record->author;
+		$row = array();
+		$row[] = $description;
+		$row[] = $filename;
+		$row[] = $filemime;
+		$row[] = $filesize;
+		$row[] = $timestamp;
+		$row[] = $author;
+		$row[] = $user->name;
+		$rows[] = $row;
+	}
+
+	if (empty($rows))
+		return $render_array;
+
+	$tableHeader[] = t('Description');
+	$tableHeader[] = t('Filename');
+	$tableHeader[] = t('Typ');
+	$tableHeader[] = t('Size');
+	$tableHeader[] = t('Date');
+	$tableHeader[] = t('Author');
+	$tableHeader[] = t('Owner');
+
+	$render_array['files'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Files'),
+			'#weight' => 8,
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+			'#attached' => array(
+					'js' => array(
+							'misc/form.js',
+							'misc/collapse.js',
+					),
+			),
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					),
+			),
+	);
+
+	$render_array['files']['data'] = array(
+			'#theme' => 'datatable',
+			'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#id_table' => 'files',
+	);
+	return $render_array;
 }
 ?>

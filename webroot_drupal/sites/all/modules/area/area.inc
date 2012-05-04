@@ -632,13 +632,13 @@ function area_swap_json_lnglat(&$json) {
 	}
 }
 
-function area_gallery($areaId) {
-	return _area_presentation($areaId);
+function area_gallery($area) {
+	return _area_presentation($area['id']);
 }
 
-function area_list($areaId) {
+function area_list($area) {
 	return _area_presentation(
-		$areaId,
+		$area['id'],
 		'gallery_presentation_list',
 		'presentation-list',
 		1000000);

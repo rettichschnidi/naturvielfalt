@@ -420,7 +420,7 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 		foreach ($result as $record) {
 			$mimeIconMap = array(
 					'path' => drupal_get_path('module', 'inventory')
-							. '/images/' . area_get_icon_map($record->filemime)
+							. '/images/' . commonstuff_get_icon_map($record->filemime)
 							. '.png',
 					'alt' => $record->filemime,
 					'title' => $record->filemime,

@@ -468,7 +468,7 @@ function area_files($areadata = NULL) {
 	foreach ($result as $record) {
 		$mimeIconMap = array(
 				'path' => drupal_get_path('module', 'inventory') . '/images/'
-						. area_get_icon_map($record->filemime) . '.png',
+						. commonstuff_get_icon_map($record->filemime) . '.png',
 				'alt' => $record->filemime,
 				'title' => $record->filemime,
 		);

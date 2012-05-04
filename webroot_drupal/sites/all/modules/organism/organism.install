@@ -1061,9 +1061,9 @@ return array (
         'type' => 'int',
         'not null' => 'TRUE',
       ),
-      'file_managed_id' => 
+      'file_managed_fid' => 
       array (
-        'description' => 'file_managed_id',
+        'description' => 'file_managed_fid',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
@@ -1080,10 +1080,10 @@ return array (
     ),
     'unique keys' => 
     array (
-      'organism_id_AND_file_managed_id' => 
+      'organism_id_AND_file_managed_fid' => 
       array (
         0 => 'organism_id',
-        1 => ' file_managed_id',
+        1 => ' file_managed_fid',
       ),
     ),
     'foreign keys' => 
@@ -1165,15 +1165,22 @@ return array (
  */
 function organism_install() {
 	$filenames = array(
-			'organism.sql',
-			'organism_lang.sql',
-			'organism_scientific_name.sql',
-			'organism_classification.sql',
-			'organism_classification_level.sql',
-			'organism_classification_subscription.sql',
-			'organism_attribute.sql',
-			'organism_attribute_value.sql',
-			'organism_attribute_value_subscription.sql'
+		'organism_artgroup_attr.sql',
+		'organism_artgroup_attr_subscription.sql',
+		'organism_artgroup_attr_type.sql',
+		'organism_artgroup_attr_values.sql',
+		'organism_artgroup_detmethod.sql',
+		'organism_artgroup_detmethod_subscription.sql',
+		'organism_artgroup.sql',
+		'organism_attribute.sql',
+		'organism_attribute_value.sql',
+		'organism_attribute_value_subscription.sql',
+		'organism_classification_level.sql',
+		'organism_classification.sql',
+		'organism_classification_subscription.sql',
+		'organism_lang.sql',
+		'organism_scientific_name.sql',
+		'organism.sql'
 	);
 	try {
 		foreach ($filenames as $filename) {
