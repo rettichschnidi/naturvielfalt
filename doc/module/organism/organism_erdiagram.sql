@@ -283,12 +283,12 @@ CREATE TABLE public.organism_file_managed
 (
 	-- Die eigene Id, wird fortlaufend inkrementiert.
 	organism_id int NOT NULL,
-	-- file_managed_id
-	file_managed_id int NOT NULL,
+	-- file_managed_fid
+	file_managed_fid int NOT NULL,
 	description text,
 	-- Stores information about the author of the document
 	author text,
-	UNIQUE (organism_id, file_managed_id)
+	UNIQUE (organism_id, file_managed_fid)
 ) WITHOUT OIDS;
 
 
@@ -577,7 +577,7 @@ COMMENT ON COLUMN public.organism_attribute.valuetype IS 'Gibt den Typ an, welch
 COMMENT ON COLUMN public.organism_attribute.name IS 'Der Name des Klassifizierungslevels in Latein.';
 COMMENT ON COLUMN public.organism_attribute.comment IS 'An information text about the aim of this attribute.';
 COMMENT ON COLUMN public.organism_file_managed.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
-COMMENT ON COLUMN public.organism_file_managed.file_managed_id IS 'file_managed_id';
+COMMENT ON COLUMN public.organism_file_managed.file_managed_fid IS 'file_managed_fid';
 COMMENT ON COLUMN public.organism_file_managed.author IS 'Stores information about the author of the document';
 COMMENT ON COLUMN public.organism_habitat_subscription.organism_id IS 'FK to organism.id';
 COMMENT ON COLUMN public.organism_habitat_subscription.habitat_id IS 'FK to habitat.id';

@@ -1061,9 +1061,9 @@ return array (
         'type' => 'int',
         'not null' => 'TRUE',
       ),
-      'file_managed_id' => 
+      'file_managed_fid' => 
       array (
-        'description' => 'file_managed_id',
+        'description' => 'file_managed_fid',
         'type' => 'int',
         'not null' => 'TRUE',
       ),
@@ -1080,10 +1080,10 @@ return array (
     ),
     'unique keys' => 
     array (
-      'organism_id_AND_file_managed_id' => 
+      'organism_id_AND_file_managed_fid' => 
       array (
         0 => 'organism_id',
-        1 => ' file_managed_id',
+        1 => ' file_managed_fid',
       ),
     ),
     'foreign keys' => 
