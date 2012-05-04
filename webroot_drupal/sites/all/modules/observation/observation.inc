@@ -68,6 +68,73 @@ function observation_get($observation_id){
 	return false;
 }
 
+function observation_get_geometries_acl_checked($observation_data = false){
+	$filter = array();
+	if($observation_data){
+		$filter[':observation_id'] = $observation_data['observation']['id'];
+		$where = " WHERE o.id=:observation_id ";
+	}
+	$sql = "SELECT o.id, o.area_geometry_id, o.acl_id,
+	a_s.altitude,
+				a_s.zip,
+				a_s.township,
+				a_s.canton,
+				a_s.country,
+				-- either POINT, POLYGON or LINESTRING
+				GeometryType(a_s.geom) AS geometry_type,
+				-- Center of the geometry - CH1903, x value
+				ST_X(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_x,
+				-- Center of the geometry - CH1903, y value
+				ST_Y(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_y,
+				-- Center of the geometry - WGS84, latitude
+				ST_X(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lat,
+				-- Center of the geometry - WGS84
+				ST_Y(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lng,
+				-- Coordinates of the geometry - CH1903
+				AsText(Transform(a_s.geom, 21781)) AS ch1903_coordinates,
+				-- Coordinates of the geometry - WGS84
+				AsText(Transform(a_s.geom, 4326)) AS wgs84_coordinates,
+				-- Area surface in m^2
+				Area(Transform(a_s.geom, 21781)) AS surface_area,
+				-- Pathlength (if linestring) in meters
+				ST_Length(Transform(a_s.geom, 21781)) AS pathlength,
+				-- Geometry as JSON
+				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
+	FROM {observation} o
+	JOIN {area_surface} a_s ON a_s.id=o.area_geometry_id".$where;
+	$results = db_query($sql, $filter)->fetchAllAssoc('id', PDO::FETCH_ASSOC);
+	$items = array();
+// 		die(print_r($results));
+
+	foreach($results as $result){
+		$tmp['observation'] = $result;
+		if(observation_read_access($tmp) == true){
+			$item = array();
+			$item['id'] = (int) $result['id'];
+			$item['altitude'] = (int) $result['altitude'];
+			$item['township'] = $result['township'];
+			$item['canton'] = $result['canton'];
+			$item['country'] = $result['country'];
+			$item['comment'] = $result['comment'];
+
+			$item['type'] = '';
+			$item['area_points'] = array();
+			$json = json_decode($result['wgs84_geom_json']);
+			if ($json) {
+				if ($json->type == 'Point') {
+					$item['type'] = 'marker';
+					$item['area_points'][] = array(
+							'lat' => $json->coordinates[1],
+							'lng' => $json->coordinates[0]
+					);
+				}
+			}
+			$items[] = $item;
+		}
+	}
+	return $items;
+
+}
 
 
 /**

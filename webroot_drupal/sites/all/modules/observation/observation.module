@@ -14,6 +14,18 @@ module_load_include('inc', 'observation', 'observation.gallery');
  * @return array
  */
 function observation_menu() {
+	$items['observation'] = array(
+			'title' => t(''),
+			'description' => t(''),
+			'page callback' => 'drupal_goto',
+			'page arguments' => array(
+					'singleobservation'
+			),
+			'access arguments' => array(
+					'access observation'
+			),
+			'type' => MENU_CALLBACK,
+	);
 	$items['singleobservation'] = array(
 			'title' => t('Show all singleobservations'),
 			'description' => t('Display a wizard to add a new singleobservation'),
@@ -140,9 +152,18 @@ function observation_menu() {
 					1
 			),
 			'access arguments' => array(
-					1
+					'access observation'
 			),
-			'access callback' => 'observation_write_access',
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	$items['singleobservation/geometry/json'] = array(
+			'title' => t('get all geometry data to show'),
+			'description' => t(''),
+			'page callback' => 'observation_get_geometry_json',
+			'access arguments' => array(
+					'access observation'
+			),
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);

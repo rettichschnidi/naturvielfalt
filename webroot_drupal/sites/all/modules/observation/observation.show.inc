@@ -19,9 +19,10 @@ function observation_show_all_singleobservations() {
 
 	$output['div']['map'] = array(
 			'#theme' => 'area',
-			'#action' => 'getcoordinate',
+			'#show' => 'custom-show',
 			'#search' => true,
-			'#ch1903' => true
+			'#ch1903' => true,
+			'#json_url' => 'singleobservation/geometry/json',
 	);
 
 	$tableHeader[] = array(
