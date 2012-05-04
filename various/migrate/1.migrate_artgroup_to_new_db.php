@@ -59,19 +59,21 @@ ALTER TABLE organism_artgroup_subscription
 
 $res1 = pg_query($olddb, 'select * from classification');
 $data_old = pg_fetch_all($res1);
-
+// die(print_r($data_old));
 $insert_artgroup = "";
 foreach ($data_old as $temp){
 	$insert_artgroup .= "insert into organism_artgroup (id, name, parent, pos) values
 	('".pg_escape_string($temp['classification_id'])."', '".pg_escape_string($temp['name_de'])."', '".$temp['parent']."', '".$temp['position']."');
 	";
+// 	pg_query($newdb, $insert_artgroup);
+	echo '<br>Insert artgroup: '.$temp['name_de'];
 }
+// die();
 
 // pg_query($newdb, "update organism_artgroup set name='".pg_escape_string('S�ugetiere')."' where name='".pg_escape_string('S�ugetiere (ohne Flederm�use)')."'");
 // pg_query($newdb, "update organism_artgroup set name='".pg_escape_string('Wirbeltiere')."' where name='".pg_escape_string('andere Wirbeltiere')."'");
 
-// bereits abgef�llt
-//pg_query($newdb, $insert_artgroup);
+pg_query($newdb, $insert_artgroup);
 
 
 
@@ -91,7 +93,7 @@ foreach ($data_temp as $dtmp){
 		$success++;
 		$catsql = "select ct.classification_id, c.name_de from classification_taxon ct
 		join classification as c on c.classification_id=ct.classification_id
-		where ct.taxon_id='".$data_org_ip['id']."' ";
+		where ct.taxon_id='".$data_org_ip['id']."' AND c.name_de!='Alle' group by ct.classification_id, c.name_de";
 		$catres = pg_fetch_all(pg_query($olddb, $catsql));
 
 		echo "Gefunden:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$dtmp['organism_id']." ".$dtmp['latnew']." in Kat: ";
