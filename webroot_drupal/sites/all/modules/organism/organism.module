@@ -287,14 +287,14 @@ function organism_load($organismId) {
 			SELECT
 				id
 			FROM
-				drupal_organism
+				{organism}
 			WHERE
 				id = :organismId) AS o
-		JOIN drupal_organism_scientific_name osn ON osn.organism_id=o.id
-		LEFT JOIN drupal_organism_attribute_value_subscription oavs ON oavs.organism_id = o.id
-		LEFT JOIN drupal_organism_attribute_value oav ON oav.id=oavs.organism_attribute_value_id
-		LEFT JOIN drupal_organism_attribute oa ON oa.id = oav.organism_attribute_id
-		LEFT JOIN drupal_organism_lang ol ON ol.organism_id = o.id;",
+		JOIN {organism_scientific_name} osn ON osn.organism_id=o.id
+		LEFT JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_id = o.id
+		LEFT JOIN {organism_attribute_value} oav ON oav.id=oavs.organism_attribute_value_id
+		LEFT JOIN {organism_attribute} oa ON oa.id = oav.organism_attribute_id
+		LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id;",
 		array(':organismId' => $organismId),
 		array('fetch' => PDO::FETCH_ASSOC));
 	$rows = $result->fetchAll();
