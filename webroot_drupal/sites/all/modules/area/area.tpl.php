@@ -107,6 +107,11 @@ case 'myareas': /**
 				 */
 	area_add_js_url($baseModulJsPath . 'area-show-myareas.js');
 	break;
+case 'custom-show': /**
+				 * Display just the ones the user owns.
+				 */
+	area_add_js_url($baseModulJsPath . 'area-show-geometry.js');
+	break;
 }
 
 /**
