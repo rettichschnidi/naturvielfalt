@@ -29,9 +29,9 @@ jQuery(document).ready(function() {
 	  observation.save = function (event, callback) {
 //			observation.showLoading();
 //			observation.callback = callback;
-		  var ajaxurl = Drupal.settings.basePath + '/observation/save';
+		  var ajaxurl = Drupal.settings.basePath + 'observation/save';
 		  if($('#observation_id').val() != ''){
-			  ajaxurl = Drupal.settings.basePath + '/observation/'+ $('#observation_id').val() +'/save';
+			  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
 		  }
 		  observation.ajax = $.ajax({
 				  type: 'POST',
