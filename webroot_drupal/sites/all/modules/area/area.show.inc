@@ -433,6 +433,12 @@ function area_habitat_table($habitatId) {
 	return $output;
 }
 
+/**
+ * Return an array that contains a table which shows all documents for this area.
+ *
+ * @param $organism_id
+ * 	Integer containing the id of the desired organism.
+ */
 function area_files($areadata) {
 	global $user;
 	$render_array = array();
@@ -450,75 +456,4 @@ function area_files($areadata) {
 		$areadata['id'],
 		$result->fetchAllKeyed(0, 0));
 }
-
-// function area_files($areadata = NULL) {
-// 	assert($areadata != NULL);
-// 	$area_id = $areadata['id'];
-// 	$render_array = array();
-// 	$result = db_query(
-// 		'SELECT
-// 				*
-// 			FROM
-// 				{area_file_managed} AS afm
-// 				JOIN {file_managed} fm ON afm.file_managed_fid = fm.fid
-// 			WHERE
-// 				area_id = :aid',
-// 		array(':aid' => $area_id));
-
-// 	$rows = array();
-// 	foreach ($result as $record) {
-// 		$mimeIconMap = array(
-// 				'path' => drupal_get_path('module', 'inventory') . '/images/'
-// 						. commonstuff_get_icon_map($record->filemime) . '.png',
-// 				'alt' => $record->filemime,
-// 				'title' => $record->filemime,
-// 		);
-// 		$img_mime = theme('image', $mimeIconMap);
-
-// 		$description = $record->description;
-// 		$downloadUrl = 'sites/default/files/naturvielfalt/area/' . $area_id
-// 				. '/' . $record->filename;
-// 		$filename = l($record->filename, $downloadUrl);
-// 		$filemime = $img_mime;
-// 		$filesize = ($record->filesize / 1000) . " KB";
-// 		$timestamp = date('d.m.Y', $record->timestamp);
-// 		$row = array();
-// 		$row[] = $description;
-// 		$row[] = $filename;
-// 		$row[] = $filemime;
-// 		$row[] = $filesize;
-// 		$row[] = $timestamp;
-// 		$rows[] = $row;
-// 	}
-
-// 	if (empty($rows))
-// 		return $render_array;
-
-// 	$tableHeaders = array(
-// 			array(
-// 					'name' => t('Description')
-// 			),
-// 			array(
-// 					'name' => t('Filename')
-// 			),
-// 			array(
-// 					'name' => t('Typ')
-// 			),
-// 			array(
-// 					'name' => t('Size')
-// 			),
-// 			array(
-// 					'name' => t('Date')
-// 			)
-// 	);
-
-// 	$render_array = array(
-// 			'#theme' => 'datatable',
-// 			'#header' => $tableHeaders,
-// 			'#rows' => $rows,
-// 			'#tableWidth' => 900,
-// 			'#id_table' => 'files',
-// 	);
-// 	return $render_array;
-// }
 ?>
