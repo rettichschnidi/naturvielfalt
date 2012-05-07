@@ -101,7 +101,7 @@ function observation_get_geometries_acl_checked($observation_data = false){
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {observation} o
-	JOIN {area_surface} a_s ON a_s.id=o.area_geometry_id".$where;
+	JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id".$where;
 	$results = db_query($sql, $filter)->fetchAllAssoc('id', PDO::FETCH_ASSOC);
 	$items = array();
 // 		die(print_r($results));
@@ -170,7 +170,7 @@ function observation_get_geometry($geometry_id){
 				ST_Length(Transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
-	FROM {area_surface} a_s WHERE a_s.id=:geometry_id";
+	FROM {area_geometry} a_s WHERE a_s.id=:geometry_id";
 	return db_query($sql,array(':geometry_id' => $geometry_id))->fetchAssoc();
 }
 
