@@ -105,7 +105,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 </div>';
 
 	$formcust .= '<div class="form-item form-type-textfield">'
-					.'<form url="'.$url.'" onsubmit="javscript:observation.save();return false;" method="post" name="'.$form_id.'" id="'.$form_id.'" enctype="multipart/form-data">'
+					.'<form url="'.$url.'" method="post" name="'.$form_id.'" id="'.$form_id.'" enctype="multipart/form-data">'
 					.'<input type="text" style="display: none; height: 0px;" id="organismn_id" name="organismn_id" value="'.$observation['observation']['organism_id'].'">'
 					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="'.$observation['observation']['found_as_lang'].'">'
 					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="'.$observation['observation']['found_as_lat'].'">'
@@ -156,15 +156,15 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 									.'</div>'
 
 									.'<div id="observation_attributes_cust_add">'
-									.'<a href="#" onclick="observation.addCustomAttribute(); return false;">'.t('Add custom details').'</a></div>'
+									.'<a href="#" onclick="observation.addCustomAttribute(); return false;" title="'.t('Add custom details').'"><b>+</b></a></div>'
 
 							.'</table></div></div></fieldset>'
-							.'<input type="button" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit" onclick="javscript:observation.save();return false;">'
-					.'</form>'
+							.'<input type="submit" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit">'
+
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
 // 					.drupal_render($image)
-
+					.'</form>'
 			.'</div>';
 	return $formcust;
 }
