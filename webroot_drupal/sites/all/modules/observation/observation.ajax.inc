@@ -8,7 +8,7 @@ module_load_include('inc', 'observation');
 function observation_save($observation_data = false){
 global $user;
 	module_load_include('inc', 'organism', 'organism.artgroup');
-
+// die(print_r($_FILES));
 	$values = $_POST;
 	$error = false;
 	$message = array();
@@ -40,7 +40,9 @@ global $user;
 	if($organismn_id > 0){
 		$artgroups = organism_artgroup_get_organsim_in_artgroup($observation['organism_id']);
 		foreach ($artgroups as $artgroup) $observation['organism_artgroup_id'] = $artgroup;
+		if($observation['organism_artgroup_id'] == '') $observation['organism_artgroup_id'] = '3';
 	}
+
 // 	}
 // 	$observation['organism_artgroup_id'] = NULL;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
@@ -190,7 +192,7 @@ global $user;
 		 */
 		foreach ($custom_names as $key => $val){
 			$attr_id = organism_artgroup_add_custom_attribute($val, $observation['organism_artgroup_id']);
-			$attributes_checked[$attr_id] = $custom_values[$key];
+			if($attr_id != false) $attributes_checked[$attr_id] = $custom_values[$key];
 		}
 
 		/**
