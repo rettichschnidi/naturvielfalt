@@ -29,38 +29,71 @@ jQuery(document).ready(function() {
 	  observation.save = function (event, callback) {
 //			observation.showLoading();
 //			observation.callback = callback;
-		  var ajaxurl = Drupal.settings.basePath + 'observation/save';
+		  var ajaxurl = Drupal.settings.basePath + '/observation/save';
 		  if($('#observation_id').val() != ''){
-			  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
+			  ajaxurl = Drupal.settings.basePath + '/observation/'+ $('#observation_id').val() +'/save';
 		  }
-		  observation.ajax = $.ajax({
-				  type: 'POST',
-				  url: ajaxurl,
-				  data: $("#observation_form").serialize(),
-				  dataType: 'json',
-				  type: 'POST',
-				});
-			observation.ajax.done(function(msg) {
-//				  $("#log").html( msg );
-				
-				if(msg.success == true){
-//					alert('success');
-					observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 5000);
-					$('#observation_form').trigger('reset');
-					$( "#species_autocomplete" ).html('');
-				}else{
-//					alert('fail');
-					observation.setMessage('<br><br>&bull;&nbsp;'+msg.message.join("<br>&bull;&nbsp;"),'error', 15000);
-				}
-				});
+//		  observation.ajax = $.ajax({
+//				  type: 'POST',
+//				  url: ajaxurl,
+//				  data: $("#observation_form").serialize(),
+//				  dataType: 'json',
+//				  type: 'POST',
+//				});
+//			observation.ajax.done(function(msg) {
+////				  $("#log").html( msg );
+//				
+//				if(msg.success == true){
+////					alert('success');
+//					observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
+//					$('#observation_form').trigger('reset');
+//					$( "#species_autocomplete" ).html('');
+//				}else{
+////					alert('fail');
+//					observation.setMessage('<br><br>&bull;&nbsp;'+msg.message.join("<br>&bull;&nbsp;"),'error', 5000);
+//				}
+//				});
+//
+//				observation.ajax.fail(function(jqXHR, textStatus) {
+////				  alert( "Request failed: " +  );
+//				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
+//				});
+		 
+			 
 
-				observation.ajax.fail(function(jqXHR, textStatus) {
-//				  alert( "Request failed: " +  );
-				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
-				});
+//			}); 
 			return false;
 		};
-		
+	    
+		    observation.showResponse = function(responseText, statusText, xhr, $form)  { 
+				if(responseText.success == true){
+					observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
+					$('#observation_form').trigger('reset');
+					$('#species_autocomplete').html('');
+				}else{
+					observation.setMessage('<br><br>&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
+				}
+		    };
+			  var ajaxurl = Drupal.settings.basePath + 'observation/save';
+			  if($('#observation_id').val() != ''){
+				  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
+			  }
+		    var options = { 
+			        target:        '#message',   // target element(s) to be updated with server response 
+			        success:       observation.showResponse,  // post-submit callback 
+			 
+			        // other available options: 
+			        url:       ajaxurl,         // override for form's 'action' attribute 
+			        type:      'post',        // 'get' or 'post', override for form's 'method' attribute 
+			        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type) 
+			        //clearForm: true        // clear all form fields after successful submit 
+			        //resetForm: true        // reset the form after successful submit 
+			 
+			        // $.ajax options can be used here too, for example: 
+			        //timeout:   3000 
+			    };
+	    // bind form using 'ajaxForm' 
+	    $('#observation_form').ajaxForm(options); 
 		observation.setMessage = function (message, type, time) {
 			if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
 			observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
@@ -141,13 +174,13 @@ jQuery(document).ready(function() {
 //		alert(id); return;
 		if (confirm(Drupal.t('This attribute will be deleted in all existing observations, are you sure?'))==false) return false;
 		  var ajaxurl = Drupal.settings.basePath + '/observation/deleteCustomAttribute/'+id;
-		  observation.ajax = $.ajax({
+		  observation.attrAjax = $.ajax({
 				  type: 'POST',
 				  url: ajaxurl,
 				  dataType: 'json',
 				  type: 'POST',
 				});
-			observation.ajax.done(function(msg) {
+			observation.attrAjax.done(function(msg) {
 				if(msg.success == true){
 					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
 					$('#attributes_tr_'+id).remove();
@@ -156,7 +189,7 @@ jQuery(document).ready(function() {
 				}
 				});
 
-				observation.ajax.fail(function(jqXHR, textStatus) {
+				observation.attrAjax.fail(function(jqXHR, textStatus) {
 //					  alert( "Request failed: " +  );
 				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
 				});
