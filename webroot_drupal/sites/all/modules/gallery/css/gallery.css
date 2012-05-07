@@ -33,12 +33,12 @@
 }
 
 ul.gallery {
-	width: 1000px;
+	width: 100%;
 }
 
 html fieldset ul.gallery {
-	width: 988px;
-}
+	width: 100%;
+} 
 
 ul.gallery,.block ul.gallery,ul.gallery li {
 	margin: 0;
