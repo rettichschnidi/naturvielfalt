@@ -15,8 +15,8 @@ module_load_include('inc', 'observation', 'observation.gallery');
  */
 function observation_menu() {
 	$items['observation'] = array(
-			'title' => t(''),
-			'description' => t(''),
+			'title' => t('Observation'),
+			'description' => t('Show a overview of observations'),
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
 					'singleobservation'
@@ -138,8 +138,8 @@ function observation_menu() {
 			'file' => 'singleobservation.inc',
 	);
 	$items['observation/save'] = array(
-			'title' => t('Save a new observation'),
-			'description' => t(''),
+			'title' => t('Save'),
+			'description' => t('Save a new observation'),
 			'page callback' => 'observation_save',
 			'access arguments' => array(
 					'create observation'
@@ -148,8 +148,8 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	$items['observation/%observation/save'] = array(
-			'title' => t('Save a existing observation'),
-			'description' => t(''),
+			'title' => t('Save'),
+			'description' => t('Save a existing observation'),
 			'page callback' => 'observation_save',
 			'page arguments' => array(
 					1
@@ -162,8 +162,8 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	$items['observation/%observation/geometry/json'] = array(
-			'title' => t('get geometry data for editing'),
-			'description' => t(''),
+			'title' => t('Geometry'),
+			'description' => t('Get geometry data for editing'),
 			'page callback' => 'observation_get_geometry_json',
 			'page arguments' => array(
 					1
@@ -175,8 +175,8 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	$items['singleobservation/geometry/json'] = array(
-			'title' => t('get all geometry data to show'),
-			'description' => t(''),
+			'title' => t('Geometry'),
+			'description' => t('Get all geometry data to show'),
 			'page callback' => 'observation_get_geometry_json',
 			'access arguments' => array(
 					'access observation'
@@ -185,8 +185,8 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	$items['observation/get/all'] = array(
-			'title' => t('Get all observations'),
-			'description' => t(''),
+			'title' => t('Obse4rvationsJSON'),
+			'description' => t('Get all observations'),
 			'page callback' => 'observation_get_all_json',
 			'access arguments' => array(
 					'create observation'
@@ -195,8 +195,8 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	$items['observation/deleteCustomAttribute/%'] = array(
-			'title' => t('Delete a custom attributt'),
-			'description' => t(''),
+			'title' => t('Delete Attribute'),
+			'description' => t('Delete a custom attribute'),
 			'page callback' => 'observation_delete_custom_attribute',
 			'page arguments' => array(
 					2
