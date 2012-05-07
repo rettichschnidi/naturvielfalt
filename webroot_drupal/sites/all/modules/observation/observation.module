@@ -67,6 +67,23 @@ function observation_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 2
 	);
+// 	if (function_exists('gallery_list_renderer')) {
+// 		$items['singleobservation/%/gallery'] = array(
+// 				'title' => t('Gallery'),
+// 				'description' => t('View the area as a gallery of organisms'),
+// 				'page callback' => 'singleobservation_gallery',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'area.inc',
+// 				'weight' => 3
+// 		);
+// 	}
 	$items['singleobservation/%observation/permissions'] = array(
 			'title' => t('Permission'),
 			'description' => t('Edit the permission of this observation.'),
@@ -81,7 +98,7 @@ function observation_menu() {
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'observation.inc',
-			'weight' => 3
+			'weight' => 4
 	);
 	$items['singleobservation/%observation/delete'] = array(
 			'title' => t('Delete observation'),
