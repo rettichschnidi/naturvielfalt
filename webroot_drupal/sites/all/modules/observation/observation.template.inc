@@ -10,10 +10,11 @@ function observation_form($observation = false) {
 	$hidden_fields_arr = array();
 	drupal_set_title('Capture a new observation');
 // 	die(print_r($observation));
+	$url = base_path().'observation/save';
 	if($observation){
 // 		$observation = observation_get($observation_id);
 		print_r($observation);
-
+		$url = base_path().'observation/'. $observation['observation']['id'] .'/save';
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 		drupal_set_title('Edit a observation');
 	}
@@ -31,9 +32,11 @@ function observation_form($observation = false) {
 	if(!isset($observation['observation']['count'])) $observation['observation']['count'] = '1';
 	if(!isset($observation['observation']['observer'])) $observation['observation']['observer'] = $user->name;
 	if(!isset($observation['observation']['organism_artgroup_detmethod_id'])) $observation['observation']['organism_artgroup_detmethod_id'] = false;
+	if(!isset($observation['detmethods_vis'])) $observation['detmethods_vis'] = array();
+	if(!isset($observation['attributes'])) $observation['attributes'] = array();
 
 	$form_id = "observation_form";
-
+	$hidden_fields = '';
 	foreach ($hidden_fields_arr as $key => $value) $hidden_fields .= '<input type="text" style="display: none; height: 0px;" id="'.$key.'" name="'.$key.'" value="'.$value.'">';
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
@@ -43,6 +46,7 @@ function observation_form($observation = false) {
 	drupal_add_library('system', 'ui.datepicker');
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
+	drupal_add_js('misc/jquery.form.js');
 	$observation_path= drupal_get_path('module', 'observation');
 // 	drupal_add_js('https://maps.google.com/maps/api/js?sensor=false');
 // 	drupal_add_js($observation_path . '/js/gmap.js');
@@ -85,15 +89,23 @@ function observation_form($observation = false) {
 	$form['div']['map']['#action'] = ($observation['observation']['id'] == '') ? 'getcoordinate' : 'custom-edit';
 	if($observation['observation']['id'] != '') $form['div']['map']['#json_url'] = 'observation/'.$observation['observation']['id'].'/geometry/json';
 
+
+	/**
+	 * include a upload form for images
+	 */
+	// Product picture
+	$image['picture'] = array('#type' => 'fieldset', '#title' => t('Product image'));
+	$image['picture']['picture_upload'] = array('#type' => 'file', '#title' => t('Upload product image'), '#size' => 48, 'accept' => 'image/*');
+
+
 	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
 
 $formcust .= '<div id="message" style="display: none; height: auto;">
 <div class="messages status"></div>
 </div>';
 
-
 	$formcust .= '<div class="form-item form-type-textfield">'
-					.'<form onsubmit="javscript:observation.save();return false;" method="post" name="'.$form_id.'" id="'.$form_id.'">'
+					.'<form url="'.$url.'" onsubmit="javscript:observation.save();return false;" method="post" name="'.$form_id.'" id="'.$form_id.'" enctype="multipart/form-data">'
 					.'<input type="text" style="display: none; height: 0px;" id="organismn_id" name="organismn_id" value="'.$observation['observation']['organism_id'].'">'
 					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="'.$observation['observation']['found_as_lang'].'">'
 					.'<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="'.$observation['observation']['found_as_lat'].'">'
@@ -150,6 +162,8 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 							.'<input type="button" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit" onclick="javscript:observation.save();return false;">'
 					.'</form>'
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
+
+// 					.drupal_render($image)
 
 			.'</div>';
 	return $formcust;
