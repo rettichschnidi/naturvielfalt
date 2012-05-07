@@ -336,7 +336,9 @@ function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false){
 function organism_artgroup_add_custom_attribute($name, $artgroup_id){
 	global $user;
 
-	$attribute['id'] = db_query("SELECT nextval('organism_artgroup_attr_id_seq') as nextval")->fetchField();
+	if($artgroup_id == null || $artgroup_id == '') return false;
+
+	$attribute['id'] = db_query("SELECT nextval('{organism_artgroup_attr}_id_seq') as nextval")->fetchField();
 	$attribute['name'] = check_plain($name);
 	$attribute['users_uid'] = $user->uid;
 	$attribute['organism_artgroup_attr_type_id'] = 1;
