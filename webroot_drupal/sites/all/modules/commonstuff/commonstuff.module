@@ -126,6 +126,18 @@ function commonstuff_get_icon_map($filemime) {
 	}
 }
 
+/**
+ * Return an array that contains a table which shows all documents for the given file ids.
+ *
+ * @param $modulename
+ * 	Sting which stores the name of the calling module, used to generate the urls
+ * @param $id
+ * 	Integer with the Id of the element the given files belongs to.
+ * @param $fidarray
+ * 	Array of integers which store the requested fids.
+ * @return
+ * 	A drupal form array with a table containing the 
+ */
 function commonstuff_showfiles($modulename, $id, $fidarray) {
 	global $user;
 	$render_array = array();
