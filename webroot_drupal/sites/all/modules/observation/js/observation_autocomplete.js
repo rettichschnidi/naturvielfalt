@@ -20,7 +20,7 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 			autocomplete.request.abort();
 		}
 		autocomplete.request = $.ajax({
-			url: Drupal.settings.basePath + "/organism/search/json",
+			url: Drupal.settings.basePath + "organism/search/json",
 			dataType: "json",
 			data: {
 				artgroup: $('#artgroup').val(),
