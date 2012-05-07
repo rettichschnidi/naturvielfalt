@@ -53,7 +53,7 @@ function observation_get($observation_id){
 		 */
 
 		$result['organism'] = organism_get($result['observation']['organism_id']);
-		$attributes = db_query("SELECT * FROM observation_attribute oa WHERE oa.observation_id=:observation_id", array(':observation_id' => $observation_id))->fetchAllAssoc('organism_artgroup_attr_id');
+		$attributes = db_query("SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id", array(':observation_id' => $observation_id))->fetchAllAssoc('organism_artgroup_attr_id');
 		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '') ? organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']): array();
 		$result['attributes'] = array();
 		foreach ($attributes_vis as $attribute_vis)
@@ -385,7 +385,7 @@ function observation_save_attribute_values($attributes_checked, $observation_id)
  * @return boolean true on success|false on fails
  */
 function observation_attribute_value_exist($observation_id, $attr_id){
-	$result = db_query("SELECT * FROM observation_attribute oa
+	$result = db_query("SELECT * FROM {observation_attribute} oa
 			WHERE oa.observation_id=:observation_id AND
 			oa.organism_artgroup_attr_id=:attr_id",
 			array(':observation_id' => $observation_id, ':attr_id' => $attr_id))
