@@ -37,8 +37,10 @@ global $user;
 	// set the last value as artgroup
 // 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	if($observation['organism_artgroup_id'] == 0){
+	if($organismn_id > 0){
 		$artgroups = organism_artgroup_get_organsim_in_artgroup($observation['organism_id']);
 		foreach ($artgroups as $artgroup) $observation['organism_artgroup_id'] = $artgroup;
+	}
 // 	}
 // 	$observation['organism_artgroup_id'] = NULL;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
@@ -205,7 +207,8 @@ global $user;
 			$observation['area_geometry_id'] = area_create_geometry($geometry);
 
 			//save the observation
-			$observation_id = $observation['id'] = db_query("SELECT nextval('observation_id_seq') as nextval")->fetchField();
+			$observation_id = $observation['id'] = db_query("SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
+// 			$observation_id = db_next_id('observation_id');
 			$observation['c_time'] = $observation['m_time'];
 			$observation['acl_id'] = new_acl('singleobservation');
 			db_insert('observation')->fields($observation)->execute();
