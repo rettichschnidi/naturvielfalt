@@ -6,3 +6,4 @@ version = "7.x-current"
 #dependencies[] = habitat
 dependencies[] = locale
 dependencies[] = datatable
+dependencies[] = commonstuff

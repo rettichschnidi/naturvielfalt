@@ -125,4 +125,96 @@ function commonstuff_get_icon_map($filemime) {
 		return $return;
 	}
 }
+
+function commonstuff_showfiles($modulename, $id, $fidarray) {
+	global $user;
+	$render_array = array();
+	if (empty($fidarray))
+		return $render_array;
+	$result = db_query(
+		'SELECT
+				*
+			FROM
+				{file_managed} fm
+			WHERE
+				fm.fid IN (:fids)',
+		array(':fids' => $fidarray));
+	foreach ($result as $record) {
+		$mimeIconMap = array(
+				'path' => drupal_get_path('module', 'inventory') . '/images/'
+						. commonstuff_get_icon_map($record->filemime) . '.png',
+				'alt' => $record->filemime,
+				'title' => $record->filemime,
+		);
+		$img_mime = theme('image', $mimeIconMap);
+
+		$description = isset($record->description) ? $record->description : '';
+		$filename = l(
+			$record->filename,
+			"sites/default/files/naturvielfalt/$modulename/" . $id . '/'
+					. $record->filename);
+		$filemime = $img_mime;
+		$filesize = ($record->filesize / 1000) . " KB";
+		$timestamp = date('d.m.Y', $record->timestamp);
+		$author = isset($record->author) ? $record->author : '';
+		$row = array();
+		$row[] = $description;
+		$row[] = $filename;
+		$row[] = $filemime;
+		$row[] = $filesize;
+		$row[] = $timestamp;
+		$row[] = $author;
+		$row[] = $user->name;
+		$rows[] = $row;
+	}
+
+	$tableHeader[] = array(
+			'name' => t('Description')
+	);
+	$tableHeader[] = array(
+			'name' => t('Filename')
+	);
+	$tableHeader[] = array(
+			'name' => t('Typ')
+	);
+	$tableHeader[] = array(
+			'name' => t('Size')
+	);
+	$tableHeader[] = array(
+			'name' => t('Date')
+	);
+	$tableHeader[] = array(
+			'name' => t('Author')
+	);
+	$tableHeader[] = array(
+			'name' => t('Owner')
+	);
+
+	$render_array = array(
+			'#type' => 'fieldset',
+			'#title' => t('Files'),
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+			'#attached' => array(
+					'js' => array(
+							'misc/form.js',
+							'misc/collapse.js',
+					),
+			),
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					),
+			),
+	);
+
+	$render_array['data'] = array(
+			'#theme' => 'datatable',
+			'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#tableWidth' => 900,
+			'#id_table' => 'files',
+	);
+	return $render_array;
+}
 ?>

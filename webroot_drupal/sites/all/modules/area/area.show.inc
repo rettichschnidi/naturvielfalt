@@ -236,10 +236,12 @@ function area_show_specific_area($areadata = NULL) {
 			'videos',
 			'area',
 			$areadata['id']);
+		$output['area_videos']['#weight'] = 14;
 		$output['area_images'] = gallery_list_renderer(
 			'images',
 			'area',
 			$areadata['id']);
+		$output['area_images']['#weight'] = 13;
 	}
 
 	/* add the linked habitats */
@@ -273,34 +275,15 @@ function area_show_specific_area($areadata = NULL) {
 			),
 			'#tableWidth' => 900,
 			'#rows' => $habitats,
+			'#weight' => 15,
 			'#id_table' => 'habitats'
 	);
 
 	/* Build the content of the table, leave out empty fields */
 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
-	$areafiles = area_files($areadata);
-	if (!empty($areafiles)) {
-		$output['area_files'] = array(
-				'#type' => 'fieldset',
-				'#weight' => 20,
-				'#title' => t('Files'),
-				'#collapsible' => true,
-				'#collapsed' => false,
-				'#attached' => array(
-						'js' => array(
-								'misc/form.js',
-								'misc/collapse.js',
-						),
-				),
-				'#attributes' => array(
-						'class' => array(
-								'collapsible'
-						),
-				),
-		);
-		$output['area_files']['table'] = $areafiles;
-	}
+	$output['area_files'] = area_files($areadata);
+	$output['area_files']['#weight'] = 16;
 
 	return $output;
 }
@@ -450,74 +433,92 @@ function area_habitat_table($habitatId) {
 	return $output;
 }
 
-function area_files($areadata = NULL) {
-	assert($areadata != NULL);
-	$area_id = $areadata['id'];
+function area_files($areadata) {
+	global $user;
 	$render_array = array();
 	$result = db_query(
 		'SELECT
-				*
-			FROM
-				{area_file_managed} AS afm
-				JOIN {file_managed} fm ON afm.file_managed_fid = fm.fid
-			WHERE
-				area_id = :aid',
-		array(':aid' => $area_id));
-
-	$rows = array();
-	foreach ($result as $record) {
-		$mimeIconMap = array(
-				'path' => drupal_get_path('module', 'inventory') . '/images/'
-						. commonstuff_get_icon_map($record->filemime) . '.png',
-				'alt' => $record->filemime,
-				'title' => $record->filemime,
-		);
-		$img_mime = theme('image', $mimeIconMap);
-
-		$description = $record->description;
-		$downloadUrl = 'sites/default/files/naturvielfalt/area/' . $area_id
-				. '/' . $record->filename;
-		$filename = l($record->filename, $downloadUrl);
-		$filemime = $img_mime;
-		$filesize = ($record->filesize / 1000) . " KB";
-		$timestamp = date('d.m.Y', $record->timestamp);
-		$row = array();
-		$row[] = $description;
-		$row[] = $filename;
-		$row[] = $filemime;
-		$row[] = $filesize;
-		$row[] = $timestamp;
-		$rows[] = $row;
-	}
-
-	if (empty($rows))
-		return $render_array;
-
-	$tableHeaders = array(
-			array(
-					'name' => t('Description')
-			),
-			array(
-					'name' => t('Filename')
-			),
-			array(
-					'name' => t('Typ')
-			),
-			array(
-					'name' => t('Size')
-			),
-			array(
-					'name' => t('Date')
-			)
-	);
-
-	$render_array = array(
-			'#theme' => 'datatable',
-			'#header' => $tableHeaders,
-			'#rows' => $rows,
-			'#tableWidth' => 900,
-			'#id_table' => 'files',
-	);
-	return $render_array;
+			file_managed_fid
+		FROM
+			{area_file_managed} ofm
+		WHERE
+			area_id = :aid',
+		array(':aid' => $areadata['id']),
+		array('fetch' => PDO::FETCH_ASSOC));
+	return commonstuff_showfiles(
+		'area',
+		$areadata['id'],
+		$result->fetchAllKeyed(0, 0));
 }
+
+// function area_files($areadata = NULL) {
+// 	assert($areadata != NULL);
+// 	$area_id = $areadata['id'];
+// 	$render_array = array();
+// 	$result = db_query(
+// 		'SELECT
+// 				*
+// 			FROM
+// 				{area_file_managed} AS afm
+// 				JOIN {file_managed} fm ON afm.file_managed_fid = fm.fid
+// 			WHERE
+// 				area_id = :aid',
+// 		array(':aid' => $area_id));
+
+// 	$rows = array();
+// 	foreach ($result as $record) {
+// 		$mimeIconMap = array(
+// 				'path' => drupal_get_path('module', 'inventory') . '/images/'
+// 						. commonstuff_get_icon_map($record->filemime) . '.png',
+// 				'alt' => $record->filemime,
+// 				'title' => $record->filemime,
+// 		);
+// 		$img_mime = theme('image', $mimeIconMap);
+
+// 		$description = $record->description;
+// 		$downloadUrl = 'sites/default/files/naturvielfalt/area/' . $area_id
+// 				. '/' . $record->filename;
+// 		$filename = l($record->filename, $downloadUrl);
+// 		$filemime = $img_mime;
+// 		$filesize = ($record->filesize / 1000) . " KB";
+// 		$timestamp = date('d.m.Y', $record->timestamp);
+// 		$row = array();
+// 		$row[] = $description;
+// 		$row[] = $filename;
+// 		$row[] = $filemime;
+// 		$row[] = $filesize;
+// 		$row[] = $timestamp;
+// 		$rows[] = $row;
+// 	}
+
+// 	if (empty($rows))
+// 		return $render_array;
+
+// 	$tableHeaders = array(
+// 			array(
+// 					'name' => t('Description')
+// 			),
+// 			array(
+// 					'name' => t('Filename')
+// 			),
+// 			array(
+// 					'name' => t('Typ')
+// 			),
+// 			array(
+// 					'name' => t('Size')
+// 			),
+// 			array(
+// 					'name' => t('Date')
+// 			)
+// 	);
+
+// 	$render_array = array(
+// 			'#theme' => 'datatable',
+// 			'#header' => $tableHeaders,
+// 			'#rows' => $rows,
+// 			'#tableWidth' => 900,
+// 			'#id_table' => 'files',
+// 	);
+// 	return $render_array;
+// }
 ?>
