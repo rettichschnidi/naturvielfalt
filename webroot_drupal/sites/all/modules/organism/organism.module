@@ -226,7 +226,6 @@ function organism_menu() {
 // 				'weight' => 7
 // 		);
 // 	}
-
 	return $items;
 }
 
@@ -322,8 +321,10 @@ function organism_load($organismId) {
 }
 
 /**
+ * Return an array that contains a table which shows all documents for this organism.
  * 
- * @param unknown_type $organism_id
+ * @param $organism_id
+ * 	Integer containing the id of the desired organism.
  */
 function organism_files($organism_id) {
 	global $user;
