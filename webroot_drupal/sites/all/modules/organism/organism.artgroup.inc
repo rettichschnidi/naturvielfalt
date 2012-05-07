@@ -211,6 +211,7 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
 		$html_before_form = false, $html_after_form = false, $attributes_selected = false){
 	$output = "";
 	$predefinied_value = '';
+	$predefinied_value_id = '';
 	$name_trimd = str_replace(' ', '', $form['name']);
 	$form_name = 'id="attributes_'.$name_trimd.'" name="attributes['.$form['id'].']"';
 	if($html_before_desc) $output .= str_replace('#id#', 'attributes_tr_'.$form['id'], $html_before_desc);
@@ -239,7 +240,7 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
 			<select '.$form_name.'><option value="0">'.t('Nicht definiert').'</option>';
 			foreach ($form['values'] as $key => $value){
 				$selected = '';
-				if($predefinied_value_id && $predefinied_value_id == $key) $selected = ' selected="selected"';
+				if(isset($predefinied_value_id) && $predefinied_value_id == $key) $selected = ' selected="selected"';
 				$output .= '<option value="'.$key.'" '.$selected.'>'.$value.'</option>';
 			}
 			$output .= '</select>';
