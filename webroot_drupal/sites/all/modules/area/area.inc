@@ -894,7 +894,7 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 		}
 	}
 
-	if (!$page)
+	if (!isset($page) || !$page)
 		$page['empty'] = array(
 				'#prefix' => '<p>',
 				'#suffix' => '<p>',
