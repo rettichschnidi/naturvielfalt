@@ -17,81 +17,42 @@ jQuery(document).ready(function() {
 	function changeArtGroup(id){
 		alert('not implemented');
 	}
-	  
-	  
-//	  $('observation_form').submit(function (e) {
-//				observation.save(e, $.proxy(function () {
-//					$(this).unbind('submit').submit();
-//				}, this));
-//		});
 
-	  observation.ajax = '';
-	  observation.save = function (event, callback) {
-//			observation.showLoading();
-//			observation.callback = callback;
-		  var ajaxurl = Drupal.settings.basePath + '/observation/save';
-		  if($('#observation_id').val() != ''){
-			  ajaxurl = Drupal.settings.basePath + '/observation/'+ $('#observation_id').val() +'/save';
-		  }
-//		  observation.ajax = $.ajax({
-//				  type: 'POST',
-//				  url: ajaxurl,
-//				  data: $("#observation_form").serialize(),
-//				  dataType: 'json',
-//				  type: 'POST',
-//				});
-//			observation.ajax.done(function(msg) {
-////				  $("#log").html( msg );
-//				
-//				if(msg.success == true){
-////					alert('success');
-//					observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
-//					$('#observation_form').trigger('reset');
-//					$( "#species_autocomplete" ).html('');
-//				}else{
-////					alert('fail');
-//					observation.setMessage('<br><br>&bull;&nbsp;'+msg.message.join("<br>&bull;&nbsp;"),'error', 5000);
-//				}
-//				});
-//
-//				observation.ajax.fail(function(jqXHR, textStatus) {
-////				  alert( "Request failed: " +  );
-//				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
-//				});
-		 
-			 
-
-//			}); 
-			return false;
-		};
 	    
-		    observation.showResponse = function(responseText, statusText, xhr, $form)  { 
-				if(responseText.success == true){
-					observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
-					$('#observation_form').trigger('reset');
-					$('#species_autocomplete').html('');
-				}else{
-					observation.setMessage('<br><br>&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
-				}
-		    };
-			  var ajaxurl = Drupal.settings.basePath + 'observation/save';
-			  if($('#observation_id').val() != ''){
-				  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
-			  }
-		    var options = { 
-			        target:        '#message',   // target element(s) to be updated with server response 
-			        success:       observation.showResponse,  // post-submit callback 
-			 
-			        // other available options: 
-			        url:       ajaxurl,         // override for form's 'action' attribute 
-			        type:      'post',        // 'get' or 'post', override for form's 'method' attribute 
-			        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type) 
-			        //clearForm: true        // clear all form fields after successful submit 
-			        //resetForm: true        // reset the form after successful submit 
-			 
-			        // $.ajax options can be used here too, for example: 
-			        //timeout:   3000 
-			    };
+	observation.showResponse = function(responseText, statusText, xhr, $form)  { 
+		if(responseText.success == true){
+			observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
+			$('#observation_form').trigger('reset');
+			$('#species_autocomplete').html('');
+			observation.hideAttributes();
+			observation.hideDetMethods();
+			areabasic.newestElement.overlay.setMap(null);
+			areabasic.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
+			if(responseText.update) {
+				window.location = window.location.toString().replace("edit", "show")
+			}
+		}else{
+			observation.setMessage('<br><br>&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
+		}
+	};
+	  var ajaxurl = Drupal.settings.basePath + 'observation/save';
+	  if($('#observation_id').val() != ''){
+		  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
+	  }
+	var options = { 
+//	        target:        '#message',   // target element(s) to be updated with server response 
+	        success:       observation.showResponse,  // post-submit callback 
+	 
+	        // other available options: 
+	        url:       ajaxurl,         // override for form's 'action' attribute 
+	        type:      'post',        // 'get' or 'post', override for form's 'method' attribute 
+	        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type) 
+	        //clearForm: true        // clear all form fields after successful submit 
+	        //resetForm: true        // reset the form after successful submit 
+	 
+	        // $.ajax options can be used here too, for example: 
+	        //timeout:   3000 
+	    };
 	    // bind form using 'ajaxForm' 
 	    $('#observation_form').ajaxForm(options); 
 		observation.setMessage = function (message, type, time) {
