@@ -13,7 +13,7 @@ function observation_form($observation = false) {
 	$url = base_path().'observation/save';
 	if($observation){
 // 		$observation = observation_get($observation_id);
-		print_r($observation);
+// 		print_r($observation);
 		$url = base_path().'observation/'. $observation['observation']['id'] .'/save';
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 		drupal_set_title('Edit a observation');
