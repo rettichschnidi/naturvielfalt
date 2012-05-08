@@ -1180,7 +1180,8 @@ function organism_install() {
 		'organism_classification_subscription.sql',
 		'organism_lang.sql',
 		'organism_scientific_name.sql',
-		'organism.sql'
+		'organism.sql',
+		'organism_artgroup_subscription.sql'
 	);
 	try {
 		foreach ($filenames as $filename) {
