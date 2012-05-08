@@ -366,7 +366,8 @@ function gallery_presentation_renderer($mediatype, $items,
 			1,
 			isset($item['subtype']) ? $item['subtype'] : false);
 		$msg = $msgPrimary;
-		if (!$image['images'] && isset($item['alternatives']) && $item['alternatives']) {
+		if (!$image['images'] && isset($item['alternatives'])
+				&& $item['alternatives']) {
 			$msg = $msgAlternative;
 			foreach ($item['alternatives'] as $alternative) {
 				$image = gallery_images(
@@ -902,7 +903,6 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$label = 'media';
 		$label_caps = 'Medias';
 		$validate_function = '_gallery_medias_form_upload_validate';
-
 	}
 	if (isset($image['id'])) {
 		$title = t(
@@ -1107,7 +1107,6 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 
 		// Openidentifiaction stuff, irrelevant for everytthing else
 		if ($new_open_identification) {
-
 			$form['description'] = array(
 					'#type' => 'textarea',
 					'#title' => t('Comment'),
@@ -1322,6 +1321,7 @@ function _gallery_image_form_categories($mediatype, $type, $id, $image) {
  */
 function _gallery_images_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
+	
 	if (!array_key_exists($name, $_FILES['files']['name'])
 			|| !$_FILES['files']['name'][$name])
 		if ($element['#file_required'])
@@ -1365,19 +1365,23 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
  */
 function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
+	
+	// no name given, bail out...
 	if (!array_key_exists($name, $_FILES['files']['name'])
 			|| !$_FILES['files']['name'][$name])
-		if ($element['#file_required'])
+		if ($element['#file_required']) {
 			return form_error(
 				$element,
 				t(
 					'!name field is required.',
 					array('!name' => $element['#title'])));
-		else
+		} else {
 			return;
+		}
+	// no type given, bail out...
 	if (array_key_exists($name, $_FILES['files']['name'])
 			&& $_FILES['files']['name'][$name]
-			&& !$_FILES['files']['type'][$name])
+			&& !$_FILES['files']['type'][$name]) {
 		return form_error(
 			$element,
 			t(
@@ -1387,6 +1391,7 @@ function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
 							parse_size(
 								variable_get('gallery_sound_size', 2048) * 1024))
 				)));
+	}
 	//'!size' => format_size(parse_size(file_upload_max_size())))));
 
 	if (!in_array($_FILES['files']['type'][$name], array('audio/mpeg')))

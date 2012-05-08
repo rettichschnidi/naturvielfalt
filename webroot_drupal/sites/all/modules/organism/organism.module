@@ -226,7 +226,6 @@ function organism_menu() {
 // 				'weight' => 7
 // 		);
 // 	}
-
 	return $items;
 }
 
@@ -321,84 +320,27 @@ function organism_load($organismId) {
 	return $organism;
 }
 
+/**
+ * Return an array that contains a table which shows all documents for this organism.
+ * 
+ * @param $organism_id
+ * 	Integer containing the id of the desired organism.
+ */
 function organism_files($organism_id) {
 	global $user;
 	$render_array = array();
 	$result = db_query(
 		'SELECT
-			*
+			file_managed_fid
 		FROM
 			{organism_file_managed} ofm
-			LEFT JOIN {file_managed} fm ON ofm.file_managed_fid = fm.fid
 		WHERE
 			organism_id = :oid',
-		array(':oid' => $organism_id));
-
-	foreach ($result as $record) {
-		$mimeIconMap = array(
-				'path' => drupal_get_path('module', 'inventory') . '/images/'
-						. commonstuff_get_icon_map($record->filemime) . '.png',
-				'alt' => $record->filemime,
-				'title' => $record->filemime,
-		);
-		$img_mime = theme('image', $mimeIconMap);
-
-		$description = $record->description;
-		$filename = l(
-			$record->filename,
-			'sites/default/files/naturvielfalt/organism/' . $organism_id . '/'
-					. $record->filename);
-		$filemime = $img_mime;
-		$filesize = ($record->filesize / 1000) . " KB";
-		$timestamp = date('d.m.Y', $record->timestamp);
-		$author = $record->author;
-		$row = array();
-		$row[] = $description;
-		$row[] = $filename;
-		$row[] = $filemime;
-		$row[] = $filesize;
-		$row[] = $timestamp;
-		$row[] = $author;
-		$row[] = $user->name;
-		$rows[] = $row;
-	}
-
-	if (empty($rows))
-		return $render_array;
-
-	$tableHeader[] = t('Description');
-	$tableHeader[] = t('Filename');
-	$tableHeader[] = t('Typ');
-	$tableHeader[] = t('Size');
-	$tableHeader[] = t('Date');
-	$tableHeader[] = t('Author');
-	$tableHeader[] = t('Owner');
-
-	$render_array['files'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Files'),
-			'#weight' => 8,
-			'#collapsible' => TRUE,
-			'#collapsed' => FALSE,
-			'#attached' => array(
-					'js' => array(
-							'misc/form.js',
-							'misc/collapse.js',
-					),
-			),
-			'#attributes' => array(
-					'class' => array(
-							'collapsible'
-					),
-			),
-	);
-
-	$render_array['files']['data'] = array(
-			'#theme' => 'datatable',
-			'#header' => $tableHeader,
-			'#rows' => $rows,
-			'#id_table' => 'files',
-	);
-	return $render_array;
+		array(':oid' => $organism_id),
+		array('fetch' => PDO::FETCH_ASSOC));
+	return commonstuff_showfiles(
+		'organism',
+		$organism_id,
+		$result->fetchAllKeyed(0, 0));
 }
 ?>

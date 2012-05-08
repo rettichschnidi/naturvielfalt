@@ -55,7 +55,8 @@ function gallery_form() {
 }
 
 /**
- * Restrict the inserted values to valid integers.
+ * Restrict the inserted values to valid integers and a size which is lower than the maximum
+ * php upload size.
  * 
  * @param array $form
  * 	Drupal form
@@ -74,6 +75,15 @@ function gallery_form_validate($form, &$form_state) {
 		form_error(
 			$form['gallery_image_size'],
 			t('Specify a valid signed integer value.'));
+	} else {
+		if ($form_state['values']['gallery_image_size']
+				> file_upload_max_size() / 1024) {
+			form_error(
+				$form['gallery_video_size'],
+				t(
+					'Size exceeds the maximum upload size of !size specified in php.ini.',
+					array('!size' => format_size(file_upload_max_size()))));
+		}
 	}
 	if (!preg_match(
 		'/^\-?[0-9]+$/',
@@ -81,12 +91,31 @@ function gallery_form_validate($form, &$form_state) {
 		form_error(
 			$form['gallery_sound_size'],
 			t('Specify a valid signed integer value.'));
+	} else {
+		if ($form_state['values']['gallery_sound_size']
+				> file_upload_max_size() / 1024) {
+			form_error(
+				$form['gallery_video_size'],
+				t(
+					'Size exceeds the maximum upload size of !size specified in php.ini.',
+					array('!size' => format_size(file_upload_max_size()))));
+		}
 	}
+
 	if (!preg_match(
 		'/^\-?[0-9]+$/',
 		$form_state['values']['gallery_video_size'])) {
 		form_error(
 			$form['gallery_video_size'],
 			t('Specify a valid signed integer value.'));
+	} else {
+		if ($form_state['values']['gallery_video_size']
+				> file_upload_max_size() / 1024) {
+			form_error(
+				$form['gallery_video_size'],
+				t(
+					'Size exceeds the maximum upload size of !size specified in php.ini.',
+					array('!size' => format_size(file_upload_max_size()))));
+		}
 	}
 }

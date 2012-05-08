@@ -16,8 +16,6 @@ function datatable_theme() {
 					'variables' => array(
 							// id of html table element
 							'id_table' => NULL,
-							// header of static tables
-							'table_headers' => NULL,
 							// header of tables with a json URL
 							'header' => NULL,
 							// content of table similar to table theme

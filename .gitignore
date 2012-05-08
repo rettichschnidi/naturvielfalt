@@ -14,3 +14,4 @@ various/migrate/import_crsf_basedata-test.php
 external/drupal/themes/
 webroot_drupal/sites/all/themes/zen/
 .htaccess
+webroot_drupal/sites/all/modules/date/

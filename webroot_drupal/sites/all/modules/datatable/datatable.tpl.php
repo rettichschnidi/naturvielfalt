@@ -72,17 +72,18 @@ if ($header) {
 
 	foreach ($header as $head) {
 		$aoColumns .= "{ display: '" . $head['name'] . "'";
-		if(isset($head['dbfield'])) $aoColumns .= ", name : '" . $head['dbfield'] . "'";
+		if (isset($head['dbfield']))
+			$aoColumns .= ", name : '" . $head['dbfield'] . "'";
 
-
-		(isset($head['noSort']) && $head['noSort'] == true) ? $aoColumns .= ",sortable : false"
+		(isset($head['noSort']) && $head['noSort'] == true)
+				? $aoColumns .= ",sortable : false"
 				: $aoColumns .= ",sortable : true";
-		(isset($head['width']) && $head['width']) ? $aoColumns .= ",  width : "
-						. $head['width']
+		(isset($head['width']) && $head['width'])
+				? $aoColumns .= ",  width : " . $head['width']
 				: $aoColumns .= ",  width : "
 						. (strlen($head['name']) * $colsized);
-		(isset($head['align']) && $head['align']) ? $aoColumns .= ",  align : '"
-						. $head['align'] . "'"
+		(isset($head['align']) && $head['align'])
+				? $aoColumns .= ",  align : '" . $head['align'] . "'"
 				: $aoColumns .= ",  align : 'left'";
 		if (isset($head['hide']) && $head['hide'] == true)
 			$aoColumns .= ", hide : true";
@@ -100,7 +101,7 @@ if ($header) {
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
 
-// 	if($rows) {
+// 	if ($rows) {
 // 		foreach ($header as $head) {
 // 			$table_headers[] = $head['name'];
 // 		}
@@ -110,7 +111,10 @@ $table[$id_table] = array(
 		'#theme' => 'table',
 		'#rows' => $rows,
 		'#sticky' => false,
-		'#attributes' => array('id' => $id_table, 'class' => $id_table),
+		'#attributes' => array(
+				'id' => $id_table,
+				'class' => $id_table
+		),
 );
 print drupal_render($table);
 ?>
@@ -124,8 +128,8 @@ jQuery("#<?php echo $id_table; ?>").flexigrid
 (
 {
 <?php
-if($options['jsonUrl']){
-	echo "url: ".$options['jsonUrl'].", dataType: 'json',";
+if ($options['jsonUrl']) {
+	echo "url: " . $options['jsonUrl'] . ", dataType: 'json',";
 }
 echo $aoColumns;
 ?>
