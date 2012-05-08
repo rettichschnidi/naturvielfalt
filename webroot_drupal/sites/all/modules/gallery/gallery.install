@@ -141,9 +141,10 @@ function gallery_schema() {
       array (
         0 => 'id',
       ),
-      'gallery_category_id' => 
+      'gallery_category_id_AND_name' => 
       array (
         0 => 'gallery_category_id',
+        1 => ' name',
       ),
     ),
     'primary key' => 
