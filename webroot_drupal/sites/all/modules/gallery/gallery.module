@@ -1488,17 +1488,17 @@ function gallery_category_delete($category) {
 	db_delete('gallery_category')->condition('id', $category['id'])
 		->execute();
 	db_delete('gallery_category_condition')->condition(
-			'category_id',
+			'gallery_category_id',
 			$category['id'])
 		->execute();
 	db_delete('gallery_image_category')->condition(
 			'option_id',
 			db_select('gallery_category_option')->fields('id')
-				->condition('category_id', $category['id']),
+				->condition('gallery_category_id', $category['id']),
 			'IN')
 		->execute();
 	db_delete('gallery_category_option')->condition(
-			'category_id',
+			'gallery_category_id',
 			$category['id'])
 		->execute();
 	return TRUE;
@@ -1507,17 +1507,17 @@ function gallery_category_delete($category) {
 /**
  * Get an array of all options of a category.
  *
- * @param $category_id
+ * @param $gallery_category_id
  *   The ID of the category.
  * @return
  *   An array of options keyed by the gallery category option ID.
  */
-function gallery_category_options($category_id) {
+function gallery_category_options($gallery_category_id) {
 	return db_select(
 		'gallery_category_option',
 		NULL,
 		array('fetch' => PDO::FETCH_ASSOC))->fields('gallery_category_option')
-		->condition('category_id', $category_id)
+		->condition('gallery_category_id', $gallery_category_id)
 		->orderBy('id')
 		->execute()
 		->fetchAll();
@@ -1585,18 +1585,18 @@ function gallery_category_option_delete($option) {
 /**
  * Get an array of all conditions of a category.
  *
- * @param $category_id
+ * @param $gallery_category_id
  *   The ID of the category.
  * @return
  *   An array of conditions keyed by the gallery category condition ID.
  */
-function gallery_category_conditions($category_id) {
+function gallery_category_conditions($gallery_category_id) {
 	return db_select(
 		'gallery_category_condition',
 		NULL,
 		array('fetch' => PDO::FETCH_ASSOC))->fields(
 			'gallery_category_condition')
-		->condition('category_id', $category_id)
+		->condition('gallery_category_id', $gallery_category_id)
 		->orderBy('name')
 		->execute()
 		->fetchAll();
@@ -1610,7 +1610,7 @@ function gallery_category_conditions($category_id) {
  * @return
  *   A category condition array containing the following keys:
  *   - "id": The unique gallery category option ID.
- *   - "category_id": The gallery category ID this option belongs to.
+ *   - "gallery_category_id": The gallery category ID this option belongs to.
  *   - "name": The name of the category condition.
  *   - "condition": The name of the condition.
  *   - "columnname": The column this condition refers to.
