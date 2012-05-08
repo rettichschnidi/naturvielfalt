@@ -28,6 +28,7 @@ jQuery(document).ready(function() {
 			observation.hideDetMethods();
 			areabasic.newestElement.overlay.setMap(null);
 			areabasic.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
+			areabasic.initLocation();
 			if(responseText.update) {
 				window.location = window.location.toString().replace("edit", "show")
 			}
