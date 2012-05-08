@@ -59,9 +59,9 @@ function observation_get($observation_id){
 		foreach ($attributes_vis as $attribute_vis)
 			$result['attributes'][$attribute_vis] = array(
 					'attribute_name' => organism_artgroup_get_attribute($attribute_vis, true),
-					'value_id' => $attributes[$attribute_vis]->organism_artgroup_attr_values_id,
-					'value_id_name' => organism_artgroup_get_attributes_value_name($attributes[$attribute_vis]->organism_artgroup_attr_values_id),
-					'value' => $attributes[$attribute_vis]->value);
+					'value_id' => @$attributes[$attribute_vis]->organism_artgroup_attr_values_id,
+					'value_id_name' => organism_artgroup_get_attributes_value_name(@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
+					'value' => @$attributes[$attribute_vis]->value);
 
 		return $result;
 	}
