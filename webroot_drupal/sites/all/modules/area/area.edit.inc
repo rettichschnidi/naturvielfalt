@@ -50,6 +50,9 @@ function area_edit($areadata = NULL) {
 	$output['file']['upload'] = drupal_get_form(
 		'area_edit_files_form',
 		$areadata);
+	$output['safetynet'] = array(
+			'#theme' => 'commonstuff.safetynet'
+	);
 	return $output;
 }
 
@@ -188,7 +191,7 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 	$form['actions'] = array(
 			'#type' => 'actions'
 	);
-	
+
 	/* add a submit button to save the changes */
 	$form['actions']['submit'] = array(
 			'#type' => 'submit',
@@ -420,7 +423,8 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 		foreach ($result as $record) {
 			$mimeIconMap = array(
 					'path' => drupal_get_path('module', 'inventory')
-							. '/images/' . commonstuff_get_icon_map($record->filemime)
+							. '/images/'
+							. commonstuff_get_icon_map($record->filemime)
 							. '.png',
 					'alt' => $record->filemime,
 					'title' => $record->filemime,
