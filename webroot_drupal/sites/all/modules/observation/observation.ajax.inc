@@ -118,7 +118,9 @@ global $user;
 				break;
 			case 'date':
 				$value_split = explode('.', $value);
-				if(checkdate($value_split[1], $value_split[0], $value_split[2])){
+
+				if(count($value_split) == '3'
+						&& checkdate(intval($value_split[1]), intval($value_split[0]), intval($value_split[2]))){
 					$attributes_checked[$key] = $value;
 				}else{
 					if($value != ""){
@@ -166,14 +168,15 @@ global $user;
 	 */
 	$custom_names = $values['attributes_custom_names'];
 	$custom_values = $values['attributes_custom_values'];
-	foreach ($custom_names as $key => $val){
-
-		if($val == t('Please enter a name') && $custom_values[$key] == t('Please enter a value')) continue;
-		if(empty($val) && empty($custom_values[$key])) continue;
-		if($val == t('Please enter a name') || empty($val) ||
-				$custom_values[$key] == t('Please enter a value')){
-			$error = true;
-			$message[] = t('Please enter for each custom attribute a text, leave both empty to ignore it');
+	if(count($custom_names > 0)){
+		foreach ($custom_names as $key => $val){
+			if($val == t('Please enter a name') && $custom_values[$key] == t('Please enter a value')) continue;
+			if(empty($val) && empty($custom_values[$key])) continue;
+			if($val == t('Please enter a name') || empty($val) ||
+					$custom_values[$key] == t('Please enter a value')){
+				$error = true;
+				$message[] = t('Please enter for each custom attribute a text, leave both empty to ignore it');
+			}
 		}
 	}
 
@@ -190,9 +193,11 @@ global $user;
 		/**
 		 * add the new custom attributes to the db and the values to the attr check array
 		 */
-		foreach ($custom_names as $key => $val){
-			$attr_id = organism_artgroup_add_custom_attribute($val, $observation['organism_artgroup_id']);
-			if($attr_id != false) $attributes_checked[$attr_id] = $custom_values[$key];
+		if(count($custom_names > 0)){
+			foreach ($custom_names as $key => $val){
+				$attr_id = organism_artgroup_add_custom_attribute($val, $observation['organism_artgroup_id']);
+				if($attr_id != false) $attributes_checked[$attr_id] = $custom_values[$key];
+			}
 		}
 
 		/**
@@ -203,7 +208,7 @@ global $user;
 			area_update_geometry($observation['area_geometry_id'], $geometry);
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 			db_update('observation')->fields($observation)->condition('id', $observation['id'])->execute();
-
+			$output['update'] = true;
 		}else{
 			// $geometry_id = area_save_geometry_blablablab();
 			$observation['area_geometry_id'] = area_create_geometry($geometry);
