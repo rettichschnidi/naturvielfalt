@@ -61,10 +61,11 @@ CREATE TABLE public.gallery_category_option
 	-- The primary identifier for a category option.
 	id serial NOT NULL UNIQUE,
 	-- The primary identifier for a gallery category.
-	gallery_category_id int NOT NULL UNIQUE,
+	gallery_category_id int NOT NULL,
 	-- The name of the option.
 	name text,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (gallery_category_id, name)
 ) WITHOUT OIDS;
 
 
