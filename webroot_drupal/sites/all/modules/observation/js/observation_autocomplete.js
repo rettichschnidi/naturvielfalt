@@ -112,14 +112,29 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 		item.langfounded = false;
 		if(label.match(re)) item.langfounded = true;
 		label = label.replace(re, '<span class="ui-state-highlight">$&</span>');
-		// seach result mark is not perfect, should be the same as the search...
+		
+		// mark the search result in the sc name
 		term = $.trim(term).split(' ');
 		item.latinfounded = false;
-		while(term.length) {
-			re = new RegExp(term.pop(), 'ig');
-			if(label_latin.match(re)) item.latinfounded = true;
-			label_latin = label_latin.replace(re, '<span class="ui-state-highlight">$&</span>');
+		label_latin_split = label_latin.split(' ');
+		
+		re = new RegExp(term[0], 'ig');
+		if(label_latin_split[0].match(re)) item.latinfounded = true;
+		label_latin_split[0] = label_latin_split[0].replace(re, '<span class="ui-state-highlight">$&</span>');
+		
+		if(label_latin_split.length > 1 && term.length > 1){
+			re = new RegExp(term[1], 'ig');
+			if(label_latin_split[1].match(re)) item.latinfounded = true;
+			label_latin_split[1] = label_latin_split[1].replace(re, '<span class="ui-state-highlight">$&</span>');
 		}
+		
+		if(label_latin_split.length > 2 && term.length > 2){
+			re = new RegExp(term[2], 'ig');
+			if(label_latin_split[2].match(re)) item.latinfounded = true;
+			label_latin_split[2] = label_latin_split[2].replace(re, '<span class="ui-state-highlight">$&</span>');
+		}
+		label_latin = label_latin_split.join(" ");
+		
 //		
 //		var old_label = item.old_label;
 //		var old_label_latin = item.old_label_latin;
