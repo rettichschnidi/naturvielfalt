@@ -5,6 +5,31 @@
  * @copyright 2012 Naturwerk, Brugg
  */
 
+/**
+ * Implements hook_theme()
+ *
+ * @return an array with theme template information
+ */
+function commonstuff_theme() {
+	return array(
+			'commonstuff.safetynet' => array(
+					'template' => 'commonstuff.safetynet',
+					'variables' => array(
+							'warningmessage' => t('Your changes will be lost!'),
+							'selector' => 'input,select,textarea'
+					)
+			)
+	);
+}
+
+/**
+ * Map the given mine-type to one where we have an icon for.
+ * 
+ * @param $filemime
+ * 	String with the mine-type
+ * @return
+ * 	String with the simplified mime-type
+ */
 function commonstuff_get_icon_map($filemime) {
 	switch ($filemime) {
 	// Word document types.
