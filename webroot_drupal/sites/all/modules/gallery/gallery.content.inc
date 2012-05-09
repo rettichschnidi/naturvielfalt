@@ -1624,7 +1624,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 				if (!$value)
 					continue;
 				$cat = array(
-						'option_id' => substr($value, 4),
+						'gallery_category_option_id' => substr($value, 4),
 				);
 				if (is_array($orig_image['categories'])
 						&& array_key_exists($value, $orig_image['categories']))
@@ -1763,12 +1763,16 @@ function gallery_image_rate($image) {
 		break;
 	}
 	if ($_REQUEST['ajax']) {
-		$sql = 'SELECT ' . 'gir.gallery_rating_type_id AS id, '
-				. 'AVG(gir.rating) AS average, '
-				. 'COUNT(gir.rating) AS number '
-				. 'FROM gallery_image_rating AS gir ' . 'WHERE '
-				. 'gir.gallery_image_id = :id '
-				. 'GROUP BY gir.gallery_rating_type_id';
+		$sql = 'SELECT
+					gir.gallery_rating_type_id AS id,
+					AVG(gir.rating) AS average,
+					COUNT(gir.rating) AS number
+				FROM 
+					{gallery_image_rating} AS gir
+				WHERE
+					gir.gallery_image_id = :id
+				GROUP BY
+					gir.gallery_rating_type_id';
 		$result = db_query($sql, array(':id' => $image['id']));
 		$image['ratings'] = array();
 		foreach ($result as $record) {
@@ -2094,7 +2098,7 @@ function theme_gallery_list($variables) {
 					. '<a ' . $extras . ' href="' . $url_href . '">'
 					. '<img src="' . $url_image . '" alt="' . $image['title']
 					. '" />' . $media_label . '</a>'
-					. (user_access('manage gallery medias')
+					. (user_access('manage gallery medias') && false /* disables the button */
 							? '<form class="show_hide" method="post" action="'
 									. url(
 										'gallery/' . $image['item_type'] . '/'
