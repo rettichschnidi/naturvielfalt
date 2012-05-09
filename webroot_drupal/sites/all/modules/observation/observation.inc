@@ -433,7 +433,7 @@ function observation_gallery_save_manual($module_name, $entry_array){
 	$mediatype = $entry_array['type'];
 
 	// if no files to work with abort
-	if(count($_FILES['files']['tmp_name']) < 1 || $_FILES['files']['tmp_name'] = '') return false;
+	if(count($_FILES['files']['tmp_name']) < 1) return false;
 
 	// make the validator for the files
 	if ($mediatype == "images") {
@@ -484,7 +484,8 @@ function observation_gallery_save_manual($module_name, $entry_array){
 // die(print_r($_FILES));
 
 	// save each files
-	foreach($_FILES['files']['tmp_name'] as $fkey => $file){
+	foreach($_FILES['files']['error'] as $fkey => $message){
+		if($message != 0) continue;
 // 		$file_name = dirname($php_files[$mediatype]['tmp_name'][$fkey]).$php_files[$mediatype]['name'][$fkey];
 // die($destination[$key].'/'.$php_files[$mediatype]['name'][$fkey]);
 // 		rename($php_files[$mediatype]['tmp_name'][$fkey], $file_name);
