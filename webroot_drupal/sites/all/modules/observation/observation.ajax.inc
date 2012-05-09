@@ -9,6 +9,7 @@ function observation_save($observation_data = false){
 global $user;
 	module_load_include('inc', 'organism', 'organism.artgroup');
 // die(print_r($_FILES));
+// die(print_r($_POST));
 	$values = $_POST;
 	$error = false;
 	$message = array();
@@ -166,18 +167,21 @@ global $user;
 	/**
 	 * Check custom attributes
 	 */
-	$custom_names = $values['attributes_custom_names'];
-	$custom_values = $values['attributes_custom_values'];
-	if(count($custom_names > 0)){
-		// Sometimes "Invalid argument supplied for foreach" don't know why... bö
-		// supress warnings
-		foreach (@$custom_names as $key => $val){
-			if($val == t('Please enter a name') && $custom_values[$key] == t('Please enter a value')) continue;
-			if(empty($val) && empty($custom_values[$key])) continue;
-			if($val == t('Please enter a name') || empty($val) ||
-					$custom_values[$key] == t('Please enter a value')){
-				$error = true;
-				$message[] = t('Please enter for each custom attribute a text, leave both empty to ignore it');
+	$custom_names = array();
+	if(isset($values['attributes_custom_names'])){
+		$custom_names = $values['attributes_custom_names'];
+		$custom_values = $values['attributes_custom_values'];
+		if(count($custom_names > 0)){
+			// Sometimes "Invalid argument supplied for foreach" don't know why... bö
+			// supress warnings
+			foreach ($custom_names as $key => $val){
+				if($val == t('Please enter a name') && $custom_values[$key] == t('Please enter a value')) continue;
+				if(empty($val) && empty($custom_values[$key])) continue;
+				if($val == t('Please enter a name') || empty($val) ||
+						$custom_values[$key] == t('Please enter a value')){
+					$error = true;
+					$message[] = t('Please enter for each custom attribute a text, leave both empty to ignore it');
+				}
 			}
 		}
 	}
@@ -238,6 +242,10 @@ global $user;
 				'type' => 'images',
 		);
 		observation_gallery_save_manual('observation', $image);
+
+		if(isset($values['delete'])){
+			observation_gallery_delete($values['delete']);
+		}
 
 		// Set the return statement
 		$output['success'] = true;
