@@ -98,10 +98,13 @@ function observation_form($observation = false) {
 	// Product picture
 	$image['picture'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Add pictures to this observation'),
+			'#title' => t('Manage media for this observation'),
 			'#id' => 'picture',
 			'#collapsible' => true,
 			'#collapsed' => false,);
+	if($observation['observation']['id'] != ''){
+		$image['picture']['media_table'] = observation_gallery_existing_file_list('observation', $observation['observation']['id']);
+	}
 	$image['picture']['picture_upload'] = array(
 			'#type' => 'file',
 			'#name' => 'files[]',
@@ -112,14 +115,7 @@ function observation_form($observation = false) {
 			'#id' => 'picture_upload',);
 // 	$image['picture']
 
-	if($observation['observation']['id'] != ''){
-		$image['image_list'] = array(
-				'#type' => 'fieldset',
-				'#title' => t('Manage media'),
-				'#collapsible' => true,
-				'#collapsed' => false,);
-		$image['image_list']['table'] = observation_gallery_existing_file_list('observation', $observation['observation']['id']);
-	}
+
 
 	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
 
