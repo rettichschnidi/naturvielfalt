@@ -169,7 +169,9 @@ global $user;
 	$custom_names = $values['attributes_custom_names'];
 	$custom_values = $values['attributes_custom_values'];
 	if(count($custom_names > 0)){
-		foreach ($custom_names as $key => $val){
+		// Sometimes "Invalid argument supplied for foreach" don't know why... bö
+		// supress warnings
+		foreach (@$custom_names as $key => $val){
 			if($val == t('Please enter a name') && $custom_values[$key] == t('Please enter a value')) continue;
 			if(empty($val) && empty($custom_values[$key])) continue;
 			if($val == t('Please enter a name') || empty($val) ||
@@ -222,6 +224,21 @@ global $user;
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 
 		}
+
+		/**
+		 * TSTING GALLERY
+		 */
+
+		$image = array(
+				'item_id' => $observation['id'],
+				'title' => '',
+				'description' => '',
+				'author' => $observation['observer'],
+				'location' => $geometry['township'].' '.$geometry['canton'],
+				'type' => 'images',
+		);
+		observation_gallery_save_manual('observation', $image);
+
 		// Set the return statement
 		$output['success'] = true;
 

@@ -24,12 +24,14 @@ jQuery(document).ready(function() {
 			observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
 			$('#observation_form').trigger('reset');
 			$('#species_autocomplete').html('');
-			observation.hideAttributes();
-			observation.hideDetMethods();
-			areabasic.newestElement.overlay.setMap(null);
-			areabasic.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
 			if(responseText.update) {
 				window.location = window.location.toString().replace("edit", "show")
+			}else{
+				observation.hideAttributes();
+				observation.hideDetMethods();
+				areabasic.newestElement.overlay.setMap(null);
+				areabasic.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
+				areabasic.initLocation();
 			}
 		}else{
 			observation.setMessage('<br><br>&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
@@ -155,6 +157,10 @@ jQuery(document).ready(function() {
 				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
 				});
 			return false;
+		};
+		
+		addUploadSlot = function(form){
+			$('#picture_upload').clone().appendTo('#picture').val('');
 		};
 		
 
