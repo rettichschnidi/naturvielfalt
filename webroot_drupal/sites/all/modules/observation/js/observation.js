@@ -159,6 +159,10 @@ jQuery(document).ready(function() {
 			return false;
 		};
 		
+		addUploadSlot = function(form){
+			$('#picture_upload').clone().appendTo('#picture').val('');
+		};
+		
 
 
 });
