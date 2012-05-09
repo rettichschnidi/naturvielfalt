@@ -426,7 +426,7 @@ function observation_add_attribute_value($entry){
 			'description' => little desc,
 			'author' => the author,
 			'location' => a location like Brugg AG,
-			'type' => 'images' OR 'mp3' OR 'mp4' (the file inputs need to named like images[])
+			'type' => 'images' OR 'mp3' OR 'mp4' (the file inputs need to named files[])!!!
  */
 function observation_gallery_save_manual($module_name, $entry_array){
 
@@ -486,9 +486,6 @@ function observation_gallery_save_manual($module_name, $entry_array){
 	// save each files
 	foreach($_FILES['files']['error'] as $fkey => $message){
 		if($message != 0) continue;
-// 		$file_name = dirname($php_files[$mediatype]['tmp_name'][$fkey]).$php_files[$mediatype]['name'][$fkey];
-// die($destination[$key].'/'.$php_files[$mediatype]['name'][$fkey]);
-// 		rename($php_files[$mediatype]['tmp_name'][$fkey], $file_name);
 		$file = file_save_upload($fkey, $validators, $destination[$key]);
 		if ($file) {
 			$file->status |= FILE_STATUS_PERMANENT;

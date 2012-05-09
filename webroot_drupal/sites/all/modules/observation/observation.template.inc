@@ -84,7 +84,8 @@ function observation_form($observation = false) {
 			'#theme' => 'area',
 			'#coordinate_storage_id' => 'coordinate',
 			'#search' => true,
-			'#ch1903' => true
+			'#ch1903' => true,
+			'#height' => '350px',
 	);
 	$form['div']['map']['#action'] = ($observation['observation']['id'] == '') ? 'getcoordinate' : 'custom-edit';
 	if($observation['observation']['id'] != '') $form['div']['map']['#json_url'] = 'observation/'.$observation['observation']['id'].'/geometry/json';
@@ -108,9 +109,8 @@ function observation_form($observation = false) {
 	$image['picture']['picture_upload'] = array(
 			'#type' => 'file',
 			'#name' => 'files[]',
-			'#title' => t('Upload image'),
+			'#title' => t('Upload new files'),
 			'#size' => 48,
-			'#accept' => 'image/*',
 			'#description' => '<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a>',
 			'#id' => 'picture_upload',);
 // 	$image['picture']
