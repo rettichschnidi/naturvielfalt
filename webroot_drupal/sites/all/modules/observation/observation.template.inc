@@ -94,8 +94,9 @@ function observation_form($observation = false) {
 	 * include a upload form for images
 	 */
 	// Product picture
-	$image['picture'] = array('#type' => 'fieldset', '#title' => t('Product image'));
-	$image['picture']['picture_upload'] = array('#type' => 'file', '#title' => t('Upload product image'), '#size' => 48, 'accept' => 'image/*');
+	$image['picture'] = array('#type' => 'fieldset', '#title' => t('Observation pictures'));
+	$image['picture']['picture_upload'] = array('#type' => 'file', '#name' => 'files[]', '#title' => t('Upload image'), '#size' => 48, 'accept' => 'image/*');
+// 	$image['picture']['picture_upload2'] = array('#type' => 'file', '#name' => 'images[]', '#title' => t('Upload image'), '#size' => 48, 'accept' => 'image/*');
 
 
 	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
@@ -163,7 +164,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
-// 					.drupal_render($image)
+					.drupal_render($image)
 					.'</form>'
 			.'</div>';
 	return $formcust;
