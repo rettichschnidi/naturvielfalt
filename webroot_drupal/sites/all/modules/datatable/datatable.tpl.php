@@ -134,7 +134,10 @@ if ($options['jsonUrl']) {
 echo $aoColumns;
 ?>
 
-searchitems : [{display: Drupal.t('ALL'), name : '*', isdefault: true}],
+searchitems : [
+		{display: Drupal.t('ALL'), name: '*', isdefault: true}
+	],
+singleSelect: true,
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",
 usepager: true,
