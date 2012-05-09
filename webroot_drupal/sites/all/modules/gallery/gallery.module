@@ -486,7 +486,7 @@ function gallery_menu() {
 
 /**
  * Implements hook_admin_paths_alter().
- * 
+ *
  * Enable overlay for certain paths
  */
 function gallery_admin_paths_alter(&$paths) {
@@ -710,7 +710,7 @@ function gallery_images($mediatype, $type = false, $id = false,
 				gc.id AS gc_id,
 				gc.name AS gc_name,
 				gc.description AS gc_description,
-				COALESCE(r.overallrating, 0) AS overallrating 
+				COALESCE(r.overallrating, 0) AS overallrating
 				$ratingSQL
 			FROM
 				{gallery_image} AS gi
@@ -1745,7 +1745,7 @@ function gallery_rating_type_delete($type) {
 
 /**
  * Checks access for gallery specific pages
- * 
+ *
  * @return boolean
  *   Whether access is granted or not
  * @param string $type
@@ -1759,7 +1759,7 @@ function gallery_access_callback($type, $permission = VIEW_GALLERY_IMAGES) {
 
 /**
  * Checks access for gallery specific edit pages
- * 
+ *
  * @return boolean
  *   Whether access is granted or not
  * @param string $type
@@ -1799,7 +1799,7 @@ function gallery_edit_access_callback($type, $id, $image = false) {
 
 /**
  * Checks whether the current user is the owner of the image or not
- * 
+ *
  * @return boolean
  *   Whether the current user is the owner or not
  * @param string $type
@@ -1816,7 +1816,7 @@ function gallery_image_owner_access_callback($type, $id, $image) {
 
 /**
  * Checks whether the current user is the owner of the specified object or not
- * 
+ *
  * @return boolean
  *   Whether the current user is the owner or not
  * @param string $type
@@ -1842,7 +1842,7 @@ function gallery_own_edit_access($owner) {
 
 /**
  * Checks whether the gallery module is active for the specific type or not
- * 
+ *
  * @return boolean
  *   Whether the type is valid or not
  * @param string $type
@@ -1920,4 +1920,40 @@ function _gallery_get_default_location($type, $id) {
 			$types[$type]['location_provider'],
 			array($id));
 	return '';
+}
+
+/**
+ * Validate uf a mime type is an allowed image format
+ * @param string $mime_type
+ * @return bool
+ * 			true on success, otherwise false
+ */
+function gallery_validate_image($mime_type){
+	if($mime_type == 'image/png'
+	|| $mime_type == 'image/jpg'
+	|| $mime_type == 'image/jpeg'
+	|| $mime_type == 'image/gif') return true;
+	return false;
+}
+
+/**
+ * Validate uf a mime type is an allowed video format
+ * @param string $mime_type
+ * @return bool
+ * 			true on success, otherwise false
+ */
+function gallery_validate_video($mime_type){
+	if($mime_type == 'video/mp4') return true;
+	return false;
+}
+
+/**
+ * Validate uf a mime type is an allowed music format
+ * @param string $mime_type
+ * @return bool
+ * 			true on success, otherwise false
+ */
+function gallery_validate_mp3($mime_type){
+	if($mime_type == 'audio/mpeg') return true;
+	return false;
 }
