@@ -169,8 +169,9 @@ function observation_menu() {
 					1
 			),
 			'access arguments' => array(
-					'access observation'
+					1
 			),
+			'access callback' => 'observation_write_access',
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
