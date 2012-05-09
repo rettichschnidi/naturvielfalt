@@ -141,9 +141,10 @@ function gallery_schema() {
       array (
         0 => 'id',
       ),
-      'gallery_category_id' => 
+      'gallery_category_id_AND_name' => 
       array (
         0 => 'gallery_category_id',
+        1 => ' name',
       ),
     ),
     'primary key' => 
@@ -284,10 +285,6 @@ function gallery_schema() {
       array (
         0 => 'gallery_image_id',
       ),
-      'gallery_category_option_id' => 
-      array (
-        0 => 'gallery_category_option_id',
-      ),
     ),
     'primary key' => 
     array (
@@ -360,14 +357,6 @@ function gallery_schema() {
       'id' => 
       array (
         0 => 'id',
-      ),
-      'gallery_image_id' => 
-      array (
-        0 => 'gallery_image_id',
-      ),
-      'gallery_rating_type_id' => 
-      array (
-        0 => 'gallery_rating_type_id',
       ),
     ),
     'primary key' => 
@@ -457,7 +446,6 @@ function gallery_schema() {
       array (
         'description' => 'Primary Key: Unique role ID.',
         'type' => 'int',
-        'not null' => 'TRUE',
       ),
       'name' => 
       array (
@@ -468,12 +456,6 @@ function gallery_schema() {
       array (
         'description' => 'Long description of the rating type.',
         'type' => 'text',
-      ),
-      'role_id' => 
-      array (
-        'description' => 'The role.rid required for placing ratings of this type.',
-        'type' => 'int',
-        'size' => 'big',
       ),
       'weight' => 
       array (
@@ -493,17 +475,6 @@ function gallery_schema() {
     'primary key' => 
     array (
       0 => 'id',
-    ),
-    'indexes' => 
-    array (
-      'gallery_rating_type_role_id_idx' => 
-      array (
-        0 => 'role_id',
-      ),
-      'gallery_rating_type_weight_idx' => 
-      array (
-        0 => 'weight',
-      ),
     ),
   ),
 );

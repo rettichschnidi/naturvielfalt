@@ -88,8 +88,10 @@ function observation_form($observation = false) {
 	);
 	$form['div']['map']['#action'] = ($observation['observation']['id'] == '') ? 'getcoordinate' : 'custom-edit';
 	if($observation['observation']['id'] != '') $form['div']['map']['#json_url'] = 'observation/'.$observation['observation']['id'].'/geometry/json';
-
-
+	// warn when leaving with changes not yet saved
+	$form['safetynet'] = array(
+			'#theme' => 'commonstuff.safetynet'
+	);
 	/**
 	 * include a upload form for images
 	 */
@@ -118,7 +120,6 @@ function observation_form($observation = false) {
 				'#collapsed' => false,);
 		$image['image_list']['table'] = observation_gallery_existing_file_list('observation', $observation['observation']['id']);
 	}
-
 
 	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
 

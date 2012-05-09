@@ -1,11 +1,4 @@
 
-/* Drop Indexes */
-
-DROP INDEX IF EXISTS gallery_rating_type_role_id_idx;
-DROP INDEX IF EXISTS gallery_rating_type_weight_idx;
-
-
-
 /* Drop Tables */
 
 DROP TABLE IF EXISTS public.gallery_category_condition;
@@ -61,10 +54,11 @@ CREATE TABLE public.gallery_category_option
 	-- The primary identifier for a category option.
 	id serial NOT NULL UNIQUE,
 	-- The primary identifier for a gallery category.
-	gallery_category_id int NOT NULL UNIQUE,
+	gallery_category_id int NOT NULL,
 	-- The name of the option.
 	name text,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (gallery_category_id, name)
 ) WITHOUT OIDS;
 
 
@@ -104,7 +98,7 @@ CREATE TABLE public.gallery_image_category
 	-- The primary identifier for a gallery image.
 	gallery_image_id int NOT NULL UNIQUE,
 	-- The primary identifier for a category option.
-	gallery_category_option_id int NOT NULL UNIQUE,
+	gallery_category_option_id int NOT NULL,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -114,9 +108,9 @@ CREATE TABLE public.gallery_image_rating
 	-- The primary identifier for a gallery image rating.
 	id serial NOT NULL UNIQUE,
 	-- The primary identifier for a gallery image.
-	gallery_image_id int NOT NULL UNIQUE,
+	gallery_image_id int NOT NULL,
 	-- The primary identifier for a gallery image rating.
-	gallery_rating_type_id int NOT NULL UNIQUE,
+	gallery_rating_type_id int NOT NULL,
 	-- Primary Key: Unique user ID.
 	user_uid bigint DEFAULT 0 NOT NULL,
 	-- The actual rating value.
@@ -144,13 +138,11 @@ CREATE TABLE public.gallery_rating_type
 	-- The primary identifier for a gallery image rating.
 	id serial NOT NULL UNIQUE,
 	-- Primary Key: Unique role ID.
-	role_rid int NOT NULL,
+	role_rid int,
 	-- The name of the rating type.
 	name text,
 	-- Long description of the rating type.
 	description text,
-	-- The role.rid required for placing ratings of this type.
-	role_id bigint,
 	-- The weight of this rating type in the global rating.
 	weight int DEFAULT 1 NOT NULL,
 	PRIMARY KEY (id)
@@ -217,13 +209,6 @@ ALTER TABLE public.gallery_image_rating
 
 
 
-/* Create Indexes */
-
-CREATE INDEX gallery_rating_type_role_id_idx ON public.gallery_rating_type USING BTREE (role_id);
-CREATE INDEX gallery_rating_type_weight_idx ON public.gallery_rating_type USING BTREE (weight);
-
-
-
 /* Comments */
 
 COMMENT ON COLUMN public.gallery_category.id IS 'The primary identifier for a gallery category.';
@@ -267,7 +252,6 @@ COMMENT ON COLUMN public.gallery_rating_type.id IS 'The primary identifier for a
 COMMENT ON COLUMN public.gallery_rating_type.role_rid IS 'Primary Key: Unique role ID.';
 COMMENT ON COLUMN public.gallery_rating_type.name IS 'The name of the rating type.';
 COMMENT ON COLUMN public.gallery_rating_type.description IS 'Long description of the rating type.';
-COMMENT ON COLUMN public.gallery_rating_type.role_id IS 'The role.rid required for placing ratings of this type.';
 COMMENT ON COLUMN public.gallery_rating_type.weight IS 'The weight of this rating type in the global rating.';
 
 
