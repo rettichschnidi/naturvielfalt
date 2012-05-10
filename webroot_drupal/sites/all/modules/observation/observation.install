@@ -5,6 +5,40 @@
 
 function observation_schema() {
 	return array (
+  'observation_file_managed' => 
+  array (
+    'fields' => 
+    array (
+      'observation_id' => 
+      array (
+        'description' => 'No description for column observation_id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'file_managed_fid' => 
+      array (
+        'description' => 'File ID.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'description' => 
+      array (
+        'description' => 'No description for column description available, please fix',
+        'type' => 'text',
+      ),
+    ),
+    'foreign keys' => 
+    array (
+      'observation_file_managed_2_observation_attribute' => 
+      array (
+        'table' => 'observation_attribute',
+        'columns' => 
+        array (
+          'observation_id' => 'id',
+        ),
+      ),
+    ),
+  ),
   'observation' => 
   array (
     'fields' => 
