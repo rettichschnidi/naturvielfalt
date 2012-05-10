@@ -1410,10 +1410,12 @@ function gallery_available_rating_types() {
 	global $user;
 	$types = gallery_rating_types();
 	$available = array();
-	foreach ($types as $type)
-		if (!array_key_exists('role', $type) || !$type['role']
-				|| in_array($type['role'], $user->roles))
+	foreach ($types as $type) {
+		if (!array_key_exists('role_rid', $type) || !$type['role_rid']
+				|| array_key_exists($type['role_rid'], $user->roles)) {
 			array_push($available, $type);
+		}
+	}
 	return $available;
 }
 
