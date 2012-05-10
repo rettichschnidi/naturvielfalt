@@ -237,7 +237,7 @@ function observation_get_table($observationdata = NULL){
 	if (!empty($observationdata['observation']['count'])) {
 		$rows[] = array(
 				array('data' => t('Count'),'header' => true),
-				date("j.m.Y", $observationdata['observation']['count'])
+				$observationdata['observation']['count']
 		);
 	}
 
@@ -416,5 +416,259 @@ function observation_add_attribute_value($entry){
 
 
 
+/**
+ * BETA!!!!
+ * @param array $php_files
+ * @param string $module_name
+ * @param array $entry_array
+			'item_id' => ID of the obervation/area/...,
+			'title' => Title,
+			'description' => little desc,
+			'author' => the author,
+			'location' => a location like Brugg AG,
+			'type' => 'images' OR 'mp3' OR 'mp4' (the file inputs need to named files[])!!!
+ */
+function observation_gallery_save_manual($module_name, $entry_array){
 
+	$mediatype = $entry_array['type'];
+
+	// if no files to work with abort
+	if(count($_FILES['files']['tmp_name']) < 1) return false;
+
+	// make the validator for the files
+	if ($mediatype == "images") {
+		$extensions = 'jpg jpeg gif png';
+		$file_size = variable_get('gallery_image_size', 2048);
+	} elseif ($mediatype == "sounds") {
+		$extensions = 'mp3';
+		$file_size = variable_get('gallery_sound_size', 2048);
+	} elseif ($mediatype == "videos") {
+		$extensions = 'mp4';
+		$file_size = variable_get('gallery_video_size', 8192);
+	}
+	$file_size = $file_size * 1024;
+	$validators = array(
+			'file_validate_extensions' => array(
+					$extensions
+			),
+			'file_validate_size' => array(
+					parse_size($file_size),
+					0
+			),
+	);
+
+	$categories = array();
+	$destination = array();
+
+	// build the db entry for the gallery module
+	$image = array(
+			'item_type' => $module_name,
+			'item_id' => $entry_array['item_id'],
+			'title' => $entry_array['title'],
+			'description' => $entry_array['description'],
+			'author' => $entry_array['author'],
+			'location' => $entry_array['location'],
+			'categories' => array(),
+			'subtypes' => array()
+	);
+
+	// check the directory, create it if not exists
+	$key = $image['item_type'] . ':' . $image['item_id'];
+	if (!array_key_exists($key, $destination)) {
+		$destination[$key] = 'public://naturvielfalt/gallery/'
+		. $image['item_type'] . '/' . $image['item_id'];
+		file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
+	}
+
+	$img_ids = array();
+// die(print_r($_FILES));
+
+	// save each files
+	foreach($_FILES['files']['error'] as $fkey => $message){
+		if($message != 0) continue;
+		$file = file_save_upload($fkey, $validators, $destination[$key]);
+		if ($file) {
+			$file->status |= FILE_STATUS_PERMANENT;
+			$file = file_save($file);
+			$image['file_managed_fid'] = $file->fid;
+		}else{
+			//FIXME
+// 			error about didn't saved...
+// die('fehlfer');
+			$img_ids[$fkey] = 'Error! File not saved!';
+		}
+		$img_ids[$fkey] = gallery_image_save($image);
+	}
+	return $img_ids;
+}
+
+
+function observation_gallery_existing_file_list($module=false, $id=false){
+
+	if(!$module || !$id) return false;
+
+	drupal_add_css(
+			drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
+			array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+			));
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
+	drupal_add_css(
+			drupal_get_path('module', 'gallery') . '/css/divbox.css',
+			array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+			));
+	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/divbox.js');
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js');
+	$types = _gallery_types();
+
+	$subtypes = _gallery_get_subtypes($type, false);
+
+	$header = array(
+			'',
+			t('Filename'),
+			t('Title')
+	);
+	if ($subtypes)
+		$header[] = t('Type');
+	$header[] = t('Author');
+	$header[] = t('Location');
+	$header[] = t('Caption');
+	$header[] = t('Operations');
+	$header[] = t('Delete');
+
+	$mediatype = 'medias';
+
+	$images = gallery_images($mediatype, $module, $id, 'edit');
+// die(print_r($images));
+	$rows = array();
+	foreach ($images[$mediatype] as $image) {
+
+		if ($mediatype == "images"
+				|| ($mediatype == "medias"
+						&& ($image['filemime'] == "image/png"
+								|| $image['filemime'] == "image/jpg"
+								|| $image['filemime'] == "image/jpeg"
+								|| $image['filemime'] == "image/gif"))) {
+
+			$url_href = url(
+					'gallery/' . $image['item_type'] . '/' . $image['item_id']
+					. '/thumb/' . $image['id'] . '/gallery_large');
+			$url_image = url(
+					'gallery/' . $image['item_type'] . '/' . $image['item_id']
+					. '/thumb/' . $image['id'] . '/gallery_mini');
+			$extras = 'rel="lightbox"';
+		} elseif ($mediatype == "sounds"
+				|| ($mediatype == "medias"
+						&& ($image['filemime'] == "audio/mpeg"))) {
+
+			$url_href = file_uri_target($image['uri']);
+			$url_href = url('sites/default/files/' . $url_href);
+			$url_image = url(
+					drupal_get_path('module', 'gallery')
+					. '/images/music_icon_mini.png');
+			$extras = 'class="divbox_sound"';
+		} elseif ($mediatype == "videos"
+				|| ($mediatype == "medias"
+						&& ($image['filemime'] == "video/mp4"))) {
+
+			$url_href = file_uri_target($image['uri']);
+			$url_href = url('sites/default/files/' . $url_href);
+			$url_image = url(
+					drupal_get_path('module', 'gallery')
+					. '/images/video_icon_mini.png');
+			$extras = 'class="divbox_video"';
+		}
+
+		$caption = '';
+		if (array_key_exists($image['item_type'], $types)
+				&& array_key_exists(
+						'image_caption',
+						$types[$image['item_type']]))
+			$caption = call_user_func_array(
+					$types[$image['item_type']]['image_caption'],
+					array($image['item_id']));
+		$editable = gallery_edit_access_callback(
+				$image['item_type'],
+				$image['item_id'],
+				$image);
+		$row = array();
+		$row[] = '<a ' . $extras . ' href="' . $url_href . '"><img src="'
+		. $url_image . '" alt="' . $image['title'] . '" /></a>';
+		$row[] = $image['filename'];
+		$row[] = $image['title'];
+		if ($subtypes) {
+			$stypes = array();
+			foreach ($image['subtypes'] as $subtype)
+				$stypes[] = $subtypes[$subtype];
+			$row[] = implode(', ', $stypes);
+		}
+		$row[] = $image['author'];
+		$row[] = $image['location'];
+		$row[] = $caption;
+		$row[] = $editable
+		? l(
+				t('edit'),
+				'gallery/' . $image['item_type'] . '/' . $image['item_id']
+				. '/' . $mediatype . '/edit/' . $image['id'],
+				$camefrom
+				? array(
+						'query' => array(
+								'camefrom' => $camefrom
+						)
+				) : array()) : '&nbsp;';
+		$row[] = $editable
+		? '<input type="checkbox" name="delete[' . $image['id']
+		. ']" value="1" />' : '&nbsp;';
+		$rows[] = $row;
+	}
+
+	if (!$rows)
+		$form['empty'] = array(
+				'#markup' => '<p>'
+				. t('There are no ' . $mediatype . ' available yet.')
+				. '</p>',
+		);
+	else
+		$form['overview'] = array(
+				'#theme' => 'table',
+				'#header' => $header,
+				'#rows' => $rows,
+		);
+
+	return $form;
+
+}
+
+/**
+ * Delete gallery images
+ * @param array $delete_arr
+ * @return array
+ * 			with img id's with true on success
+ */
+function observation_gallery_delete($delete_arr){
+
+	if(!isset($delete_arr) || !is_array($delete_arr)) return false;
+	$state = array();
+
+	foreach ($delete_arr as $iid => $del) {
+		if (!$del)
+			continue;
+		$image = gallery_image_load($iid);
+		if (!gallery_edit_access_callback(
+				$image['item_type'],
+				$image['item_id'],
+				$image)) {
+			continue;
+		}
+		$state[$iid] = gallery_image_delete($image);
+	}
+	return $state;
+}
 

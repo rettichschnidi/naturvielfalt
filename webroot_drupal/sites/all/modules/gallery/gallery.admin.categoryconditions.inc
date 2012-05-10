@@ -98,18 +98,19 @@ function gallery_category_condition_form($form, &$form_state, $category,
 	$form['actions']['submit'] = array(
 			'#type' => 'submit',
 			'#value' => t('Update category condition'),
-			'#access' => $editable,
+			'#access' => isset($editable) ? $editable : false,
 	);
 
 	return $form;
 }
 
 function _gallery_column_options($cond) {
-	$table = $cond['table'];
+	$table = isset($cond['table']) ? $cond['table'] : '';
 	if (is_array($table))
 		$table = $table[0];
 	$options = array();
-	foreach ($cond['columns'] as $column => $group) {
+	$columns = isset($cond['columns']) ? $cond['columns'] : array();
+	foreach ($columns as $column => $group) {
 		$prefix = $column . '___';
 		if (is_array($group)) {
 			if (function_exists($group[1])) {
@@ -146,7 +147,7 @@ function _create_condition_from_form(&$form_state) {
 	$condition['condition'] = $form_state['values']['condition'];
 	if ($form_state['values']['name'])
 		$condition['name'] = $form_state['values']['name'];
-	if ($form_state['values']['column_value']) {
+	if (isset($form_state['values']['column_value']) && $form_state['values']['column_value']) {
 		$column_value = explode('___', $form_state['values']['column_value'], 2);
 		$condition['columnname'] = $column_value[0];
 		$condition['value'] = $column_value[1];
@@ -297,7 +298,7 @@ function theme_gallery_category_condition_list($variables) {
 	$rows = array();
 	foreach ($conditions as $condition) {
 		$cond = $conds[$condition['condition']];
-		if (is_array($cond['columns'])
+		if (isset($cond['columns']) && is_array($cond['columns'])
 				&& is_array($cond['columns'][$condition['columnname']])) {
 			$options = _gallery_column_options(
 				array('columns' => array($condition['columnname'] => $cond['columns'][$condition['columnname']])));

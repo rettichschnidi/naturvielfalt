@@ -90,10 +90,10 @@ function organism_reference_gallery_manage_description($id, $mediatype) {
  *
  * @return array
  */
-function organism_reference_gallery_category_conditions() {
+function organism_gallery_category_conditions() {
 	return array(
 			'organismreference' => array(
-					'name' => t('organisms'),
+					'name' => t('Organisms References'),
 					'type' => 'organismreference'
 			),
 	);

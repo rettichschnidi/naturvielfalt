@@ -83,7 +83,7 @@ function gallery_rating_type_form($form, &$form_state, $type) {
 	$form['role_id'] = array(
 			'#type' => 'select',
 			'#title' => t('Required role'),
-			'#default_value' => $type['role_id'],
+			'#default_value' => isset($type['role_id']) ? $type['role_id'] : '',
 			'#options' => $roles,
 			'#description' => t(
 				'The role required to place ratings of this type.'),
@@ -213,7 +213,7 @@ function theme_gallery_rating_type_list($variables) {
 	foreach ($types as $type) {
 		$row = array();
 		$role = 'None';
-		if ($type['role_id'] && $loaded = user_role_load($type['role_id'])) {
+		if (isset($type['role_id']) && $type['role_id'] && $loaded = user_role_load($type['role_id'])) {
 			$role = $loaded->name;
 		}
 		$editURL = 'admin/config/media/gallery/rating-types/edit/'

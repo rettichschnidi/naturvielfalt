@@ -4,10 +4,17 @@
  * @copyright Naturwerk
  * @file area.tpl.php
  */
+$style ='';
+if($height || $width){
+	$style = ' style="';
+	if($height) $style .= 'height: '.$height.'; ';
+	if($width) $style .= 'height: '.$width.'; ';
+	$style .= '"';
+}
 ?>
 <div class="area-search-map">
   <div id="map">
-    <div id="map_canvas"></div>
+    <div id="map_canvas" <?php echo $style; ?>></div>
   </div>
 </div>
 <?php

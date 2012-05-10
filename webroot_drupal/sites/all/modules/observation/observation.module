@@ -127,16 +127,16 @@ function observation_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'singleobservation.inc',
 	);
-	$items['singleobservation/new/multiple'] = array(
-			'title' => t('Add new singleobservations'),
-			'description' => t('Display a form to add multiple singleobservations'),
-			'page callback' => 'singleobservation_new_multiple',
-			'access arguments' => array(
-					'create observation'
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'singleobservation.inc',
-	);
+// 	$items['singleobservation/new/multiple'] = array(
+// 			'title' => t('Add new singleobservations'),
+// 			'description' => t('Display a form to add multiple singleobservations'),
+// 			'page callback' => 'singleobservation_new_multiple',
+// 			'access arguments' => array(
+// 					'create observation'
+// 			),
+// 			'type' => MENU_NORMAL_ITEM,
+// 			'file' => 'singleobservation.inc',
+// 	);
 	$items['observation/save'] = array(
 			'title' => t('Save'),
 			'description' => t('Save a new observation'),
@@ -169,8 +169,9 @@ function observation_menu() {
 					1
 			),
 			'access arguments' => array(
-					'access observation'
+					1
 			),
+			'access callback' => 'observation_write_access',
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);

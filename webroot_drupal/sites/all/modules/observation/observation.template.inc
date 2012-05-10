@@ -84,7 +84,8 @@ function observation_form($observation = false) {
 			'#theme' => 'area',
 			'#coordinate_storage_id' => 'coordinate',
 			'#search' => true,
-			'#ch1903' => true
+			'#ch1903' => true,
+			'#height' => '350px',
 	);
 	$form['div']['map']['#action'] = ($observation['observation']['id'] == '') ? 'getcoordinate' : 'custom-edit';
 	if($observation['observation']['id'] != '') $form['div']['map']['#json_url'] = 'observation/'.$observation['observation']['id'].'/geometry/json';
@@ -96,8 +97,25 @@ function observation_form($observation = false) {
 	 * include a upload form for images
 	 */
 	// Product picture
-	$image['picture'] = array('#type' => 'fieldset', '#title' => t('Product image'));
-	$image['picture']['picture_upload'] = array('#type' => 'file', '#title' => t('Upload product image'), '#size' => 48, 'accept' => 'image/*');
+	$image['picture'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Manage media for this observation'),
+			'#id' => 'picture',
+			'#collapsible' => true,
+			'#collapsed' => false,);
+	if($observation['observation']['id'] != ''){
+		$image['picture']['media_table'] = observation_gallery_existing_file_list('observation', $observation['observation']['id']);
+	}
+	$image['picture']['picture_upload'] = array(
+			'#type' => 'file',
+			'#name' => 'files[]',
+			'#title' => t('Upload new files'),
+			'#size' => 48,
+			'#description' => '<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a>',
+			'#id' => 'picture_upload',);
+// 	$image['picture']
+
+
 
 	$species_autocomplete = ($observation['organism']['name_lat'] == '') ? t('Maximum 30 search results will be showed') : $observation['organism']['name_lat'];
 
@@ -164,7 +182,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
-// 					.drupal_render($image)
+					.drupal_render($image)
 					.'</form>'
 			.'</div>';
 	return $formcust;
@@ -253,6 +271,12 @@ function observation_show_observation($observationdata = NULL){
 			'#type' => 'markup',
 			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
 	);
+
+	$output['observation_images'] = gallery_list_renderer(
+			'images',
+			'observation',
+			$observationdata['observation']['id']);
+// 	$output['observation_images']['#weight'] = 13;
 
 	/* Create a fieldset for the comment text field */
 	$output['observation_geometry'] = array(
