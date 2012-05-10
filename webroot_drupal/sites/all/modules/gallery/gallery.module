@@ -694,13 +694,32 @@ function gallery_images($mediatype, $type = false, $id = false,
 	}
 
 	$ratingSQL = ($rating
-			? ', (SELECT AVG(gir2.rating) FROM {gallery_image_rating} AS gir2 WHERE gir2.gallery_image_id = gi.id AND gir2.gallery_rating_type_id = grt.id GROUP BY gir2.gallery_rating_type_id) AS rating, '
-					. '(SELECT COUNT(gir3.rating) FROM {gallery_image_rating} AS gir3 WHERE gir3.gallery_image_id = gi.id AND gir3.gallery_rating_type_id = grt.id GROUP BY gir3.gallery_rating_type_id) AS rating_count, '
-					. 'grt.id AS grt_id ' : '');
+			? ', (
+				SELECT
+					AVG(gir2.rating)
+				FROM
+					{gallery_image_rating} AS gir2
+				WHERE
+					gir2.gallery_image_id = gi.id 
+					AND gir2.gallery_rating_type_id = grt.id
+				GROUP BY 
+					gir2.gallery_rating_type_id) AS rating,
+					(
+						SELECT
+							COUNT(gir3.rating)
+						FROM
+							{gallery_image_rating} AS gir3
+						WHERE
+							gir3.gallery_image_id = gi.id
+							AND gir3.gallery_rating_type_id = grt.id
+						GROUP BY
+							gir3.gallery_rating_type_id) AS rating_count, 
+					grt.id AS grt_id ' : '');
 	$ratingSQL2 = ($rating
 			? 'LEFT OUTER JOIN {gallery_rating_type} AS grt ON grt.id IS NOT NULL '
 			: '');
-	$sql = "SELECT
+	$sql = "
+			SELECT
 				gi.*,
 				fm.*,
 				gic.id AS gic_id,
@@ -835,7 +854,6 @@ function gallery_images($mediatype, $type = false, $id = false,
 		$sql .= '';
 
 	$sql .= ' ORDER BY overallrating DESC';
-	//print $sql;
 	$images = array();
 	$seen = array();
 	$count = 0;
