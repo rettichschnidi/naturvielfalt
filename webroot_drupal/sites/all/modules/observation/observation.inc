@@ -432,8 +432,7 @@ function observation_add_attribute_value($entry){
 	@param string $file_managed_module_col
 			the column in the module db table where's the item_id should be inserted
  */
-function observation_gallery_save_manual($module_name, $entry_array,
-		$file_managed_table=false, $file_managed_module_col=false){
+function observation_gallery_save_manual($module_name, $entry_array, $file_managed_module_col=false){
 
 	$mediatype = $entry_array['type'];
 
@@ -511,11 +510,11 @@ function observation_gallery_save_manual($module_name, $entry_array,
 				$img_ids[$fkey] = gallery_image_save($image);
 			}else{
 				$img_ids[$fkey] = $file->fid;
-				if($file_managed_table && $file_managed_module_col){
+				if($file_managed_module_col){
 					$file_managed_table_entry[$file_managed_module_col] = $entry_array['item_id'];
 					$file_managed_table_entry['file_managed_fid'] = $file->fid;
 					$file_managed_table_entry['description'] = $entry_array['description'];
-					db_insert($file_managed_table)->fields($file_managed_table_entry)->execute();
+					db_insert($module_name.'_file_managed')->fields($file_managed_table_entry)->execute();
 				}
 			}
 		}else{

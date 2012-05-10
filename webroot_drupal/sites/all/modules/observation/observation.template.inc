@@ -278,6 +278,16 @@ function observation_show_observation($observationdata = NULL){
 			$observationdata['observation']['id']);
 // 	$output['observation_images']['#weight'] = 13;
 
+	$output['observation_videos'] = gallery_list_renderer(
+			'videos',
+			'observation',
+			$observationdata['observation']['id']);
+
+	$output['observation_mp3'] = gallery_list_renderer(
+			'sounds',
+			'observation',
+			$observationdata['observation']['id']);
+
 	/* Create a fieldset for the comment text field */
 	$output['observation_geometry'] = array(
 			'#type' => 'fieldset',
