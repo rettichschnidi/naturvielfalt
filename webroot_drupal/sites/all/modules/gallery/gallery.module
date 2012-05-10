@@ -1923,7 +1923,7 @@ function _gallery_get_default_location($type, $id) {
 }
 
 /**
- * Validate uf a mime type is an allowed image format
+ * Validate a mime type is an allowed image format
  * @param string $mime_type
  * @return bool
  * 			true on success, otherwise false
@@ -1937,7 +1937,7 @@ function gallery_validate_image($mime_type){
 }
 
 /**
- * Validate uf a mime type is an allowed video format
+ * Validate a mime type is an allowed video format
  * @param string $mime_type
  * @return bool
  * 			true on success, otherwise false
@@ -1948,7 +1948,7 @@ function gallery_validate_video($mime_type){
 }
 
 /**
- * Validate uf a mime type is an allowed music format
+ * Validate a mime type is an allowed music format
  * @param string $mime_type
  * @return bool
  * 			true on success, otherwise false
@@ -1956,4 +1956,39 @@ function gallery_validate_video($mime_type){
 function gallery_validate_mp3($mime_type){
 	if($mime_type == 'audio/mpeg') return true;
 	return false;
+}
+
+
+/**
+ * Validate a mime type is an allowed file format
+ * @param string $mime_type
+ * @return bool
+ * 			true on success, otherwise false
+ */
+function gallery_validate_file($mime_type){
+	if($mime_type == 'application/x-pdf'
+			|| $mime_type == 'application/vnd.ms-excel'
+			|| $mime_type == 'application/pdf'
+			|| $mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.documen'
+			|| $mime_type == 'application/msword'
+			|| $mime_type == 'application/vnd.ms-excel'
+			|| $mime_type == 'text/plain') return true;
+	return false;
+}
+
+
+function gallery_get_image_extensions(){
+	return 'jpg jpeg gif png';
+}
+
+function gallery_get_mp3_extensions(){
+	return 'mp3';
+}
+
+function gallery_get_video_extensions(){
+	return 'mp4';
+}
+
+function gallery_get_file_extensions(){
+	return 'doc txt pdf docx xls xlsx';
 }
