@@ -241,7 +241,7 @@ global $user;
 				'location' => $geometry['township'].' '.$geometry['canton'],
 				'type' => 'images',
 		);
-		observation_gallery_save_manual('observation', $image);
+		observation_gallery_save_manual('observation', $image, 'observation_file_managed', 'observation_id');
 
 		if(isset($values['delete'])){
 			observation_gallery_delete($values['delete']);

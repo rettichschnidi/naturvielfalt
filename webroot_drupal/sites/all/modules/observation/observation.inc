@@ -427,35 +427,18 @@ function observation_add_attribute_value($entry){
 			'author' => the author,
 			'location' => a location like Brugg AG,
 			'type' => 'images' OR 'mp3' OR 'mp4' (the file inputs need to named files[])!!!
+	@param string $file_managed_table
+			The module db table to add the entry
+	@param string $file_managed_module_col
+			the column in the module db table where's the item_id should be inserted
  */
-function observation_gallery_save_manual($module_name, $entry_array){
+function observation_gallery_save_manual($module_name, $entry_array,
+		$file_managed_table=false, $file_managed_module_col=false){
 
 	$mediatype = $entry_array['type'];
 
 	// if no files to work with abort
 	if(count($_FILES['files']['tmp_name']) < 1) return false;
-
-	// make the validator for the files
-	if ($mediatype == "images") {
-		$extensions = 'jpg jpeg gif png';
-		$file_size = variable_get('gallery_image_size', 2048);
-	} elseif ($mediatype == "sounds") {
-		$extensions = 'mp3';
-		$file_size = variable_get('gallery_sound_size', 2048);
-	} elseif ($mediatype == "videos") {
-		$extensions = 'mp4';
-		$file_size = variable_get('gallery_video_size', 8192);
-	}
-	$file_size = $file_size * 1024;
-	$validators = array(
-			'file_validate_extensions' => array(
-					$extensions
-			),
-			'file_validate_size' => array(
-					parse_size($file_size),
-					0
-			),
-	);
 
 	$categories = array();
 	$destination = array();
@@ -486,18 +469,61 @@ function observation_gallery_save_manual($module_name, $entry_array){
 	// save each files
 	foreach($_FILES['files']['error'] as $fkey => $message){
 		if($message != 0) continue;
+		$add_to_gallery = true;
+
+		// make the validator for each file
+		if (gallery_validate_image($_FILES['files']['type'][$fkey])) {
+			$extensions = gallery_get_image_extensions();
+			$file_size = variable_get('gallery_image_size', 2048);
+		} elseif (gallery_validate_mp3($_FILES['files']['type'][$fkey])) {
+			$extensions = gallery_get_mp3_extensions();
+			$file_size = variable_get('gallery_sound_size', 2048);
+		} elseif (gallery_validate_video($_FILES['files']['type'][$fkey])) {
+			$extensions = gallery_get_video_extensions();
+			$file_size = variable_get('gallery_video_size', 8192);
+		}elseif (gallery_validate_file($_FILES['files']['type'][$fkey])){
+			$extensions = gallery_get_file_extensions();
+			$file_size = variable_get('gallery_video_size', 8192);
+			$add_to_gallery = false;
+		}else{
+			//FIXME
+			// handlich for pdf or others, going only in filemanaged
+			continue;
+		}
+		$file_size = $file_size * 1024;
+		$validators = array(
+				'file_validate_extensions' => array(
+						$extensions
+				),
+				'file_validate_size' => array(
+						parse_size($file_size),
+						0
+				),
+		);
+
+
 		$file = file_save_upload($fkey, $validators, $destination[$key]);
 		if ($file) {
 			$file->status |= FILE_STATUS_PERMANENT;
 			$file = file_save($file);
 			$image['file_managed_fid'] = $file->fid;
+			if($add_to_gallery){
+				$img_ids[$fkey] = gallery_image_save($image);
+			}else{
+				$img_ids[$fkey] = $file->fid;
+				if($file_managed_table && $file_managed_module_col){
+					$file_managed_table_entry[$file_managed_module_col] = $entry_array['item_id'];
+					$file_managed_table_entry['file_managed_fid'] = $file->fid;
+					$file_managed_table_entry['description'] = $entry_array['description'];
+					db_insert($file_managed_table)->fields($file_managed_table_entry)->execute();
+				}
+			}
 		}else{
 			//FIXME
 // 			error about didn't saved...
 // die('fehlfer');
 			$img_ids[$fkey] = 'Error! File not saved!';
 		}
-		$img_ids[$fkey] = gallery_image_save($image);
 	}
 	return $img_ids;
 }
@@ -566,7 +592,7 @@ function observation_gallery_existing_file_list($module=false, $id=false){
 			$extras = 'rel="lightbox"';
 		} elseif ($mediatype == "sounds"
 				|| ($mediatype == "medias"
-						&& ($image['filemime'] == "audio/mpeg"))) {
+						&& ($image['filemime'] == "audio/mpeg"))){
 
 			$url_href = file_uri_target($image['uri']);
 			$url_href = url('sites/default/files/' . $url_href);
@@ -671,4 +697,3 @@ function observation_gallery_delete($delete_arr){
 	}
 	return $state;
 }
-
