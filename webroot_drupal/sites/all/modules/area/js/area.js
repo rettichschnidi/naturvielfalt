@@ -56,7 +56,7 @@ function Area(map_id) {
 		var mapsOptions = {
 			zoom : this.defaultZoom,
 			center : center,
-			streetViewControl : false,
+			streetViewControl : true,
 			overviewMapControl : true,
 			scaleControl : scalecontrol,
 			// Select ROADMAP out of HYBRID, ROADMAP, SATELLITE, TERRAIN;
