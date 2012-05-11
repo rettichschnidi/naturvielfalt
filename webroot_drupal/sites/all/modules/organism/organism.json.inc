@@ -80,6 +80,14 @@ function organism_show_classifiers_json() {
 	        oc_id,
 	        oc_name,
 	        organismcount.cnt;
+
+		Original example answer:
+		 oc_id |   oc_name    | levelcount |  cnt  
+		-------+--------------+------------+-------
+		 33400 | Swisslichens |          2 |  1354
+		     1 | CSCF         |          7 | 21501
+		 28643 | CRSF         |          4 |  4044
+		 33386 | Fungus       |          1 |  5877
 	 */
 	/* DB table to use */
 	$sql['dbTable'] = "{organism_classification} oc";
@@ -124,7 +132,7 @@ function organism_show_classification_classificationjson($classificationid) {
 	        FROM
 	            drupal_organism_classification oc
 	        WHERE
-	            oc.parent_id = 37 AND oc.id != oc.parent_id
+	            oc.parent_id = 1 AND oc.id != oc.parent_id
 	        ) ds
 	        JOIN (
 	            ------------------------------------------------------------
@@ -149,7 +157,24 @@ function organism_show_classification_classificationjson($classificationid) {
 	            ) sc ON sc.oc_left_value >= ds.left_value AND sc.oc_right_value <= ds.right_value AND sc.oc_prime_father_id = ds.prime_father_id
 	    GROUP BY
 	        ds.id,
-	        ds.name
+	        ds.name;
+	        
+	 Original example answer:
+		  id   |      name      |  sum  
+		-------+----------------+-------
+		 28599 | Polychaeta     |     1
+		 28604 | Reptilia       |    20
+		  2603 | Gastropoda     |   305
+		 28246 | Malacostraca   |    70
+		  2289 | Bivalvia       |    30
+		     2 | Actinopterygii |    72
+		  3228 | Insecta        | 19256
+		  2347 | Diplopoda      |   166
+		 28370 | Mammalia       |   128
+		   189 | Arachnida      |  1028
+		  1607 | Aves           |   401
+		   150 | Amphibia       |    22
+		  2341 | Cyclostomi     |     2
 	 */
 
 	$sql['dbPreStatement'] = "CREATE TEMPORARY VIEW mytempclassifications AS
