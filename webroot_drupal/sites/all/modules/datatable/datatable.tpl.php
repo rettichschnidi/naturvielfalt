@@ -101,11 +101,11 @@ if ($header) {
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
 
-// 	if ($rows) {
-// 		foreach ($header as $head) {
-// 			$table_headers[] = $head['name'];
-// 		}
-// 	}
+	// 	if ($rows) {
+	// 		foreach ($header as $head) {
+	// 			$table_headers[] = $head['name'];
+	// 		}
+	// 	}
 }
 $table[$id_table] = array(
 		'#theme' => 'table',
@@ -134,7 +134,10 @@ if ($options['jsonUrl']) {
 echo $aoColumns;
 ?>
 
-searchitems : [{display: Drupal.t('ALL'), name : '*', isdefault: true}],
+searchitems : [
+		{display: Drupal.t('ALL'), name: '*', isdefault: true}
+	],
+singleSelect: true,
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",
 usepager: true,

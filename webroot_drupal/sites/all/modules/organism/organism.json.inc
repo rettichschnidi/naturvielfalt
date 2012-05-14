@@ -621,8 +621,8 @@ function organism_search_organism_json($classification = false, $term = false,
 	global $user;
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
-
-	$langcode = isset($user->language) ? $user->language : 'de';
+print_r($user);
+	$langcode = isset($user->language) && !empty($user->lang) ? $user->language : 'de';
 
 	if (!$classification)
 		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id']
@@ -664,7 +664,7 @@ function organism_search_organism_json($classification = false, $term = false,
 	$limit = 30;
 
 	$organisms = array();
-
+	
 	$params = array();
 	if ($type_id)
 		$params[':inventoryTypeId'] = $type_id;
@@ -680,9 +680,10 @@ function organism_search_organism_json($classification = false, $term = false,
 	} else {
 		$params[':term1'] = $terms[0] . '%';
 	}
+	
 
 	$i = 1;
-	$query = 'SELECT DISTINCT ON (o.id) ol.organism_id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
+	$query = 'SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
 				FROM {organism} AS o
 				LEFT JOIN {organism_lang} AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				INNER JOIN {organism_scientific_name} AS osn ON osn.organism_id = o.id
@@ -692,9 +693,10 @@ function organism_search_organism_json($classification = false, $term = false,
 				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
 				ORDER BY o.id
 				LIMIT :limit;';
-
-	$result = db_query($query, $params);
+    
+	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
 	foreach ($result as $record) {
+	  
 		$artg_attr = '';
 		$det_methods = '';
 		if ($record->artg_id) {
@@ -707,7 +709,8 @@ function organism_search_organism_json($classification = false, $term = false,
 				'label' => strval($record->ol_name),
 				'label_latin' => $record->osn_name,
 				'attributes' => $artg_attr,
-				'det_methods' => $det_methods
+				'det_methods' => $det_methods,
+				'artgr' => $record->artg_id,
 		);
 
 		$organisms[] = $organism;

@@ -133,7 +133,7 @@ function gallery_category_add_form_submit($form, &$form_state) {
  * Form builder; Form for deleting a category.
  *
  * @param $category
- *  A category array.
+ *   A category array.
  *
  * @ingroup forms
  * @see gallery_category_delete_form_submit()

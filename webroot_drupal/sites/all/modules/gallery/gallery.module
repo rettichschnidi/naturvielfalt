@@ -694,13 +694,32 @@ function gallery_images($mediatype, $type = false, $id = false,
 	}
 
 	$ratingSQL = ($rating
-			? ', (SELECT AVG(gir2.rating) FROM {gallery_image_rating} AS gir2 WHERE gir2.gallery_image_id = gi.id AND gir2.gallery_rating_type_id = grt.id GROUP BY gir2.gallery_rating_type_id) AS rating, '
-					. '(SELECT COUNT(gir3.rating) FROM {gallery_image_rating} AS gir3 WHERE gir3.gallery_image_id = gi.id AND gir3.gallery_rating_type_id = grt.id GROUP BY gir3.gallery_rating_type_id) AS rating_count, '
-					. 'grt.id AS grt_id ' : '');
+			? ', (
+				SELECT
+					AVG(gir2.rating)
+				FROM
+					{gallery_image_rating} AS gir2
+				WHERE
+					gir2.gallery_image_id = gi.id 
+					AND gir2.gallery_rating_type_id = grt.id
+				GROUP BY 
+					gir2.gallery_rating_type_id) AS rating,
+					(
+						SELECT
+							COUNT(gir3.rating)
+						FROM
+							{gallery_image_rating} AS gir3
+						WHERE
+							gir3.gallery_image_id = gi.id
+							AND gir3.gallery_rating_type_id = grt.id
+						GROUP BY
+							gir3.gallery_rating_type_id) AS rating_count, 
+					grt.id AS grt_id ' : '');
 	$ratingSQL2 = ($rating
 			? 'LEFT OUTER JOIN {gallery_rating_type} AS grt ON grt.id IS NOT NULL '
 			: '');
-	$sql = "SELECT
+	$sql = "
+			SELECT
 				gi.*,
 				fm.*,
 				gic.id AS gic_id,
@@ -835,7 +854,6 @@ function gallery_images($mediatype, $type = false, $id = false,
 		$sql .= '';
 
 	$sql .= ' ORDER BY overallrating DESC';
-	//print $sql;
 	$images = array();
 	$seen = array();
 	$count = 0;
@@ -870,7 +888,7 @@ function gallery_images($mediatype, $type = false, $id = false,
 						'name' => $record['gc_name'],
 						'description' => $record['gc_description'],
 						'value' => $record['gco_name'],
-						'option_id' => $record['gco_id'],
+						'gallery_category_option_id' => $record['gco_id'],
 						'value_id' => $record['gic_id'],
 						'uri' => $record['fm.uri'],
 						'filename' => $record['fm.filename'],
@@ -1115,7 +1133,7 @@ function gallery_image_load($id) {
 				'name' => $record['gc_name'],
 				'description' => $record['gc_description'],
 				'value' => $record['gco_name'],
-				'option_id' => $record['gco_id'],
+				'gallery_category_option_id' => $record['gco_id'],
 				'value_id' => $record['gic_id']
 		);
 	}
@@ -1167,13 +1185,15 @@ function gallery_image_save($image) {
 	foreach ($image['categories'] as $category) {
 		$entry = array(
 				'gallery_image_id' => $image['id'],
-				'option_id' => $category['option_id']
+				'gallery_category_option_id' => $category['gallery_category_option_id']
 		);
-		if (isset($category['value_id']) && is_numeric($category['value_id'])) {
+		if (isset($category['gallery_category_option_id'])
+				&& is_numeric($category['gallery_category_option_id'])) {
 			$entry['id'] = $category['value_id'];
 			drupal_write_record('gallery_image_category', $entry, 'id');
-		} else
+		} else {
 			drupal_write_record('gallery_image_category', $entry);
+		}
 		array_push($new_entries, $entry['id']);
 	}
 	// Delete all remaining category values
@@ -1251,10 +1271,11 @@ function gallery_image_rating_save($gallery_image_id, $gallery_rating_type_id,
 		->condition('gallery_rating_type_id', $gallery_rating_type_id)
 		->fields('gir', array('id'));
 	if (!in_array('anonymous', $user->roles)) {
-		$entry['user_id'] = $user->uid;
-		$query->condition('user_id', $user->uid);
-	} else
+		$entry['user_uid'] = $user->uid;
+		$query->condition('user_uid', $user->uid);
+	} else {
 		$query->condition('user_ip', $user->hostname);
+	}
 	$record = $query->execute()
 		->fetchAssoc();
 	if ($record) {
@@ -1314,7 +1335,7 @@ function gallery_available_categories($type, $id) {
 			continue;
 		else {
 			$condition = $conditions[$category['condition']];
-			if (!$condition['table']) {
+			if (!isset($condition['table']) || !$condition['table']) {
 				if ($condition['type'] == $type)
 					$avail = true;
 				else
@@ -1407,10 +1428,12 @@ function gallery_available_rating_types() {
 	global $user;
 	$types = gallery_rating_types();
 	$available = array();
-	foreach ($types as $type)
-		if (!array_key_exists('role', $type) || !$type['role']
-				|| in_array($type['role'], $user->roles))
+	foreach ($types as $type) {
+		if (!array_key_exists('role_rid', $type) || !$type['role_rid']
+				|| array_key_exists($type['role_rid'], $user->roles)) {
 			array_push($available, $type);
+		}
+	}
 	return $available;
 }
 
@@ -1492,7 +1515,7 @@ function gallery_category_delete($category) {
 			$category['id'])
 		->execute();
 	db_delete('gallery_image_category')->condition(
-			'option_id',
+			'gallery_category_option_id',
 			db_select('gallery_category_option')->fields('id')
 				->condition('gallery_category_id', $category['id']),
 			'IN')

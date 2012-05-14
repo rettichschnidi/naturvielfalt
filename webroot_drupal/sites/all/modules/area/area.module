@@ -354,7 +354,7 @@ function area_menu() {
 				'file' => 'area.inc',
 				'weight' => 6
 		);
-		
+
 		$items['area/%area/list'] = array(
 				'title' => t('List'),
 				'description' => t('View the area as a list of organisms'),
@@ -483,6 +483,10 @@ function area_theme() {
 							'coordinate_storage_id' => false,
 							// the geometry array
 							'json_url' => false,
+							// the map height
+							'height' => false,
+							// the map width
+							'width' => false,
 					)
 			)
 	);

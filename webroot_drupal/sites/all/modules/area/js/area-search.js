@@ -61,6 +61,18 @@ jQuery(document).ready(function() {
 		searchinput.onfocus = function() {
 			searchinput.select();
 		};
+		
+		// do not submit the form when pressing enter
+		searchinput.onkeypress = function(evt) {
+		    evt = evt || window.event;
+		    var charCode = evt.keyCode || evt.which;
+		    if (charCode == 13) {
+		        evt.returnValue = false;
+		        if (evt.preventDefault) {
+		            evt.preventDefault();
+		        }
+		    }
+		};
 	};
 	
 	areabasic.createSearchbar();

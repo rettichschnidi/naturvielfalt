@@ -80,10 +80,10 @@ function gallery_rating_type_form($form, &$form_state, $type) {
 	);
 	$roles = user_roles();
 	$roles[''] = t('None');
-	$form['role_id'] = array(
+	$form['role_rid'] = array(
 			'#type' => 'select',
 			'#title' => t('Required role'),
-			'#default_value' => $type['role_id'],
+			'#default_value' => isset($type['role_rid']) ? $type['role_rid'] : '',
 			'#options' => $roles,
 			'#description' => t(
 				'The role required to place ratings of this type.'),
@@ -109,7 +109,7 @@ function gallery_rating_type_form_submit($form, &$form_state) {
 	$type['name'] = $form_state['values']['name'];
 	$type['description'] = $form_state['values']['description'];
 	$type['weight'] = $form_state['values']['weight'];
-	$type['role_id'] = $form_state['values']['role_id'];
+	$type['role_rid'] = $form_state['values']['role_rid'];
 
 	gallery_rating_type_save($type);
 	if ($form_state['values']['op'] == t('Update rating type')) {
@@ -129,7 +129,7 @@ function gallery_rating_type_add_form($form, &$form_state) {
 		$form,
 		$form_state,
 		array('weight' => 1,
-				'role_id' => ''
+				'role_rid' => ''
 		));
 	$title = t('Create new rating type');
 	drupal_set_title($title, PASS_THROUGH);
@@ -213,7 +213,7 @@ function theme_gallery_rating_type_list($variables) {
 	foreach ($types as $type) {
 		$row = array();
 		$role = 'None';
-		if ($type['role_id'] && $loaded = user_role_load($type['role_id'])) {
+		if (isset($type['role_rid']) && $type['role_rid'] && $loaded = user_role_load($type['role_rid'])) {
 			$role = $loaded->name;
 		}
 		$editURL = 'admin/config/media/gallery/rating-types/edit/'

@@ -84,6 +84,11 @@ jQuery(document)
 							if (event.keyCode != 13) {
 								return; // Was not enter
 							}
+							
+							// do not submit the form when pressing enter
+					        if (event.preventDefault) {
+					        	event.preventDefault();
+					        }
 							var text = searchinputch1903.value;
 							var match = regexch1903.exec(text);
 							if (match != null) {
