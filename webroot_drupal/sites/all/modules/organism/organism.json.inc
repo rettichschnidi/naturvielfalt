@@ -622,7 +622,7 @@ function organism_search_organism_json($classification = false, $term = false,
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
-	$langcode = isset($user->language) ? $user->language : 'de';
+	$langcode = isset($user->language) || $user->language == '' ? $user->language : 'de';
 
 	if (!$classification)
 		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id']
@@ -693,7 +693,7 @@ function organism_search_organism_json($classification = false, $term = false,
 				ORDER BY o.id
 				LIMIT :limit;';
 
-	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
+	die(print_r(db_query($query, $params)));
 	foreach ($result as $record) {
 
 		$artg_attr = '';
