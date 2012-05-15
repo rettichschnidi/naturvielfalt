@@ -95,7 +95,7 @@ $sql = "SELECT
 		WHERE
 			nr < 1000000 AND status IN ('A', 'Z', 'E')
 		ORDER BY
-			$columnstring, art, nameunterart";
+			$columnstring, art, nameunterart, nr";
 
 $rows = $dbevab->query($sql, array(), array());
 assert(!empty($rows));

@@ -97,7 +97,7 @@ $sql = "SELECT
 		FROM
 			$importTable
 		ORDER BY
-			$columnstring, species, subspecies";
+			$columnstring, species, subspecies, nuesp";
 if (false) {
 	print "Query: $sql\n";
 }
