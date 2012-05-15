@@ -97,7 +97,7 @@ $sql = "SELECT
 		FROM
 			$importTable
 		ORDER BY
-			$columnstring";
+			$columnstring, nuesp";
 if (false) {
 	print "Query: $sql\n";
 }
