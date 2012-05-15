@@ -68,12 +68,12 @@ $classification_data = array(
 		'subgenus' => array(
 				'columnname' => 'subgenus'
 		),
-		'species' => array(
-				'columnname' => 'species'
-		),
-		'subspecies' => array(
-				'columnname' => 'subspecies'
-		)
+// 		'species' => array(
+// 				'columnname' => 'species'
+// 		),
+// 		'subspecies' => array(
+// 				'columnname' => 'subspecies'
+// 		)
 );
 
 // store all level names in $classification_level_columns
@@ -126,12 +126,12 @@ $organisms[] = array(
 				array(
 						'classificationlevelname' => 'subgenus'
 				),
-				array(
-						'classificationlevelname' => 'species'
-				),
-				array(
-						'classificationlevelname' => 'subspecies'
-				)
+// 				array(
+// 						'classificationlevelname' => 'species'
+// 				),
+// 				array(
+// 						'classificationlevelname' => 'subspecies'
+// 				)
 		)
 );
 
