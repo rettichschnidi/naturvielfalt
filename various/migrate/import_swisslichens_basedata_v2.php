@@ -63,7 +63,7 @@ $sql = "SELECT
 			species,
 			scientific_name
 		ORDER BY
-			scientific_name";
+			$columnstring, scientific_name";
 
 if (false) {
 	print "Query: $sql\n";

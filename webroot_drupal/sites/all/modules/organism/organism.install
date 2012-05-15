@@ -1189,7 +1189,7 @@ function organism_install() {
 		'organism_artgroup_detmethod_subscription.sql',
 		'organism_artgroup.sql',
 		'organism_artgroup_subscription.sql',
-/*		'organism_attribute.sql',
+		'organism_attribute.sql',
 		'organism_attribute_value.sql',
 		'organism_attribute_value_subscription.sql',
 		'organism_classification_level.sql',
@@ -1197,7 +1197,7 @@ function organism_install() {
 		'organism_classification_subscription.sql',
 		'organism_lang.sql',
 		'organism_scientific_name.sql',
-		'organism.sql'*/
+		'organism.sql'
 	);
 	try {
 		foreach ($filenames as $filename) {
