@@ -80,14 +80,14 @@ function organism_show_classifiers_json() {
 	        oc_id,
 	        oc_name,
 	        organismcount.cnt;
-
-		Original example answer:
-		 oc_id |   oc_name    | levelcount |  cnt  
-		-------+--------------+------------+-------
-		 33400 | Swisslichens |          2 |  1354
-		     1 | CSCF         |          7 | 21501
-		 28643 | CRSF         |          4 |  4044
-		 33386 | Fungus       |          1 |  5877
+	
+	    Original example answer:
+	     oc_id |   oc_name    | levelcount |  cnt  
+	    -------+--------------+------------+-------
+	     33400 | Swisslichens |          2 |  1354
+	         1 | CSCF         |          7 | 21501
+	     28643 | CRSF         |          4 |  4044
+	     33386 | Fungus       |          1 |  5877
 	 */
 	/* DB table to use */
 	$sql['dbTable'] = "{organism_classification} oc";
@@ -160,21 +160,21 @@ function organism_show_classification_classificationjson($classificationid) {
 	        ds.name;
 	        
 	 Original example answer:
-		  id   |      name      |  sum  
-		-------+----------------+-------
-		 28599 | Polychaeta     |     1
-		 28604 | Reptilia       |    20
-		  2603 | Gastropoda     |   305
-		 28246 | Malacostraca   |    70
-		  2289 | Bivalvia       |    30
-		     2 | Actinopterygii |    72
-		  3228 | Insecta        | 19256
-		  2347 | Diplopoda      |   166
-		 28370 | Mammalia       |   128
-		   189 | Arachnida      |  1028
-		  1607 | Aves           |   401
-		   150 | Amphibia       |    22
-		  2341 | Cyclostomi     |     2
+	      id   |      name      |  sum  
+	    -------+----------------+-------
+	     28599 | Polychaeta     |     1
+	     28604 | Reptilia       |    20
+	      2603 | Gastropoda     |   305
+	     28246 | Malacostraca   |    70
+	      2289 | Bivalvia       |    30
+	         2 | Actinopterygii |    72
+	      3228 | Insecta        | 19256
+	      2347 | Diplopoda      |   166
+	     28370 | Mammalia       |   128
+	       189 | Arachnida      |  1028
+	      1607 | Aves           |   401
+	       150 | Amphibia       |    22
+	      2341 | Cyclostomi     |     2
 	 */
 
 	$sql['dbPreStatement'] = "CREATE TEMPORARY VIEW mytempclassifications AS
@@ -411,6 +411,15 @@ function organism_show_classification_organismjson($classificationid) {
 	$levelnamesdatastring = implode(' text, ', $levelnamearray) . ' text';
 	$levelnamesstring = implode(', ', $levelnamearray);
 
+	
+	// get all attributes for a organismclass
+	$classificationattributedata = organism_get_available_attributes(
+			$classificationid);
+	if (empty($classificationattributedata)) {
+		die("NO ATTRIBUTES FOUND - HANDLE THIS CASE PLEASE");
+	}
+	
+	
 	$sql['dbPreStatement'] = "CREATE TEMP VIEW mytempviewdata AS
 		WITH subclassification_constraints AS (
 	        -----------------------------------------------
@@ -541,7 +550,7 @@ function organism_show_classification_organismjson($classificationid) {
 	        oc_level
 	        JOIN {organism_classification_level} ocl ON ocl.prime_father_id = oc_level.prime_father_id;
 		-- And another one...
-		CREATE TEMP VIEW finaltable AS
+		CREATE TEMP VIEW final_classification_table AS
 			SELECT
 				osn.organism_id AS organism_id,
 				osn.name AS osn_name,
@@ -554,8 +563,14 @@ function organism_show_classification_organismjson($classificationid) {
 				) AS nn(
 				   organism_id integer, $levelnamesdatastring
 				) JOIN {organism_scientific_name} osn ON osn.organism_id = nn.organism_id
-				   LEFT JOIN (SELECT organism_id, name AS ol_name FROM {organism_lang} WHERE languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id
-	";
+				   LEFT JOIN (
+				   	SELECT
+				   		organism_id,
+				   		name AS ol_name
+				   	FROM
+				   		{organism_lang}
+				   	WHERE
+				   		languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id";
 
 	/* Set the db fields to select */
 	$dbcolumns = array_merge(
@@ -573,7 +588,7 @@ function organism_show_classification_organismjson($classificationid) {
 		$levelnamearray);
 
 	/* DB table to use */
-	$sql['dbTable'] = "finaltable";
+	$sql['dbTable'] = "final_classification_table";
 	/* Group */
 	$sql['id'] = 'organism_id';
 
