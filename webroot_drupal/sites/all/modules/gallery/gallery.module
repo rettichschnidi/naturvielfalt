@@ -481,6 +481,14 @@ function gallery_menu() {
 			),
 			'file' => 'gallery.content.inc',
 	);
+	$items['gallery/json/meta-form'] = array(
+			'page callback' => 'gallery_metadata_form',
+			'access arguments' => array(
+					MANAGE_GALLERY_MEDIAS
+			),
+			'file' => 'gallery.content.inc',
+			'type' => MENU_CALLBACK,
+	);
 	return $items;
 }
 
@@ -1923,58 +1931,73 @@ function _gallery_get_default_location($type, $id) {
 }
 
 /**
- * Validate a mime type is an allowed image format
- * @param string $mime_type
- * @return bool
- * 			true on success, otherwise false
+ *
+ * @param string $file_name
+ * @param string $valid_file_extensions
+ * 				space seperated string
+ * 					example "gif jpeg tiff"
  */
-function gallery_validate_image($mime_type){
-	if($mime_type == 'image/png'
-	|| $mime_type == 'image/jpg'
-	|| $mime_type == 'image/jpeg'
-	|| $mime_type == 'image/gif') return true;
+function gallery_validate_file_extension($file_name, $valid_file_extensions){
+	$extension = strtolower(array_pop(explode('.', $file_name)));
+	$valid_file_extensions = explode(' ', strtolower(trim($valid_file_extensions)));
+	if(in_array($extension, $valid_file_extensions)) return true;
 	return false;
 }
 
-/**
- * Validate a mime type is an allowed video format
- * @param string $mime_type
- * @return bool
- * 			true on success, otherwise false
- */
-function gallery_validate_video($mime_type){
-	if($mime_type == 'video/mp4') return true;
-	return false;
-}
+// /**
+//  * Validate a mime type is an allowed image format
+//  * @param string $mime_type
+//  * @return bool
+//  * 			true on success, otherwise false
+//  */
+// function gallery_validate_image($mime_type){
 
-/**
- * Validate a mime type is an allowed music format
- * @param string $mime_type
- * @return bool
- * 			true on success, otherwise false
- */
-function gallery_validate_mp3($mime_type){
-	if($mime_type == 'audio/mpeg') return true;
-	return false;
-}
+// 	if($mime_type == 'image/png'
+// 	|| $mime_type == 'image/jpg'
+// 	|| $mime_type == 'image/jpeg'
+// 	|| $mime_type == 'image/gif') return true;
+// 	return false;
+// }
+
+// /**
+//  * Validate a mime type is an allowed video format
+//  * @param string $mime_type
+//  * @return bool
+//  * 			true on success, otherwise false
+//  */
+// function gallery_validate_video($mime_type){
+// 	if($mime_type == 'video/mp4') return true;
+// 	return false;
+// }
+
+// /**
+//  * Validate a mime type is an allowed music format
+//  * @param string $mime_type
+//  * @return bool
+//  * 			true on success, otherwise false
+//  */
+// function gallery_validate_mp3($mime_type){
+// 	if($mime_type == 'audio/mpeg') return true;
+// 	return false;
+// }
 
 
-/**
- * Validate a mime type is an allowed file format
- * @param string $mime_type
- * @return bool
- * 			true on success, otherwise false
- */
-function gallery_validate_file($mime_type){
-	if($mime_type == 'application/x-pdf'
-			|| $mime_type == 'application/vnd.ms-excel'
-			|| $mime_type == 'application/pdf'
-			|| $mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.documen'
-			|| $mime_type == 'application/msword'
-			|| $mime_type == 'application/vnd.ms-excel'
-			|| $mime_type == 'text/plain') return true;
-	return false;
-}
+// /**
+//  * Validate a mime type is an allowed file format
+//  * @param string $mime_type
+//  * @return bool
+//  * 			true on success, otherwise false
+//  */
+// function gallery_validate_file($mime_type){
+// 	if($mime_type == 'application/x-pdf'
+// 			|| $mime_type == 'application/vnd.ms-excel'
+// 			|| $mime_type == 'application/pdf'
+// 			|| $mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.documen'
+// 			|| $mime_type == 'application/msword'
+// 			|| $mime_type == 'application/vnd.ms-excel'
+// 			|| $mime_type == 'text/plain') return true;
+// 	return false;
+// }
 
 
 function gallery_get_image_extensions(){
