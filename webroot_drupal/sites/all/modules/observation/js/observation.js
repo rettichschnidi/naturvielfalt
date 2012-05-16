@@ -160,9 +160,77 @@ jQuery(document).ready(function() {
 		};
 		
 		addUploadSlot = function(form){
-			$('#picture_upload').clone().appendTo('#picture').val('');
+			$('#picture_upload').clone().appendTo('#picture');
 		};
 		
+		checkMimeType_metaData = function(form){
+			mimeType = form.files["0"].type;
+			re = new RegExp('image/', 'ig');
+			re2 = new RegExp('video/mp4', 'ig');
+			re3 = new RegExp('audio/mpeg', 'ig');
+			if(mimeType.match(re) || mimeType.match(re2) || mimeType.match(re3)) {
+				return 'media';
+			}else{
+				return 'file';
+			}
+		};
 
+		observation.galleryMetaDataDialog = function (form) {
+//			e.preventDefault();
+//			tmphref = form; return;
+//			observation.showLoading();
+//			alert(form.files["0"].type);
+			if(form.val() == ''){
+				alert(Drupal.t('Please select a file'));
+				return;
+			}
+			var data = {
+				ajax: 1,
+				fn: form.val(),
+				type: 'post',
+			};
+			$.getJSON(Drupal.settings.basePath + 'gallery/json/meta-form/', data, function (data) {
+				if(data && data.form) {
+					var dialog = $('<div title="' + Drupal.t('Details for files') + '" />');
+					dialog.append($(data.form));
+					dialog.dialog({
+						modal: true,
+						resizable: false,
+						closeOnEscape: false,
+						closeText: '',
+						close: function (event, ui) {
+							$(this).remove();
+						},
+						width: 700
+					});
+//					dialog.find('#edit-actions a').click(function (e) {
+//						e.preventDefault();
+//						$(this).closest('.ui-dialog-content').dialog('close');
+//					});
+//					dialog.find('form').submit(function (e) {
+//						var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
+//						var row = inventory.container.find('input.entry_id[value="' + entry_id + '"]').closest('tr');
+//						var base_name = row.find('input.entry_id').attr('name');
+//
+//						inventory.storePrevPos(inventory.location.position);
+//
+//						inventory.addInput(row, base_name, $(this), 'lat');
+//						inventory.addInput(row, base_name, $(this), 'lng');
+//						inventory.addInput(row, base_name, $(this), 'zip');
+//						inventory.addInput(row, base_name, $(this), 'locality');
+//						inventory.addInput(row, base_name, $(this), 'township');
+//						inventory.addInput(row, base_name, $(this), 'canton');
+//						inventory.addInput(row, base_name, $(this), 'country');
+//
+//						row.find('a.location img').attr('src', row.find('a.location img').attr('src').replace('_unset', ''));
+//
+//						inventory.setMessage(Drupal.t('The location will be stored only after saving the whole form by pressing the <em>Save</em> button in the lower right.'), 'warning', 15000);
+//						$(this).closest('.ui-dialog-content').dialog('close');
+//						return false;
+//					});
+				}
+//				observation.hideLoading();
+			});
+		};
 
 });
