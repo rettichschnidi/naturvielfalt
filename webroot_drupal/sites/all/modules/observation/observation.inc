@@ -471,16 +471,16 @@ function observation_gallery_save_manual($module_name, $entry_array, $file_manag
 		$add_to_gallery = true;
 
 		// make the validator for each file
-		if (gallery_validate_image($_FILES['files']['type'][$fkey])) {
+		if (gallery_validate_file_extension($_FILES['files']['name'][$fkey], gallery_get_image_extensions())) {
 			$extensions = gallery_get_image_extensions();
 			$file_size = variable_get('gallery_image_size', 2048);
-		} elseif (gallery_validate_mp3($_FILES['files']['type'][$fkey])) {
+		} elseif (gallery_validate_file_extension($_FILES['files']['name'][$fkey], gallery_get_mp3_extensions())) {
 			$extensions = gallery_get_mp3_extensions();
 			$file_size = variable_get('gallery_sound_size', 2048);
-		} elseif (gallery_validate_video($_FILES['files']['type'][$fkey])) {
+		} elseif (gallery_validate_file_extension($_FILES['files']['name'][$fkey], gallery_get_video_extensions())) {
 			$extensions = gallery_get_video_extensions();
 			$file_size = variable_get('gallery_video_size', 8192);
-		}elseif (gallery_validate_file($_FILES['files']['type'][$fkey])){
+		}elseif (gallery_validate_file_extension($_FILES['files']['name'][$fkey], gallery_get_file_extensions())){
 			$extensions = gallery_get_file_extensions();
 			$file_size = variable_get('gallery_video_size', 8192);
 			$add_to_gallery = false;
@@ -527,10 +527,15 @@ function observation_gallery_save_manual($module_name, $entry_array, $file_manag
 	return $img_ids;
 }
 
-
-function observation_gallery_existing_file_list($module=false, $id=false){
+/**
+ *
+ * @param string $module
+ * @param int $id
+ */
+function observation_gallery_edit_existing_file_list($module=false, $id=false){
 
 	if(!$module || !$id) return false;
+
 
 	drupal_add_css(
 			drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
@@ -667,6 +672,7 @@ function observation_gallery_existing_file_list($module=false, $id=false){
 				'#rows' => $rows,
 		);
 
+
 	return $form;
 
 }
@@ -696,3 +702,139 @@ function observation_gallery_delete($delete_arr){
 	}
 	return $state;
 }
+
+function observation_gallery_get_files($module, $item_id) {
+	return db_query(
+			'SELECT fm.*, mfm.description FROM {'.$module.'_file_managed} mfm
+			JOIN {file_managed} fm ON fm.fid=mfm.file_managed_fid
+			WHERE '.$module.'_id = :item_id',
+			array(':item_id' => $item_id))->fetchAllAssoc('fid');
+
+}
+
+function observation_gallery_get_file($fid) {
+	return (object) db_query(
+			'SELECT * FROM {file_managed} WHERE fid = :fid',
+			array(':fid' => $fid))->fetchAssoc();
+
+}
+
+function observation_gallery_files_table($modulename = false, $item_id = false, $edit = false) {
+	global $user;
+	$render_array = array();
+	if (!$modulename || !$item_id) return $render_array;
+
+	$files = observation_gallery_get_files($modulename, $item_id);
+	if(count($files) < 1) return $render_array;
+
+	foreach ($files as $record) {
+		$mimeIconMap = array(
+		//FIXME
+		//why are these images in the inventory module???
+				'path' => drupal_get_path('module', 'inventory') . '/images/'
+				. commonstuff_get_icon_map($record->filemime) . '.png',
+				'alt' => $record->filemime,
+				'title' => $record->filemime,
+		);
+		$img_mime = theme('image', $mimeIconMap);
+
+		$description = isset($record->description) ? $record->description : '';
+		$filename = l(
+				$record->filename,
+				"sites/default/files/naturvielfalt/$modulename/" . $id . '/'
+				. $record->filename);
+		$filemime = $img_mime;
+		$filesize = ($record->filesize / 1000) . " KB";
+// 		$timestamp = date('d.m.Y', $record->timestamp);
+// 		$author = isset($record->author) ? $record->author : '';
+		$edit ? $desc = '<input type="text" name="file_description['.$record->fid.']" id="file_description['.$record->fid.']" value="'.$description.'">' : $desc = $description;
+		$row = array();
+		$row[] = $filemime;
+		$row[] = $filename;
+		$row[] = $desc;
+		$row[] = $filesize;
+// 		$row[] = $timestamp;
+// 		$row[] = '<input type="text" name="file_author['.$record->fid.']" id="file_author['.$record->fid.']" value="'.$author.'">';
+// 		$row[] = $user->name;
+		if($edit) $row[] = '<input type="checkbox" value="1" name="file_delete['.$record->fid.']"';
+		$rows[] = $row;
+	}
+
+	$tableHeader[] = t('Typ');
+	$tableHeader[] = t('Filename');
+	$tableHeader[] = t('Description');
+	$tableHeader[] = t('Size');
+// 	$tableHeader[] = t('Date');
+// 	$tableHeader[] = t('Author');
+// 	$tableHeader[] = t('Owner');
+	if($edit) $tableHeader[] = t('Delete');
+
+	$render_array = array(
+			'#type' => 'fieldset',
+			'#title' => t('Files'),
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+			'#attached' => array(
+					'js' => array(
+							'misc/form.js',
+							'misc/collapse.js',
+					),
+			),
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					),
+			),
+	);
+
+	$render_array['data'] = array(
+			'#theme' => 'table',
+			'#header' => $tableHeader,
+			'#rows' => $rows,
+			'#tableWidth' => 900,
+			'#id_table' => 'files',
+	);
+	return $render_array;
+}
+
+/**
+ * Delete a file managed
+ * IMPORTANT: acl not checked
+ * @param array $file_managed_ids
+ * @param string $module
+ */
+function observation_gallery_files_delete($file_managed_ids = array(), $module = false){
+	if(!is_array($file_managed_ids) || count($file_managed_ids) < 1
+			 || !$module) return false;
+	foreach($file_managed_ids as $key => $value){
+		db_delete($module.'_file_managed')->condition('file_managed_fid', $key)->execute();
+		file_delete(observation_gallery_get_file($key));
+	}
+
+}
+
+function observation_gallery_file_update($file = array()){
+	db_update('file_managed')->fields($file)->condition('fid', $file['fid'])->execute();
+}
+
+function observation_gallery_file_updateComment($module,$file_managed_descriptions){
+	if(!isset($module) || !isset($file_managed_descriptions)
+			|| empty($module) || !is_array($file_managed_descriptions)) return false;
+
+	foreach ($file_managed_descriptions as $key => $value){
+		$value = check_plain($value);
+		$key = intval($key);
+		db_update($module.'_file_managed')->fields(array('description' => $value))
+					->condition('file_managed_fid', $key)->execute();
+	}
+}
+
+
+
+
+
+
+
+
+
+
