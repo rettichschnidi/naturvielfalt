@@ -230,7 +230,7 @@ global $user;
 		}
 
 		/**
-		 * TSTING GALLERY
+		 * Medias
 		 */
 
 		$image = array(
@@ -241,10 +241,18 @@ global $user;
 				'location' => $geometry['township'].' '.$geometry['canton'],
 				'type' => 'images',
 		);
-		observation_gallery_save_manual('observation', $image, 'observation_file_managed', 'observation_id');
+		observation_gallery_save_manual('observation', $image, 'observation_id');
+
+		if(isset($values['file_description'])){
+			observation_gallery_file_updateComment('observation', $values['file_description']);
+		}
 
 		if(isset($values['delete'])){
 			observation_gallery_delete($values['delete']);
+		}
+
+		if(isset($values['file_delete'])){
+			observation_gallery_files_delete($values['file_delete'], 'observation');
 		}
 
 		// Set the return statement
@@ -287,6 +295,7 @@ function observation_get_all_json(){
 			'o.observer AS observer',
 			'o.date AS date',
 			'o.count AS count',
+			'o.acl_id',
 			'a_s.altitude AS altitude',
 			'a_s.township AS township',
 			'a_s.zip AS zip',
