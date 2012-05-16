@@ -102,7 +102,7 @@ function area_gallery_caption($id) {
 			{area} AS a
 			JOIN {area_geometry} AS a_s ON a.area_geometry_id = a_s.id
 		WHERE
-			a_s.id = :id',
+			a.id = :id',
 		array(':id' => $id))->fetch();
 	return $result->name . ' <small>' . $result->township . ' '
 			. $result->canton . ', ' . $result->country . '</small>';

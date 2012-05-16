@@ -6,8 +6,12 @@ DROP INDEX IF EXISTS left_value;
 DROP INDEX IF EXISTS left_value;
 DROP INDEX IF EXISTS PrimefatherAndRight;
 DROP INDEX IF EXISTS PrimefatherAndLeft;
+DROP INDEX IF EXISTS classification_level;
+DROP INDEX IF EXISTS prime_father;
+DROP INDEX IF EXISTS name;
 DROP INDEX IF EXISTS PrimefatherAndLeft;
 DROP INDEX IF EXISTS PrimefatherAndRight;
+DROP INDEX IF EXISTS id;
 DROP INDEX IF EXISTS organism_id;
 DROP INDEX IF EXISTS value;
 DROP INDEX IF EXISTS FK_organism_11;
@@ -412,7 +416,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -420,7 +424,7 @@ ALTER TABLE organism_classification_level
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -468,7 +472,7 @@ ALTER TABLE organism_scientific_name
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -476,7 +480,7 @@ ALTER TABLE public.organism
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -515,8 +519,12 @@ CREATE INDEX left_value ON organism_classification (left_value);
 CREATE INDEX left_value ON organism_classification (right_value);
 CREATE INDEX PrimefatherAndRight ON organism_classification (prime_father_id, right_value);
 CREATE INDEX PrimefatherAndLeft ON organism_classification (prime_father_id, left_value);
+CREATE INDEX classification_level ON organism_classification (organism_classification_level_id);
+CREATE INDEX prime_father ON organism_classification (prime_father_id);
+CREATE INDEX name ON organism_classification (name);
 CREATE INDEX PrimefatherAndLeft ON organism_classification_level (prime_father_id, left_value);
 CREATE INDEX PrimefatherAndRight ON organism_classification_level (prime_father_id, right_value);
+CREATE INDEX id ON organism_classification_level (id);
 CREATE INDEX organism_id ON organism_scientific_name (organism_id);
 CREATE INDEX value ON organism_scientific_name (name);
 CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);

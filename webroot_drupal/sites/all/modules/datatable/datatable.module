@@ -1,8 +1,10 @@
 <?php
 
-/**********************************
- *  Hook implementations
- *********************************/
+/**
+ * @file datatable.module
+ * @author Ramon Gamma, 2012
+ * @copyright 2012 Naturwerk, Brugg
+ */
 
 /**
  * Implements hook_theme()
@@ -39,7 +41,13 @@ function datatable_theme() {
  * Fields from and for http://datatables.net
  * $_Request is used for filtering
  *
- * @author Ramon Gamma, 2012
+ * @note Some values get submitted from flexigrid via POST:
+ * 	- sortname	Name of the colomn to be sorted at
+ * 	- sortorder Sortoder (asc or desc)
+ * 	- query		The phrase searched for (will be used case insensitive)
+ * 	- page		Which page to show in case there are more elements than
+ * 				showable on one page.
+ * 	- rp		Number of elements to return (per page)		
  *
  * @param $sql array
  * 			'dbPreStatement'	optional: Statement which will be executed before anything else. Usefull to create temporary views.
@@ -47,7 +55,7 @@ function datatable_theme() {
  * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
  * 			'dbSortColumns'		optional; Array of column on that can be sorted
  * 			'dbTable' 			String db table
- * 			'dbJoins' 			optional; the joins String (including all JOIN statements)
+ * 			' ' 			optional; the joins String (including all JOIN statements)
  * 			'dbGroupBy' 		optional; the GROUP BY string
  * 			'dbWhere' 			optional; the WHERE statement string
  * 			'id' 				optional: id column, default 'id'

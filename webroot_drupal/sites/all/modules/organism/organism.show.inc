@@ -193,7 +193,6 @@ function organism_show_classification($classificationid) {
 }
 
 function organism_attributes_form($form, &$form_state, $organism) {
-	
 }
 
 /**
@@ -211,15 +210,33 @@ function organism_show_organism($organism) {
 	// include the datatable javascript
 	$render_array = array();
 
-	if(function_exists('gallery_list_renderer')){
-		$render_array['ImageGallery'] = gallery_list_renderer('images', 'organismreference', $organism['id'], false, -1,false);
-		$render_array['VideoGallery'] = gallery_list_renderer('videos', 'organismreference', $organism['id'], false, -1,true);
-		$render_array['SoundGallery'] = gallery_list_renderer('sounds', 'organismreference', $organism['id'], false, -1,true);
+	if (function_exists('gallery_list_renderer')) {
+		$render_array['ImageGallery'] = gallery_list_renderer(
+			'images',
+			'organismreference',
+			$organism['id'],
+			false,
+			-1,
+			false);
+		$render_array['VideoGallery'] = gallery_list_renderer(
+			'videos',
+			'organismreference',
+			$organism['id'],
+			false,
+			-1,
+			true);
+		$render_array['SoundGallery'] = gallery_list_renderer(
+			'sounds',
+			'organismreference',
+			$organism['id'],
+			false,
+			-1,
+			true);
 	}
-// 	$render_array = array_merge($render_array, organism_attributes($organism));
-// 	$render_array = array_merge($render_array, getOrganismInventories($organism));
+	// 	$render_array = array_merge($render_array, organism_attributes($organism));
+	// 	$render_array = array_merge($render_array, getOrganismInventories($organism));
 	$render_array = array_merge($render_array, organism_files($organism['id']));
-	
+
 	$attributes = $organism['attributes'];
 
 	$render_array['attributes'] = array(

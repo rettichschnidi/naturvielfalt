@@ -40,9 +40,9 @@ $classification_data = array(
 		'genus' => array(
 				'columnname' => 'genus'
 		),
-		'species' => array(
-				'columnname' => 'species'
-		)
+// 		'species' => array(
+// 				'columnname' => 'species'
+// 		)
 );
 
 // store all level names in $classification_level_columns
@@ -63,7 +63,7 @@ $sql = "SELECT
 			species,
 			scientific_name
 		ORDER BY
-			scientific_name";
+			$columnstring, scientific_name";
 
 if (false) {
 	print "Query: $sql\n";
@@ -81,9 +81,9 @@ $organisms[] = array(
 				array(
 						'classificationlevelname' => 'genus'
 				),
-				array(
-						'classificationlevelname' => 'species'
-				)
+// 				array(
+// 						'classificationlevelname' => 'species'
+// 				)
 		)
 );
 

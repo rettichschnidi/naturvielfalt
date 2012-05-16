@@ -65,7 +65,7 @@ $sql = "SELECT
 		FROM
 			$importTable
 		ORDER BY
-			$columnstring";
+			$columnstring, fungus_artnr";
 
 if (false) {
 	print "Query: $sql\n";
