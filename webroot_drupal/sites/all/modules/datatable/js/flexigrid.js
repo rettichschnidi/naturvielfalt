@@ -42,7 +42,7 @@
 			url : false, // ajax url
 			method : 'POST', // data sending method
 			dataType : 'xml', // type of data loaded
-			errormsg : 'Connection Error',
+			errormsg : LOCALIZATION.strERRORMSG,
 			usepager : false, //
 			nowrap : true, //
 			page : 1, // current page
@@ -51,11 +51,11 @@
 			rp : 15, // results per page
 			rpOptions : [ 10, 15, 20, 25, 40 ],
 			title : false,
-			pagestat : 'Displaying {from} to {to} of {total} items',
-			procmsg : 'Processing, please wait ...',
+			pagestat : LOCALIZATION.strDISPLAYINFO,
+			procmsg : LOCALIZATION.strPROCMSG,
 			query : '',
 			qtype : '',
-			nomsg : 'No items',
+			nomsg : LOCALIZATION.strNOMSG,
 			minColToggle : 1, // minimum allowed column to be hidden
 			showToggleBtn : true, // show or hide column toggle popup
 			hideOnSubmit : true,
@@ -1346,7 +1346,7 @@
 			g.pDiv.className = 'pDiv';
 			g.pDiv.innerHTML = '<div class="pDiv2"></div>';
 			$(g.bDiv).after(g.pDiv);
-			var html = ' <div class="pGroup"> <div class="pFirst pButton"><span></span></div><div class="pPrev pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pcontrol">Page <input type="text" size="4" value="1" /> of <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span></div>';
+			var html = ' <div class="pGroup"> <div class="pFirst pButton"><span></span></div><div class="pPrev pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pcontrol">'+LOCALIZATION.strPAGE+' <input type="text" size="4" value="1" /> '+LOCALIZATION.strOF+' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span></div>';
 			$('div', g.pDiv).html(html);
 
 			$('.pReload', g.pDiv).click(function() {
@@ -1430,7 +1430,6 @@
 				g.sDiv.className = 'sDiv';
 
 				sitems = p.searchitems;
-
 				var sopt = "";
 				for ( var s = 0; s < sitems.length; s++) {
 
@@ -1466,9 +1465,9 @@
 
 				$(g.sDiv)
 						.append(
-								"<div class='sDiv2'>Quick Search <input type='text' size='30' name='q' class='qsbox' /> <select name='qtype'>"
+								"<div class='sDiv2'>"+LOCALIZATION.strQUICKSEARCH+" <input type='text' size='30' name='q' class='qsbox' /> <select name='qtype'>"
 										+ sopt
-										+ "</select> <input type='button' id=\"flexi_search\" value='Search' />&nbsp;<input type='button' id=\"flexi_reset\" value='Reset' /></div>");
+										+ "</select> <input type='button' id=\"flexi_search\" value='"+LOCALIZATION.btnSEARCH+"' />&nbsp;<input type='button' id=\"flexi_reset\" value='"+LOCALIZATION.btnRESET+"' /></div>");
 
 				// If cookies are set and whith value
 				// show search bar to inform users that
@@ -1530,7 +1529,7 @@
 			if (p.showTableToggleBtn) {
 				$(g.mDiv)
 						.append(
-								'<div class="ptogtitle" title="Minimize/Maximize Table"><span></span></div>');
+								'<div class="ptogtitle" title="'+LOCALIZATION.strMINMAX+'"><span></span></div>');
 				$('div.ptogtitle', g.mDiv).click(function() {
 					$(g.gDiv).toggleClass('hideBody');
 					$(this).toggleClass('vsble');
@@ -1621,7 +1620,7 @@
 			$(g.gDiv).prepend(g.nDiv);
 
 			$(g.nBtn).addClass('nBtn').html('<div></div>').attr('title',
-					'Hide/Show Columns').click(function() {
+					LOCALIZATION.strHIDESHOW).click(function() {
 				$(g.nDiv).toggle();
 				return true;
 			});

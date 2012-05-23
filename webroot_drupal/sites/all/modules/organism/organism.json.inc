@@ -621,8 +621,8 @@ function organism_search_organism_json($classification = false, $term = false,
 	global $user;
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
-print_r($user);
-	$langcode = isset($user->language) && !empty($user->lang) ? $user->language : 'de';
+	
+	$langcode = isset($user->language) && !empty($user) ? $user->language : 'de';
 
 	if (!$classification)
 		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id']

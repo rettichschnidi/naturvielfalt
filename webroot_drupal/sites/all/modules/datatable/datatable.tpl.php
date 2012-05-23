@@ -7,6 +7,9 @@
  * @author Ramon Gamma, 2012
  */
 
+global $user;
+$langcode = isset($user->language) && !empty($user) ? $user->language : 'de';
+
 drupal_add_library('system', 'ui.datepicker');
 
 /**
@@ -22,6 +25,16 @@ drupal_add_css(
 /**
  * add javascript files
  */
+
+// if($langcode == 'de')
+//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
+// elseif ($langcode == 'en')
+//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.en.js');
+// else
+//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
+
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.'.$langcode.'.js');
+
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(
 	drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
@@ -135,7 +148,9 @@ echo $aoColumns;
 ?>
 
 searchitems : [
-		{display: Drupal.t('ALL'), name: '*', isdefault: true}
+		{display: Drupal.t('ALL'), name: '*', isdefault: true},
+
+		<?php echo "{display: Drupal.t('Town'), name: 'a_s.township', isdefault: false}";?>
 	],
 singleSelect: true,
 sortname: "<?php echo $sortField; ?>",
