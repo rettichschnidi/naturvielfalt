@@ -186,7 +186,7 @@ function observation_edit_acl($observation = NULL){
  * Return a formated table with the observation details
  * @param array $observationdata
  */
-function observation_get_table($observationdata = NULL){
+function observation_get_table($observationdata = NULL, $simple = false){
 
 	if($observationdata == NULL || !is_array($observationdata)) return false;
 	$rows = array();
@@ -194,26 +194,28 @@ function observation_get_table($observationdata = NULL){
 	if (!empty($observationdata['organism']['name_lang'])) {
 		$rows[] = array(
 				array('data' => t('Organism Name'),'header' => true),
-				$observationdata['organism']['name_lang'],
+				$simple ? substr($observationdata['organism']['name_lang'], 0, 20).'...'
+							: $observationdata['organism']['name_lang'],
 		);
 	}
 
 	if (!empty($observationdata['organism']['name_lat'])) {
 		$rows[] = array(
 				array('data' => t('Scientific name'),'header' => true),
-				$observationdata['organism']['name_lat'],
+				$simple ? substr($observationdata['organism']['name_lat'], 0, 20).'...'
+				: $observationdata['organism']['name_lat'],
 		);
 	}
 
 
-	if (!empty($observationdata['observation']['organism_artgroup_name'])) {
+	if (!empty($observationdata['observation']['organism_artgroup_name']) && !$simple) {
 		$rows[] = array(
 				array('data' => t('Artgroup'),'header' => true),
 				t($observationdata['observation']['organism_artgroup_name']),
 		);
 	}
 
-	if (!empty($observationdata['observation']['observer'])) {
+	if (!empty($observationdata['observation']['observer']) && !$simple) {
 		$rows[] = array(
 				array('data' => t('Observer'),'header' => true),
 				$observationdata['observation']['observer'],
@@ -223,11 +225,12 @@ function observation_get_table($observationdata = NULL){
 	if (!empty($observationdata['observation']['date'])) {
 		$rows[] = array(
 				array('data' => t('Date'),'header' => true),
-				date("j.m.Y", $observationdata['observation']['date'])
+				date("j.m.Y", $observationdata['observation']['date']),
+
 		);
 	}
 
-	if (!empty($observationdata['observation']['m_time'])) {
+	if (!empty($observationdata['observation']['m_time']) && !$simple) {
 		$rows[] = array(
 				array('data' => t('Last modification'),'header' => true),
 				date("j.m.Y", $observationdata['observation']['m_time'])

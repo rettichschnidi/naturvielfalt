@@ -8,6 +8,8 @@
  */
 function observation_show_all_singleobservations() {
 
+	$observation_path= drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/observation.js');
 
 	$output['div'] = array(
 			'#type' => 'fieldset',
@@ -94,9 +96,56 @@ function observation_show_all_singleobservations() {
 			'#options' => array(
 					'jsonUrl' => "'" . base_path()."observation/get/all'",
 					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/show';})}"
+// 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+// 					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/show';})}"
+					'rowClickHandler' => "function rowClick(celDiv, id) {
+						jQuery(celDiv).click(
+							function() {
+								observation.selectObservation(id);
+							}
+						)
+					}",
 			)
 	);
 	return $output;
+}
+
+
+/**
+ * Return a form which shows some important facts about a given area.
+ * Intended for usage in a infowindow on a map.
+ *
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @param array $areadata Area data
+ * @return array Drupal form
+ */
+function observation_map_overview_form($form, &$form_state, $observationdata) {
+	$form['addressdata'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Observation'),
+			'#attributes' => array(
+					'style' => array('width:400px;'))
+	);
+	$form['addressdata']['table'] = observation_get_table($observationdata, true);
+	/**
+	 * Display the "edit" button only if user has write permission to this area
+	 */
+	if (observation_write_access($observationdata)) {
+		$form['addressdata']['edit'] = array(
+				'#type' => 'markup',
+				'#markup' => l(t('Edit'), 'singleobservation/' . $observationdata['observation']['id'] . '/edit')
+		);
+		$form['addressdata']['whitespace'] = array(
+				'#type' => 'markup',
+				'#markup' => '&nbsp/&nbsp;'
+		);
+	}
+	$form['addressdata']['show'] = array(
+			'#type' => 'markup',
+			'#markup' => l(t('Show'), 'singleobservation/' . $observationdata['observation']['id'] . '/show')
+	);
+	return $form;
 }

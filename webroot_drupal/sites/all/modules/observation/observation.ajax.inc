@@ -368,7 +368,14 @@ function observation_get_geometry_json($observation_data = false){
 
 
 
-
+/**
+ * Renders a form which allows the user to submit an area name.
+ * For usage with ajax.
+ */
+function observation_overview_ajax_callback($observation_data = false) {
+	module_load_include('inc', 'observation', 'observation.show');
+	print drupal_render(drupal_get_form('observation_map_overview_form', $observation_data));
+}
 
 
 

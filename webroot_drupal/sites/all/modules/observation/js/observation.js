@@ -1,4 +1,5 @@
 jQuery(document).ready(function() {
+	$ = jQuery;
  observation = {};
  observation.message = $('#message');
  
@@ -11,7 +12,7 @@ jQuery(document).ready(function() {
 		}
 	}).width(80);
 	if(observation.last_date) jQuery( "#date" ).val(observation.last_date);
-	jQuery( "#organismn_autocomplete" ).focus();
+	if($( "#organismn_autocomplete" ).val() == '') $( "#organismn_autocomplete" ).focus();
 	
 	
 	function changeArtGroup(id){
@@ -25,7 +26,7 @@ jQuery(document).ready(function() {
 			$('#observation_form').trigger('reset');
 			$('#species_autocomplete').html('');
 			if(responseText.update) {
-				window.location = window.location.toString().replace("edit", "show")
+				window.location = window.location.toString().replace("edit", "show");
 			}else{
 				observation.hideAttributes();
 				observation.hideDetMethods();
@@ -55,8 +56,8 @@ jQuery(document).ready(function() {
 	        // $.ajax options can be used here too, for example: 
 	        //timeout:   3000 
 	    };
-	    // bind form using 'ajaxForm' 
-	    $('#observation_form').ajaxForm(options); 
+	    // bind form using 'ajaxForm'
+		if($('#observation_form').length > 0) $('#observation_form').ajaxForm(options); 
 		observation.setMessage = function (message, type, time) {
 			if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
 			observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
@@ -248,6 +249,50 @@ jQuery(document).ready(function() {
 				}
 //				observation.hideLoading();
 			});
+		};
+		
+		observation.selectObservation = function(id){
+			if (id in areabasic.overlayElements) {
+				if (areabasic.currentElement != null) {
+					areabasic.currentElement.deselect();
+				}
+				areabasic.currentElement = areabasic.overlayElements[id];
+				areabasic.currentData = areabasic.overlayData[id];
+
+				areabasic.currentElement.select();
+				var bounds = areabasic.currentElement.getBounds();
+				areabasic.googlemap.fitBounds(bounds);
+				areabasic.googlemap.setZoom(areabasic.googlemap.getZoom() - 2);
+				observation.showInfoWindow(id);
+			} else {
+				console.error("Observation not available: " + id);
+			}
+		};
+		
+		/**
+		 * Show a info window for a given, existing area
+		 * 
+		 * @param id
+		 *            integer area id
+		 */
+		observation.showInfoWindow = function(id) {
+			var url = Drupal.settings.basePath + 'observation/' + id
+					+ '/overview/ajaxform';
+
+			if (areabasic.visibleInfoWindow != null) {
+				areabasic.visibleInfoWindow.close();
+			}
+			var infowindow = areabasic.visibleInfoWindow = new google.maps.InfoWindow({
+				content : Drupal.t('Loading...'),
+			});
+
+			jQuery.get(url, function(data) {
+				infowindow.setContent(data);
+			});
+			// move marker a little bit down, (approximately)
+			// centers the infowindow
+			areabasic.googlemap.panBy(0, -250);
+			infowindow.open(areabasic.googlemap, areabasic.currentElement);
 		};
 
 });
