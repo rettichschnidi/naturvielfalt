@@ -149,8 +149,6 @@ echo $aoColumns;
 
 searchitems : [
 		{display: Drupal.t('ALL'), name: '*', isdefault: true},
-
-		<?php echo "{display: Drupal.t('Town'), name: 'a_s.township', isdefault: false}";?>
 	],
 singleSelect: true,
 sortname: "<?php echo $sortField; ?>",

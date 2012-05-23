@@ -453,6 +453,9 @@
 				if (p.total == 0) {
 					$('tr, a, td, div', t).unbind();
 					$(t).empty();
+					$(g.bDiv).html(
+							'<div width="200px" style="text-align:center;margin-top:75px;font-size:2em;">'+p.nomsg+'</div>'
+					);
 					p.pages = 1;
 					p.page = 1;
 					this.buildpager();

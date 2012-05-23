@@ -46,7 +46,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$sql['id'] = 'id';
 	$sql['acl_level'] = $acl_level;
 	$output = datatable_dbRequest($sql);
-	return drupal_json_output($output);
+	//return drupal_json_output($output);
 }
 
 /**
