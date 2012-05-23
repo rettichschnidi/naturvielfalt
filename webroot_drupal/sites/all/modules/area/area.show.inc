@@ -322,7 +322,7 @@ function area_overview_form($form, &$form_state, $areadata) {
 		);
 		$form['addressdata']['whitespace'] = array(
 				'#type' => 'markup',
-				'#markup' => '&nbsp/&nbsp;'
+				'#markup' => '&nbsp;/&nbsp;'
 		);
 	}
 	$form['addressdata']['show'] = array(
