@@ -2268,7 +2268,15 @@ function _gallery_back_link($type, $id) {
 	return false;
 }
 
+function gallery_metadata_popup(){
+	$output['form'] = drupal_render(drupal_get_form('gallery_metadata_form'));
+	return drupal_json_output($output);
+}
+
 function gallery_metadata_form(){
+	$file_name = check_plain($_REQUEST['fn']);
+	$div_id = check_plain($_REQUEST['di']);
+
 		$form['metadata'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Metadata'),
@@ -2282,47 +2290,92 @@ function gallery_metadata_form(){
 					),
 			),
 			'#attributes' => array(
-					'class' => array('metadata collapsible'),
-					'style' => 'width: 100px;',
+					'class' => array('collapsible'),
+// 					'style' => 'width: 100px;',
 			),
 	);
-	$form['metadata']['title'] = array(
-			'#type' => 'textfield',
-			'#title' => t('Title'),
-			'#size' => 100,
-			'#maxlength' => 128,
-// 			'#default_value' => isset($image['title']) ? $image['title'] : '',
-// 			'#description' => t('The title of the ' . $label . '.'),
-			'#required' => FALSE,
+
+	if(gallery_validate_file_extension($file_name, gallery_get_image_extensions())
+			|| gallery_validate_file_extension($file_name, gallery_get_mp3_extensions())
+			|| gallery_validate_file_extension($file_name, gallery_get_video_extensions())
+			|| gallery_validate_file_extension($file_name, gallery_get_file_extensions())){
+		$form['metadata']['title'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Title'),
+				'#size' => 50,
+				'#maxlength' => 128,
+	// 			'#default_value' => isset($image['title']) ? $image['title'] : '',
+	// 			'#description' => t('The title of the ' . $label . '.'),
+				'#required' => FALSE,
+		);
+// 		$form['metadata']['description'] = array(
+// 				'#type' => 'textarea',
+// 				'#title' => t('Description'),
+// 	// 			'#default_value' => isset($image['description']) ? $image['description'] : '',
+// 	// 			'#description' => t('The description of the ' . $label . '.'),
+// 				'#required' => FALSE,
+// 		);
+		$form['metadata']['description'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Description'),
+				'#size' => 50,
+				'#maxlength' => 255,
+// 				'#description' => t(
+// 						'The location the ' . $label . ' was taken at.'),
+				'#required' => FALSE,
+		);
+		$form['metadata']['location'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Location'),
+				'#size' => 50,
+				'#maxlength' => 255,
+// 				'#description' => t(
+// 						'The location the ' . $label . ' was taken at.'),
+				'#required' => FALSE,
+		);
+		$form['metadata']['author'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Author'),
+				'#size' => 50,
+				'#maxlength' => 255,
+				'#description' => t('The author or copyright of the file'),
+				'#required' => FALSE,
+		);
+		$form['metadata']['fomr'] = array(
+				'#type' => 'textfield',
+				'#attributes' => array(
+						'id' => 'uploadform',
+						'name' => 'uploadform',
+						'value' => $div_id,
+						'style' => array(
+								'display: none;',
+								'height: 0px;'
+						)
+				),
+		);
+		// if not an image, show only the description input
+		if(gallery_validate_file_extension($file_name, gallery_get_file_extensions())){
+			$form['metadata']['title']['#attributes']['style'] = array('display: none;','height: 0px;');
+			unset($form['metadata']['title']['#title']);
+			unset($form['metadata']['title']['#description']);
+			$form['metadata']['location']['#attributes']['style'] = array('display: none;','height: 0px;');
+			unset($form['metadata']['location']['#title']);
+			unset($form['metadata']['location']['#description']);
+			$form['metadata']['author']['#attributes']['style'] = array('display: none;','height: 0px;');
+			unset($form['metadata']['author']['#title']);
+			unset($form['metadata']['author']['#description']);
+		}
+	}else{
+		$form['metadata'] = t('File not allowed');
+	}
+	$form['actions'] = array('#type' => 'actions');
+	$form['actions']['close'] = array('#markup' => l(t('Cancel'), 'observations'));
+	$form['actions']['save'] = array(
+			'#type' => 'submit',
+			'#value' => t('Save'),
+			'#attributes' => array(
+					'style' => array('float:right;'))
 	);
-	$form['metadata']['description'] = array(
-			'#type' => 'textarea',
-			'#title' => t('Description'),
-// 			'#default_value' => isset($image['description']) ? $image['description'] : '',
-// 			'#description' => t('The description of the ' . $label . '.'),
-			'#required' => FALSE,
-	);
-	$form['metadata']['location'] = array(
-			'#type' => 'textfield',
-			'#title' => t('Location'),
-			'#size' => 100,
-			'#maxlength' => 255,
-			'#default_value' => isset($image['location'])
-			? $image['location'] : $default_location,
-			'#description' => t(
-					'The location the ' . $label . ' was taken at.'),
-			'#required' => FALSE,
-	);
-	$form['metadata']['author'] = array(
-			'#type' => 'textfield',
-			'#title' => t('Author'),
-			'#size' => 100,
-			'#maxlength' => 255,
-			'#default_value' => isset($image['author']) ? $image['author']
-			: $user->name,
-			'#description' => t('The author of the ' . $label . '.'),
-			'#required' => FALSE,
-	);
-	$output['form'] = drupal_render($form);
-	drupal_json_output($output);
+
+	return $form;
 }
