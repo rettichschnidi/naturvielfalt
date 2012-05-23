@@ -235,8 +235,6 @@ global $user;
 
 		$image = array(
 				'item_id' => $observation['id'],
-				'title' => '',
-				'description' => '',
 				'author' => $observation['observer'],
 				'location' => $geometry['township'].' '.$geometry['canton'],
 				'type' => 'images',

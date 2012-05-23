@@ -131,13 +131,24 @@ function observation_form($observation = false) {
 	</legend>
 	<div class="fieldset-wrapper">
 		<div class="form-item form-type-file form-item-files-">
-			<label for="picture_upload">'.t('Upload new files').'</label>
-			<div id="picture_upload">
-			<input onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-			<a onclick="observation.galleryMetaDataDialog($(this).prev(\'input\'));return false;" >  '.t('Click here to add details to this file').'</a><div id="picture_upload_metadata_image">'
-// 			.drupal_render(gallery_get_medias_metadata_template())
-			.'</div
+			<div id="picture_upload__0" style="display: none; height: 0px;">
+				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+				<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '.t('Click here to add details to this file').'</a>
+				<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
 			</div>
+			<label for="picture_upload__1">'.t('Upload new files').'</label>
+			<div id="picture_upload__1">
+				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+				<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '.t('Click here to add details to this file').'</a>
+				<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+			</div>
+
 			<div class="description">
 				<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a>
 				<p>'.t('Allowed files endings are: ').$file_extensions.'</p>
@@ -212,7 +223,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 									.'<a href="#" onclick="observation.addCustomAttribute(); return false;" title="'.t('Add custom details').'"><b>+</b></a></div>'
 
 							.'</table></div></div></fieldset>'
-							.'<input type="submit" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit">'
+							.'<input type="submit" class="edit-submit" value="'.t('Save').'" name="op" id="edit-submit">'
 
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 

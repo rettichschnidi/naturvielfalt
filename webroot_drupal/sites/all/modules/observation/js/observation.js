@@ -160,7 +160,12 @@ jQuery(document).ready(function() {
 		};
 		
 		addUploadSlot = function(form){
-			$('#picture_upload').clone().appendTo('#picture');
+			$('#picture_upload__0').clone().appendTo('#picture').css('display','block').css('height','auto');
+			elemets_ids=0;
+			$("div[id^='picture_upload__']").each(function () {
+				$(this).attr("id", 'picture_upload__'+(elemets_ids++));
+//            	$(this).attr("id");
+			});
 		};
 		
 		checkMimeType_metaData = function(form){
@@ -175,23 +180,24 @@ jQuery(document).ready(function() {
 			}
 		};
 
-		observation.galleryMetaDataDialog = function (form) {
+		observation.galleryMetaDataDialog = function (div) {
 //			e.preventDefault();
-//			tmphref = form; return;
+//			tmphref = div; return;
+			file_name = div.children('input#file_input.form-file').val();
+			div_id = div.attr("id");
 //			observation.showLoading();
 //			alert(form.files["0"].type);
-			if(form.val() == ''){
+			if(file_name == ''){
 				alert(Drupal.t('Please select a file'));
 				return;
 			}
 			var data = {
-				ajax: 1,
-				fn: form.val(),
-				type: 'post',
+				fn: file_name,
+				di: div_id,
 			};
 			$.getJSON(Drupal.settings.basePath + 'gallery/json/meta-form/', data, function (data) {
 				if(data && data.form) {
-					var dialog = $('<div title="' + Drupal.t('Details for files') + '" />');
+					dialog = $('<div title="' + Drupal.t('Meta data for uploads') + '" />');
 					dialog.append($(data.form));
 					dialog.dialog({
 						modal: true,
@@ -203,15 +209,26 @@ jQuery(document).ready(function() {
 						},
 						width: 700
 					});
-//					dialog.find('#edit-actions a').click(function (e) {
-//						e.preventDefault();
-//						$(this).closest('.ui-dialog-content').dialog('close');
-//					});
-//					dialog.find('form').submit(function (e) {
+					var parform = dialog.find('input[name="uploadform"]').val();
+					dialog.find('input[name="title"]').val($('#'+parform).find('input[id="meta_title"]').val());
+					dialog.find('input[name="description"]').val($('#'+parform).find('input[id="meta_description"]').val());
+					dialog.find('input[name="location"]').val($('#'+parform).find('input[id="meta_location"]').val());
+					dialog.find('input[name="author"]').val($('#'+parform).find('input[id="meta_author"]').val());
+					dialog.find('#edit-actions a').click(function (e) {
+						e.preventDefault();
+						$(this).closest('.ui-dialog-content').dialog('close');
+					});
+					dialog.find('form').submit(function (e) {
+						var parform = $(this).find('input[name="uploadform"]').val();
+						$('#'+parform).find('input[id="meta_title"]').val($(this).find('input[name="title"]').val());
+						$('#'+parform).find('input[id="meta_description"]').val($(this).find('input[name="description"]').val());
+						$('#'+parform).find('input[id="meta_location"]').val($(this).find('input[name="location"]').val());
+						$('#'+parform).find('input[id="meta_author"]').val($(this).find('input[name="author"]').val());
+						
 //						var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
 //						var row = inventory.container.find('input.entry_id[value="' + entry_id + '"]').closest('tr');
 //						var base_name = row.find('input.entry_id').attr('name');
-//
+//form = $(this);
 //						inventory.storePrevPos(inventory.location.position);
 //
 //						inventory.addInput(row, base_name, $(this), 'lat');
@@ -221,13 +238,13 @@ jQuery(document).ready(function() {
 //						inventory.addInput(row, base_name, $(this), 'township');
 //						inventory.addInput(row, base_name, $(this), 'canton');
 //						inventory.addInput(row, base_name, $(this), 'country');
-//
+
 //						row.find('a.location img').attr('src', row.find('a.location img').attr('src').replace('_unset', ''));
-//
+					
 //						inventory.setMessage(Drupal.t('The location will be stored only after saving the whole form by pressing the <em>Save</em> button in the lower right.'), 'warning', 15000);
-//						$(this).closest('.ui-dialog-content').dialog('close');
-//						return false;
-//					});
+						$(this).closest('.ui-dialog-content').dialog('close');
+						return false;
+					});
 				}
 //				observation.hideLoading();
 			});

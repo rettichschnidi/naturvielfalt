@@ -442,25 +442,17 @@ function observation_gallery_save_manual($module_name, $entry_array, $file_manag
 	$categories = array();
 	$destination = array();
 
-	// build the db entry for the gallery module
-	$image = array(
-			'item_type' => $module_name,
-			'item_id' => $entry_array['item_id'],
-			'title' => $entry_array['title'],
-			'description' => $entry_array['description'],
-			'author' => $entry_array['author'],
-			'location' => $entry_array['location'],
-			'categories' => array(),
-			'subtypes' => array()
-	);
+
 
 	// check the directory, create it if not exists
-	$key = $image['item_type'] . ':' . $image['item_id'];
-	if (!array_key_exists($key, $destination)) {
+	$key = $module_name . ':' . $entry_array['item_id'];
+// 	if (!array_key_exists($key, $destination)) {
 		$destination[$key] = 'public://naturvielfalt/gallery/'
-		. $image['item_type'] . '/' . $image['item_id'];
+		. $module_name . '/' . $entry_array['item_id'];
+// 		$gallery_path = 'public://naturvielfalt/gallery/'.$module_name.'/'.$entry_array['item_id'];
+// 		die($gallery_path);
 		file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
-	}
+// 	}
 
 	$img_ids = array();
 // die(print_r($_FILES));
@@ -469,6 +461,18 @@ function observation_gallery_save_manual($module_name, $entry_array, $file_manag
 	foreach($_FILES['files']['error'] as $fkey => $message){
 		if($message != 0) continue;
 		$add_to_gallery = true;
+
+		// build the db entry for the gallery module
+		$image = array(
+				'item_type' => $module_name,
+				'item_id' => $entry_array['item_id'],
+				'title' => $_REQUEST['meta_title'][$fkey],
+				'description' => $_REQUEST['meta_description'][$fkey],
+				'author' => empty($_REQUEST['meta_author'][$fkey]) ? $entry_array['author'] : $_REQUEST['meta_author'][$fkey],
+				'location' => empty($_REQUEST['meta_location'][$fkey]) ? $entry_array['location'] : $_REQUEST['meta_location'][$fkey],
+				'categories' => array(),
+				'subtypes' => array()
+		);
 
 		// make the validator for each file
 		if (gallery_validate_file_extension($_FILES['files']['name'][$fkey], gallery_get_image_extensions())) {
@@ -513,7 +517,7 @@ function observation_gallery_save_manual($module_name, $entry_array, $file_manag
 				if($file_managed_module_col){
 					$file_managed_table_entry[$file_managed_module_col] = $entry_array['item_id'];
 					$file_managed_table_entry['file_managed_fid'] = $file->fid;
-					$file_managed_table_entry['description'] = $entry_array['description'];
+					$file_managed_table_entry['description'] = $image['description'];
 					db_insert($module_name.'_file_managed')->fields($file_managed_table_entry)->execute();
 				}
 			}
