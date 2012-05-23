@@ -42,22 +42,25 @@ jQuery(document).ready(function() {
 	  if($('#observation_id').val() != ''){
 		  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
 	  }
-	var options = { 
-//	        target:        '#message',   // target element(s) to be updated with server response 
-	        success:       observation.showResponse,  // post-submit callback 
-	 
-	        // other available options: 
-	        url:       ajaxurl,         // override for form's 'action' attribute 
-	        type:      'post',        // 'get' or 'post', override for form's 'method' attribute 
-	        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type) 
-	        //clearForm: true        // clear all form fields after successful submit 
-	        //resetForm: true        // reset the form after successful submit 
-	 
-	        // $.ajax options can be used here too, for example: 
-	        //timeout:   3000 
+	  
+	  /**
+	   * Bind the form for observations to the ajax form
+	   */
+	  	var options = {
+	        success:   observation.showResponse,
+	        url:       ajaxurl,
+	        type:      'post',
+	        dataType:  'json',
 	    };
 	    // bind form using 'ajaxForm'
-		if($('#observation_form').length > 0) $('#observation_form').ajaxForm(options); 
+		if($('#observation_form').length > 0) $('#observation_form').ajaxForm(options);
+		
+		/**
+		 * Show a top message banner
+		 * @param message
+		 * @param type
+		 * @param time
+		 */
 		observation.setMessage = function (message, type, time) {
 			if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
 			observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
@@ -67,6 +70,9 @@ jQuery(document).ready(function() {
 			}, time);
 		};
 	  
+		/**
+		 * Show a loading indicator
+		 */
 		observation.showLoading = function () {
 			if(!observation.loading) {
 				observation.loading = $('<div><img src="' + Drupal.settings.basePath + 'sites/all/modules/inventory/images/loading.gif" /></div>').hide();
@@ -86,29 +92,52 @@ jQuery(document).ready(function() {
 			});
 		};
 		
+		/**
+		 * Hide the loading indicator
+		 */
 		observation.hideLoading = function () {
 			if(!observation.loading) return;
 			observation.loading.dialog('close');
 		};
 
+		/**
+		 * Hide all determination methods
+		 */
 		observation.hideDetMethods = function(){
 			$("#determination_method_id option").each(function () {
                 $(this).css('display','none');
               });
 			observation.showDetMethod('0');
 		};
+		
+		/**
+		 * Show a determination method by id
+		 * @param id
+		 */
 		observation.showDetMethod = function(id){
 			$('#artgroup_detmethod_value_'+id).css('display','block');
 		};
+		
+		/**
+		 * Hide all attributes
+		 */
 		observation.hideAttributes = function(){
 			$("tr[id^='attributes_tr_']").each(function () {
                 $(this).css('display','none');
               });
 		};
+		
+		/**
+		 * Show a attribute by id
+		 * @param id
+		 */
 		observation.showAttribute = function(id){
 			$('#attributes_tr_'+id).css('display','table-row');
 		};
 		
+		/**
+		 * Add a additional custom attribute field, for name and value
+		 */
 		observation.addCustomAttribute = function(){
 			$('#attributes_table > tbody:last').append(
 					'<tr><td><input type="text" name="attributes_custom_names[]" onFocus="javascript:if($(this).val()==\''
@@ -118,6 +147,9 @@ jQuery(document).ready(function() {
 					+'"></td></tr>');
 		};
 		
+		/**
+		 * Reset the input's specially the organism related
+		 */
 		observation.resetOrganism = function(){
 			$( "#organismn_id" ).val('');
 			$( "#species_autocomplete" ).html('');
@@ -127,39 +159,54 @@ jQuery(document).ready(function() {
 			observation.hideDetMethods();
 		};
 		
+		/**
+		 * Reset the autocomplete field, and the organism related
+		 */
 		observation.resetOrganismAutomcomplete = function(){
 			$( "#organismn_autocomplete" ).val('');
 			observation.resetOrganism();
 		};
 
-	customAttributeDelete = function (attribute_id) {
-		tmp = attribute_id.split('_');
-		var id = tmp[2];
-//		alert(id); return;
-		if (confirm(Drupal.t('This attribute will be deleted in all existing observations, are you sure?'))==false) return false;
-		  var ajaxurl = Drupal.settings.basePath + '/observation/deleteCustomAttribute/'+id;
-		  observation.attrAjax = $.ajax({
-				  type: 'POST',
-				  url: ajaxurl,
-				  dataType: 'json',
-				  type: 'POST',
-				});
-			observation.attrAjax.done(function(msg) {
+		/**
+		 * Delete a already saved custom attribute by id
+		 * @param attribute_id
+		 */
+		customAttributeDelete = function (attribute_id) {
+			tmp = attribute_id.split('_');
+			var id = tmp[2];
+			if (confirm(Drupal.t('This attribute will be deleted in all existing observations, are you sure?'))==false) return false;
+	  		var ajaxurl = Drupal.settings.basePath + '/observation/deleteCustomAttribute/'+id;
+			attrAjax = $.getJSON(ajaxurl,{
+				type: 'POST',
+				url: ajaxurl,
+				dataType: 'json',
+			},function(msg) {
 				if(msg.success == true){
 					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
 					$('#attributes_tr_'+id).remove();
 				}else{
 					observation.setMessage('<br><br>&bull;&nbsp;'+Drupal.t('Custom attribute not deleted'),'error', 15000);
 				}
-				});
-
-				observation.attrAjax.fail(function(jqXHR, textStatus) {
-//					  alert( "Request failed: " +  );
-				  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
-				});
-			return false;
+			});
+//	  		attrAjax.done(function(msg) {
+//				if(msg.success == true){
+//					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
+//					$('#attributes_tr_'+id).remove();
+//				}else{
+//					observation.setMessage('<br><br>&bull;&nbsp;'+Drupal.t('Custom attribute not deleted'),'error', 15000);
+//				}
+//			});
+//	  		attrAjax.error(function(textStatus) {
+//	//					  alert( "Request failed: " +  );
+//			  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
+//			});
+	  		return false;
 		};
 		
+		/**
+		 * Add another upload slot for files
+		 * @param form //unused
+		 */
 		addUploadSlot = function(form){
 			$('#picture_upload__0').clone().appendTo('#picture').css('display','block').css('height','auto');
 			elemets_ids=0;
@@ -169,6 +216,10 @@ jQuery(document).ready(function() {
 			});
 		};
 		
+		/**
+		 * Check the type of the selected file
+		 * @param form
+		 */
 		checkMimeType_metaData = function(form){
 			mimeType = form.files["0"].type;
 			re = new RegExp('image/', 'ig');
@@ -181,13 +232,14 @@ jQuery(document).ready(function() {
 			}
 		};
 
+		/**
+		 * Opens a dialog to add meta data to a fileupload
+		 * @param div
+		 */
 		observation.galleryMetaDataDialog = function (div) {
-//			e.preventDefault();
-//			tmphref = div; return;
 			file_name = div.children('input#file_input.form-file').val();
 			div_id = div.attr("id");
-//			observation.showLoading();
-//			alert(form.files["0"].type);
+			observation.showLoading();
 			if(file_name == ''){
 				alert(Drupal.t('Please select a file'));
 				return;
@@ -225,32 +277,18 @@ jQuery(document).ready(function() {
 						$('#'+parform).find('input[id="meta_description"]').val($(this).find('input[name="description"]').val());
 						$('#'+parform).find('input[id="meta_location"]').val($(this).find('input[name="location"]').val());
 						$('#'+parform).find('input[id="meta_author"]').val($(this).find('input[name="author"]').val());
-						
-//						var entry_id = $(this).attr('action').split('/').pop().replace(/\?.*$/, '');
-//						var row = inventory.container.find('input.entry_id[value="' + entry_id + '"]').closest('tr');
-//						var base_name = row.find('input.entry_id').attr('name');
-//form = $(this);
-//						inventory.storePrevPos(inventory.location.position);
-//
-//						inventory.addInput(row, base_name, $(this), 'lat');
-//						inventory.addInput(row, base_name, $(this), 'lng');
-//						inventory.addInput(row, base_name, $(this), 'zip');
-//						inventory.addInput(row, base_name, $(this), 'locality');
-//						inventory.addInput(row, base_name, $(this), 'township');
-//						inventory.addInput(row, base_name, $(this), 'canton');
-//						inventory.addInput(row, base_name, $(this), 'country');
-
-//						row.find('a.location img').attr('src', row.find('a.location img').attr('src').replace('_unset', ''));
-					
-//						inventory.setMessage(Drupal.t('The location will be stored only after saving the whole form by pressing the <em>Save</em> button in the lower right.'), 'warning', 15000);
 						$(this).closest('.ui-dialog-content').dialog('close');
 						return false;
 					});
 				}
-//				observation.hideLoading();
+				observation.hideLoading();
 			});
 		};
 		
+		/**
+		 * get a observation on the map and zoom.. by id
+		 * @param id
+		 */
 		observation.selectObservation = function(id){
 			if (id in areabasic.overlayElements) {
 				if (areabasic.currentElement != null) {
@@ -270,10 +308,8 @@ jQuery(document).ready(function() {
 		};
 		
 		/**
-		 * Show a info window for a given, existing area
-		 * 
+		 * Show a info window for a given, existing observation
 		 * @param id
-		 *            integer area id
 		 */
 		observation.showInfoWindow = function(id) {
 			var url = Drupal.settings.basePath + 'observation/' + id
