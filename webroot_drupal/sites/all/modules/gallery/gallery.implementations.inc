@@ -304,8 +304,8 @@ function gallery_implementation_delete($delete_arr){
  * @param int $item_id
  * @return array
  */
-function gallery_implementation_get_files($module, $item_id) {
-	if(!$module || !$id) return false;
+function gallery_implementation_get_files($module = false, $item_id = false) {
+	if(!$module || !$item_id) return false;
 	return db_query(
 			'SELECT fm.*, mfm.description FROM {'.$module.'_file_managed} mfm
 			JOIN {file_managed} fm ON fm.fid=mfm.file_managed_fid
