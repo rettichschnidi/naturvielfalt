@@ -9,7 +9,7 @@
  * Return the CH1903 coordinates of a given area.
  * Include a link to the Wikipedia article about
  * CH1903.
- * 
+ *
  * @param array $areadata
  * @return string Coordinates with link to wikipedia article
  */
@@ -29,7 +29,7 @@ function get_ch1903_coordinates_link($areadata) {
  * Return the WGS84 coordinates of a given area.
  * Include a link to the Wikipedia article about
  * WGS84.
- * 
+ *
  * @param array $areadata
  * @return string Coordinates with link to wikipedia article
  */
@@ -47,7 +47,7 @@ function get_wgs84_coordinates_link($areadata) {
 
 /**
  * Return an array with all data of a given $area_id.
- * 
+ *
  * @todo document all elements
  * @param integer $area_id
  */
@@ -298,7 +298,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 
 /**
  * Return a hidden form which can be used to store values handed over by Javascript.
- * 
+ *
  * @todo lets find a better way than this... please...
  * @return array Drupal form to submit area properties
  */
@@ -946,4 +946,46 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 
 	return $page;
 }
-?>
+
+/**
+ * This method is responsible for using the Google Reverse Geocode API
+ * to receive the canton, city, zip, etc. to store it later on in the database
+ * as additional information to the longitude, latitude values.
+ *
+ * Return preformated array with all the needed fields for the naturvielfalt geometry
+ * @param long $longitude
+ * @param long $latitude
+ * @param bool $original_response
+ * 				set to true, if you want the original answer from google
+ * @return array
+ */
+function area_get_geocodeInfo($longitude = false, $latitude = false, $original_response = false) {
+//print_r(area_get_geocodeInfo('8.209283','47.481280'));
+	if(!$longitude || !$latitude) return false;
+
+	$url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' . $latitude . ',' . $longitude.'&sensor=true';
+	$data = @file_get_contents($url);
+	$jsondata = json_decode($data, true);
+
+	$url = 'http://maps.googleapis.com/maps/api/elevation/json?locations=' . $latitude . ',' . $longitude.'&sensor=true';
+	$data = @file_get_contents($url);
+	$elevationData = json_decode($data, true);
+
+	// if we get a placemark array and the status was good, get the addres
+	if(!is_array($jsondata )&& $jsondata ['Status']['code']!= 200) return false;
+
+	if($original_response){
+		$jsondata['elevationData'] = $elevationData;
+		return $jsondata;
+	}
+
+	$output['coordinate'] = '[['.$latitude.','.$longitude.']]';
+	$output['zip'] = $jsondata['results'][1]['address_components'][6]['long_name'];
+	$output['canton'] = $jsondata['results'][1]['address_components'][4]['long_name'];
+	$output['country'] = $jsondata['results'][1]['address_components'][5]['long_name'];
+	$output['township'] = $jsondata['results'][1]['address_components'][2]['long_name'];
+	$output['altitude'] = intval($elevationData['results'][0]['elevation']);
+	$output['area_points'] = $output['coordinate'];
+	$output['marker'] = 'marker';
+	return $output;
+}
