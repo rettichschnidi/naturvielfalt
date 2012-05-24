@@ -1,6 +1,7 @@
 <?php
 // function observation_new_form($form, $form_state) {
 module_load_include('inc', 'observation');
+module_load_include('inc', 'gallery', 'gallery.implementations');
 /**
  * Show the form to add or edit a observation
  * @param array $observation
@@ -107,7 +108,7 @@ function observation_form($observation = false) {
 				'#title' => t('Manage existing media for this observation'),
 				'#collapsible' => true,
 				'#collapsed' => false,);
-		$image['picture']['media_table'] = observation_gallery_edit_existing_file_list('observation', $observation['observation']['id']);
+		$image['picture']['media_table'] = gallery_implementation_edit_existing_file_list('observation', $observation['observation']['id']);
 		$image = drupal_render($image);
 	}else{
 		$image = '';
@@ -158,7 +159,7 @@ function observation_form($observation = false) {
 </fieldset>';
 
 
-	$file_list['files'] = observation_gallery_files_table('observation', $observation['observation']['id'], true);
+	$file_list['files'] = gallery_implementation_files_table('observation', $observation['observation']['id'], true);
 
 
 
@@ -358,7 +359,7 @@ function observation_show_observation($observationdata = NULL){
 			$observationdata['observation']['id']);
 	$output['observation_mp3']['#weight'] = 12;
 
-	$output['observation_files'] = observation_gallery_files_table('observation', $observationdata['observation']['id']);
+	$output['observation_files'] = gallery_implementation_files_table('observation', $observationdata['observation']['id']);
 	$output['observation_files']['#weight'] = 14;
 
 	/* Create a fieldset for the comment text field */

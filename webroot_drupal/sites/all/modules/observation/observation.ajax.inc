@@ -1,6 +1,7 @@
 <?php
 
 module_load_include('inc', 'observation');
+module_load_include('inc', 'gallery', 'gallery.implementations');
 
 /**
  *
@@ -237,20 +238,19 @@ global $user;
 				'item_id' => $observation['id'],
 				'author' => $observation['observer'],
 				'location' => $geometry['township'].' '.$geometry['canton'],
-				'type' => 'images',
 		);
-		observation_gallery_save_manual('observation', $image, 'observation_id');
+		gallery_implementation_save_manual('observation', $image, 'observation_id');
 
 		if(isset($values['file_description'])){
-			observation_gallery_file_updateComment('observation', $values['file_description']);
+			gallery_implementation_file_updateComment('observation', $values['file_description']);
 		}
 
 		if(isset($values['delete'])){
-			observation_gallery_delete($values['delete']);
+			gallery_implementation_delete($values['delete']);
 		}
 
 		if(isset($values['file_delete'])){
-			observation_gallery_files_delete($values['file_delete'], 'observation');
+			gallery_implementation_files_delete($values['file_delete'], 'observation');
 		}
 
 		// Set the return statement
