@@ -31,7 +31,7 @@ function auth() {
 	header('WWW-Authenticate: Basic realm="Naturvielfalt"'); // FIXME: Use auth-digest instead of auth basic
 	header('HTTP/1.0 401 Unauthorized');
 
-	echo 'FAIL: Please authorize';
+	echo 'ERROR: Please authorize';
 	if($debug) webservice_log('FAIL: Please authorize');
 	exit;
 }
@@ -64,6 +64,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		// $comment = @$_POST['comment']; // noch nicht komplett implementiert
 
 		if($debug) webservice_log('request :'.var_export($request, true) );
+		if($debug) webservice_log('files :'.var_export($_FILES, true) );
 
 		// Check the variables
 		if($organism < 1) 	error_exit('organism should an int and not smaller than 1 || variable value:'.$organism);
@@ -76,7 +77,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		if($latitude == "") 		error_exit('latitude should an double || variable value:'.$latitude);
 
 
-		// FIXME Dieses Daten müssen allesammt validiert werden BEVOR diese auf die DB aufschlagen...
+		// FIXME Dieses Daten m√ºssen allesammt validiert werden BEVOR diese auf die DB aufschlagen...
 		// Reverse geocode from longitude and latitude coordinates get city, canton, etc...
 		$jsondata = reverseGeocode($longitude, $latitude);
 		if($debug) webservice_log('reverseGeocode: '.var_export($jsondata, true));
@@ -145,7 +146,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 				$attributesAnzahl = db_insert('inventory_type_attribute_inventory_entry')->fields(array('inventory_entry_id' => $entry, 'inventory_type_attribute_id' => $anzahlId, 'value' => $count))->execute();
 				if(!$attributesAnzahl) error_exit("the count attribute can't inserted in the db");
 			}else{
-				if($debug) webservice_log("Flowers don't have any amount..");
+				if($debug) webservice_log("Info: Flowers don't have any amount..");
 			}
 
 			$beobachterId = db_select('inventory_type_attribute', 'i')->fields('i', array('id'))->condition('inventory_type_id', $type)->condition('name', "Beobachter")->execute()->fetchField();
@@ -171,15 +172,15 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		if(isset($_FILES['file'])) {
 			storeImage($entry, $uid, $author);
 		}else {
-			if($debug) webservice_log('no image to store');
+			if($debug) webservice_log('INFO: no image to store');
 		}
 
 		if($successful) {
 			echo 'SUCCESS';
 			if($debug) webservice_log('SUCCESS');
 		} else {
-			echo 'Some went wrong.. Please check the submitData.php file on the Naturvielfalt Webserver.';
-			if($debug) webservice_log('FAIL');
+			echo 'Some went wrong.. Please check the submitData.php file on the Swissmon Webserver.';
+			if($debug) webservice_log('ERROR: Some went wrong.. Please check the submitData.php file on the Swissmon Webserver.');
 		}
 
 	} else {
@@ -197,25 +198,25 @@ if($debug) webservice_log('-----------------------------------------------------
 function storeImage($entry, $uid, $author) {
 	global $debug;
 	$filename = "iphoneprovepicture.png";
-	$folder = $_SERVER["DOCUMENT_ROOT"] . "/sites/default/files/naturvielfalt/gallery/inventory_entry/" . $entry . '/'; // FIXME: Dateipfad soll aus der DB stammen
-	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/naturvielfalt/application/sites/default/files/naturvielfalt/gallery/inventory_entry/" . $entry . '/';
+	$folder = $_SERVER["DOCUMENT_ROOT"] . "/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/'; // FIXME: Dateipfad soll aus der DB stammen
+	// $folder = "/Applications/XAMPP/xamppfiles/htdocs/swissmon/application/sites/default/files/swissmon/gallery/inventory_entry/" . $entry . '/';
 	$target_path = $folder . $filename;
 
-	if($debug) webservice_log('try to store image: '. $target_path);
+	if($debug) webservice_log('INFO: try to store image: '. $target_path);
 	// echo 'Folder: ' . $folder;
 	// echo 'Target path: ' . $target_path;
 
 	if (!file_exists($folder)) {
 		if(mkdir($folder, 0777)){
-			if($debug) webservice_log('folder created');
+			if($debug) webservice_log('INFO: folder created');
 		}else{
-			if($debug) webservice_log('create folder failed');
+			if($debug) webservice_log('ERROR: create folder failed');
 		}
 	}
 
 	if(move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
-		if($debug) webservice_log('move file success');
-		$uri = 'public://naturvielfalt/gallery/inventory_entry/' . $entry . '/' . $filename;
+		if($debug) webservice_log('INFO: move file success');
+		$uri = 'public://swissmon/gallery/inventory_entry/' . $entry . '/' . $filename;
 		$filesize = filesize($target_path);
 		$timestamp = time();
 
@@ -227,11 +228,11 @@ function storeImage($entry, $uid, $author) {
 			$gallery_image_entry = db_insert('gallery_image')->fields(array('item_type' => 'inventory_entry', 'item_id' => $entry, 'fid' => $file_managed_entry, 'title' => 'IPhone Belegfoto', 'description' => '', 'author' => $author, 'visible' => 1, 'owner_id' => $uid, 'created_date' => '2011-09-19 10:04:52.730903+02', 'modified_date' => '2011-09-19 10:04:52.730903+02'))->execute();
 		} else {
 			$successful = false;
-			if($debug) webservice_log('db insert fail (file_managed)');
+			if($debug) webservice_log('ERROR: db insert fail (file_managed)');
 		}
 	} else {
 		$successful = false;
-		if($debug) webservice_log("can't move file");
+		if($debug) webservice_log("ERROR: can't move file");
 	}
 }
 
@@ -247,10 +248,10 @@ function reverseGeocode($longitude, $latitude) {
 	// $longitude = '8.209748';
 
 	// Naturwerk API KEY
-	$api_key = "ABQIAAAAwcMkDr6mXdEANl2JDXxaVRQfE9mbrKsN7lT6vEoUZH5uGIZnyxQPomqpos48lV9muY5UBtJAwRzeFQ"; // FIXME: gehört in DB
+	$api_key = "ABQIAAAAwcMkDr6mXdEANl2JDXxaVRQfE9mbrKsN7lT6vEoUZH5uGIZnyxQPomqpos48lV9muY5UBtJAwRzeFQ"; // FIXME: geh√∂rt in DB
 
 	// format this string with the appropriate latitude longitude
-	$url = 'http://maps.google.com/maps/geo?q=' . $latitude . ',' . $longitude . '&sensor=false&output=json&key=' . $api_key; // FIXME: gehört in DB
+	$url = 'http://maps.google.com/maps/geo?q=' . $latitude . ',' . $longitude . '&sensor=false&output=json&key=' . $api_key; // FIXME: geh√∂rt in DB
 
 	// make the HTTP request
 	$data = @file_get_contents($url);

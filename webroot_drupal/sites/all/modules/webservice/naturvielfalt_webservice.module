@@ -1,0 +1,25 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+module_load_include('inc', 'naturvielfalt_webservice');
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function observation_menu() {
+	$items['webservice/api'] = array(
+			'title' => t('Webservice'),
+			'page callback' => 'naturvielfalt_webservice_parse_import_observations',
+			'access arguments' => array(
+					'access observation'
+			),
+			'file' => 'naturvielfalt_webservice.inc',
+	);
+	return $items;
+}
+
+?>
