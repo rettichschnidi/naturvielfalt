@@ -3,23 +3,35 @@
  *  Hook implementations
  *********************************/
 
-module_load_include('inc', 'naturvielfalt_webservice');
+// module_load_include('inc', 'naturvielfalt_webservice');
 
 /**
  * Implements hook_menu()
  *
  * @return array
  */
-function observation_menu() {
+function naturvielfalt_webservice_menu() {
 	$items['webservice/api'] = array(
 			'title' => t('Webservice'),
 			'page callback' => 'naturvielfalt_webservice_parse_import_observations',
 			'access arguments' => array(
-					'access observation'
+					'access webservice'
 			),
 			'file' => 'naturvielfalt_webservice.inc',
 	);
 	return $items;
+}
+
+/**
+ * Default permission function
+ *
+ */
+function naturvielfalt_webservice_permission() {
+	return array(
+			'access webservice' => array(
+					'title' => t('can access the webservice'),
+			),
+	);
 }
 
 ?>
