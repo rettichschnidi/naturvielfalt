@@ -33,19 +33,23 @@ jQuery(document).ready(function() {
 				areabasic.newestElement.overlay.setMap(null);
 				areabasic.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
 				areabasic.initLocation();
+				$('#recent_observations').flexReload();
 			}
 		}else{
 			observation.setMessage('<br><br>&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
 		}
 	};
-	  var ajaxurl = Drupal.settings.basePath + 'observation/save';
-	  if($('#observation_id').val() != ''){
-		  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
-	  }
+	
+	
 	  
 	  /**
 	   * Bind the form for observations to the ajax form
 	   */
+	  var ajaxurl = Drupal.settings.basePath + 'observation/save';
+	  if($('#observation_id').val() != ''){
+		  ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
+	  }
+
 	  	var options = {
 	        success:   observation.showResponse,
 	        url:       ajaxurl,
