@@ -1,6 +1,6 @@
 <?php
 // function observation_new_form($form, $form_state) {
-
+module_load_include('inc', 'observation');
 /**
  * Show the form to add or edit a observation
  * @param array $observation
@@ -231,6 +231,28 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 					.drupal_render($file_list)
 					.'</form>'
 			.'</div>';
+
+		$recent['rencent_observation'] = array(
+				'#theme' => 'datatable',
+				'#header' => observation_get_standart_datatable_headers(1, 'desc'),
+				'#title' => t('Recently recorded and saved observations (click on a row, to edit an entry)'),
+				'#id_table' => 'recent_observations',
+				'#options' => array(
+						'jsonUrl' => "'" . base_path()."observation/get/all'",
+						'rowClick' => 'rowClick',
+						'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+									window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/edit';})}"
+// 						'rowClickHandler' => "function rowClick(celDiv, id) {
+// 						jQuery(celDiv).click(
+// 						function() {
+// 						observation.selectObservation(id);
+// 		}
+// 				)
+// 		}",
+				)
+		);
+		$formcust .= drupal_render($recent);
+
 	return $formcust;
 }
 

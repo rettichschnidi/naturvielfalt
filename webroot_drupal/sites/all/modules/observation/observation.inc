@@ -837,7 +837,69 @@ function observation_gallery_file_updateComment($module,$file_managed_descriptio
 }
 
 
+function observation_get_standart_datatable_headers($init_sort = false, $init_sort2 = false){
+	$tableHeader[] = array(
+			'name' => t('Internal Id'),
+			'idField' => true,
+			'dbfield' => 'id',
+			'hide' => true,
+			'width' => 30
+	);
 
+	$tableHeader[] = array(
+			'name' => t('Organism'),
+			'dbfield' => 'organism_l',
+			'width' => 200,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Species'),
+			'dbfield' => 'organism_sc',
+			'width' => 200,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Date'),
+			'dbfield' => 'date',
+			'width' => 60
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Altitude [m]'),
+			'dbfield' => 'altitude',
+			'width' => 60
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+			'width' => 150
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Canton'),
+			'dbfield' => 'canton',
+			'width' => 40
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Country'),
+			'dbfield' => 'country',
+			'width' => 180
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Observer'),
+			'dbfield' => 'observer',
+			'width' => 120
+	);
+
+	if($init_sort && $init_sort2){
+		$tableHeader[$init_sort--]['initSort'] = true;
+		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
+	}
+	return $tableHeader;
+}
 
 
 
