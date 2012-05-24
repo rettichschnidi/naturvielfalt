@@ -1,17 +1,29 @@
 <?php
+/**
+ * @file observation.ajax.inc
+ * @author Ramon Gamma, 2012
+ * @copyright 2012 Naturwerk, Brugg
+ */
 
 module_load_include('inc', 'observation');
 module_load_include('inc', 'gallery', 'gallery.implementations');
+module_load_include('inc', 'organism', 'organism.artgroup');
 
 /**
- *
+ * Save a existing/new observation
+ * Post vars are used
+ * @param array $observation_data
+ * 				not implemented, maybe in the future
+ * @param unknown_type $from_api
+ * 				set true for handling request from the webservice api
  */
-function observation_save($observation_data = false){
+function observation_save($observation_data = false, $custom_data =false, $from_api = false){
 global $user;
-	module_load_include('inc', 'organism', 'organism.artgroup');
+
 // die(print_r($_FILES));
 // die(print_r($_POST));
 	$values = $_POST;
+	if($custom_data) $values = $custom_data;
 	$error = false;
 	$message = array();
 // 	$output['post'] = $values;
@@ -39,14 +51,11 @@ global $user;
 	// set the last value as artgroup
 // 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	if($observation['organism_artgroup_id'] == 0){
-	if($organismn_id > 0){
-		$artgroups = organism_artgroup_get_organsim_in_artgroup($observation['organism_id']);
-		foreach ($artgroups as $artgroup) $observation['organism_artgroup_id'] = $artgroup;
-		if($observation['organism_artgroup_id'] == '') $observation['organism_artgroup_id'] = '3';
-	}
+	if($organismn_id > 0) $observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup($observation['organism_id'], true);
 
 // 	}
 // 	$observation['organism_artgroup_id'] = NULL;
+	if(!isset($values['determination_method_id'])) $values['determination_method_id'] = 0;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 	if($artgroup_id > 0){
 		$determination_methods_db = organism_artgroup_get_determation_methods($artgroup_id);
@@ -256,20 +265,15 @@ global $user;
 		// Set the return statement
 		$output['success'] = true;
 
-
-
-
-
-	}
-// 	foreach ($message as $messag){
-
-
-
-
-// 		$output['db_fields'] = $observation;
-
+	}else{
+		$output['success'] = false;
 		$output['message'] = $message;
-// 	}
+	}
+
+	//
+	if($from_api){
+		return $output;
+	}
 
 	return drupal_json_output($output);
 	return print_r($output);
