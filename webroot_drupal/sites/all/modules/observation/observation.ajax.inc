@@ -38,10 +38,11 @@ global $user;
 	/**
 	 * check the organism id
 	 */
-	$organismn_id = $observation['organism_id'] = $values['organismn_id'];
-	if($organismn_id < 1 || empty($organismn_id)){
+	if(!organism_get(filter_xss($values['organismn_id']))){
 		$error = true;
 		$message[] = t('The organism is value not permitted');
+	}else{
+		$observation['organism_id'] = filter_xss($values['organismn_id']);
 	}
 	if(is_bool((bool) $values['observation_found_as_lang'])) $observation['found_as_lang'] = $values['observation_found_as_lang'];
 	if(is_bool((bool) $values['observation_found_as_latin'])) $observation['found_as_lat'] = $values['observation_found_as_latin'];
@@ -53,7 +54,7 @@ global $user;
 	// set the last value as artgroup
 // 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	if($observation['organism_artgroup_id'] == 0){
-	if($organismn_id > 0) $observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup($observation['organism_id'], true);
+	if($observation['organism_id'] > 0) $observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup($observation['organism_id'], true);
 
 // 	}
 // 	$observation['organism_artgroup_id'] = NULL;
