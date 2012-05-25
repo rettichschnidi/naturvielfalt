@@ -62,6 +62,7 @@ function naturvielfalt_webservice_parse_import_observations(){
 		 */
 
 		$data = area_get_geocodeInfo(filter_xss($_POST['longitude']), filter_xss($_POST['latitude']));
+// 		die(print_r($data));
 		$data['organismn_id'] = $_POST['organismn_id'];
 		$data['organism_artgroup_id'] = $_POST['organism_artgroup_id'];
 		$data['count'] = $_POST['count'];
@@ -69,12 +70,12 @@ function naturvielfalt_webservice_parse_import_observations(){
 		$data['observer'] = $_POST['observer'];
 		$data['attributes_custom_names'][0] = t('Accuracy');
 		$data['attributes_custom_values'][0] = $_POST['accuracy'].'m';
-		$data['meta_description'][0] = $_POST['comment'];
+		$data['meta_description'][] = $_POST['comment'];
+		$data['set_user_uid'] = $user->uid;
 
 		if($webservice_debug) naturvielfalt_webservice_log('Rewrited Request :'.var_export($data, true) );
 
 		$observation_status = observation_save(false, $data, true);
-		naturvielfalt_webservice_log('tttttttttttt');
 		// get the data
 		if($observation_status['success'] == true) {
 			if($webservice_debug) naturvielfalt_webservice_log('SUCCESS');
