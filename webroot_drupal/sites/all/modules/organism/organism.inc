@@ -9,10 +9,13 @@
  * Return an organism, just lat&lang name
  * maybe later we need more fields
  *
+ * @param int $organismid
  * @return array
  */
 function organism_get($organismid) {
 	global $user;
+	$organismid = intval(filter_xss($organismid));
+	if($organismid < 1 || $organismid > 1000000) return false;
 	$resultarray = array();
 	return db_query(
 		'SELECT
@@ -30,7 +33,7 @@ function organism_get($organismid) {
 
 /**
  * Return all classification levels of a given organism.
- * 
+ *
  * @param $classificationid
  * 	Id of the organism in question.
  */
@@ -106,15 +109,15 @@ function organism_get_available_attributes($classificationid) {
 		JOIN drupal_organism_attribute_value oav ON oav.id = oavs.organism_attribute_value_id
 		JOIN drupal_organism_attribute oa ON oa.id = oav.organism_attribute_id
 	ORDER BY oa.id";
-	
+
 	$rows= db_query(
 			$sqlGetAttributes,
 			array(':classificationid' => $classificationid),
 			array('fetch' => PDO::FETCH_ASSOC))->fetchAll();
-	
+
 	$levelnamesstring = '';
 	foreach($rows as $row) {
-	
+
 	}
 }
 ?>
