@@ -44,7 +44,7 @@
 			dataType : 'xml', // type of data loaded
 			errormsg : LOCALIZATION.strERRORMSG,
 			usepager : false, //
-			nowrap : true, //
+			nowrap : false, //
 			page : 1, // current page
 			total : 1, // total pages
 			useRp : true, // use the results per page select box
@@ -432,7 +432,7 @@
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
 				this.rePosDrag();
 			},
-			addData: function (data) { //parse data
+			addData: function (data) { //parse data			
 				if (p.dataType == 'json') {
 					data = $.extend({rows: [], page: 0, total: 0}, data);
 				}
@@ -453,13 +453,11 @@
 				if (p.total == 0) {
 					$('tr, a, td, div', t).unbind();
 					$(t).empty();
-					$(g.bDiv).html(
-							'<div width="200px" style="text-align:center;margin-top:75px;font-size:2em;">'+p.nomsg+'</div>'
-					);
+					g.bDiv.appendChild(noEDiv);
 					p.pages = 1;
 					p.page = 1;
 					this.buildpager();
-					$('.pPageStat', this.pDiv).html(p.nomsg);
+					$('.pPageStat', this.pDiv).empty();
 					return false;
 				}
 				p.pages = Math.ceil(p.total / p.rp);
@@ -468,7 +466,6 @@
 				} else {
 					p.page = data.page;
 				}
-				this.buildpager();
 				//build new body
 				var tbody = document.createElement('tbody');
 				if (p.dataType == 'json') {
@@ -548,6 +545,7 @@
 						robj = null;
 					});
 				}
+				this.buildpager();
 				$('tr', t).unbind();
 				$(t).empty();
 				$(t).append(tbody);
@@ -825,7 +823,7 @@
 						}
 						$(tdDiv).css({
 							textAlign : pth.align,
-							width : $('div:first', pth)[0].style.width
+							width : $('div:first', pth).width() + 'px'
 						});
 
 						if (pth.hide)
@@ -982,7 +980,13 @@
 		g.iDiv = document.createElement('div'); // create editable layer
 		g.tDiv = document.createElement('div'); // create toolbar
 		g.sDiv = document.createElement('div');
-
+		var noEDiv = document.createElement('div'); //create notification container
+		
+		noEDiv.style.textAlign = 'center';
+		noEDiv.style.marginTop = '90px';
+		noEDiv.style.fontSize = '2em';
+		noEDiv.innerHTML = p.nomsg;
+		
 		if (p.usepager)
 			g.pDiv = document.createElement('div'); // create pager container
 		g.hTable = document.createElement('table');
