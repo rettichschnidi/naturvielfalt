@@ -26,7 +26,7 @@ function observation_show_all_singleobservations() {
 			'#search' => true,
 			'#ch1903' => true,
 			'#json_url' => 'singleobservation/geometry/json',
-			'#height' => '350px',
+// 			'#height' => '350px',
 	);
 
 	$output['space'] = array(
