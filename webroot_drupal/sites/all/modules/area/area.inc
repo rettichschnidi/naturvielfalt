@@ -980,10 +980,10 @@ function area_get_geocodeInfo($longitude = false, $latitude = false, $original_r
 	}
 
 	$output['coordinate'] = '[['.$latitude.','.$longitude.']]';
-	$output['zip'] = $jsondata['results'][1]['address_components'][6]['long_name'];
-	$output['canton'] = $jsondata['results'][1]['address_components'][4]['long_name'];
-	$output['country'] = $jsondata['results'][1]['address_components'][5]['long_name'];
-	$output['township'] = $jsondata['results'][1]['address_components'][2]['long_name'];
+	$output['zip'] = $jsondata['results'][0]['address_components'][6]['long_name'];
+	$output['canton'] = $jsondata['results'][0]['address_components'][4]['long_name'];
+	$output['country'] = $jsondata['results'][0]['address_components'][5]['long_name'];
+	$output['township'] = $jsondata['results'][0]['address_components'][2]['long_name'];
 	$output['altitude'] = intval($elevationData['results'][0]['elevation']);
 	$output['area_points'] = $output['coordinate'];
 	$output['marker'] = 'marker';
