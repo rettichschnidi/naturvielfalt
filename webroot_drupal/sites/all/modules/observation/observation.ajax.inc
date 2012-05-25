@@ -21,9 +21,11 @@ function observation_save($observation_data = false, $custom_data =false, $from_
 global $user;
 
 // die(print_r($_FILES));
-// die(print_r($_POST));
 	$values = $_POST;
 	if($custom_data) $values = $custom_data;
+
+// 	die(print_r($values));
+
 	$error = false;
 	$message = array();
 // 	$output['post'] = $values;
@@ -78,7 +80,7 @@ global $user;
 	 * Check observer
 	 */
 	$observation['observer'] = check_plain($values['observer']);
-	$observation['users_uid'] = $user->uid;
+	$observation['users_uid'] = $values['set_user_uid'] ? $values['set_user_uid'] : $user->uid;
 
 	/**
 	 * Check the count value
@@ -199,7 +201,7 @@ global $user;
 
 
 // 	check_plain($text)
-
+// die(print_r($observation));
 	if(!$error){
 		/**
 		 * Save to the DB
@@ -233,7 +235,8 @@ global $user;
 			$observation_id = $observation['id'] = db_query("SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
 // 			$observation_id = db_next_id('observation_id');
 			$observation['c_time'] = $observation['m_time'];
-			$observation['acl_id'] = new_acl('singleobservation');
+			$observation['acl_id'] = new_acl('singleobservation', $observation['users_uid']);
+// 			die(print_r($observation));
 			db_insert('observation')->fields($observation)->execute();
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 
