@@ -437,6 +437,13 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 	);
 
 	$tableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 30,
+			'noSort' => true,
+	);
+
+	$tableHeader[] = array(
 			'name' => t('Organism'),
 			'dbfield' => 'organism_l',
 			'width' => 200,
@@ -457,31 +464,44 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 	$tableHeader[] = array(
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
-			'width' => 60
+			'width' => 60,
+			'hide' => true,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
-			'width' => 150
+			'width' => 150,
+			'hide' => true,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
-			'width' => 40
+			'width' => 40,
+			'hide' => true,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
-			'width' => 180
+			'width' => 180,
+			'hide' => true,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Observer'),
 			'dbfield' => 'observer',
-			'width' => 120
+			'width' => 120,
+			'hide' => true,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of pictures'),
+			'dbfield' => 'piccount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => true,
 	);
 
 	if($init_sort && $init_sort2){
