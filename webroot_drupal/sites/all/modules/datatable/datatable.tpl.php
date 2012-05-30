@@ -33,7 +33,7 @@ drupal_add_css(
 // else
 //   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
 
-drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.'.$langcode.'.js');
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.' . $langcode . '.js');
 
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(
@@ -79,6 +79,7 @@ $colsized = (7 > $charTableSize) ? 8 : $charTableSize;
  */
 if ($header) {
 	$aoColumns = "colModel : [";
+	$searchColumns = "searchitems : [{display: '" . t('ALL') . "', name: '*', isdefault: true},";
 	$headers = array();
 	$sortField = isset($header[0]['dbfield']) ? $header[0]['dbfield'] : '';
 	$sortOrder = "asc";
@@ -108,11 +109,17 @@ if ($header) {
 			$sortField = $head['dbfield'];
 		if (isset($head['sortOrder']) && $head['sortOrder'])
 			$sortOrder = $head['sortOrder'];
+		
+		if(isset($head['dbExactField']))
+		  $searchColumns .= "{display: '" . t($head['name']) . "', name: '" . $head['dbExactField'] . "', isdefault: false},";
 	}
-
+	
 	// remove trailing comma
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
+	
+	$searchColumns = substr_replace($searchColumns, "", -1);
+	$searchColumns .= "],";
 
 	// 	if ($rows) {
 	// 		foreach ($header as $head) {
@@ -147,9 +154,8 @@ if ($options['jsonUrl']) {
 echo $aoColumns;
 ?>
 
-searchitems : [
-		{display: Drupal.t('ALL'), name: '*', isdefault: true},
-	],
+<?php echo $searchColumns; ?>
+
 singleSelect: true,
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",

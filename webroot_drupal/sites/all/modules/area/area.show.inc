@@ -41,36 +41,42 @@ function area_show_all_areas($onlyMyAreas = false) {
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
+	        'dbExactField' => 'a.name',
 			'width' => 310,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
+			'dbExactField' => 'a_s.altitude',
 			'width' => 60
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
+			'dbExactField' => 'a_s.township',
 			'width' => 150
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
+			'dbExactField' => 'a_s.canton',
 			'width' => 40
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
+			'dbExactField' => 'a_s.country',
 			'width' => 180
 	);
 
 	$tableHeader[] = array(
 			'name' => t('User'),
 			'dbfield' => 'username',
+			'dbExactField' => 'u.name',
 			'width' => 120
 	);
 
@@ -82,7 +88,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 	$output['area_table'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
-			'#title' => 'Areas',
+			'#title' => t('Areas'),
 			'#id_table' => 'areas',
 			'#options' => array(
 					'jsonUrl' => "'" . base_path()

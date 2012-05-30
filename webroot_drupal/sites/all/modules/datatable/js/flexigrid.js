@@ -432,7 +432,9 @@
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
 				this.rePosDrag();
 			},
-			addData: function (data) { //parse data			
+			addData: function (data) { //parse data
+				if(g.bDiv.contains(noEDiv))
+					g.bDiv.removeChild(noEDiv);
 				if (p.dataType == 'json') {
 					data = $.extend({rows: [], page: 0, total: 0}, data);
 				}

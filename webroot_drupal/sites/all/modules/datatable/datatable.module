@@ -11,6 +11,7 @@
  *
  * @return an array with theme template information
  */
+
 function datatable_theme() {
 	return array(
 			'datatable' => array(
@@ -88,6 +89,7 @@ function datatable_theme() {
  */
 function datatable_dbRequest($sql, $arguments = array(),
 		$preArguments = array()) {
+		  
 	/* Set the db fields to select */
 	if (!$sql['dbColumns'] || !$sql['dbTable'])
 		return "Error! No dbColumns or dbTable";
@@ -163,9 +165,9 @@ function datatable_dbRequest($sql, $arguments = array(),
 			return "Error! Sortorder not possible";
 	}
 	// 	Not progressed, always search in all searchable columns
-	// 	if (isset($_POST['qtype'])) {
-	// 		$qtype = pg_escape_string($_POST['qtype']);
-	// 	}
+	if (isset($_POST['qtype'])) {
+	 	$qtype = pg_escape_string($_POST['qtype']);
+	}
 	if (isset($_POST['query'])) {
 		$query = $_POST['query'];
 		if (!is_string($query))
@@ -212,18 +214,22 @@ function datatable_dbRequest($sql, $arguments = array(),
 	 * on very large tables, and MySQL's regex functionality is very limited
 	 */
 	($where == "") ? $sWhere = "" : $sWhere = $where . "";
-	if (isset($query) && $query != "") {
-		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
-		for ($i = 0; $i < count($searchColumns); $i++) {
-			/**
-			 * yes, this is ia terrible hack, but I do not know how another solution to make sure
-			 * that all(?!) types can be used with LIKE
-			 */
-			$sWhere .= "LOWER(CAST(" . $searchColumns[$i]
-					. " AS TEXT)) LIKE LOWER(CAST('%$query%' AS TEXT)) OR ";
-		}
-		$sWhere = substr_replace($sWhere, "", -3);
-		$sWhere .= ')';
+	if (isset($query) && $query != "" && isset($qtype) && $qtype != "") {
+	    if($qtype == "*"){	    
+    		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
+    		for ($i = 0; $i < count($searchColumns); $i++) {
+    			/**
+    			 * yes, this is ia terrible hack, but I do not know how another solution to make sure
+    			 * that all(?!) types can be used with LIKE
+    			 */
+    			$sWhere .= "LOWER(CAST(" . $searchColumns[$i]
+    					. " AS TEXT)) LIKE LOWER(CAST('%$query%' AS TEXT)) OR ";
+    		}
+    		$sWhere = substr_replace($sWhere, "", -3);
+    		$sWhere .= ')';
+	    }
+	    else
+	        $sWhere = "WHERE LOWER(" . (string)$qtype . ") LIKE LOWER('%". (string)$query . "%')";
 	}
 
 	/*
@@ -277,6 +283,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 			);
 		}
 	}
+	
 	return $output;
 }
 ?>
