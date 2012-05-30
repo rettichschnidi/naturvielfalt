@@ -413,11 +413,11 @@ function organism_show_classification_organismjson($classificationid) {
 
 	
 	// get all attributes for a organismclass
-	$classificationattributedata = organism_get_available_attributes(
-			$classificationid);
-	if (empty($classificationattributedata)) {
-		die("NO ATTRIBUTES FOUND - HANDLE THIS CASE PLEASE");
-	}
+// 	$classificationattributedata = organism_get_available_attributes(
+// 			$classificationid);
+// 	if (empty($classificationattributedata)) {
+// 		die("NO ATTRIBUTES FOUND - HANDLE THIS CASE PLEASE");
+// 	}
 	
 	
 	$sql['dbPreStatement'] = "CREATE TEMP VIEW mytempviewdata AS
