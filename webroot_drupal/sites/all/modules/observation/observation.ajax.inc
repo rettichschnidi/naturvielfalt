@@ -352,6 +352,20 @@ function observation_get_all_json(){
 // 		$row['cell']['image_link'] = $link;
 		if($row['cell']['organism_l'] == "") $row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
+		$images = gallery_images('image', 'observation', $row['id']);
+		$row['cell']['piccount'] = $images['count'];
+		$row['cell']['thumbnail'] = '';
+		if($images['count'] > 0){
+// 			$image = gallery_image_load($images['images'][0]['id']);
+// 			die(print_r($image));
+			$row['cell']['thumbnail'] = '<img src="'
+							. url(
+								'gallery/observation/'
+										. $row['id'] . '/thumb/'
+										. $images['images'][0]['id'] . '/gallery_thumbnail')
+							. '" alt="' . $images['images'][0]['title'] . '" height="30" width="30" />';
+		}
+
 	}
 	return drupal_json_output($output);
 

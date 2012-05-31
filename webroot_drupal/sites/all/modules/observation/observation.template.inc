@@ -206,7 +206,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 							'<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
-							<span class="fieldset-legend">Add more Details</span>
+							<span class="fieldset-legend">'.t('Add more Details').'</span>
 							</legend>
 							<div class="fieldset-wrapper">'
 
@@ -235,7 +235,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 		$recent['rencent_observation'] = array(
 				'#theme' => 'datatable',
-				'#header' => observation_get_standart_datatable_headers(1, 'desc'),
+				'#header' => observation_get_standart_datatable_headers(5, 'desc'),
 				'#title' => t('Recently recorded and saved observations (click on a row, to edit an entry)'),
 				'#id_table' => 'recent_observations',
 				'#options' => array(
