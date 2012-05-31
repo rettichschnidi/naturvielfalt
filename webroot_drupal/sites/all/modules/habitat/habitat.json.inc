@@ -27,7 +27,7 @@ function habitat_list_datatablejson() {
 
 	$sql['dbTable'] = '{habitat} h';
 	$sql['dbJoins'] = 'LEFT JOIN {area_habitat} ah ON h.id = ah.habitat_id';
-	$sql['dbGroupBy'] = 'h.id, h.label, h.name';
+	$sql['dbGroupBy'] = 'h.id, h.label, h.name, h.name_scientific';
 	$sql['id'] = 'id';
 	$output = datatable_dbRequest($sql);
 
