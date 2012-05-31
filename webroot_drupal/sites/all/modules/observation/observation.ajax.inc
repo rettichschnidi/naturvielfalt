@@ -21,6 +21,7 @@ function observation_save($observation_data = false, $custom_data =false, $from_
 global $user;
 
 // die(print_r($_FILES));
+// die(print_r($_POST));
 	$values = $_POST;
 	if($custom_data) $values = $custom_data;
 
