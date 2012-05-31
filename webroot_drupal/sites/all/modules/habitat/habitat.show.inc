@@ -18,17 +18,20 @@ function habitat_show_all() {
 	$tableHeader[] = array(
 			'name' => t('Label'),
 			'dbfield' => 'label',
+			'dbExactField' => 'h.label',
 			'initSort' => true,
 			'width' => 150
 	);
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
+			'dbExactField' => 'h.name',
 			'width' => 350,
 	);
 	$tableHeader[] = array(
 			'name' => t('Latin name'),
 			'dbfield' => 'name_scientific',
+			'dbExactField' => 'h.name_scientific',
 			'width' => 200,
 	);
 	$tableHeader[] = array(

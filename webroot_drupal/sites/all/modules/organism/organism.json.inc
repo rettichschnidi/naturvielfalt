@@ -704,7 +704,7 @@ function organism_search_organism_json($classification = false, $term = false,
 	$limit = 30;
 
 	$organisms = array();
-
+	
 	$params = array();
 	if ($type_id)
 		$params[':inventoryTypeId'] = $type_id;
@@ -720,6 +720,7 @@ function organism_search_organism_json($classification = false, $term = false,
 	} else {
 		$params[':term1'] = $terms[0] . '%';
 	}
+	
 
 	$i = 1;
 	$query = 'SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id

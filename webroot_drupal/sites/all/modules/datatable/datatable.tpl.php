@@ -7,6 +7,9 @@
  * @author Ramon Gamma, 2012
  */
 
+global $user;
+$langcode = isset($user->language) && !empty($user) ? $user->language : 'de';
+
 drupal_add_library('system', 'ui.datepicker');
 
 /**
@@ -22,6 +25,16 @@ drupal_add_css(
 /**
  * add javascript files
  */
+
+// if($langcode == 'de')
+//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
+// elseif ($langcode == 'en')
+//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.en.js');
+// else
+//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
+
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.' . $langcode . '.js');
+
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(
 	drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
@@ -66,6 +79,7 @@ $colsized = (7 > $charTableSize) ? 8 : $charTableSize;
  */
 if ($header) {
 	$aoColumns = "colModel : [";
+	$searchColumns = "searchitems : [{display: '" . t('ALL') . "', name: '*', isdefault: true},";
 	$headers = array();
 	$sortField = isset($header[0]['dbfield']) ? $header[0]['dbfield'] : '';
 	$sortOrder = "asc";
@@ -95,17 +109,16 @@ if ($header) {
 			$sortField = $head['dbfield'];
 		if (isset($head['sortOrder']) && $head['sortOrder'])
 			$sortOrder = $head['sortOrder'];
+		
+		if(isset($head['dbExactField']))
+		  $searchColumns .= "{display: '" . t($head['name']) . "', name: '" . $head['dbExactField'] . "', isdefault: false},";
 	}
-
+	
 	// remove trailing comma
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
-
-	// 	if ($rows) {
-	// 		foreach ($header as $head) {
-	// 			$table_headers[] = $head['name'];
-	// 		}
-	// 	}
+	$searchColumns = substr_replace($searchColumns, "", -1);
+	$searchColumns .= "],";
 }
 $table[$id_table] = array(
 		'#theme' => 'table',
@@ -134,9 +147,7 @@ if ($options['jsonUrl']) {
 echo $aoColumns;
 ?>
 
-searchitems : [
-		{display: Drupal.t('ALL'), name: '*', isdefault: true}
-	],
+<?php echo $searchColumns; ?>
 singleSelect: true,
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",
