@@ -1,0 +1,6 @@
+name = export
+description = Export areas and organisms to PDF
+package = Naturvielfalt
+core = 7.x
+version = "7.x-current"
+#dependencies[] = commonstuff
