@@ -83,21 +83,21 @@ function observation_get_geometries_acl_checked($observation_data = false){
 				-- either POINT, POLYGON or LINESTRING
 				GeometryType(a_s.geom) AS geometry_type,
 				-- Center of the geometry - CH1903, x value
-				ST_X(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_x,
+				ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x,
 				-- Center of the geometry - CH1903, y value
-				ST_Y(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_y,
+				ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y,
 				-- Center of the geometry - WGS84, latitude
-				ST_X(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lat,
+				ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat,
 				-- Center of the geometry - WGS84
-				ST_Y(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lng,
+				ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng,
 				-- Coordinates of the geometry - CH1903
-				AsText(Transform(a_s.geom, 21781)) AS ch1903_coordinates,
+				st_astext(st_transform(a_s.geom, 21781)) AS ch1903_coordinates,
 				-- Coordinates of the geometry - WGS84
-				AsText(Transform(a_s.geom, 4326)) AS wgs84_coordinates,
+				st_astext(st_transform(a_s.geom, 4326)) AS wgs84_coordinates,
 				-- Area surface in m^2
-				Area(Transform(a_s.geom, 21781)) AS surface_area,
+				st_area(st_transform(a_s.geom, 21781)) AS surface_area,
 				-- Pathlength (if linestring) in meters
-				ST_Length(Transform(a_s.geom, 21781)) AS pathlength,
+				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {observation} o
@@ -153,21 +153,21 @@ function observation_get_geometry($geometry_id){
 				-- either POINT, POLYGON or LINESTRING
 				GeometryType(a_s.geom) AS geometry_type,
 				-- Center of the geometry - CH1903, x value
-				ST_X(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_x,
+				ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x,
 				-- Center of the geometry - CH1903, y value
-				ST_Y(ST_Centroid(Transform(a_s.geom, 21781))) AS ch1903_center_y,
+				ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y,
 				-- Center of the geometry - WGS84, latitude
-				ST_X(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lat,
+				ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat,
 				-- Center of the geometry - WGS84
-				ST_Y(ST_Centroid(Transform(a_s.geom, 4326))) AS wgs84_center_lng,
+				ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng,
 				-- Coordinates of the geometry - CH1903
-				AsText(Transform(a_s.geom, 21781)) AS ch1903_coordinates,
+				st_astext(st_transform(a_s.geom, 21781)) AS ch1903_coordinates,
 				-- Coordinates of the geometry - WGS84
-				AsText(Transform(a_s.geom, 4326)) AS wgs84_coordinates,
+				st_astext(st_transform(a_s.geom, 4326)) AS wgs84_coordinates,
 				-- Area surface in m^2
-				Area(Transform(a_s.geom, 21781)) AS surface_area,
+				st_area(st_transform(a_s.geom, 21781)) AS surface_area,
 				-- Pathlength (if linestring) in meters
-				ST_Length(Transform(a_s.geom, 21781)) AS pathlength,
+				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {area_geometry} a_s WHERE a_s.id=:geometry_id";
@@ -447,18 +447,21 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'name' => t('Organism'),
 			'dbfield' => 'organism_l',
 			'width' => 200,
+			'dbExactField' => 'ol.name',
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Species'),
 			'dbfield' => 'organism_sc',
 			'width' => 200,
+			'dbExactField' => 'osn.name',
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Date'),
 			'dbfield' => 'date',
-			'width' => 60
+			'width' => 60,
+			'dbExactField' => 'o.date',
 	);
 
 	$tableHeader[] = array(
@@ -466,6 +469,7 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'dbfield' => 'altitude',
 			'width' => 60,
 			'hide' => true,
+			'dbExactField' => 'a_s.altitude',
 	);
 
 	$tableHeader[] = array(
@@ -473,6 +477,7 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'dbfield' => 'township',
 			'width' => 150,
 			'hide' => true,
+			'dbExactField' => 'a_s.township',
 	);
 
 	$tableHeader[] = array(
@@ -480,6 +485,7 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'dbfield' => 'canton',
 			'width' => 40,
 			'hide' => true,
+			'dbExactField' => 'a_s.canton',
 	);
 
 	$tableHeader[] = array(
@@ -487,6 +493,7 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'dbfield' => 'country',
 			'width' => 180,
 			'hide' => true,
+			'dbExactField' => 'a_s.country',
 	);
 
 	$tableHeader[] = array(
@@ -494,6 +501,7 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'dbfield' => 'observer',
 			'width' => 120,
 			'hide' => true,
+			'dbExactField' => 'o.observer',
 	);
 
 	$tableHeader[] = array(
