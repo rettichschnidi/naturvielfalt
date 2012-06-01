@@ -740,14 +740,6 @@
 						delete prefs.qtype;
 					}
 
-					// save query
-					if (squery !== "") {
-						prefs.q = {};
-						prefs.q = squery;
-					} else {
-						delete prefs.q;
-					}
-
 					// reset page
 					prefs.page = 1;
 
@@ -1477,27 +1469,6 @@
 								"<div class='sDiv2'>"+LOCALIZATION.strQUICKSEARCH+" <input type='text' size='30' name='q' class='qsbox' /> <select name='qtype'>"
 										+ sopt
 										+ "</select> <input type='button' id=\"flexi_search\" value='"+LOCALIZATION.btnSEARCH+"' />&nbsp;<input type='button' id=\"flexi_reset\" value='"+LOCALIZATION.btnRESET+"' /></div>");
-
-				// If cookies are set and whith value
-				// show search bar to inform users that
-				// info is filterd
-				if (p.cookies) {
-					var prefs = g.prefs.load();
-					if (typeof prefs.q != 'undefined') {
-						if ($(g.sDiv).not('visible'))
-							$('.pSearch', g.pDiv).click();
-					}
-				}
-
-				// if search cookie is set
-				// filter results right now
-				if (p.cookies) {
-					var prefs = g.prefs.load();
-					if (typeof prefs.q != 'undefined') {
-						$('input[name=q]', g.sDiv).val(prefs.q);
-						g.doSearch();
-					}
-				}
 
 				$('input[name=q],select[name=qtype]', g.sDiv).keydown(
 						function(e) {
