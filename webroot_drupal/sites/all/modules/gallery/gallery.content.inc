@@ -26,8 +26,8 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 				'every_page' => TRUE
 		));
 	$page = array();
-// 	$editable = gallery_edit_access_callback($type, $id);
-	$editable = false;
+ 	$editable = gallery_edit_access_callback($type, $id);
+//	$editable = false;
 	$params = _gallery_list_parameters($type, $id);
 	$images = gallery_images(
 		$mediatype,
