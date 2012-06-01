@@ -1,6 +1,7 @@
 <?php
 // function observation_new_form($form, $form_state) {
-
+module_load_include('inc', 'observation');
+module_load_include('inc', 'gallery', 'gallery.implementations');
 /**
  * Show the form to add or edit a observation
  * @param array $observation
@@ -47,12 +48,14 @@ function observation_form($observation = false) {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js('misc/jquery.form.js');
+	drupal_add_js('misc/ui/jquery.ui.dialog.min.js');
 	$observation_path= drupal_get_path('module', 'observation');
 // 	drupal_add_js('https://maps.google.com/maps/api/js?sensor=false');
 // 	drupal_add_js($observation_path . '/js/gmap.js');
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
+	drupal_add_css('misc/ui/jquery.ui.dialog.css');
 	$formcust = "";
 
 	/**
@@ -93,27 +96,70 @@ function observation_form($observation = false) {
 	$form['safetynet'] = array(
 			'#theme' => 'commonstuff.safetynet'
 	);
+
 	/**
 	 * include a upload form for images
 	 */
 	// Product picture
-	$image['picture'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Manage media for this observation'),
-			'#id' => 'picture',
-			'#collapsible' => true,
-			'#collapsed' => false,);
+
 	if($observation['observation']['id'] != ''){
-		$image['picture']['media_table'] = observation_gallery_existing_file_list('observation', $observation['observation']['id']);
+		$image['picture'] = array(
+				'#type' => 'fieldset',
+				'#title' => t('Manage existing media for this observation'),
+				'#collapsible' => true,
+				'#collapsed' => false,);
+		$image['picture']['media_table'] = gallery_implementation_edit_existing_file_list('observation', $observation['observation']['id']);
+		$image = drupal_render($image);
+	}else{
+		$image = '';
 	}
-	$image['picture']['picture_upload'] = array(
-			'#type' => 'file',
-			'#name' => 'files[]',
-			'#title' => t('Upload new files'),
-			'#size' => 48,
-			'#description' => '<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a>',
-			'#id' => 'picture_upload',);
-// 	$image['picture']
+	$file_extensions = gallery_get_image_extensions().' '.gallery_get_mp3_extensions().' '.gallery_get_video_extensions().' '.gallery_get_file_extensions();
+// 	$image['picture']['picture_upload'] = array(
+// 			'#type' => 'file',
+// 			'#name' => 'files[]',
+// 			'#title' => t('Upload new files'),
+// 			'#size' => 48,
+// 			'#attributes' => array('onchange' => 'javascript:checkMimeType_metaData(this);'),
+// 			'#description' => '<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a><p>'
+// 								.t('Allowed files endings are: '.$file_extensions),
+// 			'#id' => 'picture_upload',);
+
+	// format the upload field manually, because it's not possible with drupal forms...
+
+	$image .= '<fieldset id="picture" class="form-wrapper">
+	<legend>
+		<span class="fieldset-legend">'.t('Add new media for this observation').'</span>
+	</legend>
+	<div class="fieldset-wrapper">
+		<div class="form-item form-type-file form-item-files-">
+			<div id="picture_upload__0" style="display: none; height: 0px;">
+				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+				<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '.t('Click here to add details to this file').'</a>
+				<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+			</div>
+			<label for="picture_upload__1">'.t('Upload new files').'</label>
+			<div id="picture_upload__1">
+				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+				<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '.t('Click here to add details to this file').'</a>
+				<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+			</div>
+
+			<div class="description">
+				<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a>
+				<p>'.t('Allowed files endings are: ').$file_extensions.'</p>
+			</div>
+		</div>
+	</div>
+</fieldset>';
+
+
+	$file_list['files'] = gallery_implementation_files_table('observation', $observation['observation']['id'], true);
 
 
 
@@ -160,7 +206,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 
 							'<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
-							<span class="fieldset-legend">Add more Details</span>
+							<span class="fieldset-legend">'.t('Add more Details').'</span>
 							</legend>
 							<div class="fieldset-wrapper">'
 
@@ -178,13 +224,36 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 									.'<a href="#" onclick="observation.addCustomAttribute(); return false;" title="'.t('Add custom details').'"><b>+</b></a></div>'
 
 							.'</table></div></div></fieldset>'
-							.'<input type="submit" class="form-submit" value="'.t('Save').'" name="op" id="edit-submit">'
+							.'<input type="submit" class="edit-submit" value="'.t('Save').'" name="op" id="edit-submit">'
 
 					.'<div style="display: none;" id="message"><div class="messages"></div></div>'
 
-					.drupal_render($image)
+					.$image
+					.drupal_render($file_list)
 					.'</form>'
 			.'</div>';
+
+		$recent['rencent_observation'] = array(
+				'#theme' => 'datatable',
+				'#header' => observation_get_standart_datatable_headers(5, 'desc'),
+				'#title' => t('Recently recorded and saved observations (click on a row, to edit an entry)'),
+				'#id_table' => 'recent_observations',
+				'#options' => array(
+						'jsonUrl' => "'" . base_path()."observation/get/all'",
+						'rowClick' => 'rowClick',
+						'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+									window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/edit';})}"
+// 						'rowClickHandler' => "function rowClick(celDiv, id) {
+// 						jQuery(celDiv).click(
+// 						function() {
+// 						observation.selectObservation(id);
+// 		}
+// 				)
+// 		}",
+				)
+		);
+		$formcust .= drupal_render($recent);
+
 	return $formcust;
 }
 
@@ -276,7 +345,22 @@ function observation_show_observation($observationdata = NULL){
 			'images',
 			'observation',
 			$observationdata['observation']['id']);
-// 	$output['observation_images']['#weight'] = 13;
+	$output['observation_images']['#weight'] = 11;
+
+	$output['observation_videos'] = gallery_list_renderer(
+			'videos',
+			'observation',
+			$observationdata['observation']['id']);
+	$output['observation_videos']['#weight'] = 13;
+
+	$output['observation_mp3'] = gallery_list_renderer(
+			'sounds',
+			'observation',
+			$observationdata['observation']['id']);
+	$output['observation_mp3']['#weight'] = 12;
+
+	$output['observation_files'] = gallery_implementation_files_table('observation', $observationdata['observation']['id']);
+	$output['observation_files']['#weight'] = 14;
 
 	/* Create a fieldset for the comment text field */
 	$output['observation_geometry'] = array(

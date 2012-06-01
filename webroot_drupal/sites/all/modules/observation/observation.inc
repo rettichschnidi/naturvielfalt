@@ -165,7 +165,7 @@ function observation_get_geometry($geometry_id){
 				-- Coordinates of the geometry - WGS84
 				st_astext(st_transform(a_s.geom, 4326)) AS wgs84_coordinates,
 				-- Area surface in m^2
-				Area(st_transform(a_s.geom, 21781)) AS surface_area,
+				st_area(st_transform(a_s.geom, 21781)) AS surface_area,
 				-- Pathlength (if linestring) in meters
 				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
@@ -186,7 +186,7 @@ function observation_edit_acl($observation = NULL){
  * Return a formated table with the observation details
  * @param array $observationdata
  */
-function observation_get_table($observationdata = NULL){
+function observation_get_table($observationdata = NULL, $simple = false){
 
 	if($observationdata == NULL || !is_array($observationdata)) return false;
 	$rows = array();
@@ -194,26 +194,28 @@ function observation_get_table($observationdata = NULL){
 	if (!empty($observationdata['organism']['name_lang'])) {
 		$rows[] = array(
 				array('data' => t('Organism Name'),'header' => true),
-				$observationdata['organism']['name_lang'],
+				$simple ? substr($observationdata['organism']['name_lang'], 0, 20).'...'
+							: $observationdata['organism']['name_lang'],
 		);
 	}
 
 	if (!empty($observationdata['organism']['name_lat'])) {
 		$rows[] = array(
 				array('data' => t('Scientific name'),'header' => true),
-				$observationdata['organism']['name_lat'],
+				$simple ? substr($observationdata['organism']['name_lat'], 0, 20).'...'
+				: $observationdata['organism']['name_lat'],
 		);
 	}
 
 
-	if (!empty($observationdata['observation']['organism_artgroup_name'])) {
+	if (!empty($observationdata['observation']['organism_artgroup_name']) && !$simple) {
 		$rows[] = array(
 				array('data' => t('Artgroup'),'header' => true),
 				t($observationdata['observation']['organism_artgroup_name']),
 		);
 	}
 
-	if (!empty($observationdata['observation']['observer'])) {
+	if (!empty($observationdata['observation']['observer']) && !$simple) {
 		$rows[] = array(
 				array('data' => t('Observer'),'header' => true),
 				$observationdata['observation']['observer'],
@@ -223,11 +225,12 @@ function observation_get_table($observationdata = NULL){
 	if (!empty($observationdata['observation']['date'])) {
 		$rows[] = array(
 				array('data' => t('Date'),'header' => true),
-				date("j.m.Y", $observationdata['observation']['date'])
+				date("j.m.Y", $observationdata['observation']['date']),
+
 		);
 	}
 
-	if (!empty($observationdata['observation']['m_time'])) {
+	if (!empty($observationdata['observation']['m_time']) && !$simple) {
 		$rows[] = array(
 				array('data' => t('Last modification'),'header' => true),
 				date("j.m.Y", $observationdata['observation']['m_time'])
@@ -417,258 +420,108 @@ function observation_add_attribute_value($entry){
 
 
 /**
- * BETA!!!!
- * @param array $php_files
- * @param string $module_name
- * @param array $entry_array
-			'item_id' => ID of the obervation/area/...,
-			'title' => Title,
-			'description' => little desc,
-			'author' => the author,
-			'location' => a location like Brugg AG,
-			'type' => 'images' OR 'mp3' OR 'mp4' (the file inputs need to named files[])!!!
- */
-function observation_gallery_save_manual($module_name, $entry_array){
-
-	$mediatype = $entry_array['type'];
-
-	// if no files to work with abort
-	if(count($_FILES['files']['tmp_name']) < 1) return false;
-
-	// make the validator for the files
-	if ($mediatype == "images") {
-		$extensions = 'jpg jpeg gif png';
-		$file_size = variable_get('gallery_image_size', 2048);
-	} elseif ($mediatype == "sounds") {
-		$extensions = 'mp3';
-		$file_size = variable_get('gallery_sound_size', 2048);
-	} elseif ($mediatype == "videos") {
-		$extensions = 'mp4';
-		$file_size = variable_get('gallery_video_size', 8192);
-	}
-	$file_size = $file_size * 1024;
-	$validators = array(
-			'file_validate_extensions' => array(
-					$extensions
-			),
-			'file_validate_size' => array(
-					parse_size($file_size),
-					0
-			),
-	);
-
-	$categories = array();
-	$destination = array();
-
-	// build the db entry for the gallery module
-	$image = array(
-			'item_type' => $module_name,
-			'item_id' => $entry_array['item_id'],
-			'title' => $entry_array['title'],
-			'description' => $entry_array['description'],
-			'author' => $entry_array['author'],
-			'location' => $entry_array['location'],
-			'categories' => array(),
-			'subtypes' => array()
-	);
-
-	// check the directory, create it if not exists
-	$key = $image['item_type'] . ':' . $image['item_id'];
-	if (!array_key_exists($key, $destination)) {
-		$destination[$key] = 'public://naturvielfalt/gallery/'
-		. $image['item_type'] . '/' . $image['item_id'];
-		file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
-	}
-
-	$img_ids = array();
-// die(print_r($_FILES));
-
-	// save each files
-	foreach($_FILES['files']['error'] as $fkey => $message){
-		if($message != 0) continue;
-		$file = file_save_upload($fkey, $validators, $destination[$key]);
-		if ($file) {
-			$file->status |= FILE_STATUS_PERMANENT;
-			$file = file_save($file);
-			$image['file_managed_fid'] = $file->fid;
-		}else{
-			//FIXME
-// 			error about didn't saved...
-// die('fehlfer');
-			$img_ids[$fkey] = 'Error! File not saved!';
-		}
-		$img_ids[$fkey] = gallery_image_save($image);
-	}
-	return $img_ids;
-}
-
-
-function observation_gallery_existing_file_list($module=false, $id=false){
-
-	if(!$module || !$id) return false;
-
-	drupal_add_css(
-			drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
-			array(
-					'group' => CSS_DEFAULT,
-					'every_page' => TRUE
-			));
-	drupal_add_js(
-			drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
-	drupal_add_js(
-			drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
-	drupal_add_css(
-			drupal_get_path('module', 'gallery') . '/css/divbox.css',
-			array(
-					'group' => CSS_DEFAULT,
-					'every_page' => TRUE
-			));
-	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/divbox.js');
-	drupal_add_js(
-			drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js');
-	$types = _gallery_types();
-
-	$subtypes = _gallery_get_subtypes($type, false);
-
-	$header = array(
-			'',
-			t('Filename'),
-			t('Title')
-	);
-	if ($subtypes)
-		$header[] = t('Type');
-	$header[] = t('Author');
-	$header[] = t('Location');
-	$header[] = t('Caption');
-	$header[] = t('Operations');
-	$header[] = t('Delete');
-
-	$mediatype = 'medias';
-
-	$images = gallery_images($mediatype, $module, $id, 'edit');
-// die(print_r($images));
-	$rows = array();
-	foreach ($images[$mediatype] as $image) {
-
-		if ($mediatype == "images"
-				|| ($mediatype == "medias"
-						&& ($image['filemime'] == "image/png"
-								|| $image['filemime'] == "image/jpg"
-								|| $image['filemime'] == "image/jpeg"
-								|| $image['filemime'] == "image/gif"))) {
-
-			$url_href = url(
-					'gallery/' . $image['item_type'] . '/' . $image['item_id']
-					. '/thumb/' . $image['id'] . '/gallery_large');
-			$url_image = url(
-					'gallery/' . $image['item_type'] . '/' . $image['item_id']
-					. '/thumb/' . $image['id'] . '/gallery_mini');
-			$extras = 'rel="lightbox"';
-		} elseif ($mediatype == "sounds"
-				|| ($mediatype == "medias"
-						&& ($image['filemime'] == "audio/mpeg"))) {
-
-			$url_href = file_uri_target($image['uri']);
-			$url_href = url('sites/default/files/' . $url_href);
-			$url_image = url(
-					drupal_get_path('module', 'gallery')
-					. '/images/music_icon_mini.png');
-			$extras = 'class="divbox_sound"';
-		} elseif ($mediatype == "videos"
-				|| ($mediatype == "medias"
-						&& ($image['filemime'] == "video/mp4"))) {
-
-			$url_href = file_uri_target($image['uri']);
-			$url_href = url('sites/default/files/' . $url_href);
-			$url_image = url(
-					drupal_get_path('module', 'gallery')
-					. '/images/video_icon_mini.png');
-			$extras = 'class="divbox_video"';
-		}
-
-		$caption = '';
-		if (array_key_exists($image['item_type'], $types)
-				&& array_key_exists(
-						'image_caption',
-						$types[$image['item_type']]))
-			$caption = call_user_func_array(
-					$types[$image['item_type']]['image_caption'],
-					array($image['item_id']));
-		$editable = gallery_edit_access_callback(
-				$image['item_type'],
-				$image['item_id'],
-				$image);
-		$row = array();
-		$row[] = '<a ' . $extras . ' href="' . $url_href . '"><img src="'
-		. $url_image . '" alt="' . $image['title'] . '" /></a>';
-		$row[] = $image['filename'];
-		$row[] = $image['title'];
-		if ($subtypes) {
-			$stypes = array();
-			foreach ($image['subtypes'] as $subtype)
-				$stypes[] = $subtypes[$subtype];
-			$row[] = implode(', ', $stypes);
-		}
-		$row[] = $image['author'];
-		$row[] = $image['location'];
-		$row[] = $caption;
-		$row[] = $editable
-		? l(
-				t('edit'),
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-				. '/' . $mediatype . '/edit/' . $image['id'],
-				$camefrom
-				? array(
-						'query' => array(
-								'camefrom' => $camefrom
-						)
-				) : array()) : '&nbsp;';
-		$row[] = $editable
-		? '<input type="checkbox" name="delete[' . $image['id']
-		. ']" value="1" />' : '&nbsp;';
-		$rows[] = $row;
-	}
-
-	if (!$rows)
-		$form['empty'] = array(
-				'#markup' => '<p>'
-				. t('There are no ' . $mediatype . ' available yet.')
-				. '</p>',
-		);
-	else
-		$form['overview'] = array(
-				'#theme' => 'table',
-				'#header' => $header,
-				'#rows' => $rows,
-		);
-
-	return $form;
-
-}
-
-/**
- * Delete gallery images
- * @param array $delete_arr
+ * Return the observations standart table headers
+ * @param int $init_sort
+ * 				which header in the array should be the initsort array[$init_sort]
+ * @param String $init_sort2
+ * 				Sort directions ex. 'asc' or 'desc'
  * @return array
- * 			with img id's with true on success
  */
-function observation_gallery_delete($delete_arr){
+function observation_get_standart_datatable_headers($init_sort = false, $init_sort2 = false){
+	$tableHeader[] = array(
+			'name' => t('Internal Id'),
+			'idField' => true,
+			'dbfield' => 'id',
+			'hide' => true,
+			'width' => 30
+	);
 
-	if(!isset($delete_arr) || !is_array($delete_arr)) return false;
-	$state = array();
+	$tableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 30,
+			'noSort' => true,
+	);
 
-	foreach ($delete_arr as $iid => $del) {
-		if (!$del)
-			continue;
-		$image = gallery_image_load($iid);
-		if (!gallery_edit_access_callback(
-				$image['item_type'],
-				$image['item_id'],
-				$image)) {
-			continue;
-		}
-		$state[$iid] = gallery_image_delete($image);
+	$tableHeader[] = array(
+			'name' => t('Organism'),
+			'dbfield' => 'organism_l',
+			'width' => 200,
+			'dbExactField' => 'ol.name',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Species'),
+			'dbfield' => 'organism_sc',
+			'width' => 200,
+			'dbExactField' => 'osn.name',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Date'),
+			'dbfield' => 'date',
+			'width' => 60,
+			'dbExactField' => 'o.date',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Altitude [m]'),
+			'dbfield' => 'altitude',
+			'width' => 60,
+			'hide' => true,
+			'dbExactField' => 'a_s.altitude',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+			'width' => 150,
+			'hide' => true,
+			'dbExactField' => 'a_s.township',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Canton'),
+			'dbfield' => 'canton',
+			'width' => 40,
+			'hide' => true,
+			'dbExactField' => 'a_s.canton',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Country'),
+			'dbfield' => 'country',
+			'width' => 180,
+			'hide' => true,
+			'dbExactField' => 'a_s.country',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Observer'),
+			'dbfield' => 'observer',
+			'width' => 120,
+			'hide' => true,
+			'dbExactField' => 'o.observer',
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of pictures'),
+			'dbfield' => 'piccount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => true,
+	);
+
+	if($init_sort && $init_sort2){
+		$tableHeader[$init_sort--]['initSort'] = true;
+		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
 	}
-	return $state;
+	return $tableHeader;
 }
+
+
+
+
+
+
 

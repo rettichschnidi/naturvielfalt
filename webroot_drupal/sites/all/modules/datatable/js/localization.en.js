@@ -1,6 +1,6 @@
 var LOCALIZATION = {
-		strQUICKSEARCH: 		'Quick Search',
-		strDISPLAYINFO: 		'Show {from} to {to} of {total} items',
+		strQUICKSEARCH: 	'Quick Search',
+		strDISPLAYINFO: 	'Show {from} to {to} of {total} items',
 		strPAGE: 			'Page',
 		strOF: 				'of',
 		strHIDESHOW:		'Hide/Show Columns',

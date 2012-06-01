@@ -117,15 +117,8 @@ if ($header) {
 	// remove trailing comma
 	$aoColumns = substr_replace($aoColumns, "", -1);
 	$aoColumns .= "],";
-	
 	$searchColumns = substr_replace($searchColumns, "", -1);
 	$searchColumns .= "],";
-
-	// 	if ($rows) {
-	// 		foreach ($header as $head) {
-	// 			$table_headers[] = $head['name'];
-	// 		}
-	// 	}
 }
 $table[$id_table] = array(
 		'#theme' => 'table',
@@ -155,7 +148,6 @@ echo $aoColumns;
 ?>
 
 <?php echo $searchColumns; ?>
-
 singleSelect: true,
 sortname: "<?php echo $sortField; ?>",
 sortorder: "<?php echo $sortOrder; ?>",

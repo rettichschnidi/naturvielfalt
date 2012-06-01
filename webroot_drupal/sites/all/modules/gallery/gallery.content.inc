@@ -26,7 +26,8 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 				'every_page' => TRUE
 		));
 	$page = array();
-	$editable = gallery_edit_access_callback($type, $id);
+// 	$editable = gallery_edit_access_callback($type, $id);
+	$editable = false;
 	$params = _gallery_list_parameters($type, $id);
 	$images = gallery_images(
 		$mediatype,
@@ -80,8 +81,8 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 
 /**
  * Renders the medias of a given object type and id
- * 
- * @return 
+ *
+ * @return
  * @param object $type
  * @param object $id
  * @param object $title[optional]
@@ -106,8 +107,8 @@ function gallery_list_renderer($mediatype, $type, $id, $title = false,
 
 /**
  * Renders the medias of a given object type and multiple ids
- * 
- * @return 
+ *
+ * @return
  * @param object $type
  * @param object $ids
  * @param object $title[optional]
@@ -303,9 +304,9 @@ function _gallery_list_fieldset($list, $title = false, $weight = 10,
 }
 
 /**
- * Renders the highest rated media of the given items 
- * 
- * @return 
+ * Renders the highest rated media of the given items
+ *
+ * @return
  * @param array $items
  *   Array of arrays having the following keys:
  *   - "type": The type of object to display
@@ -470,8 +471,8 @@ function gallery_presentation_renderer($mediatype, $items,
 /**
  * Renders a link to view the medias of a given object type and id
  * if the user has view permissions and there are medias available
- * 
- * @return 
+ *
+ * @return
  * @param object $type
  * @param object $id
  * @param object $url[Optional]
@@ -1321,7 +1322,7 @@ function _gallery_image_form_categories($mediatype, $type, $id, $image) {
  */
 function _gallery_images_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
-	
+
 	if (!array_key_exists($name, $_FILES['files']['name'])
 			|| !$_FILES['files']['name'][$name])
 		if ($element['#file_required'])
@@ -1365,7 +1366,7 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
  */
 function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
-	
+
 	// no name given, bail out...
 	if (!array_key_exists($name, $_FILES['files']['name'])
 			|| !$_FILES['files']['name'][$name])
@@ -1767,7 +1768,7 @@ function gallery_image_rate($image) {
 					gir.gallery_rating_type_id AS id,
 					AVG(gir.rating) AS average,
 					COUNT(gir.rating) AS number
-				FROM 
+				FROM
 					{gallery_image_rating} AS gir
 				WHERE
 					gir.gallery_image_id = :id
@@ -2237,8 +2238,8 @@ function theme_gallery_image_rating($variables) {
  * If $_SERVER['HTTP_REFERER'] available and valid, generate an array with the elements
  *  'title' => t('Back')
  *  'href' => $lastVisitedPage
- * 
- * 
+ *
+ *
  * @param $type
  * 	String with the type of the gallery: 'images', 'videos', etc.
  * @param $id
@@ -2265,4 +2266,116 @@ function _gallery_back_link($type, $id) {
 				'href' => $_SESSION[$gallery_back_url_key]
 		);
 	return false;
+}
+
+function gallery_metadata_popup(){
+	$output['form'] = drupal_render(drupal_get_form('gallery_metadata_form'));
+	return drupal_json_output($output);
+}
+
+function gallery_metadata_form(){
+	$file_name = check_plain($_REQUEST['fn']);
+	$div_id = check_plain($_REQUEST['di']);
+
+		$form['metadata'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Metadata'),
+			'#weight' => 1,
+			'#collapsible' => true,
+			'#collapsed' => $collapsed,
+			'#attached' => array(
+					'js' => array(
+							'misc/form.js',
+							'misc/collapse.js',
+					),
+			),
+			'#attributes' => array(
+					'class' => array('collapsible'),
+// 					'style' => 'width: 100px;',
+			),
+	);
+
+	if(gallery_validate_file_extension($file_name, gallery_get_image_extensions())
+			|| gallery_validate_file_extension($file_name, gallery_get_mp3_extensions())
+			|| gallery_validate_file_extension($file_name, gallery_get_video_extensions())
+			|| gallery_validate_file_extension($file_name, gallery_get_file_extensions())){
+		$form['metadata']['title'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Title'),
+				'#size' => 50,
+				'#maxlength' => 128,
+	// 			'#default_value' => isset($image['title']) ? $image['title'] : '',
+	// 			'#description' => t('The title of the ' . $label . '.'),
+				'#required' => FALSE,
+		);
+// 		$form['metadata']['description'] = array(
+// 				'#type' => 'textarea',
+// 				'#title' => t('Description'),
+// 	// 			'#default_value' => isset($image['description']) ? $image['description'] : '',
+// 	// 			'#description' => t('The description of the ' . $label . '.'),
+// 				'#required' => FALSE,
+// 		);
+		$form['metadata']['description'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Description'),
+				'#size' => 50,
+				'#maxlength' => 255,
+// 				'#description' => t(
+// 						'The location the ' . $label . ' was taken at.'),
+				'#required' => FALSE,
+		);
+		$form['metadata']['location'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Location'),
+				'#size' => 50,
+				'#maxlength' => 255,
+// 				'#description' => t(
+// 						'The location the ' . $label . ' was taken at.'),
+				'#required' => FALSE,
+		);
+		$form['metadata']['author'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Author'),
+				'#size' => 50,
+				'#maxlength' => 255,
+				'#description' => t('The author or copyright of the file'),
+				'#required' => FALSE,
+		);
+		$form['metadata']['fomr'] = array(
+				'#type' => 'textfield',
+				'#attributes' => array(
+						'id' => 'uploadform',
+						'name' => 'uploadform',
+						'value' => $div_id,
+						'style' => array(
+								'display: none;',
+								'height: 0px;'
+						)
+				),
+		);
+		// if not an image, show only the description input
+		if(gallery_validate_file_extension($file_name, gallery_get_file_extensions())){
+			$form['metadata']['title']['#attributes']['style'] = array('display: none;','height: 0px;');
+			unset($form['metadata']['title']['#title']);
+			unset($form['metadata']['title']['#description']);
+			$form['metadata']['location']['#attributes']['style'] = array('display: none;','height: 0px;');
+			unset($form['metadata']['location']['#title']);
+			unset($form['metadata']['location']['#description']);
+			$form['metadata']['author']['#attributes']['style'] = array('display: none;','height: 0px;');
+			unset($form['metadata']['author']['#title']);
+			unset($form['metadata']['author']['#description']);
+		}
+	}else{
+		$form['metadata'] = t('File not allowed');
+	}
+	$form['actions'] = array('#type' => 'actions');
+	$form['actions']['close'] = array('#markup' => l(t('Cancel'), 'observations'));
+	$form['actions']['save'] = array(
+			'#type' => 'submit',
+			'#value' => t('Save'),
+			'#attributes' => array(
+					'style' => array('float:right;'))
+	);
+
+	return $form;
 }

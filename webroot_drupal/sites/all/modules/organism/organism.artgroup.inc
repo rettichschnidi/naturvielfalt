@@ -296,14 +296,26 @@ function organism_artgroup_get_detmethods_ids($artgroup_id){
 }
 
 /**
- * Returns artgroup where an organism is in
+ * Returns all artgroups id's where an organism is in
  * @param int $organism_id
- * @return
+ * @param bool $just_the_last
+ * @return array || int
  */
-function organism_artgroup_get_organsim_in_artgroup($organism_id){
-	return organism_artgroup_get_children(3, false, $organism_id);
+function organism_artgroup_get_organsim_in_artgroup($organism_id, $just_the_last = false){
+	$artgroups = organism_artgroup_get_children(3, false, $organism_id);
+	if(!$just_the_last) return $artgroups;
+	$output = '';
+	foreach ($artgroups as $artgroup) $output = $artgroup;
+	if($output == '') return 3;
+	return $output;
 }
 
+/**
+ * Return a artgroup or just the name
+ * @param int $artgroup_id
+ * @param bool $just_the_name
+ * @return array || string
+ */
 function organism_artgroup_get_artgroup($artgroup_id, $just_the_name = false){
 	if(!$artgroup_id) return;
 	$artg =  db_query("SELECT * FROM {organism_artgroup} "

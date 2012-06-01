@@ -208,6 +208,20 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'observation.ajax.inc',
 	);
+	/* Show some important information about an area. For usage in a infoWindow, ajax. */
+	$items['observation/%observation/overview/ajaxform'] = array(
+			'title' => t('observation overview form'),
+			'page callback' => 'observation_overview_ajax_callback',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_read_access',
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc',
+	);
 	return $items;
 }
 

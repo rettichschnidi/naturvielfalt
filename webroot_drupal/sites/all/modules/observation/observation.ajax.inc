@@ -1,16 +1,32 @@
 <?php
+/**
+ * @file observation.ajax.inc
+ * @author Ramon Gamma, 2012
+ * @copyright 2012 Naturwerk, Brugg
+ */
 
 module_load_include('inc', 'observation');
+module_load_include('inc', 'gallery', 'gallery.implementations');
+module_load_include('inc', 'organism', 'organism.artgroup');
 
 /**
- *
+ * Save a existing/new observation
+ * Post vars are used
+ * @param array $observation_data
+ * 				not implemented, maybe in the future
+ * @param unknown_type $from_api
+ * 				set true for handling request from the webservice api
  */
-function observation_save($observation_data = false){
+function observation_save($observation_data = false, $custom_data =false, $from_api = false){
 global $user;
-	module_load_include('inc', 'organism', 'organism.artgroup');
+
 // die(print_r($_FILES));
 // die(print_r($_POST));
 	$values = $_POST;
+	if($custom_data) $values = $custom_data;
+
+// 	die(print_r($values));
+
 	$error = false;
 	$message = array();
 // 	$output['post'] = $values;
@@ -23,10 +39,11 @@ global $user;
 	/**
 	 * check the organism id
 	 */
-	$organismn_id = $observation['organism_id'] = $values['organismn_id'];
-	if($organismn_id < 1 || empty($organismn_id)){
+	if(!organism_get(filter_xss($values['organismn_id']))){
 		$error = true;
 		$message[] = t('The organism is value not permitted');
+	}else{
+		$observation['organism_id'] = filter_xss($values['organismn_id']);
 	}
 	if(is_bool((bool) $values['observation_found_as_lang'])) $observation['found_as_lang'] = $values['observation_found_as_lang'];
 	if(is_bool((bool) $values['observation_found_as_latin'])) $observation['found_as_lat'] = $values['observation_found_as_latin'];
@@ -38,14 +55,11 @@ global $user;
 	// set the last value as artgroup
 // 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 // 	if($observation['organism_artgroup_id'] == 0){
-	if($organismn_id > 0){
-		$artgroups = organism_artgroup_get_organsim_in_artgroup($observation['organism_id']);
-		foreach ($artgroups as $artgroup) $observation['organism_artgroup_id'] = $artgroup;
-		if($observation['organism_artgroup_id'] == '') $observation['organism_artgroup_id'] = '3';
-	}
+	if($observation['organism_id'] > 0) $observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup($observation['organism_id'], true);
 
 // 	}
 // 	$observation['organism_artgroup_id'] = NULL;
+	if(!isset($values['determination_method_id'])) $values['determination_method_id'] = 0;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval($values['determination_method_id']);
 	if($artgroup_id > 0){
 		$determination_methods_db = organism_artgroup_get_determation_methods($artgroup_id);
@@ -68,7 +82,7 @@ global $user;
 	 * Check observer
 	 */
 	$observation['observer'] = check_plain($values['observer']);
-	$observation['users_uid'] = $user->uid;
+	$observation['users_uid'] = $values['set_user_uid'] ? $values['set_user_uid'] : $user->uid;
 
 	/**
 	 * Check the count value
@@ -189,7 +203,7 @@ global $user;
 
 
 // 	check_plain($text)
-
+// die(print_r($observation));
 	if(!$error){
 		/**
 		 * Save to the DB
@@ -223,47 +237,48 @@ global $user;
 			$observation_id = $observation['id'] = db_query("SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
 // 			$observation_id = db_next_id('observation_id');
 			$observation['c_time'] = $observation['m_time'];
-			$observation['acl_id'] = new_acl('singleobservation');
+			$observation['acl_id'] = new_acl('singleobservation', $observation['users_uid']);
+// 			die(print_r($observation));
 			db_insert('observation')->fields($observation)->execute();
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 
 		}
 
 		/**
-		 * TSTING GALLERY
+		 * Medias
 		 */
 
 		$image = array(
 				'item_id' => $observation['id'],
-				'title' => '',
-				'description' => '',
 				'author' => $observation['observer'],
 				'location' => $geometry['township'].' '.$geometry['canton'],
-				'type' => 'images',
 		);
-		observation_gallery_save_manual('observation', $image);
+		gallery_implementation_save_manual('observation', $image, 'observation_id');
+
+		if(isset($values['file_description'])){
+			gallery_implementation_file_updateComment('observation', $values['file_description']);
+		}
 
 		if(isset($values['delete'])){
-			observation_gallery_delete($values['delete']);
+			gallery_implementation_delete($values['delete']);
+		}
+
+		if(isset($values['file_delete'])){
+			gallery_implementation_files_delete($values['file_delete'], 'observation');
 		}
 
 		// Set the return statement
 		$output['success'] = true;
 
-
-
-
-
-	}
-// 	foreach ($message as $messag){
-
-
-
-
-// 		$output['db_fields'] = $observation;
-
+	}else{
+		$output['success'] = false;
 		$output['message'] = $message;
-// 	}
+	}
+
+	//
+	if($from_api){
+		return $output;
+	}
 
 	return drupal_json_output($output);
 	return print_r($output);
@@ -287,6 +302,7 @@ function observation_get_all_json(){
 			'o.observer AS observer',
 			'o.date AS date',
 			'o.count AS count',
+			'o.acl_id',
 			'a_s.altitude AS altitude',
 			'a_s.township AS township',
 			'a_s.zip AS zip',
@@ -336,6 +352,20 @@ function observation_get_all_json(){
 // 		$row['cell']['image_link'] = $link;
 		if($row['cell']['organism_l'] == "") $row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
+		$images = gallery_images('image', 'observation', $row['id']);
+		$row['cell']['piccount'] = $images['count'];
+		$row['cell']['thumbnail'] = '';
+		if($images['count'] > 0){
+// 			$image = gallery_image_load($images['images'][0]['id']);
+// 			die(print_r($image));
+			$row['cell']['thumbnail'] = '<img src="'
+							. url(
+								'gallery/observation/'
+										. $row['id'] . '/thumb/'
+										. $images['images'][0]['id'] . '/gallery_thumbnail')
+							. '" alt="' . $images['images'][0]['title'] . '" height="30" width="30" />';
+		}
+
 	}
 	return drupal_json_output($output);
 
@@ -361,7 +391,14 @@ function observation_get_geometry_json($observation_data = false){
 
 
 
-
+/**
+ * Renders a form which allows the user to submit an area name.
+ * For usage with ajax.
+ */
+function observation_overview_ajax_callback($observation_data = false) {
+	module_load_include('inc', 'observation', 'observation.show');
+	print drupal_render(drupal_get_form('observation_map_overview_form', $observation_data));
+}
 
 
 
