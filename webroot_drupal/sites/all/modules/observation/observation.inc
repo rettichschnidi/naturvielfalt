@@ -165,7 +165,7 @@ function observation_get_geometry($geometry_id){
 				-- Coordinates of the geometry - WGS84
 				st_astext(st_transform(a_s.geom, 4326)) AS wgs84_coordinates,
 				-- Area surface in m^2
-				st_area(st_transform(a_s.geom, 21781)) AS surface_area,
+				Area(st_transform(a_s.geom, 21781)) AS surface_area,
 				-- Pathlength (if linestring) in meters
 				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
