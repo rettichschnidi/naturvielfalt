@@ -9,7 +9,7 @@ module_load_include('inc', 'gallery', 'gallery.implementations');
 function observation_form($observation = false) {
 	global $user;
 	$hidden_fields_arr = array();
-	drupal_set_title('Capture a new observation');
+	drupal_set_title(t('Capture a new observation'));
 // 	die(print_r($observation));
 	$url = base_path().'observation/save';
 	if($observation){
