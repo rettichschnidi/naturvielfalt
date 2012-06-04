@@ -48,7 +48,44 @@ function get_wgs84_coordinates_link($areadata) {
 /**
  * Return an array with all data of a given $area_id.
  *
- * @todo document all elements
+ * @return
+ * array (
+ *   'id' => '2',
+ *   'area_geometry_id' => '2',
+ *   'acl_id' => '127',
+ *   'name' => 'asdf',
+ *   'comment' => NULL,
+ *   'create_time' => '2012-04-30 08:32:46.881145',
+ *   'modify_time' => '2012-05-08 10:58:43.376642',
+ *   'protection_target' => NULL,
+ *   'safety_precautions' => NULL,
+ *   'tending_strategies' => NULL,
+ *   'altitude' => '347',
+ *   'zip' => '5200',
+ *   'township' => 'Brugg',
+ *   'canton' => 'AG',
+ *   'country' => 'Schweiz',
+ *   'geometry_type' => 'POINT',
+ *   'ch1903_center_x' => '658176.409277528',
+ *   'ch1903_center_y' => '259971.342576873',
+ *   'wgs84_center_lat' => '8.2105669577275',
+ *   'wgs84_center_lng' => '47.487932375354',
+ *   'ch1903_coordinates' => 'POINT(658176.409277528 259971.342576873)',
+ *   'wgs84_coordinates' => 'POINT(8.2105669577275 47.487932375354)',
+ *   'surface_area' => '0',
+ *   'pathlength' => '0',
+ *   'wgs84_geom_json' => '{"type":"Point","coordinates":[8.210566957727499,47.487932375353999]}',
+ *   'username' => 'naturvielfalt',
+ *   'userid' => '1',
+ *   'coordinatejson' => 
+ *   array (
+ *     0 => 
+ *     array (
+ *       0 => 47.487932375354,
+ *       1 => 8.2105669577275,
+ *     ),
+ *   ),
+ * )
  * @param integer $area_id
  */
 function area_get_full_dataset_of_specific_area($area_id) {
