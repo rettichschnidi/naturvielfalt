@@ -1,6 +1,7 @@
 
 /* Drop Tables */
 
+DROP TABLE IF EXISTS observation_file_managed;
 DROP TABLE IF EXISTS public.observation_attribute;
 DROP TABLE IF EXISTS public.observation;
 
@@ -8,6 +9,15 @@ DROP TABLE IF EXISTS public.observation;
 
 
 /* Create Tables */
+
+CREATE TABLE observation_file_managed
+(
+	observation_id int NOT NULL,
+	-- File ID.
+	file_managed_fid int NOT NULL,
+	description text
+) WITHOUT OIDS;
+
 
 CREATE TABLE public.observation
 (
@@ -57,9 +67,18 @@ ALTER TABLE public.observation_attribute
 ;
 
 
+ALTER TABLE observation_file_managed
+	ADD FOREIGN KEY (observation_id)
+	REFERENCES public.observation_attribute (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
+
 
 /* Comments */
 
+COMMENT ON COLUMN observation_file_managed.file_managed_fid IS 'File ID.';
 COMMENT ON COLUMN public.observation.organism_id IS 'No description for column id available, please fix';
 COMMENT ON COLUMN public.observation.inventory_id IS 'Id des Inventars';
 COMMENT ON COLUMN public.observation.users_uid IS 'Primary Key: Unique user ID.';

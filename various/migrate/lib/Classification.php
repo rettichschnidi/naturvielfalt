@@ -686,7 +686,7 @@ class Classification {
 				return $this->scientific_names[$organismName];
 			}
 		}
-		// if existing in DB, reaturn organism id
+		// if existing in DB, return organism id
 		foreach ($organismNames as $organismName) {
 			$columnNameArray = array(
 					'organism_id'

@@ -1,3 +1,0 @@
-[submodule "webroot_drupal/sites/all/modules/commonstuff/js/safetynet"]
-	path = webroot_drupal/sites/all/modules/commonstuff/js/safetynet
-	url = https://rettichschnidi@github.com/naturwerk/jquery.safetynet.git

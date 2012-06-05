@@ -70,6 +70,8 @@ function naturvielfalt_webservice_parse_import_observations(){
 		$data['observer'] = $_POST['observer'];
 		$data['attributes_custom_names'][0] = t('Accuracy');
 		$data['attributes_custom_values'][0] = $_POST['accuracy'].'m';
+		$data['attributes_custom_names'][1] = t('Comment');
+		$data['attributes_custom_values'][1] = $_POST['comment'];
 		$data['meta_description'][] = $_POST['comment'];
 		$data['set_user_uid'] = $user->uid;
 
