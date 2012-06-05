@@ -28,13 +28,7 @@
         <text>Navigation</text>
       </controlProperties>
     </control>
-    <control controlID="9" controlTypeID="com.balsamiq.mockups::Paragraph" x="349" y="210" w="113" h="228" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <text>Gebiet%0ABeobachtung%0AOrganismen</text>
-      </controlProperties>
-    </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="767" h="481" measuredW="273" measuredH="100" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="767" h="481" measuredW="273" measuredH="100" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-wikipedia%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C511%2C224%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C199%2C600%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
@@ -42,47 +36,47 @@
         <text>Basisinfo%2C%20Lexikon%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
-    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Anguilla%20anguilla</text>
       </controlProperties>
     </control>
-    <control controlID="35" controlTypeID="com.balsamiq.mockups::FieldSet" x="510" y="373" w="714" h="230" measuredW="200" measuredH="170" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="35" controlTypeID="com.balsamiq.mockups::FieldSet" x="510" y="373" w="714" h="230" measuredW="200" measuredH="170" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Dateien</text>
       </controlProperties>
     </control>
-    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="579" measuredH="85" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="579" measuredH="85" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Beschreibung%2C%20Dateiname%2C%20Typ%2C%20Gr%F6sse%2C%20Datum%2C%20Autor%2C%20Besitzer%0A%2C%20gesunde%20Aale.pdf%2C%20%2C199.547%20KB%2C%20%2005.06.2012%2C%20Albert%2C%20naturvielfalt%2C%20%20%20%0AKranke%20Aale%2C%20kranke%20Aale.pdf%2C%20%2C%20500%20KB%2C%20%2005.06.2012%2C%20Susi%2C%20naturvielfalt%2C%20%20%20</text>
       </controlProperties>
     </control>
-    <control controlID="37" controlTypeID="com.balsamiq.mockups::Icon" x="787" y="272" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Icon" x="787" y="272" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>DocPDFIcon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="38" controlTypeID="com.balsamiq.mockups::Icon" x="1202" y="272" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Icon" x="1202" y="272" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>Trash2Icon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="39" controlTypeID="com.balsamiq.mockups::Icon" x="1202" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="39" controlTypeID="com.balsamiq.mockups::Icon" x="1202" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>Trash2Icon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="40" controlTypeID="com.balsamiq.mockups::Icon" x="787" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="40" controlTypeID="com.balsamiq.mockups::Icon" x="787" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>DocPDFIcon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="41" controlTypeID="com.balsamiq.mockups::Button" x="1013" y="422" w="-1" h="-1" measuredW="99" measuredH="27" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="41" controlTypeID="com.balsamiq.mockups::Button" x="1013" y="422" w="-1" h="-1" measuredW="99" measuredH="27" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Durchsuche...</text>
       </controlProperties>
     </control>
-    <control controlID="43" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="419" w="480" h="32" measuredW="32" measuredH="32" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="419" w="480" h="32" measuredW="32" measuredH="32" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <align>left</align>
         <color>10066329</color>
@@ -90,41 +84,41 @@
         <text>/home/reto/Desktop/zivi/excel.xls</text>
       </controlProperties>
     </control>
-    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="525" y="394" w="-1" h="-1" measuredW="109" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="525" y="394" w="-1" h="-1" measuredW="109" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Datei%20heraufladen</text>
       </controlProperties>
     </control>
-    <control controlID="45" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="484" w="480" h="32" measuredW="32" measuredH="32" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="484" w="480" h="32" measuredW="32" measuredH="32" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <align>left</align>
         <shape>rectangle</shape>
         <text>Eine%20tolle%20Excelliste</text>
       </controlProperties>
     </control>
-    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="83" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="83" measuredH="21" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Beschreibung</text>
       </controlProperties>
     </control>
-    <control controlID="47" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="556" w="480" h="32" measuredW="32" measuredH="32" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="556" w="480" h="32" measuredW="32" measuredH="32" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <align>left</align>
         <shape>rectangle</shape>
         <text>Dr.%20Prof.%20Superhirn</text>
       </controlProperties>
     </control>
-    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="525" y="531" w="-1" h="-1" measuredW="37" measuredH="21" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="525" y="531" w="-1" h="-1" measuredW="37" measuredH="21" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Autor</text>
       </controlProperties>
     </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::Button" x="510" y="614" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::Button" x="510" y="614" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Hochladen</text>
       </controlProperties>
     </control>
-    <control controlID="51" controlTypeID="com.balsamiq.mockups::Arrow" x="607" y="349" w="229" h="273" measuredW="150" measuredH="100" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Arrow" x="607" y="349" w="229" h="273" measuredW="150" measuredH="100" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <color>13576743</color>
         <curvature>-1</curvature>
@@ -132,6 +126,28 @@
         <leftArrow>false</leftArrow>
         <rightArrow>true</rightArrow>
         <text>Upload</text>
+      </controlProperties>
+    </control>
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="363" y="225" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <href>all_areas%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C214%2C300%2C235%22%20href%3D%22all_areas.bmml%22%20alt%3D%22all_areas%22%20id%3D%2261%22/%3E</map>
+        <text>Gebiet</text>
+      </controlProperties>
+    </control>
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::Label" x="363" y="246" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <text>Beobachtung</text>
+      </controlProperties>
+    </control>
+    <control controlID="63" controlTypeID="com.balsamiq.mockups::Label" x="363" y="267" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C256%2C332%2C277%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2263%22/%3E</map>
+        <text>Klassifizierer</text>
       </controlProperties>
     </control>
   </controls>

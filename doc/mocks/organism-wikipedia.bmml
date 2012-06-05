@@ -28,13 +28,7 @@
         <text>Navigation</text>
       </controlProperties>
     </control>
-    <control controlID="9" controlTypeID="com.balsamiq.mockups::Paragraph" x="349" y="210" w="113" h="228" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <text>Gebiet%0ABeobachtung%0AOrganismen</text>
-      </controlProperties>
-    </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="865" measuredW="273" measuredH="100" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="865" measuredW="273" measuredH="100" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-wikipedia%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C511%2C224%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C199%2C600%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
@@ -42,23 +36,23 @@
         <text>Basisinfo%2C%20Lexikon%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
-    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Anguilla%20anguilla</text>
       </controlProperties>
     </control>
-    <control controlID="32" controlTypeID="com.balsamiq.mockups::Paragraph" x="499" y="247" w="687" h="739" measuredW="200" measuredH="80" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="32" controlTypeID="com.balsamiq.mockups::Paragraph" x="499" y="247" w="687" h="739" measuredW="200" measuredH="80" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Inhaltsverzeichnis%0A%20%0A%20%20%20%201%20Lebenszyklus%20und%20Fortpflanzung%0A%20%20%20%202%20Lebensweise%0A%20%20%20%203%20Die%20gro%DFe%20Reise%0A%20%20%20%204%20Wissenschaftsgeschichte%0A%20%20%20%205%20Gef%E4hrdung%0A%20%20%20%20%20%20%20%205.1%20Fischfang%0A%20%20%20%20%20%20%20%205.2%20Schwimmblasenwurm%0A%20%20%20%20%20%20%20%205.3%20Umweltverschmutzung%0A%20%20%20%20%20%20%20%205.4%20Gew%E4sserverbauung%0A%20%20%20%20%20%20%20%205.5%20Fisch%20des%20Jahres%0A%20%20%20%206%20Aalfang%0A%20%20%20%207%20Bedeutung%20in%20der%20K%FCche%0A%20%20%20%208%20Einzelnachweise%0A%20%20%20%209%20Weblinks%0A%20%0ALebenszyklus%20und%20Fortpflanzung%0AEine%20Weidenblattlarve%0ALebenslauf%20der%20Aale%0A%20%0AAale%20schl%FCpfen%20im%20Atlantik%2C%20in%20der%20Sargassosee%20%28in%20der%20N%E4he%20der%20Bahamas%29.%20Wegen%20ihrer%20Form%20hei%DFen%20die%20Aallarven%20Weidenblattlarven%20%28Leptocephalus-Larve%29.%20Etwa%20drei%20Jahre%20brauchen%20diese%20Larven%2C%20um%20von%20der%20Sargassosee%20an%20die%20europ%E4ischen%20K%FCsten%20zu%20gelangen.%20W%E4hrend%20man%20fr%FCher%20annahm%2C%20dass%20sie%20sich%20dabei%20passiv%20vom%20Golfstrom%20tragen%20lassen%2C%20wei%DF%20man%20heute%2C%20dass%20die%20Larven%20aktiv%20schwimmen.%0A%20%0AWenn%20die%20Weidenblattlarven%20in%20den%20europ%E4ischen%20K%FCstengew%E4ssern%20ankommen%2C%20wandeln%20sie%20sich%20zu%20den%20ca.%207%20cm%20langen%20Glasaalen.%20Im%20Fr%FChjahr%20schwimmen%20sie%20in%20zum%20Teil%20gro%DFen%20Schw%E4rmen%20von%20den%20europ%E4ischen%20K%FCsten%20flussaufw%E4rts%20in%20die%20Binnengew%E4sser%20des%20Landesinneren.%20W%E4hrend%20dieser%20Zeit%20hei%DFen%20sie%20%u201ESteigaale%u201C%2C%20wegen%20ihrer%20gelblichen%20Bauchf%E4rbung%20auch%20%u201EGelbaale%u201C.In%20ihren%20Heimatgew%E4ssern%20wachsen%20sie%20die%20n%E4chsten%20Jahre%20zur%20vollen%20Gr%F6%DFe%20heran.%20Weibliche%20Tiere%20werden%20mit%2012%20bis%2015%20Jahren%20geschlechtsreif%2C%20m%E4nnliche%20bereits%20in%20einem%20Alter%20von%20sechs%20bis%20neun%20Jahren.%20Zum%20Ablaichen%20wandern%20die%20Tiere%20im%20September/Oktober%20aus%20den%20Gew%E4ssern%20des%20Landesinneren%20%FCber%20die%20Fl%FCsse%20dahin%20zur%FCck%2C%20wo%20sie%20geschl%FCpft%20waren%3A%20in%20die%20Sargassosee.%20Dabei%20werden%20innerhalb%20eines%20Jahres%20teilweise%20Strecken%20von%20%FCber%205000%20Kilometern%20ohne%20Nahrungsaufnahme%20gegen%20den%20Golfstrom%20zur%FCckgelegt.%20Ergebnisse%2C%20die%20per%20Satellitentelemetrie%20an%20Aalen%20gewonnen%20wurden%2C%20denen%20satellitenerkennbare%20Markierungen%20angebracht%20wurden%2C%20zeigten%2C%20dass%20die%20Tiere%20sich%20w%E4hrend%20der%20Wanderung%20tags%FCber%20in%20k%FChlen%20W%E4ssern%20zwischen%20200%20und%201000%20Metern%20Tiefe%20aufhalten%20und%20nachts%20in%20w%E4rmeren%20Oberfl%E4chenbereichen%20schwimmen.%20Dabei%20legen%20sie%20zwischen%20Irland%20und%20den%20Bahamas%20auf%20den%20ersten%201300%20Kilometern%20nur%205%u201325%20Kilometer%20pro%20Tag%20zur%FCck%2C%20viel%20weniger%20als%20die%2035%20Kilometer%2C%20die%20n%F6tig%20w%E4ren%2C%20um%20innerhalb%20eines%20Jahres%20die%20Strecke%20von%205000%20km%20zu%20bew%E4ltigen.%5B1%5D%20Daraus%20folgert%20man%2C%20dass%20die%20Aale%20sp%E4ter%20Wasserstr%F6mungen%20ausnutzen%2C%20die%20ihnen%20dann%20eine%20h%F6here%20Tagesgeschwindigkeit%20erm%F6glichen.%20%28Eine%20Weile%20hat%20man%20daher%20auch%20angenommen%2C%20europ%E4ische%20Aale%20erreichten%20das%20Laichgebiet%20gar%20nicht%20und%20alle%20Jungaale%20stammten%20von%20amerikanischen%20Eltern%20und%20schw%E4rmten%20nach%20beiden%20Richtungen%20aus.%29%0A%20%0AW%E4hrend%20der%20letzten%20Zeit%20in%20den%20Binnengew%E4ssern%20und%20auf%20dem%20Weg%20zur%FCck%20zum%20Meer%20ver%E4ndern%20sich%20die%20K%F6rpermerkmale%20der%20Tiere%3A%20Ihre%20urspr%FCngliche%20F%E4rbung%20wechselt%20von%20gr%FCn-braun%20zu%20silbrig-grau%2C%20der....</text>
       </controlProperties>
     </control>
-    <control controlID="33" controlTypeID="com.balsamiq.mockups::Image" x="1000" y="384" w="146" h="79" measuredW="220" measuredH="105" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Image" x="1000" y="384" w="146" h="79" measuredW="220" measuredH="105" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <src>http%3A//upload.wikimedia.org/wikipedia/commons/thumb/8/80/LeptocephalusConger.jpg/220px-LeptocephalusConger.jpg</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="45" controlTypeID="__group__" x="499" y="1018" w="831" h="189" measuredW="831" measuredH="189" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="45" controlTypeID="__group__" x="499" y="1018" w="831" h="189" measuredW="831" measuredH="189" zOrder="10" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="705" h="36" measuredW="1020" measuredH="21" zOrder="0" locked="false" isInGroup="45">
           <controlProperties>
@@ -77,17 +71,39 @@
             <text>Link%20zu</text>
           </controlProperties>
         </control>
-        <control controlID="3" controlTypeID="com.balsamiq.mockups::CallOut" x="381" y="104" w="450" h="34" measuredW="445" measuredH="39" zOrder="3" locked="false" isInGroup="45">
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::CallOut" x="381" y="104" w="450" h="34" measuredW="445" measuredH="37" zOrder="3" locked="false" isInGroup="45">
           <controlProperties>
             <text>http%3A//de.wikipedia.org/w/index.php%3Ftitle%3DAcipenser_sturio%26action%3Dhistory</text>
           </controlProperties>
         </control>
-        <control controlID="4" controlTypeID="com.balsamiq.mockups::CallOut" x="335" y="150" w="279" h="39" measuredW="279" measuredH="40" zOrder="4" locked="false" isInGroup="45">
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::CallOut" x="335" y="150" w="279" h="39" measuredW="279" measuredH="43" zOrder="4" locked="false" isInGroup="45">
           <controlProperties>
             <text>http%3A//de.wikipedia.org/wiki/Acipenser_sturio</text>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
+    </control>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::Label" x="355" y="209" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <href>all_areas%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C198%2C292%2C219%22%20href%3D%22all_areas.bmml%22%20alt%3D%22all_areas%22%20id%3D%2252%22/%3E</map>
+        <text>Gebiet</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Label" x="355" y="230" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <text>Beobachtung</text>
+      </controlProperties>
+    </control>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Label" x="355" y="251" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C240%2C324%2C261%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2254%22/%3E</map>
+        <text>Klassifizierer</text>
+      </controlProperties>
     </control>
   </controls>
 </mockup>
