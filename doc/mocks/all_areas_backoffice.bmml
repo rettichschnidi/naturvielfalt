@@ -62,7 +62,7 @@
       <controlProperties>
         <href>all_areas_testgebiet%26bm%3Ball_areas_testgebiet.bmml%26bm%3Ball_areas_testgebiet.bmml%26bm%3Ball_areas_testgebiet.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22767%2C432%2C824%2C478%22%20href%3D%22all_areas_testgebiet.bmml%22%20alt%3D%22all_areas_testgebiet%22%20id%3D%2221%22/%3E</map>
-        <src>./pin.png</src>
+        <src>./assets/pin.png</src>
       </controlProperties>
     </control>
     <control controlID="26" controlTypeID="com.balsamiq.mockups::VSlider" x="544" y="317" w="-1" h="172" measuredW="11" measuredH="33" zOrder="12" locked="false" isInGroup="-1">
@@ -97,7 +97,7 @@
       <controlProperties>
         <href>all_areas_backoffice%26bm%3Ball_areas_backoffice.bmml%26bm%3Ball_areas_backoffice.bmml%26bm%3Ball_areas_backoffice.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22504%2C432%2C561%2C478%22%20href%3D%22all_areas_backoffice.bmml%22%20alt%3D%22all_areas_backoffice%22%20id%3D%2234%22/%3E</map>
-        <src>./pin.png</src>
+        <src>./assets/pin.png</src>
       </controlProperties>
     </control>
     <control controlID="37" controlTypeID="com.balsamiq.mockups::Label" x="536" y="536" w="763" h="22" measuredW="10" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
