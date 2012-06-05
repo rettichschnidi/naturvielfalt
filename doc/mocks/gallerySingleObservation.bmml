@@ -78,194 +78,202 @@
         <text>Erstellen</text>
       </controlProperties>
     </control>
-    <control controlID="80" controlTypeID="__group__" x="497" y="239" w="703" h="189" measuredW="703" measuredH="189" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="80" controlTypeID="__group__" x="497" y="239" w="728" h="189" measuredW="728" measuredH="189" zOrder="14" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
-        <control controlID="0" controlTypeID="com.balsamiq.mockups::Image" x="2" y="29" w="106" h="94" measuredW="188" measuredH="125" zOrder="0" locked="false" isInGroup="80">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22390%2C257%2C496%2C351%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%220%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="64" measuredH="21" zOrder="1" locked="false" isInGroup="80">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="64" measuredH="21" zOrder="0" locked="false" isInGroup="80">
           <controlProperties>
             <text>Amphibien</text>
           </controlProperties>
         </control>
-        <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="205" y="29" w="106" h="94" measuredW="188" measuredH="111" zOrder="2" locked="false" isInGroup="80">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C257%2C699%2C351%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%222%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation2.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="394" y="29" w="106" h="94" measuredW="188" measuredH="125" zOrder="3" locked="false" isInGroup="80">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C257%2C888%2C351%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%223%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation3.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="4" controlTypeID="com.balsamiq.mockups::Image" x="597" y="29" w="106" h="94" measuredW="188" measuredH="139" zOrder="4" locked="false" isInGroup="80">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C257%2C1091%2C351%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%224%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation4.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="2" y="130" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="5" locked="false" isInGroup="80">
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="2" y="130" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="1" locked="false" isInGroup="80">
           <controlProperties>
             <text>Salamandridae</text>
           </controlProperties>
         </control>
-        <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="2" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="80">
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="2" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="80">
           <controlProperties>
             <text>Salamandra%20atra%0AAlpensalamander</text>
           </controlProperties>
         </control>
-        <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="394" y="130" w="-1" h="-1" measuredW="61" measuredH="21" zOrder="7" locked="false" isInGroup="80">
+        <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="394" y="130" w="-1" h="-1" measuredW="61" measuredH="21" zOrder="3" locked="false" isInGroup="80">
           <controlProperties>
             <text>Bufonidae</text>
           </controlProperties>
         </control>
-        <control controlID="8" controlTypeID="com.balsamiq.mockups::Paragraph" x="205" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="8" locked="false" isInGroup="80">
+        <control controlID="8" controlTypeID="com.balsamiq.mockups::Paragraph" x="205" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="80">
           <controlProperties>
             <text>Triturus%20alpestris%0ABergmolch</text>
           </controlProperties>
         </control>
-        <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="207" y="130" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="9" locked="false" isInGroup="80">
+        <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="207" y="130" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="5" locked="false" isInGroup="80">
           <controlProperties>
             <text>Salamandridae</text>
           </controlProperties>
         </control>
-        <control controlID="10" controlTypeID="com.balsamiq.mockups::Paragraph" x="394" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="10" locked="false" isInGroup="80">
+        <control controlID="10" controlTypeID="com.balsamiq.mockups::Paragraph" x="394" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="80">
           <controlProperties>
             <text>Bufo%20bufo%0AErdkr%F6te</text>
           </controlProperties>
         </control>
-        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="597" y="130" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="11" locked="false" isInGroup="80">
+        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="597" y="130" w="-1" h="-1" measuredW="90" measuredH="21" zOrder="7" locked="false" isInGroup="80">
           <controlProperties>
             <text>Salamandridae</text>
           </controlProperties>
         </control>
-        <control controlID="12" controlTypeID="com.balsamiq.mockups::Paragraph" x="597" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="12" locked="false" isInGroup="80">
+        <control controlID="12" controlTypeID="com.balsamiq.mockups::Paragraph" x="597" y="151" w="106" h="38" measuredW="200" measuredH="80" zOrder="8" locked="false" isInGroup="80">
           <controlProperties>
             <text>Triturus%20carnifex%0AAlpen-Kammolch</text>
           </controlProperties>
         </control>
-        <control controlID="13" controlTypeID="com.balsamiq.mockups::HRule" x="2" y="16" w="701" h="-1" measuredW="100" measuredH="5" zOrder="13" locked="false" isInGroup="80">
+        <control controlID="13" controlTypeID="com.balsamiq.mockups::HRule" x="2" y="16" w="701" h="-1" measuredW="100" measuredH="5" zOrder="9" locked="false" isInGroup="80">
           <controlProperties>
             <color>10066329</color>
+          </controlProperties>
+        </control>
+        <control controlID="14" controlTypeID="com.balsamiq.mockups::Image" x="0" y="29" w="152" h="101" measuredW="188" measuredH="125" zOrder="10" locked="false" isInGroup="80">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C257%2C540%2C358%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2214%22/%3E</map>
+            <src>./assets/gallery_thumb3.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="15" controlTypeID="com.balsamiq.mockups::Image" x="205" y="32" w="174" h="100" measuredW="188" measuredH="111" zOrder="11" locked="false" isInGroup="80">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C260%2C767%2C360%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2215%22/%3E</map>
+            <src>./assets/gallery_thumb4.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="16" controlTypeID="com.balsamiq.mockups::Image" x="394" y="32" w="147" h="98" measuredW="188" measuredH="125" zOrder="12" locked="false" isInGroup="80">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C260%2C929%2C358%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2216%22/%3E</map>
+            <src>./assets/gallery_thumb5.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="17" controlTypeID="com.balsamiq.mockups::Image" x="597" y="33" w="131" h="97" measuredW="188" measuredH="139" zOrder="13" locked="false" isInGroup="80">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C261%2C1116%2C358%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2217%22/%3E</map>
+            <src>./assets/gallery_thumb6.png</src>
+            <text/>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="81" controlTypeID="__group__" x="497" y="443" w="703" h="203" measuredW="703" measuredH="203" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="81" controlTypeID="__group__" x="497" y="443" w="729" h="203" measuredW="729" measuredH="203" zOrder="15" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
-        <control controlID="0" controlTypeID="com.balsamiq.mockups::Image" x="2" y="29" w="106" h="94" measuredW="188" measuredH="139" zOrder="0" locked="false" isInGroup="81">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22390%2C461%2C496%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%220%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation5.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="70" measuredH="21" zOrder="1" locked="false" isInGroup="81">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="70" measuredH="21" zOrder="0" locked="false" isInGroup="81">
           <controlProperties>
             <text>S%E4ugetiere</text>
           </controlProperties>
         </control>
-        <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="205" y="29" w="106" h="94" measuredW="188" measuredH="132" zOrder="2" locked="false" isInGroup="81">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C461%2C699%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%222%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation6.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="394" y="29" w="106" h="94" measuredW="188" measuredH="139" zOrder="3" locked="false" isInGroup="81">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C461%2C888%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%223%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation5.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="4" controlTypeID="com.balsamiq.mockups::Image" x="597" y="29" w="106" h="94" measuredW="188" measuredH="132" zOrder="4" locked="false" isInGroup="81">
-          <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C461%2C1091%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%224%22/%3E</map>
-            <src>../../../../../../../Users/ramon/Downloads/gallery_presentation6.jpg</src>
-          </controlProperties>
-        </control>
-        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="2" y="140" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="5" locked="false" isInGroup="81">
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="2" y="140" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="1" locked="false" isInGroup="81">
           <controlProperties>
             <text>Vespertilionidae</text>
           </controlProperties>
         </control>
-        <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="2" y="161" w="106" h="38" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="81">
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="2" y="161" w="106" h="38" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="81">
           <controlProperties>
             <text>Eptesicus%20serotinus%0ABreitfl%FCgelfledermaus</text>
           </controlProperties>
         </control>
-        <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="394" y="144" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="7" locked="false" isInGroup="81">
+        <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="394" y="144" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="3" locked="false" isInGroup="81">
           <controlProperties>
             <text>Vespertilionidae</text>
           </controlProperties>
         </control>
-        <control controlID="8" controlTypeID="com.balsamiq.mockups::Paragraph" x="205" y="165" w="106" h="38" measuredW="200" measuredH="80" zOrder="8" locked="false" isInGroup="81">
+        <control controlID="8" controlTypeID="com.balsamiq.mockups::Paragraph" x="205" y="165" w="106" h="38" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="81">
           <controlProperties>
             <text>Myotis%20bechsteinii%0ABechsteinfledermaus</text>
           </controlProperties>
         </control>
-        <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="207" y="144" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="9" locked="false" isInGroup="81">
+        <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="207" y="144" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="5" locked="false" isInGroup="81">
           <controlProperties>
             <text>Vespertilionidae</text>
           </controlProperties>
         </control>
-        <control controlID="10" controlTypeID="com.balsamiq.mockups::Paragraph" x="394" y="165" w="106" h="38" measuredW="200" measuredH="80" zOrder="10" locked="false" isInGroup="81">
+        <control controlID="10" controlTypeID="com.balsamiq.mockups::Paragraph" x="394" y="165" w="106" h="38" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="81">
           <controlProperties>
             <text>Myotis%20bechsteinii%0ABechsteinfledermaus</text>
           </controlProperties>
         </control>
-        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="597" y="144" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="11" locked="false" isInGroup="81">
+        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="597" y="144" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="7" locked="false" isInGroup="81">
           <controlProperties>
             <text>Vespertilionidae</text>
           </controlProperties>
         </control>
-        <control controlID="12" controlTypeID="com.balsamiq.mockups::Paragraph" x="597" y="165" w="106" h="38" measuredW="200" measuredH="80" zOrder="12" locked="false" isInGroup="81">
+        <control controlID="12" controlTypeID="com.balsamiq.mockups::Paragraph" x="597" y="165" w="106" h="38" measuredW="200" measuredH="80" zOrder="8" locked="false" isInGroup="81">
           <controlProperties>
             <text>Myotis%20bechsteinii%0ABechsteinfledermaus</text>
           </controlProperties>
         </control>
-        <control controlID="13" controlTypeID="com.balsamiq.mockups::HRule" x="2" y="16" w="701" h="-1" measuredW="100" measuredH="5" zOrder="13" locked="false" isInGroup="81">
+        <control controlID="13" controlTypeID="com.balsamiq.mockups::HRule" x="2" y="16" w="701" h="-1" measuredW="100" measuredH="5" zOrder="9" locked="false" isInGroup="81">
           <controlProperties>
             <color>10066329</color>
           </controlProperties>
         </control>
-        <control controlID="14" controlTypeID="com.balsamiq.mockups::Label" x="2" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="14" locked="false" isInGroup="81">
+        <control controlID="14" controlTypeID="com.balsamiq.mockups::Label" x="2" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="10" locked="false" isInGroup="81">
           <controlProperties>
             <color>10066329</color>
             <size>10</size>
             <text>%A9something%2C%20zusatz</text>
           </controlProperties>
         </control>
-        <control controlID="15" controlTypeID="com.balsamiq.mockups::Label" x="205" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="15" locked="false" isInGroup="81">
+        <control controlID="15" controlTypeID="com.balsamiq.mockups::Label" x="205" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="11" locked="false" isInGroup="81">
           <controlProperties>
             <color>10066329</color>
             <size>10</size>
             <text>%A9something%2C%20zusatz</text>
           </controlProperties>
         </control>
-        <control controlID="16" controlTypeID="com.balsamiq.mockups::Label" x="394" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="16" locked="false" isInGroup="81">
+        <control controlID="16" controlTypeID="com.balsamiq.mockups::Label" x="394" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="12" locked="false" isInGroup="81">
           <controlProperties>
             <color>10066329</color>
             <size>10</size>
             <text>%A9something%2C%20zusatz</text>
           </controlProperties>
         </control>
-        <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="597" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="17" locked="false" isInGroup="81">
+        <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="597" y="123" w="-1" h="-1" measuredW="93" measuredH="17" zOrder="13" locked="false" isInGroup="81">
           <controlProperties>
             <color>10066329</color>
             <size>10</size>
             <text>%A9something%2C%20zusatz</text>
+          </controlProperties>
+        </control>
+        <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="205" y="30" w="132" h="93" measuredW="188" measuredH="132" zOrder="14" locked="false" isInGroup="81">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C462%2C725%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2219%22/%3E</map>
+            <src>./assets/gallery_thumb1.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="22" controlTypeID="com.balsamiq.mockups::Image" x="597" y="30" w="132" h="93" measuredW="188" measuredH="132" zOrder="15" locked="false" isInGroup="81">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C462%2C1117%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2222%22/%3E</map>
+            <src>./assets/gallery_thumb1.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="23" controlTypeID="com.balsamiq.mockups::Image" x="0" y="30" w="123" h="93" measuredW="188" measuredH="139" zOrder="16" locked="false" isInGroup="81">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C462%2C511%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2223%22/%3E</map>
+            <src>./assets/gallery_thumb2.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="24" controlTypeID="com.balsamiq.mockups::Image" x="394" y="30" w="123" h="93" measuredW="188" measuredH="139" zOrder="17" locked="false" isInGroup="81">
+          <controlProperties>
+            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C462%2C905%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2224%22/%3E</map>
+            <src>./assets/gallery_thumb2.png</src>
+            <text/>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
