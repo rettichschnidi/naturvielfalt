@@ -1,0 +1,39 @@
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="766" mockupW="1425" mockupH="755">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="755" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>A%20Web%20Page%0Ahttp%3A//</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="628" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="174" w="769" h="528" measuredW="224" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>One%2C%20Two%2C%20Three%2C%20Four</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1"/>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="342" y="89" w="926" h="70" measuredW="1294" measuredH="133" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/banner_topnav_big.jpg</src>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Image" x="342" y="159" w="120" h="325" measuredW="220" measuredH="487" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/sidebar_main-bg.jpg</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="370" y="174" w="-1" h="-1" measuredW="64" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <text>Navigation</text>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::Paragraph" x="342" y="210" w="120" h="233" measuredW="200" measuredH="80" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <text>Gebiet%0ABeobachtung%0AOrganismen%0ABlabla%0ABlabla%0ABlabla%0ABlabla%0ABlabla</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
