@@ -40,7 +40,7 @@ function organism_show_classifiers() {
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
-			'#title' => 'Classifiers',
+			'#title' => t('Classifiers'),
 			'#id_table' => 'classificators',
 			'#options' => array(
 					'jsonUrl' => "'" . base_path() . "organism/json'",
