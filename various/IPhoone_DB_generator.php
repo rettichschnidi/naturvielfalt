@@ -43,7 +43,9 @@ $sql_create_iphone_db_structur = '
 	DROP TABLE IF EXISTS organism;
 	CREATE TABLE organism (
 	-- entry id
-		id bigint PRIMARY KEY,
+	--	id bigint PRIMARY KEY,
+	-- the original organsim id
+		organism_id bigint,
 	-- flora or group or something other, not used on the new system (NOT NULL removed)
 		organism_type bigint,
 	-- organism id
@@ -77,9 +79,9 @@ $sql_create_iphone_db_structur = '
 
 ';
 
-
+// removed DISTINCT ON (osn.organism_id)
 $query_all_organism = "
-	SELECT DISTINCT ON (osn.organism_id)
+	SELECT
 	osn.organism_id organism_id,
 	osn.name name_sc,
 	ol_de.name name_de,
@@ -141,7 +143,7 @@ $sql_all_organism = '
 ';
 foreach ($results_all_organism as $organism){
 	$sql_all_artgroups .= "
-INSERT INTO organism (id, name_sc, name_de, name_fr, name_it, name_rm, name_en) values ('".pg_escape_string($organism['organism_id'])."','".pg_escape_string($organism['name_sc'])."','".pg_escape_string($organism['name_de'])."','".pg_escape_string($organism['name_fr'])."','".pg_escape_string($organism['name_it'])."','".pg_escape_string($organism['name_rm'])."','".pg_escape_string($organism['name_en'])."');";
+INSERT INTO organism (organism_id, name_sc, name_de, name_fr, name_it, name_rm, name_en) values ('".pg_escape_string($organism['organism_id'])."','".pg_escape_string($organism['name_sc'])."','".pg_escape_string($organism['name_de'])."','".pg_escape_string($organism['name_fr'])."','".pg_escape_string($organism['name_it'])."','".pg_escape_string($organism['name_rm'])."','".pg_escape_string($organism['name_en'])."');";
 }
 
 echo 'build all subscription sql inserts<br>';
