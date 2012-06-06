@@ -7,10 +7,10 @@
       </controlProperties>
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="1599" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
-    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1456" measuredW="259" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1456" measuredW="257" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%2CgallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%2CnewSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C524%2C211%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22524%2C186%2C591%2C211%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%222_2%22/%3E%0A</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C523%2C211%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22523%2C186%2C589%2C211%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%222_2%22/%3E%0A</map>
         <selectedIndex>2</selectedIndex>
         <text>%DCbersicht%2C%20Gallerie%2C%20Erstellen</text>
       </controlProperties>
@@ -71,11 +71,11 @@
         <text>Gallery</text>
       </controlProperties>
     </control>
-    <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="370" y="289" w="-1" h="-1" measuredW="57" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="370" y="289" w="-1" h="-1" measuredW="56" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
         <href>newSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C278%2C318%2C299%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%2259%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C278%2C317%2C299%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%2259%22/%3E</map>
         <text>Erstellen</text>
       </controlProperties>
     </control>
@@ -421,6 +421,27 @@
         <src>./assets/gmap_single_point.png</src>
         <text/>
       </controlProperties>
+    </control>
+    <control controlID="112" controlTypeID="__group__" x="393" y="880" w="117" h="140" measuredW="117" measuredH="140" zOrder="55" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Arrow" x="0" y="0" w="117" h="59" measuredW="150" measuredH="100" zOrder="0" locked="false" isInGroup="112">
+          <controlProperties>
+            <direction>bottom</direction>
+            <leftArrow>false</leftArrow>
+            <rightArrow>false</rightArrow>
+            <text>Klick</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Arrow" x="0" y="49" w="112" h="91" measuredW="150" measuredH="100" zOrder="1" locked="false" isInGroup="112">
+          <controlProperties>
+            <curvature>-1</curvature>
+            <direction>top</direction>
+            <leftArrow>false</leftArrow>
+            <rightArrow>true</rightArrow>
+            <text>f%FCgt%20hinzu</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
     </control>
   </controls>
 </mockup>
