@@ -7,12 +7,12 @@
       </controlProperties>
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="1599" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
-    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1456" measuredW="259" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1456" measuredW="355" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%2CgallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%2CnewSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C524%2C211%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22524%2C186%2C591%2C211%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%222_2%22/%3E%0A</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C461%2C211%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22461%2C186%2C541%2C211%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22541%2C186%2C633%2C211%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%222_2%22/%3E%0A</map>
         <selectedIndex>2</selectedIndex>
-        <text>%DCbersicht%2C%20Gallerie%2C%20Erstellen</text>
+        <text>Anzeigen%2C%20Bearbeiten%2C%20Berechtigung%2C%20L%F6schen</text>
       </controlProperties>
     </control>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1"/>

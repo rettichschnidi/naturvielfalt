@@ -265,16 +265,17 @@
         <color>0</color>
       </controlProperties>
     </control>
-    <control controlID="85" controlTypeID="com.balsamiq.mockups::Image" x="392" y="174" w="837" h="638" measuredW="1020" measuredH="779" zOrder="18" locked="false" isInGroup="-1">
-      <controlProperties>
-        <src>../../../../../../../Users/ramon/Downloads/Unbenannt-9.png</src>
-      </controlProperties>
-    </control>
-    <control controlID="86" controlTypeID="com.balsamiq.mockups::Label" x="1156" y="732" w="67" h="36" measuredW="10" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="86" controlTypeID="com.balsamiq.mockups::Label" x="1162" y="743" w="67" h="36" measuredW="10" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <href>gallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221047%2C721%2C1114%2C757%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%2286%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221053%2C732%2C1120%2C768%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%2286%22/%3E</map>
         <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="87" controlTypeID="com.balsamiq.mockups::Image" x="462" y="226" w="778" h="594" measuredW="1020" measuredH="779" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/gallery_popup_big.png</src>
+        <text/>
       </controlProperties>
     </control>
   </controls>
