@@ -147,8 +147,8 @@
     <control controlID="28" controlTypeID="com.balsamiq.mockups::Label" x="375" y="229" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>all_areas%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22266%2C218%2C312%2C239%22%20href%3D%22all_areas.bmml%22%20alt%3D%22all_areas%22%20id%3D%2228%22/%3E</map>
+        <href>areas_all%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22266%2C218%2C312%2C239%22%20href%3D%22areas_all.bmml%22%20alt%3D%22areas_all%22%20id%3D%2228%22/%3E</map>
         <text>Gebiet</text>
       </controlProperties>
     </control>
