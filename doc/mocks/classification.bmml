@@ -254,6 +254,8 @@
     <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="355" y="230" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
+        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C219%2C325%2C240%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2223%22/%3E</map>
         <text>Beobachtung</text>
       </controlProperties>
     </control>
@@ -263,6 +265,25 @@
         <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C240%2C324%2C261%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2227%22/%3E</map>
         <text>Klassifizierer</text>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::Arrow" x="1210" y="274" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <leftArrow>false</leftArrow>
+      </controlProperties>
+    </control>
+    <control controlID="29" controlTypeID="com.balsamiq.mockups::StickyNote" x="1354" y="364" w="155" h="120" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Ein%20Klick%20auf%20eine%20Klassifizeriung%20schr%E4nkt%20die%20gelisteten%20Organismen%20ein.</text>
+      </controlProperties>
+    </control>
+    <control controlID="30" controlTypeID="com.balsamiq.mockups::Arrow" x="1210" y="476" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <curvature>-1</curvature>
+        <direction>bottom</direction>
+        <leftArrow>true</leftArrow>
+        <rightArrow>false</rightArrow>
+        <text/>
       </controlProperties>
     </control>
   </controls>
