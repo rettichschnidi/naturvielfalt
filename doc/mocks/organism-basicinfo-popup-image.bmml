@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1001" mockupW="1425" mockupH="990">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1001" mockupW="1425" mockupH="1001">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="990" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -30,12 +30,12 @@
     <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="706" measuredW="273" measuredH="100" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-wikipedia%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C511%2C224%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C199%2C600%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C210%2C453%2C235%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C210%2C511%2C235%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C210%2C600%2C235%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
         <text>Basisinfo%2C%20Lexikon%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
-    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="177" w="324" h="19" measuredW="324" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="324" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Attribute%20und%20Synonyme%20von%20Tetragonia%20expansa%20Murray</text>
       </controlProperties>
@@ -96,8 +96,6 @@
     </control>
     <control controlID="31" controlTypeID="com.balsamiq.mockups::Image" x="524" y="275" w="88" h="80" measuredW="615" measuredH="400" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22415%2C264%2C503%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2231%22/%3E</map>
         <src>http%3A//database.prota.org/dbtw-wpd/protabase/Photfile%2520Images%255CTetragonia%2520tetragonioides%25207143.jpg</src>
         <text/>
       </controlProperties>
@@ -122,8 +120,6 @@
     </control>
     <control controlID="35" controlTypeID="com.balsamiq.mockups::Image" x="524" y="418" w="93" h="73" measuredW="188" measuredH="150" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>organism-basicinfo-popup-sound%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22415%2C407%2C508%2C480%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%2235%22/%3E</map>
         <src>http%3A//localhost/%7Ereto/naturvielfalt/sites/all/modules/gallery/images/music_icon.png</src>
         <text/>
       </controlProperties>
@@ -216,7 +212,7 @@
       <controlProperties>
         <color>16777215</color>
         <href>all_areas%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C198%2C292%2C219%22%20href%3D%22all_areas.bmml%22%20alt%3D%22all_areas%22%20id%3D%2243%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C209%2C292%2C230%22%20href%3D%22all_areas.bmml%22%20alt%3D%22all_areas%22%20id%3D%2243%22/%3E</map>
         <text>Gebiet</text>
       </controlProperties>
     </control>
@@ -224,7 +220,7 @@
       <controlProperties>
         <color>16777215</color>
         <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C219%2C325%2C240%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2244%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C230%2C325%2C251%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2244%22/%3E</map>
         <text>Beobachtung</text>
       </controlProperties>
     </control>
@@ -232,8 +228,43 @@
       <controlProperties>
         <color>16777215</color>
         <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C240%2C324%2C261%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2245%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C251%2C324%2C272%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2245%22/%3E</map>
         <text>Klassifizierer</text>
+      </controlProperties>
+    </control>
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="551" y="737" w="171" h="42" measuredW="162" measuredH="21" zOrder="27" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Tetragonia%20expansa%20Murray</text>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::ModalScreen" x="109" y="0" w="1425" h="990" measuredW="320" measuredH="240" zOrder="28" locked="false" isInGroup="-1"/>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Canvas" x="449" y="144" w="819" h="746" measuredW="100" measuredH="70" zOrder="29" locked="false" isInGroup="-1"/>
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Image" x="489" y="165" w="734" h="613" measuredW="615" measuredH="400" zOrder="30" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>http%3A//database.prota.org/dbtw-wpd/protabase/Photfile%2520Images%255CTetragonia%2520tetragonioides%25207143.jpg</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::Label" x="489" y="787" w="-1" h="-1" measuredW="125" measuredH="21" zOrder="31" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%A9%20Google%2C%20unbekannt</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Label" x="489" y="823" w="-1" h="-1" measuredW="162" measuredH="21" zOrder="32" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Tetragonia%20expansa%20Murray</text>
+      </controlProperties>
+    </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::Label" x="490" y="845" w="-1" h="-1" measuredW="105" measuredH="21" zOrder="33" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Neuseelandspinat</text>
+      </controlProperties>
+    </control>
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::Icon" x="1178" y="808" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="34" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
+        <icon>XIcon%7Csmall</icon>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221069%2C808%2C1093%2C832%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2256%22/%3E</map>
       </controlProperties>
     </control>
   </controls>

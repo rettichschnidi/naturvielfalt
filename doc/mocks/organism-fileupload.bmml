@@ -46,7 +46,7 @@
         <text>Dateien</text>
       </controlProperties>
     </control>
-    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="579" measuredH="85" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="576" measuredH="85" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Beschreibung%2C%20Dateiname%2C%20Typ%2C%20Gr%F6sse%2C%20Datum%2C%20Autor%2C%20Besitzer%0A%2C%20gesunde%20Aale.pdf%2C%20%2C199.547%20KB%2C%20%2005.06.2012%2C%20Albert%2C%20naturvielfalt%2C%20%20%20%0AKranke%20Aale%2C%20kranke%20Aale.pdf%2C%20%2C%20500%20KB%2C%20%2005.06.2012%2C%20Susi%2C%20naturvielfalt%2C%20%20%20</text>
       </controlProperties>
@@ -84,7 +84,7 @@
         <text>/home/reto/Desktop/zivi/excel.xls</text>
       </controlProperties>
     </control>
-    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="525" y="394" w="-1" h="-1" measuredW="109" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="525" y="394" w="-1" h="-1" measuredW="105" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Datei%20heraufladen</text>
       </controlProperties>
@@ -96,7 +96,7 @@
         <text>Eine%20tolle%20Excelliste</text>
       </controlProperties>
     </control>
-    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="83" measuredH="21" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="82" measuredH="21" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Beschreibung</text>
       </controlProperties>
@@ -108,7 +108,7 @@
         <text>Dr.%20Prof.%20Superhirn</text>
       </controlProperties>
     </control>
-    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="525" y="531" w="-1" h="-1" measuredW="37" measuredH="21" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="525" y="531" w="-1" h="-1" measuredW="36" measuredH="21" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Autor</text>
       </controlProperties>
@@ -125,7 +125,7 @@
         <direction>bottom</direction>
         <leftArrow>false</leftArrow>
         <rightArrow>true</rightArrow>
-        <text>Upload</text>
+        <text>Datei%20wird%20hinzugef%FCgt</text>
       </controlProperties>
     </control>
     <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="363" y="225" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="23" locked="false" isInGroup="-1">

@@ -254,6 +254,8 @@
     <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="355" y="230" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
+        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C219%2C325%2C240%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2223%22/%3E</map>
         <text>Beobachtung</text>
       </controlProperties>
     </control>
