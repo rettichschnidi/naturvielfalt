@@ -126,8 +126,8 @@
         </control>
         <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="4" y="46" w="695" h="33" measuredW="10" measuredH="21" zOrder="1" locked="false" isInGroup="16">
           <controlProperties>
-            <href>organism-classification%26bm%3Borganism-classification.bmml%26bm%3Borganism-classification.bmml%26bm%3Borganism-classification.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22375%2C240%2C1070%2C273%22%20href%3D%22organism-classification.bmml%22%20alt%3D%22organism-classification%22%20id%3D%221%22/%3E</map>
+            <href>classification%26bm%3Bclassification.bmml%26bm%3Bclassification.bmml%26bm%3Bclassification.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22375%2C240%2C1070%2C273%22%20href%3D%22classification.bmml%22%20alt%3D%22classification%22%20id%3D%221%22/%3E</map>
             <text>%20</text>
           </controlProperties>
         </control>

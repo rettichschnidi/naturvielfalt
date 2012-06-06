@@ -267,5 +267,24 @@
         <text>Klassifizierer</text>
       </controlProperties>
     </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::Arrow" x="1210" y="274" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <leftArrow>false</leftArrow>
+      </controlProperties>
+    </control>
+    <control controlID="29" controlTypeID="com.balsamiq.mockups::StickyNote" x="1354" y="364" w="155" h="120" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Ein%20Klick%20auf%20eine%20Klassifizeriung%20schr%E4nkt%20die%20gelisteten%20Organismen%20ein.</text>
+      </controlProperties>
+    </control>
+    <control controlID="30" controlTypeID="com.balsamiq.mockups::Arrow" x="1210" y="476" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <curvature>-1</curvature>
+        <direction>bottom</direction>
+        <leftArrow>true</leftArrow>
+        <rightArrow>false</rightArrow>
+        <text/>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>
