@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1604" measuredH="1173" mockupW="1495" mockupH="1162">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1173" mockupW="1425" mockupH="1162">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="1162" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -148,11 +148,6 @@
         <text>Klassifizierer</text>
       </controlProperties>
     </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::StickyNote" x="1281" y="195" w="323" h="123" measuredW="109" measuredH="123" zOrder="15" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>-%20Wessen%20Bilder/Videos/Sounds%20anzeigen%3F%0A-%20Welche%20Bilder/Videos/Sounds%20anzeigen%3F%20%28Belegbilder/Portraitbilder%29</text>
-      </controlProperties>
-    </control>
     <control controlID="50" controlTypeID="__group__" x="498" y="659" w="719" h="141" measuredW="719" measuredH="141" zOrder="8" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="141" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="50">
@@ -207,11 +202,13 @@
       </groupChildrenDescriptors>
     </control>
     <control controlID="51" controlTypeID="__group__" x="498" y="399" w="719" h="122" measuredW="719" measuredH="122" zOrder="10" locked="false" isInGroup="-1">
-      <controlProperties/>
+      <controlProperties>
+        <href>organism-basicinfo-popup-sound%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22389%2C388%2C1108%2C510%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%2251%22/%3E</map>
+      </controlProperties>
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="122" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="51">
           <controlProperties>
-            <markup>true</markup>
             <text>Sound</text>
           </controlProperties>
         </control>
@@ -243,19 +240,23 @@
         <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="132" y="27" w="101" h="81" measuredW="294" measuredH="208" zOrder="2" locked="false" isInGroup="52">
           <controlProperties>
             <crop>66%2C190%2C850%2C602</crop>
+            <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22521%2C263%2C622%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%222%22/%3E</map>
             <src>http%3A//www.seeds-samen.eu/img/p/194-268-large.jpg</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="261" y="33" w="99" h="68" measuredW="598" measuredH="408" zOrder="3" locked="false" isInGroup="52">
           <controlProperties>
+            <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22650%2C269%2C749%2C337%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%223%22/%3E</map>
             <src>http%3A//av-media.netletter.at/to/mmedia/image//2008.04.17/1208433035_1.jpg%3F1277659945</src>
             <text/>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="53" controlTypeID="__group__" x="498" y="531" w="719" h="122" measuredW="719" measuredH="122" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="53" controlTypeID="__group__" x="498" y="531" w="719" h="122" measuredW="719" measuredH="122" zOrder="15" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="122" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="53">
           <controlProperties>
@@ -272,10 +273,28 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="55" controlTypeID="com.balsamiq.mockups::VCurly" x="1274" y="665" w="255" h="140" measuredW="180" measuredH="140" zOrder="17" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Alle%20Attribute%20%28Einschr%E4nkungen%3F%29</text>
-      </controlProperties>
+    <control controlID="54" controlTypeID="__group__" x="112" y="84" w="1403" h="1055" measuredW="1403" measuredH="1055" zOrder="16" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="1048" y="451" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="54">
+          <controlProperties>
+            <icon>XIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="13" controlTypeID="com.balsamiq.mockups::ModalScreen" x="0" y="0" w="1403" h="1055" measuredW="320" measuredH="240" zOrder="0" locked="false" isInGroup="54">
+          <controlProperties>
+            <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%223%2C73%2C1406%2C1128%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2213%22/%3E</map>
+          </controlProperties>
+        </control>
+        <control controlID="14" controlTypeID="com.balsamiq.mockups::VideoPlayer" x="404" y="322" w="696" h="424" measuredW="300" measuredH="200" zOrder="2" locked="false" isInGroup="54"/>
+        <control controlID="15" controlTypeID="com.balsamiq.mockups::Icon" x="1075" y="293" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="54">
+          <controlProperties>
+            <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
+            <icon>XIcon%7Csmall</icon>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221078%2C366%2C1102%2C390%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2215%22/%3E</map>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
     </control>
   </controls>
 </mockup>

@@ -1,0 +1,38 @@
+<mockup version="1.0" skin="sketch" measuredW="1786" measuredH="798" mockupW="1410" mockupH="777">
+  <controls>
+    <control controlID="29" controlTypeID="__group__" x="376" y="21" w="1078" h="777" measuredW="1078" measuredH="777" zOrder="0" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="824" y="348" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="29">
+          <controlProperties>
+            <icon>XIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="13" controlTypeID="com.balsamiq.mockups::ModalScreen" x="0" y="0" w="1078" h="777" measuredW="320" measuredH="240" zOrder="0" locked="false" isInGroup="29"/>
+        <control controlID="14" controlTypeID="com.balsamiq.mockups::VideoPlayer" x="180" y="219" w="696" h="424" measuredW="300" measuredH="200" zOrder="2" locked="false" isInGroup="29"/>
+        <control controlID="15" controlTypeID="com.balsamiq.mockups::Icon" x="851" y="190" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="29">
+          <controlProperties>
+            <icon>XIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="31" controlTypeID="com.balsamiq.mockups::StickyNote" x="540" y="40" w="-1" h="-1" measuredW="109" measuredH="123" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Modaler%20Player</text>
+      </controlProperties>
+    </control>
+    <control controlID="32" controlTypeID="com.balsamiq.mockups::StickyNote" x="1463" y="87" w="323" h="129" measuredW="109" measuredH="123" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>-%20Klick%20auf%20X%20schliesst%20das%20Fenster/Overlay.%0A-%20Alternativ%20funktioniert%20auch%20ein%20Klick%20ausserhalb%20des%20Players</text>
+      </controlProperties>
+    </control>
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Arrow" x="1242" y="146" w="227" h="63" measuredW="150" measuredH="100" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <curvature>1</curvature>
+        <direction>bottom</direction>
+        <leftArrow>false</leftArrow>
+        <text/>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

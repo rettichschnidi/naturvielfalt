@@ -237,7 +237,12 @@
         <text>Tetragonia%20expansa%20Murray</text>
       </controlProperties>
     </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::ModalScreen" x="109" y="0" w="1425" h="990" measuredW="320" measuredH="240" zOrder="28" locked="false" isInGroup="-1"/>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::ModalScreen" x="109" y="0" w="1425" h="990" measuredW="320" measuredH="240" zOrder="28" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%220%2C0%2C1425%2C990%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2249%22/%3E</map>
+      </controlProperties>
+    </control>
     <control controlID="50" controlTypeID="com.balsamiq.mockups::Canvas" x="449" y="144" w="819" h="746" measuredW="100" measuredH="70" zOrder="29" locked="false" isInGroup="-1"/>
     <control controlID="51" controlTypeID="com.balsamiq.mockups::Image" x="489" y="165" w="734" h="613" measuredW="615" measuredH="400" zOrder="30" locked="false" isInGroup="-1">
       <controlProperties>
