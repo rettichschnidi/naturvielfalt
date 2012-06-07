@@ -73,16 +73,16 @@
         </control>
         <control controlID="3" controlTypeID="com.balsamiq.mockups::Button" x="163" y="149" w="84" h="28" measuredW="78" measuredH="27" zOrder="3" locked="false" isInGroup="106">
           <controlProperties>
-            <href>user-profile-show%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22585%2C333%2C669%2C361%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%223%22/%3E</map>
+            <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22585%2C333%2C669%2C361%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%223%22/%3E</map>
             <text>Einloggen</text>
           </controlProperties>
         </control>
-        <control controlID="4" controlTypeID="com.balsamiq.mockups::Link" x="262" y="150" w="-1" h="-1" measuredW="108" measuredH="21" zOrder="4" locked="false" isInGroup="106">
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Link" x="262" y="150" w="-1" h="-1" measuredW="129" measuredH="21" zOrder="4" locked="false" isInGroup="106">
           <controlProperties>
             <href>user-passwortreset%26bm%3Buser-passwortreset.bmml%26bm%3Buser-passwortreset.bmml%26bm%3Buser-passwortreset.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22684%2C334%2C792%2C355%22%20href%3D%22user-passwortreset.bmml%22%20alt%3D%22user-passwortreset%22%20id%3D%224%22/%3E</map>
-            <text>Forgot%20password%3F</text>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22684%2C334%2C813%2C355%22%20href%3D%22user-passwortreset.bmml%22%20alt%3D%22user-passwortreset%22%20id%3D%224%22/%3E</map>
+            <text>Passwort%20vergessen%3F</text>
           </controlProperties>
         </control>
         <control controlID="5" controlTypeID="com.balsamiq.mockups::TextInput" x="163" y="105" w="253" h="-1" measuredW="79" measuredH="27" zOrder="5" locked="false" isInGroup="106">
