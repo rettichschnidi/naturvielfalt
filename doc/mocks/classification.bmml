@@ -272,7 +272,7 @@
         <leftArrow>false</leftArrow>
       </controlProperties>
     </control>
-    <control controlID="29" controlTypeID="com.balsamiq.mockups::StickyNote" x="1354" y="364" w="155" h="120" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="29" controlTypeID="com.balsamiq.mockups::StickyNote" x="1327" y="365" w="165" h="120" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Ein%20Klick%20auf%20eine%20Klassifizeriung%20schr%E4nkt%20die%20gelisteten%20Organismen%20ein.</text>
       </controlProperties>

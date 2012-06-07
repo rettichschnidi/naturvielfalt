@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1001" mockupW="1425" mockupH="990">
+<mockup version="1.0" skin="sketch" measuredW="1559" measuredH="1001" mockupW="1450" mockupH="990">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="990" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -51,16 +51,16 @@
         <text>Xenophyte%3A</text>
       </controlProperties>
     </control>
-    <control controlID="20" controlTypeID="com.balsamiq.mockups::Label" x="514" y="582" w="-1" h="-1" measuredW="91" measuredH="21" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="20" controlTypeID="com.balsamiq.mockups::Label" x="514" y="582" w="-1" h="-1" measuredW="96" measuredH="21" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
-        <text>CRSF%20number%3A</text>
+        <text>CRSF%20Nummer%3A</text>
       </controlProperties>
     </control>
-    <control controlID="21" controlTypeID="com.balsamiq.mockups::Label" x="514" y="600" w="98" h="23" measuredW="51" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="21" controlTypeID="com.balsamiq.mockups::Label" x="514" y="600" w="98" h="23" measuredW="44" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
-        <text>Author%3A</text>
+        <text>Autor%3A</text>
       </controlProperties>
     </control>
     <control controlID="22" controlTypeID="com.balsamiq.mockups::Label" x="514" y="621" w="-1" h="-1" measuredW="99" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
@@ -69,17 +69,17 @@
         <text>Flora%20Helvetica%3A</text>
       </controlProperties>
     </control>
-    <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="587" y="561" w="98" h="21" measuredW="30" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="587" y="561" w="43" h="21" measuredW="37" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>true</text>
+        <text>Wahr</text>
       </controlProperties>
     </control>
-    <control controlID="24" controlTypeID="com.balsamiq.mockups::Label" x="605" y="582" w="139" h="21" measuredW="52" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="24" controlTypeID="com.balsamiq.mockups::Label" x="613" y="582" w="139" h="21" measuredW="52" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <text>414600</text>
       </controlProperties>
     </control>
-    <control controlID="25" controlTypeID="com.balsamiq.mockups::Label" x="566" y="601" w="98" h="20" measuredW="81" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::Label" x="562" y="601" w="98" h="20" measuredW="81" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%28Pall.%29%20Kuntze</text>
       </controlProperties>
@@ -105,12 +105,16 @@
     <control controlID="32" controlTypeID="com.balsamiq.mockups::Image" x="630" y="274" w="101" h="81" measuredW="294" measuredH="208" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <crop>66%2C190%2C850%2C602</crop>
+        <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22521%2C263%2C622%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2232%22/%3E</map>
         <src>http%3A//www.seeds-samen.eu/img/p/194-268-large.jpg</src>
         <text/>
       </controlProperties>
     </control>
     <control controlID="33" controlTypeID="com.balsamiq.mockups::Image" x="759" y="280" w="99" h="68" measuredW="598" measuredH="408" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
+        <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22650%2C269%2C749%2C337%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2233%22/%3E</map>
         <src>http%3A//av-media.netletter.at/to/mmedia/image//2008.04.17/1208433035_1.jpg%3F1277659945</src>
         <text/>
       </controlProperties>
@@ -234,6 +238,11 @@
         <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C240%2C324%2C261%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2245%22/%3E</map>
         <text>Klassifizierer</text>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::StickyNote" x="1277" y="179" w="282" h="123" measuredW="109" measuredH="123" zOrder="27" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>-%20Wessen%20Bilder%20anzeigen%3F%0A-%20Welche%20Bilder%20anzeigen%3F%20%28Belegbilder/Portraitbilder%29</text>
       </controlProperties>
     </control>
   </controls>
