@@ -150,5 +150,10 @@
         <text>Klassifizierer</text>
       </controlProperties>
     </control>
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::StickyNote" x="1282" y="237" w="169" h="123" measuredW="109" measuredH="123" zOrder="26" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Alle%20Dateien%20an%20nur%20einer%20Stelle%20heraufladen%3F</text>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>
