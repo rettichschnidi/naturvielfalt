@@ -228,7 +228,7 @@
           <controlProperties>
             <href>my_areas_testgebiet%26bm%3Bmy_areas_testgebiet.bmml%26bm%3Bmy_areas_testgebiet.bmml%26bm%3Bmy_areas_testgebiet.bmml</href>
             <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221060%2C214%2C1117%2C260%22%20href%3D%22my_areas_testgebiet.bmml%22%20alt%3D%22my_areas_testgebiet%22%20id%3D%221%22/%3E</map>
-            <src>../Mocks/assets/pin.png</src>
+            <src>./assets/pin.png</src>
           </controlProperties>
         </control>
         <control controlID="2" controlTypeID="com.balsamiq.mockups::VSlider" x="15" y="88" w="-1" h="172" measuredW="11" measuredH="33" zOrder="2" locked="false" isInGroup="124">
@@ -254,7 +254,7 @@
         </control>
         <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="5" y="3" w="-1" h="-1" measuredW="51" measuredH="51" zOrder="5" locked="false" isInGroup="124">
           <controlProperties>
-            <src>../Mocks/assets/gmap_move_roundle.png</src>
+            <src>./assets/gmap_move_roundle.png</src>
             <text/>
           </controlProperties>
         </control>
