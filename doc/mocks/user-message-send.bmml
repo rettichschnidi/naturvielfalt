@@ -1,0 +1,87 @@
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="915" mockupW="1425" mockupH="904">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="904" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Herzlich%20willkommen...%0Ahttp%3A//www.naturvielfalt.ch/</text>
+        <value>0</value>
+        <verticalScrollbar>false</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="760" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="2" locked="false" isInGroup="-1"/>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="342" y="89" w="926" h="70" measuredW="1278" measuredH="133" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <crop>5%2C0%2C988%2C1000</crop>
+        <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/banner_topnav_big.jpg</src>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Image" x="342" y="159" w="120" h="325" measuredW="220" measuredH="487" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/sidebar_main-bg.jpg</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="104" controlTypeID="com.balsamiq.mockups::Link" x="1084" y="125" w="-1" h="-1" measuredW="63" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22975%2C114%2C1038%2C135%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22104%22/%3E</map>
+        <text>Ausloggen</text>
+      </controlProperties>
+    </control>
+    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="879" y="125" w="-1" h="-1" measuredW="197" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>user-profile-show%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22770%2C114%2C967%2C135%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
+        <text>Eingeloggt%20als%20avf@naturwerk.info</text>
+      </controlProperties>
+    </control>
+    <control controlID="107" controlTypeID="com.balsamiq.mockups::Button" x="883" y="437" w="-1" h="-1" measuredW="68" measuredH="27" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22774%2C426%2C842%2C453%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22107%22/%3E</map>
+        <text>Senden</text>
+      </controlProperties>
+    </control>
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::StickyNote" x="1284" y="174" w="235" h="163" measuredW="109" measuredH="123" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>*%20Nur%20eingeloggte%20User%20k%F6nnen%20Nachrichten%20verschicken.%0A*%20Nachrichten%20werden%20per%20Mail%20an%20den%20Empf%E4nger%20verschickt</text>
+      </controlProperties>
+    </control>
+    <control controlID="111" controlTypeID="com.balsamiq.mockups::ComboBox" x="1162" y="124" w="91" h="-1" measuredW="79" measuredH="23" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <state>closed</state>
+        <text>Deutsch%0AFranz%F6sisch%0AItalienisch%0AEnglisch</text>
+      </controlProperties>
+    </control>
+    <control controlID="122" controlTypeID="__group__" x="492" y="186" w="459" h="242" measuredW="459" measuredH="242" zOrder="10" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="459" h="242" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="122">
+          <controlProperties>
+            <text>Nachricht%20verschicken</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="22" y="58" w="77" h="21" measuredW="63" measuredH="21" zOrder="1" locked="false" isInGroup="122">
+          <controlProperties>
+            <text>Nachricht%3A</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="22" y="29" w="-1" h="-1" measuredW="72" measuredH="21" zOrder="2" locked="false" isInGroup="122">
+          <controlProperties>
+            <text>Empf%E4nger%3A</text>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Label" x="116" y="29" w="-1" h="-1" measuredW="58" measuredH="21" zOrder="3" locked="false" isInGroup="122">
+          <controlProperties>
+            <text>storch52</text>
+          </controlProperties>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::TextArea" x="116" y="59" w="282" h="140" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="122">
+          <controlProperties>
+            <text>Hoi%20Storchi%0A%20%0ARuf%20mich%20an%3A%20123%20456%2078%2090%0A%20%0AGruss%2C%0AXY</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>
