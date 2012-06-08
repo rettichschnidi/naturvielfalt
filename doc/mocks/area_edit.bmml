@@ -1,13 +1,13 @@
-<mockup version="1.0" skin="sketch" measuredW="1757" measuredH="1200" mockupW="1628" mockupH="1169">
+<mockup version="1.0" skin="sketch" measuredW="1757" measuredH="1591" mockupW="1628" mockupH="1560">
   <controls>
-    <control controlID="15" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="129" y="31" w="1425" h="1169" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="129" y="31" w="1425" h="1560" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
         <customID>bla</customID>
         <markup>true</markup>
         <text>Alle%20Gebiete%20%7C%20www.naturvielfalt.ch%0Ahttp%3A//naturvielfalt.ch/areas/show/my</text>
       </controlProperties>
     </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::Canvas" x="349" y="109" w="1010" h="1052" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::Canvas" x="349" y="109" w="1010" h="1446" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="17" controlTypeID="com.balsamiq.mockups::Image" x="349" y="179" w="192" h="325" measuredW="220" measuredH="487" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/sidebar_main-bg.jpg</src>
@@ -19,7 +19,7 @@
         <color>11982760</color>
       </controlProperties>
     </control>
-    <control controlID="19" controlTypeID="com.balsamiq.mockups::TabBar" x="533" y="215" w="812" h="931" measuredW="547" measuredH="100" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::TabBar" x="533" y="215" w="812" h="1325" measuredW="545" measuredH="100" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>area_show%26bm%3Barea_show.bmml%26bm%3Barea_show.bmml%26bm%3Barea_show.bmml%2Carea_edit%26bm%3Barea_edit.bmml%26bm%3Barea_edit.bmml%26bm%3Barea_edit.bmml%2Carea_permission%26bm%3Barea_permission.bmml%26bm%3Barea_permission.bmml%26bm%3Barea_permission.bmml%2C%2C</hrefs>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22424%2C184%2C534%2C209%22%20href%3D%22area_show.bmml%22%20alt%3D%22area_show%22%20id%3D%2219_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22534%2C184%2C657%2C209%22%20href%3D%22area_edit.bmml%22%20alt%3D%22area_edit%22%20id%3D%2219_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22657%2C184%2C829%2C209%22%20href%3D%22area_permission.bmml%22%20alt%3D%22area_permission%22%20id%3D%2219_2%22/%3E%0A</map>
@@ -211,104 +211,143 @@
         <text>9.38/47.46%20%28WGS84%29%0A746599/258742%20%28CH1903%29</text>
       </controlProperties>
     </control>
-    <control controlID="58" controlTypeID="com.balsamiq.mockups::Label" x="574" y="795" w="-1" h="-1" measuredW="110" measuredH="21" zOrder="37" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>+%20Gebietskonzept</text>
-      </controlProperties>
-    </control>
-    <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="574" y="816" w="-1" h="-1" measuredW="167" measuredH="21" zOrder="38" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>+%20Gekoppelte%20Lebensr%E4ume</text>
-      </controlProperties>
-    </control>
-    <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="574" y="1110" w="-1" h="-1" measuredW="58" measuredH="21" zOrder="39" locked="false" isInGroup="-1">
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="574" y="1504" w="-1" h="-1" measuredW="58" measuredH="21" zOrder="37" locked="false" isInGroup="-1">
       <controlProperties>
         <text>+Dateien</text>
       </controlProperties>
     </control>
-    <control controlID="62" controlTypeID="com.balsamiq.mockups::FieldSet" x="574" y="845" w="738" h="265" measuredW="200" measuredH="170" zOrder="40" locked="false" isInGroup="-1">
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::FieldSet" x="574" y="1246" w="738" h="178" measuredW="200" measuredH="170" zOrder="38" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>-%20Bilder</text>
+        <text>-%20Gebietsbilder</text>
       </controlProperties>
     </control>
-    <control controlID="63" controlTypeID="com.balsamiq.mockups::Image" x="612" y="879" w="-1" h="-1" measuredW="188" measuredH="125" zOrder="41" locked="false" isInGroup="-1">
-      <controlProperties>
-        <src>./assets/gallery_thumb5.png</src>
-        <text/>
-      </controlProperties>
-    </control>
-    <control controlID="64" controlTypeID="com.balsamiq.mockups::Image" x="815" y="878" w="170" h="126" measuredW="188" measuredH="139" zOrder="42" locked="false" isInGroup="-1">
-      <controlProperties>
-        <src>./assets/gallery_thumb6.png</src>
-        <text/>
-      </controlProperties>
-    </control>
-    <control controlID="65" controlTypeID="com.balsamiq.mockups::Image" x="1000" y="878" w="212" h="125" measuredW="188" measuredH="111" zOrder="43" locked="false" isInGroup="-1">
-      <controlProperties>
-        <src>./assets/gallery_thumb4.png</src>
-        <text/>
-      </controlProperties>
-    </control>
-    <control controlID="66" controlTypeID="com.balsamiq.mockups::TextInput" x="612" y="1019" w="280" h="-1" measuredW="79" measuredH="27" zOrder="45" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text/>
-      </controlProperties>
-    </control>
-    <control controlID="67" controlTypeID="com.balsamiq.mockups::Button" x="612" y="1074" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="46" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Hochladen</text>
-      </controlProperties>
-    </control>
-    <control controlID="68" controlTypeID="com.balsamiq.mockups::Label" x="1000" y="1022" w="-1" h="-1" measuredW="161" measuredH="21" zOrder="47" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>+%20weitere%20Bilder%20Hochladen</text>
-        <underline>true</underline>
-      </controlProperties>
-    </control>
-    <control controlID="69" controlTypeID="com.balsamiq.mockups::Label" x="612" y="1048" w="-1" h="-1" measuredW="342" measuredH="21" zOrder="44" locked="false" isInGroup="-1">
-      <controlProperties>
-        <italic>true</italic>
-        <text>Bilder%20mit%20folgenden%20Endungen%20sind%20erlaubt%3A%20.jpg%2C%20.jpeg%2C%20.png</text>
-        <underline>false</underline>
-      </controlProperties>
-    </control>
-    <control controlID="70" controlTypeID="com.balsamiq.mockups::FieldSet" x="574" y="592" w="738" h="196" measuredW="200" measuredH="170" zOrder="48" locked="false" isInGroup="-1">
+    <control controlID="70" controlTypeID="com.balsamiq.mockups::FieldSet" x="574" y="592" w="738" h="196" measuredW="200" measuredH="170" zOrder="39" locked="false" isInGroup="-1">
       <controlProperties>
         <text>-%20Beschreibung</text>
       </controlProperties>
     </control>
-    <control controlID="72" controlTypeID="com.balsamiq.mockups::TextInput" x="592" y="636" w="208" h="-1" measuredW="78" measuredH="27" zOrder="49" locked="false" isInGroup="-1">
+    <control controlID="72" controlTypeID="com.balsamiq.mockups::TextInput" x="592" y="636" w="208" h="-1" measuredW="78" measuredH="27" zOrder="40" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Testgebiet</text>
       </controlProperties>
     </control>
-    <control controlID="73" controlTypeID="com.balsamiq.mockups::Label" x="592" y="615" w="-1" h="-1" measuredW="84" measuredH="21" zOrder="50" locked="false" isInGroup="-1">
+    <control controlID="73" controlTypeID="com.balsamiq.mockups::Label" x="592" y="615" w="-1" h="-1" measuredW="84" measuredH="21" zOrder="41" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>Gebietsname</text>
       </controlProperties>
     </control>
-    <control controlID="74" controlTypeID="com.balsamiq.mockups::Label" x="673" y="612" w="-1" h="-1" measuredW="15" measuredH="26" zOrder="51" locked="false" isInGroup="-1">
+    <control controlID="74" controlTypeID="com.balsamiq.mockups::Label" x="673" y="612" w="-1" h="-1" measuredW="15" measuredH="26" zOrder="42" locked="false" isInGroup="-1">
       <controlProperties>
         <color>13369344</color>
         <size>18</size>
         <text>*</text>
       </controlProperties>
     </control>
-    <control controlID="75" controlTypeID="com.balsamiq.mockups::Label" x="592" y="670" w="-1" h="-1" measuredW="86" measuredH="21" zOrder="52" locked="false" isInGroup="-1">
+    <control controlID="75" controlTypeID="com.balsamiq.mockups::Label" x="592" y="670" w="-1" h="-1" measuredW="86" measuredH="21" zOrder="43" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>Beschreibung</text>
       </controlProperties>
     </control>
-    <control controlID="76" controlTypeID="com.balsamiq.mockups::TextArea" x="592" y="691" w="705" h="82" measuredW="200" measuredH="140" zOrder="53" locked="false" isInGroup="-1">
+    <control controlID="76" controlTypeID="com.balsamiq.mockups::TextArea" x="592" y="691" w="705" h="82" measuredW="200" measuredH="140" zOrder="44" locked="false" isInGroup="-1">
       <controlProperties>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="77" controlTypeID="com.balsamiq.mockups::Button" x="892" y="1019" w="-1" h="-1" measuredW="96" measuredH="27" zOrder="54" locked="false" isInGroup="-1">
+    <control controlID="78" controlTypeID="com.balsamiq.mockups::Image" x="612" y="1273" w="175" h="124" measuredW="448" measuredH="318" zOrder="45" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Durchsuchen</text>
+        <src>http%3A//devel.naturvielfalt.ch/gallery/habitat/4753/thumb/37/gallery_large</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="79" controlTypeID="com.balsamiq.mockups::Image" x="815" y="1272" w="170" h="126" measuredW="448" measuredH="316" zOrder="46" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>http%3A//devel.naturvielfalt.ch/gallery/habitat/4757/thumb/35/gallery_large</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="80" controlTypeID="com.balsamiq.mockups::StickyNote" x="1205" y="1225" w="140" h="123" measuredW="109" measuredH="123" zOrder="47" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>nur%20eigene%20Bilder%20werden%20angezeigt%20und%20k%F6nnen%20auch%20gel%F6scht%20werden</text>
+      </controlProperties>
+    </control>
+    <control controlID="85" controlTypeID="com.balsamiq.mockups::Button" x="592" y="1198" w="-1" h="-1" measuredW="81" measuredH="27" zOrder="50" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Speichern</text>
+      </controlProperties>
+    </control>
+    <control controlID="86" controlTypeID="com.balsamiq.mockups::Label" x="574" y="797" w="167" h="22" measuredW="167" measuredH="21" zOrder="48" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>+%20Gekoppelte%20Lebensr%E4ume</text>
+      </controlProperties>
+    </control>
+    <control controlID="87" controlTypeID="com.balsamiq.mockups::FieldSet" x="574" y="828" w="738" h="412" measuredW="200" measuredH="170" zOrder="49" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Gebietskonzept</text>
+      </controlProperties>
+    </control>
+    <control controlID="89" controlTypeID="com.balsamiq.mockups::TextInput" x="592" y="1119" w="194" h="-1" measuredW="35" measuredH="27" zOrder="51" locked="false" isInGroup="-1">
+      <controlProperties>
+        <state>up</state>
+        <text>key</text>
+      </controlProperties>
+    </control>
+    <control controlID="91" controlTypeID="com.balsamiq.mockups::Label" x="592" y="852" w="-1" h="-1" measuredW="65" measuredH="21" zOrder="52" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Schutzziel</text>
+      </controlProperties>
+    </control>
+    <control controlID="92" controlTypeID="com.balsamiq.mockups::Label" x="592" y="931" w="-1" h="-1" measuredW="65" measuredH="21" zOrder="53" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Schutzziel</text>
+      </controlProperties>
+    </control>
+    <control controlID="93" controlTypeID="com.balsamiq.mockups::Label" x="592" y="1012" w="-1" h="-1" measuredW="65" measuredH="21" zOrder="54" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Schutzziel</text>
+      </controlProperties>
+    </control>
+    <control controlID="94" controlTypeID="com.balsamiq.mockups::TextArea" x="592" y="871" w="691" h="60" measuredW="200" measuredH="140" zOrder="55" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="95" controlTypeID="com.balsamiq.mockups::TextArea" x="592" y="952" w="691" h="60" measuredW="200" measuredH="140" zOrder="56" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="96" controlTypeID="com.balsamiq.mockups::TextArea" x="592" y="1033" w="691" h="60" measuredW="200" measuredH="140" zOrder="57" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="97" controlTypeID="com.balsamiq.mockups::Label" x="592" y="1095" w="-1" h="-1" measuredW="165" measuredH="21" zOrder="58" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>weiteres%20Attribut%20hinzuf%FCgen</text>
+        <underline>true</underline>
+      </controlProperties>
+    </control>
+    <control controlID="98" controlTypeID="com.balsamiq.mockups::TextArea" x="592" y="1146" w="691" h="52" measuredW="200" measuredH="140" zOrder="59" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>value</text>
+      </controlProperties>
+    </control>
+    <control controlID="99" controlTypeID="com.balsamiq.mockups::Arrow" x="764" y="1104" w="51" h="34" measuredW="150" measuredH="100" zOrder="60" locked="false" isInGroup="-1">
+      <controlProperties>
+        <direction>top</direction>
+        <leftArrow>false</leftArrow>
+      </controlProperties>
+    </control>
+    <control controlID="100" controlTypeID="com.balsamiq.mockups::StickyNote" x="421" y="1055" w="140" h="155" measuredW="109" measuredH="123" zOrder="61" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>es%20k%F6nnen%20beliebig%20viele%20Attribute%20hinzugef%FCgt%20werden%0AAlles%20ist%20Plain-Text%2C%20KEINE%20html%20formatierung%20etc.</text>
+      </controlProperties>
+    </control>
+    <control controlID="101" controlTypeID="com.balsamiq.mockups::StickyNote" x="301" y="1295" w="247" h="102" measuredW="109" measuredH="123" zOrder="62" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Upload%3A%20Hinweis%20f%FCr%20User-%3E%20KEINE%20Bilder%20mit%20Fokus%20auf%20Organism%2C%20NUR%20Landschaftsbilder%20zum%20Gebiet</text>
       </controlProperties>
     </control>
   </controls>
