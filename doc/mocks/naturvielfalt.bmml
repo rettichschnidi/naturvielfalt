@@ -52,10 +52,10 @@
         <text>Klassifizierer</text>
       </controlProperties>
     </control>
-    <control controlID="104" controlTypeID="com.balsamiq.mockups::Link" x="1148" y="123" w="-1" h="-1" measuredW="59" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="104" controlTypeID="com.balsamiq.mockups::Link" x="1100" y="123" w="-1" h="-1" measuredW="59" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-login%26bm%3Buser-login.bmml%26bm%3Buser-login.bmml%26bm%3Buser-login.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221039%2C112%2C1098%2C133%22%20href%3D%22user-login.bmml%22%20alt%3D%22user-login%22%20id%3D%22104%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22991%2C112%2C1050%2C133%22%20href%3D%22user-login.bmml%22%20alt%3D%22user-login%22%20id%3D%22104%22/%3E</map>
         <text>Einloggen</text>
       </controlProperties>
     </control>
@@ -68,6 +68,11 @@
     <control controlID="114" controlTypeID="com.balsamiq.mockups::StickyNote" x="1279" y="108" w="240" h="123" measuredW="109" measuredH="123" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <text>-%20Sprache%20wird%20Aufgrund%20der%20Browsereinstellungen%20gew%E4hlt.</text>
+      </controlProperties>
+    </control>
+    <control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="1174" y="123" w="-1" h="-1" measuredW="79" measuredH="78" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Deutsch%0AFranz%F6sisch%0AItalienisch%0AEnglisch</text>
       </controlProperties>
     </control>
   </controls>

@@ -70,16 +70,5 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="123" controlTypeID="com.balsamiq.mockups::Arrow" x="952" y="447" w="367" h="100" measuredW="150" measuredH="100" zOrder="9" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text/>
-      </controlProperties>
-    </control>
-    <control controlID="124" controlTypeID="com.balsamiq.mockups::StickyNote" x="1316" y="532" w="118" h="123" measuredW="109" measuredH="123" zOrder="10" locked="false" isInGroup="-1">
-      <controlProperties>
-        <align>left</align>
-        <text>E-Mail%3A%0A%20%0AHallo%20storch52%2C%0A....</text>
-      </controlProperties>
-    </control>
   </controls>
 </mockup>
