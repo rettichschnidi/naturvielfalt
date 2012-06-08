@@ -22,39 +22,26 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="104" controlTypeID="com.balsamiq.mockups::Link" x="1084" y="125" w="-1" h="-1" measuredW="63" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
-      <controlProperties>
-        <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22975%2C114%2C1038%2C135%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22104%22/%3E</map>
-        <text>Ausloggen</text>
-      </controlProperties>
-    </control>
-    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="879" y="125" w="-1" h="-1" measuredW="197" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="879" y="125" w="-1" h="-1" measuredW="197" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-profile-show%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22770%2C114%2C967%2C135%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
         <text>Eingeloggt%20als%20avf@naturwerk.info</text>
       </controlProperties>
     </control>
-    <control controlID="107" controlTypeID="com.balsamiq.mockups::Button" x="883" y="437" w="-1" h="-1" measuredW="68" measuredH="27" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="107" controlTypeID="com.balsamiq.mockups::Button" x="883" y="437" w="-1" h="-1" measuredW="68" measuredH="27" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22774%2C426%2C842%2C453%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22107%22/%3E</map>
         <text>Senden</text>
       </controlProperties>
     </control>
-    <control controlID="110" controlTypeID="com.balsamiq.mockups::StickyNote" x="1284" y="174" w="235" h="163" measuredW="109" measuredH="123" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::StickyNote" x="1284" y="174" w="235" h="160" measuredW="109" measuredH="123" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>*%20Nur%20eingeloggte%20User%20k%F6nnen%20Nachrichten%20verschicken.%0A*%20Nachrichten%20werden%20per%20Mail%20an%20den%20Empf%E4nger%20verschickt</text>
       </controlProperties>
     </control>
-    <control controlID="111" controlTypeID="com.balsamiq.mockups::ComboBox" x="1162" y="124" w="91" h="-1" measuredW="79" measuredH="23" zOrder="9" locked="false" isInGroup="-1">
-      <controlProperties>
-        <state>closed</state>
-        <text>Deutsch%0AFranz%F6sisch%0AItalienisch%0AEnglisch</text>
-      </controlProperties>
-    </control>
-    <control controlID="122" controlTypeID="__group__" x="492" y="186" w="459" h="242" measuredW="459" measuredH="242" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="122" controlTypeID="__group__" x="492" y="186" w="459" h="242" measuredW="459" measuredH="242" zOrder="8" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="459" h="242" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="122">
           <controlProperties>
@@ -82,6 +69,17 @@
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
+    </control>
+    <control controlID="123" controlTypeID="com.balsamiq.mockups::Arrow" x="952" y="447" w="367" h="100" measuredW="150" measuredH="100" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="124" controlTypeID="com.balsamiq.mockups::StickyNote" x="1316" y="532" w="118" h="123" measuredW="109" measuredH="123" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <text>E-Mail%3A%0A%20%0AHallo%20storch52%2C%0A....</text>
+      </controlProperties>
     </control>
   </controls>
 </mockup>

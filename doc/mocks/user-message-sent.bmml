@@ -35,9 +35,16 @@
         <text>Weiter</text>
       </controlProperties>
     </control>
-    <control controlID="126" controlTypeID="com.balsamiq.mockups::StickyNote" x="1297" y="129" w="198" h="123" measuredW="109" measuredH="123" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="126" controlTypeID="com.balsamiq.mockups::StickyNote" x="1290" y="114" w="197" h="162" measuredW="109" measuredH="123" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Nach%20Erfolgsmeldung%20zur%FCck%20zum%20Startbildschirm.</text>
+        <bold>false</bold>
+        <text>Nach%20Erfolgsmeldung%20innert%205%20Sekunden%20zur%FCck%20zum%20Startbildschirm.%0AAlternativ%20via%20%22Weiter%22%20Button.</text>
+      </controlProperties>
+    </control>
+    <control controlID="128" controlTypeID="com.balsamiq.mockups::StickyNote" x="697" y="174" w="133" h="267" measuredW="109" measuredH="123" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <text>E-Mail%3A%0A%20%0AHallo%20storch52%2C%0A...</text>
       </controlProperties>
     </control>
   </controls>
