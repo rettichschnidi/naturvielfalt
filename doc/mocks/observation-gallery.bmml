@@ -8,8 +8,8 @@
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="787" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="659" measuredW="257" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%2CgallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%2CnewSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C523%2C211%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22523%2C186%2C589%2C211%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%222_2%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-gallery%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C523%2C211%22%20href%3D%22observation-gallery.bmml%22%20alt%3D%22observation-gallery%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22523%2C186%2C589%2C211%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%222_2%22/%3E%0A</map>
         <selectedIndex>1</selectedIndex>
         <text>%DCbersicht%2C%20Gallerie%2C%20Erstellen</text>
       </controlProperties>
@@ -57,24 +57,24 @@
     <control controlID="57" controlTypeID="com.balsamiq.mockups::Label" x="370" y="247" w="-1" h="-1" measuredW="61" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C236%2C322%2C257%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2257%22/%3E</map>
+        <href>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C236%2C322%2C257%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2257%22/%3E</map>
         <text>%DCbersicht</text>
       </controlProperties>
     </control>
     <control controlID="58" controlTypeID="com.balsamiq.mockups::Label" x="370" y="265" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>gallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C254%2C307%2C275%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%2258%22/%3E</map>
+        <href>observation-gallery%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C254%2C307%2C275%22%20href%3D%22observation-gallery.bmml%22%20alt%3D%22observation-gallery%22%20id%3D%2258%22/%3E</map>
         <text>Gallery</text>
       </controlProperties>
     </control>
     <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="370" y="289" w="-1" h="-1" measuredW="56" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>newSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C278%2C317%2C299%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%2259%22/%3E</map>
+        <href>observation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C278%2C317%2C299%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%2259%22/%3E</map>
         <text>Erstellen</text>
       </controlProperties>
     </control>
@@ -132,32 +132,32 @@
         </control>
         <control controlID="14" controlTypeID="com.balsamiq.mockups::Image" x="0" y="29" w="152" h="101" measuredW="188" measuredH="125" zOrder="10" locked="false" isInGroup="80">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C257%2C540%2C358%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2214%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C257%2C540%2C358%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2214%22/%3E</map>
             <src>./assets/gallery_thumb3.png</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="15" controlTypeID="com.balsamiq.mockups::Image" x="205" y="32" w="174" h="100" measuredW="188" measuredH="111" zOrder="11" locked="false" isInGroup="80">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C260%2C767%2C360%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2215%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C260%2C767%2C360%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2215%22/%3E</map>
             <src>./assets/gallery_thumb4.png</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="16" controlTypeID="com.balsamiq.mockups::Image" x="394" y="32" w="147" h="98" measuredW="188" measuredH="125" zOrder="12" locked="false" isInGroup="80">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C260%2C929%2C358%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2216%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C260%2C929%2C358%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2216%22/%3E</map>
             <src>./assets/gallery_thumb5.png</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="17" controlTypeID="com.balsamiq.mockups::Image" x="597" y="33" w="131" h="97" measuredW="188" measuredH="139" zOrder="13" locked="false" isInGroup="80">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C261%2C1116%2C358%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2217%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C261%2C1116%2C358%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2217%22/%3E</map>
             <src>./assets/gallery_thumb6.png</src>
             <text/>
           </controlProperties>
@@ -246,32 +246,32 @@
         </control>
         <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="205" y="30" w="132" h="93" measuredW="188" measuredH="132" zOrder="14" locked="false" isInGroup="81">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C462%2C725%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2219%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22593%2C462%2C725%2C555%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2219%22/%3E</map>
             <src>./assets/gallery_thumb1.png</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="22" controlTypeID="com.balsamiq.mockups::Image" x="597" y="30" w="132" h="93" measuredW="188" measuredH="132" zOrder="15" locked="false" isInGroup="81">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C462%2C1117%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2222%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22985%2C462%2C1117%2C555%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2222%22/%3E</map>
             <src>./assets/gallery_thumb1.png</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="23" controlTypeID="com.balsamiq.mockups::Image" x="0" y="30" w="123" h="93" measuredW="188" measuredH="139" zOrder="16" locked="false" isInGroup="81">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C462%2C511%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2223%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C462%2C511%2C555%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2223%22/%3E</map>
             <src>./assets/gallery_thumb2.png</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="24" controlTypeID="com.balsamiq.mockups::Image" x="394" y="30" w="123" h="93" measuredW="188" measuredH="139" zOrder="17" locked="false" isInGroup="81">
           <controlProperties>
-            <href>gallerySingleObservationPopUp%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml%26bm%3BgallerySingleObservationPopUp.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C462%2C905%2C555%22%20href%3D%22gallerySingleObservationPopUp.bmml%22%20alt%3D%22gallerySingleObservationPopUp%22%20id%3D%2224%22/%3E</map>
+            <href>observation-popup-image%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml%26bm%3Bobservation-popup-image.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22782%2C462%2C905%2C555%22%20href%3D%22observation-popup-image.bmml%22%20alt%3D%22observation-popup-image%22%20id%3D%2224%22/%3E</map>
             <src>./assets/gallery_thumb2.png</src>
             <text/>
           </controlProperties>

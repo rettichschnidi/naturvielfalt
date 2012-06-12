@@ -42,8 +42,8 @@
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
-        <hrefs>%2Careas_all%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml%2Careas_my%26bm%3Bareas_my.bmml%26bm%3Bareas_my.bmml%26bm%3Bareas_my.bmml%2Carea_new%26bm%3Barea_new.bmml%26bm%3Barea_new.bmml%26bm%3Barea_new.bmml%2C%2C%2C%2C</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C201%2C393%2C224%22%20href%3D%22areas_all.bmml%22%20alt%3D%22areas_all%22%20id%3D%2239_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C224%2C393%2C247%22%20href%3D%22areas_my.bmml%22%20alt%3D%22areas_my%22%20id%3D%2239_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C247%2C393%2C270%22%20href%3D%22area_new.bmml%22%20alt%3D%22area_new%22%20id%3D%2239_2%22/%3E%0A</map>
+        <hrefs>%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Careas-my%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2C%2C%2C%2C%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C201%2C393%2C224%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2239_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C224%2C393%2C247%22%20href%3D%22areas-my.bmml%22%20alt%3D%22areas-my%22%20id%3D%2239_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C247%2C393%2C270%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%2239_2%22/%3E%0A</map>
         <selectedIndex>-1</selectedIndex>
         <text>%3E%20Einzelbeobachtung%0Av%20Alle%20Gebiete%0A%20%3E%20Meine%20Gebiete%0A%3E%20Gebiet%20erstellen%0A%3E%20Klassifizierer</text>
       </controlProperties>
@@ -129,8 +129,8 @@
         </control>
         <control controlID="17" controlTypeID="com.balsamiq.mockups::Button" x="23" y="112" w="-1" h="-1" measuredW="74" measuredH="27" zOrder="5" locked="false" isInGroup="50">
           <controlProperties>
-            <href>area_new_created_popup%26bm%3Barea_new_created_popup.bmml%26bm%3Barea_new_created_popup.bmml%26bm%3Barea_new_created_popup.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22627%2C484%2C701%2C511%22%20href%3D%22area_new_created_popup.bmml%22%20alt%3D%22area_new_created_popup%22%20id%3D%2217%22/%3E</map>
+            <href>area-new_created_popup%26bm%3Barea-new_created_popup.bmml%26bm%3Barea-new_created_popup.bmml%26bm%3Barea-new_created_popup.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22627%2C484%2C701%2C511%22%20href%3D%22area-new_created_popup.bmml%22%20alt%3D%22area-new_created_popup%22%20id%3D%2217%22/%3E</map>
             <text>Erstellen</text>
           </controlProperties>
         </control>
