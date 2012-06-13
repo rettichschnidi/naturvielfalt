@@ -7,10 +7,10 @@
       </controlProperties>
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="526" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
-    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="481" y="203" w="764" h="293" measuredW="259" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="462" measuredW="259" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%2CgallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%2CnewSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22392%2C192%2C463%2C217%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22463%2C192%2C523%2C217%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22523%2C192%2C590%2C217%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%222_2%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-gallery%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C524%2C211%22%20href%3D%22observation-gallery.bmml%22%20alt%3D%22observation-gallery%22%20id%3D%222_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22524%2C186%2C591%2C211%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%222_2%22/%3E%0A</map>
         <selectedIndex>2</selectedIndex>
         <text>%DCbersicht%2C%20Gallerie%2C%20Erstellen</text>
       </controlProperties>
@@ -58,24 +58,24 @@
     <control controlID="57" controlTypeID="com.balsamiq.mockups::Label" x="370" y="247" w="-1" h="-1" measuredW="61" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C236%2C322%2C257%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2257%22/%3E</map>
+        <href>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C236%2C322%2C257%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2257%22/%3E</map>
         <text>%DCbersicht</text>
       </controlProperties>
     </control>
     <control controlID="58" controlTypeID="com.balsamiq.mockups::Label" x="370" y="265" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>gallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C254%2C307%2C275%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%2258%22/%3E</map>
+        <href>observation-gallery%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C254%2C307%2C275%22%20href%3D%22observation-gallery.bmml%22%20alt%3D%22observation-gallery%22%20id%3D%2258%22/%3E</map>
         <text>Gallery</text>
       </controlProperties>
     </control>
     <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="370" y="289" w="-1" h="-1" measuredW="57" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>newSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C278%2C318%2C299%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%2259%22/%3E</map>
+        <href>observation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C278%2C318%2C299%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%2259%22/%3E</map>
         <text>Erstellen</text>
       </controlProperties>
     </control>
@@ -170,7 +170,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="103" controlTypeID="com.balsamiq.mockups::Canvas" x="499" y="246" w="720" h="216" measuredW="100" measuredH="70" zOrder="22" locked="false" isInGroup="-1"/>
+    <control controlID="103" controlTypeID="com.balsamiq.mockups::Canvas" x="500" y="241" w="720" h="389" measuredW="100" measuredH="70" zOrder="22" locked="false" isInGroup="-1"/>
     <control controlID="104" controlTypeID="com.balsamiq.mockups::Canvas" x="504" y="245" w="704" h="31" measuredW="100" measuredH="70" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <color>13421772</color>
@@ -183,34 +183,64 @@
         <text>Meta%20Daten%20f%FCr%20Uploads</text>
       </controlProperties>
     </control>
-    <control controlID="106" controlTypeID="com.balsamiq.mockups::FieldSet" x="509" y="279" w="696" h="123" measuredW="200" measuredH="170" zOrder="25" locked="false" isInGroup="-1">
+    <control controlID="106" controlTypeID="com.balsamiq.mockups::FieldSet" x="509" y="279" w="696" h="299" measuredW="200" measuredH="170" zOrder="25" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Meta%20Daten</text>
       </controlProperties>
     </control>
-    <control controlID="109" controlTypeID="com.balsamiq.mockups::Label" x="517" y="306" w="-1" h="-1" measuredW="103" measuredH="24" zOrder="26" locked="false" isInGroup="-1">
+    <control controlID="107" controlTypeID="com.balsamiq.mockups::Label" x="526" y="309" w="-1" h="-1" measuredW="39" measuredH="24" zOrder="26" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>true</bold>
+        <size>16</size>
+        <text>Titel</text>
+      </controlProperties>
+    </control>
+    <control controlID="108" controlTypeID="com.balsamiq.mockups::TextInput" x="527" y="329" w="592" h="-1" measuredW="79" measuredH="27" zOrder="27" locked="false" isInGroup="-1"/>
+    <control controlID="109" controlTypeID="com.balsamiq.mockups::Label" x="525" y="372" w="-1" h="-1" measuredW="103" measuredH="24" zOrder="28" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <size>16</size>
         <text>Beschreibung</text>
       </controlProperties>
     </control>
-    <control controlID="110" controlTypeID="com.balsamiq.mockups::TextInput" x="518" y="328" w="592" h="-1" measuredW="79" measuredH="27" zOrder="27" locked="false" isInGroup="-1"/>
-    <control controlID="120" controlTypeID="com.balsamiq.mockups::Label" x="510" y="427" w="-1" h="-1" measuredW="69" measuredH="21" zOrder="28" locked="false" isInGroup="-1">
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::TextInput" x="526" y="394" w="592" h="-1" measuredW="79" measuredH="27" zOrder="29" locked="false" isInGroup="-1"/>
+    <control controlID="115" controlTypeID="com.balsamiq.mockups::Label" x="524" y="435" w="-1" h="-1" measuredW="70" measuredH="24" zOrder="30" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>newSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22401%2C416%2C470%2C437%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%22120%22/%3E</map>
+        <bold>true</bold>
+        <size>16</size>
+        <text>Standort</text>
+      </controlProperties>
+    </control>
+    <control controlID="116" controlTypeID="com.balsamiq.mockups::TextInput" x="525" y="455" w="592" h="-1" measuredW="79" measuredH="27" zOrder="31" locked="false" isInGroup="-1"/>
+    <control controlID="117" controlTypeID="com.balsamiq.mockups::Label" x="525" y="494" w="-1" h="-1" measuredW="47" measuredH="24" zOrder="32" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>true</bold>
+        <size>16</size>
+        <text>Autor</text>
+      </controlProperties>
+    </control>
+    <control controlID="118" controlTypeID="com.balsamiq.mockups::TextInput" x="526" y="514" w="592" h="-1" measuredW="79" measuredH="27" zOrder="33" locked="false" isInGroup="-1"/>
+    <control controlID="119" controlTypeID="com.balsamiq.mockups::Label" x="524" y="541" w="-1" h="-1" measuredW="169" measuredH="18" zOrder="34" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>11</size>
+        <text>Der%20Autor%20oder%20Copyright%20Inhaber</text>
+      </controlProperties>
+    </control>
+    <control controlID="120" controlTypeID="com.balsamiq.mockups::Label" x="510" y="594" w="-1" h="-1" measuredW="69" measuredH="21" zOrder="35" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>observation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22401%2C583%2C470%2C604%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22120%22/%3E</map>
         <text>Abbrechen</text>
       </controlProperties>
     </control>
-    <control controlID="121" controlTypeID="com.balsamiq.mockups::Button" x="1125" y="429" w="81" h="27" measuredW="81" measuredH="27" zOrder="29" locked="false" isInGroup="-1">
+    <control controlID="121" controlTypeID="com.balsamiq.mockups::Button" x="1119" y="591" w="-1" h="-1" measuredW="81" measuredH="27" zOrder="36" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>newSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221016%2C418%2C1097%2C445%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%22121%22/%3E</map>
+        <href>observation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221010%2C580%2C1091%2C607%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22121%22/%3E</map>
         <text>Speichern</text>
       </controlProperties>
     </control>
-    <control controlID="123" controlTypeID="com.balsamiq.mockups::VCurly" x="1221" y="234" w="253" h="237" measuredW="180" measuredH="140" zOrder="30" locked="false" isInGroup="-1">
+    <control controlID="123" controlTypeID="com.balsamiq.mockups::VCurly" x="1221" y="234" w="253" h="410" measuredW="180" measuredH="140" zOrder="37" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Inline%20POPUP</text>

@@ -219,16 +219,16 @@
     <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="355" y="230" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="25" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C230%2C325%2C251%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2244%22/%3E</map>
+        <href>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C230%2C325%2C251%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2244%22/%3E</map>
         <text>Beobachtung</text>
       </controlProperties>
     </control>
     <control controlID="45" controlTypeID="com.balsamiq.mockups::Label" x="355" y="251" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="26" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C251%2C324%2C272%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2245%22/%3E</map>
+        <href>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C251%2C324%2C272%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2245%22/%3E</map>
         <text>Klassifizierer</text>
       </controlProperties>
     </control>

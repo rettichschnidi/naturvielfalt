@@ -31,43 +31,63 @@
     <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="363" y="225" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>areas_all%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C214%2C300%2C235%22%20href%3D%22areas_all.bmml%22%20alt%3D%22areas_all%22%20id%3D%2261%22/%3E</map>
+        <href>areas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C214%2C300%2C235%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2261%22/%3E</map>
         <text>Gebiet</text>
       </controlProperties>
     </control>
     <control controlID="62" controlTypeID="com.balsamiq.mockups::Label" x="363" y="246" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C235%2C333%2C256%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2262%22/%3E</map>
+        <href>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C235%2C333%2C256%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2262%22/%3E</map>
         <text>Beobachtung</text>
       </controlProperties>
     </control>
     <control controlID="63" controlTypeID="com.balsamiq.mockups::Label" x="363" y="267" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>classifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C256%2C332%2C277%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2263%22/%3E</map>
+        <href>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C256%2C332%2C277%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2263%22/%3E</map>
         <text>Klassifizierer</text>
       </controlProperties>
     </control>
-    <control controlID="104" controlTypeID="com.balsamiq.mockups::Link" x="1148" y="123" w="-1" h="-1" measuredW="59" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
-      <controlProperties>
-        <href>user-login%26bm%3Buser-login.bmml%26bm%3Buser-login.bmml%26bm%3Buser-login.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221039%2C112%2C1098%2C133%22%20href%3D%22user-login.bmml%22%20alt%3D%22user-login%22%20id%3D%22104%22/%3E</map>
-        <text>Einloggen</text>
-      </controlProperties>
-    </control>
-    <control controlID="113" controlTypeID="com.balsamiq.mockups::TextArea" x="485" y="183" w="741" h="385" measuredW="200" measuredH="140" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="113" controlTypeID="com.balsamiq.mockups::TextArea" x="485" y="183" w="741" h="385" measuredW="200" measuredH="140" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <borderColor>16777215</borderColor>
         <text>Herzlich%20willkommen...%0A...%20bei%20Naturvielfalt.ch%20%u2013%20die%20Plattform%20f%FCr%20Naturbeobachtungen%20%21%0A%20%0ANaturvielfalt.ch%20bietet%20ein%20vielseitiges%20Informations-%20und%20Erfassungsportal%20f%FCr%20Flora%20und%20Fauna%20in%20der%20Schweiz%20und%20Umgebung.%20Erstellen%20Sie%20ein%20kostenloses%20Konto%20um%20%20Gebiete%2C%20Inventare%20sowie%20Einzelbeobachtungen%20zu%20erfassen%20und%20verwalten.%20Ihre%20gesammelten%20Daten%20halten%20Sie%20entweder%20privat%20oder%20machen%20diese%20den%20anderen%20registrierten%20Benutzer%28innen%29%20zug%E4nglich.%20Dar%FCber%20freuen%20sich%20nicht%20nur%20andere%20registrierte%20Natubeobachter%28innen%29%2C%20sondern%20Sie%20unterst%FCtzen%20somit%20auch%20den%20praktischen%20Naturschutz%20mit%20wertvollen%20Daten%20die%20z.B.%20f%FCr%20Aufwertungsmassnahmen%20sehr%20hilfreich%20sind.%0A%20%0AWenn%20Sie%20eine%20Jahresmitgliedschaft%20abschliessen%2C%20k%F6nen%20sie%20noch%20mehr%20Funktionen%20n%FCtzen%20und%20unterst%FCtzen%20die%20Weiterentwicklung%20der%20Platform.%0A%20%0AUm%20gleich%20loszulegen%20er%F6ffnen%20Sie%20ein%20kostenloses%20Benutzerkonto%2C%20oder%20lernen%20Sie%20mehr%20%FCber%20die%20Benutzung%20dieser%20Plattform%20unter%20H%E4ufige%20Fragen.</text>
       </controlProperties>
     </control>
-    <control controlID="114" controlTypeID="com.balsamiq.mockups::StickyNote" x="1279" y="108" w="240" h="123" measuredW="109" measuredH="123" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="114" controlTypeID="com.balsamiq.mockups::StickyNote" x="1279" y="108" w="240" h="123" measuredW="109" measuredH="123" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <text>-%20Sprache%20wird%20Aufgrund%20der%20Browsereinstellungen%20gew%E4hlt.</text>
+      </controlProperties>
+    </control>
+    <control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="1174" y="123" w="-1" h="-1" measuredW="79" measuredH="78" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Deutsch%0AFranz%F6sisch%0AItalienisch%0AEnglisch</text>
+      </controlProperties>
+    </control>
+    <control controlID="116" controlTypeID="com.balsamiq.mockups::Button" x="1081" y="123" w="-1" h="-1" measuredW="78" measuredH="27" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Einloggen</text>
+      </controlProperties>
+    </control>
+    <control controlID="117" controlTypeID="com.balsamiq.mockups::TextInput" x="1023" y="123" w="-1" h="-1" measuredW="50" measuredH="27" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>******</text>
+      </controlProperties>
+    </control>
+    <control controlID="118" controlTypeID="com.balsamiq.mockups::TextInput" x="925" y="123" w="89" h="-1" measuredW="66" measuredH="27" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>storch52</text>
+      </controlProperties>
+    </control>
+    <control controlID="119" controlTypeID="com.balsamiq.mockups::Link" x="813" y="126" w="-1" h="-1" measuredW="97" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>user-register%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22704%2C115%2C801%2C136%22%20href%3D%22user-register.bmml%22%20alt%3D%22user-register%22%20id%3D%22119%22/%3E</map>
+        <text>neu%20registrieren</text>
       </controlProperties>
     </control>
   </controls>

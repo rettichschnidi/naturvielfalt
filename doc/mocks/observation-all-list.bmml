@@ -8,8 +8,8 @@
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="1104" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="988" measuredW="208" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%2CgallerySingleObservation%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%26bm%3BgallerySingleObservation.bmml%2CnewSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C529%2C211%22%20href%3D%22gallerySingleObservation.bmml%22%20alt%3D%22gallerySingleObservation%22%20id%3D%222_1%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-gallery%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C529%2C211%22%20href%3D%22observation-gallery.bmml%22%20alt%3D%22observation-gallery%22%20id%3D%222_1%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
         <text>%DCbersicht%2C%20Erfassen</text>
       </controlProperties>
@@ -75,15 +75,15 @@
     </control>
     <control controlID="47" controlTypeID="com.balsamiq.mockups::Link" x="791" y="443" w="-1" h="-1" measuredW="70" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>editSingleObservation%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22682%2C432%2C752%2C453%22%20href%3D%22editSingleObservation.bmml%22%20alt%3D%22editSingleObservation%22%20id%3D%2247%22/%3E</map>
+        <href>observation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22682%2C432%2C752%2C453%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%2247%22/%3E</map>
         <text>Bearbeiten</text>
       </controlProperties>
     </control>
     <control controlID="48" controlTypeID="com.balsamiq.mockups::Link" x="860" y="443" w="-1" h="-1" measuredW="70" measuredH="21" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>showSingleObservation%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22751%2C432%2C821%2C453%22%20href%3D%22showSingleObservation.bmml%22%20alt%3D%22showSingleObservation%22%20id%3D%2248%22/%3E</map>
+        <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22751%2C432%2C821%2C453%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%2248%22/%3E</map>
         <text>/%20%20Anzeigen</text>
       </controlProperties>
     </control>
@@ -102,24 +102,24 @@
     <control controlID="57" controlTypeID="com.balsamiq.mockups::Label" x="370" y="247" w="-1" h="-1" measuredW="61" measuredH="21" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C236%2C322%2C257%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2257%22/%3E</map>
+        <href>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C236%2C322%2C257%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2257%22/%3E</map>
         <text>%DCbersicht</text>
       </controlProperties>
     </control>
     <control controlID="58" controlTypeID="com.balsamiq.mockups::Label" x="370" y="265" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>allGallerySingleObservation%26bm%3BallGallerySingleObservation.bmml%26bm%3BallGallerySingleObservation.bmml%26bm%3BallGallerySingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C254%2C307%2C275%22%20href%3D%22allGallerySingleObservation.bmml%22%20alt%3D%22allGallerySingleObservation%22%20id%3D%2258%22/%3E</map>
+        <href>observation-all-gallery%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C254%2C307%2C275%22%20href%3D%22observation-all-gallery.bmml%22%20alt%3D%22observation-all-gallery%22%20id%3D%2258%22/%3E</map>
         <text>Gallery</text>
       </controlProperties>
     </control>
     <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="370" y="284" w="-1" h="-1" measuredW="55" measuredH="21" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <color>16777215</color>
-        <href>newSingleObservation%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml%26bm%3BnewSingleObservation.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C273%2C316%2C294%22%20href%3D%22newSingleObservation.bmml%22%20alt%3D%22newSingleObservation%22%20id%3D%2259%22/%3E</map>
+        <href>observation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22261%2C273%2C316%2C294%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%2259%22/%3E</map>
         <text>Erfassen</text>
       </controlProperties>
     </control>
@@ -244,24 +244,24 @@
             </control>
             <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="0" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="1" locked="false" isInGroup="6">
               <controlProperties>
-                <href>editSingleObservation%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C792%2C409%2C808%22%20href%3D%22editSingleObservation.bmml%22%20alt%3D%22editSingleObservation%22%20id%3D%221%22/%3E</map>
+                <href>observation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C792%2C409%2C808%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%221%22/%3E</map>
                 <src>./assets/edit_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="16" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="2" locked="false" isInGroup="6">
               <controlProperties>
-                <href>deleteSingleObservation%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22409%2C792%2C425%2C808%22%20href%3D%22deleteSingleObservation.bmml%22%20alt%3D%22deleteSingleObservation%22%20id%3D%222%22/%3E</map>
+                <href>observation-delete%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22409%2C792%2C425%2C808%22%20href%3D%22observation-delete.bmml%22%20alt%3D%22observation-delete%22%20id%3D%222%22/%3E</map>
                 <src>./assets/delete_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="16" y="3" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="3" locked="false" isInGroup="6">
               <controlProperties>
-                <href>showSingleObservation%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22409%2C765%2C425%2C781%22%20href%3D%22showSingleObservation.bmml%22%20alt%3D%22showSingleObservation%22%20id%3D%223%22/%3E</map>
+                <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22409%2C765%2C425%2C781%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%223%22/%3E</map>
                 <src>./assets/zoom_icon.png</src>
                 <text/>
               </controlProperties>
@@ -314,8 +314,8 @@
             </control>
             <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="16" y="3" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="1" locked="false" isInGroup="8">
               <controlProperties>
-                <href>showSingleObservation%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C833%2C423%2C849%22%20href%3D%22showSingleObservation.bmml%22%20alt%3D%22showSingleObservation%22%20id%3D%223%22/%3E</map>
+                <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C833%2C423%2C849%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%223%22/%3E</map>
                 <src>./assets/zoom_icon.png</src>
                 <text/>
               </controlProperties>
@@ -540,24 +540,24 @@
             </control>
             <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="0" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="1" locked="false" isInGroup="6">
               <controlProperties>
-                <href>editSingleObservation%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22391%2C926%2C407%2C942%22%20href%3D%22editSingleObservation.bmml%22%20alt%3D%22editSingleObservation%22%20id%3D%221%22/%3E</map>
+                <href>observation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22391%2C926%2C407%2C942%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%221%22/%3E</map>
                 <src>./assets/edit_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="16" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="2" locked="false" isInGroup="6">
               <controlProperties>
-                <href>deleteSingleObservation%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C926%2C423%2C942%22%20href%3D%22deleteSingleObservation.bmml%22%20alt%3D%22deleteSingleObservation%22%20id%3D%222%22/%3E</map>
+                <href>observation-delete%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C926%2C423%2C942%22%20href%3D%22observation-delete.bmml%22%20alt%3D%22observation-delete%22%20id%3D%222%22/%3E</map>
                 <src>./assets/delete_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="16" y="3" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="3" locked="false" isInGroup="6">
               <controlProperties>
-                <href>showSingleObservation%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C899%2C423%2C915%22%20href%3D%22showSingleObservation.bmml%22%20alt%3D%22showSingleObservation%22%20id%3D%223%22/%3E</map>
+                <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C899%2C423%2C915%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%223%22/%3E</map>
                 <src>./assets/zoom_icon.png</src>
                 <text/>
               </controlProperties>
@@ -610,24 +610,24 @@
             </control>
             <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="0" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="1" locked="false" isInGroup="8">
               <controlProperties>
-                <href>editSingleObservation%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22389%2C994%2C405%2C1010%22%20href%3D%22editSingleObservation.bmml%22%20alt%3D%22editSingleObservation%22%20id%3D%221%22/%3E</map>
+                <href>observation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22389%2C994%2C405%2C1010%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%221%22/%3E</map>
                 <src>./assets/edit_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="16" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="2" locked="false" isInGroup="8">
               <controlProperties>
-                <href>deleteSingleObservation%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22405%2C994%2C421%2C1010%22%20href%3D%22deleteSingleObservation.bmml%22%20alt%3D%22deleteSingleObservation%22%20id%3D%222%22/%3E</map>
+                <href>observation-delete%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22405%2C994%2C421%2C1010%22%20href%3D%22observation-delete.bmml%22%20alt%3D%22observation-delete%22%20id%3D%222%22/%3E</map>
                 <src>./assets/delete_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="16" y="3" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="3" locked="false" isInGroup="8">
               <controlProperties>
-                <href>showSingleObservation%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22405%2C967%2C421%2C983%22%20href%3D%22showSingleObservation.bmml%22%20alt%3D%22showSingleObservation%22%20id%3D%223%22/%3E</map>
+                <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22405%2C967%2C421%2C983%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%223%22/%3E</map>
                 <src>./assets/zoom_icon.png</src>
                 <text/>
               </controlProperties>
@@ -680,24 +680,24 @@
             </control>
             <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="0" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="1" locked="false" isInGroup="6">
               <controlProperties>
-                <href>editSingleObservation%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml%26bm%3BeditSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22391%2C1059%2C407%2C1075%22%20href%3D%22editSingleObservation.bmml%22%20alt%3D%22editSingleObservation%22%20id%3D%221%22/%3E</map>
+                <href>observation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22391%2C1059%2C407%2C1075%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%221%22/%3E</map>
                 <src>./assets/edit_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="16" y="30" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="2" locked="false" isInGroup="6">
               <controlProperties>
-                <href>deleteSingleObservation%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml%26bm%3BdeleteSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C1059%2C423%2C1075%22%20href%3D%22deleteSingleObservation.bmml%22%20alt%3D%22deleteSingleObservation%22%20id%3D%222%22/%3E</map>
+                <href>observation-delete%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml%26bm%3Bobservation-delete.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C1059%2C423%2C1075%22%20href%3D%22observation-delete.bmml%22%20alt%3D%22observation-delete%22%20id%3D%222%22/%3E</map>
                 <src>./assets/delete_icon.png</src>
                 <text/>
               </controlProperties>
             </control>
             <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="16" y="3" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="3" locked="false" isInGroup="6">
               <controlProperties>
-                <href>showSingleObservation%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml%26bm%3BshowSingleObservation.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C1032%2C423%2C1048%22%20href%3D%22showSingleObservation.bmml%22%20alt%3D%22showSingleObservation%22%20id%3D%223%22/%3E</map>
+                <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22407%2C1032%2C423%2C1048%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%223%22/%3E</map>
                 <src>./assets/zoom_icon.png</src>
                 <text/>
               </controlProperties>
@@ -763,8 +763,8 @@
         <control controlID="1" controlTypeID="com.balsamiq.mockups::ComboBox" x="84" y="0" w="189" h="-1" measuredW="60" measuredH="48" zOrder="1" locked="false" isInGroup="136">
           <controlProperties>
             <color>9684093</color>
-            <href>allGallerySingleObservation%26bm%3BallGallerySingleObservation.bmml%26bm%3BallGallerySingleObservation.bmml%26bm%3BallGallerySingleObservation.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22475%2C616%2C664%2C664%22%20href%3D%22allGallerySingleObservation.bmml%22%20alt%3D%22allGallerySingleObservation%22%20id%3D%221%22/%3E</map>
+            <href>observation-all-gallery%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22475%2C616%2C664%2C664%22%20href%3D%22observation-all-gallery.bmml%22%20alt%3D%22observation-all-gallery%22%20id%3D%221%22/%3E</map>
             <state>up</state>
             <text>Liste%0AGallery</text>
           </controlProperties>
