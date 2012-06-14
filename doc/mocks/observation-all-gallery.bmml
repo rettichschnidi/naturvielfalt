@@ -8,8 +8,8 @@
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="1202" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1079" measuredW="208" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-gallery%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%26bm%3Bobservation-gallery.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2C%2C%2C</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C529%2C211%22%20href%3D%22observation-gallery.bmml%22%20alt%3D%22observation-gallery%22%20id%3D%222_1%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22393%2C186%2C464%2C211%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%222_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22464%2C186%2C529%2C211%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%222_1%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
         <text>%DCbersicht%2C%20Erfassen</text>
       </controlProperties>

@@ -21,12 +21,12 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="853" measuredW="273" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="853" measuredW="226" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-wikipedia%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C511%2C224%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C199%2C600%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
+        <hrefs>%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C542%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_0%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
-        <text>Basisinfo%2C%20Lexikon%2C%20Datei%20Upload</text>
+        <text>Basisinfo%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
     <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="177" w="324" h="19" measuredW="324" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
@@ -207,19 +207,6 @@
             <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
             <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22415%2C264%2C503%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%221%22/%3E</map>
             <src>./assets/neuseelandspinat.jpg</src>
-            <text/>
-          </controlProperties>
-        </control>
-        <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="132" y="27" w="101" h="81" measuredW="294" measuredH="208" zOrder="2" locked="false" isInGroup="52">
-          <controlProperties>
-            <crop>66%2C190%2C850%2C602</crop>
-            <src>http%3A//www.seeds-samen.eu/img/p/194-268-large.jpg</src>
-            <text/>
-          </controlProperties>
-        </control>
-        <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="261" y="33" w="99" h="68" measuredW="598" measuredH="408" zOrder="3" locked="false" isInGroup="52">
-          <controlProperties>
-            <src>http%3A//av-media.netletter.at/to/mmedia/image//2008.04.17/1208433035_1.jpg%3F1277659945</src>
             <text/>
           </controlProperties>
         </control>

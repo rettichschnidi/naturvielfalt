@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="3335" measuredH="1597" mockupW="3283" mockupH="1562">
+<mockup version="1.0" skin="sketch" measuredW="3335" measuredH="1759" mockupW="3298" mockupH="1724">
   <controls>
     <control controlID="78" controlTypeID="__group__" x="52" y="491" w="698" h="268" measuredW="698" measuredH="268" zOrder="1" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
@@ -227,7 +227,7 @@
         <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="347" y="214" w="57" h="46" measuredW="300" measuredH="249" zOrder="1" locked="false" isInGroup="124">
           <controlProperties>
             <href>my_areas_testgebiet%26bm%3Bmy_areas_testgebiet.bmml%26bm%3Bmy_areas_testgebiet.bmml%26bm%3Bmy_areas_testgebiet.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221060%2C214%2C1117%2C260%22%20href%3D%22my_areas_testgebiet.bmml%22%20alt%3D%22my_areas_testgebiet%22%20id%3D%221%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221075%2C214%2C1132%2C260%22%20href%3D%22my_areas_testgebiet.bmml%22%20alt%3D%22my_areas_testgebiet%22%20id%3D%221%22/%3E</map>
             <src>./assets/pin.png</src>
           </controlProperties>
         </control>
@@ -271,7 +271,7 @@
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
         <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-all-gallery%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Careas-my%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C297%2C889%2C317%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22142_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C317%2C889%2C337%22%20href%3D%22observation-all-gallery.bmml%22%20alt%3D%22observation-all-gallery%22%20id%3D%22142_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C337%2C889%2C357%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22142_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C357%2C889%2C377%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22142_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C377%2C889%2C397%22%20href%3D%22areas-my.bmml%22%20alt%3D%22areas-my%22%20id%3D%22142_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C397%2C889%2C417%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22142_5%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22713%2C417%2C889%2C437%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22142_6%22/%3E%0A</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C297%2C904%2C317%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22142_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C317%2C904%2C337%22%20href%3D%22observation-all-gallery.bmml%22%20alt%3D%22observation-all-gallery%22%20id%3D%22142_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C337%2C904%2C357%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22142_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C357%2C904%2C377%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22142_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C377%2C904%2C397%22%20href%3D%22areas-my.bmml%22%20alt%3D%22areas-my%22%20id%3D%22142_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C397%2C904%2C417%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22142_5%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C417%2C904%2C437%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22142_6%22/%3E%0A</map>
         <selectedIndex>-1</selectedIndex>
         <size>11</size>
         <text>v%20Einzelbeobachtung%0A%20%3E%20Gallery%0A%20%3E%20Erfassen%0Av%20Alle%20Gebiete%0A%20%3E%20Meine%20Gebiete%0A%3E%20Gebiet%20erstellen%0A%3E%20Klassifizierer</text>
@@ -280,7 +280,7 @@
     <control controlID="143" controlTypeID="com.balsamiq.mockups::Label" x="1072" y="360" w="173" h="29" measuredW="10" measuredH="21" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221020%2C325%2C1193%2C354%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22143%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221035%2C325%2C1208%2C354%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22143%22/%3E</map>
         <text>%20</text>
       </controlProperties>
     </control>
@@ -1008,6 +1008,51 @@
           <controlProperties>
             <text>Speichern</text>
           </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="186" controlTypeID="__group__" x="37" y="1426" w="514" h="333" measuredW="514" measuredH="333" zOrder="13" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::ModalScreen" x="0" y="0" w="514" h="333" measuredW="320" measuredH="240" zOrder="0" locked="false" isInGroup="186"/>
+        <control controlID="1" controlTypeID="__group__" x="28" y="21" w="459" h="278" measuredW="459" measuredH="278" zOrder="1" locked="false" isInGroup="186">
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::Button" x="391" y="251" w="-1" h="-1" measuredW="68" measuredH="27" zOrder="0" locked="false" isInGroup="1">
+              <controlProperties>
+                <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
+                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22419%2C1663%2C487%2C1690%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%220%22/%3E</map>
+                <text>Senden</text>
+              </controlProperties>
+            </control>
+            <control controlID="1" controlTypeID="__group__" x="0" y="0" w="459" h="242" measuredW="459" measuredH="242" zOrder="1" locked="false" isInGroup="1">
+              <groupChildrenDescriptors>
+                <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="459" h="242" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="1">
+                  <controlProperties>
+                    <text>Nachricht%20verschicken</text>
+                  </controlProperties>
+                </control>
+                <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="22" y="58" w="77" h="21" measuredW="63" measuredH="21" zOrder="1" locked="false" isInGroup="1">
+                  <controlProperties>
+                    <text>Nachricht%3A</text>
+                  </controlProperties>
+                </control>
+                <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="22" y="29" w="-1" h="-1" measuredW="72" measuredH="21" zOrder="2" locked="false" isInGroup="1">
+                  <controlProperties>
+                    <text>Empf%E4nger%3A</text>
+                  </controlProperties>
+                </control>
+                <control controlID="4" controlTypeID="com.balsamiq.mockups::Label" x="116" y="29" w="-1" h="-1" measuredW="58" measuredH="21" zOrder="3" locked="false" isInGroup="1">
+                  <controlProperties>
+                    <text>storch52</text>
+                  </controlProperties>
+                </control>
+                <control controlID="5" controlTypeID="com.balsamiq.mockups::TextArea" x="116" y="59" w="282" h="140" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="1">
+                  <controlProperties>
+                    <text>Hoi%20storch52%0A%20%0ARuf%20mich%20an%3A%20123%20456%2078%2090%0A%20%0AGruss%2C%0Aeidechse66</text>
+                  </controlProperties>
+                </control>
+              </groupChildrenDescriptors>
+            </control>
+          </groupChildrenDescriptors>
         </control>
       </groupChildrenDescriptors>
     </control>
