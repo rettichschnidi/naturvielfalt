@@ -46,6 +46,8 @@
     </control>
     <control controlID="116" controlTypeID="com.balsamiq.mockups::Button" x="1081" y="123" w="-1" h="-1" measuredW="78" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
+        <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22972%2C112%2C1050%2C139%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22116%22/%3E</map>
         <text>Einloggen</text>
       </controlProperties>
     </control>
@@ -77,10 +79,10 @@
         <text>%3E%20Einzelbeobachtung%0A%3E%20Alle%20Gebiete%0A%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
-    <control controlID="122" controlTypeID="com.balsamiq.mockups::Label" x="357" y="115" w="173" h="35" measuredW="10" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="122" controlTypeID="com.balsamiq.mockups::Label" x="349" y="115" w="181" h="35" measuredW="10" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C104%2C421%2C139%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22122%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22240%2C104%2C421%2C139%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22122%22/%3E</map>
         <text>%20</text>
       </controlProperties>
     </control>

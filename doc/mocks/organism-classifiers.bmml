@@ -143,5 +143,12 @@
         <text>%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::Label" x="349" y="115" w="181" h="35" measuredW="10" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22240%2C104%2C421%2C139%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%2219%22/%3E</map>
+        <text>%20</text>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>

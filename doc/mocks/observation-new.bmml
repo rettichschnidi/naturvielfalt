@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1929" measuredH="1728" mockupW="1820" mockupH="1717">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1728" mockupW="1425" mockupH="1717">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="1717" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -171,9 +171,9 @@
             <text>Beobachter</text>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::TextInput" x="0" y="21" w="107" h="-1" measuredW="74" measuredH="27" zOrder="1" locked="false" isInGroup="76">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::TextInput" x="0" y="21" w="107" h="-1" measuredW="63" measuredH="27" zOrder="1" locked="false" isInGroup="76">
           <controlProperties>
-            <text>MeinName</text>
+            <text>storch52</text>
           </controlProperties>
         </control>
         <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="0" y="55" w="-1" h="-1" measuredW="137" measuredH="17" zOrder="2" locked="false" isInGroup="76">
@@ -288,7 +288,7 @@
         <text>Durchsuchen...</text>
       </controlProperties>
     </control>
-    <control controlID="100" controlTypeID="__group__" x="399" y="1154" w="117" h="71" measuredW="117" measuredH="71" zOrder="36" locked="false" isInGroup="-1">
+    <control controlID="100" controlTypeID="__group__" x="399" y="1154" w="0" h="0" measuredW="0" measuredH="0" zOrder="36" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::Arrow" x="0" y="0" w="117" h="30" measuredW="150" measuredH="100" zOrder="0" locked="false" isInGroup="100">
           <controlProperties>
@@ -380,7 +380,7 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="112" controlTypeID="__group__" x="393" y="880" w="117" h="140" measuredW="117" measuredH="140" zOrder="48" locked="false" isInGroup="-1">
+    <control controlID="112" controlTypeID="__group__" x="393" y="880" w="0" h="0" measuredW="0" measuredH="0" zOrder="48" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::Arrow" x="0" y="0" w="117" h="59" measuredW="150" measuredH="100" zOrder="0" locked="false" isInGroup="112">
           <controlProperties>
