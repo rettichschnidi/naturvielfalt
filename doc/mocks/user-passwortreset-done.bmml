@@ -22,45 +22,31 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="370" y="174" w="-1" h="-1" measuredW="64" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <text>Navigation</text>
-      </controlProperties>
-    </control>
-    <control controlID="61" controlTypeID="com.balsamiq.mockups::Label" x="363" y="225" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <href>areas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C214%2C300%2C235%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2261%22/%3E</map>
-        <text>Gebiet</text>
-      </controlProperties>
-    </control>
-    <control controlID="62" controlTypeID="com.balsamiq.mockups::Label" x="363" y="246" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <text>Beobachtung</text>
-      </controlProperties>
-    </control>
-    <control controlID="63" controlTypeID="com.balsamiq.mockups::Label" x="363" y="267" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <href>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22254%2C256%2C332%2C277%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2263%22/%3E</map>
-        <text>Klassifizierer</text>
-      </controlProperties>
-    </control>
-    <control controlID="108" controlTypeID="com.balsamiq.mockups::Link" x="1148" y="123" w="-1" h="-1" measuredW="59" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="108" controlTypeID="com.balsamiq.mockups::Link" x="1148" y="123" w="-1" h="-1" measuredW="59" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-register%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221039%2C112%2C1098%2C133%22%20href%3D%22user-register.bmml%22%20alt%3D%22user-register%22%20id%3D%22108%22/%3E</map>
         <text>Einloggen</text>
       </controlProperties>
     </control>
-    <control controlID="110" controlTypeID="com.balsamiq.mockups::TextArea" x="493" y="185" w="465" h="140" measuredW="200" measuredH="140" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::TextArea" x="493" y="185" w="355" h="23" measuredW="200" measuredH="140" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <borderColor>16777215</borderColor>
         <text>Das%20neue%20Passwort%20wurde%20an%20avf@naturwerk.info%20verschickt%21</text>
+      </controlProperties>
+    </control>
+    <control controlID="111" controlTypeID="com.balsamiq.mockups::Label" x="357" y="119" w="173" h="29" measuredW="10" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C108%2C421%2C137%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22111%22/%3E</map>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="112" controlTypeID="com.balsamiq.mockups::Button" x="493" y="223" w="-1" h="-1" measuredW="64" measuredH="27" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22384%2C212%2C448%2C239%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22112%22/%3E</map>
+        <text>Weiter</text>
       </controlProperties>
     </control>
   </controls>

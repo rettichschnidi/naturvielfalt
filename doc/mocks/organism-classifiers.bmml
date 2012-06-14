@@ -132,5 +132,16 @@
         <text>Klassifizierer</text>
       </controlProperties>
     </control>
+    <control controlID="18" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="209" w="120" h="225" measuredW="300" measuredH="225" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+        <hrefs>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C198%2C353%2C221%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2218_0%22/%3E%0A</map>
+        <selectedIndex>-1</selectedIndex>
+        <size>13</size>
+        <text>%3E%20Klassifizierer</text>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>

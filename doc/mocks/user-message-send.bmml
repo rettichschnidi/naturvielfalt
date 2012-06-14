@@ -22,11 +22,11 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="879" y="125" w="-1" h="-1" measuredW="197" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="979" y="123" w="-1" h="-1" measuredW="143" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-profile-show%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22770%2C114%2C967%2C135%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
-        <text>Eingeloggt%20als%20avf@naturwerk.info</text>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22870%2C112%2C1013%2C133%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
+        <text>Eingeloggt%20als%20%20storch52</text>
       </controlProperties>
     </control>
     <control controlID="107" controlTypeID="com.balsamiq.mockups::Button" x="883" y="437" w="-1" h="-1" measuredW="68" measuredH="27" zOrder="6" locked="false" isInGroup="-1">
@@ -58,17 +58,24 @@
             <text>Empf%E4nger%3A</text>
           </controlProperties>
         </control>
-        <control controlID="4" controlTypeID="com.balsamiq.mockups::Label" x="116" y="29" w="-1" h="-1" measuredW="58" measuredH="21" zOrder="3" locked="false" isInGroup="122">
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Label" x="116" y="29" w="-1" h="-1" measuredW="74" measuredH="21" zOrder="3" locked="false" isInGroup="122">
           <controlProperties>
-            <text>storch52</text>
+            <text>eidechse66</text>
           </controlProperties>
         </control>
         <control controlID="5" controlTypeID="com.balsamiq.mockups::TextArea" x="116" y="59" w="282" h="140" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="122">
           <controlProperties>
-            <text>Hoi%20Storchi%0A%20%0ARuf%20mich%20an%3A%20123%20456%2078%2090%0A%20%0AGruss%2C%0AXY</text>
+            <text>Hoi%20eidechse66%0A%20%0ARuf%20mich%20an%3A%20123%20456%2078%2090%0A%20%0AGruss%2C%0Astorch52</text>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
+    </control>
+    <control controlID="123" controlTypeID="com.balsamiq.mockups::Label" x="357" y="119" w="173" h="29" measuredW="10" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C108%2C421%2C137%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22123%22/%3E</map>
+        <text>%20</text>
+      </controlProperties>
     </control>
   </controls>
 </mockup>

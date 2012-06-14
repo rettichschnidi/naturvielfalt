@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1001" mockupW="1425" mockupH="1001">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="1001" mockupW="1431" mockupH="1001">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="990" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -21,110 +21,104 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="370" y="174" w="-1" h="-1" measuredW="64" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <text>Navigation</text>
-      </controlProperties>
-    </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="706" measuredW="273" measuredH="100" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="706" measuredW="273" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-wikipedia%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C210%2C453%2C235%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C210%2C511%2C235%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C210%2C600%2C235%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22394%2C210%2C459%2C235%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22459%2C210%2C517%2C235%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22517%2C210%2C606%2C235%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
         <text>Basisinfo%2C%20Lexikon%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
-    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="324" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="175" w="-1" h="-1" measuredW="324" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Attribute%20und%20Synonyme%20von%20Tetragonia%20expansa%20Murray</text>
       </controlProperties>
     </control>
-    <control controlID="18" controlTypeID="com.balsamiq.mockups::FieldSet" x="498" y="528" w="719" h="141" measuredW="200" measuredH="170" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="18" controlTypeID="com.balsamiq.mockups::FieldSet" x="498" y="528" w="719" h="141" measuredW="200" measuredH="170" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Attribute</text>
       </controlProperties>
     </control>
-    <control controlID="19" controlTypeID="com.balsamiq.mockups::Label" x="514" y="561" w="-1" h="-1" measuredW="73" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::Label" x="514" y="561" w="-1" h="-1" measuredW="73" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>Xenophyte%3A</text>
       </controlProperties>
     </control>
-    <control controlID="20" controlTypeID="com.balsamiq.mockups::Label" x="514" y="582" w="-1" h="-1" measuredW="91" measuredH="21" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="20" controlTypeID="com.balsamiq.mockups::Label" x="514" y="582" w="-1" h="-1" measuredW="91" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>CRSF%20number%3A</text>
       </controlProperties>
     </control>
-    <control controlID="21" controlTypeID="com.balsamiq.mockups::Label" x="514" y="600" w="98" h="23" measuredW="51" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="21" controlTypeID="com.balsamiq.mockups::Label" x="514" y="600" w="98" h="23" measuredW="51" measuredH="21" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>Author%3A</text>
       </controlProperties>
     </control>
-    <control controlID="22" controlTypeID="com.balsamiq.mockups::Label" x="514" y="621" w="-1" h="-1" measuredW="99" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::Label" x="514" y="621" w="-1" h="-1" measuredW="99" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <text>Flora%20Helvetica%3A</text>
       </controlProperties>
     </control>
-    <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="587" y="561" w="98" h="21" measuredW="30" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="587" y="561" w="98" h="21" measuredW="30" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <text>true</text>
       </controlProperties>
     </control>
-    <control controlID="24" controlTypeID="com.balsamiq.mockups::Label" x="605" y="582" w="139" h="21" measuredW="52" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="24" controlTypeID="com.balsamiq.mockups::Label" x="605" y="582" w="139" h="21" measuredW="52" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <text>414600</text>
       </controlProperties>
     </control>
-    <control controlID="25" controlTypeID="com.balsamiq.mockups::Label" x="566" y="601" w="98" h="20" measuredW="81" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::Label" x="566" y="601" w="98" h="20" measuredW="81" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%28Pall.%29%20Kuntze</text>
       </controlProperties>
     </control>
-    <control controlID="26" controlTypeID="com.balsamiq.mockups::Label" x="612" y="621" w="122" h="21" measuredW="30" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="26" controlTypeID="com.balsamiq.mockups::Label" x="612" y="621" w="122" h="21" measuredW="30" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <text>277</text>
       </controlProperties>
     </control>
-    <control controlID="30" controlTypeID="com.balsamiq.mockups::FieldSet" x="498" y="247" w="719" h="137" measuredW="200" measuredH="170" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="30" controlTypeID="com.balsamiq.mockups::FieldSet" x="498" y="247" w="719" h="137" measuredW="200" measuredH="170" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Bilder</text>
       </controlProperties>
     </control>
-    <control controlID="31" controlTypeID="com.balsamiq.mockups::Image" x="524" y="275" w="88" h="80" measuredW="615" measuredH="400" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="31" controlTypeID="com.balsamiq.mockups::Image" x="524" y="275" w="88" h="80" measuredW="77" measuredH="79" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <src>http%3A//database.prota.org/dbtw-wpd/protabase/Photfile%2520Images%255CTetragonia%2520tetragonioides%25207143.jpg</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="32" controlTypeID="com.balsamiq.mockups::Image" x="630" y="274" w="101" h="81" measuredW="294" measuredH="208" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="32" controlTypeID="com.balsamiq.mockups::Image" x="630" y="274" w="101" h="81" measuredW="294" measuredH="208" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <crop>66%2C190%2C850%2C602</crop>
         <src>http%3A//www.seeds-samen.eu/img/p/194-268-large.jpg</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="33" controlTypeID="com.balsamiq.mockups::Image" x="759" y="280" w="99" h="68" measuredW="598" measuredH="408" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Image" x="759" y="280" w="99" h="68" measuredW="598" measuredH="408" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <src>http%3A//av-media.netletter.at/to/mmedia/image//2008.04.17/1208433035_1.jpg%3F1277659945</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="34" controlTypeID="com.balsamiq.mockups::FieldSet" x="498" y="393" w="719" h="122" measuredW="200" measuredH="170" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::FieldSet" x="498" y="393" w="719" h="122" measuredW="200" measuredH="170" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Sound</text>
       </controlProperties>
     </control>
-    <control controlID="35" controlTypeID="com.balsamiq.mockups::Image" x="524" y="418" w="93" h="73" measuredW="188" measuredH="150" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="35" controlTypeID="com.balsamiq.mockups::Image" x="524" y="418" w="93" h="73" measuredW="188" measuredH="150" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <src>http%3A//localhost/%7Ereto/naturvielfalt/sites/all/modules/gallery/images/music_icon.png</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="36" controlTypeID="__group__" x="498" y="675" w="719" h="210" measuredW="719" measuredH="210" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="36" controlTypeID="__group__" x="498" y="675" w="719" h="210" measuredW="719" measuredH="210" zOrder="22" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="29" w="719" h="151" measuredW="267" measuredH="85" zOrder="0" locked="false" isInGroup="36">
           <controlProperties>
@@ -208,68 +202,55 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="43" controlTypeID="com.balsamiq.mockups::Label" x="355" y="209" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="24" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <href>all_areas%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml%26bm%3Ball_areas.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C209%2C292%2C230%22%20href%3D%22all_areas.bmml%22%20alt%3D%22all_areas%22%20id%3D%2243%22/%3E</map>
-        <text>Gebiet</text>
-      </controlProperties>
-    </control>
-    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="355" y="230" w="-1" h="-1" measuredW="79" measuredH="21" zOrder="25" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <href>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C230%2C325%2C251%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2244%22/%3E</map>
-        <text>Beobachtung</text>
-      </controlProperties>
-    </control>
-    <control controlID="45" controlTypeID="com.balsamiq.mockups::Label" x="355" y="251" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="26" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>16777215</color>
-        <href>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22246%2C251%2C324%2C272%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2245%22/%3E</map>
-        <text>Klassifizierer</text>
-      </controlProperties>
-    </control>
-    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="551" y="737" w="171" h="42" measuredW="162" measuredH="21" zOrder="27" locked="false" isInGroup="-1">
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="551" y="737" w="171" h="42" measuredW="162" measuredH="21" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Tetragonia%20expansa%20Murray</text>
       </controlProperties>
     </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::ModalScreen" x="109" y="0" w="1425" h="990" measuredW="320" measuredH="240" zOrder="28" locked="false" isInGroup="-1">
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::ModalScreen" x="103" y="0" w="1425" h="990" measuredW="320" measuredH="240" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
         <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%220%2C0%2C1425%2C990%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2249%22/%3E</map>
       </controlProperties>
     </control>
-    <control controlID="50" controlTypeID="com.balsamiq.mockups::Canvas" x="449" y="144" w="819" h="746" measuredW="100" measuredH="70" zOrder="29" locked="false" isInGroup="-1"/>
-    <control controlID="51" controlTypeID="com.balsamiq.mockups::Image" x="489" y="165" w="734" h="613" measuredW="615" measuredH="400" zOrder="30" locked="false" isInGroup="-1">
-      <controlProperties>
-        <src>http%3A//database.prota.org/dbtw-wpd/protabase/Photfile%2520Images%255CTetragonia%2520tetragonioides%25207143.jpg</src>
-        <text/>
-      </controlProperties>
-    </control>
-    <control controlID="52" controlTypeID="com.balsamiq.mockups::Label" x="489" y="787" w="-1" h="-1" measuredW="125" measuredH="21" zOrder="31" locked="false" isInGroup="-1">
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Canvas" x="449" y="144" w="819" h="746" measuredW="100" measuredH="70" zOrder="26" locked="false" isInGroup="-1"/>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::Label" x="489" y="787" w="-1" h="-1" measuredW="125" measuredH="21" zOrder="27" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%A9%20Google%2C%20unbekannt</text>
       </controlProperties>
     </control>
-    <control controlID="53" controlTypeID="com.balsamiq.mockups::Label" x="489" y="823" w="-1" h="-1" measuredW="162" measuredH="21" zOrder="32" locked="false" isInGroup="-1">
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Label" x="489" y="823" w="-1" h="-1" measuredW="162" measuredH="21" zOrder="28" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Tetragonia%20expansa%20Murray</text>
       </controlProperties>
     </control>
-    <control controlID="55" controlTypeID="com.balsamiq.mockups::Label" x="490" y="845" w="-1" h="-1" measuredW="105" measuredH="21" zOrder="33" locked="false" isInGroup="-1">
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::Label" x="490" y="845" w="-1" h="-1" measuredW="105" measuredH="21" zOrder="29" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Neuseelandspinat</text>
       </controlProperties>
     </control>
-    <control controlID="56" controlTypeID="com.balsamiq.mockups::Icon" x="1178" y="808" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="34" locked="false" isInGroup="-1">
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::Icon" x="1178" y="808" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="30" locked="false" isInGroup="-1">
       <controlProperties>
         <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
         <icon>XIcon%7Csmall</icon>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221069%2C808%2C1093%2C832%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2256%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221075%2C808%2C1099%2C832%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2256%22/%3E</map>
+      </controlProperties>
+    </control>
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::Image" x="486" y="180" w="758" h="596" measuredW="598" measuredH="408" zOrder="31" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/neuseelandspinat.jpg</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="58" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="193" w="120" h="225" measuredW="300" measuredH="225" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+        <hrefs>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22239%2C193%2C359%2C216%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2258_0%22/%3E%0A</map>
+        <selectedIndex>-1</selectedIndex>
+        <size>13</size>
+        <text>%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
   </controls>

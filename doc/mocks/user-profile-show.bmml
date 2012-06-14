@@ -104,7 +104,7 @@
             <text>Bemerkungen%3A</text>
           </controlProperties>
         </control>
-        <control controlID="33" controlTypeID="com.balsamiq.mockups::Label" x="225" y="52" w="-1" h="-1" measuredW="115" measuredH="21" zOrder="16" locked="false" isInGroup="103">
+        <control controlID="33" controlTypeID="com.balsamiq.mockups::Label" x="225" y="52" w="-1" h="-1" measuredW="116" measuredH="21" zOrder="16" locked="false" isInGroup="103">
           <controlProperties>
             <text>avf@naturwerk.info</text>
             <underline>true</underline>
@@ -155,7 +155,7 @@
             <text>Schweiz</text>
           </controlProperties>
         </control>
-        <control controlID="43" controlTypeID="com.balsamiq.mockups::Label" x="225" y="328" w="174" h="21" measuredW="53" measuredH="21" zOrder="26" locked="false" isInGroup="103">
+        <control controlID="43" controlTypeID="com.balsamiq.mockups::Label" x="225" y="328" w="174" h="21" measuredW="52" measuredH="21" zOrder="26" locked="false" isInGroup="103">
           <controlProperties>
             <text>Deutsch</text>
           </controlProperties>
@@ -180,18 +180,18 @@
             <text>Benutzername%3A</text>
           </controlProperties>
         </control>
-        <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="225" y="26" w="174" h="21" measuredW="58" measuredH="21" zOrder="31" locked="false" isInGroup="103">
+        <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="225" y="26" w="174" h="21" measuredW="55" measuredH="21" zOrder="31" locked="false" isInGroup="103">
           <controlProperties>
             <text>storch52</text>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="879" y="125" w="-1" h="-1" measuredW="197" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="1015" y="123" w="-1" h="-1" measuredW="139" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-profile-show%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22770%2C114%2C967%2C135%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
-        <text>Eingeloggt%20als%20avf@naturwerk.info</text>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22906%2C112%2C1045%2C133%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
+        <text>Eingeloggt%20als%20storch52</text>
       </controlProperties>
     </control>
     <control controlID="107" controlTypeID="com.balsamiq.mockups::Button" x="870" y="736" w="-1" h="-1" measuredW="88" measuredH="27" zOrder="7" locked="false" isInGroup="-1">
@@ -210,6 +210,13 @@
     <control controlID="110" controlTypeID="com.balsamiq.mockups::StickyNote" x="1299" y="246" w="168" h="95" measuredW="109" measuredH="123" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>User%20kann%20nur%20seine%20eigene%20Seite%20einsehen.</text>
+      </controlProperties>
+    </control>
+    <control controlID="111" controlTypeID="com.balsamiq.mockups::Label" x="357" y="119" w="173" h="29" measuredW="10" measuredH="21" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C108%2C421%2C137%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22111%22/%3E</map>
+        <text>%20</text>
       </controlProperties>
     </control>
   </controls>

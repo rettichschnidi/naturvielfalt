@@ -47,5 +47,12 @@
         <text>E-Mail%3A%0A%20%0AHallo%20storch52%2C%0A...</text>
       </controlProperties>
     </control>
+    <control controlID="129" controlTypeID="com.balsamiq.mockups::Label" x="357" y="115" w="173" h="29" measuredW="10" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C104%2C421%2C133%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22129%22/%3E</map>
+        <text>%20</text>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>

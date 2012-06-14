@@ -40,7 +40,7 @@
         <text>Dateien</text>
       </controlProperties>
     </control>
-    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="575" measuredH="85" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="576" measuredH="85" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Beschreibung%2C%20Dateiname%2C%20Typ%2C%20Gr%F6sse%2C%20Datum%2C%20Autor%2C%20Besitzer%0A%2C%20gesunde%20Aale.pdf%2C%20%2C199.547%20KB%2C%20%2005.06.2012%2C%20Albert%2C%20naturvielfalt%2C%20%20%20%0AKranke%20Aale%2C%20kranke%20Aale.pdf%2C%20%2C%20500%20KB%2C%20%2005.06.2012%2C%20Susi%2C%20naturvielfalt%2C%20%20%20</text>
       </controlProperties>
@@ -90,7 +90,7 @@
         <text>Eine%20tolle%20Excelliste</text>
       </controlProperties>
     </control>
-    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="81" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="82" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Beschreibung</text>
       </controlProperties>
@@ -125,6 +125,17 @@
     <control controlID="64" controlTypeID="com.balsamiq.mockups::StickyNote" x="1282" y="237" w="169" h="123" measuredW="109" measuredH="123" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Alle%20Dateien%20an%20nur%20einer%20Stelle%20heraufladen%3F</text>
+      </controlProperties>
+    </control>
+    <control controlID="65" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="209" w="120" h="225" measuredW="300" measuredH="225" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+        <hrefs>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C198%2C353%2C221%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2265_0%22/%3E%0A</map>
+        <selectedIndex>-1</selectedIndex>
+        <size>13</size>
+        <text>%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
   </controls>
