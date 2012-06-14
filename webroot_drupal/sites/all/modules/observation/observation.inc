@@ -68,6 +68,12 @@ function observation_get($observation_id){
 	return false;
 }
 
+/**
+ * Return geometries of all observations or for a single
+ * acl checked
+ * @param array $observation_data
+ * @return array
+ */
 function observation_get_geometries_acl_checked($observation_data = false){
 	$filter = array();
 	if($observation_data){
@@ -294,7 +300,11 @@ function observation_get_details_table($observationdata = NULL){
 }
 
 
-
+/**
+ * Return the drupal table as array, with geometry details for the observation
+ * @param array $observationdata
+ * @return array
+ */
 function observation_get_geometry_table($observationdata = NULL){
 	/**
 	 * Geometry Details

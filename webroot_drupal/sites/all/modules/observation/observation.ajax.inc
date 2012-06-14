@@ -284,7 +284,10 @@ global $user;
 	return print_r($output);
 }
 
-
+/**
+ * This method handle the request from flexigrid
+ * @return JSON
+ */
 function observation_get_all_json(){
 	global $user;
 
@@ -384,6 +387,10 @@ function observation_delete_custom_attribute($attribute_id){
 	return drupal_json_output(array('success' => false));
 }
 
+/**
+ * Returns the JSON data of geometries or a single
+ * @param array $observation_data
+ */
 function observation_get_geometry_json($observation_data = false){
 	drupal_json_output(observation_get_geometries_acl_checked($observation_data));
 }
