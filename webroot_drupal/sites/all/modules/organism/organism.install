@@ -10,7 +10,6 @@
  *
  * @note Do not modify habitat_schema, it is generated code!
  */
-function organism_schema() {
 return array (
   'organism_artgroup' => 
   array (
@@ -571,7 +570,7 @@ return array (
         'table' => 'organism_classification',
         'columns' => 
         array (
-          'prime_father_id' => 'id',
+          'parent_id' => 'id',
         ),
       ),
       'organism_classification_2_organism_classification_level' => 
@@ -589,16 +588,12 @@ return array (
       array (
         0 => 'id',
       ),
-      'left_value' => 
-      array (
-        0 => 'right_value',
-      ),
-      'PrimefatherAndRight' => 
+      'index_pfather_right_oc' => 
       array (
         0 => 'prime_father_id',
         1 => 'right_value',
       ),
-      'PrimefatherAndLeft' => 
+      'index_pfather_left_oc' => 
       array (
         0 => 'prime_father_id',
         1 => 'left_value',
@@ -614,6 +609,18 @@ return array (
       'name' => 
       array (
         0 => 'name',
+      ),
+      'parent_id_index_oc' => 
+      array (
+        0 => 'parent_id',
+      ),
+      'index_left_value_oc' => 
+      array (
+        0 => 'left_value',
+      ),
+      'index_right_value_oc' => 
+      array (
+        0 => 'right_value',
       ),
     ),
   ),
@@ -745,12 +752,12 @@ return array (
     ),
     'indexes' => 
     array (
-      'PrimefatherAndLeft' => 
+      'index_pfather_left_ocl' => 
       array (
         0 => 'prime_father_id',
         1 => 'left_value',
       ),
-      'PrimefatherAndRight' => 
+      'index_pfather_right_ocl' => 
       array (
         0 => 'prime_father_id',
         1 => 'right_value',
@@ -758,6 +765,18 @@ return array (
       'id' => 
       array (
         0 => 'id',
+      ),
+      'parent_id_index_ocl' => 
+      array (
+        0 => 'parent_id',
+      ),
+      'index_left_value_ocl' => 
+      array (
+        0 => 'left_value',
+      ),
+      'index_right_value_ocl' => 
+      array (
+        0 => 'right_value',
       ),
     ),
   ),
@@ -934,11 +953,11 @@ return array (
     ),
     'indexes' => 
     array (
-      'organism_id' => 
+      'index_organism_id_osn' => 
       array (
         0 => 'organism_id',
       ),
-      'value' => 
+      'index_osn' => 
       array (
         0 => 'name',
       ),
@@ -999,7 +1018,7 @@ return array (
         'table' => 'organism',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
     ),
@@ -1012,14 +1031,24 @@ return array (
       'FK_organism_2' => 
       array (
         0 => 'left_value',
+        1 => 'prime_father_id',
       ),
       'idx_name_de' => 
       array (
         0 => 'right_value',
+        1 => 'prime_father_id',
       ),
-      'parent_id_index' => 
+      'parent_id_index_o' => 
       array (
         0 => 'parent_id',
+      ),
+      'index_left_value_o' => 
+      array (
+        0 => 'left_value',
+      ),
+      'index_right_value_o' => 
+      array (
+        0 => 'right_value',
       ),
     ),
   ),

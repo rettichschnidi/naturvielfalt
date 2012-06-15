@@ -2,22 +2,28 @@
 /* Drop Indexes */
 
 DROP INDEX IF EXISTS primaryKey;
-DROP INDEX IF EXISTS left_value;
-DROP INDEX IF EXISTS left_value;
-DROP INDEX IF EXISTS PrimefatherAndRight;
-DROP INDEX IF EXISTS PrimefatherAndLeft;
+DROP INDEX IF EXISTS index_pfather_right_oc;
+DROP INDEX IF EXISTS index_pfather_left_oc;
 DROP INDEX IF EXISTS classification_level;
 DROP INDEX IF EXISTS prime_father;
 DROP INDEX IF EXISTS name;
-DROP INDEX IF EXISTS PrimefatherAndLeft;
-DROP INDEX IF EXISTS PrimefatherAndRight;
+DROP INDEX IF EXISTS parent_id_index_oc;
+DROP INDEX IF EXISTS index_left_value_oc;
+DROP INDEX IF EXISTS index_right_value_oc;
+DROP INDEX IF EXISTS index_pfather_left_ocl;
+DROP INDEX IF EXISTS index_pfather_right_ocl;
 DROP INDEX IF EXISTS id;
-DROP INDEX IF EXISTS organism_id;
-DROP INDEX IF EXISTS value;
+DROP INDEX IF EXISTS parent_id_index_ocl;
+DROP INDEX IF EXISTS index_left_value_ocl;
+DROP INDEX IF EXISTS index_right_value_ocl;
+DROP INDEX IF EXISTS index_organism_id_osn;
+DROP INDEX IF EXISTS index_osn;
 DROP INDEX IF EXISTS FK_organism_11;
 DROP INDEX IF EXISTS FK_organism_2;
 DROP INDEX IF EXISTS idx_name_de;
-DROP INDEX IF EXISTS parent_id_index;
+DROP INDEX IF EXISTS parent_id_index_o;
+DROP INDEX IF EXISTS index_left_value_o;
+DROP INDEX IF EXISTS index_right_value_o;
 DROP INDEX IF EXISTS organism_habitat_habitat_id_idx;
 DROP INDEX IF EXISTS organism_habitat_organism_id_idx;
 
@@ -376,17 +382,17 @@ ALTER TABLE organism_attribute_value_subscription
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE CASCADE
+	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
@@ -472,7 +478,7 @@ ALTER TABLE organism_scientific_name
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -480,7 +486,7 @@ ALTER TABLE public.organism
 
 
 ALTER TABLE public.organism
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES public.organism (id)
 	ON UPDATE CASCADE
 	ON DELETE RESTRICT
@@ -515,22 +521,28 @@ ALTER TABLE organism_attribute_value
 /* Create Indexes */
 
 CREATE INDEX primaryKey ON organism_classification USING BTREE (id);
-CREATE INDEX left_value ON organism_classification (left_value);
-CREATE INDEX left_value ON organism_classification (right_value);
-CREATE INDEX PrimefatherAndRight ON organism_classification (prime_father_id, right_value);
-CREATE INDEX PrimefatherAndLeft ON organism_classification (prime_father_id, left_value);
+CREATE INDEX index_pfather_right_oc ON organism_classification (prime_father_id, right_value);
+CREATE INDEX index_pfather_left_oc ON organism_classification (prime_father_id, left_value);
 CREATE INDEX classification_level ON organism_classification (organism_classification_level_id);
 CREATE INDEX prime_father ON organism_classification (prime_father_id);
 CREATE INDEX name ON organism_classification (name);
-CREATE INDEX PrimefatherAndLeft ON organism_classification_level (prime_father_id, left_value);
-CREATE INDEX PrimefatherAndRight ON organism_classification_level (prime_father_id, right_value);
+CREATE INDEX parent_id_index_oc ON organism_classification (parent_id);
+CREATE INDEX index_left_value_oc ON organism_classification (left_value);
+CREATE INDEX index_right_value_oc ON organism_classification (right_value);
+CREATE INDEX index_pfather_left_ocl ON organism_classification_level (prime_father_id, left_value);
+CREATE INDEX index_pfather_right_ocl ON organism_classification_level (prime_father_id, right_value);
 CREATE INDEX id ON organism_classification_level (id);
-CREATE INDEX organism_id ON organism_scientific_name (organism_id);
-CREATE INDEX value ON organism_scientific_name (name);
+CREATE INDEX parent_id_index_ocl ON organism_classification_level (parent_id);
+CREATE INDEX index_left_value_ocl ON organism_classification_level (left_value);
+CREATE INDEX index_right_value_ocl ON organism_classification_level (right_value);
+CREATE INDEX index_organism_id_osn ON organism_scientific_name (organism_id);
+CREATE INDEX index_osn ON organism_scientific_name (name);
 CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);
-CREATE INDEX FK_organism_2 ON public.organism USING BTREE (left_value);
-CREATE INDEX idx_name_de ON public.organism USING BTREE (right_value);
-CREATE INDEX parent_id_index ON public.organism (parent_id);
+CREATE INDEX FK_organism_2 ON public.organism USING BTREE (left_value, prime_father_id);
+CREATE INDEX idx_name_de ON public.organism USING BTREE (right_value, prime_father_id);
+CREATE INDEX parent_id_index_o ON public.organism (parent_id);
+CREATE INDEX index_left_value_o ON public.organism (left_value);
+CREATE INDEX index_right_value_o ON public.organism (right_value);
 CREATE INDEX organism_habitat_habitat_id_idx ON public.organism_habitat_subscription (habitat_id);
 CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscription (organism_id);
 
