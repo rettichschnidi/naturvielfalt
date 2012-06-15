@@ -22,7 +22,7 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="357" y="183" w="76" h="21" measuredW="63" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="357" y="183" w="76" h="21" measuredW="64" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <color>0</color>
         <text>Navigation</text>
@@ -39,7 +39,7 @@
         <text>-%20Sprache%20wird%20Aufgrund%20der%20Browsereinstellungen%20gew%E4hlt.</text>
       </controlProperties>
     </control>
-    <control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="1174" y="123" w="-1" h="-1" measuredW="78" measuredH="78" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="1174" y="123" w="-1" h="-1" measuredW="79" measuredH="78" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Deutsch%0AFranz%F6sisch%0AItalienisch%0AEnglisch</text>
       </controlProperties>
@@ -51,20 +51,20 @@
         <text>Einloggen</text>
       </controlProperties>
     </control>
-    <control controlID="117" controlTypeID="com.balsamiq.mockups::TextInput" x="1023" y="123" w="-1" h="-1" measuredW="51" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="117" controlTypeID="com.balsamiq.mockups::TextInput" x="1023" y="123" w="-1" h="-1" measuredW="50" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <text>******</text>
       </controlProperties>
     </control>
-    <control controlID="118" controlTypeID="com.balsamiq.mockups::TextInput" x="925" y="123" w="89" h="-1" measuredW="63" measuredH="27" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="118" controlTypeID="com.balsamiq.mockups::TextInput" x="925" y="123" w="89" h="-1" measuredW="66" measuredH="27" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <text>storch52</text>
       </controlProperties>
     </control>
-    <control controlID="119" controlTypeID="com.balsamiq.mockups::Link" x="813" y="126" w="-1" h="-1" measuredW="95" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="119" controlTypeID="com.balsamiq.mockups::Link" x="813" y="126" w="-1" h="-1" measuredW="97" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-register%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22704%2C115%2C799%2C136%22%20href%3D%22user-register.bmml%22%20alt%3D%22user-register%22%20id%3D%22119%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22704%2C115%2C801%2C136%22%20href%3D%22user-register.bmml%22%20alt%3D%22user-register%22%20id%3D%22119%22/%3E</map>
         <text>neu%20registrieren</text>
       </controlProperties>
     </control>
