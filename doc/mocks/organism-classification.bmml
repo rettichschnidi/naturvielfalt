@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="804" mockupW="1425" mockupH="793">
+<mockup version="1.0" skin="sketch" measuredW="1887" measuredH="804" mockupW="1778" mockupH="793">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="793" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -42,7 +42,7 @@
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="__group__" x="0" y="0" w="776" h="204" measuredW="776" measuredH="204" zOrder="0" locked="false" isInGroup="19">
           <groupChildrenDescriptors>
-            <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="26" w="776" h="148" measuredW="342" measuredH="145" zOrder="0" locked="false" isInGroup="0">
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="26" w="776" h="148" measuredW="358" measuredH="145" zOrder="0" locked="false" isInGroup="0">
               <controlProperties>
                 <text>Klassifizierungsname%20Name%20%5Ev%2C%20Anzahl%20von%20Organismen%20%5Ev%0AAceraceae%2C%206%0AAdoxaceae%2C%201%0AAnacardiaceae%2C%203%0AApiaceae%2C%20132</text>
                 <verticalScrollbar>true</verticalScrollbar>
@@ -138,9 +138,9 @@
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="__group__" x="0" y="0" w="776" h="302" measuredW="776" measuredH="302" zOrder="0" locked="false" isInGroup="20">
           <groupChildrenDescriptors>
-            <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="34" w="776" h="233" measuredW="497" measuredH="235" zOrder="0" locked="false" isInGroup="0">
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="34" w="776" h="233" measuredW="582" measuredH="235" zOrder="0" locked="false" isInGroup="0">
               <controlProperties>
-                <text>Family%20%5Ev%2C%20Genus%20%5Ev%2C%20Wissenschaftlicher%20Name%20%5Ev%2C%20Name%20%5Ev%0AAceraceae%2C%20Acer%2C%20Acer%20aceraceae%20L.%2C%20Feld-Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20monspessulanum%20L.%20%2C%20Franz%F6sischer%20Massholder%0AAceraceae%2C%20Acer%2C%20Acer%20negundo%20L.%2C%20Eschen-Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20opalus%20Mill.%2C%20Schneeballbl%E4ttriger%20Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20platanoides%20L.%2C%20Spitz-Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20pseudoplatanus%20L.%2C%20Berg-Ahorn%0AAizoaceae%2C%20Tetragonia%2C%20Tetragonia%20expansa%20Murray%2C%20Neuseel%E4nderspinat</text>
+                <text>Family%20%5Ev%2C%20Genus%20%5Ev%2C%20Wissenschaftlicher%20Name%20%5Ev%2C%20Name%20%5Ev%0AAceraceae%2C%20Acer%2C%20Acer%20aceraceae%20L.%2C%20Feld-Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20monspessulanum%20L.%20%2C%20Franz%F6sischer%20Massholder%0AAceraceae%2C%20Acer%2C%20Acer%20negundo%20L.%2C%20Eschen-Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20opalus%20Mill.%2C%20Schneeballbl%E4ttriger%20Ahorn%0AAceraceae%2C%20Acer%2C%20Acer%20platanoides%20L.%2C%20Spitz-Ahorn%0AAizoaceae%2C%20Tetragonia%2C%20Tetragonia%20tetragonoides%20%28Pall.%29%20Kuntze%2C%20Neuseel%E4nderspinat%0AAizoaceae%2C%20Tetragonia%2C%20Tetragonia%20expansa%20Murray%2C%20Neuseel%E4nderspinat</text>
                 <verticalScrollbar>true</verticalScrollbar>
               </controlProperties>
             </control>
@@ -265,6 +265,24 @@
         <selectedIndex>-1</selectedIndex>
         <size>13</size>
         <text>%3E%20Klassifizierer</text>
+      </controlProperties>
+    </control>
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::VCurly" x="1268" y="643" w="114" h="68" measuredW="180" measuredH="140" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Synonyme</text>
+      </controlProperties>
+    </control>
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::StickyNote" x="1500" y="484" w="387" h="176" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Falls%20mehrere%20wissenschaftliche%20Namen%20f%FCr%20ein%20Organismus%20vorhanden%2C%20so%20werden%202%20Zeilen%20angezeigt.%20Selbes%20gilt%2C%20wenn%20mehrere%20Synonyme%20in%20einer%20Landessprache%20existieren.%0A%20%0AACHTUNG%3A%20Die%20Anzahl%20dargestellter%20Zeilen%20ist%20%22Anzahl%20wissenschaftlicher%20Namen%22%20x%20%22Anzahl%20lokaler%20Namen%22.</text>
+      </controlProperties>
+    </control>
+    <control controlID="35" controlTypeID="com.balsamiq.mockups::Arrow" x="1312" y="571" w="196" h="80" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <curvature>1</curvature>
+        <direction>bottom</direction>
+        <leftArrow>false</leftArrow>
+        <text/>
       </controlProperties>
     </control>
   </controls>
