@@ -1201,7 +1201,6 @@ return array (
     ),
   ),
 );
-}
 
 /**
  * Implement hook_install()
