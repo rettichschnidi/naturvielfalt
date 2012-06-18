@@ -173,7 +173,7 @@ function commonstuff_showfiles($modulename, $id, $fidarray) {
 				*
 			FROM
 				{file_managed} fm
-				JOIN {users} u ON fm.uid = users.uid
+				JOIN {users} u ON fm.uid = u.uid
 			WHERE
 				fm.fid IN (:fids)',
 		array(':fids' => $fidarray));
