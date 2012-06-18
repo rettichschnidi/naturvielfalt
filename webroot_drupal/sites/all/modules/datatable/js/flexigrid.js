@@ -44,7 +44,7 @@
 			dataType : 'xml', // type of data loaded
 			errormsg : LOCALIZATION.strERRORMSG,
 			usepager : false, //
-			nowrap : false, //
+			nowrap : true, //
 			page : 1, // current page
 			total : 1, // total pages
 			useRp : true, // use the results per page select box

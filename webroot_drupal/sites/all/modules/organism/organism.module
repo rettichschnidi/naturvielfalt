@@ -9,7 +9,8 @@
  *  Hook implementations
  *********************************/
 
-define('ACCESS_ORGANISMS', 'access content');
+define('ORGANISMS_ACCESS', 'organisms access content');
+define('ORGANISMS_UPLOAD', 'organisms upload');
 
 // Load gallery integration
 module_load_include('inc', 'organism', 'organism.gallery');
@@ -45,7 +46,7 @@ function organism_menu() {
 			'title' => t('Classifiers'),
 			'page callback' => 'organism_show_classifiers',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('List of classifiers'),
 			'type' => MENU_NORMAL_ITEM,
@@ -59,7 +60,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('List of organisms classifications'),
 			'type' => MENU_NORMAL_ITEM,
@@ -70,7 +71,7 @@ function organism_menu() {
 			'title' => t('Organisms JSON'),
 			'page callback' => 'organism_show_classifiers_json',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('Json of classifiers'),
 			'type' => MENU_CALLBACK,
@@ -84,7 +85,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification_classificationjson',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('List of subclassifications'),
 			'type' => MENU_CALLBACK,
@@ -98,7 +99,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_classification_organismjson',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('List of organisms with this classifications'),
 			'type' => MENU_CALLBACK,
@@ -112,7 +113,7 @@ function organism_menu() {
 					1
 			),
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('Specific organism'),
 			'type' => MENU_NORMAL_ITEM,
@@ -127,7 +128,7 @@ function organism_menu() {
 					1
 			),
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -142,7 +143,7 @@ function organism_menu() {
 					1
 			),
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -156,7 +157,7 @@ function organism_menu() {
 			),
 			'page callback' => 'organism_show_organism_json',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('Specific organism json'),
 			'type' => MENU_CALLBACK,
@@ -167,7 +168,7 @@ function organism_menu() {
 			'title' => t('Organism search json'),
 			'page callback' => 'organism_search_organism_json',
 			'access arguments' => array(
-					ACCESS_ORGANISMS
+					ORGANISMS_ACCESS
 			),
 			'description' => t('Specific organism json'),
 			'type' => MENU_CALLBACK,
@@ -183,7 +184,7 @@ function organism_menu() {
 					1
 			),
 			'access arguments' => array(
-					'organism upload'
+					ORGANISMS_UPLOAD
 			),
 			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -191,42 +192,74 @@ function organism_menu() {
 			'weight' => 10,
 	);
 
-// 	if (function_exists('gallery_list_renderer')) {
-// 		$items['organism/%organism/reference/gallery'] = array(
-// 				'title' => t('Gallery'),
-// 				'description' => t(
-// 					'View the organism as a gallery of organism pictures'),
-// 				'page callback' => 'organism_reference_gallery',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'organism.inc',
-// 				'weight' => 6
-// 		);
+	$items['organism/%/delete_file/%'] = array(
+			'title' => t('Delete file'),
+			'description' => t('Delete an existing file'),
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array(
+					'organism_delete_file',
+					1,
+					3
+			),
+			'access arguments' => array(
+					ORGANISMS_UPLOAD
+			),
+			'file' => 'organism.edit.inc',
+			'weight' => 10,
+	);
 
-// 		$items['organism/%organism/reference/list'] = array(
-// 				'title' => t('List'),
-// 				'description' => t(
-// 					'View the organism as a list of organism pictures'),
-// 				'page callback' => 'organism_reference_list',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'organism.inc',
-// 				'weight' => 7
-// 		);
-// 	}
+	// 	if (function_exists('gallery_list_renderer')) {
+	// 		$items['organism/%organism/reference/gallery'] = array(
+	// 				'title' => t('Gallery'),
+	// 				'description' => t(
+	// 					'View the organism as a gallery of organism pictures'),
+	// 				'page callback' => 'organism_reference_gallery',
+	// 				'page arguments' => array(
+	// 						1
+	// 				),
+	// 				'access arguments' => array(
+	// 						AREA_ACCESS
+	// 				),
+	// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 				'file' => 'organism.inc',
+	// 				'weight' => 6
+	// 		);
+
+	// 		$items['organism/%organism/reference/list'] = array(
+	// 				'title' => t('List'),
+	// 				'description' => t(
+	// 					'View the organism as a list of organism pictures'),
+	// 				'page callback' => 'organism_reference_list',
+	// 				'page arguments' => array(
+	// 						1
+	// 				),
+	// 				'access arguments' => array(
+	// 						AREA_ACCESS
+	// 				),
+	// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 				'file' => 'organism.inc',
+	// 				'weight' => 7
+	// 		);
+	// 	}
 	return $items;
+}
+
+/**
+ * Define permissions which can be given to different roles.
+ *
+ * @note Those permissions are not related to the acl
+ */
+function organism_permission() {
+	return array(
+			ORGANISMS_UPLOAD => array(
+					'title' => t('Upload files to organisms.'),
+			),
+			ORGANISMS_ACCESS => array(
+					'title' => t('View organisms'),
+			)
+	);
 }
 
 /**

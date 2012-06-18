@@ -6,3 +6,4 @@ version = "7.x-current"
 dependencies[] = datatable
 dependencies[] = c_acl
 dependencies[] = commonstuff
+dependencies[] = habitat

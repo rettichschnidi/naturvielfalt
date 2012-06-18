@@ -366,6 +366,11 @@ function organism_artgroup_add_custom_attribute($name, $artgroup_id){
 
 }
 
+/**
+ * Checks if a custom attribute exists
+ * @param int $attribute_id
+ * @return bool | true if exists
+ */
 function organism_artgroup_custom_attribute_exist($attribute_id){
 	global $user;
 	$attribute_id = intval($attribute_id);

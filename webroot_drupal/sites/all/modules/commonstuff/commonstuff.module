@@ -173,6 +173,7 @@ function commonstuff_showfiles($modulename, $id, $fidarray) {
 				*
 			FROM
 				{file_managed} fm
+				JOIN {users} u ON fm.uid = u.uid
 			WHERE
 				fm.fid IN (:fids)',
 		array(':fids' => $fidarray));
@@ -201,7 +202,7 @@ function commonstuff_showfiles($modulename, $id, $fidarray) {
 		$row[] = $filesize;
 		$row[] = $timestamp;
 		$row[] = $author;
-		$row[] = $user->name;
+		$row[] = $record->name;
 		$rows[] = $row;
 	}
 

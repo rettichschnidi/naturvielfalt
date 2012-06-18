@@ -21,8 +21,8 @@
     </control>
     <control controlID="19" controlTypeID="com.balsamiq.mockups::TabBar" x="533" y="215" w="812" h="931" measuredW="547" measuredH="100" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>area_show%26bm%3Barea_show.bmml%26bm%3Barea_show.bmml%26bm%3Barea_show.bmml%2Carea_edit%26bm%3Barea_edit.bmml%26bm%3Barea_edit.bmml%26bm%3Barea_edit.bmml%2C%2C%2C</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22553%2C215%2C663%2C240%22%20href%3D%22area_show.bmml%22%20alt%3D%22area_show%22%20id%3D%2219_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22663%2C215%2C786%2C240%22%20href%3D%22area_edit.bmml%22%20alt%3D%22area_edit%22%20id%3D%2219_1%22/%3E%0A</map>
+        <hrefs>area-show%26bm%3Barea-show.bmml%26bm%3Barea-show.bmml%26bm%3Barea-show.bmml%2Carea-edit%26bm%3Barea-edit.bmml%26bm%3Barea-edit.bmml%26bm%3Barea-edit.bmml%2C%2C%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22553%2C215%2C663%2C240%22%20href%3D%22area-show.bmml%22%20alt%3D%22area-show%22%20id%3D%2219_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22663%2C215%2C786%2C240%22%20href%3D%22area-edit.bmml%22%20alt%3D%22area-edit%22%20id%3D%2219_1%22/%3E%0A</map>
         <selectedIndex>1</selectedIndex>
         <text>Gebiet%20anzeigen%2C%20Gebiet%20bearbeiten%2C%20Berechtigungen%20bearbeiten%2C%20Galerie%2C%20Liste</text>
       </controlProperties>
@@ -50,8 +50,8 @@
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
-        <hrefs>allSingleObservation%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%26bm%3BallSingleObservation.bmml%2Careas_all%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml%26bm%3Bareas_all.bmml%2Careas_my%26bm%3Bareas_my.bmml%26bm%3Bareas_my.bmml%26bm%3Bareas_my.bmml%2Carea_new%26bm%3Barea_new.bmml%26bm%3Barea_new.bmml%26bm%3Barea_new.bmml%2Cclassifiers%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml%26bm%3Bclassifiers.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C215%2C533%2C238%22%20href%3D%22allSingleObservation.bmml%22%20alt%3D%22allSingleObservation%22%20id%3D%2224_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C238%2C533%2C261%22%20href%3D%22areas_all.bmml%22%20alt%3D%22areas_all%22%20id%3D%2224_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C261%2C533%2C284%22%20href%3D%22areas_my.bmml%22%20alt%3D%22areas_my%22%20id%3D%2224_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C284%2C533%2C307%22%20href%3D%22area_new.bmml%22%20alt%3D%22area_new%22%20id%3D%2224_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C307%2C533%2C330%22%20href%3D%22classifiers.bmml%22%20alt%3D%22classifiers%22%20id%3D%2224_4%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Careas-my%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%2C%2C%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C215%2C533%2C238%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2224_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C238%2C533%2C261%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2224_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C261%2C533%2C284%22%20href%3D%22areas-my.bmml%22%20alt%3D%22areas-my%22%20id%3D%2224_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C284%2C533%2C307%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%2224_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C307%2C533%2C330%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2224_4%22/%3E%0A</map>
         <selectedIndex>-1</selectedIndex>
         <text>%3E%20Einzelbeobachtung%0Av%20Alle%20Gebiete%0A%20%3E%20Meine%20Gebiete%0A%3E%20Gebiet%20erstellen%0A%3E%20Klassifizierer</text>
       </controlProperties>
@@ -301,8 +301,8 @@
         </control>
         <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="861" y="587" w="31" h="36" measuredW="10" measuredH="21" zOrder="3" locked="false" isInGroup="80">
           <controlProperties>
-            <href>area_edit%26bm%3Barea_edit.bmml%26bm%3Barea_edit.bmml%26bm%3Barea_edit.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221280%2C748%2C1311%2C784%22%20href%3D%22area_edit.bmml%22%20alt%3D%22area_edit%22%20id%3D%223%22/%3E</map>
+            <href>area-edit%26bm%3Barea-edit.bmml%26bm%3Barea-edit.bmml%26bm%3Barea-edit.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221280%2C748%2C1311%2C784%22%20href%3D%22area-edit.bmml%22%20alt%3D%22area-edit%22%20id%3D%223%22/%3E</map>
             <text>%20</text>
           </controlProperties>
         </control>

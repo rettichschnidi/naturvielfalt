@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1774" measuredH="915" mockupW="1665" mockupH="904">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="915" mockupW="1425" mockupH="904">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="904" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -178,68 +178,28 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="1015" y="123" w="-1" h="-1" measuredW="155" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="105" controlTypeID="com.balsamiq.mockups::Link" x="1015" y="123" w="-1" h="-1" measuredW="158" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-profile-show%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml%26bm%3Buser-profile-show.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22906%2C112%2C1061%2C133%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
-        <text>Eingeloggt%20als%20eidechse66</text>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22906%2C112%2C1064%2C133%22%20href%3D%22user-profile-show.bmml%22%20alt%3D%22user-profile-show%22%20id%3D%22105%22/%3E</map>
+        <text>Eingeloggt%20als%20DRITTUSER</text>
       </controlProperties>
     </control>
-    <control controlID="111" controlTypeID="com.balsamiq.mockups::Label" x="357" y="119" w="173" h="29" measuredW="10" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::StickyNote" x="1277" y="195" w="242" h="94" measuredW="109" measuredH="123" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Ansicht%20eines%20dritten%20Benutzers%20auf%20ein%20fremdes%20Profil.</text>
+      </controlProperties>
+    </control>
+    <control controlID="111" controlTypeID="com.balsamiq.mockups::Label" x="357" y="119" w="173" h="29" measuredW="10" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C108%2C421%2C137%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22111%22/%3E</map>
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="114" controlTypeID="__group__" x="111" y="78" w="1423" h="811" measuredW="1423" measuredH="811" zOrder="8" locked="false" isInGroup="-1">
-      <groupChildrenDescriptors>
-        <control controlID="0" controlTypeID="com.balsamiq.mockups::ModalScreen" x="0" y="0" w="1423" h="811" measuredW="320" measuredH="240" zOrder="0" locked="false" isInGroup="114"/>
-        <control controlID="1" controlTypeID="__group__" x="501" y="205" w="460" h="242" measuredW="460" measuredH="242" zOrder="1" locked="false" isInGroup="114">
-          <groupChildrenDescriptors>
-            <control controlID="1" controlTypeID="__group__" x="0" y="0" w="460" h="242" measuredW="460" measuredH="242" zOrder="0" locked="false" isInGroup="1">
-              <groupChildrenDescriptors>
-                <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="460" h="242" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="1">
-                  <controlProperties>
-                    <text>Nachricht%20verschicken</text>
-                  </controlProperties>
-                </control>
-                <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="22" y="57" w="77" h="21" measuredW="63" measuredH="21" zOrder="1" locked="false" isInGroup="1">
-                  <controlProperties>
-                    <text>Nachricht%3A</text>
-                  </controlProperties>
-                </control>
-                <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="22" y="29" w="72" h="21" measuredW="72" measuredH="21" zOrder="2" locked="false" isInGroup="1">
-                  <controlProperties>
-                    <text>Empf%E4nger%3A</text>
-                  </controlProperties>
-                </control>
-                <control controlID="4" controlTypeID="com.balsamiq.mockups::Label" x="116" y="29" w="58" h="21" measuredW="58" measuredH="21" zOrder="3" locked="false" isInGroup="1">
-                  <controlProperties>
-                    <text>storch52</text>
-                  </controlProperties>
-                </control>
-                <control controlID="5" controlTypeID="com.balsamiq.mockups::TextArea" x="116" y="59" w="282" h="124" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="1">
-                  <controlProperties>
-                    <text>Hoi%20storch52%0A%20%0ARuf%20mich%20an%3A%20123%20456%2078%2090%0A%20%0AGruss%2C%0Aeidechse66</text>
-                  </controlProperties>
-                </control>
-                <control controlID="6" controlTypeID="com.balsamiq.mockups::Button" x="384" y="198" w="68" h="27" measuredW="68" measuredH="27" zOrder="5" locked="false" isInGroup="1">
-                  <controlProperties>
-                    <href>user-message-sent%26bm%3Buser-message-sent.bmml%26bm%3Buser-message-sent.bmml%26bm%3Buser-message-sent.bmml</href>
-                    <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22887%2C470%2C955%2C497%22%20href%3D%22user-message-sent.bmml%22%20alt%3D%22user-message-sent%22%20id%3D%226%22/%3E</map>
-                    <text>Senden</text>
-                  </controlProperties>
-                </control>
-              </groupChildrenDescriptors>
-            </control>
-          </groupChildrenDescriptors>
-        </control>
-      </groupChildrenDescriptors>
-    </control>
-    <control controlID="115" controlTypeID="com.balsamiq.mockups::StickyNote" x="1559" y="74" w="215" h="119" measuredW="109" measuredH="123" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="112" controlTypeID="com.balsamiq.mockups::StickyNote" x="1298" y="530" w="201" h="149" measuredW="109" measuredH="123" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>WARNUNG%3A%20Falls%20Drupal%20verwendet%20wird%2C%20so%20wird%20dieses%20Menu%20etwas%20anders%20aussehen%21</text>
+        <text>Noch%20zu%20definieren%2C%20was%20hier%20angezeigt/ausgewertet%20werden%20soll.</text>
       </controlProperties>
     </control>
   </controls>

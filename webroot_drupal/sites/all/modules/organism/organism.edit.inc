@@ -38,7 +38,8 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			fm.timestamp,
 			fm.fid,
 			fm.filesize,
-			ofm.description
+			ofm.description,
+			ofm.author
 		FROM
 			{organism_file_managed} ofm,
 			{file_managed} fm
@@ -75,7 +76,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			$filemime = $img_mime;
 			$filesize = ($record->filesize / 1000) . " KB";
 			$timestamp = date('d.m.Y', $record->timestamp);
-			$author = $record->author;
+			$author = isset($record->author) ? $record->author : '';
 			$row = array();
 			$row[] = $description;
 			$row[] = $filename;
@@ -185,7 +186,7 @@ function organism_delete_file($form, &$form_state, $organism_id, $file_id) {
 			$organism_id)
 		->condition('ofm.file_managed_fid', $file_id)
 		->fields('ofm', array('description'));
-	$query->join('file_managed', 'fm', 'fm.fid = ofm.file_id');
+	$query->join('file_managed', 'fm', 'fm.fid = ofm.file_managed_fid');
 	$query->fields('fm', array('filename'));
 	$query->condition('fm.uid', $user->uid);
 	$file = $query->execute()
@@ -211,11 +212,15 @@ function organism_delete_file_submit($form, &$form_state) {
 	$file_id = $form_state['file_id'];
 
 	$file = file_load($file_id);
-	file_delete($file);
-	db_delete('organism_file_managed')->condition('organism_id', $organism_id)
-		->condition('file_id', $file_id)
+	if($file) {
+		file_delete($file);
+		db_delete('organism_file_managed')->condition('organism_id', $organism_id)
+		->condition('file_managed_fid', $file_id)
 		->execute();
-	drupal_set_message(t('The file was successfully deleted'));
+		drupal_set_message(t('The file was successfully deleted!'));
+	} else {
+		drupal_set_message(t('The file could not be deleted!'));
+	}
 	$form_state['redirect'] = 'organism/' . $organism_id . '/edit';
 }
 
