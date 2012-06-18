@@ -75,7 +75,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			$filemime = $img_mime;
 			$filesize = ($record->filesize / 1000) . " KB";
 			$timestamp = date('d.m.Y', $record->timestamp);
-			$author = $record->author;
+			$author = isset($record->author) ? $record->author : '';
 			$row = array();
 			$row[] = $description;
 			$row[] = $filename;
