@@ -196,47 +196,53 @@ function organism_menu() {
 			'title' => t('Delete file'),
 			'description' => t('Delete an existing file'),
 			'page callback' => 'drupal_get_form',
-			'page arguments' => array('organism_delete_file', 1, 3),
-			'access arguments' => array('organism upload'),
+			'page arguments' => array(
+					'organism_delete_file',
+					1,
+					3
+			),
+			'access arguments' => array(
+					ORGANISMS_UPLOAD
+			),
 			'file' => 'organism.edit.inc',
 			'weight' => 10,
 	);
 
-// 	if (function_exists('gallery_list_renderer')) {
-// 		$items['organism/%organism/reference/gallery'] = array(
-// 				'title' => t('Gallery'),
-// 				'description' => t(
-// 					'View the organism as a gallery of organism pictures'),
-// 				'page callback' => 'organism_reference_gallery',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'organism.inc',
-// 				'weight' => 6
-// 		);
+	// 	if (function_exists('gallery_list_renderer')) {
+	// 		$items['organism/%organism/reference/gallery'] = array(
+	// 				'title' => t('Gallery'),
+	// 				'description' => t(
+	// 					'View the organism as a gallery of organism pictures'),
+	// 				'page callback' => 'organism_reference_gallery',
+	// 				'page arguments' => array(
+	// 						1
+	// 				),
+	// 				'access arguments' => array(
+	// 						AREA_ACCESS
+	// 				),
+	// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 				'file' => 'organism.inc',
+	// 				'weight' => 6
+	// 		);
 
-// 		$items['organism/%organism/reference/list'] = array(
-// 				'title' => t('List'),
-// 				'description' => t(
-// 					'View the organism as a list of organism pictures'),
-// 				'page callback' => 'organism_reference_list',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'organism.inc',
-// 				'weight' => 7
-// 		);
-// 	}
+	// 		$items['organism/%organism/reference/list'] = array(
+	// 				'title' => t('List'),
+	// 				'description' => t(
+	// 					'View the organism as a list of organism pictures'),
+	// 				'page callback' => 'organism_reference_list',
+	// 				'page arguments' => array(
+	// 						1
+	// 				),
+	// 				'access arguments' => array(
+	// 						AREA_ACCESS
+	// 				),
+	// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+	// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 				'file' => 'organism.inc',
+	// 				'weight' => 7
+	// 		);
+	// 	}
 	return $items;
 }
 
