@@ -38,7 +38,8 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			fm.timestamp,
 			fm.fid,
 			fm.filesize,
-			ofm.description
+			ofm.description,
+			ofm.author
 		FROM
 			{organism_file_managed} ofm,
 			{file_managed} fm
