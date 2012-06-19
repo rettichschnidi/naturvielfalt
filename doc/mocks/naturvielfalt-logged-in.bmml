@@ -49,7 +49,7 @@
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="117" controlTypeID="com.balsamiq.mockups::Label" x="357" y="183" w="76" h="21" measuredW="63" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="117" controlTypeID="com.balsamiq.mockups::Label" x="357" y="183" w="76" h="21" measuredW="64" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <color>0</color>
         <text>Navigation</text>
@@ -73,11 +73,11 @@
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
-        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-all-gallery%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Careas-my%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%26bm%3Bareas-my.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C208%2C453%2C227%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22121_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C227%2C453%2C246%22%20href%3D%22observation-all-gallery.bmml%22%20alt%3D%22observation-all-gallery%22%20id%3D%22121_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C246%2C453%2C265%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22121_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C265%2C453%2C284%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22121_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C284%2C453%2C303%22%20href%3D%22areas-my.bmml%22%20alt%3D%22areas-my%22%20id%3D%22121_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C303%2C453%2C322%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22121_5%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C322%2C453%2C341%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22121_6%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-all-gallery%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%26bm%3Bobservation-all-gallery.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C208%2C453%2C227%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22121_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C227%2C453%2C246%22%20href%3D%22observation-all-gallery.bmml%22%20alt%3D%22observation-all-gallery%22%20id%3D%22121_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C246%2C453%2C265%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22121_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C265%2C453%2C284%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22121_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C284%2C453%2C303%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22121_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22333%2C303%2C453%2C322%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22121_5%22/%3E%0A</map>
         <selectedIndex>-1</selectedIndex>
         <size>10</size>
-        <text>v%20Einzelbeobachtung%0A%20%3E%20Gallery%0A%20%3E%20Erfassen%0Av%20Alle%20Gebiete%0A%20%3E%20Meine%20Gebiete%0A%3E%20Gebiet%20erstellen%0A%3E%20Klassifizierer</text>
+        <text>v%20Einzelbeobachtung%0A%20%3E%20Gallery%0A%20%3E%20Erfassen%0A%3E%20Gebiete%0A%3E%20Gebiet%20erstellen%0A%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
   </controls>
