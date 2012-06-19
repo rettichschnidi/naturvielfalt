@@ -415,7 +415,7 @@
             <text/>
           </controlProperties>
         </control>
-        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="0" y="80" w="110" h="21" measuredW="76" measuredH="21" zOrder="11" locked="false" isInGroup="107">
+        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="0" y="80" w="110" h="21" measuredW="75" measuredH="21" zOrder="11" locked="false" isInGroup="107">
           <controlProperties>
             <text>B%FCrogummis</text>
           </controlProperties>
