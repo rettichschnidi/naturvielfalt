@@ -362,7 +362,7 @@
     </control>
     <control controlID="90" controlTypeID="com.balsamiq.mockups::StickyNote" x="1089" y="1033" w="-1" h="-1" measuredW="109" measuredH="123" zOrder="44" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Wie%20viele%20Bilder%20hier%20darstellen%3F</text>
+        <text>Wie%20viele%20Bilder%20hier%20max.%20darstellen%3F</text>
       </controlProperties>
     </control>
   </controls>
