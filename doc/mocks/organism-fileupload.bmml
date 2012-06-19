@@ -1,13 +1,13 @@
-<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="915" mockupW="1425" mockupH="904">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="822" mockupW="1425" mockupH="811">
   <controls>
-    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="904" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="811" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Herzlich%20willkommen...%0Ahttp%3A//www.naturvielfalt.ch/</text>
         <value>0</value>
         <verticalScrollbar>false</verticalScrollbar>
       </controlProperties>
     </control>
-    <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="760" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="689" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="2" locked="false" isInGroup="-1"/>
     <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="342" y="89" w="926" h="70" measuredW="1278" measuredH="133" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
@@ -22,7 +22,7 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="767" h="481" measuredW="226" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="767" h="540" measuredW="226" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2C</hrefs>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A</map>
@@ -35,84 +35,12 @@
         <text>Anguilla%20anguilla</text>
       </controlProperties>
     </control>
-    <control controlID="35" controlTypeID="com.balsamiq.mockups::FieldSet" x="510" y="373" w="714" h="230" measuredW="200" measuredH="170" zOrder="7" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Dateien</text>
-      </controlProperties>
-    </control>
-    <control controlID="36" controlTypeID="com.balsamiq.mockups::DataGrid" x="510" y="248" w="719" h="101" measuredW="576" measuredH="85" zOrder="8" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Beschreibung%2C%20Dateiname%2C%20Typ%2C%20Gr%F6sse%2C%20Datum%2C%20Autor%2C%20Besitzer%0A%2C%20gesunde%20Aale.pdf%2C%20%2C199.547%20KB%2C%20%2005.06.2012%2C%20Albert%2C%20naturvielfalt%2C%20%20%20%0AKranke%20Aale%2C%20kranke%20Aale.pdf%2C%20%2C%20500%20KB%2C%20%2005.06.2012%2C%20Susi%2C%20naturvielfalt%2C%20%20%20</text>
-      </controlProperties>
-    </control>
-    <control controlID="37" controlTypeID="com.balsamiq.mockups::Icon" x="787" y="272" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="9" locked="false" isInGroup="-1">
-      <controlProperties>
-        <icon>DocPDFIcon%7Csmall</icon>
-      </controlProperties>
-    </control>
-    <control controlID="38" controlTypeID="com.balsamiq.mockups::Icon" x="1202" y="272" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="10" locked="false" isInGroup="-1">
-      <controlProperties>
-        <icon>Trash2Icon%7Csmall</icon>
-      </controlProperties>
-    </control>
-    <control controlID="39" controlTypeID="com.balsamiq.mockups::Icon" x="1202" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="11" locked="false" isInGroup="-1">
-      <controlProperties>
-        <icon>Trash2Icon%7Csmall</icon>
-      </controlProperties>
-    </control>
-    <control controlID="40" controlTypeID="com.balsamiq.mockups::Icon" x="787" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="12" locked="false" isInGroup="-1">
-      <controlProperties>
-        <icon>DocPDFIcon%7Csmall</icon>
-      </controlProperties>
-    </control>
-    <control controlID="41" controlTypeID="com.balsamiq.mockups::Button" x="1013" y="422" w="-1" h="-1" measuredW="99" measuredH="27" zOrder="13" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Durchsuche...</text>
-      </controlProperties>
-    </control>
-    <control controlID="43" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="419" w="480" h="32" measuredW="32" measuredH="32" zOrder="14" locked="false" isInGroup="-1">
-      <controlProperties>
-        <align>left</align>
-        <color>10066329</color>
-        <shape>rectangle</shape>
-        <text>/home/reto/Desktop/zivi/excel.xls</text>
-      </controlProperties>
-    </control>
-    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="525" y="394" w="-1" h="-1" measuredW="105" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Datei%20heraufladen</text>
-      </controlProperties>
-    </control>
-    <control controlID="45" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="484" w="480" h="32" measuredW="32" measuredH="32" zOrder="16" locked="false" isInGroup="-1">
-      <controlProperties>
-        <align>left</align>
-        <shape>rectangle</shape>
-        <text>Eine%20tolle%20Excelliste</text>
-      </controlProperties>
-    </control>
-    <control controlID="46" controlTypeID="com.balsamiq.mockups::Label" x="525" y="459" w="-1" h="-1" measuredW="82" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Beschreibung</text>
-      </controlProperties>
-    </control>
-    <control controlID="47" controlTypeID="com.balsamiq.mockups::RoundButton" x="525" y="556" w="480" h="32" measuredW="32" measuredH="32" zOrder="18" locked="false" isInGroup="-1">
-      <controlProperties>
-        <align>left</align>
-        <shape>rectangle</shape>
-        <text>Dr.%20Prof.%20Superhirn</text>
-      </controlProperties>
-    </control>
-    <control controlID="48" controlTypeID="com.balsamiq.mockups::Label" x="525" y="531" w="-1" h="-1" measuredW="36" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Autor</text>
-      </controlProperties>
-    </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::Button" x="510" y="614" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::Button" x="515" y="699" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Hochladen</text>
       </controlProperties>
     </control>
-    <control controlID="51" controlTypeID="com.balsamiq.mockups::Arrow" x="607" y="349" w="229" h="273" measuredW="150" measuredH="100" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Arrow" x="612" y="434" w="229" h="273" measuredW="150" measuredH="100" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <color>13576743</color>
         <curvature>-1</curvature>
@@ -122,12 +50,12 @@
         <text>Datei%20wird%20hinzugef%FCgt</text>
       </controlProperties>
     </control>
-    <control controlID="64" controlTypeID="com.balsamiq.mockups::StickyNote" x="1282" y="237" w="169" h="123" measuredW="109" measuredH="123" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::StickyNote" x="1282" y="237" w="169" h="123" measuredW="109" measuredH="123" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Alle%20Dateien%20an%20nur%20einer%20Stelle%20heraufladen%3F</text>
       </controlProperties>
     </control>
-    <control controlID="65" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="209" w="120" h="225" measuredW="300" measuredH="225" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="65" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="209" w="120" h="225" measuredW="300" measuredH="225" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
@@ -137,6 +65,101 @@
         <size>13</size>
         <text>%3E%20Klassifizierer</text>
       </controlProperties>
+    </control>
+    <control controlID="68" controlTypeID="__group__" x="510" y="248" w="719" h="201" measuredW="719" measuredH="201" zOrder="7" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="0" w="719" h="201" measuredW="732" measuredH="175" zOrder="0" locked="false" isInGroup="68">
+          <controlProperties>
+            <text>Beschreibung%2C%20Dateiname%2C%20Typ%2C%20Gr%F6sse%2C%20Datum%2C%20Autor%2C%20Besitzer%0A%2C%20gesunde%20Aale.pdf%2C%20%2C199.547%20KB%2C%20%2005.06.2012%2C%20Albert%2C%20storch52%2C%20%20%20%0AKranke%20Aale%2C%20kranke%20Aale.pdf%2C%20%2C%20500%20KB%2C%20%2005.06.2012%2C%20Susi%2C%20naturvielfalt%2C%0APortraitbild%20von%20Neuseelandsalat%2C%20neuseelandsalat.jpg%2C%20%2C%20200%20KB%2C%20%2005.06.2012%2C%20Keystone%2C%20storch52%2C%20%20%20%0AVideo%20von%20Neuseelandsalat%2C%20neuseelandsalat.mp4%2C%20%2C%2010%20MB%2C%20%2012.01.2012%2C%20Schneider%2C%20naturvielfalt%2C%20%20%20%0ASound%20von%20Neuseelandsalat%2C%20neuseelandsalat.mp3%2C%20%2C%201%20MB%2C%20%2002.03.2012%2C%20Wikipedia%2C%20eidechse66%2C%20%20%20</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Icon" x="343" y="25" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>DocPDFIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Icon" x="692" y="25" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="2" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>Trash2Icon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Icon" x="692" y="88" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>Trash2Icon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="343" y="57" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="4" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>DocPDFIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Icon" x="343" y="88" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="5" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>CameraIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::Icon" x="343" y="112" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="6" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>VideoCameraIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+        <control controlID="8" controlTypeID="com.balsamiq.mockups::Icon" x="343" y="144" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="7" locked="false" isInGroup="68">
+          <controlProperties>
+            <icon>VolumeIcon%7Csmall</icon>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="70" controlTypeID="__group__" x="515" y="458" w="714" h="230" measuredW="714" measuredH="230" zOrder="8" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="714" h="230" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="70">
+          <controlProperties>
+            <text>Dateien</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Button" x="503" y="49" w="-1" h="-1" measuredW="99" measuredH="27" zOrder="1" locked="false" isInGroup="70">
+          <controlProperties>
+            <text>Durchsuche...</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::RoundButton" x="15" y="46" w="480" h="32" measuredW="32" measuredH="32" zOrder="2" locked="false" isInGroup="70">
+          <controlProperties>
+            <align>left</align>
+            <color>10066329</color>
+            <shape>rectangle</shape>
+            <text>/home/reto/Desktop/zivi/excel.xls</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="15" y="21" w="-1" h="-1" measuredW="105" measuredH="21" zOrder="3" locked="false" isInGroup="70">
+          <controlProperties>
+            <text>Datei%20heraufladen</text>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::RoundButton" x="15" y="111" w="480" h="32" measuredW="32" measuredH="32" zOrder="4" locked="false" isInGroup="70">
+          <controlProperties>
+            <align>left</align>
+            <shape>rectangle</shape>
+            <text>Eine%20tolle%20Excelliste</text>
+          </controlProperties>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="15" y="86" w="-1" h="-1" measuredW="82" measuredH="21" zOrder="5" locked="false" isInGroup="70">
+          <controlProperties>
+            <text>Beschreibung</text>
+          </controlProperties>
+        </control>
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::RoundButton" x="15" y="183" w="480" h="32" measuredW="32" measuredH="32" zOrder="6" locked="false" isInGroup="70">
+          <controlProperties>
+            <align>left</align>
+            <shape>rectangle</shape>
+            <text>Dr.%20Prof.%20Superhirn</text>
+          </controlProperties>
+        </control>
+        <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="15" y="158" w="-1" h="-1" measuredW="36" measuredH="21" zOrder="7" locked="false" isInGroup="70">
+          <controlProperties>
+            <text>Autor</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
     </control>
   </controls>
 </mockup>

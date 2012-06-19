@@ -771,13 +771,14 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="92" controlTypeID="com.balsamiq.mockups::StickyNote" x="219" y="766" w="176" h="191" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="92" controlTypeID="com.balsamiq.mockups::StickyNote" x="188" y="766" w="212" h="469" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Falls%20es%20die%20Berechtigung%20erlaubt%2C%20werden%20Links%20zum%0A%20-%20L%F6schen%0A%20-%20Editieren%0A%20-%20Ansehen%0Aangezeigt</text>
+        <text>Falls%20es%20die%20Berechtigung%20erlaubt%2C%20werden%20Links%20zum%0A%20-%20L%F6schen%0A%20-%20Editieren%0A%20-%20Ansehen%0Aangezeigt%0A%20%0ACheckbox%3A%20Nur%20angehakte%20Gebiete%20werden%20%FCberhaupt%20auf%20der%20Map%20dargestellt.%20Per%20Default%20sind%20alle%20Checkboxen%20angehakt.</text>
       </controlProperties>
     </control>
-    <control controlID="93" controlTypeID="com.balsamiq.mockups::Arrow" x="386" y="851" w="164" h="100" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="93" controlTypeID="com.balsamiq.mockups::Arrow" x="386" y="851" w="164" h="83" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
+        <leftArrow>false</leftArrow>
         <text/>
       </controlProperties>
     </control>

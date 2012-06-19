@@ -131,19 +131,19 @@
         <text>1%29%20Mit%20der%20Toolbar%20k%F6nnen%20Gebietspunkte/linien/fl%E4chen%20auf%20der%20Karte%20gezeichnet%20werden.%20%0A2%29%20Anschliessend%20wird%20das%20Popup%20angezeigt.%0A3%29%20Durch%20Klicken%20des%20%22Erstellen%22-Buttons%20wird%20das%20Gebiet%20in%20einer%20neuen%20Maske%20angezeigt.</text>
       </controlProperties>
     </control>
-    <control controlID="54" controlTypeID="com.balsamiq.mockups::CallOut" x="689" y="246" w="-1" h="-1" measuredW="37" measuredH="43" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::CallOut" x="689" y="246" w="-1" h="-1" measuredW="37" measuredH="40" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>1</text>
       </controlProperties>
     </control>
-    <control controlID="56" controlTypeID="com.balsamiq.mockups::CallOut" x="702" y="368" w="-1" h="-1" measuredW="39" measuredH="39" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::CallOut" x="702" y="368" w="-1" h="-1" measuredW="39" measuredH="40" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>2</text>
       </controlProperties>
     </control>
-    <control controlID="57" controlTypeID="com.balsamiq.mockups::CallOut" x="708" y="490" w="-1" h="-1" measuredW="38" measuredH="43" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::CallOut" x="708" y="490" w="-1" h="-1" measuredW="38" measuredH="39" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>3</text>
@@ -202,6 +202,17 @@
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C178%2C393%2C201%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2266_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C201%2C393%2C224%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%2266_1%22/%3E%0A</map>
         <selectedIndex>-1</selectedIndex>
         <text>%3E%20Gebiete%0A%3E%20Gebiet%20erstellen</text>
+      </controlProperties>
+    </control>
+    <control controlID="67" controlTypeID="com.balsamiq.mockups::StickyNote" x="897" y="605" w="332" h="123" measuredW="109" measuredH="123" zOrder="30" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Erstellte%20Gebiete%20sind%20standardm%E4ssig%20von%20Dritten%20verwendbar.</text>
+      </controlProperties>
+    </control>
+    <control controlID="68" controlTypeID="com.balsamiq.mockups::Arrow" x="805" y="510" w="164" h="121" measuredW="150" measuredH="100" zOrder="31" locked="false" isInGroup="-1">
+      <controlProperties>
+        <leftArrow>false</leftArrow>
+        <text/>
       </controlProperties>
     </control>
   </controls>

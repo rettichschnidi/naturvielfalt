@@ -272,9 +272,9 @@
         <text>Synonyme</text>
       </controlProperties>
     </control>
-    <control controlID="34" controlTypeID="com.balsamiq.mockups::StickyNote" x="1500" y="484" w="387" h="176" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::StickyNote" x="1500" y="484" w="387" h="182" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Falls%20mehrere%20wissenschaftliche%20Namen%20f%FCr%20ein%20Organismus%20vorhanden%2C%20so%20werden%202%20Zeilen%20angezeigt.%20Selbes%20gilt%2C%20wenn%20mehrere%20Synonyme%20in%20einer%20Landessprache%20existieren.%0A%20%0AACHTUNG%3A%20Die%20Anzahl%20dargestellter%20Zeilen%20ist%20%22Anzahl%20wissenschaftlicher%20Namen%22%20x%20%22Anzahl%20lokaler%20Namen%22.</text>
+        <text>Falls%20mehrere%20wissenschaftliche%20Namen%20f%FCr%20ein%20Organismus%20vorhanden%2C%20so%20werden%202%20Zeilen%20angezeigt.%20Selbes%20gilt%2C%20wenn%20mehrere%20Synonyme%20in%20einer%20Landessprache%20existieren.%0A%20%0AACHTUNG%3A%20Die%20Anzahl%20dargestellter%20Zeilen%20entspricht%20%22Anzahl%20wissenschaftlicher%20Namen%22%20x%20%22Anzahl%20lokaler%20Namen%20der%20aktuellen%20Sprache%22.%20Potentiell%20also%20viele.</text>
       </controlProperties>
     </control>
     <control controlID="35" controlTypeID="com.balsamiq.mockups::Arrow" x="1312" y="571" w="196" h="80" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
@@ -282,6 +282,25 @@
         <curvature>1</curvature>
         <direction>bottom</direction>
         <leftArrow>false</leftArrow>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::StickyNote" x="996" y="43" w="296" h="131" measuredW="109" measuredH="123" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Da%20Synonyme%20zu%20doppelten%20Eintr%E4gen%20in%20der%20unteren%20Tabelle%20f%FChren%2C%20stimmen%20diese%20Zahlen%20nicht%20immer%20%FCberein.</text>
+      </controlProperties>
+    </control>
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Arrow" x="996" y="167" w="100" h="544" measuredW="150" measuredH="100" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <curvature>0</curvature>
+        <direction>bottom</direction>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Arrow" x="887" y="167" w="167" h="82" measuredW="150" measuredH="100" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <curvature>0</curvature>
+        <direction>bottom</direction>
         <text/>
       </controlProperties>
     </control>
