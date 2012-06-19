@@ -342,7 +342,7 @@
     </control>
     <control controlID="86" controlTypeID="com.balsamiq.mockups::StickyNote" x="211" y="875" w="232" h="123" measuredW="109" measuredH="123" zOrder="40" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Wer%20darf%20alles%20Bilder%20hinzuf%FCgen%3F</text>
+        <text>Jeder%20Benutzer%2C%20der%20dieses%20Gebiet%20ansehen%20kann%2C%20darf%20Bilder%20und%20Dokumente%20hinaufladen.</text>
       </controlProperties>
     </control>
     <control controlID="87" controlTypeID="com.balsamiq.mockups::Arrow" x="443" y="901" w="320" h="285" measuredW="150" measuredH="100" zOrder="41" locked="false" isInGroup="-1">
