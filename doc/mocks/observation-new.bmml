@@ -382,7 +382,7 @@
             <text>Beobachter</text>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::TextInput" x="0" y="21" w="107" h="-1" measuredW="63" measuredH="27" zOrder="1" locked="false" isInGroup="115">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::TextInput" x="0" y="21" w="107" h="-1" measuredW="65" measuredH="27" zOrder="1" locked="false" isInGroup="115">
           <controlProperties>
             <text>storch52</text>
           </controlProperties>
@@ -451,5 +451,35 @@
       </groupChildrenDescriptors>
     </control>
     <control controlID="125" controlTypeID="com.balsamiq.mockups::VRule" x="637" y="319" w="-1" h="171" measuredW="5" measuredH="100" zOrder="52" locked="false" isInGroup="-1"/>
+    <control controlID="126" controlTypeID="__group__" x="109" y="15" w="393" h="246" measuredW="393" measuredH="246" zOrder="53" locked="false" isInGroup="-1">
+      <controlProperties>
+        <controlName>status%20draft</controlName>
+        <markup>true</markup>
+      </controlProperties>
+      <groupChildrenDescriptors>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="37" y="25" w="-1" h="-1" measuredW="146.1371803175385" measuredH="103.71077344634566" zOrder="1" locked="false" isInGroup="126">
+          <controlProperties>
+            <color>16777215</color>
+            <size>60</size>
+            <text>draft</text>
+            <textOrientation>slanted</textOrientation>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="__group__" x="0" y="0" w="393" h="246" measuredW="393" measuredH="246" zOrder="0" locked="false" isInGroup="126">
+          <controlProperties>
+            <crop>506%2C497%2C494%2C503</crop>
+          </controlProperties>
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::RoundButton" x="0" y="0" w="796" h="489" measuredW="32" measuredH="32" zOrder="0" locked="false" isInGroup="4">
+              <controlProperties>
+                <borderColor>15843890</borderColor>
+                <color>15843890</color>
+                <shape>diamond</shape>
+              </controlProperties>
+            </control>
+          </groupChildrenDescriptors>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
   </controls>
 </mockup>

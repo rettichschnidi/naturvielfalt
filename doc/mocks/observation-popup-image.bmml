@@ -6,10 +6,10 @@
       </controlProperties>
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="787" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
-    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="659" measuredW="258" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="659" measuredW="202" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <selectedIndex>1</selectedIndex>
-        <text>%DCbersicht%2C%20Gallerie%2C%20Erstellen</text>
+        <text>%DCbersicht%2C%20Gallerie</text>
       </controlProperties>
     </control>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1"/>
@@ -217,7 +217,7 @@
         <text>1%2C2%2C3%2C4</text>
       </controlProperties>
     </control>
-    <control controlID="84" controlTypeID="com.balsamiq.mockups::Canvas" x="109" y="20" w="1425" h="821" measuredW="100" measuredH="70" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="84" controlTypeID="com.balsamiq.mockups::Canvas" x="109" y="82" w="1425" h="821" measuredW="100" measuredH="70" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.25</backgroundAlpha>
         <color>0</color>

@@ -109,13 +109,13 @@
             <text>Land*%3A</text>
           </controlProperties>
         </control>
-        <control controlID="25" controlTypeID="com.balsamiq.mockups::ComboBox" x="173" y="185" w="175" h="-1" measuredW="79" measuredH="23" zOrder="15" locked="false" isInGroup="107">
+        <control controlID="25" controlTypeID="com.balsamiq.mockups::ComboBox" x="173" y="185" w="175" h="-1" measuredW="80" measuredH="23" zOrder="15" locked="false" isInGroup="107">
           <controlProperties>
             <state>closed</state>
             <text>Schweiz%0ADeutschland%0A%D6sterreich</text>
           </controlProperties>
         </control>
-        <control controlID="26" controlTypeID="com.balsamiq.mockups::TextInput" x="175" y="61" w="175" h="-1" measuredW="63" measuredH="27" zOrder="16" locked="false" isInGroup="107">
+        <control controlID="26" controlTypeID="com.balsamiq.mockups::TextInput" x="175" y="61" w="175" h="-1" measuredW="65" measuredH="27" zOrder="16" locked="false" isInGroup="107">
           <controlProperties>
             <text>storch52</text>
           </controlProperties>
@@ -133,6 +133,11 @@
         <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22247%2C104%2C420%2C133%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22109%22/%3E</map>
         <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::StickyNote" x="1067" y="224" w="208" h="145" measuredW="109" measuredH="123" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Falls%20Drupal%20eingesetzt%20wird%2C%20wird%20dieser%20Screen%20einiges%20anders%20aussehen%2C%20inhaltlich%20aber%20gleich%20sein.</text>
       </controlProperties>
     </control>
   </controls>

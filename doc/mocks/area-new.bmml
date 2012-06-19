@@ -20,7 +20,7 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::Label" x="541" y="171" w="-1" h="-1" measuredW="174" measuredH="24" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::Label" x="541" y="171" w="-1" h="-1" measuredW="170" measuredH="24" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <bold>true</bold>
         <size>16</size>
@@ -86,14 +86,14 @@
             <tooltipDirection>SW</tooltipDirection>
           </controlProperties>
         </control>
-        <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="23" y="28" w="206" h="21" measuredW="176" measuredH="24" zOrder="1" locked="false" isInGroup="50">
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="23" y="28" w="206" h="21" measuredW="173" measuredH="24" zOrder="1" locked="false" isInGroup="50">
           <controlProperties>
             <bold>true</bold>
             <size>16</size>
             <text>Flurname/Gebietsname</text>
           </controlProperties>
         </control>
-        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="23" y="76" w="-1" h="-1" measuredW="383" measuredH="21" zOrder="2" locked="false" isInGroup="50">
+        <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="23" y="76" w="-1" h="-1" measuredW="382" measuredH="21" zOrder="2" locked="false" isInGroup="50">
           <controlProperties>
             <bold>false</bold>
             <text>Bitte%20f%FCgen%20Sie%20dem%20Gebiet%20einen%20Flurnamen/Gebietsnamen%20hinzu.</text>
@@ -131,19 +131,19 @@
         <text>1%29%20Mit%20der%20Toolbar%20k%F6nnen%20Gebietspunkte/linien/fl%E4chen%20auf%20der%20Karte%20gezeichnet%20werden.%20%0A2%29%20Anschliessend%20wird%20das%20Popup%20angezeigt.%0A3%29%20Durch%20Klicken%20des%20%22Erstellen%22-Buttons%20wird%20das%20Gebiet%20in%20einer%20neuen%20Maske%20angezeigt.</text>
       </controlProperties>
     </control>
-    <control controlID="54" controlTypeID="com.balsamiq.mockups::CallOut" x="689" y="246" w="-1" h="-1" measuredW="37" measuredH="40" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::CallOut" x="689" y="246" w="-1" h="-1" measuredW="37" measuredH="43" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>1</text>
       </controlProperties>
     </control>
-    <control controlID="56" controlTypeID="com.balsamiq.mockups::CallOut" x="702" y="368" w="-1" h="-1" measuredW="39" measuredH="40" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::CallOut" x="702" y="368" w="-1" h="-1" measuredW="38" measuredH="39" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>2</text>
       </controlProperties>
     </control>
-    <control controlID="57" controlTypeID="com.balsamiq.mockups::CallOut" x="708" y="490" w="-1" h="-1" measuredW="38" measuredH="39" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::CallOut" x="708" y="490" w="-1" h="-1" measuredW="38" measuredH="40" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>3</text>
