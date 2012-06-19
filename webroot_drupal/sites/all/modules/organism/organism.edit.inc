@@ -147,7 +147,7 @@ function organism_edit_file($form, &$form_state) {
 					'doc txt pdf docx mp3'
 			),
 			'file_validate_size' => array(
-					1000000,
+					8388608,
 					0
 			),
 	);
