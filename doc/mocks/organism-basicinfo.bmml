@@ -29,12 +29,13 @@
         <text>Basisinfo%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
-    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="177" w="585" h="19" measuredW="581" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="475" y="169" w="585" h="19" measuredW="485" measuredH="21" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Attribute%20und%20Synonyme%20von%20Tetragonia%20expansa%20Murray%20%28Wikipedia-Link%3A%20%5BTetragonia%20expansa%20Murray%5D%29</text>
+        <bold>true</bold>
+        <text>Tetragonia%20expansa%20Murray%20/%20Deutscher%20Name%20%28%20%20%20%20%20%20%20%20%20%5BTetragonia%20expansa%20Murray%5D%29</text>
       </controlProperties>
     </control>
-    <control controlID="36" controlTypeID="__group__" x="498" y="815" w="719" h="210" measuredW="719" measuredH="210" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="36" controlTypeID="__group__" x="498" y="815" w="719" h="210" measuredW="719" measuredH="210" zOrder="9" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="29" w="719" h="151" measuredW="267" measuredH="85" zOrder="0" locked="false" isInGroup="36">
           <controlProperties>
@@ -118,12 +119,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::StickyNote" x="688" y="325" w="323" h="271" measuredW="109" measuredH="123" zOrder="19" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>-%20Wessen%20Bilder/Videos/Sounds%20anzeigen%3F%0A-%20Welche%20Bilder/Videos/Sounds%20anzeigen%3F%20%28Belegbilder/Portraitbilder%29</text>
-      </controlProperties>
-    </control>
-    <control controlID="50" controlTypeID="__group__" x="498" y="659" w="719" h="141" measuredW="719" measuredH="141" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="50" controlTypeID="__group__" x="498" y="659" w="719" h="141" measuredW="719" measuredH="141" zOrder="6" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="141" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="50">
           <controlProperties>
@@ -176,7 +172,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="51" controlTypeID="__group__" x="498" y="399" w="719" h="122" measuredW="719" measuredH="122" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="51" controlTypeID="__group__" x="498" y="399" w="719" h="122" measuredW="719" measuredH="122" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties/>
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="122" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="51">
@@ -185,34 +181,150 @@
             <text>Sound</text>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="26" y="19" w="93" h="73" measuredW="188" measuredH="150" zOrder="1" locked="false" isInGroup="51">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="26" y="19" w="56" h="52" measuredW="77" measuredH="79" zOrder="1" locked="false" isInGroup="51">
           <controlProperties>
             <href>organism-basicinfo-popup-sound%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22484%2C407%2C577%2C480%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%221%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22484%2C407%2C540%2C459%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%221%22/%3E</map>
             <src>http%3A//localhost/%7Ereto/naturvielfalt/sites/all/modules/gallery/images/music_icon.png</src>
             <text/>
           </controlProperties>
         </control>
+        <control controlID="2" controlTypeID="__group__" x="0" y="86" w="717" h="36" measuredW="717" measuredH="36" zOrder="2" locked="false" isInGroup="51">
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::RoundButton" x="0" y="2" w="717" h="33" measuredW="32" measuredH="32" zOrder="0" locked="false" isInGroup="2">
+              <controlProperties>
+                <shape>rectangle</shape>
+                <text/>
+              </controlProperties>
+            </control>
+            <control controlID="1" controlTypeID="com.balsamiq.mockups::Icon" x="6" y="4" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>SearchIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="2" controlTypeID="com.balsamiq.mockups::ComboBox" x="52" y="7" w="59" h="-1" measuredW="46" measuredH="23" zOrder="2" locked="false" isInGroup="2">
+              <controlProperties>
+                <state>closed</state>
+                <text>10%0A15%0A20%0A25%0A40</text>
+              </controlProperties>
+            </control>
+            <control controlID="3" controlTypeID="com.balsamiq.mockups::Icon" x="132" y="5" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>RewindChapterIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="165" y="5" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="4" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>LeftTriangleIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="5" controlTypeID="com.balsamiq.mockups::Icon" x="305" y="7" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="5" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>RewindChapterIcon%7Csmall</icon>
+                <rotation>180</rotation>
+              </controlProperties>
+            </control>
+            <control controlID="6" controlTypeID="com.balsamiq.mockups::Icon" x="280" y="7" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="6" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>LeftTriangleIcon%7Csmall</icon>
+                <rotation>180</rotation>
+              </controlProperties>
+            </control>
+            <control controlID="7" controlTypeID="com.balsamiq.mockups::TextInput" x="236" y="5" w="22" h="-1" measuredW="21" measuredH="27" zOrder="7" locked="false" isInGroup="2">
+              <controlProperties>
+                <text>1</text>
+              </controlProperties>
+            </control>
+            <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="198" y="7" w="38" h="22" measuredW="37" measuredH="21" zOrder="8" locked="false" isInGroup="2">
+              <controlProperties>
+                <text>Seite</text>
+              </controlProperties>
+            </control>
+            <control controlID="9" controlTypeID="com.balsamiq.mockups::VRule" x="342" y="2" w="-1" h="34" measuredW="5" measuredH="100" zOrder="9" locked="false" isInGroup="2"/>
+            <control controlID="10" controlTypeID="com.balsamiq.mockups::VRule" x="190" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="10" locked="false" isInGroup="2"/>
+            <control controlID="11" controlTypeID="com.balsamiq.mockups::VRule" x="268" y="2" w="-1" h="34" measuredW="5" measuredH="100" zOrder="11" locked="false" isInGroup="2"/>
+            <control controlID="12" controlTypeID="com.balsamiq.mockups::VRule" x="116" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="12" locked="false" isInGroup="2"/>
+            <control controlID="13" controlTypeID="com.balsamiq.mockups::VRule" x="36" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="13" locked="false" isInGroup="2"/>
+          </groupChildrenDescriptors>
+        </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="52" controlTypeID="__group__" x="498" y="247" w="719" h="137" measuredW="719" measuredH="137" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="52" controlTypeID="__group__" x="498" y="247" w="719" h="137" measuredW="719" measuredH="137" zOrder="7" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="137" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="52">
           <controlProperties>
-            <text>Bilder</text>
+            <text>Portraitbilder</text>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="26" y="28" w="88" h="80" measuredW="598" measuredH="408" zOrder="1" locked="false" isInGroup="52">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="26" y="28" w="71" h="66" measuredW="598" measuredH="408" zOrder="1" locked="false" isInGroup="52">
           <controlProperties>
             <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22484%2C264%2C572%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%221%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22484%2C264%2C555%2C330%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%221%22/%3E</map>
             <src>./assets/neuseelandspinat.jpg</src>
             <text/>
           </controlProperties>
         </control>
+        <control controlID="2" controlTypeID="__group__" x="0" y="101" w="717" h="36" measuredW="717" measuredH="36" zOrder="2" locked="false" isInGroup="52">
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::RoundButton" x="0" y="2" w="717" h="33" measuredW="32" measuredH="32" zOrder="0" locked="false" isInGroup="2">
+              <controlProperties>
+                <shape>rectangle</shape>
+                <text/>
+              </controlProperties>
+            </control>
+            <control controlID="1" controlTypeID="com.balsamiq.mockups::Icon" x="6" y="4" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>SearchIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="2" controlTypeID="com.balsamiq.mockups::ComboBox" x="52" y="7" w="59" h="-1" measuredW="46" measuredH="23" zOrder="2" locked="false" isInGroup="2">
+              <controlProperties>
+                <state>closed</state>
+                <text>10%0A15%0A20%0A25%0A40</text>
+              </controlProperties>
+            </control>
+            <control controlID="3" controlTypeID="com.balsamiq.mockups::Icon" x="132" y="5" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>RewindChapterIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="165" y="5" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="4" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>LeftTriangleIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="5" controlTypeID="com.balsamiq.mockups::Icon" x="305" y="7" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="5" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>RewindChapterIcon%7Csmall</icon>
+                <rotation>180</rotation>
+              </controlProperties>
+            </control>
+            <control controlID="6" controlTypeID="com.balsamiq.mockups::Icon" x="280" y="7" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="6" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>LeftTriangleIcon%7Csmall</icon>
+                <rotation>180</rotation>
+              </controlProperties>
+            </control>
+            <control controlID="7" controlTypeID="com.balsamiq.mockups::TextInput" x="236" y="5" w="22" h="-1" measuredW="21" measuredH="27" zOrder="7" locked="false" isInGroup="2">
+              <controlProperties>
+                <text>1</text>
+              </controlProperties>
+            </control>
+            <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="198" y="7" w="38" h="22" measuredW="37" measuredH="21" zOrder="8" locked="false" isInGroup="2">
+              <controlProperties>
+                <text>Seite</text>
+              </controlProperties>
+            </control>
+            <control controlID="9" controlTypeID="com.balsamiq.mockups::VRule" x="342" y="2" w="-1" h="34" measuredW="5" measuredH="100" zOrder="9" locked="false" isInGroup="2"/>
+            <control controlID="10" controlTypeID="com.balsamiq.mockups::VRule" x="190" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="10" locked="false" isInGroup="2"/>
+            <control controlID="11" controlTypeID="com.balsamiq.mockups::VRule" x="268" y="2" w="-1" h="34" measuredW="5" measuredH="100" zOrder="11" locked="false" isInGroup="2"/>
+            <control controlID="12" controlTypeID="com.balsamiq.mockups::VRule" x="116" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="12" locked="false" isInGroup="2"/>
+            <control controlID="13" controlTypeID="com.balsamiq.mockups::VRule" x="36" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="13" locked="false" isInGroup="2"/>
+          </groupChildrenDescriptors>
+        </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="53" controlTypeID="__group__" x="498" y="531" w="719" h="122" measuredW="719" measuredH="122" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="53" controlTypeID="__group__" x="498" y="531" w="719" h="122" measuredW="719" measuredH="122" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties/>
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="122" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="53">
@@ -220,24 +332,82 @@
             <text>Video</text>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="27" y="24" w="93" h="73" measuredW="188" measuredH="150" zOrder="1" locked="false" isInGroup="53">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="27" y="24" w="51" h="47" measuredW="77" measuredH="79" zOrder="1" locked="false" isInGroup="53">
           <controlProperties>
             <href>organism-basicinfo-popup-video%26bm%3Borganism-basicinfo-popup-video.bmml%26bm%3Borganism-basicinfo-popup-video.bmml%26bm%3Borganism-basicinfo-popup-video.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22485%2C544%2C578%2C617%22%20href%3D%22organism-basicinfo-popup-video.bmml%22%20alt%3D%22organism-basicinfo-popup-video%22%20id%3D%221%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22485%2C544%2C536%2C591%22%20href%3D%22organism-basicinfo-popup-video.bmml%22%20alt%3D%22organism-basicinfo-popup-video%22%20id%3D%221%22/%3E</map>
             <src>http%3A//localhost/%7Ereto/naturvielfalt/sites/all/modules/gallery/images/video_icon.png</src>
             <text/>
           </controlProperties>
         </control>
+        <control controlID="2" controlTypeID="__group__" x="0" y="86" w="717" h="36" measuredW="717" measuredH="36" zOrder="2" locked="false" isInGroup="53">
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::RoundButton" x="0" y="2" w="717" h="33" measuredW="32" measuredH="32" zOrder="0" locked="false" isInGroup="2">
+              <controlProperties>
+                <shape>rectangle</shape>
+                <text/>
+              </controlProperties>
+            </control>
+            <control controlID="1" controlTypeID="com.balsamiq.mockups::Icon" x="6" y="4" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>SearchIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="2" controlTypeID="com.balsamiq.mockups::ComboBox" x="52" y="7" w="59" h="-1" measuredW="46" measuredH="23" zOrder="2" locked="false" isInGroup="2">
+              <controlProperties>
+                <state>closed</state>
+                <text>10%0A15%0A20%0A25%0A40</text>
+              </controlProperties>
+            </control>
+            <control controlID="3" controlTypeID="com.balsamiq.mockups::Icon" x="132" y="5" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="3" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>RewindChapterIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="165" y="5" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="4" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>LeftTriangleIcon%7Csmall</icon>
+              </controlProperties>
+            </control>
+            <control controlID="5" controlTypeID="com.balsamiq.mockups::Icon" x="305" y="7" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="5" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>RewindChapterIcon%7Csmall</icon>
+                <rotation>180</rotation>
+              </controlProperties>
+            </control>
+            <control controlID="6" controlTypeID="com.balsamiq.mockups::Icon" x="280" y="7" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="6" locked="false" isInGroup="2">
+              <controlProperties>
+                <icon>LeftTriangleIcon%7Csmall</icon>
+                <rotation>180</rotation>
+              </controlProperties>
+            </control>
+            <control controlID="7" controlTypeID="com.balsamiq.mockups::TextInput" x="236" y="5" w="22" h="-1" measuredW="21" measuredH="27" zOrder="7" locked="false" isInGroup="2">
+              <controlProperties>
+                <text>1</text>
+              </controlProperties>
+            </control>
+            <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="198" y="7" w="38" h="22" measuredW="37" measuredH="21" zOrder="8" locked="false" isInGroup="2">
+              <controlProperties>
+                <text>Seite</text>
+              </controlProperties>
+            </control>
+            <control controlID="9" controlTypeID="com.balsamiq.mockups::VRule" x="342" y="2" w="-1" h="34" measuredW="5" measuredH="100" zOrder="9" locked="false" isInGroup="2"/>
+            <control controlID="10" controlTypeID="com.balsamiq.mockups::VRule" x="190" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="10" locked="false" isInGroup="2"/>
+            <control controlID="11" controlTypeID="com.balsamiq.mockups::VRule" x="268" y="2" w="-1" h="34" measuredW="5" measuredH="100" zOrder="11" locked="false" isInGroup="2"/>
+            <control controlID="12" controlTypeID="com.balsamiq.mockups::VRule" x="116" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="12" locked="false" isInGroup="2"/>
+            <control controlID="13" controlTypeID="com.balsamiq.mockups::VRule" x="36" y="0" w="-1" h="34" measuredW="5" measuredH="100" zOrder="13" locked="false" isInGroup="2"/>
+          </groupChildrenDescriptors>
+        </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="56" controlTypeID="com.balsamiq.mockups::Label" x="356" y="115" w="173" h="29" measuredW="10" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::Label" x="356" y="115" w="173" h="29" measuredW="10" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22316%2C104%2C489%2C133%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%2256%22/%3E</map>
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="57" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="209" w="120" h="225" measuredW="300" measuredH="225" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="209" w="120" h="225" measuredW="300" measuredH="225" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
@@ -248,38 +418,39 @@
         <text>%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
-    <control controlID="58" controlTypeID="com.balsamiq.mockups::StickyNote" x="40" y="399" w="330" h="161" measuredW="109" measuredH="123" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="58" controlTypeID="com.balsamiq.mockups::StickyNote" x="40" y="399" w="330" h="161" measuredW="109" measuredH="123" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Wird%20nur%20eingeblendet%2C%20wenn%20gen%FCgend%20Rechte%20vorhanden.%0A%20%0ATODO%3A%20Erforderliche%20Rechte%20definieren.%20Oder%20steht%20die%20Abmachung%20mit%20dem%20%22Organism%20Moderator%22-Drupal-Rolle%20noch%3F</text>
+        <text>Wird%20nur%20eingeblendet%2C%20wenn%20Benutzer%20angemeldet.</text>
+        <underline>true</underline>
       </controlProperties>
     </control>
-    <control controlID="59" controlTypeID="com.balsamiq.mockups::Arrow" x="332" y="221" w="253" h="213" measuredW="150" measuredH="100" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::Arrow" x="332" y="221" w="253" h="213" measuredW="150" measuredH="100" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <direction>bottom</direction>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="60" controlTypeID="com.balsamiq.mockups::StickyNote" x="1281" y="668" w="469" h="123" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="60" controlTypeID="com.balsamiq.mockups::StickyNote" x="1281" y="668" w="469" h="123" measuredW="109" measuredH="123" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Alle%20Attribute%20werden%20aktuell%20so%20dargestellt.%20Brauchen%20wir%20%22versteckte%22%20Attribute%2C%20welche%20hier%20nicht%20dargestellt%20werden%20sollten%3F</text>
       </controlProperties>
     </control>
-    <control controlID="61" controlTypeID="com.balsamiq.mockups::StickyNote" x="1281" y="859" w="469" h="123" measuredW="109" measuredH="123" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::StickyNote" x="1281" y="859" w="469" h="123" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Sollten%20hier%20auch%20Synonyme%20der%20aktuellen%20Benutzersprache%20angezeigt%20werden%3F%20Evt.%20sogar%20von%20anderen%20Sprachen%3F%0A%20%0ATODO/Vorschlag%3A%20Statische%20Tabelle%20verwenden</text>
       </controlProperties>
     </control>
-    <control controlID="62" controlTypeID="com.balsamiq.mockups::StickyNote" x="1070" y="135" w="219" h="183" measuredW="109" measuredH="123" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::StickyNote" x="1068" y="115" w="219" h="183" measuredW="109" measuredH="123" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Link%20auf%20den%20Wikipedia-Artikel%20%28Nur%20wenn%20Artikel%20in%20der%20Benutzersprache%20existent%29</text>
       </controlProperties>
     </control>
-    <control controlID="63" controlTypeID="com.balsamiq.mockups::FieldSet" x="477" y="1068" w="755" h="158" measuredW="200" measuredH="170" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="63" controlTypeID="com.balsamiq.mockups::FieldSet" x="477" y="1068" w="755" h="158" measuredW="200" measuredH="170" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Dateien</text>
       </controlProperties>
     </control>
-    <control controlID="65" controlTypeID="__group__" x="490" y="1097" w="719" h="101" measuredW="719" measuredH="101" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="65" controlTypeID="__group__" x="490" y="1097" w="719" h="101" measuredW="719" measuredH="101" zOrder="18" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="0" w="719" h="101" measuredW="551" measuredH="85" zOrder="0" locked="false" isInGroup="65">
           <controlProperties>
@@ -298,9 +469,30 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="66" controlTypeID="com.balsamiq.mockups::StickyNote" x="1278" y="1086" w="241" h="123" measuredW="109" measuredH="123" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::StickyNote" x="1278" y="1086" w="241" h="123" measuredW="109" measuredH="123" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Vorschlag%3A%20Statische%20Tabelle%20verwenden</text>
+      </controlProperties>
+    </control>
+    <control controlID="67" controlTypeID="com.balsamiq.mockups::Canvas" x="462" y="159" w="807" h="39" measuredW="100" measuredH="70" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>11982760</color>
+      </controlProperties>
+    </control>
+    <control controlID="68" controlTypeID="com.balsamiq.mockups::StickyNote" x="65" y="131" w="224" h="108" measuredW="109" measuredH="123" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Familie%20wissenschaftlich%20/%20Familie%20deutsch%2C%20Art%20wissenschaftlich%2C%20Art%20deutsch</text>
+      </controlProperties>
+    </control>
+    <control controlID="69" controlTypeID="com.balsamiq.mockups::Arrow" x="274" y="159" w="201" h="24" measuredW="150" measuredH="100" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="70" controlTypeID="com.balsamiq.mockups::Image" x="763" y="167" w="22" h="23" measuredW="48" measuredH="48" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./icons/Wikipedia_Icon.png</src>
+        <text/>
       </controlProperties>
     </control>
   </controls>

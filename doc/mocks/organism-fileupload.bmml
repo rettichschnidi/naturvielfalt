@@ -1,13 +1,13 @@
-<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="822" mockupW="1425" mockupH="811">
+<mockup version="1.0" skin="sketch" measuredW="1534" measuredH="869" mockupW="1425" mockupH="858">
   <controls>
-    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="811" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="109" y="11" w="1425" h="858" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Herzlich%20willkommen...%0Ahttp%3A//www.naturvielfalt.ch/</text>
         <value>0</value>
         <verticalScrollbar>false</verticalScrollbar>
       </controlProperties>
     </control>
-    <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="689" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="712" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="2" locked="false" isInGroup="-1"/>
     <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="342" y="89" w="926" h="70" measuredW="1278" measuredH="133" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
@@ -35,12 +35,12 @@
         <text>Anguilla%20anguilla</text>
       </controlProperties>
     </control>
-    <control controlID="49" controlTypeID="com.balsamiq.mockups::Button" x="515" y="699" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::Button" x="506" y="759" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Hochladen</text>
       </controlProperties>
     </control>
-    <control controlID="51" controlTypeID="com.balsamiq.mockups::Arrow" x="612" y="434" w="229" h="273" measuredW="150" measuredH="100" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Arrow" x="603" y="494" w="229" h="273" measuredW="150" measuredH="100" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <color>13576743</color>
         <curvature>-1</curvature>
@@ -66,7 +66,7 @@
         <text>%3E%20Klassifizierer</text>
       </controlProperties>
     </control>
-    <control controlID="68" controlTypeID="__group__" x="510" y="248" w="719" h="201" measuredW="719" measuredH="201" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="68" controlTypeID="__group__" x="501" y="308" w="719" h="201" measuredW="719" measuredH="201" zOrder="7" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="0" w="719" h="201" measuredW="732" measuredH="175" zOrder="0" locked="false" isInGroup="68">
           <controlProperties>
@@ -110,7 +110,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="70" controlTypeID="__group__" x="515" y="458" w="714" h="230" measuredW="714" measuredH="230" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="70" controlTypeID="__group__" x="506" y="518" w="714" h="230" measuredW="714" measuredH="230" zOrder="8" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="714" h="230" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="70">
           <controlProperties>
@@ -160,6 +160,11 @@
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
+    </control>
+    <control controlID="71" controlTypeID="com.balsamiq.mockups::Label" x="499" y="258" w="716" h="38" measuredW="555" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>ACHTUNG%21%20Nur%20f%FCr%20erfahrene%20Artkenner.%20Diese%20Portraitbilder%20werden%20f%FCr%20alle%20Benutzer%20angezeigt.</text>
+      </controlProperties>
     </control>
   </controls>
 </mockup>
