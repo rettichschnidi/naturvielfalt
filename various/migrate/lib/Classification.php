@@ -270,7 +270,6 @@ class Classification {
 						->startTransactionIfPossible();
 				}
 			}
-
 			$this->addOrganism($organism);
 		}
 		$this->db
@@ -330,7 +329,7 @@ class Classification {
 					$classificationLevelId = $classificationLevels[$classificationLevelName];
 				} else {
 					print 
-						"Miss for classification level: $classificationLevelName\n";
+						"Cache miss for classification level: $classificationLevelName [" . $this->classifier_name . "]\n";
 					$classificationLevelId = $this->getOrCreateClassificationLevelName(
 							$classificationLevelName,
 							$parentClassificationLevelId);
@@ -345,7 +344,7 @@ class Classification {
 						//print "Hit for classification: $classificationName\n";
 						$classificationId = $currentClassifications[$classificationName]['id'];
 					} else {
-						// print "Miss for classification: $classificationName\n";
+						print "Cache miss for classification: $classificationName [" . $this->classifier_name . "]\n";
 						$classificationId = $this->getOrCreateClassification(
 								$classificationName,
 								$parentClassificationId,
@@ -432,11 +431,22 @@ class Classification {
 		}
 	}
 
+	/**
+	 * Return next id of id field in given table.
+	 * @param string $tablename
+	 */
 	private function getNextval($tablename) {
 		return $this->db
 			->get_nextval($tablename . '_id_seq');
 	}
 
+	/**
+	 * Return a single field of a record.
+	 * 
+	 * @param string $column
+	 * @param string $table
+	 * @param integer $id
+	 */
 	private function getSingleValue($column, $table, $id) {
 		assert($column != NULL);
 		assert($table != NULL);
@@ -462,6 +472,14 @@ class Classification {
 		return $rows[0][$column];
 	}
 
+	/**
+	 * If existing: return existing ClassificationLevel
+	 * If not: create classification level and return it
+	 * 
+	 * @param string $classification_level_name
+	 * @param string $parent_id
+	 * @return id
+	 */
 	private function getOrCreateClassificationLevelName(
 			$classification_level_name, $parent_id) {
 		$table = $this->classification_level_table;
@@ -779,14 +797,16 @@ class Classification {
 	}
 
 	/**
+	 * Create organism including subscription to its classifier and all scientific names.
 	 * 
-	 * @param unknown_type $organismNames
-	 * @param unknown_type $classificationId
-	 * @param unknown_type $parentOrganismId
+	 * @param array of strings $organismNames
+	 * @param integer $classificationId
+	 * @param integer $parentOrganismId
 	 */
 	private function getOrCreateOrganism($organismNames, $classificationId,
 			$parentOrganismId = NULL) {
 		$primeFatherOrganismId = NULL;
+		$organism_id = NULL;
 		$table = $this->scientific_name_table;
 
 		// if already existing in cache, return the organism id
@@ -817,142 +837,144 @@ class Classification {
 					$typesArray,
 					$valuesArray);
 			if (count($rows) == 1) {
-				print "$organismName already existing.\n";
+				// print "$organismName already existing.\n";
 				$this->scientific_names[$organismName] = $rows[0]['organism_id'];
-				return $rows[0]['organism_id'];
+				$organism_id = $rows[0]['organism_id'];
 			}
 		}
 
-		$table = $this->organism_table;
-		$newid = $this->getNextval($table);
-		if ($parentOrganismId == NULL) {
-			$leftValue = 1;
-			$rightValue = 2;
-			$parentOrganismId = $newid;
-			$primeFatherOrganismId = $newid;
-		} else {
-			$parentRightValue = $this->getSingleValue(
-					'right_value',
-					$table,
-					$parentOrganismId);
-			$primeFatherOrganismId = $this->getSingleValue(
-					'prime_father_id',
-					$table,
-					$parentOrganismId);
-			assert($parentPrimeFatherId == $primeFatherOrganismId);
-
-			$query = "UPDATE
-							$table
-						SET
-							right_value = right_value + 2
-						WHERE
-							prime_father_id = ?
-							AND right_value >= ?";
-			$typesArray = array(
-					'integer',
-					'integer'
-			);
-			$valuesArray = array(
-					$primeFatherOrganismId,
-					$parentRightValue
-			);
-			$this->query($query, $typesArray, $valuesArray, false);
-
-			$query = "UPDATE
-							$table
-						SET
-							left_value = left_value + 2
-						WHERE
-							prime_father_id = ?
-							AND left_value > ?";
-			$typesArray = array(
-					'integer',
-					'integer'
-			);
-			$valuesArray = array(
-					$primeFatherOrganismId,
-					$parentRightValue
-			);
-			$this->db
-				->query($query, $typesArray, $valuesArray, false);
-
-			$leftValue = $parentRightValue;
-			$rightValue = $parentRightValue + 1;
-		}
-
-		$columnArray = array(
-				'id',
-				'parent_id',
-				'prime_father_id',
-				'left_value',
-				'right_value',
-		);
-		$typesArray = array(
-				'integer',
-				'integer',
-				'integer',
-				'integer',
-				'integer',
-		);
-		$valuesArray = array(
-				$newid,
-				$parentOrganismId,
-				$primeFatherOrganismId,
-				$leftValue,
-				$rightValue
-		);
-		$rowcount = $this->db
-			->insert_query($columnArray, $table, $typesArray, $valuesArray);
-		assert(count($rowcount) == 1);
-		$organism_id = $newid;
-
-		// Attach all names to organism			
-		$table = $this->scientific_name_table;
-		foreach ($organismNames as $organismName) {
+		// If organism not found, create it
+		if($organism_id == NULL) {
+			$table = $this->organism_table;
 			$newid = $this->getNextval($table);
+			if ($parentOrganismId == NULL) {
+				$leftValue = 1;
+				$rightValue = 2;
+				$parentOrganismId = $newid;
+				$primeFatherOrganismId = $newid;
+			} else {
+				$parentRightValue = $this->getSingleValue(
+						'right_value',
+						$table,
+						$parentOrganismId);
+				$primeFatherOrganismId = $this->getSingleValue(
+						'prime_father_id',
+						$table,
+						$parentOrganismId);
+				assert($parentPrimeFatherId == $primeFatherOrganismId);
+	
+				$query = "UPDATE
+								$table
+							SET
+								right_value = right_value + 2
+							WHERE
+								prime_father_id = ?
+								AND right_value >= ?";
+				$typesArray = array(
+						'integer',
+						'integer'
+				);
+				$valuesArray = array(
+						$primeFatherOrganismId,
+						$parentRightValue
+				);
+				$this->query($query, $typesArray, $valuesArray, false);
+	
+				$query = "UPDATE
+								$table
+							SET
+								left_value = left_value + 2
+							WHERE
+								prime_father_id = ?
+								AND left_value > ?";
+				$typesArray = array(
+						'integer',
+						'integer'
+				);
+				$valuesArray = array(
+						$primeFatherOrganismId,
+						$parentRightValue
+				);
+				$this->db
+					->query($query, $typesArray, $valuesArray, false);
+	
+				$leftValue = $parentRightValue;
+				$rightValue = $parentRightValue + 1;
+			}
+	
+			$columnArray = array(
+					'id',
+					'parent_id',
+					'prime_father_id',
+					'left_value',
+					'right_value',
+			);
+			$typesArray = array(
+					'integer',
+					'integer',
+					'integer',
+					'integer',
+					'integer',
+			);
+			$valuesArray = array(
+					$newid,
+					$parentOrganismId,
+					$primeFatherOrganismId,
+					$leftValue,
+					$rightValue
+			);
+			$rowcount = $this->db
+				->insert_query($columnArray, $table, $typesArray, $valuesArray);
+			assert(count($rowcount) == 1);
+			$organism_id = $newid;
+		
+			// Attach all names to organism			
+			$table = $this->scientific_name_table;
+			foreach ($organismNames as $organismName) {
+				$newid = $this->getNextval($table);
+				$columnArray = array(
+						'organism_id',
+						'name',
+						'id'
+				);
+				$typesArray = array(
+						'integer',
+						'text',
+						'integer'
+				);
+				$valuesArray = array(
+						$organism_id,
+						$organismName,
+						$newid
+				);
+				$numrow = $this->db
+					->insert_query($columnArray, $table, $typesArray, $valuesArray);
+				assert($numrow == 1);
+				$this->scientific_names[$organismName] = $organism_id;
+			}
+
+			// subscribe organism to classification
+			$table = $this->organism_classification_subscription_table;
+			$newidsubscription = $this->getNextval($table);
 			$columnArray = array(
 					'organism_id',
-					'name',
+					'organism_classification_id',
 					'id'
 			);
 			$typesArray = array(
 					'integer',
-					'text',
+					'integer',
 					'integer'
 			);
 			$valuesArray = array(
 					$organism_id,
-					$organismName,
-					$newid
+					$classificationId,
+					$newidsubscription
 			);
 			$numrow = $this->db
 				->insert_query($columnArray, $table, $typesArray, $valuesArray);
 			assert($numrow == 1);
-			$this->scientific_names[$organismName] = $organism_id;
 		}
-
-		// subscribe organism to classification
-		$table = $this->organism_classification_subscription_table;
-		$newidsubscription = $this->getNextval($table);
-		$columnArray = array(
-				'organism_id',
-				'organism_classification_id',
-				'id'
-		);
-		$typesArray = array(
-				'integer',
-				'integer',
-				'integer'
-		);
-		$valuesArray = array(
-				$organism_id,
-				$classificationId,
-				$newidsubscription
-		);
-		$numrow = $this->db
-			->insert_query($columnArray, $table, $typesArray, $valuesArray);
-		assert($numrow == 1);
-
 		return $organism_id;
 	}
 
