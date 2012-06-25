@@ -51,12 +51,15 @@ require_once(dirname(__FILE__) . '/Db.php');
  * 						),
  * 				)
  * 		),
+ * 		'artgroups' => array(
+ * 				'Flora',
+ * 		),
  * );
  * 
  * $importer = new Classification($driver, $name, $user, $password, $host);
  * $importer->addOrganism($organism);
  * 
- * @note: It is possible to specifiy just some classifications for an organism. 
+ * @note It is possible to specifiy just some classifications for an organism. 
  * 	However, the very first organism for any classificator has to contain ALL
  * 	classificationlevelnames (in descending order, as always required).
  *  Example:
@@ -72,6 +75,7 @@ require_once(dirname(__FILE__) . '/Db.php');
  *  		)
  *  );
  *  $importer->addOrganism($makeSureItWorksOrganism);
+ * @note Please make sure that you are sorting the input by its classification (ordered by e.g. class, order, family, genus).
  */
 class Classification {
 	var $db = NULL;
@@ -89,6 +93,8 @@ class Classification {
 	var $organism_attribute_table = '';
 	var $organism_attribute_value_table = '';
 	var $organism_attribute_value_subscription_table = '';
+	var $organism_artgroup = '';
+	var $organism_artgroup_subscription = '';
 
 	/* Caches the structure of the current classifier.
 	 * Saves us many database requests.
@@ -164,7 +170,8 @@ class Classification {
 	var $tree;
 
 	/*
-	 * Cache all existing names with their organism id
+	 * Cache all existing scientific names with their organism id.
+	 * 
 	 * Example:
 	 *  Array
 	 *  (
@@ -227,6 +234,9 @@ class Classification {
 				. 'organism_attribute_value';
 		$this->organism_attribute_value_subscription_table = $drupalprefix
 				. 'organism_attribute_value_subscription';
+		$this->organism_artgroup_subscription = $drupalprefix
+				. 'organism_artgroup_subscription';
+		$this->organism_artgroup = $drupalprefix . 'organism_artgroup';
 		$this->tree = array();
 	}
 
@@ -329,7 +339,8 @@ class Classification {
 					$classificationLevelId = $classificationLevels[$classificationLevelName];
 				} else {
 					print 
-						"Cache miss for classification level: $classificationLevelName [" . $this->classifier_name . "]\n";
+						"Cache miss for classification level: $classificationLevelName ["
+								. $this->classifier_name . "]\n";
 					$classificationLevelId = $this->getOrCreateClassificationLevelName(
 							$classificationLevelName,
 							$parentClassificationLevelId);
@@ -344,7 +355,9 @@ class Classification {
 						//print "Hit for classification: $classificationName\n";
 						$classificationId = $currentClassifications[$classificationName]['id'];
 					} else {
-						print "Cache miss for classification: $classificationName [" . $this->classifier_name . "]\n";
+						print 
+							"Cache miss for classification: $classificationName ["
+									. $this->classifier_name . "]\n";
 						$classificationId = $this->getOrCreateClassification(
 								$classificationName,
 								$parentClassificationId,
@@ -363,7 +376,7 @@ class Classification {
 			}
 		}
 
-		// Create organism
+		// Create organism (only if scientific names given)
 		$organismId = NULL;
 		if (isset($organism['scientific_names'])) {
 			if ($classificationId == NULL) {
@@ -378,7 +391,7 @@ class Classification {
 
 			assert($organismId != NULL);
 
-			// create translation for organisms
+			// create translation for organisms (if given)
 			if (isset($organism['classification_name_translations'])) {
 				foreach ($organism['classification_name_translations'] as $lang => $classificationNameTranslations) {
 					foreach ($classificationNameTranslations as $classificationNameTranslation) {
@@ -390,7 +403,7 @@ class Classification {
 				}
 			}
 
-			// create attributes for organism
+			// create attributes for organism (if given)
 			if (isset($organism['attributes'])) {
 				foreach ($organism['attributes'] as $attributeName => $attributeValues) {
 					$attributeValueType = $attributeValues['valuetype'];
@@ -426,6 +439,18 @@ class Classification {
 								$organismId);
 						assert($attributeValueSubscriptionId != NULL);
 					}
+				}
+			}
+
+			// subscribe organism to artgroup (if artgroup given)
+			if (isset($organism['artgroups'])) {
+				foreach ($organism['artgroups'] as $artgroupName) {
+					$artgroupId = $this->getOrCreateArtgroup($artgroupName);
+					assert($artgroupId != NULL);
+					$artgroupSubscriptionId = $this->getOrCreateArtgroupSubscription(
+							$organismId,
+							$artgroupId);
+					assert($artgroupSubscriptionId != NULL);
 				}
 			}
 		}
@@ -797,7 +822,7 @@ class Classification {
 	}
 
 	/**
-	 * Create organism including subscription to its classifier and all scientific names.
+	 * Create organism, add all scientific names and subscribe to its classifier.
 	 * 
 	 * @param array of strings $organismNames
 	 * @param integer $classificationId
@@ -844,7 +869,7 @@ class Classification {
 		}
 
 		// If organism not found, create it
-		if($organism_id == NULL) {
+		if ($organism_id == NULL) {
 			$table = $this->organism_table;
 			$newid = $this->getNextval($table);
 			if ($parentOrganismId == NULL) {
@@ -862,7 +887,7 @@ class Classification {
 						$table,
 						$parentOrganismId);
 				assert($parentPrimeFatherId == $primeFatherOrganismId);
-	
+
 				$query = "UPDATE
 								$table
 							SET
@@ -879,7 +904,7 @@ class Classification {
 						$parentRightValue
 				);
 				$this->query($query, $typesArray, $valuesArray, false);
-	
+
 				$query = "UPDATE
 								$table
 							SET
@@ -897,11 +922,11 @@ class Classification {
 				);
 				$this->db
 					->query($query, $typesArray, $valuesArray, false);
-	
+
 				$leftValue = $parentRightValue;
 				$rightValue = $parentRightValue + 1;
 			}
-	
+
 			$columnArray = array(
 					'id',
 					'parent_id',
@@ -927,7 +952,7 @@ class Classification {
 				->insert_query($columnArray, $table, $typesArray, $valuesArray);
 			assert(count($rowcount) == 1);
 			$organism_id = $newid;
-		
+
 			// Attach all names to organism			
 			$table = $this->scientific_name_table;
 			foreach ($organismNames as $organismName) {
@@ -948,7 +973,11 @@ class Classification {
 						$newid
 				);
 				$numrow = $this->db
-					->insert_query($columnArray, $table, $typesArray, $valuesArray);
+					->insert_query(
+						$columnArray,
+						$table,
+						$typesArray,
+						$valuesArray);
 				assert($numrow == 1);
 				$this->scientific_names[$organismName] = $organism_id;
 			}
@@ -1204,6 +1233,118 @@ class Classification {
 					$lang,
 					$classificationNameTranslation,
 					$organismId
+			);
+			$rowcount = $this->db
+				->insert_query($columnArray, $table, $typesArray, $valuesArray);
+			assert(count($rowcount) == 1);
+			return $newid;
+		}
+		assert(false);
+	}
+
+	/**
+	 * Return the argroupid for the given artgroupname (and create it if needed).
+	 * 
+	 * @note This is a very simple implemenation. It does not support hierarchical
+	 * artgroups. If we ever need them, this function has to be extended.
+	 * 
+	 * @param string $artgroupName
+	 */
+	private function getOrCreateArtgroup($artgroupName) {
+		$table = $this->organism_artgroup;
+		$columnNameArray = array(
+				'id'
+		);
+		$fromQuery = "FROM $table WHERE name = ?";
+		$typesArray = array(
+				'text',
+		);
+		$valuesArray = array(
+				$artgroupName
+		);
+		$rows = $this->db
+			->select_query(
+				$columnNameArray,
+				$fromQuery,
+				$typesArray,
+				$valuesArray);
+
+		if (count($rows) == 1) {
+			return $rows[0]['id'];
+		} else {
+			$newid = $this->getNextval($table);
+			$columnArray = array(
+					'id',
+					'name',
+					'parent',
+					'pos'
+			);
+			$typesArray = array(
+					'integer',
+					'text',
+					'integer',
+					'integer'
+			);
+			$valuesArray = array(
+					$newid,
+					$artgroupName,
+					$newid,
+					1
+			);
+			$rowcount = $this->db
+				->insert_query($columnArray, $table, $typesArray, $valuesArray);
+			assert(count($rowcount) == 1);
+			return $newid;
+		}
+		assert(false);
+	}
+
+	/**
+	 * Subscribe an organism to an artgroup and return the id of the subscription.
+	 * If the subscription already exists, just return its id.
+	 * 
+	 * @param integer $organismId
+	 * @param integer $artgroupId
+	 */
+	private function getOrCreateArtgroupSubscription($organismId, $artgroupId) {
+		$table = $this->organism_artgroup_subscription;
+		$columnNameArray = array(
+				'id'
+		);
+		$fromQuery = "FROM $table WHERE organism_id = ? AND organism_artgroup_id = ? ";
+		$typesArray = array(
+				'integer',
+				'integer',
+		);
+		$valuesArray = array(
+				$organismId,
+				$artgroupId
+		);
+		$rows = $this->db
+			->select_query(
+				$columnNameArray,
+				$fromQuery,
+				$typesArray,
+				$valuesArray);
+
+		if (count($rows) == 1) {
+			return $rows[0]['id'];
+		} else {
+			$newid = $this->getNextval($table);
+			$columnArray = array(
+					'id',
+					'organism_id',
+					'organism_artgroup_id'
+			);
+			$typesArray = array(
+					'integer',
+					'integer',
+					'integer'
+			);
+			$valuesArray = array(
+					$newid,
+					$organismId,
+					$artgroupId
 			);
 			$rowcount = $this->db
 				->insert_query($columnArray, $table, $typesArray, $valuesArray);

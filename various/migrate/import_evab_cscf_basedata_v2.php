@@ -34,6 +34,7 @@ $classifier = new Classification(
  *    Column   |          Type          | Modifiers
  * ------------+------------------------+-----------
  *  nuesp      | integer                |
+ *  artgroup   | character varying(50)  | 
  *  class      | character varying(255) |
  *  evaborder  | character varying(255) |
  *  family     | character varying(255) |
@@ -86,6 +87,7 @@ foreach ($classification_data as $classification_level_name => $data) {
 $columnstring = implode(',', $classification_level_columns);
 $sql = "SELECT
 			nuesp,
+			artgroup,
 			$columnstring,
 			name_de,
 			name_fr,
@@ -154,9 +156,16 @@ foreach ($rows as $row) {
 				'classificationname' => $value,
 		);
 	}
+	
+	// Fix the Umlauts
+	$artgruppe = $row['artgroup'];
+	$artgruppe = preg_replace('/ae/', 'ä', $artgruppe);
+	$artgruppe = preg_replace('/oe/', 'ö', $artgruppe);
+	$artgruppe = preg_replace('/ue/', 'ü', $artgruppe);
 	$organism = array(
 			'classificator' => $classificator,
 			'classifications' => $classifications,
+			'artgroups' => array($artgruppe),
 			'scientific_names' => array(
 					$row['name_latin']
 			),
