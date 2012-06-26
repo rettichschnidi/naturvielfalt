@@ -111,12 +111,12 @@ $organisms[] = array(
 				array(
 						'classificationlevelname' => 'genus'
 				),
-// 				array(
-// 						'classificationlevelname' => 'species'
-// 				),
-// 				array(
-// 						'classificationlevelname' => 'subspecies'
-// 				)
+		// 				array(
+		// 						'classificationlevelname' => 'species'
+		// 				),
+		// 				array(
+		// 						'classificationlevelname' => 'subspecies'
+		// 				)
 		)
 );
 
@@ -148,13 +148,6 @@ foreach ($rows as $row) {
 							'valuetype' => 'n',
 							'values' => array(
 									$row['nr']
-							)
-					),
-					'Author' => array(
-							'comment' => 'Name of the scientist who classified this organism.',
-							'valuetype' => 't',
-							'values' => array(
-									$row['autor']
 							)
 					),
 					'Xenophyte' => array(
@@ -190,6 +183,16 @@ foreach ($rows as $row) {
 				)
 		);
 	}
+	if ($row['autor'] != NULL) {
+		$organism['attributes']['Author'] = array(
+				'comment' => 'Name of the scientist who classified this organism.',
+				'valuetype' => 't',
+				'values' => array(
+						$row['autor']
+				)
+		);
+	}
+
 	$organisms[$row['nr']] = $organism;
 }
 
@@ -210,9 +213,9 @@ $sql = "SELECT
 $rows = $dbevab->query($sql, array(), array());
 
 foreach ($rows as $row) {
-// 	print "Old:\n";
-// 	print_r($organisms[$row['offizielleart']]);
-	
+	// 	print "Old:\n";
+	// 	print_r($organisms[$row['offizielleart']]);
+
 	$organism = &$organisms[$row['offizielleart']];
 	$organism['scientific_names'][] = $row['name'];
 
@@ -225,8 +228,8 @@ foreach ($rows as $row) {
 	if ($row['italienisch'] != NULL) {
 		$organism['classification_name_translations']['it'][] = $row['italienisch'];
 	}
-// 	print "New:\n";
-// 	print_r($organisms[$row['offizielleart']]);
+	// 	print "New:\n";
+	// 	print_r($organisms[$row['offizielleart']]);
 }
 
 assert(!empty($rows));
