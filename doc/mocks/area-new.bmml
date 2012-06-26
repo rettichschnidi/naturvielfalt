@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1700" measuredH="772" mockupW="1580" mockupH="755">
+<mockup version="1.0" skin="sketch" measuredW="1700" measuredH="772" mockupW="1615" mockupH="755">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="120" y="17" w="1425" h="755" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -106,15 +106,15 @@
             <text>x</text>
           </controlProperties>
         </control>
-        <control controlID="16" controlTypeID="com.balsamiq.mockups::TextInput" x="23" y="49" w="221" h="-1" measuredW="121" measuredH="27" zOrder="4" locked="false" isInGroup="50">
+        <control controlID="16" controlTypeID="com.balsamiq.mockups::TextInput" x="23" y="49" w="221" h="-1" measuredW="71" measuredH="27" zOrder="4" locked="false" isInGroup="50">
           <controlProperties>
-            <text>Mein%20neues%20Gebiet</text>
+            <text>Hangr%FCteli</text>
           </controlProperties>
         </control>
         <control controlID="17" controlTypeID="com.balsamiq.mockups::Button" x="23" y="112" w="-1" h="-1" measuredW="74" measuredH="27" zOrder="5" locked="false" isInGroup="50">
           <controlProperties>
             <href>areas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22627%2C484%2C701%2C511%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2217%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22662%2C484%2C736%2C511%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2217%22/%3E</map>
             <text>Erstellen</text>
           </controlProperties>
         </control>
@@ -126,24 +126,24 @@
         <borderColor>13369344</borderColor>
       </controlProperties>
     </control>
-    <control controlID="53" controlTypeID="com.balsamiq.mockups::StickyNote" x="248" y="375" w="225" h="215" measuredW="109" measuredH="123" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::StickyNote" x="85" y="271" w="225" h="215" measuredW="109" measuredH="123" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <text>1%29%20Mit%20der%20Toolbar%20k%F6nnen%20Gebietspunkte/linien/fl%E4chen%20auf%20der%20Karte%20gezeichnet%20werden.%20%0A2%29%20Anschliessend%20wird%20das%20Popup%20angezeigt.%0A3%29%20Durch%20Klicken%20des%20%22Erstellen%22-Buttons%20wird%20das%20Gebiet%20in%20einer%20neuen%20Maske%20angezeigt.</text>
       </controlProperties>
     </control>
-    <control controlID="54" controlTypeID="com.balsamiq.mockups::CallOut" x="689" y="246" w="-1" h="-1" measuredW="37" measuredH="43" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::CallOut" x="689" y="246" w="-1" h="-1" measuredW="37" measuredH="40" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>1</text>
       </controlProperties>
     </control>
-    <control controlID="56" controlTypeID="com.balsamiq.mockups::CallOut" x="702" y="368" w="-1" h="-1" measuredW="38" measuredH="39" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::CallOut" x="702" y="368" w="-1" h="-1" measuredW="39" measuredH="40" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>2</text>
       </controlProperties>
     </control>
-    <control controlID="57" controlTypeID="com.balsamiq.mockups::CallOut" x="708" y="490" w="-1" h="-1" measuredW="38" measuredH="40" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::CallOut" x="708" y="490" w="-1" h="-1" measuredW="38" measuredH="43" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0.75</backgroundAlpha>
         <text>3</text>
@@ -190,29 +190,30 @@
     <control controlID="65" controlTypeID="com.balsamiq.mockups::Label" x="356" y="115" w="173" h="29" measuredW="10" measuredH="21" zOrder="28" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22236%2C98%2C409%2C127%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%2265%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22271%2C98%2C444%2C127%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%2265%22/%3E</map>
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="66" controlTypeID="com.balsamiq.mockups::Tree" x="337" y="195" w="176" h="225" measuredW="300" measuredH="225" zOrder="29" locked="false" isInGroup="-1">
-      <controlProperties>
-        <backgroundAlpha>0</backgroundAlpha>
-        <borderStyle>none</borderStyle>
-        <hrefs>areas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C178%2C393%2C201%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2266_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22217%2C201%2C393%2C224%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%2266_1%22/%3E%0A</map>
-        <selectedIndex>-1</selectedIndex>
-        <text>%3E%20Gebiete%0A%3E%20Gebiet%20erstellen</text>
-      </controlProperties>
-    </control>
-    <control controlID="67" controlTypeID="com.balsamiq.mockups::StickyNote" x="897" y="605" w="332" h="123" measuredW="109" measuredH="123" zOrder="30" locked="false" isInGroup="-1">
+    <control controlID="67" controlTypeID="com.balsamiq.mockups::StickyNote" x="897" y="605" w="332" h="123" measuredW="109" measuredH="123" zOrder="29" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Erstellte%20Gebiete%20sind%20standardm%E4ssig%20von%20Dritten%20verwendbar.</text>
       </controlProperties>
     </control>
-    <control controlID="68" controlTypeID="com.balsamiq.mockups::Arrow" x="805" y="510" w="164" h="121" measuredW="150" measuredH="100" zOrder="31" locked="false" isInGroup="-1">
+    <control controlID="68" controlTypeID="com.balsamiq.mockups::Arrow" x="805" y="510" w="164" h="121" measuredW="150" measuredH="100" zOrder="30" locked="false" isInGroup="-1">
       <controlProperties>
         <leftArrow>false</leftArrow>
         <text/>
+      </controlProperties>
+    </control>
+    <control controlID="70" controlTypeID="com.balsamiq.mockups::Tree" x="340" y="159" w="170" h="340" measuredW="300" measuredH="372" zOrder="31" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+        <hrefs>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%2Cinfothek%26bm%3Binfothek.bmml%26bm%3Binfothek.bmml%26bm%3Binfothek.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%2Chabitats%26bm%3Bhabitats.bmml%26bm%3Bhabitats.bmml%26bm%3Bhabitats.bmml%2Credlist%26bm%3Bredlist.bmml%26bm%3Bredlist.bmml%26bm%3Bredlist.bmml%2Csensiblelist%26bm%3Bsensiblelist.bmml%26bm%3Bsensiblelist.bmml%26bm%3Bsensiblelist.bmml%2Cprotectedlist%26bm%3Bprotectedlist.bmml%26bm%3Bprotectedlist.bmml%26bm%3Bprotectedlist.bmml%2C%2Cobservation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Cinventory-all%26bm%3Binventory-all.bmml%26bm%3Binventory-all.bmml%26bm%3Binventory-all.bmml%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C142%2C425%2C165%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%2270_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C165%2C425%2C188%22%20href%3D%22infothek.bmml%22%20alt%3D%22infothek%22%20id%3D%2270_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C188%2C425%2C211%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2270_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C211%2C425%2C234%22%20href%3D%22habitats.bmml%22%20alt%3D%22habitats%22%20id%3D%2270_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C234%2C425%2C257%22%20href%3D%22redlist.bmml%22%20alt%3D%22redlist%22%20id%3D%2270_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C257%2C425%2C280%22%20href%3D%22sensiblelist.bmml%22%20alt%3D%22sensiblelist%22%20id%3D%2270_5%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C280%2C425%2C303%22%20href%3D%22protectedlist.bmml%22%20alt%3D%22protectedlist%22%20id%3D%2270_6%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C326%2C425%2C349%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%2270_7%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C349%2C425%2C372%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%2270_8%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C372%2C425%2C395%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%2270_9%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C395%2C425%2C418%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%2270_10%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22255%2C418%2C425%2C441%22%20href%3D%22inventory-all.bmml%22%20alt%3D%22inventory-all%22%20id%3D%2270_11%22/%3E%0A</map>
+        <selectedIndex>11</selectedIndex>
+        <size>13</size>
+        <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
       </controlProperties>
     </control>
   </controls>
