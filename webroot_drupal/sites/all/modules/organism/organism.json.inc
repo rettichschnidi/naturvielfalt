@@ -650,6 +650,7 @@ function organism_show_organism_json($organism) {
  *  - "label": The name of the organism
  *  - "label_latin": The latin name of the organism
  *  - "old_id"[Optional]: The ID of the initially found organism
+ *  - "artgroup": The id of the speciesgroup to search in
  *    (only available if the found organism has a reference to an official one)
  *  - "old_label"[Optional]: The name of the initially found organism
  *    (only available if the found organism has a reference to an official one)
@@ -680,12 +681,9 @@ function organism_search_organism_json($classification = false, $term = false,
 	}
 
 	$artgroup_join = "";
-
 	if (isset($_REQUEST['artgroup'])) {
 		$artgroup = $_REQUEST['artgroup'];
-		if ($artgroup == '3')
-			$artgroup = false;
-		if ($artgroup > 0 && $artgroup < 1000000) {
+		if (is_int($artgroup) && $artgroup > 0 && $artgroup < 1000000) {
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;
 			$artgroup_join = '
@@ -700,7 +698,7 @@ function organism_search_organism_json($classification = false, $term = false,
 	$terms = explode(' ', trim($term));
 
 	// why limit result with the length of the search term??
-	// 	$limit = strlen(trim($term)) > 3 ? 100000 : 20;
+	// $limit = strlen(trim($term)) > 3 ? 100000 : 20;
 	$limit = 30;
 
 	$organisms = array();

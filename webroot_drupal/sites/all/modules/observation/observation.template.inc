@@ -178,7 +178,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 					.@$hidden_fields
 					.'<table class="form-item form-type-textfield">'
 						.'<tr><td class="observation_td">'
-								.'<span class="observation_title">'.t('Search for organsim or species').'</span><br>'
+								.'<span class="observation_title">'.t('Search for organism or species').'</span><br>'
 									.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="'.$observation['organism']['name_lang'].'">'
 									.'<br><span id="species_autocomplete">'.$species_autocomplete.'</span>'
 							.'</td><td class="observation_td">'
