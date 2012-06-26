@@ -663,7 +663,7 @@ function organism_search_organism_json($classification = false, $term = false,
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
-	$langcode = isset($user->language)  || $user->language == '' ? $user->language : 'de';
+	$langcode = (isset($user->language) && $user->language != '') ? $user->language : 'de';
 
 	if (!$classification)
 		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id']
@@ -676,24 +676,23 @@ function organism_search_organism_json($classification = false, $term = false,
 		if (isset($_REQUEST['term'])) {
 			$term = $_REQUEST['term'];
 		} else {
-			return drupal_json_output(array('label' => 'No search term'));
+			return drupal_json_output(array('label' => t('No search term')));
 		}
 	}
 
 	$artgroup_join = "";
 	if (isset($_REQUEST['artgroup'])) {
-		$artgroup = $_REQUEST['artgroup'];
+		$artgroup = (integer) $_REQUEST['artgroup'];
 		if (is_int($artgroup) && $artgroup > 0 && $artgroup < 1000000) {
 			$artgroup_ids = organism_artgroup_get_children($artgroup);
 			$artgroup_ids[] = $artgroup;
-			$artgroup_join = '
-								LEFT JOIN {organism_artgroup} AS oa ON oa.id=oas.organism_artgroup_id
+			$artgroup_join = ' JOIN {organism_artgroup} AS oa ON oa.id=oas.organism_artgroup_id
 								AND ('
 					. organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id')
 					. ')';
 		}
 	}
-
+	
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
 
