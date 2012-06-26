@@ -30,8 +30,7 @@ function observation_save($observation_data = false, $custom_data = false,
 
 	// 	die(print_r($values));
 
-	$error = false;
-	$message = array();
+	$errormessages = array();
 	// 	$output['post'] = $values;
 	$observation = array();
 	$observation['m_time'] = time();
@@ -44,8 +43,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	 * check the organism id
 	 */
 	if (!organism_get(filter_xss($values['organismn_id']))) {
-		$error = true;
-		$message[] = t('The organism is value not permitted');
+		$errormessages[] = t('The organism is value not permitted');
 	} else {
 		$observation['organism_id'] = filter_xss($values['organismn_id']);
 	}
@@ -84,8 +82,7 @@ function observation_save($observation_data = false, $custom_data = false,
 				}
 			}
 			if (!$artgroup_id_checked) {
-				$error = true;
-				$message[] = t(
+				$errormessages[] = t(
 					'Artgroup with this determination method not allowed');
 			}
 		}
@@ -103,8 +100,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	 */
 	$count = $observation['count'] = $values['count'];
 	if ($count < 1 || empty($count)) {
-		$error = true;
-		$message[] = t('The count should be a number and bigger than zero');
+		$errormessages[] = t('The count should be a number and bigger than zero');
 	}
 
 	/**
@@ -121,8 +117,7 @@ function observation_save($observation_data = false, $custom_data = false,
 		$date_split[2]);
 	if (empty($date)
 			|| !checkdate($date_split[1], $date_split[0], $date_split[2])) {
-		$error = true;
-		$message[] = t('Please enter a valid date');
+		$errormessages[] = t('Please enter a valid date');
 	}
 
 	/**
@@ -147,8 +142,7 @@ function observation_save($observation_data = false, $custom_data = false,
 				if (array_key_exists($value, $attribute['values'])) {
 					$attributes_checked[$key] = 'db_id-->' . $value;
 				} else {
-					$error = true;
-					$message[] = t(
+					$errormessages[] = t(
 						'The value of ' . $attribute['name'] . ' not permitted');
 				}
 			}
@@ -164,8 +158,7 @@ function observation_save($observation_data = false, $custom_data = false,
 				$attributes_checked[$key] = $value;
 			} else {
 				if ($value != "") {
-					$error = true;
-					$message[] = t(
+					$errormessages[] = t(
 						'The value of ' . $attribute['name']
 								. ' should be a date');
 				}
@@ -176,8 +169,7 @@ function observation_save($observation_data = false, $custom_data = false,
 			if (is_int($value) && !empty($value)) {
 				$attributes_checked[$key] = $value;
 			} elseif ($value != "") {
-				$error = true;
-				$message[] = t(
+				$errormessages[] = t(
 					'The value of ' . $attribute['name']
 							. ' should be a number');
 			}
@@ -191,8 +183,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	 */
 
 	if (filter_xss($values['coordinate']) == "") {
-		$error = true;
-		$message[] = t('Please mark a point on the map');
+		$errormessages[] = t('Please mark a point on the map');
 	}
 
 	$geometry['zip'] = intval(filter_xss($values['zip']));
@@ -221,8 +212,7 @@ function observation_save($observation_data = false, $custom_data = false,
 					continue;
 				if ($val == t('Please enter a name') || empty($val)
 						|| $custom_values[$key] == t('Please enter a value')) {
-					$error = true;
-					$message[] = t(
+					$errormessages[] = t(
 						'Please enter for each custom attribute a text, leave both empty to ignore it');
 				}
 			}
@@ -231,7 +221,7 @@ function observation_save($observation_data = false, $custom_data = false,
 
 	// 	check_plain($text)
 	// die(print_r($observation));
-	if (!$error) {
+	if (empty($errormessages)) {
 		/**
 		 * Save to the DB
 		 */
@@ -318,7 +308,7 @@ function observation_save($observation_data = false, $custom_data = false,
 
 	} else {
 		$output['success'] = false;
-		$output['message'] = $message;
+		$output['message'] = $errormessages;
 	}
 
 	//
