@@ -43,7 +43,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	 * check the organism id
 	 */
 	if (!organism_get(filter_xss($values['organismn_id']))) {
-		$errormessages[] = t('The organism is value not permitted');
+		$errormessages[] = t('This organism is not permitted!');
 	} else {
 		$observation['organism_id'] = filter_xss($values['organismn_id']);
 	}
@@ -98,7 +98,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	/**
 	 * Check the count value
 	 */
-	$count = $observation['count'] = $values['count'];
+	$count = (integer) $observation['count'] = $values['count'];
 	if ($count < 1 || empty($count) || !is_int($count)) {
 		$errormessages[] = t(
 			'The count has to be a number and bigger than zero');

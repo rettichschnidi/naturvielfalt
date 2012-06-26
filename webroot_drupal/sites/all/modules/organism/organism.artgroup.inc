@@ -2,20 +2,19 @@
 
 /**
  * Get artgroups, optionally filtered with the parent id, as html <optio> tag
+ * 
  * @param int $parent
  * @param int $deep
  * @return string
  */
-function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false){
-
-	if($parent != false){
-		$parent_sql = "'" . db_escape_field($parent) . "' AND parent != id";
+function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {
+	if($parent != false) {
+		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent='" . db_escape_field($parent) . "' AND parent != id";
 	}else{
-		$parent_sql = "id";
+		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL";
 	}
 	if($selected_id == '') $selected_id = false;
 
-	$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent=" . $parent_sql;
 	$top_result= db_query($top_sql);
 
 	$output = "";

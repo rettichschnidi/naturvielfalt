@@ -683,16 +683,11 @@ function organism_search_organism_json($classification = false, $term = false,
 	$artgroup_join = "";
 	if (isset($_REQUEST['artgroup'])) {
 		$artgroup = (integer) $_REQUEST['artgroup'];
-		if (is_int($artgroup) && $artgroup > 0 && $artgroup < 1000000) {
-			$artgroup_ids = organism_artgroup_get_children($artgroup);
-			$artgroup_ids[] = $artgroup;
-			$artgroup_join = ' JOIN {organism_artgroup} AS oa ON oa.id=oas.organism_artgroup_id
-								AND ('
-					. organism_artgroup_get_sql_from_id($artgroup_ids, 'oa.id')
-					. ')';
-		}
+	} else {
+		watchdog('organism', 'No argroup id got submitted. Please fix.');
+		$artgroup = 1; // UGLY: artgroup_id 1 == 'all'. If this changes in the future, our default value goes boooom.
 	}
-	
+
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
 
@@ -707,6 +702,7 @@ function organism_search_organism_json($classification = false, $term = false,
 		$params[':inventoryTypeId'] = $type_id;
 	$params[':limit'] = $limit;
 	$params[':lang'] = $langcode;
+	$params[':artgroupid'] = $artgroup;
 	$params[':term'] = '%' . trim($term) . '%';
 
 	if (count($terms) > 2) {
@@ -720,13 +716,18 @@ function organism_search_organism_json($classification = false, $term = false,
 	
 
 	$i = 1;
-	$query = 'SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
+	$query = 'WITH RECURSIVE anchestors AS
+	(
+		SELECT oa.id, oa.name, oa.parent FROM drupal_organism_artgroup oa WHERE id = :artgroupid
+		UNION ALL
+		SELECT child.id, child.name, child.parent FROM drupal_organism_artgroup child INNER JOIN anchestors p ON p.id = child.parent
+	)
+	SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
 				FROM {organism} AS o
 				LEFT JOIN {organism_lang} AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				INNER JOIN {organism_scientific_name} AS osn ON osn.organism_id = o.id
 				LEFT JOIN {organism_artgroup_subscription} AS oas ON oas.organism_id=o.id
-				' . $artgroup_join
-			. '
+				JOIN anchestors AS a ON a.id=oas.organism_artgroup_id
 				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
 				ORDER BY o.id
 				LIMIT :limit;';
