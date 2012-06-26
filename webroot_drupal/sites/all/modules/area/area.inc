@@ -458,7 +458,7 @@ function area_convert_wgs84_to_ch1903($coordinates = NULL) {
 
 /**
  *
- * Return a PostGIS geometry object from a JSON
+ * Return a PostGIS geometry object from a JSON.
  *
  * The return value can be used by the method fields() of db_update/db_insert
  *
@@ -466,6 +466,7 @@ function area_convert_wgs84_to_ch1903($coordinates = NULL) {
  * 	 Valid values: 'polyline', 'polygon' or 'marker'
  * @param object $coordinatesJson
  * @return geometry A geometry type, representing the given JSON coordinates
+ * @throws Exception
  */
 function area_get_postgis_geometry_object($areaType = NULL,
 		$coordinatesJson = NULL) {
@@ -500,12 +501,25 @@ function area_get_postgis_geometry_object($areaType = NULL,
 			t(
 				'«@areatype» is not a valid area type.',
 				array('@areatype' => $areaType)));
-		return false;
+		throw new Exception(
+			t(
+				'«@areatype» is not a valid area type.',
+				array('@areatype' => $areaType)));
 	}
-	$result = db_query("SELECT $geom AS geom");
-	assert($result->rowCount() == 1);
-	return $result->fetch()
-		->geom;
+	$transaction = db_transaction();
+	try {
+		$result = db_query("SELECT $geom AS geom");
+		assert($result->rowCount() == 1);
+		return $result->fetch()
+			->geom;
+	} catch (Exception $e) {
+		$transaction->rollback();
+		watchdog_exception('area', $e);
+		drupal_set_message(
+			t('Temporary geometry object could not be created.'),
+			'error');
+		throw $e;
+	}
 }
 
 /**
@@ -525,6 +539,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
  * @return integer
  *  New geometry id or false if a failure occurred
  * @note For an example usage, have a look at area_create_new_area()
+ * @throws Exception
  */
 function area_create_geometry($data = array(),
 		$coordinates_are_already_lng_lat = false) {
@@ -583,6 +598,7 @@ function area_create_geometry($data = array(),
  * 	 - 'type' (mandatory, either 'polyline', 'polygon' or 'marker')
  * @param boolean $coordinates_are_already_lng_lat
  * 	True if area_points are already in lng/lat format, false otherwise (default)
+ * @throws Exception
  */
 function area_update_geometry($geometry_id, $data = array(),
 		$coordinates_are_already_lng_lat = false) {
@@ -997,27 +1013,32 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
  * 				set to true, if you want the original answer from google
  * @return array
  */
-function area_get_geocodeInfo($longitude = false, $latitude = false, $original_response = false) {
-//print_r(area_get_geocodeInfo('8.209283','47.481280'));
-	if(!$longitude || !$latitude) return false;
+function area_get_geocodeInfo($longitude = false, $latitude = false,
+		$original_response = false) {
+	//print_r(area_get_geocodeInfo('8.209283','47.481280'));
+	if (!$longitude || !$latitude)
+		return false;
 
-	$url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' . $latitude . ',' . $longitude.'&sensor=true';
+	$url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
+			. $latitude . ',' . $longitude . '&sensor=true';
 	$data = @file_get_contents($url);
 	$jsondata = json_decode($data, true);
 
-	$url = 'http://maps.googleapis.com/maps/api/elevation/json?locations=' . $latitude . ',' . $longitude.'&sensor=true';
+	$url = 'http://maps.googleapis.com/maps/api/elevation/json?locations='
+			. $latitude . ',' . $longitude . '&sensor=true';
 	$data = @file_get_contents($url);
 	$elevationData = json_decode($data, true);
 
-	// if we get a placemark array and the status was good, get the addres
-	if(!is_array($jsondata )&& $jsondata ['Status']['code']!= 200) return false;
+	// if we get a placemark array and the status was good, get the address
+	if (!is_array($jsondata) && $jsondata['Status']['code'] != 200)
+		return false;
 
-	if($original_response){
+	if ($original_response) {
 		$jsondata['elevationData'] = $elevationData;
 		return $jsondata;
 	}
 
-	$output['coordinate'] = '[['.$latitude.','.$longitude.']]';
+	$output['coordinate'] = '[[' . $latitude . ',' . $longitude . ']]';
 	$output['zip'] = $jsondata['results'][0]['address_components'][6]['long_name'];
 	$output['canton'] = $jsondata['results'][0]['address_components'][4]['long_name'];
 	$output['country'] = $jsondata['results'][0]['address_components'][5]['long_name'];
