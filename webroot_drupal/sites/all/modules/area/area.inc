@@ -562,6 +562,7 @@ function area_create_geometry($data = array(),
 		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(t('New geometry could not be created.'), 'error');
+		throw $e;
 	}
 	return $geometry_id;
 }
