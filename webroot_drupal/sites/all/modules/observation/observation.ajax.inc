@@ -210,7 +210,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	if (isset($values['attributes_custom_names'])) {
 		$custom_names = $values['attributes_custom_names'];
 		$custom_values = $values['attributes_custom_values'];
-		if (count($custom_names > 0)) {
+		if (count($custom_names) > 0) {
 			// Sometimes "Invalid argument supplied for foreach" don't know why... bö
 			// supress warnings
 			foreach ($custom_names as $key => $val) {
