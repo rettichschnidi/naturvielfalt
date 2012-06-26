@@ -100,7 +100,8 @@ function observation_save($observation_data = false, $custom_data = false,
 	 */
 	$count = $observation['count'] = $values['count'];
 	if ($count < 1 || empty($count)) {
-		$errormessages[] = t('The count should be a number and bigger than zero');
+		$errormessages[] = t(
+			'The count should be a number and bigger than zero');
 	}
 
 	/**
@@ -242,70 +243,83 @@ function observation_save($observation_data = false, $custom_data = false,
 		/**
 		 * save the observation
 		 */
-		if ($observation['id']) {
-			// do update
-			area_update_geometry($observation['area_geometry_id'], $geometry);
-			observation_save_attribute_values(
-				$attributes_checked,
-				$observation['id']);
-			db_update('observation')->fields($observation)
-				->condition('id', $observation['id'])
-				->execute();
-			$output['update'] = true;
-		} else {
-			// $geometry_id = area_save_geometry_blablablab();
-			$observation['area_geometry_id'] = area_create_geometry($geometry);
+		$transaction = db_transaction();
+		// Yes, it's by far too much for a try element - but adding this try clause when the rest is already
+		// done leads to such smells. :( At least there is no loop in it :)
+		// Feel free to refactor it.
+		try {
+			if ($observation['id']) {
+				// do update
+				area_update_geometry(
+					$observation['area_geometry_id'],
+					$geometry);
+				observation_save_attribute_values(
+					$attributes_checked,
+					$observation['id']);
+				db_update('observation')->fields($observation)
+					->condition('id', $observation['id'])
+					->execute();
+				$output['update'] = true;
+			} else {
+				// $geometry_id = area_save_geometry_blablablab();
+				$observation['area_geometry_id'] = area_create_geometry(
+					$geometry);
 
-			//save the observation
-			$observation_id = $observation['id'] = db_query(
-				"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
-			// 			$observation_id = db_next_id('observation_id');
-			$observation['c_time'] = $observation['m_time'];
-			$observation['acl_id'] = new_acl(
-				'singleobservation',
-				$observation['users_uid']);
-			// 			die(print_r($observation));
-			db_insert('observation')->fields($observation)
-				->execute();
-			observation_save_attribute_values(
-				$attributes_checked,
-				$observation['id']);
+				//save the observation
+				$observation_id = $observation['id'] = db_query(
+					"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
+				// 			$observation_id = db_next_id('observation_id');
+				$observation['c_time'] = $observation['m_time'];
+				$observation['acl_id'] = new_acl(
+					'singleobservation',
+					$observation['users_uid']);
+				// 			die(print_r($observation));
+				db_insert('observation')->fields($observation)
+					->execute();
+				observation_save_attribute_values(
+					$attributes_checked,
+					$observation['id']);
+			}
 
-		}
+			/**
+			 * Medias
+			 */
 
-		/**
-		 * Medias
-		 */
-
-		$image = array(
-				'item_id' => $observation['id'],
-				'author' => $observation['observer'],
-				'location' => $geometry['township'] . ' ' . $geometry['canton'],
-		);
-		gallery_implementation_save_manual(
-			'observation',
-			$image,
-			'observation_id');
-
-		if (isset($values['file_description'])) {
-			gallery_implementation_file_updateComment(
+			$image = array(
+					'item_id' => $observation['id'],
+					'author' => $observation['observer'],
+					'location' => $geometry['township'] . ' '
+							. $geometry['canton'],
+			);
+			gallery_implementation_save_manual(
 				'observation',
-				$values['file_description']);
+				$image,
+				'observation_id');
+
+			if (isset($values['file_description'])) {
+				gallery_implementation_file_updateComment(
+					'observation',
+					$values['file_description']);
+			}
+
+			if (isset($values['delete'])) {
+				gallery_implementation_delete($values['delete']);
+			}
+
+			if (isset($values['file_delete'])) {
+				gallery_implementation_files_delete(
+					$values['file_delete'],
+					'observation');
+			}
+
+			// Set the return statement
+			$output['success'] = true;
+		} catch (Exception $e) {
+			$transaction->rollback();
+			watchdog_exception('observation', $e);
+			$output['success'] = false;
+			$output['message'] = array(t('Could not save the observation because of an unknown error.'));
 		}
-
-		if (isset($values['delete'])) {
-			gallery_implementation_delete($values['delete']);
-		}
-
-		if (isset($values['file_delete'])) {
-			gallery_implementation_files_delete(
-				$values['file_delete'],
-				'observation');
-		}
-
-		// Set the return statement
-		$output['success'] = true;
-
 	} else {
 		$output['success'] = false;
 		$output['message'] = $errormessages;
