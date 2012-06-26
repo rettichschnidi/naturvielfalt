@@ -99,9 +99,9 @@ function observation_save($observation_data = false, $custom_data = false,
 	 * Check the count value
 	 */
 	$count = $observation['count'] = $values['count'];
-	if ($count < 1 || empty($count)) {
+	if ($count < 1 || empty($count) || !is_int($count)) {
 		$errormessages[] = t(
-			'The count should be a number and bigger than zero');
+			'The count has to be a number and bigger than zero');
 	}
 
 	/**
