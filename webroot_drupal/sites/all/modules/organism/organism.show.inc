@@ -32,7 +32,7 @@ function organism_show_classifiers() {
 			'width' => 100,
 	);
 	$tableHeader[] = array(
-			'name' => t('# of organisms'),
+			'name' => t('Number of organisms'),
 			'dbfield' => 'cnt',
 			'width' => 100,
 	);
@@ -101,7 +101,7 @@ function organism_show_classification($classificationid) {
 			'hide' => false
 	);
 	$classificationTableHeader[] = array(
-			'name' => t('Number of organism'),
+			'name' => t('Number of organisms'),
 			'dbfield' => 'cnt',
 			'width' => 100,
 			'hide' => false
@@ -156,14 +156,14 @@ function organism_show_classification($classificationid) {
 	}
 
 	$organismsTableHeader[] = array(
-			'name' => t('Latin Name'),
+			'name' => t('Scientific name'),
 			'dbfield' => 'osn_name',
 			'hide' => false,
 			'width' => 300
 	);
 
 	$organismsTableHeader[] = array(
-			'name' => t('Localized Name'),
+			'name' => t('Common Name'),
 			'dbfield' => 'ol_name',
 			'hide' => false,
 			'width' => 200
@@ -171,8 +171,7 @@ function organism_show_classification($classificationid) {
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => 'Organisms which are in classification '
-					. $classificationName,
+			'#title' => t('Organisms which are in classification ')	. $classificationName,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
