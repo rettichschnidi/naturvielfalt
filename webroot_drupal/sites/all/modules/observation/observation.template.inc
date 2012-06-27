@@ -215,14 +215,6 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 									.organism_artgroup_get_determation_methods(false, true, $observation['observation']['organism_artgroup_detmethod_id'], $observation['detmethods_vis'])
 									.'</select></td>'
 									.'</tr>'
-
-									.'<div id="observation_attributes">'
-									.organism_artgroup_get_attributes(false,true,'<tr id="#id#" style="display: none;"><td>','</td>', '<td>', '</td></tr>', false, $observation['attributes'])
-									.'</div>'
-
-									.'<div id="observation_attributes_cust_add">'
-									.'<a href="#" onclick="observation.addCustomAttribute(); return false;" title="'.t('Add custom details').'"><b>+</b></a></div>'
-
 							.'</table></div></div></fieldset>'
 							.'<input type="submit" class="edit-submit" value="'.t('Save').'" name="op" id="edit-submit">'
 

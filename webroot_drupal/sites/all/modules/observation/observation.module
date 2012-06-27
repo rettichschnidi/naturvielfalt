@@ -208,19 +208,6 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	
-	$items['observation/deleteCustomAttribute/%'] = array(
-			'title' => t('Delete Attribute'),
-			'description' => t('Delete a custom attribute'),
-			'page callback' => 'observation_delete_custom_attribute',
-			'page arguments' => array(
-					2
-			),
-			'access arguments' => array(
-					'create observation'
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'observation.ajax.inc',
-	);
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
 	$items['observation/%observation/overview/ajaxform'] = array(
 			'title' => t('observation overview form'),

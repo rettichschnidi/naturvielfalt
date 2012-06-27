@@ -71,8 +71,6 @@ CREATE TABLE organism_artgroup_attr
 (
 	id serial NOT NULL UNIQUE,
 	organism_artgroup_attr_type_id int NOT NULL,
-	-- Primary Key: Unique user ID.
-	users_uid bigint DEFAULT 0,
 	name text,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
@@ -422,7 +420,7 @@ ALTER TABLE organism_classification
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -430,7 +428,7 @@ ALTER TABLE organism_classification_level
 
 
 ALTER TABLE organism_classification_level
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification_level (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
@@ -550,7 +548,6 @@ CREATE INDEX organism_habitat_organism_id_idx ON public.organism_habitat_subscri
 
 /* Comments */
 
-COMMENT ON COLUMN organism_artgroup_attr.users_uid IS 'Primary Key: Unique user ID.';
 COMMENT ON COLUMN organism_artgroup_subscription.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_attribute_value.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_attribute_value.organism_attribute_id IS 'Fremdschlüssel auf die Tabelle organism_attribute. ';

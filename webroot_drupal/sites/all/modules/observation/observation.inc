@@ -367,7 +367,7 @@ function observation_get_geometry_table($observationdata = NULL){
  * @param int $observation_id
  */
 function observation_save_attribute_values($attributes_checked, $observation_id){
-	// save each attributes
+	// save all attributes
 	foreach ($attributes_checked as $key => $value){
 		$val = explode('-->', $value);
 		$db_id = NULL; $db_val = NULL;

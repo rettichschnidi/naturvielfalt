@@ -196,50 +196,9 @@ function observation_save($observation_data = false, $custom_data = false,
 	$geometry['type'] = 'marker';
 
 	/**
-	 * Check custom attributes
+	 * Save to the DB
 	 */
-	$custom_names = array();
-	if (isset($values['attributes_custom_names'])) {
-		$custom_names = $values['attributes_custom_names'];
-		$custom_values = $values['attributes_custom_values'];
-		if (count($custom_names) > 0) {
-			// Sometimes "Invalid argument supplied for foreach" don't know why... bö
-			// supress warnings
-			foreach ($custom_names as $key => $val) {
-				if ($val == t('Please enter a name')
-						&& $custom_values[$key] == t('Please enter a value'))
-					continue;
-				if (empty($val) && empty($custom_values[$key]))
-					continue;
-				if ($val == t('Please enter a name') || empty($val)
-						|| $custom_values[$key] == t('Please enter a value')) {
-					$errormessages[] = t(
-						'Please enter for each custom attribute a text, leave both empty to ignore it');
-				}
-			}
-		}
-	}
-
-	// 	check_plain($text)
-	// die(print_r($observation));
 	if (empty($errormessages)) {
-		/**
-		 * Save to the DB
-		 */
-
-		/**
-		 * add the new custom attributes to the db and the values to the attr check array
-		 */
-		if (count($custom_names > 0)) {
-			foreach ($custom_names as $key => $val) {
-				$attr_id = organism_artgroup_add_custom_attribute(
-					$val,
-					$observation['organism_artgroup_id']);
-				if ($attr_id != false)
-					$attributes_checked[$attr_id] = $custom_values[$key];
-			}
-		}
-
 		/**
 		 * save the observation
 		 */
@@ -268,12 +227,10 @@ function observation_save($observation_data = false, $custom_data = false,
 				//save the observation
 				$observation_id = $observation['id'] = db_query(
 					"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
-				// 			$observation_id = db_next_id('observation_id');
 				$observation['c_time'] = $observation['m_time'];
 				$observation['acl_id'] = new_acl(
 					'singleobservation',
 					$observation['users_uid']);
-				// 			die(print_r($observation));
 				db_insert('observation')->fields($observation)
 					->execute();
 				observation_save_attribute_values(
@@ -434,22 +391,6 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 	}
 	return drupal_json_output($output);
 
-}
-
-/**
- * Delete a custom attribute and all entries in all own observations
- * @param int $attribute_id
- */
-function observation_delete_custom_attribute($attribute_id) {
-	if (!organism_artgroup_custom_attribute_exist($attribute_id))
-		return drupal_json_output(array('success' => false));
-	db_delete('observation_attribute')->condition(
-			'organism_artgroup_attr_id',
-			$attribute_id)
-		->execute();
-	if (organism_artgroup_delete_custom_attribute($attribute_id))
-		return drupal_json_output(array('success' => true));
-	return drupal_json_output(array('success' => false));
 }
 
 /**

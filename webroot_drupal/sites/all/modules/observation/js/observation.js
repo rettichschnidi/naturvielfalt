@@ -140,18 +140,6 @@ jQuery(document).ready(function() {
 		};
 		
 		/**
-		 * Add a additional custom attribute field, for name and value
-		 */
-		observation.addCustomAttribute = function(){
-			$('#attributes_table > tbody:last').append(
-					'<tr><td><input type="text" name="attributes_custom_names[]" onFocus="javascript:if($(this).val()==\''
-					+Drupal.t('Please enter a name')+'\'){$(this).val(\'\');}" maxlength="40" value="'+ Drupal.t('Please enter a name')
-					+'"></td>'+'<td><input type="text" name="attributes_custom_values[]" onFocus="javascript:if($(this).val()==\''
-					+Drupal.t('Please enter a value')+'\'){$(this).val(\'\');}" maxlength="40" value="'+ Drupal.t('Please enter a value')
-					+'"></td></tr>');
-		};
-		
-		/**
 		 * Reset the input's specially the organism related
 		 */
 		observation.resetOrganism = function(){
@@ -170,42 +158,6 @@ jQuery(document).ready(function() {
 			$( "#organismn_autocomplete" ).val('');
 			observation.resetOrganism();
 		};
-
-		/**
-		 * Delete a already saved custom attribute by id
-		 * @param attribute_id
-		 */
-		customAttributeDelete = function (attribute_id) {
-			tmp = attribute_id.split('_');
-			var id = tmp[2];
-			if (confirm(Drupal.t('This attribute will be deleted in all existing observations, are you sure?'))==false) return false;
-	  		var ajaxurl = Drupal.settings.basePath + '/observation/deleteCustomAttribute/'+id;
-			attrAjax = $.getJSON(ajaxurl,{
-				type: 'POST',
-				url: ajaxurl,
-				dataType: 'json',
-			},function(msg) {
-				if(msg.success == true){
-					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
-					$('#attributes_tr_'+id).remove();
-				}else{
-					observation.setMessage('<br><br>&bull;&nbsp;'+Drupal.t('Custom attribute not deleted'),'error', 15000);
-				}
-			});
-//	  		attrAjax.done(function(msg) {
-//				if(msg.success == true){
-//					observation.setMessage('<br><br>'+Drupal.t('Custom attribute deleted'), 'status', 5000);
-//					$('#attributes_tr_'+id).remove();
-//				}else{
-//					observation.setMessage('<br><br>&bull;&nbsp;'+Drupal.t('Custom attribute not deleted'),'error', 15000);
-//				}
-//			});
-//	  		attrAjax.error(function(textStatus) {
-//	//					  alert( "Request failed: " +  );
-//			  observation.setMessage(Drupal.t('Request failed: ')+textStatus,'error', 15000);
-//			});
-	  		return false;
-		};
 		
 		/**
 		 * Add another upload slot for files
@@ -216,7 +168,6 @@ jQuery(document).ready(function() {
 			elemets_ids=0;
 			$("div[id^='picture_upload__']").each(function () {
 				$(this).attr("id", 'picture_upload__'+(elemets_ids++));
-//            	$(this).attr("id");
 			});
 		};
 		
