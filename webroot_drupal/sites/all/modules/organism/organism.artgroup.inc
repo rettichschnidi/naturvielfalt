@@ -1,5 +1,7 @@
 <?php
 
+define('SPECIESGROUP_ALL', 1);
+
 /**
  * Get artgroups, optionally filtered with the parent id, as html <optio> tag
  * 
@@ -39,29 +41,33 @@ function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $select
  */
 function organism_artgroup_get_children($artgroup_id = false, $output = false, $organism_id = false){
 	$join = '';
-	if(!$artgroup_id) $artgroup_id = 3;
+	if(!$artgroup_id) {
+		$artgroup_id = SPECIESGROUP_ALL;
+	}
 	$wooor = array(':parent' => $artgroup_id);
 
-// 	if($organism_id){
-		$join = "JOIN {organism_artgroup_subscription} oas "
-				."ON oas.organism_artgroup_id = oa.id "
-				."AND oas.organism_id=:organism_id ";
-		$wooor[':organism_id'] = $organism_id;
-// 	}
+	$join = "JOIN {organism_artgroup_subscription} oas "
+			."ON oas.organism_artgroup_id = oa.id "
+			."AND oas.organism_id=:organism_id ";
+	$wooor[':organism_id'] = $organism_id;
 	$top_sql = "SELECT oa.id id, oas.organism_id organism_id FROM {organism_artgroup} oa ".$join." WHERE oa.parent=:parent AND oa.parent!=oa.id";
-// 	die($top_sql);
 	$top_result= db_query($top_sql, $wooor);
 
-	if(!$output) $output = array();
+	if(!$output) {
+		$output = array();
+	}
 
 	foreach ($top_result as $top){
 		if($organism_id){
-			if($top->organism_id != "") $output[] = $top->id;
+			if($top->organism_id != "") {
+				$output[] = $top->id;
+			}
 		}else{
-			if($top->id == '') continue;
+			if($top->id == '') {
+				continue;
+			}
 			$output[] = $top->id;
 		}
-// 		die(print_r($top));
 		$output = organism_artgroup_get_children($top->id, $output, $organism_id);
 	}
 
@@ -287,17 +293,23 @@ function organism_artgroup_get_detmethods_ids($artgroup_id){
 }
 
 /**
- * Returns all artgroups id's where an organism is in
+ * Returns all artgroups id's which an organism is subscribed to.
  * @param int $organism_id
  * @param bool $just_the_last
  * @return array || int
  */
-function organism_artgroup_get_organsim_in_artgroup($organism_id, $just_the_last = false){
-	$artgroups = organism_artgroup_get_children(3, false, $organism_id);
-	if(!$just_the_last) return $artgroups;
+function organism_artgroup_get_organsim_in_artgroup($organism_id, $just_the_last = false) {
+	$artgroups = organism_artgroup_get_children(SPECIESGROUP_ALL, false, $organism_id);
+	if(!$just_the_last) {
+		return $artgroups;
+	}
 	$output = '';
-	foreach ($artgroups as $artgroup) $output = $artgroup;
-	if($output == '') return 3;
+	foreach ($artgroups as $artgroup) {
+		$output = $artgroup;
+	}
+	if($output == '') {
+		return SPECIESGROUP_ALL;
+	}
 	return $output;
 }
 

@@ -21,24 +21,21 @@ function observation_save($observation_data = false, $custom_data = false,
 		$from_api = false) {
 	global $user;
 
-	// die(print_r($_FILES));
-	// die(print_r($_POST));
 	$values = $_POST;
 	if ($custom_data) {
 		$values = $custom_data;
 	}
 
-	// 	die(print_r($values));
-
 	$errormessages = array();
-	// 	$output['post'] = $values;
 	$observation = array();
 	$observation['m_time'] = time();
-	if (isset($values['observation_id']))
+	if (isset($values['observation_id'])) {
 		$observation['id'] = $values['observation_id'];
-	if (isset($values['area_geometry_id']))
+	}
+	if (isset($values['area_geometry_id'])) {
 		$observation['area_geometry_id'] = $values['area_geometry_id'];
-
+	}
+	
 	/**
 	 * check the organism id
 	 */
@@ -47,25 +44,26 @@ function observation_save($observation_data = false, $custom_data = false,
 	} else {
 		$observation['organism_id'] = filter_xss($values['organismn_id']);
 	}
-	if (is_bool((bool) $values['observation_found_as_lang']))
+	if (is_bool((bool) $values['observation_found_as_lang'])) {
 		$observation['found_as_lang'] = $values['observation_found_as_lang'];
-	if (is_bool((bool) $values['observation_found_as_latin']))
+	}
+	if (is_bool((bool) $values['observation_found_as_latin'])) {
 		$observation['found_as_lat'] = $values['observation_found_as_latin'];
+	}
 
 	/**
 	 * Check the determation and artgroup value
 	 */
 	// prevent wrong artgroup, set it each time automatically
 	// set the last value as artgroup
-	// 	$artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
-	// 	if($observation['organism_artgroup_id'] == 0){
-	if ($observation['organism_id'] > 0)
+	// $artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
+	// if($observation['organism_artgroup_id'] == 0){
+	if ($observation['organism_id'] > 0) {
 		$observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
 			$observation['organism_id'],
 			true);
+	}
 
-	// 	}
-	// 	$observation['organism_artgroup_id'] = NULL;
 	if (!isset($values['determination_method_id']))
 		$values['determination_method_id'] = 0;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval(
