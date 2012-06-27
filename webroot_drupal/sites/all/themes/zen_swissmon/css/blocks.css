@@ -109,9 +109,11 @@ h2.block-title /* Block title */ {
   color: #e65016;
 }
 #block-system-navigation /* "Navigation" block for Drupal navigation menu */ {
+  color: white;
 }
 #block-system-navigation a:link,
 #block-system-navigation a:visited {
+  color: white;
 }
 
 

@@ -409,14 +409,12 @@ button {
 
 a:link,
 a:visited {
-/*  color: #3d7967; */
-  color: black;
+  color: #3d7967;
   text-decoration: none;
 }
 
 a:hover {
-/*  color: #3d7967; */
-  color: black;
+  color: #3d7967;
   text-decoration: underline;
 }
 
