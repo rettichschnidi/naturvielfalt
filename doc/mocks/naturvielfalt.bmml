@@ -16,105 +16,74 @@
         <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/banner_topnav_big.jpg</src>
       </controlProperties>
     </control>
-    <control controlID="7" controlTypeID="com.balsamiq.mockups::Image" x="342" y="159" w="120" h="325" measuredW="220" measuredH="487" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Image" x="342" y="159" w="170" h="325" measuredW="220" measuredH="487" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/sidebar_main-bg.jpg</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="357" y="183" w="76" h="21" measuredW="64" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
-      <controlProperties>
-        <color>0</color>
-        <text>Navigation</text>
-      </controlProperties>
-    </control>
-    <control controlID="113" controlTypeID="com.balsamiq.mockups::TextArea" x="485" y="183" w="767" h="385" measuredW="200" measuredH="140" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="113" controlTypeID="com.balsamiq.mockups::TextArea" x="527" y="183" w="725" h="385" measuredW="200" measuredH="140" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <borderColor>16777215</borderColor>
-        <text>Herzlich%20willkommen...%0A...%20bei%20Naturvielfalt.ch%20%u2013%20die%20Plattform%20f%FCr%20Naturbeobachtungen%20%21%0A%20%0ANaturvielfalt.ch%20bietet%20ein%20vielseitiges%20Informations-%20und%20Erfassungsportal%20f%FCr%20Flora%20und%20Fauna%20in%20der%20Schweiz%20und%20Umgebung.%20Erstellen%20Sie%20ein%20kostenloses%20Konto%20um%20%20Gebiete%2C%20Inventare%20sowie%20Einzelbeobachtungen%20zu%20erfassen%20und%20verwalten.%20Ihre%20gesammelten%20Daten%20halten%20Sie%20entweder%20privat%20oder%20machen%20diese%20den%20anderen%20registrierten%20Benutzer%28innen%29%20zug%E4nglich.%20Dar%FCber%20freuen%20sich%20nicht%20nur%20andere%20registrierte%20Natubeobachter%28innen%29%2C%20sondern%20Sie%20unterst%FCtzen%20somit%20auch%20den%20praktischen%20Naturschutz%20mit%20wertvollen%20Daten%20die%20z.B.%20f%FCr%20Aufwertungsmassnahmen%20sehr%20hilfreich%20sind.%0A%20%0AWenn%20Sie%20eine%20Jahresmitgliedschaft%20abschliessen%2C%20k%F6nen%20sie%20noch%20mehr%20Funktionen%20n%FCtzen%20und%20unterst%FCtzen%20die%20Weiterentwicklung%20der%20Platform.%0A%20%0AUm%20gleich%20loszulegen%20er%F6ffnen%20Sie%20ein%20kostenloses%20Benutzerkonto%2C%20oder%20lernen%20Sie%20mehr%20%FCber%20die%20Benutzung%20dieser%20Plattform%20unter%20H%E4ufige%20Fragen.</text>
+        <text>Herzlich%20willkommen...%0A...%20bei%20Naturvielfalt.ch%20%u2013%20die%20Plattform%20f%FCr%20Naturbeobachtungen%20%21%0A%20%0ANaturvielfalt.ch%20bietet%20ein%20vielseitiges%20Informations-%20und%20Erfassungsportal%20f%FCr%20Flora%20und%20Fauna%20in%20der%20Schweiz%20und%20Umgebung.%20Erstellen%20Sie%20ein%20kostenloses%20Konto%20um%20Einzelbeobachtungen%20zu%20erfassen%20und%20verwalten.%20Ihre%20gesammelten%20Daten%20halten%20Sie%20entweder%20privat%20oder%20machen%20diese%20den%20anderen%20registrierten%20Benutzer%28innen%29%20zug%E4nglich.%20Dar%FCber%20freuen%20sich%20nicht%20nur%20andere%20registrierte%20Natubeobachter%28innen%29%2C%20sondern%20Sie%20unterst%FCtzen%20somit%20auch%20den%20praktischen%20Naturschutz%20mit%20wertvollen%20Daten%20die%20z.B.%20f%FCr%20Aufwertungsmassnahmen%20sehr%20hilfreich%20sind.%0A%20%0AWenn%20Sie%20eine%20Jahresmitgliedschaft%20abschliessen%2C%20k%F6nen%20sie%20noch%20mehr%20Funktionen%20n%FCtzen%20und%20unterst%FCtzen%20die%20Weiterentwicklung%20der%20Platform.%0A%20%0AUm%20gleich%20loszulegen%20er%F6ffnen%20Sie%20ein%20kostenloses%20Benutzerkonto%2C%20oder%20lernen%20Sie%20mehr%20%FCber%20die%20Benutzung%20dieser%20Plattform%20unter%20H%E4ufige%20Fragen.</text>
       </controlProperties>
     </control>
-    <control controlID="114" controlTypeID="com.balsamiq.mockups::StickyNote" x="1279" y="108" w="240" h="123" measuredW="109" measuredH="123" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="114" controlTypeID="com.balsamiq.mockups::StickyNote" x="1279" y="101" w="240" h="123" measuredW="109" measuredH="123" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <text>-%20Sprache%20wird%20Aufgrund%20der%20Browsereinstellungen%20gew%E4hlt.</text>
       </controlProperties>
     </control>
-    <control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="1174" y="123" w="-1" h="-1" measuredW="79" measuredH="78" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="1174" y="123" w="-1" h="-1" measuredW="79" measuredH="78" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Deutsch%0AFranz%F6sisch%0AItalienisch%0AEnglisch</text>
       </controlProperties>
     </control>
-    <control controlID="116" controlTypeID="com.balsamiq.mockups::Button" x="1081" y="123" w="-1" h="-1" measuredW="78" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="116" controlTypeID="com.balsamiq.mockups::Button" x="357" y="612" w="-1" h="-1" measuredW="81" measuredH="27" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt-logged-in%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml%26bm%3Bnaturvielfalt-logged-in.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22972%2C112%2C1050%2C139%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22116%22/%3E</map>
-        <text>Einloggen</text>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C601%2C329%2C628%22%20href%3D%22naturvielfalt-logged-in.bmml%22%20alt%3D%22naturvielfalt-logged-in%22%20id%3D%22116%22/%3E</map>
+        <text>Anmelden</text>
       </controlProperties>
     </control>
-    <control controlID="117" controlTypeID="com.balsamiq.mockups::TextInput" x="1023" y="123" w="-1" h="-1" measuredW="50" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="117" controlTypeID="com.balsamiq.mockups::TextInput" x="357" y="570" w="-1" h="-1" measuredW="50" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>******</text>
       </controlProperties>
     </control>
-    <control controlID="118" controlTypeID="com.balsamiq.mockups::TextInput" x="925" y="123" w="89" h="-1" measuredW="65" measuredH="27" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="118" controlTypeID="com.balsamiq.mockups::TextInput" x="357" y="524" w="89" h="-1" measuredW="66" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <text>storch52</text>
       </controlProperties>
     </control>
-    <control controlID="119" controlTypeID="com.balsamiq.mockups::Link" x="813" y="126" w="-1" h="-1" measuredW="97" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="119" controlTypeID="com.balsamiq.mockups::Link" x="357" y="657" w="-1" h="-1" measuredW="97" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
         <href>user-register%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml%26bm%3Buser-register.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22704%2C115%2C801%2C136%22%20href%3D%22user-register.bmml%22%20alt%3D%22user-register%22%20id%3D%22119%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22248%2C646%2C345%2C667%22%20href%3D%22user-register.bmml%22%20alt%3D%22user-register%22%20id%3D%22119%22/%3E</map>
         <text>neu%20registrieren</text>
       </controlProperties>
     </control>
-    <control controlID="121" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="219" w="106" h="107" measuredW="300" measuredH="225" zOrder="13" locked="false" isInGroup="-1">
-      <controlProperties>
-        <backgroundAlpha>0</backgroundAlpha>
-        <borderStyle>none</borderStyle>
-        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C208%2C339%2C231%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22121_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C231%2C339%2C254%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22121_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C254%2C339%2C277%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22121_2%22/%3E%0A</map>
-        <selectedIndex>-1</selectedIndex>
-        <size>13</size>
-        <text>%3E%20Einzelbeobachtung%0A%3E%20Alle%20Gebiete%0A%3E%20Klassifizierer</text>
-      </controlProperties>
-    </control>
-    <control controlID="122" controlTypeID="com.balsamiq.mockups::Label" x="349" y="115" w="181" h="35" measuredW="10" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="122" controlTypeID="com.balsamiq.mockups::Label" x="349" y="115" w="181" h="35" measuredW="10" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <href>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22240%2C104%2C421%2C139%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22122%22/%3E</map>
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="123" controlTypeID="__group__" x="109" y="13" w="393" h="246" measuredW="393" measuredH="246" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="124" controlTypeID="com.balsamiq.mockups::BreadCrumbs" x="525" y="158" w="-1" h="-1" measuredW="583" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
-        <controlName>status%20approved</controlName>
-        <markup>true</markup>
+        <text>Willkommen%2C%20und%2C%20weitere%2C%20breadcrumbs%2C%20Navigations%2C%20Elemente%2C%20auf%2C%20allen%2C%20Seiten</text>
       </controlProperties>
-      <groupChildrenDescriptors>
-        <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="262.04827947222674" measuredH="134.76905885864815" zOrder="1" locked="false" isInGroup="123">
-          <controlProperties>
-            <color>16777215</color>
-            <size>60</size>
-            <text>approved</text>
-            <textOrientation>slanted</textOrientation>
-          </controlProperties>
-        </control>
-        <control controlID="4" controlTypeID="__group__" x="0" y="0" w="393" h="246" measuredW="393" measuredH="246" zOrder="0" locked="false" isInGroup="123">
-          <controlProperties>
-            <crop>506%2C497%2C494%2C503</crop>
-          </controlProperties>
-          <groupChildrenDescriptors>
-            <control controlID="0" controlTypeID="com.balsamiq.mockups::RoundButton" x="0" y="0" w="796" h="489" measuredW="32" measuredH="32" zOrder="0" locked="false" isInGroup="4">
-              <controlProperties>
-                <borderColor>3700253</borderColor>
-                <color>3700253</color>
-                <shape>diamond</shape>
-              </controlProperties>
-            </control>
-          </groupChildrenDescriptors>
-        </control>
-      </groupChildrenDescriptors>
+    </control>
+    <control controlID="125" controlTypeID="com.balsamiq.mockups::Tree" x="342" y="159" w="170" h="340" measuredW="300" measuredH="372" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+        <hrefs>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%2Cinfothek%26bm%3Binfothek.bmml%26bm%3Binfothek.bmml%26bm%3Binfothek.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%2Chabitats%26bm%3Bhabitats.bmml%26bm%3Bhabitats.bmml%26bm%3Bhabitats.bmml%2Credlist%26bm%3Bredlist.bmml%26bm%3Bredlist.bmml%26bm%3Bredlist.bmml%2Csensiblelist%26bm%3Bsensiblelist.bmml%26bm%3Bsensiblelist.bmml%26bm%3Bsensiblelist.bmml%2Cprotectedlist%26bm%3Bprotectedlist.bmml%26bm%3Bprotectedlist.bmml%26bm%3Bprotectedlist.bmml%2C%2Cobservation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2Cinventory-all%26bm%3Binventory-all.bmml%26bm%3Binventory-all.bmml%26bm%3Binventory-all.bmml%2C%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C148%2C403%2C171%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22125_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C171%2C403%2C194%22%20href%3D%22infothek.bmml%22%20alt%3D%22infothek%22%20id%3D%22125_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C194%2C403%2C217%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22125_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C217%2C403%2C240%22%20href%3D%22habitats.bmml%22%20alt%3D%22habitats%22%20id%3D%22125_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C240%2C403%2C263%22%20href%3D%22redlist.bmml%22%20alt%3D%22redlist%22%20id%3D%22125_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C263%2C403%2C286%22%20href%3D%22sensiblelist.bmml%22%20alt%3D%22sensiblelist%22%20id%3D%22125_5%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C286%2C403%2C309%22%20href%3D%22protectedlist.bmml%22%20alt%3D%22protectedlist%22%20id%3D%22125_6%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C332%2C403%2C355%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22125_7%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C355%2C403%2C378%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22125_8%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C378%2C403%2C401%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22125_9%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C401%2C403%2C424%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22125_10%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C424%2C403%2C447%22%20href%3D%22inventory-all.bmml%22%20alt%3D%22inventory-all%22%20id%3D%22125_11%22/%3E%0A</map>
+        <selectedIndex>0</selectedIndex>
+        <size>13</size>
+        <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
+      </controlProperties>
     </control>
   </controls>
 </mockup>

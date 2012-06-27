@@ -74,7 +74,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 								. '/images/can_delete.png') . '" alt="'
 					. t('Delete') . '" />';
 			$filemime = $img_mime;
-			$filesize = ($record->filesize / 1000) . " KB";
+			$filesize = ($record->filesize / 1024) . " KB";
 			$timestamp = date('d.m.Y', $record->timestamp);
 			$author = isset($record->author) ? $record->author : '';
 			$row = array();
