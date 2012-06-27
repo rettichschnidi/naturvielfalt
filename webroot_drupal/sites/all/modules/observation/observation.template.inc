@@ -232,10 +232,9 @@ function observation_form($observation = false) {
 				false,
 				0,
 				$observation['observation']['organism_artgroup_id'])
-			. '</select>'
- . '</td></tr></table>'
+			. '</select>' . '</td></tr></table>'
 			. '<table class="form-item form-type-textfield" style="width: auto !important;">'
- . '<tr>' . '<td class="observation_subtitle">' . t('Date')
+			. '<tr>' . '<td class="observation_subtitle">' . t('Date')
 			. '<br><input type="text" id="date" name="date" value="'
 			. date('d.m.Y', $timestamp) . '"></td>'
 			. '<td class="observation_subtitle">' . t('Count')
@@ -259,7 +258,7 @@ function observation_form($observation = false) {
 			. '</span>
 							</legend>
 							<div class="fieldset-wrapper">'
- . '<div><table id="attributes_table"><tr>' . '<td>'
+			. '<div><table id="attributes_table"><tr>' . '<td>'
 			. t('Determination method')
 			. ':</td><td> <select name="determination_method_id" id="determination_method_id">'
 			. organism_artgroup_get_determation_methods(
@@ -271,7 +270,7 @@ function observation_form($observation = false) {
 			. '<input type="submit" class="edit-submit" value="' . t('Save')
 			. '" name="op" id="edit-submit">'
 			. '<div style="display: none;" id="message"><div class="messages"></div></div>'
- . $image . drupal_render($file_list) . '</form>' . '</div>';
+			. $image . drupal_render($file_list) . '</form>' . '</div>';
 
 	$recent['rencent_observation'] = array(
 			'#theme' => 'datatable',

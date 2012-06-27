@@ -61,10 +61,13 @@ function observation_gallery_manage_title($id, $mediatype) {
  */
 function observation_gallery_caption($id) {
 	$observationdata = observation_load($id);
-	if(!observation_read_access($observationdata)) return false;
-	return t("@observation_organism", array(
-				'@observation_organism' => $observationdata['organism']['name_lang']
-											.'('.$observationdata['organism']['name_lat'].')',));
+	if (!observation_read_access($observationdata))
+		return false;
+	return t(
+		"@observation_organism",
+		array('@observation_organism' => $observationdata['organism']['name_lang']
+						. '(' . $observationdata['organism']['name_lat'] . ')',
+		));
 }
 
 /**

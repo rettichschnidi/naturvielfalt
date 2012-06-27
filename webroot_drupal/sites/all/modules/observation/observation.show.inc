@@ -9,7 +9,7 @@ module_load_include('inc', 'observation');
  */
 function observation_show_all_singleobservations() {
 
-	$observation_path= drupal_get_path('module', 'observation');
+	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
 
 	$output['div'] = array(
@@ -26,7 +26,7 @@ function observation_show_all_singleobservations() {
 			'#search' => true,
 			'#ch1903' => true,
 			'#json_url' => 'singleobservation/geometry/json',
-// 			'#height' => '350px',
+	// 			'#height' => '350px',
 	);
 
 	$output['space'] = array(
@@ -40,10 +40,10 @@ function observation_show_all_singleobservations() {
 			'#title' => t('Singleobservations'),
 			'#id_table' => 'observations',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path()."observation/get/all'",
+					'jsonUrl' => "'" . base_path() . "observation/get/all'",
 					'rowClick' => 'rowClick',
-// 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-// 					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/show';})}"
+					// 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
+					// 					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/show';})}"
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
@@ -55,7 +55,6 @@ function observation_show_all_singleobservations() {
 	);
 	return $output;
 }
-
 
 /**
  * Return a form which shows some important facts about a given area.
@@ -73,16 +72,24 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 			'#type' => 'fieldset',
 			'#title' => t('Observation'),
 			'#attributes' => array(
-					'style' => array('width:400px;'))
+					'style' => array(
+							'width:400px;'
+					)
+			)
 	);
-	$form['addressdata']['table'] = observation_get_table($observationdata, true);
+	$form['addressdata']['table'] = observation_get_table(
+		$observationdata,
+		true);
 	/**
 	 * Display the "edit" button only if user has write permission to this area
 	 */
 	if (observation_write_access($observationdata)) {
 		$form['addressdata']['edit'] = array(
 				'#type' => 'markup',
-				'#markup' => l(t('Edit'), 'singleobservation/' . $observationdata['observation']['id'] . '/edit')
+				'#markup' => l(
+					t('Edit'),
+					'singleobservation/'
+							. $observationdata['observation']['id'] . '/edit')
 		);
 		$form['addressdata']['whitespace'] = array(
 				'#type' => 'markup',
@@ -91,7 +98,10 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 	}
 	$form['addressdata']['show'] = array(
 			'#type' => 'markup',
-			'#markup' => l(t('Show'), 'singleobservation/' . $observationdata['observation']['id'] . '/show')
+			'#markup' => l(
+				t('Show'),
+				'singleobservation/' . $observationdata['observation']['id']
+						. '/show')
 	);
 	return $form;
 }

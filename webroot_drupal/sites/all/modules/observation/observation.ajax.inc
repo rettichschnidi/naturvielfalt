@@ -35,7 +35,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	if (isset($values['area_geometry_id'])) {
 		$observation['area_geometry_id'] = $values['area_geometry_id'];
 	}
-	
+
 	/**
 	 * check the organism id
 	 */
@@ -273,7 +273,10 @@ function observation_save($observation_data = false, $custom_data = false,
 			$transaction->rollback();
 			watchdog_exception('observation', $e);
 			$output['success'] = false;
-			$output['message'] = array(t('Could not save the observation because of an unknown error.'));
+			$output['message'] = array(
+					t(
+						'Could not save the observation because of an unknown error.')
+			);
 		}
 	} else {
 		$output['success'] = false;
@@ -354,7 +357,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 	$sql['id'] = 'id';
 	/* Only show writeable observations */
 	$sql['acl_level'] = $acl_level;
-	
+
 	$output = datatable_dbRequest($sql);
 
 	// 	// Add a link to the gallery of each habitat
