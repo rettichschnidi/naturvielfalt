@@ -25,7 +25,7 @@ function observation_form($observation = false) {
 	$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 	if(!isset($observation['observation']['found_as_lang'])) $observation['observation']['found_as_lang'] = 'false';
 	if(!isset($observation['observation']['found_as_lat'])) $observation['observation']['found_as_lat'] = 'false';
-	if(!isset($observation['observation']['organism_artgroup_id'])) $observation['observation']['organism_artgroup_id'] = '';
+	if(!isset($observation['observation']['organism_artgroup_id'])) $observation['observation']['organism_artgroup_id'] = '1'; // Assuming artgroup 'all' has the id 1.
 	if(!isset($observation['observation']['organism_id'])) $observation['observation']['organism_id'] = '';
 	if(!isset($observation['organism']['name_lat'])) $observation['organism']['name_lat'] = '';
 	if(!isset($observation['organism']['name_lang'])) $observation['organism']['name_lang'] = '';
@@ -178,7 +178,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 					.@$hidden_fields
 					.'<table class="form-item form-type-textfield">'
 						.'<tr><td class="observation_td">'
-								.'<span class="observation_title">'.t('Search for organism or species').'</span><br>'
+								.'<span class="observation_title">'.t('Search for organsim or species').'</span><br>'
 									.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="'.$observation['organism']['name_lang'].'">'
 									.'<br><span id="species_autocomplete">'.$species_autocomplete.'</span>'
 							.'</td><td class="observation_td">'
