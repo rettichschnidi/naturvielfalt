@@ -187,7 +187,7 @@ function observation_menu() {
 	);
 	$items['observation/get/all'] = array(
 			'title' => t('Obse4rvationsJSON'),
-			'description' => t('Get all observations'),
+			'description' => t('Get readable observations'),
 			'page callback' => 'observation_get_all_json',
 			'access arguments' => array(
 					'create observation'
@@ -195,6 +195,19 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+
+	$items['observation/get/writeable'] = array(
+			'title' => t('Writeable Observations JSON'),
+			'description' => t('Get writeable observations'),
+			'page callback' => 'observation_get_all_json',
+			'page arguments' => array('ACL_WRITE'),
+			'access arguments' => array(
+					'access observation'
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
 	$items['observation/deleteCustomAttribute/%'] = array(
 			'title' => t('Delete Attribute'),
 			'description' => t('Delete a custom attribute'),

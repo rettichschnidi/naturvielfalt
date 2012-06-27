@@ -239,7 +239,7 @@ $formcust .= '<div id="message" style="display: none; height: auto;">
 				'#title' => t('Recently recorded and saved observations (click on a row, to edit an entry)'),
 				'#id_table' => 'recent_observations',
 				'#options' => array(
-						'jsonUrl' => "'" . base_path()."observation/get/all'",
+						'jsonUrl' => "'" . base_path()."observation/get/writeable'",
 						'rowClick' => 'rowClick',
 						'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
 									window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/edit';})}"

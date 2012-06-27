@@ -338,7 +338,7 @@ function observation_save($observation_data = false, $custom_data = false,
  * This method handle the request from flexigrid
  * @return JSON
  */
-function observation_get_all_json() {
+function observation_get_all_json($acl_level = 'ACL_READ') {
 	global $user;
 
 	// if the search is for a date, convert it to timestamp to find the results in the db
@@ -361,7 +361,7 @@ function observation_get_all_json() {
 			'o.observer AS observer',
 			'o.date AS date',
 			'o.count AS count',
-			'o.acl_id',
+			'o.acl_id AS acl_id',
 			'a_s.altitude AS altitude',
 			'a_s.township AS township',
 			'a_s.zip AS zip',
@@ -397,6 +397,9 @@ function observation_get_all_json() {
 			. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
+	/* Only show writeable observations */
+	$sql['acl_level'] = $acl_level;
+	
 	$output = datatable_dbRequest($sql);
 
 	// 	// Add a link to the gallery of each habitat
