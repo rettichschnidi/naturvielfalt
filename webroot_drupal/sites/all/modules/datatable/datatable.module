@@ -219,17 +219,17 @@ function datatable_dbRequest($sql, $arguments = array(),
     		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
     		for ($i = 0; $i < count($searchColumns); $i++) {
     			/**
-    			 * yes, this is ia terrible hack, but I do not know how another solution to make sure
+    			 * yes, this is a terrible hack, but I do not know how another solution to make sure
     			 * that all(?!) types can be used with LIKE
     			 */
-    			$sWhere .= "LOWER(CAST(" . $searchColumns[$i]
-    					. " AS TEXT)) LIKE LOWER(CAST('%$query%' AS TEXT)) OR ";
+    			$sWhere .= "CAST(" . $searchColumns[$i]
+    					. " AS TEXT) ILIKE CAST('%$query%' AS TEXT) OR ";
     		}
     		$sWhere = substr_replace($sWhere, "", -3);
     		$sWhere .= ')';
 	    }
 	    else
-	        $sWhere = "WHERE LOWER(" . (string)$qtype . ") LIKE LOWER('%". (string)$query . "%')";
+	        $sWhere = "WHERE " . (string)$qtype . " ILIKE '%". (string)$query . "%'";
 	}
 
 	/*
