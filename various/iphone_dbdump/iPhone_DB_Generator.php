@@ -14,7 +14,7 @@ $web_db = pg_connect(
 			. $config['naturvielfalt_dev']['name'] . ' user='
 			. $config['naturvielfalt_dev']['user'] . ' password='
 			. $config['naturvielfalt_dev']['password']);
-$file = 'IPhone_DB_.sql';
+$file = 'iPhone_DB.sql';
 
 $sql_create_iphone_db_structur = '
 	DROP TABLE IF EXISTS classification;
@@ -119,15 +119,15 @@ $query_organism_artgroup_subscription = "
 		oas.organism_artgroup_id classification_id
 	FROM $table_oas oas";
 
-ECHO 'get all organism<br>';
+echo "get all organism<br>\n";
 $results_all_organism = pg_fetch_all(pg_query($web_db, $query_all_organism));
-echo 'get all artgroups<br>';
+echo "get all artgroups<br>\n";
 $results_all_artgroups = pg_fetch_all(pg_query($web_db, $query_all_artgroups));
-echo 'get all subscriptions';
+echo "get all subscriptions<br/>\n";
 $results_organism_artgroup_subscription = pg_fetch_all(
 	pg_query($web_db, $query_organism_artgroup_subscription));
 
-echo 'build artgroups sql inserts<br>';
+echo "build artgroups sql inserts<br>\n";
 $sql_all_artgroups = '
 
 ';
@@ -140,7 +140,7 @@ INSERT INTO classification (classification_id, name_de, parent, \"position\", cl
 			. pg_escape_string($artgroup['position']) . "', 1);";
 }
 
-echo 'build organism sql inserts<br>';
+echo "build organism sql inserts<br>\n";
 $sql_all_organism = '
 
 ';
@@ -156,10 +156,8 @@ INSERT INTO organism (organism_id, name_sc, name_de, name_fr, name_it, name_rm, 
 			. pg_escape_string($organism['name_en']) . "');";
 }
 
-echo 'build all subscription sql inserts<br>';
-$sql_organism_artgroup_subscription = '
+echo "build all subscription sql inserts<br>\n";
 
-';
 foreach ($results_organism_artgroup_subscription as $subs) {
 	$sql_all_artgroups .= "
 INSERT INTO classification_taxon (taxon_id, classification_id) values ('"
@@ -167,9 +165,9 @@ INSERT INTO classification_taxon (taxon_id, classification_id) values ('"
 			. pg_escape_string($subs['classification_id']) . "');";
 }
 
-echo 'save all to the file';
-$save = $sql_create_iphone_db_structur . $sql_all_artgroups . $sql_all_organism
-		. $sql_organism_artgroup_subscription;
+echo "save all to the file '$file'\n";
+$save = $sql_create_iphone_db_structur . $sql_all_artgroups . $sql_all_organism;
+
 if (file_exists($file)) {
 	unlink($file);
 }
