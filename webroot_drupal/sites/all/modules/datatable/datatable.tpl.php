@@ -8,7 +8,8 @@
  */
 
 global $user;
-$langcode = isset($user->language) && !empty($user) ? $user->language : 'de';
+global $language;
+$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
 
 drupal_add_library('system', 'ui.datepicker');
 
