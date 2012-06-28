@@ -31,5 +31,11 @@ for next in `ls -d external/drupal/core/*/`;do
 	rm -rf $next
 done
 
+mkdir webroot_drupal/sites/all/libraries
+for next in `ls external/drupal/CKEditor/*.tar.gz`;do
+	echo "Untaring CKEditor - $next"
+	tar -xzf $next -C webroot_drupal/sites/all/libraries/
+done
+
 cp external/drupal/translations-core/drupal-* webroot_drupal/profiles/standard/translations/
 exit 0
