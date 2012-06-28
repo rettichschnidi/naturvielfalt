@@ -115,7 +115,7 @@
         <text>Familie%20wissenschaftlich%20/%20Familie%20deutsch%2C%20Art%20wissenschaftlich%2C%20Art%20deutsch</text>
       </controlProperties>
     </control>
-    <control controlID="69" controlTypeID="com.balsamiq.mockups::Arrow" x="383" y="167" w="201" h="24" measuredW="150" measuredH="100" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="69" controlTypeID="com.balsamiq.mockups::Arrow" x="383" y="167" w="201" h="24" measuredW="150" measuredH="100" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <text/>
       </controlProperties>
@@ -302,7 +302,7 @@
                 </control>
               </groupChildrenDescriptors>
             </control>
-            <control controlID="5" controlTypeID="__group__" x="0" y="53" w="717" h="131" measuredW="717" measuredH="160" zOrder="2" locked="false" isInGroup="0">
+            <control controlID="5" controlTypeID="__group__" x="0" y="53" w="717" h="131" measuredW="717" measuredH="131" zOrder="2" locked="false" isInGroup="0">
               <groupChildrenDescriptors>
                 <control controlID="14" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="150" h="101" measuredW="188" measuredH="125" zOrder="0" locked="false" isInGroup="5">
                   <controlProperties>
@@ -377,14 +377,7 @@
         <text>Nur%20Portraitbilder%0APortraitbilder%20dann%20Belegbilder%0ABelegbilder%20dann%20Portraitbilder</text>
       </controlProperties>
     </control>
-    <control controlID="80" controlTypeID="com.balsamiq.mockups::Link" x="611" y="1114" w="-1" h="-1" measuredW="109" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
-      <controlProperties>
-        <href>organism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22452%2C1067%2C561%2C1088%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2280%22/%3E</map>
-        <text>Medien%20hinzuf%FCgen</text>
-      </controlProperties>
-    </control>
-    <control controlID="85" controlTypeID="__group__" x="612" y="431" w="359" h="80" measuredW="359" measuredH="80" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="85" controlTypeID="__group__" x="612" y="431" w="359" h="80" measuredW="359" measuredH="80" zOrder="18" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="359" h="80" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="85">
           <controlProperties>
@@ -398,7 +391,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="86" controlTypeID="__group__" x="980" y="431" w="349" h="80" measuredW="349" measuredH="80" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="86" controlTypeID="__group__" x="980" y="431" w="349" h="80" measuredW="349" measuredH="80" zOrder="19" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="349" h="80" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="86">
           <controlProperties>
@@ -412,7 +405,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="87" controlTypeID="com.balsamiq.mockups::Tree" x="414" y="189" w="170" h="340" measuredW="300" measuredH="372" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="87" controlTypeID="com.balsamiq.mockups::Tree" x="414" y="189" w="170" h="340" measuredW="300" measuredH="372" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
@@ -423,12 +416,12 @@
         <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
       </controlProperties>
     </control>
-    <control controlID="88" controlTypeID="com.balsamiq.mockups::Arrow" x="1310" y="786" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="88" controlTypeID="com.balsamiq.mockups::Arrow" x="1310" y="786" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="89" controlTypeID="com.balsamiq.mockups::StickyNote" x="1430" y="830" w="172" h="108" measuredW="109" measuredH="123" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="89" controlTypeID="com.balsamiq.mockups::StickyNote" x="1430" y="830" w="172" h="108" measuredW="109" measuredH="123" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Paging%20in%20irgend%20einer%20Form%2C%20muss%20nicht%20so%20aussehen.</text>
       </controlProperties>

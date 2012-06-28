@@ -458,5 +458,6 @@
         <text>%3E%20Willkommen%0A%3E%20Arten%20%28Systematik%29%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
       </controlProperties>
     </control>
+    <control controlID="174" controlTypeID="com.balsamiq.mockups::RedX" x="495" y="823" w="701" h="28" measuredW="240" measuredH="104" zOrder="27" locked="false" isInGroup="-1"/>
   </controls>
 </mockup>
