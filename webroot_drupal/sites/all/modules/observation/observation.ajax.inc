@@ -122,7 +122,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	/**
 	 * Check if all attributes are permitted
 	 */
-	$attributes = $values['attributes'];
+	$attributes = isset($values['attributes']) ? $values['attributes'] : array();
 	$attributes_checked = array();
 	foreach ($attributes as $key => $value) {
 		// 		$output['attro'][] = $key.': '.$value;
