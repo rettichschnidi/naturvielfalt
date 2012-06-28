@@ -718,9 +718,9 @@ function organism_search_organism_json($classification = false, $term = false,
 	$i = 1;
 	$query = 'WITH RECURSIVE anchestors AS
 	(
-		SELECT oa.id, oa.name, oa.parent FROM drupal_organism_artgroup oa WHERE id = :artgroupid
+		SELECT oa.id, oa.name, oa.parent FROM {organism_artgroup} oa WHERE id = :artgroupid
 		UNION ALL
-		SELECT child.id, child.name, child.parent FROM drupal_organism_artgroup child INNER JOIN anchestors p ON p.id = child.parent
+		SELECT child.id, child.name, child.parent FROM {organism_artgroup} child INNER JOIN anchestors p ON p.id = child.parent
 	)
 	SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
 				FROM {organism} AS o
