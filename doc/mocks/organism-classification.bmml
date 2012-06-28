@@ -168,7 +168,7 @@
         <text>Da%20Synonyme%20zu%20doppelten%20Eintr%E4gen%20in%20der%20unteren%20Tabelle%20f%FChren%2C%20stimmen%20diese%20Zahlen%20nicht%20immer%20%FCberein.</text>
       </controlProperties>
     </control>
-    <control controlID="37" controlTypeID="com.balsamiq.mockups::Arrow" x="981" y="167" w="115" h="519" measuredW="150" measuredH="100" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Arrow" x="972" y="167" w="124" h="566" measuredW="150" measuredH="100" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <curvature>0</curvature>
         <direction>bottom</direction>
