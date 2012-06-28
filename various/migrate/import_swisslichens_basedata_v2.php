@@ -100,6 +100,7 @@ foreach ($rows as $row) {
 	$organism = array(
 			'classificator' => $classificator,
 			'classifications' => $classifications,
+			'artgroups' => array('Lichens'),
 			'scientific_names' => array(
 					$row['scientific_name']
 			)

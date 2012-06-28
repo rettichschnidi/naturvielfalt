@@ -138,6 +138,7 @@ foreach ($rows as $row) {
 	$organism = array(
 			'classificator' => $classificator,
 			'classifications' => $classifications,
+			'artgroups' => array('Flora'),
 			'scientific_names' => array(
 					$row['name']
 			),

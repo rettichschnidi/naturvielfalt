@@ -14,7 +14,7 @@ module_load_include('inc', 'area', 'area');
  * Return the single observation form to add a observation
  * @param array $observationdata
  */
-function observation_edit($observationdata = NULL){
+function observation_edit($observationdata = NULL) {
 	return observation_form($observationdata);
 }
 
@@ -23,26 +23,43 @@ function observation_edit($observationdata = NULL){
  * @param int $observation_id
  * @return array
  */
-function observation_get($observation_id){
+function observation_get($observation_id) {
 	$observation_id = db_escape_field(filter_xss($observation_id));
-	if($observation_id > 0){
+	if ($observation_id > 0) {
 		$sql = "SELECT * FROM {observation} o
 				WHERE o.id=:observation_id";
-		$result['observation'] = db_query($sql,array('observation_id' => $observation_id))->fetchAssoc();
+		$result['observation'] = db_query(
+			$sql,
+			array('observation_id' => $observation_id))->fetchAssoc();
 		// If no artgroup, try to find a artgroup
-		if($result['observation']['organism_artgroup_id'] == 0){
-			$artgroups = organism_artgroup_get_organsim_in_artgroup($result['observation']['organism_id']);
-			foreach ($artgroups as $artgroup) $result['observation']['organism_artgroup_id'] = $artgroup;
+		if ($result['observation']['organism_artgroup_id'] == 0) {
+			$artgroups = organism_artgroup_get_organsim_in_artgroup(
+				$result['observation']['organism_id']);
+			foreach ($artgroups as $artgroup) {
+				$result['observation']['organism_artgroup_id'] = $artgroup;
+			}
 		}
-		$result['observation']['organism_artgroup_detmethod_name'] = organism_artgroup_get_detmethod($result['observation']['organism_artgroup_detmethod_id'], true);
-		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup($result['observation']['organism_artgroup_id'], true);
-		$result['detmethods_vis'] = ($result['observation']['organism_artgroup_id'] != '') ? organism_artgroup_get_detmethods_ids($result['observation']['organism_artgroup_id']) : array();
-		$result['geometry'] = observation_get_geometry($result['observation']['area_geometry_id']);
-		($result['observation']['found_as_lang'] == 1) ? $result['observation']['found_as_lang'] = 'true' : $result['observation']['found_as_lang'] = 'false';
-		($result['observation']['found_as_lat'] == 1) ? $result['observation']['found_as_lat'] = 'true' : $result['observation']['found_as_lat'] = 'false';
+		$result['observation']['organism_artgroup_detmethod_name'] = organism_artgroup_get_detmethod(
+			$result['observation']['organism_artgroup_detmethod_id'],
+			true);
+		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup(
+			$result['observation']['organism_artgroup_id'],
+			true);
+		$result['detmethods_vis'] = ($result['observation']['organism_artgroup_id']
+				!= '')
+				? organism_artgroup_get_detmethods_ids(
+					$result['observation']['organism_artgroup_id']) : array();
+		$result['geometry'] = observation_get_geometry(
+			$result['observation']['area_geometry_id']);
+		($result['observation']['found_as_lang'] == 1)
+				? $result['observation']['found_as_lang'] = 'true'
+				: $result['observation']['found_as_lang'] = 'false';
+		($result['observation']['found_as_lat'] == 1)
+				? $result['observation']['found_as_lat'] = 'true'
+				: $result['observation']['found_as_lat'] = 'false';
 
 		/**
-		 * cheap hack to work with the very special weard
+		 * cheap hack to work with the very special weird
 		 * 'json' format from area, don't ask and don't change it!
 		 */
 		$tmp = (json_decode($result['geometry']['wgs84_geom_json'])->coordinates);
@@ -52,16 +69,26 @@ function observation_get($observation_id){
 		 * hack end
 		 */
 
-		$result['organism'] = organism_get($result['observation']['organism_id']);
-		$attributes = db_query("SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id", array(':observation_id' => $observation_id))->fetchAllAssoc('organism_artgroup_attr_id');
-		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '') ? organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id']): array();
+		$result['organism'] = organism_get(
+			$result['observation']['organism_id']);
+		$attributes = db_query(
+			"SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id",
+			array(':observation_id' => $observation_id))->fetchAllAssoc(
+				'organism_artgroup_attr_id');
+		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '')
+				? organism_artgroup_get_attributes_ids(
+					$result['observation']['organism_artgroup_id']) : array();
 		$result['attributes'] = array();
 		foreach ($attributes_vis as $attribute_vis)
 			$result['attributes'][$attribute_vis] = array(
-					'attribute_name' => organism_artgroup_get_attribute($attribute_vis, true),
+					'attribute_name' => organism_artgroup_get_attribute(
+						$attribute_vis,
+						true),
 					'value_id' => @$attributes[$attribute_vis]->organism_artgroup_attr_values_id,
-					'value_id_name' => organism_artgroup_get_attributes_value_name(@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
-					'value' => @$attributes[$attribute_vis]->value);
+					'value_id_name' => organism_artgroup_get_attributes_value_name(
+						@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
+					'value' => @$attributes[$attribute_vis]->value
+			);
 
 		return $result;
 	}
@@ -74,9 +101,9 @@ function observation_get($observation_id){
  * @param array $observation_data
  * @return array
  */
-function observation_get_geometries_acl_checked($observation_data = false){
+function observation_get_geometries_acl_checked($observation_data = false) {
 	$filter = array();
-	if($observation_data){
+	if ($observation_data) {
 		$filter[':observation_id'] = $observation_data['observation']['id'];
 		$where = " WHERE o.id=:observation_id ";
 	}
@@ -107,14 +134,14 @@ function observation_get_geometries_acl_checked($observation_data = false){
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {observation} o
-	JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id".$where;
+	JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id" . $where;
 	$results = db_query($sql, $filter)->fetchAllAssoc('id', PDO::FETCH_ASSOC);
 	$items = array();
-// 		die(print_r($results));
+	// 		die(print_r($results));
 
-	foreach($results as $result){
+	foreach ($results as $result) {
 		$tmp['observation'] = $result;
-		if(observation_read_access($tmp) == true){
+		if (observation_read_access($tmp) == true) {
 			$item = array();
 			$item['id'] = (int) $result['id'];
 			$item['altitude'] = (int) $result['altitude'];
@@ -142,14 +169,13 @@ function observation_get_geometries_acl_checked($observation_data = false){
 
 }
 
-
 /**
  * Return the geometry array for a observation
  * @param int $geometry_id
  * @return array
  */
-function observation_get_geometry($geometry_id){
-// 	die($geometry_id);
+function observation_get_geometry($geometry_id) {
+	// 	die($geometry_id);
 	$sql = "SELECT
 				a_s.altitude,
 				a_s.zip,
@@ -177,14 +203,14 @@ function observation_get_geometry($geometry_id){
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {area_geometry} a_s WHERE a_s.id=:geometry_id";
-	return db_query($sql,array(':geometry_id' => $geometry_id))->fetchAssoc();
+	return db_query($sql, array(':geometry_id' => $geometry_id))->fetchAssoc();
 }
 
 /**
  * Return the acl permission form for a observation
  * @param array $observation
  */
-function observation_edit_acl($observation = NULL){
+function observation_edit_acl($observation = NULL) {
 	return observation_acl_template($observation);
 }
 
@@ -192,60 +218,90 @@ function observation_edit_acl($observation = NULL){
  * Return a formated table with the observation details
  * @param array $observationdata
  */
-function observation_get_table($observationdata = NULL, $simple = false){
+function observation_get_table($observationdata = NULL, $simple = false) {
 
-	if($observationdata == NULL || !is_array($observationdata)) return false;
+	if ($observationdata == NULL || !is_array($observationdata)) {
+		return false;
+	}
 	$rows = array();
 
 	if (!empty($observationdata['organism']['name_lang'])) {
 		$rows[] = array(
-				array('data' => t('Organism Name'),'header' => true),
-				$simple ? substr($observationdata['organism']['name_lang'], 0, 20).'...'
-							: $observationdata['organism']['name_lang'],
+				array(
+						'data' => t('Organism Name'),
+						'header' => true
+				),
+				$simple
+						? substr(
+							$observationdata['organism']['name_lang'],
+							0,
+							20) . '...'
+						: $observationdata['organism']['name_lang'],
 		);
 	}
 
 	if (!empty($observationdata['organism']['name_lat'])) {
 		$rows[] = array(
-				array('data' => t('Scientific name'),'header' => true),
-				$simple ? substr($observationdata['organism']['name_lat'], 0, 20).'...'
-				: $observationdata['organism']['name_lat'],
+				array(
+						'data' => t('Scientific name'),
+						'header' => true
+				),
+				$simple
+						? substr(
+							$observationdata['organism']['name_lat'],
+							0,
+							20) . '...'
+						: $observationdata['organism']['name_lat'],
 		);
 	}
 
-
-	if (!empty($observationdata['observation']['organism_artgroup_name']) && !$simple) {
+	if (!empty($observationdata['observation']['organism_artgroup_name'])
+			&& !$simple) {
 		$rows[] = array(
-				array('data' => t('Artgroup'),'header' => true),
+				array(
+						'data' => t('Artgroup'),
+						'header' => true
+				),
 				t($observationdata['observation']['organism_artgroup_name']),
 		);
 	}
 
 	if (!empty($observationdata['observation']['observer']) && !$simple) {
 		$rows[] = array(
-				array('data' => t('Observer'),'header' => true),
+				array(
+						'data' => t('Observer'),
+						'header' => true
+				),
 				$observationdata['observation']['observer'],
 		);
 	}
 
 	if (!empty($observationdata['observation']['date'])) {
 		$rows[] = array(
-				array('data' => t('Date'),'header' => true),
+				array(
+						'data' => t('Date'),
+						'header' => true
+				),
 				date("j.m.Y", $observationdata['observation']['date']),
-
 		);
 	}
 
 	if (!empty($observationdata['observation']['m_time']) && !$simple) {
 		$rows[] = array(
-				array('data' => t('Last modification'),'header' => true),
+				array(
+						'data' => t('Last modification'),
+						'header' => true
+				),
 				date("j.m.Y", $observationdata['observation']['m_time'])
 		);
 	}
 
 	if (!empty($observationdata['observation']['count'])) {
 		$rows[] = array(
-				array('data' => t('Count'),'header' => true),
+				array(
+						'data' => t('Count'),
+						'header' => true
+				),
 				$observationdata['observation']['count']
 		);
 	}
@@ -260,34 +316,38 @@ function observation_get_table($observationdata = NULL, $simple = false){
 	return $form;
 }
 
-
 /**
  * Return a formated table with the observation details
  * @param array $observationdata
  */
-function observation_get_details_table($observationdata = NULL){
-	if($observationdata == NULL || !is_array($observationdata)) return false;
+function observation_get_details_table($observationdata = NULL) {
+	if ($observationdata == NULL || !is_array($observationdata))
+		return false;
 	$rows = array();
 
-// 	if (!empty($observationdata['observation']['organism_artgroup_detmethod_name'])) {
+	// 	if (!empty($observationdata['observation']['organism_artgroup_detmethod_name'])) {
+	$rows[] = array(
+			array(
+					'data' => t('Determination method'),
+					'header' => true
+			),
+			($observationdata['observation']['organism_artgroup_detmethod_name']
+					== '') ? t('Not definied')
+					: t(
+						$observationdata['observation']['organism_artgroup_detmethod_name']),
+	);
+	// 	}
+
+	foreach ($observationdata['attributes'] as $attribute) {
 		$rows[] = array(
-				array('data' => t('Determination method'),'header' => true),
-				($observationdata['observation']['organism_artgroup_detmethod_name'] == '') ?
-					t('Not definied') :
-					t($observationdata['observation']['organism_artgroup_detmethod_name']),
-
-		);
-// 	}
-
-	foreach ($observationdata['attributes'] as $attribute){
-		$rows[] = array(
-				array('data' => t($attribute['attribute_name']),'header' => true),
-				($attribute['value_id'] == '') ?
-					$attribute['value'] : t($attribute['value_id_name']),
-
+				array(
+						'data' => t($attribute['attribute_name']),
+						'header' => true
+				),
+				($attribute['value_id'] == '') ? $attribute['value']
+						: t($attribute['value_id_name']),
 		);
 	}
-
 
 	/* add the table with the data prepared above */
 	$form = array(
@@ -299,43 +359,57 @@ function observation_get_details_table($observationdata = NULL){
 	return $form;
 }
 
-
 /**
  * Return the drupal table as array, with geometry details for the observation
  * @param array $observationdata
  * @return array
  */
-function observation_get_geometry_table($observationdata = NULL){
+function observation_get_geometry_table($observationdata = NULL) {
 	/**
 	 * Geometry Details
 	 */
 	if (!empty($observationdata['geometry']['township'])) {
 		$rows[] = array(
-				array('data' => t('Township'),'header' => true),
+				array(
+						'data' => t('Township'),
+						'header' => true
+				),
 				$observationdata['geometry']['township']
 		);
 	}
 	if (!empty($observationdata['geometry']['zip'])) {
 		$rows[] = array(
-				array('data' => t('ZIP'),'header' => true),
+				array(
+						'data' => t('ZIP'),
+						'header' => true
+				),
 				$observationdata['geometry']['zip']
 		);
 	}
 	if (!empty($observationdata['geometry']['canton'])) {
 		$rows[] = array(
-				array('data' => t('Canton'),'header' => true),
+				array(
+						'data' => t('Canton'),
+						'header' => true
+				),
 				$observationdata['geometry']['canton']
 		);
 	}
 	if (!empty($observationdata['geometry']['country'])) {
 		$rows[] = array(
-				array('data' => t('Country'),'header' => true),
+				array(
+						'data' => t('Country'),
+						'header' => true
+				),
 				$observationdata['geometry']['country']
 		);
 	}
 	if (!empty($observationdata['geometry']['altitude'])) {
 		$rows[] = array(
-				array('data' => t('Altitude [m.a.s.l.]'),'header' => true),
+				array(
+						'data' => t('Altitude [m.a.s.l.]'),
+						'header' => true
+				),
 				$observationdata['geometry']['altitude']
 		);
 	}
@@ -344,12 +418,16 @@ function observation_get_geometry_table($observationdata = NULL){
 			&& !empty($observationdata['geometry']['ch1903_center_x'])
 			&& !empty($observationdata['geometry']['ch1903_center_y']))) {
 		$rows[] = array(
-				array('data' => t('Coordinates'),'header' => true),
-				get_wgs84_coordinates_link($observationdata['geometry']) . "<br/>"
-				. get_ch1903_coordinates_link($observationdata['geometry'])
+				array(
+						'data' => t('Coordinates'),
+						'header' => true
+				),
+				get_wgs84_coordinates_link($observationdata['geometry'])
+						. "<br/>"
+						. get_ch1903_coordinates_link(
+							$observationdata['geometry'])
 		);
 	}
-
 
 	/* add the table with the data prepared above */
 	$form = array(
@@ -366,14 +444,15 @@ function observation_get_geometry_table($observationdata = NULL){
  * @param array $attributes_checked
  * @param int $observation_id
  */
-function observation_save_attribute_values($attributes_checked, $observation_id){
-	// save each attributes
-	foreach ($attributes_checked as $key => $value){
+function observation_save_attribute_values($attributes_checked, $observation_id) {
+	// save all attributes
+	foreach ($attributes_checked as $key => $value) {
 		$val = explode('-->', $value);
-		$db_id = NULL; $db_val = NULL;
-		if($val[0] == 'db_id'){
+		$db_id = NULL;
+		$db_val = NULL;
+		if ($val[0] == 'db_id') {
 			$db_id = $val[1];
-		}else{
+		} else {
 			$db_val = $value;
 		}
 		$entry = array(
@@ -382,9 +461,9 @@ function observation_save_attribute_values($attributes_checked, $observation_id)
 				'organism_artgroup_attr_values_id' => $db_id,
 				'value' => $db_val,
 		);
-		if(observation_attribute_value_exist($observation_id, $key)){
+		if (observation_attribute_value_exist($observation_id, $key)) {
 			observation_update_attribute_value($entry);
-		}else{
+		} else {
 			observation_add_attribute_value($entry);
 		}
 
@@ -397,13 +476,16 @@ function observation_save_attribute_values($attributes_checked, $observation_id)
  * @param int $attr_id
  * @return boolean true on success|false on fails
  */
-function observation_attribute_value_exist($observation_id, $attr_id){
-	$result = db_query("SELECT * FROM {observation_attribute} oa
+function observation_attribute_value_exist($observation_id, $attr_id) {
+	$result = db_query(
+		"SELECT * FROM {observation_attribute} oa
 			WHERE oa.observation_id=:observation_id AND
 			oa.organism_artgroup_attr_id=:attr_id",
-			array(':observation_id' => $observation_id, ':attr_id' => $attr_id))
-			->rowCount();
-	if($result == 1) return true;
+		array(':observation_id' => $observation_id,
+				':attr_id' => $attr_id
+		))->rowCount();
+	if ($result == 1)
+		return true;
 	return false;
 }
 
@@ -411,23 +493,23 @@ function observation_attribute_value_exist($observation_id, $attr_id){
  * update a observation attribute
  * @param array $entry
  */
-function observation_update_attribute_value($entry){
-	db_update('observation_attribute')
-	->fields($entry)
-	->condition('observation_id', $entry['observation_id'])
-	->condition('organism_artgroup_attr_id', $entry['organism_artgroup_attr_id'])
-	->execute();
+function observation_update_attribute_value($entry) {
+	db_update('observation_attribute')->fields($entry)
+		->condition('observation_id', $entry['observation_id'])
+		->condition(
+			'organism_artgroup_attr_id',
+			$entry['organism_artgroup_attr_id'])
+		->execute();
 }
 
 /**
  * add a observation attribute
  * @param array $entry
  */
-function observation_add_attribute_value($entry){
-	db_insert('observation_attribute')->fields($entry)->execute();
+function observation_add_attribute_value($entry) {
+	db_insert('observation_attribute')->fields($entry)
+		->execute();
 }
-
-
 
 /**
  * Return the observations standart table headers
@@ -437,7 +519,8 @@ function observation_add_attribute_value($entry){
  * 				Sort directions ex. 'asc' or 'desc'
  * @return array
  */
-function observation_get_standart_datatable_headers($init_sort = false, $init_sort2 = false){
+function observation_get_standart_datatable_headers($init_sort = false,
+		$init_sort2 = false) {
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
@@ -522,16 +605,10 @@ function observation_get_standart_datatable_headers($init_sort = false, $init_so
 			'noSort' => true,
 	);
 
-	if($init_sort && $init_sort2){
+	if ($init_sort && $init_sort2) {
 		$tableHeader[$init_sort--]['initSort'] = true;
 		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
 	}
 	return $tableHeader;
 }
-
-
-
-
-
-
 

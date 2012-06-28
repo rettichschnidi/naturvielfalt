@@ -1,21 +1,22 @@
 <?php
 
+define('SPECIESGROUP_ALL', 1);
+
 /**
  * Get artgroups, optionally filtered with the parent id, as html <optio> tag
+ * 
  * @param int $parent
  * @param int $deep
  * @return string
  */
-function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false){
-
-	if($parent != false){
-		$parent_sql = "'" . db_escape_field($parent) . "' AND parent != id";
+function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {
+	if($parent != false) {
+		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent='" . db_escape_field($parent) . "' AND parent != id";
 	}else{
-		$parent_sql = "id";
+		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL";
 	}
 	if($selected_id == '') $selected_id = false;
 
-	$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent=" . $parent_sql;
 	$top_result= db_query($top_sql);
 
 	$output = "";
@@ -40,29 +41,33 @@ function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $select
  */
 function organism_artgroup_get_children($artgroup_id = false, $output = false, $organism_id = false){
 	$join = '';
-	if(!$artgroup_id) $artgroup_id = 3;
+	if(!$artgroup_id) {
+		$artgroup_id = SPECIESGROUP_ALL;
+	}
 	$wooor = array(':parent' => $artgroup_id);
 
-// 	if($organism_id){
-		$join = "JOIN {organism_artgroup_subscription} oas "
-				."ON oas.organism_artgroup_id = oa.id "
-				."AND oas.organism_id=:organism_id ";
-		$wooor[':organism_id'] = $organism_id;
-// 	}
+	$join = "JOIN {organism_artgroup_subscription} oas "
+			."ON oas.organism_artgroup_id = oa.id "
+			."AND oas.organism_id=:organism_id ";
+	$wooor[':organism_id'] = $organism_id;
 	$top_sql = "SELECT oa.id id, oas.organism_id organism_id FROM {organism_artgroup} oa ".$join." WHERE oa.parent=:parent AND oa.parent!=oa.id";
-// 	die($top_sql);
 	$top_result= db_query($top_sql, $wooor);
 
-	if(!$output) $output = array();
+	if(!$output) {
+		$output = array();
+	}
 
 	foreach ($top_result as $top){
 		if($organism_id){
-			if($top->organism_id != "") $output[] = $top->id;
+			if($top->organism_id != "") {
+				$output[] = $top->id;
+			}
 		}else{
-			if($top->id == '') continue;
+			if($top->id == '') {
+				continue;
+			}
 			$output[] = $top->id;
 		}
-// 		die(print_r($top));
 		$output = organism_artgroup_get_children($top->id, $output, $organism_id);
 	}
 
@@ -156,8 +161,6 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 						."JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id".$artgroup_filter;
 	$attributes_results = db_query($attributes_sql, array(':users_uid' => $user->uid));
 
-// 	if(!$as_html) return $attributes_results;
-
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result){
 		$values = db_query("SELECT * FROM {organism_artgroup_attr_values} WHERE organism_artgroup_attr_id='".$attributes_result->id."'");
@@ -220,12 +223,6 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
 		$predefinied_value = $attributes_selected[$form['id']]['value'];
 		$predefinied_value_id = $attributes_selected[$form['id']]['value_id'];
 	}
-	$custom_delete = '';
-	if($form['custom'] == '1'){
-		$custom_delete = '<a href="" onclick="javascript:customAttributeDelete($(this).parents(\'tr\').attr(\'id\'));return false;" '
-				.'title="'.t('Delete this custom attribute').'">&nbsp;<img src="'.base_path().drupal_get_path('module', 'observation').'/img/notfound.gif"></a>';
-	}
-	$output .= t($form['name']).$custom_delete.':';
 	if($html_after_desc) $output .= $html_after_desc;
 	if($html_before_form) $output .= $html_before_form;
 
@@ -296,17 +293,23 @@ function organism_artgroup_get_detmethods_ids($artgroup_id){
 }
 
 /**
- * Returns all artgroups id's where an organism is in
+ * Returns all artgroups id's which an organism is subscribed to.
  * @param int $organism_id
  * @param bool $just_the_last
  * @return array || int
  */
-function organism_artgroup_get_organsim_in_artgroup($organism_id, $just_the_last = false){
-	$artgroups = organism_artgroup_get_children(3, false, $organism_id);
-	if(!$just_the_last) return $artgroups;
+function organism_artgroup_get_organsim_in_artgroup($organism_id, $just_the_last = false) {
+	$artgroups = organism_artgroup_get_children(SPECIESGROUP_ALL, false, $organism_id);
+	if(!$just_the_last) {
+		return $artgroups;
+	}
 	$output = '';
-	foreach ($artgroups as $artgroup) $output = $artgroup;
-	if($output == '') return 3;
+	foreach ($artgroups as $artgroup) {
+		$output = $artgroup;
+	}
+	if($output == '') {
+		return SPECIESGROUP_ALL;
+	}
 	return $output;
 }
 
@@ -337,63 +340,6 @@ function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false){
 	if($just_the_name) return $detmethod['name'];
 	return $detmethod;
 }
-
-
-
-/**
- * add a custom attribute
- * @param string $name
- * @param int $artgroup_id
- */
-function organism_artgroup_add_custom_attribute($name, $artgroup_id){
-	global $user;
-
-	if($artgroup_id == null || $artgroup_id == '') return false;
-
-	$attribute['id'] = db_query("SELECT nextval('{organism_artgroup_attr}_id_seq') as nextval")->fetchField();
-	$attribute['name'] = check_plain($name);
-	$attribute['users_uid'] = $user->uid;
-	$attribute['organism_artgroup_attr_type_id'] = 1;
-
-	$attribute_subcr['organism_artgroup_attr_id'] = $attribute['id'];
-	$attribute_subcr['organism_artgroup_id'] = $artgroup_id;
-
-	db_insert('organism_artgroup_attr')->fields($attribute)->execute();
-	db_insert('organism_artgroup_attr_subscription')->fields($attribute_subcr)->execute();
-
-	return $attribute['id'];
-
-
-}
-
-/**
- * Checks if a custom attribute exists
- * @param int $attribute_id
- * @return bool | true if exists
- */
-function organism_artgroup_custom_attribute_exist($attribute_id){
-	global $user;
-	$attribute_id = intval($attribute_id);
-	$attribute_count = db_query('SELECT * FROM {organism_artgroup_attr} WHERE id=:attr_id AND users_uid=:users_uid',
-			array(':users_uid' => $user->uid, ':attr_id' => $attribute_id))->rowCount();
-	if($attribute_count < 1) return false;
-	return true;
-}
-
-/**
- * delete a custom attribute
- * @param int $attribute_id
- */
-function organism_artgroup_delete_custom_attribute($attribute_id){
-	global $user;
-	if(!organism_artgroup_custom_attribute_exist($attribute_id)) return false;
-	db_delete('organism_artgroup_attr_subscription')
-		->condition('organism_artgroup_attr_id', $attribute_id)->execute();
-	db_delete('organism_artgroup_attr')->condition('id', $attribute_id)
-		->condition('users_uid', $user->uid)->execute();
-	return true;
-}
-
 
 
 

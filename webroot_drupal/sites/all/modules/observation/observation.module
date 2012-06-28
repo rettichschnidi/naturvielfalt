@@ -28,7 +28,8 @@ function observation_menu() {
 	);
 	$items['singleobservation'] = array(
 			'title' => t('Show all singleobservations'),
-			'description' => t('Display a wizard to add a new singleobservation'),
+			'description' => t(
+				'Display a wizard to add a new singleobservation'),
 			'page callback' => 'observation_show_all_singleobservations',
 			'access arguments' => array(
 					'access observation'
@@ -67,23 +68,23 @@ function observation_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 2
 	);
-// 	if (function_exists('gallery_list_renderer')) {
-// 		$items['singleobservation/%/gallery'] = array(
-// 				'title' => t('Gallery'),
-// 				'description' => t('View the area as a gallery of organisms'),
-// 				'page callback' => 'singleobservation_gallery',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'area.inc',
-// 				'weight' => 3
-// 		);
-// 	}
+	// 	if (function_exists('gallery_list_renderer')) {
+	// 		$items['singleobservation/%/gallery'] = array(
+	// 				'title' => t('Gallery'),
+	// 				'description' => t('View the area as a gallery of organisms'),
+	// 				'page callback' => 'singleobservation_gallery',
+	// 				'page arguments' => array(
+	// 						1
+	// 				),
+	// 				'access arguments' => array(
+	// 						AREA_ACCESS
+	// 				),
+	// 				'type' => MENU_LOCAL_TASK,
+	// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+	// 				'file' => 'area.inc',
+	// 				'weight' => 3
+	// 		);
+	// 	}
 	$items['singleobservation/%observation/permissions'] = array(
 			'title' => t('Permission'),
 			'description' => t('Edit the permission of this observation.'),
@@ -127,16 +128,16 @@ function observation_menu() {
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'singleobservation.inc',
 	);
-// 	$items['singleobservation/new/multiple'] = array(
-// 			'title' => t('Add new singleobservations'),
-// 			'description' => t('Display a form to add multiple singleobservations'),
-// 			'page callback' => 'singleobservation_new_multiple',
-// 			'access arguments' => array(
-// 					'create observation'
-// 			),
-// 			'type' => MENU_NORMAL_ITEM,
-// 			'file' => 'singleobservation.inc',
-// 	);
+	// 	$items['singleobservation/new/multiple'] = array(
+	// 			'title' => t('Add new singleobservations'),
+	// 			'description' => t('Display a form to add multiple singleobservations'),
+	// 			'page callback' => 'singleobservation_new_multiple',
+	// 			'access arguments' => array(
+	// 					'create observation'
+	// 			),
+	// 			'type' => MENU_NORMAL_ITEM,
+	// 			'file' => 'singleobservation.inc',
+	// 	);
 	$items['observation/save'] = array(
 			'title' => t('Save'),
 			'description' => t('Save a new observation'),
@@ -187,7 +188,7 @@ function observation_menu() {
 	);
 	$items['observation/get/all'] = array(
 			'title' => t('Obse4rvationsJSON'),
-			'description' => t('Get all observations'),
+			'description' => t('Get readable observations'),
 			'page callback' => 'observation_get_all_json',
 			'access arguments' => array(
 					'create observation'
@@ -195,19 +196,21 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
-	$items['observation/deleteCustomAttribute/%'] = array(
-			'title' => t('Delete Attribute'),
-			'description' => t('Delete a custom attribute'),
-			'page callback' => 'observation_delete_custom_attribute',
+
+	$items['observation/get/writeable'] = array(
+			'title' => t('Writeable Observations JSON'),
+			'description' => t('Get writeable observations'),
+			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
-					2
+					'ACL_WRITE'
 			),
 			'access arguments' => array(
-					'create observation'
+					'access observation'
 			),
-			'type' => MENU_CALLBACK,
 			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
 	);
+
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
 	$items['observation/%observation/overview/ajaxform'] = array(
 			'title' => t('observation overview form'),
@@ -224,9 +227,6 @@ function observation_menu() {
 	);
 	return $items;
 }
-
-
-
 
 /**
  * Default permission function
@@ -255,7 +255,9 @@ function observation_admin_access($observationdata = NULL) {
 		return false;
 	}
 	if (isset($observationdata['observation']['acl_id'])) {
-		return check_permission($observationdata['observation']['acl_id'], variable_get('ACL_ADMIN'));
+		return check_permission(
+			$observationdata['observation']['acl_id'],
+			variable_get('ACL_ADMIN'));
 	}
 	return false;
 }
@@ -272,7 +274,9 @@ function observation_write_access($observationdata = NULL) {
 		return false;
 	}
 	if (isset($observationdata['observation']['acl_id'])) {
-		return check_permission($observationdata['observation']['acl_id'], variable_get('ACL_WRITE'));
+		return check_permission(
+			$observationdata['observation']['acl_id'],
+			variable_get('ACL_WRITE'));
 	}
 	return false;
 }
@@ -289,7 +293,9 @@ function observation_read_access($observationdata = NULL) {
 		return false;
 	}
 	if (isset($observationdata['observation']['acl_id'])) {
-		return check_permission($observationdata['observation']['acl_id'], variable_get('ACL_READ'));
+		return check_permission(
+			$observationdata['observation']['acl_id'],
+			variable_get('ACL_READ'));
 	}
 	return false;
 }
@@ -303,7 +309,7 @@ function observation_read_access($observationdata = NULL) {
  */
 function observation_load($arg) {
 	$observationdata = array();
-	if ($arg != NULL && ((int)$arg) > 0) {
+	if ($arg != NULL && ((int) $arg) > 0) {
 		$observationdata = observation_get($arg);
 	}
 	return $observationdata;

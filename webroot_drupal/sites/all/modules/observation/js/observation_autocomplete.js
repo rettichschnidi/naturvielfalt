@@ -28,7 +28,7 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 			},
 			// success : response,
 			success: function (data) {
-				if(data.length == 0) {
+				if(data == null || data.length == 0) {
 					//change visual indicator to notfound and hide menu again
 					actualElement.removeClass("searching");
 					actualElement.addClass("notfound");

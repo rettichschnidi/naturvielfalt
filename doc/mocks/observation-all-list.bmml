@@ -6,10 +6,10 @@
       </controlProperties>
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="271" y="89" w="997" h="1293" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
-    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1161" measuredW="239" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="482" y="197" w="764" h="1161" measuredW="241" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22482%2C189%2C547%2C214%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%222_0%22/%3E%0A</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22483%2C189%2C549%2C214%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%222_0%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
         <text>Beobachtungen%2C%20Erfassen</text>
       </controlProperties>
@@ -166,7 +166,7 @@
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="146" controlTypeID="com.balsamiq.mockups::StickyNote" x="1314" y="797" w="123" h="87" measuredW="109" measuredH="123" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="146" controlTypeID="com.balsamiq.mockups::StickyNote" x="1314" y="759" w="123" h="87" measuredW="109" measuredH="123" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Nur%20Belegmedien</text>
       </controlProperties>
@@ -190,7 +190,7 @@
         <text>Nur%20Punkte%20anzeigen%2C%20die%20unten%20in%20der%20Tabelle%20selektioniert%20wurden.</text>
       </controlProperties>
     </control>
-    <control controlID="150" controlTypeID="com.balsamiq.mockups::StickyNote" x="211" y="495" w="185" h="110" measuredW="109" measuredH="123" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="150" controlTypeID="com.balsamiq.mockups::StickyNote" x="211" y="495" w="185" h="154" measuredW="109" measuredH="123" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Ver%E4ndert%20nur%20den%20Kartenausschnitt.%20Nicht%20die%20Such-Kriterien%20in%20der%20Tabelle.</text>
       </controlProperties>
@@ -260,7 +260,7 @@
               <groupChildrenDescriptors>
                 <control controlID="0" controlTypeID="__group__" x="0" y="0" w="724" h="309" measuredW="724" measuredH="309" zOrder="0" locked="false" isInGroup="3">
                   <groupChildrenDescriptors>
-                    <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="38" w="724" h="201" measuredW="1109" measuredH="145" zOrder="0" locked="false" isInGroup="0">
+                    <control controlID="0" controlTypeID="com.balsamiq.mockups::DataGrid" x="0" y="38" w="724" h="201" measuredW="1108" measuredH="145" zOrder="0" locked="false" isInGroup="0">
                       <controlProperties>
                         <selectedIndex>1</selectedIndex>
                         <text>C%20%5Ev%2CD%20%5Ev%2C%20E%20%5Ev%2C%20B%20%5Ev%2C%20L%20%5Ev%2C%20Familie%20%5Ev%2C%20Artgruppe%5Ev%2C%20Wissenschaftlicher%20Name%20%5Ev%2C%20Name%20%5Ev%2C%20Datum%20Zeit%20%5Ev%2C%20Beobachter%20%5Ev%2C%20.%20%5Ev%2C%20Bilder%20%5Ev%2C%20Dok%20%5Ev%2C%20Video%20%5Ev%2C%20Audio%20%5Ev%0A%2C%2C%2C%2C%2C%20Aceraceae%2C%20Flora%2C%20Acer%20campestre%20L.%2C%20Feld-Ahorn%2C%2001.01.2012%2012%3A12%2C%20Albert%2C%2C%201%2C%20%2C%204%2C%201%0A%2C%2C%2C%2C%2C%20Aceraceae%2C%20Flora%2C%20Acer%20platanoides%20L.%20%2C%20Spitz-Ahorn%2C%2015.04.2010%2013%3A55%2C%20Roman%2C%2C%201%2C%20%2C%204%2C%201%0A%2C%2C%2C%2C%2C%20Aceraceae%2C%20Flora%2C%20Acer%20pseudoplatanus%20L.%2C%20Berg-Ahorn%2C%2028.02.2011%2023%3A59%2C%20Reto%2C%2C%201%2C%202%2C%204%2C%201%0A%2C%2C%2C%2C%2C%20Aceraceae%2C%20Flora%2C%20Acer%20pseudoplatanus%20L.%2C%20Berg-Ahorn%2C%2028.02.2011%2021%3A59%2C%20Albert%2C%2C%20%2C%2C%2C</text>

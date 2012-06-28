@@ -68,13 +68,6 @@ function organism_schema() {
 	        'type' => 'int',
 	        'not null' => 'TRUE',
 	      ),
-	      'users_uid' => 
-	      array (
-	        'description' => 'Primary Key: Unique user ID.',
-	        'type' => 'int',
-	        'default' => '0',
-	        'size' => 'big',
-	      ),
 	      'name' => 
 	      array (
 	        'description' => 'No description for column name available, please fix',
@@ -747,7 +740,7 @@ function organism_schema() {
 	        'table' => 'organism_classification_level',
 	        'columns' => 
 	        array (
-	          'prime_father_id' => 'id',
+	          'parent_id' => 'id',
 	        ),
 	      ),
 	    ),

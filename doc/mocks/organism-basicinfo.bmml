@@ -302,49 +302,9 @@
                 </control>
               </groupChildrenDescriptors>
             </control>
-            <control controlID="5" controlTypeID="__group__" x="0" y="53" w="717" h="160" measuredW="717" measuredH="160" zOrder="2" locked="false" isInGroup="0">
+            <control controlID="5" controlTypeID="__group__" x="0" y="53" w="717" h="131" measuredW="717" measuredH="160" zOrder="2" locked="false" isInGroup="0">
               <groupChildrenDescriptors>
-                <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="2" y="101" w="89" h="21" measuredW="90" measuredH="21" zOrder="0" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Salamandridae</text>
-                  </controlProperties>
-                </control>
-                <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="2" y="122" w="104" h="38" measuredW="200" measuredH="80" zOrder="1" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Salamandra%20atra%0AAlpensalamander</text>
-                  </controlProperties>
-                </control>
-                <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="388" y="101" w="60" h="21" measuredW="61" measuredH="21" zOrder="2" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Bufonidae</text>
-                  </controlProperties>
-                </control>
-                <control controlID="8" controlTypeID="com.balsamiq.mockups::Paragraph" x="202" y="122" w="104" h="38" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Triturus%20alpestris%0ABergmolch</text>
-                  </controlProperties>
-                </control>
-                <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="204" y="101" w="89" h="21" measuredW="90" measuredH="21" zOrder="4" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Salamandridae</text>
-                  </controlProperties>
-                </control>
-                <control controlID="10" controlTypeID="com.balsamiq.mockups::Paragraph" x="388" y="122" w="104" h="38" measuredW="200" measuredH="80" zOrder="5" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Bufo%20bufo%0AErdkr%F6te</text>
-                  </controlProperties>
-                </control>
-                <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="588" y="101" w="89" h="21" measuredW="90" measuredH="21" zOrder="6" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Salamandridae</text>
-                  </controlProperties>
-                </control>
-                <control controlID="12" controlTypeID="com.balsamiq.mockups::Paragraph" x="588" y="122" w="104" h="38" measuredW="200" measuredH="80" zOrder="7" locked="false" isInGroup="5">
-                  <controlProperties>
-                    <text>Triturus%20carnifex%0AAlpen-Kammolch</text>
-                  </controlProperties>
-                </control>
-                <control controlID="14" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="150" h="101" measuredW="188" measuredH="125" zOrder="8" locked="false" isInGroup="5">
+                <control controlID="14" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="150" h="101" measuredW="188" measuredH="125" zOrder="0" locked="false" isInGroup="5">
                   <controlProperties>
                     <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
                     <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22452%2C550%2C602%2C651%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2214%22/%3E</map>
@@ -352,7 +312,7 @@
                     <text/>
                   </controlProperties>
                 </control>
-                <control controlID="15" controlTypeID="com.balsamiq.mockups::Image" x="202" y="3" w="171" h="100" measuredW="188" measuredH="111" zOrder="9" locked="false" isInGroup="5">
+                <control controlID="15" controlTypeID="com.balsamiq.mockups::Image" x="202" y="3" w="171" h="100" measuredW="188" measuredH="111" zOrder="1" locked="false" isInGroup="5">
                   <controlProperties>
                     <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
                     <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22654%2C553%2C825%2C653%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2215%22/%3E</map>
@@ -360,7 +320,7 @@
                     <text/>
                   </controlProperties>
                 </control>
-                <control controlID="16" controlTypeID="com.balsamiq.mockups::Image" x="388" y="3" w="145" h="98" measuredW="188" measuredH="125" zOrder="10" locked="false" isInGroup="5">
+                <control controlID="16" controlTypeID="com.balsamiq.mockups::Image" x="388" y="3" w="145" h="98" measuredW="188" measuredH="125" zOrder="2" locked="false" isInGroup="5">
                   <controlProperties>
                     <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
                     <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22840%2C553%2C985%2C651%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2216%22/%3E</map>
@@ -368,7 +328,7 @@
                     <text/>
                   </controlProperties>
                 </control>
-                <control controlID="17" controlTypeID="com.balsamiq.mockups::Image" x="588" y="4" w="129" h="97" measuredW="188" measuredH="139" zOrder="11" locked="false" isInGroup="5">
+                <control controlID="17" controlTypeID="com.balsamiq.mockups::Image" x="588" y="4" w="129" h="97" measuredW="188" measuredH="139" zOrder="3" locked="false" isInGroup="5">
                   <controlProperties>
                     <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
                     <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221040%2C554%2C1169%2C651%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2217%22/%3E</map>
@@ -376,36 +336,36 @@
                     <text/>
                   </controlProperties>
                 </control>
-                <control controlID="25" controlTypeID="com.balsamiq.mockups::Icon" x="129" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="12" locked="false" isInGroup="5">
+                <control controlID="25" controlTypeID="com.balsamiq.mockups::Icon" x="129" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="4" locked="false" isInGroup="5">
                   <controlProperties>
                     <icon>AddCommentIcon%7Csmall</icon>
                   </controlProperties>
                 </control>
-                <control controlID="26" controlTypeID="com.balsamiq.mockups::Tooltip" x="139" y="64" w="138" h="51" measuredW="139" measuredH="0" zOrder="13" locked="false" isInGroup="5">
+                <control controlID="26" controlTypeID="com.balsamiq.mockups::Tooltip" x="139" y="64" w="138" h="51" measuredW="139" measuredH="0" zOrder="5" locked="false" isInGroup="5">
                   <controlProperties>
                     <text>Nachricht%20an%20Fotograf%20senden</text>
                     <tooltipDirection>SW</tooltipDirection>
                   </controlProperties>
                 </control>
-                <control controlID="27" controlTypeID="com.balsamiq.mockups::Icon" x="350" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="14" locked="false" isInGroup="5">
+                <control controlID="27" controlTypeID="com.balsamiq.mockups::Icon" x="350" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="6" locked="false" isInGroup="5">
                   <controlProperties>
                     <icon>AddCommentIcon%7Csmall</icon>
                   </controlProperties>
                 </control>
-                <control controlID="28" controlTypeID="com.balsamiq.mockups::Icon" x="509" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="15" locked="false" isInGroup="5">
+                <control controlID="28" controlTypeID="com.balsamiq.mockups::Icon" x="509" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="7" locked="false" isInGroup="5">
                   <controlProperties>
                     <icon>AddCommentIcon%7Csmall</icon>
                   </controlProperties>
                 </control>
-                <control controlID="29" controlTypeID="com.balsamiq.mockups::Icon" x="692" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="16" locked="false" isInGroup="5">
+                <control controlID="29" controlTypeID="com.balsamiq.mockups::Icon" x="692" y="105" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="8" locked="false" isInGroup="5">
                   <controlProperties>
                     <icon>AddCommentIcon%7Csmall</icon>
                   </controlProperties>
                 </control>
-                <control controlID="30" controlTypeID="com.balsamiq.mockups::RedX" x="129" y="101" w="22" h="28" measuredW="240" measuredH="104" zOrder="17" locked="false" isInGroup="5"/>
-                <control controlID="31" controlTypeID="com.balsamiq.mockups::RedX" x="350" y="103" w="22" h="28" measuredW="240" measuredH="104" zOrder="18" locked="false" isInGroup="5"/>
-                <control controlID="32" controlTypeID="com.balsamiq.mockups::RedX" x="509" y="103" w="22" h="28" measuredW="240" measuredH="104" zOrder="19" locked="false" isInGroup="5"/>
-                <control controlID="33" controlTypeID="com.balsamiq.mockups::RedX" x="692" y="103" w="22" h="28" measuredW="240" measuredH="104" zOrder="20" locked="false" isInGroup="5"/>
+                <control controlID="30" controlTypeID="com.balsamiq.mockups::RedX" x="129" y="101" w="22" h="28" measuredW="240" measuredH="104" zOrder="9" locked="false" isInGroup="5"/>
+                <control controlID="31" controlTypeID="com.balsamiq.mockups::RedX" x="350" y="103" w="22" h="28" measuredW="240" measuredH="104" zOrder="10" locked="false" isInGroup="5"/>
+                <control controlID="32" controlTypeID="com.balsamiq.mockups::RedX" x="509" y="103" w="22" h="28" measuredW="240" measuredH="104" zOrder="11" locked="false" isInGroup="5"/>
+                <control controlID="33" controlTypeID="com.balsamiq.mockups::RedX" x="692" y="103" w="22" h="28" measuredW="240" measuredH="104" zOrder="12" locked="false" isInGroup="5"/>
               </groupChildrenDescriptors>
             </control>
           </groupChildrenDescriptors>
@@ -461,6 +421,16 @@
         <selectedIndex>2</selectedIndex>
         <size>13</size>
         <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
+      </controlProperties>
+    </control>
+    <control controlID="88" controlTypeID="com.balsamiq.mockups::Arrow" x="1310" y="786" w="-1" h="-1" measuredW="150" measuredH="100" zOrder="22" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="89" controlTypeID="com.balsamiq.mockups::StickyNote" x="1430" y="830" w="172" h="108" measuredW="109" measuredH="123" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Paging%20in%20irgend%20einer%20Form%2C%20muss%20nicht%20so%20aussehen.</text>
       </controlProperties>
     </control>
   </controls>

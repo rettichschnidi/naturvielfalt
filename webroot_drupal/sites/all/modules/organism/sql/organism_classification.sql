@@ -1738,6 +1738,7 @@ INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (5720, 5710, 1, 5, 11435, 11436, 'Brintesia');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (4180, 4171, 1, 5, 8355, 8356, 'Hermetia');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (1994, 1922, 1, 5, 3983, 3984, 'Limobius');
+INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (5723, 5710, 1, 5, 11441, 11442, 'Erebia');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (793, 784, 1, 4, 1582, 1617, 'Craspedosomatidae');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (370, 353, 1, 5, 735, 736, 'Pellenes');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (810, 793, 1, 5, 1615, 1616, 'Rothenbühleria');
@@ -1861,7 +1862,6 @@ INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (3222, 3219, 1, 5, 6439, 6440, 'Arthrocnodax');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (396, 390, 1, 5, 787, 788, 'Dipoena');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (6136, 6062, 1, 5, 12267, 12268, 'Philedonides');
-INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (5723, 5710, 1, 5, 11441, 11442, 'Erebia');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (1664, 1606, 1, 5, 3323, 3324, 'Obrium');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (2007, 1922, 1, 5, 4009, 4010, 'Mitoplinthus');
 INSERT INTO {organism_classification} (id, parent_id, prime_father_id, organism_classification_level_id, left_value, right_value, name) VALUES (397, 390, 1, 5, 789, 790, 'Enoplognatha');
