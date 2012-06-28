@@ -15,3 +15,5 @@ external/drupal/themes/
 webroot_drupal/sites/all/themes/zen/
 .htaccess
 webroot_drupal/sites/all/modules/date/
+IPhone_DB_.sql
+various/iphone_dbdump/config/database.php
