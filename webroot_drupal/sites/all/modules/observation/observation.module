@@ -7,6 +7,8 @@ module_load_include('inc', 'observation');
 
 // Load gallery integration
 module_load_include('inc', 'observation', 'observation.gallery');
+define('ACCESS_OBSERVATION', 'access observation');
+define('CREATE_OBSERVATION', 'create observation');
 
 /**
  * Implements hook_menu()
@@ -22,7 +24,7 @@ function observation_menu() {
 					'singleobservation'
 			),
 			'access arguments' => array(
-					'access observation'
+					ACCESS_OBSERVATION
 			),
 			'type' => MENU_CALLBACK,
 	);
@@ -32,7 +34,7 @@ function observation_menu() {
 				'Display a wizard to add a new singleobservation'),
 			'page callback' => 'observation_show_all_singleobservations',
 			'access arguments' => array(
-					'access observation'
+					ACCESS_OBSERVATION
 			),
 			'file' => 'observation.show.inc',
 	);
@@ -123,7 +125,7 @@ function observation_menu() {
 			'description' => t('Display a form to add a new singleobservation'),
 			'page callback' => 'singleobservation_new',
 			'access arguments' => array(
-					'create observation'
+					CREATE_OBSERVATION
 			),
 			'type' => MENU_NORMAL_ITEM,
 			'file' => 'singleobservation.inc',
@@ -133,7 +135,7 @@ function observation_menu() {
 	// 			'description' => t('Display a form to add multiple singleobservations'),
 	// 			'page callback' => 'singleobservation_new_multiple',
 	// 			'access arguments' => array(
-	// 					'create observation'
+	// 					CREATE_OBSERVATION
 	// 			),
 	// 			'type' => MENU_NORMAL_ITEM,
 	// 			'file' => 'singleobservation.inc',
@@ -143,7 +145,7 @@ function observation_menu() {
 			'description' => t('Save a new observation'),
 			'page callback' => 'observation_save',
 			'access arguments' => array(
-					'create observation'
+					CREATE_OBSERVATION
 			),
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
@@ -181,17 +183,20 @@ function observation_menu() {
 			'description' => t('Get all geometry data to show'),
 			'page callback' => 'observation_get_geometry_json',
 			'access arguments' => array(
-					'access observation'
+					ACCESS_OBSERVATION
 			),
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
 	$items['observation/get/all'] = array(
-			'title' => t('Obse4rvationsJSON'),
+			'title' => t('ObservationsJSON'),
 			'description' => t('Get readable observations'),
 			'page callback' => 'observation_get_all_json',
+			'page arguments' => array(
+					'ACL_READ'
+			),
 			'access arguments' => array(
-					'create observation'
+					ACCESS_OBSERVATION
 			),
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
@@ -205,7 +210,7 @@ function observation_menu() {
 					'ACL_WRITE'
 			),
 			'access arguments' => array(
-					'access observation'
+					ACCESS_OBSERVATION
 			),
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
@@ -234,10 +239,10 @@ function observation_menu() {
  */
 function observation_permission() {
 	return array(
-			'access observation' => array(
+			ACCESS_OBSERVATION => array(
 					'title' => t('can view observations'),
 			),
-			'create observation' => array(
+			CREATE_OBSERVATION => array(
 					'title' => t('can create observations'),
 			),
 	);
