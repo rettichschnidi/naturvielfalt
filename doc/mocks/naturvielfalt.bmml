@@ -69,7 +69,7 @@
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="124" controlTypeID="com.balsamiq.mockups::BreadCrumbs" x="525" y="158" w="-1" h="-1" measuredW="584" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="124" controlTypeID="com.balsamiq.mockups::BreadCrumbs" x="525" y="158" w="-1" h="-1" measuredW="583" measuredH="24" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Willkommen%2C%20und%2C%20weitere%2C%20breadcrumbs%2C%20Navigations%2C%20Elemente%2C%20auf%2C%20allen%2C%20Seiten</text>
       </controlProperties>
@@ -82,12 +82,12 @@
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C148%2C403%2C171%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22125_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C171%2C403%2C194%22%20href%3D%22infothek.bmml%22%20alt%3D%22infothek%22%20id%3D%22125_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C194%2C403%2C217%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22125_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C217%2C403%2C240%22%20href%3D%22habitats.bmml%22%20alt%3D%22habitats%22%20id%3D%22125_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C240%2C403%2C263%22%20href%3D%22redlist.bmml%22%20alt%3D%22redlist%22%20id%3D%22125_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C263%2C403%2C286%22%20href%3D%22sensiblelist.bmml%22%20alt%3D%22sensiblelist%22%20id%3D%22125_5%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C286%2C403%2C309%22%20href%3D%22protectedlist.bmml%22%20alt%3D%22protectedlist%22%20id%3D%22125_6%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C332%2C403%2C355%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22125_7%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C355%2C403%2C378%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22125_8%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C378%2C403%2C401%22%20href%3D%22inventory-all.bmml%22%20alt%3D%22inventory-all%22%20id%3D%22125_9%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
         <size>13</size>
-        <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%3E%20Gebiete%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
+        <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%3E%20Gebiete%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20H%E4ufig%20gestellte%20Fragen</text>
       </controlProperties>
     </control>
     <control controlID="126" controlTypeID="com.balsamiq.mockups::RedX" x="369" y="232" w="140" h="94" measuredW="240" measuredH="104" zOrder="15" locked="false" isInGroup="-1"/>
     <control controlID="127" controlTypeID="com.balsamiq.mockups::RedX" x="340" y="320" w="170" h="23" measuredW="240" measuredH="104" zOrder="16" locked="false" isInGroup="-1"/>
-    <control controlID="128" controlTypeID="com.balsamiq.mockups::RedX" x="342" y="368" w="170" h="116" measuredW="240" measuredH="104" zOrder="17" locked="false" isInGroup="-1"/>
+    <control controlID="128" controlTypeID="com.balsamiq.mockups::RedX" x="342" y="368" w="170" h="92" measuredW="240" measuredH="104" zOrder="17" locked="false" isInGroup="-1"/>
     <control controlID="129" controlTypeID="com.balsamiq.mockups::RedX" x="1174" y="123" w="78" h="79" measuredW="240" measuredH="104" zOrder="18" locked="false" isInGroup="-1"/>
     <control controlID="130" controlTypeID="com.balsamiq.mockups::RedX" x="512" y="159" w="597" h="24" measuredW="240" measuredH="104" zOrder="19" locked="false" isInGroup="-1"/>
     <control controlID="131" controlTypeID="com.balsamiq.mockups::RedX" x="1279" y="101" w="247" h="123" measuredW="240" measuredH="104" zOrder="20" locked="false" isInGroup="-1"/>
