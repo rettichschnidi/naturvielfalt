@@ -175,7 +175,6 @@ function observation_get_geometries_acl_checked($observation_data = false) {
  * @return array
  */
 function observation_get_geometry($geometry_id) {
-	// 	die($geometry_id);
 	$sql = "SELECT
 				a_s.altitude,
 				a_s.zip,
