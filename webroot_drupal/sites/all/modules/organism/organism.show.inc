@@ -198,20 +198,19 @@ function organism_attributes_form($form, &$form_state, $organism) {}
  * Menu callback. This will be called for visits to /organism/%.
  * @return array
  */
-function organism_show_organism($organism) {
+function organism_show_organism($organismdata) {
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
 	global $user;
 	global $language;
 	$current_language = isset($user->language) && !empty($user->language)
 			? $user->language : $language->language;
 
-	if (empty($organism)) {
+	if (empty($organismdata)) {
 		drupal_set_title(t('No such organism available'));
 		$render_array['nosuchorganism'] = null;
 		return $render_array;
 	}
-	drupal_set_title(
-		t('Show attributes and synonyms of ' . $organism['scientific_names'][0]));
+	drupal_set_title(organism_get_organism_title($organismdata), PASS_THROUGH);
 	// include the datatable javascript
 	$render_array = array();
 
@@ -219,28 +218,30 @@ function organism_show_organism($organism) {
 		$render_array['ImageGallery'] = gallery_list_renderer(
 			'images',
 			'organismreference',
-			$organism['id'],
+			$organismdata['id'],
 			false,
 			-1,
 			false);
 		$render_array['VideoGallery'] = gallery_list_renderer(
 			'videos',
 			'organismreference',
-			$organism['id'],
+			$organismdata['id'],
 			false,
 			-1,
 			true);
 		$render_array['SoundGallery'] = gallery_list_renderer(
 			'sounds',
 			'organismreference',
-			$organism['id'],
+			$organismdata['id'],
 			false,
 			-1,
 			true);
 	}
-	$render_array = array_merge($render_array, organism_files($organism['id']));
+	$render_array = array_merge(
+		$render_array,
+		organism_files($organismdata['id']));
 
-	$attributes = $organism['attributes'];
+	$attributes = $organismdata['attributes'];
 
 	$render_array['attributes'] = array(
 			'#type' => 'fieldset',
@@ -280,12 +281,13 @@ function organism_show_organism($organism) {
 	/**
 	 * Show all synonyms of this organism (but only, if there are any).
 	 */
-	if ((isset($organism['classification_name_translations'][$current_language])
+	if ((isset(
+		$organismdata['classification_name_translations'][$current_language])
 			&& count(
-				$organism['classification_name_translations'][$current_language])
+				$organismdata['classification_name_translations'][$current_language])
 					> 1)
-			|| (isset($organism['scientific_names'])
-					&& count($organism['scientific_names']) > 1)) {
+			|| (isset($organismdata['scientific_names'])
+					&& count($organismdata['scientific_names']) > 1)) {
 		$render_array['synonyms-container'] = array(
 				'#prefix' => '<div id="organism-synonyms-container">',
 				'#suffix' => '</div>',
@@ -299,22 +301,24 @@ function organism_show_organism($organism) {
 		);
 
 		$render_array['synonyms-container']['scientific_names']['synonyms'] = array(
-				'#markup' => implode('<br/>', $organism['scientific_names']) // there is always one existing
+				'#markup' => implode('<br/>', $organismdata['scientific_names']) // there is always one existing
 		);
 
 		$render_array['synonyms-container']['classification_name_translations'] = array(
 				'#type' => 'fieldset',
-				'#title' => t('Synonyms'),
+				'#title' => t(
+					'Synonyms @language',
+					array('@language' => $language->native)),
 				'#attributes' => array(
 						'id' => 'organism-synonyms-localized' // required for CSS
 				)
 		);
 		if (isset(
-			$organism['classification_name_translations'][$current_language])) {
+			$organismdata['classification_name_translations'][$current_language])) {
 			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
 					'#markup' => implode(
 						'<br/>',
-						$organism['classification_name_translations'][$current_language])
+						$organismdata['classification_name_translations'][$current_language])
 			);
 		} else {
 			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
@@ -323,5 +327,39 @@ function organism_show_organism($organism) {
 		}
 	}
 	return $render_array;
+}
+
+/**
+ * Return the title of an organism. Include the localized name if available and link the text
+ * to wikipedia if an article about this organism exists.
+ * @param unknown_type $organismdata
+ * @return String title, may contain HTML
+ */
+function organism_get_organism_title($organismdata) {
+	global $user;
+	global $language;
+	// Make sure we get a language
+	$langcode = isset($user->language) ? $user->language : $language->language;
+
+	$logo_wikipedia_url = base_path()
+			. drupal_get_path('module', 'commonstuff')
+			. '/images/wikipedia.png';
+	$scientific_name = $organismdata['scientific_names'][0]; // just take the first one (we have no preferences so far)
+	$title = $scientific_name;
+	if (isset($organismdata['classification_name_translations'][$langcode])
+			&& !empty(
+				$organismdata['classification_name_translations'][$langcode])) {
+		$title .= ' / '
+				. reset(
+					$organismdata['classification_name_translations'][$langcode]);
+	}
+
+	// if wikipedia article existing, linkt to it and show a wikipedialogo
+	if ($link = organism_check_if_wikipedia_article_exists($organismdata)) {
+		$alt_text = t('Wikipedia article available');
+		$title = "<a href='$link' title='$alt_text'>$title <img style='height: 1em' src='$logo_wikipedia_url'/></a>";
+	}
+
+	return $title;
 }
 ?>

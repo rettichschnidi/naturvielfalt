@@ -135,21 +135,6 @@ function organism_menu() {
 			'file' => 'organism.show.inc',
 	);
 
-	$items['organism/%organism/lexikon'] = array(
-			'title' => t('Lexikon'),
-			'description' => 'Show organism lexika',
-			'page callback' => 'organism_lexika_show',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					ORGANISMS_ACCESS
-			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'organism.lexika.inc',
-	);
-
 	$items['organism/%organism/json'] = array(
 			'title' => t('Organism json'),
 			'page arguments' => array(
