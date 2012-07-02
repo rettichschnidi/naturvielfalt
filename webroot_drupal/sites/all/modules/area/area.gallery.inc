@@ -198,8 +198,7 @@ function area_habitat_gallery_manage_title($id) {
  */
 function area_habitat_gallery_manage_description($id, $mediatype) {
 	return t(
-		'Add and edit ' . $mediatype
-				. ' of the specified habitat located in the mentioned area.');
+		'Add and edit @mediatype of the specified habitat located in the mentioned area.', array('@mediatype' => $mediatype));
 }
 
 /**
