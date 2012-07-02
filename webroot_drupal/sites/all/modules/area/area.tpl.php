@@ -4,11 +4,13 @@
  * @copyright Naturwerk
  * @file area.tpl.php
  */
-$style ='';
-if($height || $width){
+$style = '';
+if ($height || $width) {
 	$style = ' style="';
-	if($height) $style .= 'height: '.$height.'; ';
-	if($width) $style .= 'height: '.$width.'; ';
+	if ($height)
+		$style .= 'height: ' . $height . '; ';
+	if ($width)
+		$style .= 'height: ' . $width . '; ';
 	$style .= '"';
 }
 ?>
@@ -75,7 +77,7 @@ if ($json_url) {
 /**
  * If requested, include an scale on the map.
  */
-print
+print 
 	"<script>scalecontrol = " . ($scalecontrol ? "true" : "false")
 			. ";</script>\n";
 
@@ -115,8 +117,8 @@ case 'myareas': /**
 	area_add_js_url($baseModulJsPath . 'area-show-myareas.js');
 	break;
 case 'custom-show': /**
-				 * Display just the ones the user owns.
-				 */
+					 * Display just the ones the user owns.
+					 */
 	area_add_js_url($baseModulJsPath . 'area-show-geometry.js');
 	break;
 }
@@ -126,8 +128,8 @@ case 'custom-show': /**
  * (encoded as JSON string)
  */
 if ($coordinate_storage_id != false) {
-	print
-	"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
+	print 
+		"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
 }
 
 /**
@@ -145,14 +147,13 @@ case 'edit': /**
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 	break;
 case 'custom-edit': /**
-			  * Create an existing area geometry
-			  */
+					 * Create an existing area geometry
+					 */
 	area_add_js_url($baseModulJsPath . 'area-edit-geometry.js');
 	break;
-case 'getcoordinate':
-	/**
-	 * Set a marker and update the hidden fields (provided by the user of this theme)
-	 */
+case 'getcoordinate': /**
+					   * Set a marker and update the hidden fields (provided by the user of this theme)
+					   */
 	area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
 	break;
 }
