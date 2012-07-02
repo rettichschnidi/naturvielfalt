@@ -171,7 +171,8 @@ function organism_show_classification($classificationid) {
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => t('Organisms which are in classification ')	. $classificationName,
+			'#title' => t('Organisms which are in classification ')
+					. $classificationName,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
@@ -191,14 +192,19 @@ function organism_show_classification($classificationid) {
 	return $render_array;
 }
 
-function organism_attributes_form($form, &$form_state, $organism) {
-}
+function organism_attributes_form($form, &$form_state, $organism) {}
 
 /**
  * Menu callback. This will be called for visits to /organism/%.
  * @return array
  */
 function organism_show_organism($organism) {
+	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
+	global $user;
+	global $language;
+	$current_language = isset($user->language) && !empty($user->language)
+			? $user->language : $language->language;
+
 	if (empty($organism)) {
 		drupal_set_title(t('No such organism available'));
 		$render_array['nosuchorganism'] = null;
@@ -232,8 +238,6 @@ function organism_show_organism($organism) {
 			-1,
 			true);
 	}
-	// 	$render_array = array_merge($render_array, organism_attributes($organism));
-	// 	$render_array = array_merge($render_array, getOrganismInventories($organism));
 	$render_array = array_merge($render_array, organism_files($organism['id']));
 
 	$attributes = $organism['attributes'];
@@ -241,7 +245,10 @@ function organism_show_organism($organism) {
 	$render_array['attributes'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Attributes'),
-			'#tree' => TRUE
+			'#tree' => TRUE,
+			'#attributes' => array(
+					'id' => 'organism-attributes' // required for CSS
+			)
 	);
 
 	if (!empty($attributes)) {
@@ -265,46 +272,55 @@ function organism_show_organism($organism) {
 	} else {
 		$render_array['attributes']['noattribute'] = array(
 				'#type' => 'markup',
-				'#markup' => '<b>' . t("No attributes set for this organism")
+				'#markup' => '<b>' . t('No attributes set for this organism')
 						. '</b>',
 		);
 	}
 
 	/**
-	 * Show all synonyms of this organism.
+	 * Show all synonyms of this organism (but only, if there are any).
 	 */
-	if (count($organism['scientific_names']) > 1) {
-		// Set the table header
-		$tableHeader[] = array(
-				'name' => t('Organism id'),
-				'dbfield' => 'o_id',
-				'idField' => true,
-				'hide' => true,
-				'width' => 30
+	if ((isset($organism['classification_name_translations'][$current_language])
+			&& count(
+				$organism['classification_name_translations'][$current_language])
+					> 1)
+			|| (isset($organism['scientific_names'])
+					&& count($organism['scientific_names']) > 1)) {
+		$render_array['synonyms-container'] = array(
+				'#prefix' => '<div id="organism-synonyms-container">',
+				'#suffix' => '</div>',
 		);
-		$tableHeader[] = array(
-				'name' => t('Organism scientific name'),
-				'dbfield' => 'osn_name',
-				'idField' => false,
-				'hide' => false,
-				'width' => 800
+		$render_array['synonyms-container']['scientific_names'] = array(
+				'#type' => 'fieldset',
+				'#title' => t('Scientific synonyms'),
+				'#attributes' => array(
+						'id' => 'organism-synonyms-scientific' // required for CSS
+				)
 		);
 
-		foreach ($organism['scientific_names'] as $synonym) {
-			$row = array();
-			$row[] = $organism['id'];
-			$row[] = $synonym;
-			$rows[] = $row;
+		$render_array['synonyms-container']['scientific_names']['synonyms'] = array(
+				'#markup' => implode('<br/>', $organism['scientific_names']) // there is always one existing
+		);
+
+		$render_array['synonyms-container']['classification_name_translations'] = array(
+				'#type' => 'fieldset',
+				'#title' => t('Synonyms'),
+				'#attributes' => array(
+						'id' => 'organism-synonyms-localized' // required for CSS
+				)
+		);
+		if (isset(
+			$organism['classification_name_translations'][$current_language])) {
+			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
+					'#markup' => implode(
+						'<br/>',
+						$organism['classification_name_translations'][$current_language])
+			);
+		} else {
+			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
+					'#markup' => t('None available')
+			);
 		}
-
-		$render_array['organisms'] = array(
-				'#theme' => 'datatable',
-				'#title' => t('Synonyms for') . ' '
-						. $organism['scientific_names'][0],
-				'#header' => $tableHeader,
-				'#id_table' => 'organism_synonyms',
-				'#rows' => $rows
-		);
 	}
 	return $render_array;
 }
