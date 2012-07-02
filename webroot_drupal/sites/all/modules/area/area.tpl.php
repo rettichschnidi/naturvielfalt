@@ -16,7 +16,9 @@ if ($height || $width) {
 ?>
 <div class="area-search-map">
   <div id="map">
-    <div id="map_canvas" <?php echo $style; ?>></div>
+    <div id="map_canvas" <?php echo $style; ?> >
+		<h1> <?php print(t('You have to enable Javascript!')) ?> </h1>
+    </div>
   </div>
 </div>
 <?php
@@ -103,6 +105,18 @@ if ($ch1903) {
 }
 
 /**
+ * Show a reticle in the middle of the map.
+ */
+if ($reticle) {
+	$reticle_image_url = base_path() . drupal_get_path('module', 'commonstuff')
+	. '/images/reticle.png';
+	drupal_add_js(
+			array('area' => array('reticleimageurl' => $reticle_image_url)),
+			'setting');
+	area_add_js_url($baseModulJsPath . 'area-reticle.js');
+}
+
+/**
  * If existing area should be shown...
  */
 switch ($show) {
@@ -141,19 +155,22 @@ case 'create': /**
 			    */
 	area_add_js_url($baseModulJsPath . 'area-create.js');
 	break;
-case 'edit': /**
-			  * Create an existing area geometry
-			  */
+/**
+ * Create an existing area geometry
+ */
+case 'edit':
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 	break;
-case 'custom-edit': /**
-					 * Create an existing area geometry
-					 */
+/**
+ * Create an existing area geometry
+ */
+case 'custom-edit':
 	area_add_js_url($baseModulJsPath . 'area-edit-geometry.js');
 	break;
-case 'getcoordinate': /**
-					   * Set a marker and update the hidden fields (provided by the user of this theme)
-					   */
+/**
+ * Set a marker and update the hidden fields (provided by the user of this theme)
+ */
+case 'getcoordinate':
 	area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
 	break;
 }
