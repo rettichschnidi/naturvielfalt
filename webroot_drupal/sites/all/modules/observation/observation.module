@@ -21,7 +21,7 @@ function observation_menu() {
 			'description' => t('Show a overview of observations'),
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
-					'singleobservation'
+					'singleobservation/show'
 			),
 			'access arguments' => array(
 					ACCESS_OBSERVATION
@@ -30,13 +30,41 @@ function observation_menu() {
 	);
 	$items['singleobservation'] = array(
 			'title' => t('Show all singleobservations'),
-			'description' => t(
-				'Display a wizard to add a new singleobservation'),
+			'description' => t('Show a overview of observations'),
+			'page callback' => 'drupal_goto',
+			'page arguments' => array(
+					'singleobservation/show'
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.show.inc',
+	);
+	$items['singleobservation/show'] = array(
+			'title' => t('Show all singleobservations'),
+			'description' => t('Show a overview of observations'),
 			'page callback' => 'observation_show_all_singleobservations',
 			'access arguments' => array(
 					ACCESS_OBSERVATION
 			),
+			'type' => MENU_NORMAL_ITEM | MENU_DEFAULT_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'observation.show.inc',
+			'weight' => 1,
+	);
+
+	$items['singleobservation/new'] = array(
+			'title' => t('Add a new singleobservation'),
+			'description' => t('Display a form to add a new singleobservation'),
+			'page callback' => 'singleobservation_new',
+			'access arguments' => array(
+					CREATE_OBSERVATION
+			),
+			'type' => MENU_NORMAL_ITEM | MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'singleobservation.inc',
+			'weight' => 2,
 	);
 	$items['singleobservation/%observation/show'] = array(
 			'title' => t('Show'),
@@ -103,16 +131,6 @@ function observation_menu() {
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'observation.delete.inc',
 			'weight' => 99
-	);
-	$items['singleobservation/new'] = array(
-			'title' => t('Add a new singleobservation'),
-			'description' => t('Display a form to add a new singleobservation'),
-			'page callback' => 'singleobservation_new',
-			'access arguments' => array(
-					CREATE_OBSERVATION
-			),
-			'type' => MENU_NORMAL_ITEM,
-			'file' => 'singleobservation.inc',
 	);
 
 	$items['observation/save'] = array(
