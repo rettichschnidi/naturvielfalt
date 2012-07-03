@@ -21,7 +21,7 @@ jQuery(document).ready(function() {
 
 	observation.showResponse = function(responseText, statusText, xhr, $form)  { 
 		if(responseText != null && responseText.success == true){
-			observation.setMessage('<br><br>'+Drupal.t('Observation saved successfully'), 'status', 3000);
+			observation.setMessage(Drupal.t('Observation saved successfully'), 'status', 3000);
 			$('#observation_form').trigger('reset');
 			$('#species_autocomplete').html('');
 			if(responseText.update) {
@@ -35,9 +35,9 @@ jQuery(document).ready(function() {
 				$('#recent_observations').flexReload();
 			}
 		} else if (responseText != null) {
-			observation.setMessage('&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
+			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
 		} else {
-			observation.setMessage('<br><br>&bull;&nbsp;' + Drupal.t('Saving failed due to unknown error.'),'error', 5000);
+			observation.setMessage('&bull;&nbsp;' + Drupal.t('Saving failed due to unknown error.'),'error', 5000);
 		}
 	};
 	
