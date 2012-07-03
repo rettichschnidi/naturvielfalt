@@ -12,7 +12,7 @@
 	<category_index>0</category_index>
 	<zoom>0.8</zoom>
 	<x>393</x>
-	<y>0</y>
+	<y>146</y>
 	<default_color>
 		<r>0</r>
 		<g>0</g>
@@ -125,16 +125,16 @@
 					<name>organism</name>
 					<selected>true</selected>
 					<node_element>16</node_element>
-					<node_element>21</node_element>
+					<node_element>20</node_element>
 					<node_element>11</node_element>
 					<node_element>14</node_element>
-					<node_element>18</node_element>
+					<node_element>22</node_element>
 					<node_element>8</node_element>
 					<node_element>0</node_element>
 					<node_element>4</node_element>
-					<node_element>20</node_element>
-					<node_element>9</node_element>
 					<node_element>19</node_element>
+					<node_element>9</node_element>
+					<node_element>18</node_element>
 					<node_element>12</node_element>
 					<node_element>15</node_element>
 					<node_element>13</node_element>
@@ -142,7 +142,7 @@
 					<node_element>10</node_element>
 					<node_element>1</node_element>
 					<node_element>3</node_element>
-					<node_element>22</node_element>
+					<node_element>21</node_element>
 					<node_element>17</node_element>
 				</category>
 			</categories>
@@ -169,7 +169,7 @@
 			</connections>
 			<display>true</display>
 			<creation_date>2012-01-16 15:39:47</creation_date>
-			<updated_date>2012-06-27 13:45:42</updated_date>
+			<updated_date>2012-07-03 14:25:33</updated_date>
 			<model_property>
 				<name>Project Name</name>
 				<value>naturvielfalt</value>
@@ -877,19 +877,6 @@
 		</word>
 		<word>
 			<id>52</id>
-			<length>null</length>
-			<decimal>null</decimal>
-			<array>false</array>
-			<array_dimension>null</array_dimension>
-			<unsigned>false</unsigned>
-			<args></args>
-			<description></description>
-			<logical_name>pos</logical_name>
-			<physical_name>pos</physical_name>
-			<type>integer</type>
-		</word>
-		<word>
-			<id>53</id>
 			<length>128</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -902,7 +889,7 @@
 			<type>varchar(n)</type>
 		</word>
 		<word>
-			<id>54</id>
+			<id>53</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -910,6 +897,19 @@
 			<unsigned>false</unsigned>
 			<args></args>
 			<description>Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis.</description>
+			<logical_name>right_value</logical_name>
+			<physical_name>right_value</physical_name>
+			<type>integer</type>
+		</word>
+		<word>
+			<id>54</id>
+			<length>null</length>
+			<decimal>null</decimal>
+			<array>false</array>
+			<array_dimension>null</array_dimension>
+			<unsigned>false</unsigned>
+			<args></args>
+			<description>Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. </description>
 			<logical_name>right_value</logical_name>
 			<physical_name>right_value</physical_name>
 			<type>integer</type>
@@ -935,26 +935,13 @@
 			<array_dimension>null</array_dimension>
 			<unsigned>false</unsigned>
 			<args></args>
-			<description>Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. </description>
-			<logical_name>right_value</logical_name>
-			<physical_name>right_value</physical_name>
-			<type>integer</type>
-		</word>
-		<word>
-			<id>57</id>
-			<length>null</length>
-			<decimal>null</decimal>
-			<array>false</array>
-			<array_dimension>null</array_dimension>
-			<unsigned>false</unsigned>
-			<args></args>
 			<description>A field indicating the status of the file. Two status are defined in core: temporary (0) and permanent (1). Temporary files older than DRUPAL_MAXIMUM_TEMP_FILE_AGE will be removed during a cron run.</description>
 			<logical_name>status</logical_name>
 			<physical_name>status</physical_name>
 			<type>smallint</type>
 		</word>
 		<word>
-			<id>58</id>
+			<id>57</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -967,7 +954,7 @@
 			<type>text</type>
 		</word>
 		<word>
-			<id>59</id>
+			<id>58</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -980,7 +967,7 @@
 			<type>bigint</type>
 		</word>
 		<word>
-			<id>60</id>
+			<id>59</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -993,7 +980,7 @@
 			<type>bigint</type>
 		</word>
 		<word>
-			<id>61</id>
+			<id>60</id>
 			<length>255</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -1006,7 +993,7 @@
 			<type>varchar(n)</type>
 		</word>
 		<word>
-			<id>62</id>
+			<id>61</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -1019,7 +1006,7 @@
 			<type>text</type>
 		</word>
 		<word>
-			<id>63</id>
+			<id>62</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -1032,7 +1019,7 @@
 			<type>char</type>
 		</word>
 		<word>
-			<id>64</id>
+			<id>63</id>
 			<length>null</length>
 			<decimal>null</decimal>
 			<array>false</array>
@@ -1081,7 +1068,7 @@
 				</relation>
 				<relation>
 					<id>1</id>
-					<source>18</source>
+					<source>22</source>
 					<target>0</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -1105,7 +1092,7 @@
 			<option></option>
 			<columns>
 				<normal_column>
-					<word_id>23</word_id>
+					<word_id>17</word_id>
 					<id>0</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1138,7 +1125,7 @@
 				</normal_column>
 				<normal_column>
 					<id>1</id>
-					<referenced_column>89</referenced_column>
+					<referenced_column>101</referenced_column>
 					<relation>1</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1228,7 +1215,7 @@
 			<connections>
 				<relation>
 					<id>2</id>
-					<source>14</source>
+					<source>22</source>
 					<target>1</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -1245,7 +1232,7 @@
 				</relation>
 				<relation>
 					<id>3</id>
-					<source>18</source>
+					<source>14</source>
 					<target>1</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -1269,7 +1256,7 @@
 			<option></option>
 			<columns>
 				<normal_column>
-					<word_id>17</word_id>
+					<word_id>21</word_id>
 					<id>3</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1302,8 +1289,8 @@
 				</normal_column>
 				<normal_column>
 					<id>4</id>
-					<referenced_column>89</referenced_column>
-					<relation>3</relation>
+					<referenced_column>101</referenced_column>
+					<relation>2</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_artgroup_id</logical_name>
@@ -1336,7 +1323,7 @@
 				<normal_column>
 					<id>5</id>
 					<referenced_column>68</referenced_column>
-					<relation>2</relation>
+					<relation>3</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_artgroup_detmethod_id</logical_name>
@@ -1431,7 +1418,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>60</word_id>
+					<word_id>59</word_id>
 					<id>7</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1495,7 +1482,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>61</word_id>
+					<word_id>60</word_id>
 					<id>9</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1591,7 +1578,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>57</word_id>
+					<word_id>56</word_id>
 					<id>12</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1623,7 +1610,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>59</word_id>
+					<word_id>58</word_id>
 					<id>13</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -1921,6 +1908,23 @@
 			<connections>
 				<relation>
 					<id>6</id>
+					<source>5</source>
+					<target>4</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>7</id>
 					<source>17</source>
 					<target>4</target>
 						<bendpoint>
@@ -1938,23 +1942,6 @@
 					<source_yp>52</source_yp>
 					<target_xp>45</target_xp>
 					<target_yp>0</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>7</id>
-					<source>5</source>
-					<target>4</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
 				</relation>
@@ -2001,7 +1988,7 @@
 				<normal_column>
 					<id>18</id>
 					<referenced_column>82</referenced_column>
-					<relation>6</relation>
+					<relation>7</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_classification_lang_id</logical_name>
@@ -2034,7 +2021,7 @@
 				<normal_column>
 					<id>19</id>
 					<referenced_column>21</referenced_column>
-					<relation>7</relation>
+					<relation>6</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>languages_language</logical_name>
@@ -2397,7 +2384,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>53</word_id>
+					<word_id>52</word_id>
 					<id>29</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -2429,7 +2416,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>64</word_id>
+					<word_id>63</word_id>
 					<id>30</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -2887,23 +2874,6 @@
 			<connections>
 				<relation>
 					<id>8</id>
-					<source>2</source>
-					<target>7</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name>o_fki_fm</name>
-					<on_delete_action>CASCADE</on_delete_action>
-					<on_update_action>CASCADE</on_update_action>
-					<source_xp>46</source_xp>
-					<source_yp>0</source_yp>
-					<target_xp>52</target_xp>
-					<target_yp>100</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>9</id>
 					<source>16</source>
 					<target>7</target>
 						<bendpoint>
@@ -2924,6 +2894,23 @@
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
 				</relation>
+				<relation>
+					<id>9</id>
+					<source>2</source>
+					<target>7</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name>o_fki_fm</name>
+					<on_delete_action>CASCADE</on_delete_action>
+					<on_update_action>CASCADE</on_update_action>
+					<source_xp>46</source_xp>
+					<source_yp>0</source_yp>
+					<target_xp>52</target_xp>
+					<target_yp>100</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
 			</connections>
 			<physical_name>organism_file_managed</physical_name>
 			<logical_name>organism_file_managed</logical_name>
@@ -2935,7 +2922,7 @@
 				<normal_column>
 					<id>42</id>
 					<referenced_column>77</referenced_column>
-					<relation>9</relation>
+					<relation>8</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_id</logical_name>
@@ -2968,7 +2955,7 @@
 				<normal_column>
 					<id>43</id>
 					<referenced_column>6</referenced_column>
-					<relation>8</relation>
+					<relation>9</relation>
 					<description>file_managed_fid</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>file_managed_fid</logical_name>
@@ -3139,7 +3126,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>63</word_id>
+					<word_id>62</word_id>
 					<id>47</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -3349,7 +3336,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>58</word_id>
+					<word_id>57</word_id>
 					<id>52</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -3666,6 +3653,23 @@
 			<connections>
 				<relation>
 					<id>12</id>
+					<source>16</source>
+					<target>11</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>13</id>
 					<source>5</source>
 					<target>11</target>
 						<bendpoint>
@@ -3683,23 +3687,6 @@
 					<source_yp>0</source_yp>
 					<target_xp>48</target_xp>
 					<target_yp>100</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>13</id>
-					<source>16</source>
-					<target>11</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
 				</relation>
@@ -3746,7 +3733,7 @@
 				<normal_column>
 					<id>59</id>
 					<referenced_column>21</referenced_column>
-					<relation>12</relation>
+					<relation>13</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>languages_language</logical_name>
@@ -3779,7 +3766,7 @@
 				<normal_column>
 					<id>60</id>
 					<referenced_column>77</referenced_column>
-					<relation>13</relation>
+					<relation>12</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_id</logical_name>
@@ -3921,7 +3908,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>35</word_id>
+					<word_id>34</word_id>
 					<id>63</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4010,7 +3997,7 @@
 			<connections>
 				<relation>
 					<id>14</id>
-					<source>20</source>
+					<source>19</source>
 					<target>13</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
@@ -4034,7 +4021,7 @@
 			<option></option>
 			<columns>
 				<normal_column>
-					<word_id>20</word_id>
+					<word_id>23</word_id>
 					<id>65</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4067,7 +4054,7 @@
 				</normal_column>
 				<normal_column>
 					<id>66</id>
-					<referenced_column>96</referenced_column>
+					<referenced_column>92</referenced_column>
 					<relation>14</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4099,7 +4086,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>62</word_id>
+					<word_id>61</word_id>
 					<id>67</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4163,7 +4150,7 @@
 			<option></option>
 			<columns>
 				<normal_column>
-					<word_id>18</word_id>
+					<word_id>20</word_id>
 					<id>68</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4288,28 +4275,6 @@
 					<target>15</target>
 						<bendpoint>
 							<relative>true</relative>
-							<x>20</x>
-							<y>38</y>
-						</bendpoint>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>100</source_xp>
-					<source_yp>81</source_yp>
-					<target_xp>90</target_xp>
-					<target_yp>100</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>16</id>
-					<source>15</source>
-					<target>15</target>
-						<bendpoint>
-							<relative>true</relative>
 							<x>32</x>
 							<y>56</y>
 						</bendpoint>
@@ -4322,6 +4287,28 @@
 					<source_xp>100</source_xp>
 					<source_yp>72</source_yp>
 					<target_xp>84</target_xp>
+					<target_yp>100</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>16</id>
+					<source>15</source>
+					<target>15</target>
+						<bendpoint>
+							<relative>true</relative>
+							<x>20</x>
+							<y>38</y>
+						</bendpoint>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>100</source_xp>
+					<source_yp>81</source_yp>
+					<target_xp>90</target_xp>
 					<target_yp>100</target_yp>
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
@@ -4369,7 +4356,7 @@
 				<normal_column>
 					<id>72</id>
 					<referenced_column>71</referenced_column>
-					<relation>15</relation>
+					<relation>16</relation>
 					<description>Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>parent_id</logical_name>
@@ -4402,7 +4389,7 @@
 				<normal_column>
 					<id>73</id>
 					<referenced_column>71</referenced_column>
-					<relation>16</relation>
+					<relation>15</relation>
 					<description>Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>prime_father_id</logical_name>
@@ -4465,7 +4452,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>54</word_id>
+					<word_id>53</word_id>
 					<id>75</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4833,7 +4820,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>55</word_id>
+					<word_id>54</word_id>
 					<id>81</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -4998,6 +4985,23 @@
 				</relation>
 				<relation>
 					<id>20</id>
+					<source>15</source>
+					<target>17</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>CASCADE</on_delete_action>
+					<on_update_action>CASCADE</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>21</id>
 					<source>17</source>
 					<target>17</target>
 						<bendpoint>
@@ -5015,23 +5019,6 @@
 					<source_yp>80</source_yp>
 					<target_xp>90</target_xp>
 					<target_yp>100</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>21</id>
-					<source>15</source>
-					<target>17</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>CASCADE</on_delete_action>
-					<on_update_action>CASCADE</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
 					<referenced_column>null</referenced_column>
 					<referenced_complex_unique_key>null</referenced_complex_unique_key>
 				</relation>
@@ -5078,7 +5065,7 @@
 				<normal_column>
 					<id>83</id>
 					<referenced_column>82</referenced_column>
-					<relation>20</relation>
+					<relation>21</relation>
 					<description>Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>parent_id</logical_name>
@@ -5144,7 +5131,7 @@
 				<normal_column>
 					<id>85</id>
 					<referenced_column>71</referenced_column>
-					<relation>21</relation>
+					<relation>20</relation>
 					<description>Fremdschlüssel auf die Tabelle organism_classification_level.</description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_classification_level_id</logical_name>
@@ -5207,7 +5194,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>56</word_id>
+					<word_id>55</word_id>
 					<id>87</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -5422,28 +5409,62 @@
 		</table>
 		<table>
 			<id>18</id>
-			<height>128</height>
-			<width>356</width>
+			<height>107</height>
+			<width>304</width>
 				<font_name>Lucida Grande</font_name>
 				<font_size>9</font_size>
-			<x>550</x>
-			<y>361</y>
+			<x>576</x>
+			<y>541</y>
 			<color>
 				<r>255</r>
 				<g>0</g>
 				<b>0</b>
 			</color>
 			<connections>
+				<relation>
+					<id>22</id>
+					<source>22</source>
+					<target>18</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
+				<relation>
+					<id>23</id>
+					<source>19</source>
+					<target>18</target>
+					<child_cardinality>1..n</child_cardinality>
+					<parent_cardinality>1</parent_cardinality>
+					<reference_for_pk>true</reference_for_pk>
+					<name></name>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
+					<source_xp>-1</source_xp>
+					<source_yp>-1</source_yp>
+					<target_xp>-1</target_xp>
+					<target_yp>-1</target_yp>
+					<referenced_column>null</referenced_column>
+					<referenced_complex_unique_key>null</referenced_complex_unique_key>
+				</relation>
 			</connections>
-			<physical_name>organism_artgroup</physical_name>
-			<logical_name>organism_artgroup</logical_name>
+			<physical_name>organism_artgroup_attr_subscription</physical_name>
+			<logical_name>organism_artgroup_attr_subscription</logical_name>
 			<description></description>
 			<constraint></constraint>
 			<primary_key_name></primary_key_name>
 			<option></option>
 			<columns>
 				<normal_column>
-					<word_id>21</word_id>
+					<word_id>19</word_id>
 					<id>89</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
@@ -5475,203 +5496,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>34</word_id>
 					<id>90</id>
-					<description></description>
-					<unique_key_name></unique_key_name>
-					<logical_name></logical_name>
-					<physical_name></physical_name>
-					<type>text</type>
-					<constraint></constraint>
-					<default_value></default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>false</foreign_key>
-					<not_null>true</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<word_id>50</word_id>
-					<id>91</id>
-					<description></description>
-					<unique_key_name></unique_key_name>
-					<logical_name></logical_name>
-					<physical_name></physical_name>
-					<type>integer</type>
-					<constraint></constraint>
-					<default_value>1</default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>false</foreign_key>
-					<not_null>false</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<word_id>52</word_id>
-					<id>92</id>
-					<description></description>
-					<unique_key_name></unique_key_name>
-					<logical_name></logical_name>
-					<physical_name></physical_name>
-					<type>integer</type>
-					<constraint></constraint>
-					<default_value></default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>false</foreign_key>
-					<not_null>false</not_null>
-					<primary_key>false</primary_key>
-					<unique_key>false</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-			</columns>
-			<indexes>
-			</indexes>
-			<complex_unique_key_list>
-			</complex_unique_key_list>
-			<table_properties>
-				<schema></schema>
-				<without_oids>true</without_oids>
-			</table_properties>
-		</table>
-		<table>
-			<id>19</id>
-			<height>107</height>
-			<width>304</width>
-				<font_name>Lucida Grande</font_name>
-				<font_size>9</font_size>
-			<x>576</x>
-			<y>541</y>
-			<color>
-				<r>255</r>
-				<g>0</g>
-				<b>0</b>
-			</color>
-			<connections>
-				<relation>
-					<id>22</id>
-					<source>20</source>
-					<target>19</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-				<relation>
-					<id>23</id>
-					<source>18</source>
-					<target>19</target>
-					<child_cardinality>1..n</child_cardinality>
-					<parent_cardinality>1</parent_cardinality>
-					<reference_for_pk>true</reference_for_pk>
-					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
-					<source_xp>-1</source_xp>
-					<source_yp>-1</source_yp>
-					<target_xp>-1</target_xp>
-					<target_yp>-1</target_yp>
-					<referenced_column>null</referenced_column>
-					<referenced_complex_unique_key>null</referenced_complex_unique_key>
-				</relation>
-			</connections>
-			<physical_name>organism_artgroup_attr_subscription</physical_name>
-			<logical_name>organism_artgroup_attr_subscription</logical_name>
-			<description></description>
-			<constraint></constraint>
-			<primary_key_name></primary_key_name>
-			<option></option>
-			<columns>
-				<normal_column>
-					<word_id>22</word_id>
-					<id>93</id>
-					<description></description>
-					<unique_key_name></unique_key_name>
-					<logical_name></logical_name>
-					<physical_name></physical_name>
-					<type>serial</type>
-					<constraint></constraint>
-					<default_value></default_value>
-					<auto_increment>false</auto_increment>
-					<foreign_key>false</foreign_key>
-					<not_null>true</not_null>
-					<primary_key>true</primary_key>
-					<unique_key>true</unique_key>
-					<character_set></character_set>
-					<collation></collation>
-					<sequence>
-						<name></name>
-						<schema></schema>
-						<increment></increment>
-						<min_value></min_value>
-						<max_value></max_value>
-						<start></start>
-						<cache></cache>
-						<cycle>false</cycle>
-						<order>false</order>
-						<description></description>
-						<data_type></data_type>
-						<decimal_size>0</decimal_size>
-					</sequence>
-				</normal_column>
-				<normal_column>
-					<id>94</id>
-					<referenced_column>89</referenced_column>
-					<relation>23</relation>
+					<referenced_column>101</referenced_column>
+					<relation>22</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_artgroup_id</logical_name>
@@ -5702,9 +5529,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>95</id>
-					<referenced_column>96</referenced_column>
-					<relation>22</relation>
+					<id>91</id>
+					<referenced_column>92</referenced_column>
+					<relation>23</relation>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_artgroup_attr_id</logical_name>
@@ -5745,7 +5572,7 @@
 			</table_properties>
 		</table>
 		<table>
-			<id>20</id>
+			<id>19</id>
 			<height>128</height>
 			<width>301</width>
 				<font_name>Lucida Grande</font_name>
@@ -5761,7 +5588,7 @@
 				<relation>
 					<id>24</id>
 					<source>12</source>
-					<target>20</target>
+					<target>19</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
@@ -5784,8 +5611,8 @@
 			<option></option>
 			<columns>
 				<normal_column>
-					<word_id>19</word_id>
-					<id>96</id>
+					<word_id>22</word_id>
+					<id>92</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -5816,7 +5643,7 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>97</id>
+					<id>93</id>
 					<referenced_column>62</referenced_column>
 					<relation>24</relation>
 					<description></description>
@@ -5849,8 +5676,8 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<word_id>36</word_id>
-					<id>98</id>
+					<word_id>35</word_id>
+					<id>94</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -5891,7 +5718,7 @@
 			</table_properties>
 		</table>
 		<table>
-			<id>21</id>
+			<id>20</id>
 			<height>118</height>
 			<width>333</width>
 				<font_name>Sans</font_name>
@@ -5906,8 +5733,8 @@
 			<connections>
 				<relation>
 					<id>25</id>
-					<source>16</source>
-					<target>21</target>
+					<source>9</source>
+					<target>20</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
@@ -5923,8 +5750,8 @@
 				</relation>
 				<relation>
 					<id>26</id>
-					<source>9</source>
-					<target>21</target>
+					<source>16</source>
+					<target>20</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
@@ -5948,7 +5775,7 @@
 			<columns>
 				<normal_column>
 					<word_id>25</word_id>
-					<id>99</id>
+					<id>95</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -5979,9 +5806,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>100</id>
+					<id>96</id>
 					<referenced_column>77</referenced_column>
-					<relation>25</relation>
+					<relation>26</relation>
 					<description>Fremdschlüssel auf die Tabelle organism. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_id</logical_name>
@@ -6012,9 +5839,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>101</id>
+					<id>97</id>
 					<referenced_column>50</referenced_column>
-					<relation>26</relation>
+					<relation>25</relation>
 					<description>Fremdschlüssel auf die Tabelle organism_attribute_value. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_attribute_value_id</logical_name>
@@ -6053,10 +5880,10 @@
 					<name></name>
 					<columns>
 						<column>
-							<id>100</id>
+							<id>96</id>
 						</column>
 						<column>
-							<id>101</id>
+							<id>97</id>
 						</column>
 					</columns>
 				</complex_unique_key>
@@ -6067,7 +5894,7 @@
 			</table_properties>
 		</table>
 		<table>
-			<id>22</id>
+			<id>21</id>
 			<height>118</height>
 			<width>359</width>
 				<font_name>Sans</font_name>
@@ -6082,14 +5909,14 @@
 			<connections>
 				<relation>
 					<id>27</id>
-					<source>16</source>
-					<target>22</target>
+					<source>17</source>
+					<target>21</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
 					<name></name>
-					<on_delete_action>RESTRICT</on_delete_action>
-					<on_update_action>RESTRICT</on_update_action>
+					<on_delete_action>CASCADE</on_delete_action>
+					<on_update_action>CASCADE</on_update_action>
 					<source_xp>-1</source_xp>
 					<source_yp>-1</source_yp>
 					<target_xp>-1</target_xp>
@@ -6099,14 +5926,14 @@
 				</relation>
 				<relation>
 					<id>28</id>
-					<source>17</source>
-					<target>22</target>
+					<source>16</source>
+					<target>21</target>
 					<child_cardinality>1..n</child_cardinality>
 					<parent_cardinality>1</parent_cardinality>
 					<reference_for_pk>true</reference_for_pk>
 					<name></name>
-					<on_delete_action>CASCADE</on_delete_action>
-					<on_update_action>CASCADE</on_update_action>
+					<on_delete_action>RESTRICT</on_delete_action>
+					<on_update_action>RESTRICT</on_update_action>
 					<source_xp>-1</source_xp>
 					<source_yp>-1</source_yp>
 					<target_xp>-1</target_xp>
@@ -6124,7 +5951,7 @@
 			<columns>
 				<normal_column>
 					<word_id>25</word_id>
-					<id>102</id>
+					<id>98</id>
 					<description></description>
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
@@ -6155,9 +5982,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>103</id>
+					<id>99</id>
 					<referenced_column>77</referenced_column>
-					<relation>27</relation>
+					<relation>28</relation>
 					<description>Fremdschlüssel auf die Tabelle organism. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_id</logical_name>
@@ -6188,9 +6015,9 @@
 					</sequence>
 				</normal_column>
 				<normal_column>
-					<id>104</id>
+					<id>100</id>
 					<referenced_column>82</referenced_column>
-					<relation>28</relation>
+					<relation>27</relation>
 					<description>Fremdschlüssel auf die Tabelle organism_classification. </description>
 					<unique_key_name></unique_key_name>
 					<logical_name>organism_classification_id</logical_name>
@@ -6229,10 +6056,138 @@
 					<name></name>
 					<columns>
 						<column>
-							<id>103</id>
+							<id>99</id>
 						</column>
 					</columns>
 				</complex_unique_key>
+			</complex_unique_key_list>
+			<table_properties>
+				<schema></schema>
+				<without_oids>true</without_oids>
+			</table_properties>
+		</table>
+		<table>
+			<id>22</id>
+			<height>128</height>
+			<width>356</width>
+				<font_name>Lucida Grande</font_name>
+				<font_size>9</font_size>
+			<x>550</x>
+			<y>361</y>
+			<color>
+				<r>255</r>
+				<g>0</g>
+				<b>0</b>
+			</color>
+			<connections>
+			</connections>
+			<physical_name>organism_artgroup</physical_name>
+			<logical_name>organism_artgroup</logical_name>
+			<description></description>
+			<constraint></constraint>
+			<primary_key_name></primary_key_name>
+			<option></option>
+			<columns>
+				<normal_column>
+					<word_id>18</word_id>
+					<id>101</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>serial</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>true</primary_key>
+					<unique_key>true</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<word_id>36</word_id>
+					<id>102</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>text</type>
+					<constraint></constraint>
+					<default_value></default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>true</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+				<normal_column>
+					<word_id>50</word_id>
+					<id>103</id>
+					<description></description>
+					<unique_key_name></unique_key_name>
+					<logical_name></logical_name>
+					<physical_name></physical_name>
+					<type>integer</type>
+					<constraint></constraint>
+					<default_value>1</default_value>
+					<auto_increment>false</auto_increment>
+					<foreign_key>false</foreign_key>
+					<not_null>false</not_null>
+					<primary_key>false</primary_key>
+					<unique_key>false</unique_key>
+					<character_set></character_set>
+					<collation></collation>
+					<sequence>
+						<name></name>
+						<schema></schema>
+						<increment></increment>
+						<min_value></min_value>
+						<max_value></max_value>
+						<start></start>
+						<cache></cache>
+						<cycle>false</cycle>
+						<order>false</order>
+						<description></description>
+						<data_type></data_type>
+						<decimal_size>0</decimal_size>
+					</sequence>
+				</normal_column>
+			</columns>
+			<indexes>
+			</indexes>
+			<complex_unique_key_list>
 			</complex_unique_key_list>
 			<table_properties>
 				<schema></schema>

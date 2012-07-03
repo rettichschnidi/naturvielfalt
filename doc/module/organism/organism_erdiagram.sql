@@ -62,7 +62,6 @@ CREATE TABLE organism_artgroup
 	id serial NOT NULL UNIQUE,
 	name text NOT NULL,
 	parent int DEFAULT 1,
-	pos int,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
