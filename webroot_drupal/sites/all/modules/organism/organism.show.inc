@@ -148,7 +148,12 @@ function organism_show_classification($classificationid) {
 			continue;
 		}
 		$organismsTableHeader[] = array(
-				'name' => t(ucfirst($value->name)),
+				'name' => t(
+					ucfirst($value->name),
+					array(),
+					array(
+							'context' => 'scientific classification'
+					)),
 				'dbfield' => 'oc_' . $value->name,
 				'hide' => false,
 				'width' => 200
