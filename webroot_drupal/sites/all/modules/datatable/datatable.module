@@ -56,11 +56,12 @@ function datatable_theme() {
  * 			'dbSearchColumns' 	Array of columns that can be searched with the like command (no 'counts' or 'id'(bigint)
  * 			'dbSortColumns'		optional; Array of column on that can be sorted
  * 			'dbTable' 			String db table
- * 			' ' 			optional; the joins String (including all JOIN statements)
+ * 			'dbJoins' 			optional; the joins String (including all JOIN statements)
  * 			'dbGroupBy' 		optional; the GROUP BY string
  * 			'dbWhere' 			optional; the WHERE statement string
  * 			'id' 				optional: id column, default 'id'
  * 			'acl_level'			optional: Required acl level. For valid values, have a look at the c_acl module (file c_acl.base.inc)
+ *			'dbDefaultOrder'	optional: When no sorting given via AJAX, use this one
  *
  *			Default values:
  * 			$sql['dbPreStatement'] = '';
@@ -73,6 +74,7 @@ function datatable_theme() {
  * 			$sql['dbWhere'] = '';
  * 			$sql['id] = 'id';
  * 			$sql['acl_level'] = 'ACL_READ';
+ * 			$sql['dbDefaultOrder'] = NULL;
  *
  * @param $arguments array
  * 			Values for the query
@@ -89,7 +91,7 @@ function datatable_theme() {
  */
 function datatable_dbRequest($sql, $arguments = array(),
 		$preArguments = array()) {
-		  
+
 	/* Set the db fields to select */
 	if (!$sql['dbColumns'] || !$sql['dbTable'])
 		return "Error! No dbColumns or dbTable";
@@ -106,7 +108,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 		}
 		db_query($sql['dbPreStatement'], $preArguments);
 	}
-	if(!isset($sql['acl_level'])) {
+	if (!isset($sql['acl_level'])) {
 		$sql['acl_level'] = 'ACL_READ';
 	}
 
@@ -166,7 +168,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 	}
 	// 	Not progressed, always search in all searchable columns
 	if (isset($_POST['qtype'])) {
-	 	$qtype = pg_escape_string($_POST['qtype']);
+		$qtype = pg_escape_string($_POST['qtype']);
 	}
 	if (isset($_POST['query'])) {
 		$query = $_POST['query'];
@@ -179,7 +181,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 	 * Paging
 	 */
 	if (isset($_POST['page'])) {
-		$pageNumber = (int)$_POST['page'];
+		$pageNumber = (int) $_POST['page'];
 		if ($pageNumber < 1)
 			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
 	} else {
@@ -187,7 +189,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 	}
 
 	if (isset($_POST['rp'])) {
-		$pagesize = (int)$_POST['rp'];
+		$pagesize = (int) $_POST['rp'];
 		if ($pagesize < 1)
 			return "Error! Pagesize < 1";
 	}
@@ -204,7 +206,9 @@ function datatable_dbRequest($sql, $arguments = array(),
 	 */
 	$sOrder = '';
 	if (isset($sortname)) {
-		$sOrder = "ORDER BY " . $sortname . " " . $sortorder;
+		$sOrder = "ORDER BY $sortname $sortorder";
+	} else if (isset($sql['dbDefaultOrder']) && !empty($sql['dbDefaultOrder'])) {
+		$sOrder = 'ORDER BY ' . $sql['dbDefaultOrder'];
 	}
 
 	/*
@@ -215,21 +219,21 @@ function datatable_dbRequest($sql, $arguments = array(),
 	 */
 	($where == "") ? $sWhere = "" : $sWhere = $where . "";
 	if (isset($query) && $query != "" && isset($qtype) && $qtype != "") {
-	    if($qtype == "*"){	    
-    		($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
-    		for ($i = 0; $i < count($searchColumns); $i++) {
-    			/**
-    			 * yes, this is a terrible hack, but I do not know how another solution to make sure
-    			 * that all(?!) types can be used with LIKE
-    			 */
-    			$sWhere .= "CAST(" . $searchColumns[$i]
-    					. " AS TEXT) ILIKE CAST('%$query%' AS TEXT) OR ";
-    		}
-    		$sWhere = substr_replace($sWhere, "", -3);
-    		$sWhere .= ')';
-	    }
-	    else
-	        $sWhere = "WHERE " . (string)$qtype . " ILIKE '%". (string)$query . "%'";
+		if ($qtype == "*") {
+			($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
+			for ($i = 0; $i < count($searchColumns); $i++) {
+				/**
+				 * yes, this is a terrible hack, but I do not know how another solution to make sure
+				 * that all(?!) types can be used with LIKE
+				 */
+				$sWhere .= "CAST(" . $searchColumns[$i]
+						. " AS TEXT) ILIKE CAST('%$query%' AS TEXT) OR ";
+			}
+			$sWhere = substr_replace($sWhere, "", -3);
+			$sWhere .= ')';
+		} else
+			$sWhere = "WHERE " . (string) $qtype . " ILIKE '%"
+					. (string) $query . "%'";
 	}
 
 	/*
@@ -252,7 +256,9 @@ function datatable_dbRequest($sql, $arguments = array(),
 	$numberOfAccessibleRows = 0;
 	if (isset($fullRecords[0]->acl_id)) {
 		foreach ($fullRecords as $record) {
-			if (check_permission($record->acl_id, variable_get($sql['acl_level']))) {
+			if (check_permission(
+				$record->acl_id,
+				variable_get($sql['acl_level']))) {
 				$numberOfAccessibleRows++;
 			}
 		}
@@ -269,21 +275,23 @@ function datatable_dbRequest($sql, $arguments = array(),
 	$counter = 0;
 	$validElementsCounter = 0;
 	foreach ($fullRecords as $aRow) {
-		if(++$counter <= $offset) {
+		if (++$counter <= $offset) {
 			continue;
-		} else if(++$validElementsCounter > $pagesize) {
+		} else if (++$validElementsCounter > $pagesize) {
 			break;
 		}
 		$row = get_object_vars($aRow);
 		if (!isset($aRow->acl_id)
-				|| check_permission($aRow->acl_id, variable_get($sql['acl_level']))) {
+				|| check_permission(
+					$aRow->acl_id,
+					variable_get($sql['acl_level']))) {
 			$output['rows'][] = array(
 					'id' => $aRow->$idColumn,
 					'cell' => $row
 			);
 		}
 	}
-	
+
 	return $output;
 }
 ?>

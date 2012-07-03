@@ -357,7 +357,8 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 	$sql['id'] = 'id';
 	/* Only show writeable observations */
 	$sql['acl_level'] = $acl_level;
-
+	$sql['dbDefaultOrder'] = 'o.date DESC';
+	
 	$output = datatable_dbRequest($sql);
 
 	// 	// Add a link to the gallery of each habitat
