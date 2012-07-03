@@ -47,9 +47,10 @@ function organism_reference_gallery_image_caption($id) {
  */
 function organism_reference_gallery_manage_title($id, $mediatype) {
 	return t(
-		'' . $mediatype . ' of the organism !title',
+		'@mediatype of the organism !title',
 		array('!title' => '<em>' . organism_reference_gallery_caption($id)
-						. '</em>'
+						. '</em>',
+				'@mediatype' => $mediatype
 		));
 }
 
@@ -81,7 +82,9 @@ function organism_reference_gallery_caption($id) {
  * @return string
  */
 function organism_reference_gallery_manage_description($id, $mediatype) {
-	return t('Add and edit generic ' . $mediatype . ' of this organism.');
+	return t(
+		'Add and edit generic @mediatype of this organism.',
+		array('@mediatype' => $mediatype));
 }
 
 /**

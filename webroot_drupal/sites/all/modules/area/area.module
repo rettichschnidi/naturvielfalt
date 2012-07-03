@@ -429,6 +429,8 @@ function area_theme() {
 							'height' => false,
 							// the map width
 							'width' => false,
+							// show a reticle on the map's center
+							'reticle' => true,
 					)
 			)
 	);

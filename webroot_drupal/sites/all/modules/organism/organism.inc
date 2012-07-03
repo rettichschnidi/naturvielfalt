@@ -15,7 +15,8 @@
 function organism_get($organismid) {
 	global $user;
 	$organismid = intval(filter_xss($organismid));
-	if($organismid < 1 || $organismid > 1000000) return false;
+	if ($organismid < 1 || $organismid > 1000000)
+		return false;
 	$resultarray = array();
 	return db_query(
 		'SELECT
@@ -110,14 +111,60 @@ function organism_get_available_attributes($classificationid) {
 		JOIN drupal_organism_attribute oa ON oa.id = oav.organism_attribute_id
 	ORDER BY oa.id";
 
-	$rows= db_query(
-			$sqlGetAttributes,
-			array(':classificationid' => $classificationid),
-			array('fetch' => PDO::FETCH_ASSOC))->fetchAll();
+	$rows = db_query(
+		$sqlGetAttributes,
+		array(':classificationid' => $classificationid),
+		array('fetch' => PDO::FETCH_ASSOC))->fetchAll();
 
 	$levelnamesstring = '';
-	foreach($rows as $row) {
+	foreach ($rows as $row) {}
+}
 
+/**
+ * Check if wikipedia has an article for an organism in the current language.
+ * If found, return the URL to the site.
+ * @param  $organismdata organismdata
+ * @return String with link to article or false, if none existing.
+ */
+function organism_check_if_wikipedia_article_exists($organismdata) {
+	global $user;
+	global $language;
+	$langcode = isset($user->language) ? $user->language : $language->language;
+	// Take first synonym
+	$organism_name = $organismdata['scientific_names'][0];
+	// Reduce to first two words, as this delivers the best results.
+	if (preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {
+		$organism_name = $matches[1];
 	}
+
+	$host = $langcode . '.wikipedia.org';
+	$url = '/w/api.php?';
+	$postdata = 'action=query&prop=revisions&titles='
+			. urlencode($organism_name)
+			. '&rvprop=content&rvparse&format=json&redirects';
+	$fp = pfsockopen($host, 80, &$errno, &$errstr, 60);
+	if (!$fp) {
+		return false;
+	}
+	fputs($fp, "POST $url$postdata HTTP/1.1\n");
+	fputs($fp, "Host: $host\n");
+	fputs($fp, "User-Agent: Post\n");
+	fputs($fp, "Accept: */*\n");
+	fputs($fp, "Content-type: application/x-www-form-urlencoded\n");
+	fputs($fp, "Content-length: " . strlen($postdata) . "\n\n");
+	fputs($fp, "$postdata\n\n");
+	$o = '';
+	while (!feof($fp))
+		$o .= fgets($fp, 1024);
+	fclose($fp);
+
+	$pos = strpos($o, '{"query":');
+	$o = substr($o, $pos);
+	// Check lenght of article. If article has more than 300 chars, then assume that article exists.
+	// Value choosen by accident, will work. Mostly.
+	if (strlen($o) > 300) {
+		return "//$host/wiki/$organism_name";
+	}
+	return false;
 }
 ?>

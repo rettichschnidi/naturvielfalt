@@ -4,10 +4,6 @@
  * @file area-edit-geometry.js
  */
 
-/**
- * 
- */
-
 jQuery(document).ready(
 		function() {
 			if (typeof json_url == 'undefined') {
@@ -26,25 +22,30 @@ jQuery(document).ready(
 				var bounds = overlayElement.getBounds();
 				map.fitBounds(bounds);
 				overlayElement.setEditable(true);
-				
+
 				jQuery('#' + coordinate_storage_id).val(
 						JSON.stringify(overlayElement.getJsonCoordinates()));
 				overlayElement.overlay = overlayElement;
 				updateHiddenfields(overlayElement);
-				
-				google.maps.event.addListener(areabasic.googlemap,
-						'rightclick', function(mouseevent) {
+
+				google.maps.event.addListener(
+						areabasic.googlemap,
+						'rightclick',
+						function(mouseevent) {
 							console.log(mouseevent.latLng);
 							overlayElement
 									.deleteClosestVertex(mouseevent.latLng);
 						});
 
-				google.maps.event.addListener(overlayElement,
-						'geometry_changed', function() {
-					jQuery('#' + coordinate_storage_id).val(
-							JSON.stringify(overlayElement.getJsonCoordinates()));
-					overlayElement.overlay = overlayElement;
-					updateHiddenfields(overlayElement);
+				google.maps.event.addListener(
+						overlayElement,
+						'geometry_changed',
+						function() {
+							jQuery('#' + coordinate_storage_id).val(
+									JSON.stringify(overlayElement
+											.getJsonCoordinates()));
+							overlayElement.overlay = overlayElement;
+							updateHiddenfields(overlayElement);
 						});
 			});
 		});

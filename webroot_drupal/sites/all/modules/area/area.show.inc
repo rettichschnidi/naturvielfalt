@@ -41,7 +41,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
-	        'dbExactField' => 'a.name',
+			'dbExactField' => 'a.name',
 			'width' => 310,
 	);
 

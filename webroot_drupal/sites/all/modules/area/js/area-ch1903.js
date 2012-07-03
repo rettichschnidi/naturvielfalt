@@ -97,8 +97,7 @@ jQuery(document)
 								wgsLat = CHtoWGSlat(y, x);
 								wgsLng = CHtoWGSlng(y, x);
 								console.log("CH1903: " + y + " / " + x);
-								console
-										.log("WGS84: " + wgsLat + " / "
+								console.log("WGS84: " + wgsLat + " / "
 												+ wgsLng);
 								var newCenter = new google.maps.LatLng(wgsLat,
 										wgsLng);

@@ -2,9 +2,7 @@
  * @author Reto Schneider, 2012
  * @copyright Naturwerk
  * @file area-getcoordinate.js
- */
-
-/**
+ * 
  * Allow the user to set a marker and store the data about this
  * point (country, township, etc) returned by Google into hidden
  * fields.

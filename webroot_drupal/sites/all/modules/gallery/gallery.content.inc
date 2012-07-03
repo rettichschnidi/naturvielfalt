@@ -26,8 +26,8 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 				'every_page' => TRUE
 		));
 	$page = array();
- 	$editable = gallery_edit_access_callback($type, $id);
-//	$editable = false;
+	$editable = gallery_edit_access_callback($type, $id);
+	//	$editable = false;
 	$params = _gallery_list_parameters($type, $id);
 	$images = gallery_images(
 		$mediatype,
@@ -50,14 +50,17 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 	} else if ($editable) {
 		$page['gallery_list'] = array(
 				'#markup' => '<p>'
-						. t('There are no ' . $mediatype . ' available yet.')
-						. '</p>',
+						. t(
+							'There are no @mediatype available yet.',
+							array('@mediatype' => $mediatype)) . '</p>',
 		);
 	}
 	if ($editable)
 		array_push(
 			$links,
-			array('title' => t('Manage ' . $mediatype . ''),
+			array('title' => t(
+						'Manage @mediatype',
+						array('@mediatype' => $mediatype)),
 					'href' => 'gallery/' . $type . '/' . $id . '/' . $mediatype
 							. '/edit' //'href' => 'gallery/'.$type.'/'.$id.'/edit'
 			));
@@ -195,16 +198,18 @@ function _gallery_list_links($params, $count, $mediatype) {
 			$info = array(
 					'#markup' => '<p class="info">'
 							. t(
-								'Showing first !showing ' . $mediatype
-										. ' of !total',
+								'Showing first !showing @mediatype of !total',
 								array('!showing' => GALLERY_IMAGE_COUNT,
-										'!total' => $count
+										'!total' => $count,
+										'@mediatype' => $mediatype
 								)),
 					'#weight' => 10
 			);
 			array_push(
 				$links,
-				array('title' => t('Show all ' . $mediatype . ''),
+				array('title' => t(
+							'Show all @mediatype',
+							array('@mediatype' => $mediatype)),
 						'href' => $url,
 						'query' => array(
 								$params['key'] => '1'
@@ -228,7 +233,9 @@ function _gallery_list_links($params, $count, $mediatype) {
 		if ($params['crosslinked'])
 			array_push(
 				$links,
-				array('title' => t('Hide linked ' . $mediatype . ''),
+				array('title' => t(
+							'Hide linked @mediatype',
+							array('@mediatype' => $mediatype)),
 						'href' => $url,
 						'query' => array(
 								$params['key'] . '_crosslinked' => ''
@@ -238,7 +245,9 @@ function _gallery_list_links($params, $count, $mediatype) {
 		else
 			array_push(
 				$links,
-				array('title' => t('Show linked ' . $mediatype . ''),
+				array('title' => t(
+							'Show linked @mediatype',
+							array('@mediatype' => $mediatype)),
 						'href' => $url,
 						'query' => array(
 								$params['key'] . '_crosslinked' => '1'
@@ -248,7 +257,9 @@ function _gallery_list_links($params, $count, $mediatype) {
 	}
 	if ($params['subtypes']) {
 		$links[(!$params['subtype'] ? 'selected' : count($links))] = array(
-				'title' => t('Show all ' . $mediatype . ' types'),
+				'title' => t(
+					'Show all @mediatype types',
+					array('@mediatype' => $mediatype)),
 				'href' => $url,
 				'query' => array(
 						$params['key'] . '_subtype' => ''
@@ -584,7 +595,9 @@ function gallery_images_edit($type, $id, $mediatype) {
 
 	$page['upload'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Upload new ' . $mediatype . ''),
+			'#title' => t(
+				'Upload new @mediatype',
+				array('@mediatype' => $mediatype)),
 			'#weight' => 1,
 			'#collapsible' => true,
 			'#attached' => array(
@@ -610,7 +623,9 @@ function gallery_images_edit($type, $id, $mediatype) {
 
 	$page['edit'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Edit existing ' . $mediatype . ''),
+			'#title' => t(
+				'Edit existing @mediatype',
+				array('@mediatype' => $mediatype)),
 			'#weight' => 2,
 			'#collapsible' => true,
 			'#attached' => array(
@@ -634,7 +649,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 		false,
 		'gallery/' . $type . '/' . $id . '/' . $mediatype . '');
 
-	$title = t('Manage ' . $mediatype . '');
+	$title = t('Manage @mediatype', array('@mediatype' => $mediatype));
 	drupal_set_title($title, PASS_THROUGH);
 
 	$info = _gallery_get_title_description($type, $id, $mediatype);
@@ -819,8 +834,9 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 	if (!$rows)
 		$form['empty'] = array(
 				'#markup' => '<p>'
-						. t('There are no ' . $mediatype . ' available yet.')
-						. '</p>',
+						. t(
+							'There are no @mediatype available yet.',
+							array('@mediatype' => $mediatype)) . '</p>',
 		);
 	else
 		$form['overview'] = array(
@@ -836,7 +852,9 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 		);
 		$form['actions']['delete_submit'] = array(
 				'#type' => 'submit',
-				'#value' => t('Delete selected ' . $mediatype . ''),
+				'#value' => t(
+					'Delete selected @mediatype',
+					array('@mediatype' => $mediatype)),
 				'#submit' => array(
 						'gallery_images_form_delete_submit'
 				),
@@ -1881,12 +1899,15 @@ function gallery_own_list($user, $mediatype = "images") {
 	} else
 		$page['gallery_list'] = array(
 				'#markup' => '<p>'
-						. t('You have not added any ' . $mediatype . '')
-						. '</p>',
+						. t(
+							'You have not added any @mediatype',
+							array('@mediatype' => $mediatype)) . '</p>',
 		);
 	array_push(
 		$links,
-		array('title' => t('Manage ' . $mediatype . ''),
+		array('title' => t(
+					'Manage @mediatype',
+					array('@mediatype' => $mediatype)),
 				'href' => 'user/' . $user->uid . '/gallery/edit'
 		));
 	if ($backlink) {
@@ -1904,7 +1925,11 @@ function gallery_own_list($user, $mediatype = "images") {
 				'#weight' => 9
 		);
 	drupal_set_title(
-		t($mediatype . ' added by %user', array('%user' => $user->name)),
+		t(
+			'@mediatype added by %user',
+			array('%user' => $user->name,
+					'@mediatype' => $mediatype
+			)),
 		PASS_THROUGH);
 	return $page;
 }
@@ -1928,7 +1953,11 @@ function gallery_own_edit($user, $mediatype = "images") {
 		$images,
 		'user/' . $user->uid . '/gallery/edit');
 	drupal_set_title(
-		t($mediatype . ' added by %user', array('%user' => $user->name)),
+		t(
+			'@mediatype added by %user',
+			array('%user' => $user->name,
+					'@mediatype' => $mediatype
+			)),
 		PASS_THROUGH);
 	return $form;
 }
@@ -2268,16 +2297,16 @@ function _gallery_back_link($type, $id) {
 	return false;
 }
 
-function gallery_metadata_popup(){
+function gallery_metadata_popup() {
 	$output['form'] = drupal_render(drupal_get_form('gallery_metadata_form'));
 	return drupal_json_output($output);
 }
 
-function gallery_metadata_form(){
+function gallery_metadata_form() {
 	$file_name = check_plain($_REQUEST['fn']);
 	$div_id = check_plain($_REQUEST['di']);
 
-		$form['metadata'] = array(
+	$form['metadata'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Metadata'),
 			'#weight' => 1,
@@ -2290,38 +2319,48 @@ function gallery_metadata_form(){
 					),
 			),
 			'#attributes' => array(
-					'class' => array('collapsible'),
-// 					'style' => 'width: 100px;',
+					'class' => array(
+							'collapsible'
+					),
+			// 					'style' => 'width: 100px;',
 			),
 	);
 
-	if(gallery_validate_file_extension($file_name, gallery_get_image_extensions())
-			|| gallery_validate_file_extension($file_name, gallery_get_mp3_extensions())
-			|| gallery_validate_file_extension($file_name, gallery_get_video_extensions())
-			|| gallery_validate_file_extension($file_name, gallery_get_file_extensions())){
+	if (gallery_validate_file_extension(
+		$file_name,
+		gallery_get_image_extensions())
+			|| gallery_validate_file_extension(
+				$file_name,
+				gallery_get_mp3_extensions())
+			|| gallery_validate_file_extension(
+				$file_name,
+				gallery_get_video_extensions())
+			|| gallery_validate_file_extension(
+				$file_name,
+				gallery_get_file_extensions())) {
 		$form['metadata']['title'] = array(
 				'#type' => 'textfield',
 				'#title' => t('Title'),
 				'#size' => 50,
 				'#maxlength' => 128,
-	// 			'#default_value' => isset($image['title']) ? $image['title'] : '',
-	// 			'#description' => t('The title of the ' . $label . '.'),
+				// 			'#default_value' => isset($image['title']) ? $image['title'] : '',
+				// 			'#description' => t('The title of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
-// 		$form['metadata']['description'] = array(
-// 				'#type' => 'textarea',
-// 				'#title' => t('Description'),
-// 	// 			'#default_value' => isset($image['description']) ? $image['description'] : '',
-// 	// 			'#description' => t('The description of the ' . $label . '.'),
-// 				'#required' => FALSE,
-// 		);
+		// 		$form['metadata']['description'] = array(
+		// 				'#type' => 'textarea',
+		// 				'#title' => t('Description'),
+		// 	// 			'#default_value' => isset($image['description']) ? $image['description'] : '',
+		// 	// 			'#description' => t('The description of the ' . $label . '.'),
+		// 				'#required' => FALSE,
+		// 		);
 		$form['metadata']['description'] = array(
 				'#type' => 'textfield',
 				'#title' => t('Description'),
 				'#size' => 50,
 				'#maxlength' => 255,
-// 				'#description' => t(
-// 						'The location the ' . $label . ' was taken at.'),
+				// 				'#description' => t(
+				// 						'The location the ' . $label . ' was taken at.'),
 				'#required' => FALSE,
 		);
 		$form['metadata']['location'] = array(
@@ -2329,8 +2368,8 @@ function gallery_metadata_form(){
 				'#title' => t('Location'),
 				'#size' => 50,
 				'#maxlength' => 255,
-// 				'#description' => t(
-// 						'The location the ' . $label . ' was taken at.'),
+				// 				'#description' => t(
+				// 						'The location the ' . $label . ' was taken at.'),
 				'#required' => FALSE,
 		);
 		$form['metadata']['author'] = array(
@@ -2354,27 +2393,45 @@ function gallery_metadata_form(){
 				),
 		);
 		// if not an image, show only the description input
-		if(gallery_validate_file_extension($file_name, gallery_get_file_extensions())){
-			$form['metadata']['title']['#attributes']['style'] = array('display: none;','height: 0px;');
+		if (gallery_validate_file_extension(
+			$file_name,
+			gallery_get_file_extensions())) {
+			$form['metadata']['title']['#attributes']['style'] = array(
+					'display: none;',
+					'height: 0px;'
+			);
 			unset($form['metadata']['title']['#title']);
 			unset($form['metadata']['title']['#description']);
-			$form['metadata']['location']['#attributes']['style'] = array('display: none;','height: 0px;');
+			$form['metadata']['location']['#attributes']['style'] = array(
+					'display: none;',
+					'height: 0px;'
+			);
 			unset($form['metadata']['location']['#title']);
 			unset($form['metadata']['location']['#description']);
-			$form['metadata']['author']['#attributes']['style'] = array('display: none;','height: 0px;');
+			$form['metadata']['author']['#attributes']['style'] = array(
+					'display: none;',
+					'height: 0px;'
+			);
 			unset($form['metadata']['author']['#title']);
 			unset($form['metadata']['author']['#description']);
 		}
-	}else{
+	} else {
 		$form['metadata'] = t('File not allowed');
 	}
-	$form['actions'] = array('#type' => 'actions');
-	$form['actions']['close'] = array('#markup' => l(t('Cancel'), 'observations'));
+	$form['actions'] = array(
+			'#type' => 'actions'
+	);
+	$form['actions']['close'] = array(
+			'#markup' => l(t('Cancel'), 'observations')
+	);
 	$form['actions']['save'] = array(
 			'#type' => 'submit',
 			'#value' => t('Save'),
 			'#attributes' => array(
-					'style' => array('float:right;'))
+					'style' => array(
+							'float:right;'
+					)
+			)
 	);
 
 	return $form;

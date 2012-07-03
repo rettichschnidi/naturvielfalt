@@ -4,17 +4,21 @@
  * @copyright Naturwerk
  * @file area.tpl.php
  */
-$style ='';
-if($height || $width){
+$style = '';
+if ($height || $width) {
 	$style = ' style="';
-	if($height) $style .= 'height: '.$height.'; ';
-	if($width) $style .= 'height: '.$width.'; ';
+	if ($height)
+		$style .= 'height: ' . $height . '; ';
+	if ($width)
+		$style .= 'height: ' . $width . '; ';
 	$style .= '"';
 }
 ?>
 <div class="area-search-map">
   <div id="map">
-    <div id="map_canvas" <?php echo $style; ?>></div>
+    <div id="map_canvas" <?php echo $style; ?> >
+		<h1> <?php print(t('You have to enable Javascript!')) ?> </h1>
+    </div>
   </div>
 </div>
 <?php
@@ -75,7 +79,7 @@ if ($json_url) {
 /**
  * If requested, include an scale on the map.
  */
-print
+print 
 	"<script>scalecontrol = " . ($scalecontrol ? "true" : "false")
 			. ";</script>\n";
 
@@ -101,6 +105,18 @@ if ($ch1903) {
 }
 
 /**
+ * Show a reticle in the middle of the map.
+ */
+if ($reticle) {
+	$reticle_image_url = base_path() . drupal_get_path('module', 'commonstuff')
+	. '/images/reticle.png';
+	drupal_add_js(
+			array('area' => array('reticleimageurl' => $reticle_image_url)),
+			'setting');
+	area_add_js_url($baseModulJsPath . 'area-reticle.js');
+}
+
+/**
  * If existing area should be shown...
  */
 switch ($show) {
@@ -115,8 +131,8 @@ case 'myareas': /**
 	area_add_js_url($baseModulJsPath . 'area-show-myareas.js');
 	break;
 case 'custom-show': /**
-				 * Display just the ones the user owns.
-				 */
+					 * Display just the ones the user owns.
+					 */
 	area_add_js_url($baseModulJsPath . 'area-show-geometry.js');
 	break;
 }
@@ -126,8 +142,8 @@ case 'custom-show': /**
  * (encoded as JSON string)
  */
 if ($coordinate_storage_id != false) {
-	print
-	"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
+	print 
+		"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
 }
 
 /**
@@ -139,20 +155,22 @@ case 'create': /**
 			    */
 	area_add_js_url($baseModulJsPath . 'area-create.js');
 	break;
-case 'edit': /**
-			  * Create an existing area geometry
-			  */
+/**
+ * Create an existing area geometry
+ */
+case 'edit':
 	area_add_js_url($baseModulJsPath . 'area-edit.js');
 	break;
-case 'custom-edit': /**
-			  * Create an existing area geometry
-			  */
+/**
+ * Create an existing area geometry
+ */
+case 'custom-edit':
 	area_add_js_url($baseModulJsPath . 'area-edit-geometry.js');
 	break;
+/**
+ * Set a marker and update the hidden fields (provided by the user of this theme)
+ */
 case 'getcoordinate':
-	/**
-	 * Set a marker and update the hidden fields (provided by the user of this theme)
-	 */
 	area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
 	break;
 }

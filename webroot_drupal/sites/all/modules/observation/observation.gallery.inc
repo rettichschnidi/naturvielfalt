@@ -48,8 +48,10 @@ function observation_gallery_image_caption($id) {
  */
 function observation_gallery_manage_title($id, $mediatype) {
 	return t(
-		'' . $mediatype . ' of the observation !title',
-		array('!title' => '<em>' . observation_gallery_caption($id) . '</em>'));
+		'@mediatype of the observation !title',
+		array('!title' => '<em>' . observation_gallery_caption($id) . '</em>',
+				'@mediatype' => $mediatype
+		));
 }
 
 /**
@@ -79,7 +81,9 @@ function observation_gallery_caption($id) {
  * @return string
  */
 function observation_gallery_manage_description($id, $mediatype) {
-	return t('Add and edit generic ' . $mediatype . ' of this observation.');
+	return t(
+		'Add and edit generic @mediatype of this observation.',
+		array('@mediatype' => $mediatype));
 }
 
 /**

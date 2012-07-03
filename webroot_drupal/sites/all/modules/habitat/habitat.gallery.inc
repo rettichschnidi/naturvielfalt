@@ -48,8 +48,10 @@ function habitat_gallery_image_caption($id) {
  */
 function habitat_gallery_manage_title($id, $mediatype) {
 	return t(
-		'' . $mediatype . ' of the habitat !title',
-		array('!title' => '<em>' . habitat_gallery_caption($id) . '</em>'));
+		'@$mediatype of the habitat !title',
+		array('!title' => '<em>' . habitat_gallery_caption($id) . '</em>',
+				'@mediatype' => $mediatype
+		));
 }
 
 /**
@@ -78,7 +80,9 @@ function habitat_gallery_caption($id) {
  * @return string
  */
 function habitat_gallery_manage_description($id, $mediatype) {
-	return t('Add and edit generic ' . $mediatype . ' of this habitat.');
+	return t(
+		'Add and edit generic @mediatype of this habitat.',
+		array('@mediatype' => $mediatype));
 }
 
 /**
