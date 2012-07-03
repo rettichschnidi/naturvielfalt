@@ -232,8 +232,8 @@ function datatable_dbRequest($sql, $arguments = array(),
 			$sWhere = substr_replace($sWhere, "", -3);
 			$sWhere .= ')';
 		} else
-			$sWhere = "WHERE " . (string) $qtype . " ILIKE '%"
-					. (string) $query . "%'";
+			$sWhere = "WHERE CAST(" . (string) $qtype . " AS TEXT) ILIKE CAST('%"
+					. (string) $query . "%' AS TEXT)";
 	}
 
 	/*
