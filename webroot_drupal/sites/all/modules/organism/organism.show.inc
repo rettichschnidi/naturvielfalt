@@ -253,8 +253,6 @@ function organism_show_organism($organismdata) {
 		$render_array,
 		organism_files($organismdata['id']));
 
-	$attributes = $organismdata['attributes'];
-
 	$render_array['attributes'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Attributes'),
@@ -264,7 +262,8 @@ function organism_show_organism($organismdata) {
 			)
 	);
 
-	if (!empty($attributes)) {
+	if (isset($organismdata['attributes']) && !empty($organismdata['attributes'])) {
+		$attributes = $organismdata['attributes'];
 		foreach ($attributes as $attribute_name => $data) {
 			$attributevaluetype = $data['valuetype'];
 			$attributename = $attribute_name;
