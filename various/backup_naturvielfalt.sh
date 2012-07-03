@@ -10,7 +10,6 @@ if [ ! !? ]; then
 fi
 
 for TABLE in $TABLES; do
-	export TABLE
 	OUTPUTSCHEMA="$OUTPUTDIR/dbdump_naturvielfalt_$TABLE-schema.sql"
 	pg_dump -U drupal --column-inserts -h localhost --schema-only -f $OUTPUTSCHEMA -t $TABLE naturvielfalt
 	if [ ! $? ]; then
@@ -25,5 +24,8 @@ for TABLE in $TABLES; do
 		EXITVALUE=1
 	fi
 done
+
+OUTPUTFILEDUMP="$OUTPUTDIR/filedump_naturvielfalt.tar"
+cd /var/www/naturvielfalt/; tar cf "$OUTPUTFILEDUMP" webroot_drupal/
 
 exit $EXITVALUE
