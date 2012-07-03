@@ -9,7 +9,7 @@ function inventory_list_show_users_inventory() {
 	drupal_add_js(drupal_get_path('module', 'inventory') . '/js/inventory.datatable.select.js');
 	$render_array = array();
 
-	generate_user_list(&$render_array);
+	generate_user_list($render_array);
 
 	return $render_array;
 }
@@ -344,7 +344,7 @@ function _inventory_list_factory($result, $id, $title, $msg_empty = false, $head
 		if ($row_factory && function_exists($row_factory))
 			$row = call_user_func_array($row_factory, array($row,
 					$record,
-					&$rows
+					$rows
 			));
 		if ($row)
 			$rows[] = array(

@@ -142,7 +142,7 @@ function organism_check_if_wikipedia_article_exists($organismdata) {
 	$postdata = 'action=query&prop=revisions&titles='
 			. urlencode($organism_name)
 			. '&rvprop=content&rvparse&format=json&redirects';
-	$fp = pfsockopen($host, 80, &$errno, &$errstr, 60);
+	$fp = pfsockopen($host, 80, $errno, $errstr, 60);
 	if (!$fp) {
 		return false;
 	}
