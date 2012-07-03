@@ -23,6 +23,7 @@ function organism_show_classifiers() {
 	$tableHeader[] = array(
 			'name' => t('Classificator name'),
 			'dbfield' => 'oc_name',
+			'dbExactField' => 'oc.name',
 			'width' => 400,
 	);
 	$tableHeader[] = array(
@@ -34,6 +35,7 @@ function organism_show_classifiers() {
 	$tableHeader[] = array(
 			'name' => t('Number of organisms'),
 			'dbfield' => 'cnt',
+			'dbExactField' => 'organismcount.cnt',
 			'width' => 100,
 	);
 
@@ -97,12 +99,14 @@ function organism_show_classification($classificationid) {
 	$classificationTableHeader[] = array(
 			'name' => t('Classificator name'),
 			'dbfield' => 'ds_name',
+			'dbExactField' => 'ds_name',
 			'width' => 760,
 			'hide' => false
 	);
 	$classificationTableHeader[] = array(
 			'name' => t('Number of organisms'),
 			'dbfield' => 'cnt',
+			'dbExactField' => 'cnt',
 			'width' => 100,
 			'hide' => false
 	);
@@ -155,6 +159,7 @@ function organism_show_classification($classificationid) {
 							'context' => 'scientific classification'
 					)),
 				'dbfield' => 'oc_' . $value->name,
+				'dbExactField' => 'oc_' . $value->name,
 				'hide' => false,
 				'width' => 200
 		);
@@ -163,13 +168,15 @@ function organism_show_classification($classificationid) {
 	$organismsTableHeader[] = array(
 			'name' => t('Scientific name'),
 			'dbfield' => 'osn_name',
+			'dbExactField' => 'osn_name',
 			'hide' => false,
 			'width' => 300
 	);
 
 	$organismsTableHeader[] = array(
-			'name' => t('Common Name'),
+			'name' => t('Common name'),
 			'dbfield' => 'ol_name',
+			'dbExactField' => 'ol_name',
 			'hide' => false,
 			'width' => 200
 	);

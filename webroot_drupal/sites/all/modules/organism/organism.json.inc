@@ -221,7 +221,8 @@ function organism_show_classification_classificationjson($classificationid) {
 	);
 
 	$sql['dbSearchColumns'] = array(
-			'ds_name'
+			'ds_name',
+			'cnt'
 	);
 
 	/* DB table to use */
