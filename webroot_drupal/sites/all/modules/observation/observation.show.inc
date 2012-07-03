@@ -25,8 +25,7 @@ function observation_show_all_singleobservations() {
 			'#show' => 'custom-show',
 			'#search' => true,
 			'#ch1903' => true,
-			'#json_url' => 'singleobservation/geometry/json',
-	// 			'#height' => '350px',
+			'#json_url' => base_path() . 'singleobservation/geometry/json',
 	);
 
 	$output['space'] = array(
@@ -42,8 +41,6 @@ function observation_show_all_singleobservations() {
 			'#options' => array(
 					'jsonUrl' => "'" . base_path() . "observation/get/all'",
 					'rowClick' => 'rowClick',
-					// 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-					// 					window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/show';})}"
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
