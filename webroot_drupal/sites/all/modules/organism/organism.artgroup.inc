@@ -11,9 +11,9 @@ define('SPECIESGROUP_ALL', 1);
  */
 function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {
 	if($parent != false) {
-		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent='" . db_escape_field($parent) . "' AND parent != id";
+		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent='" . db_escape_field($parent) . "' AND parent != id ORDER BY name";
 	}else{
-		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL";
+		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL ORDER BY name";
 	}
 	if($selected_id == '') $selected_id = false;
 
