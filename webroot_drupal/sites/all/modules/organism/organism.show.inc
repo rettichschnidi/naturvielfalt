@@ -357,7 +357,7 @@ function organism_get_organism_title($organismdata) {
 	// if wikipedia article existing, linkt to it and show a wikipedialogo
 	if ($link = organism_check_if_wikipedia_article_exists($organismdata)) {
 		$alt_text = t('Wikipedia article available');
-		$title = "<a href='$link' title='$alt_text'>$title <img style='height: 1em' src='$logo_wikipedia_url'/></a>";
+		$title = "<a href='$link' target='_blank' title='$alt_text'>$title <img style='height: 1em' src='$logo_wikipedia_url'/></a>";
 	}
 
 	return $title;
