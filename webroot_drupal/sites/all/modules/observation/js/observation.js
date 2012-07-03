@@ -35,7 +35,7 @@ jQuery(document).ready(function() {
 				$('#recent_observations').flexReload();
 			}
 		} else if (responseText != null) {
-			observation.setMessage('<br><br>&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
+			observation.setMessage('&bull;&nbsp;'+responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
 		} else {
 			observation.setMessage('<br><br>&bull;&nbsp;' + Drupal.t('Saving failed due to unknown error.'),'error', 5000);
 		}
