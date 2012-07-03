@@ -35,7 +35,7 @@ function observation_show_all_singleobservations() {
 
 	$output['area_table'] = array(
 			'#theme' => 'datatable',
-			'#header' => observation_get_standart_datatable_headers(),
+			'#header' => observation_get_standart_datatable_headers(4, 'desc'),
 			'#title' => t('Singleobservations'),
 			'#id_table' => 'observations',
 			'#options' => array(
