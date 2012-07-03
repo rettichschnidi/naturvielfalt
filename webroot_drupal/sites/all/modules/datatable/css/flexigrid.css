@@ -358,7 +358,7 @@
 	border-right: 1px solid #ddd;
 	border-left: 1px solid #fff;
 	overflow: hidden;
-	vertical-align: top !important;
+	vertical-align: middle !important;
 	padding-left: 0;
 	padding-right: 0;
 	padding-top: 0;
