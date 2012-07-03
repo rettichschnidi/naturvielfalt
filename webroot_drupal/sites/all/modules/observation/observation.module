@@ -18,7 +18,6 @@ define('CREATE_OBSERVATION', 'create observation');
 function observation_menu() {
 	$items['observation'] = array(
 			'title' => t('Observation'),
-			'description' => t('Singleobservations'),
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
 					'singleobservation/show'
@@ -29,8 +28,7 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	$items['singleobservation'] = array(
-			'title' => t('Singleobservations'),
-			'description' => t('Show a overview of observations'),
+			'title' => t('Observation'),
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
 					'singleobservation/show'
@@ -42,8 +40,8 @@ function observation_menu() {
 			'file' => 'observation.show.inc',
 	);
 	$items['singleobservation/show'] = array(
-			'title' => t('Singleobservations'),
-			'description' => t('Show a overview of observations'),
+			'title' => t('Observation'),
+			'description' => t('Show an all observations'),
 			'page callback' => 'observation_show_all_singleobservations',
 			'access arguments' => array(
 					ACCESS_OBSERVATION
@@ -116,7 +114,7 @@ function observation_menu() {
 			'weight' => 4
 	);
 	$items['singleobservation/%observation/delete'] = array(
-			'title' => t('Delete observation'),
+			'title' => t('Delete'),
 			'description' => t('Delete an existing observation.'),
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
