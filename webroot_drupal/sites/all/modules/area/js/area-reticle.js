@@ -91,17 +91,19 @@ ReticleOverlay.prototype.draw = function() {
 	// Retrieve the southwest and northeast coordinates of this overlay
 	// in latlngs and convert them to pixels coordinates.
 	// We'll use these coordinates to resize the DIV.
-	var sw = overlayProjection
-			.fromLatLngToDivPixel(this.map_.getBounds().getSouthWest());
-	var ne = overlayProjection
-			.fromLatLngToDivPixel(this.map_.getBounds().getNorthEast());
-
-	// Resize the image's DIV to fit the indicated dimensions.
-	var div = this.div_;
-	div.style.left = sw.x + (ne.x - sw.x)/2 - 12 + 'px'; // MAGIC!!
-	div.style.top = ne.y + (sw.y - ne.y)/2 - 12 + 'px';
-	div.style.width = (ne.x - sw.x) + 'px';
-	div.style.height = (sw.y - ne.y) + 'px';
+	if(overlayProjection != null) {
+		var sw = overlayProjection
+				.fromLatLngToDivPixel(this.map_.getBounds().getSouthWest());
+		var ne = overlayProjection
+				.fromLatLngToDivPixel(this.map_.getBounds().getNorthEast());
+	
+		// Resize the image's DIV to fit the indicated dimensions.
+		var div = this.div_;
+		div.style.left = sw.x + (ne.x - sw.x)/2 - 12 + 'px'; // MAGIC!!
+		div.style.top = ne.y + (sw.y - ne.y)/2 - 12 + 'px';
+		div.style.width = (ne.x - sw.x) + 'px';
+		div.style.height = (sw.y - ne.y) + 'px';
+	}
 };
 
 ReticleOverlay.prototype.onRemove = function() {
@@ -112,7 +114,7 @@ ReticleOverlay.prototype.onRemove = function() {
 jQuery(document).ready(function() {
 	var srcImage = Drupal.settings.area.reticleimageurl;
 	overlay = new ReticleOverlay(srcImage, areabasic.googlemap);
-	google.maps.event.addListener(areabasic.googlemap, 'idle', function() { // change idle to center_changed or another event if needed
+	google.maps.event.addListener(areabasic.googlemap, 'center_changed', function() { // change even to e.g. idle if needed
 		overlay.draw();
 	});
 });
