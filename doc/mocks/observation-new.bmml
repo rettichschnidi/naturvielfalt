@@ -72,7 +72,7 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="108" controlTypeID="com.balsamiq.mockups::Arrow" x="82" y="258" w="437" h="1387" measuredW="150" measuredH="100" zOrder="30" locked="false" isInGroup="-1">
+    <control controlID="108" controlTypeID="com.balsamiq.mockups::Arrow" x="82" y="258" w="437" h="1387" measuredW="150" measuredH="100" zOrder="29" locked="false" isInGroup="-1">
       <controlProperties>
         <curvature>0</curvature>
         <direction>top</direction>
@@ -368,8 +368,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="141" controlTypeID="com.balsamiq.mockups::RedX" x="499" y="230" w="565" h="59" measuredW="240" measuredH="104" zOrder="27" locked="false" isInGroup="-1"/>
-    <control controlID="142" controlTypeID="__group__" x="501" y="1362" w="718" h="275" measuredW="718" measuredH="275" zOrder="28" locked="false" isInGroup="-1">
+    <control controlID="142" controlTypeID="__group__" x="501" y="1362" w="718" h="275" measuredW="718" measuredH="275" zOrder="27" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="718" h="275" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="142">
           <controlProperties>
@@ -640,7 +639,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="145" controlTypeID="__group__" x="360" y="1710" w="869" h="378" measuredW="869" measuredH="378" zOrder="29" locked="false" isInGroup="-1">
+    <control controlID="145" controlTypeID="__group__" x="360" y="1710" w="869" h="378" measuredW="869" measuredH="378" zOrder="28" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="__group__" x="141" y="0" w="728" h="378" measuredW="728" measuredH="378" zOrder="0" locked="false" isInGroup="145">
           <groupChildrenDescriptors>
@@ -966,7 +965,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="146" controlTypeID="com.balsamiq.mockups::Tree" x="279" y="169" w="170" h="340" measuredW="300" measuredH="372" zOrder="31" locked="false" isInGroup="-1">
+    <control controlID="146" controlTypeID="com.balsamiq.mockups::Tree" x="279" y="169" w="170" h="340" measuredW="300" measuredH="372" zOrder="30" locked="false" isInGroup="-1">
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
@@ -977,7 +976,7 @@
         <text>%3E%20Willkommen%0A%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29%0A%20%3E%20Lebensr%E4ume%0A%20%3E%20Rote%20Liste%0A%20%3E%20Sensible%20Arten%0A%20%3E%20Gesch%FCtzte%20Arten%0A%3E%20Wer%20weiss%20es%3F%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20Inventare%0A%3E%20Vorlagen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
       </controlProperties>
     </control>
-    <control controlID="147" controlTypeID="com.balsamiq.mockups::StickyNote" x="1317" y="166" w="299" h="187" measuredW="109" measuredH="123" zOrder="32" locked="false" isInGroup="-1">
+    <control controlID="147" controlTypeID="com.balsamiq.mockups::StickyNote" x="1317" y="166" w="299" h="187" measuredW="109" measuredH="123" zOrder="31" locked="false" isInGroup="-1">
       <controlProperties>
         <align>left</align>
         <color>10470904</color>
