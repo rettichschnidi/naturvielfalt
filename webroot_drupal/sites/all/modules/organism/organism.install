@@ -1,5 +1,5 @@
 <?php
-require_once 'drupalschema.inc';
+require_once dirname(__FILE__) . '/drupalschema.inc';
 /**
  * @file organism.install
  * @author Reto Schneider, 2012
@@ -9,7 +9,6 @@ require_once 'drupalschema.inc';
 /**
  * Implement hook_schema()
  *
- * @note Do not modify habitat_schema, it is generated code!
  */
 function organism_schema() {
 	return get_schema();
