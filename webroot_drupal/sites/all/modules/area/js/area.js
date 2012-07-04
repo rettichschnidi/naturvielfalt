@@ -234,10 +234,8 @@ function Area(map_id) {
 		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
 			overlayElement.setMap(null);
-			overlayElement = null;
-			overlayElement.setVisible(false);
 		});
-
+		
 		// move marker a little bit down, (approximately)
 		// centers the infowindow
 		this.googlemap.panBy(0, -250);

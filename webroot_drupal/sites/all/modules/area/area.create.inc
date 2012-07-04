@@ -43,7 +43,10 @@ function area_new_areaname_form($form, &$form_state) {
 			'#title' => t('Field name/area name'),
 			'#description' => t('Please insert a custom name for this area.'),
 			'#size' => 20,
-			'#maxlength' => 80
+			'#maxlength' => 80,
+			'#attributes' => array(
+					'placeholder' => t('My area')
+			)
 	);
 
 	$form['button'] = array(
