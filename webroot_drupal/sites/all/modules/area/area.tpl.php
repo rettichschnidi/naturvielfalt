@@ -57,8 +57,9 @@ if ($action == 'create' || $action == 'getcoordinate') {
 	$libraries .= ',drawing';
 }
 
+$protocol = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
 area_add_js_url(
-	"http://maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language="
+	$protocol . "maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language="
 			. $user->language . "\n");
 
 /**
