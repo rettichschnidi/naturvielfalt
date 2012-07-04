@@ -241,7 +241,7 @@ function observation_form($observation = false) {
 	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
 							<span class="fieldset-legend">'
-			. t('Add more Details')
+			. t('Add more details')
 			. '</span>
 							</legend>
 							<div class="fieldset-wrapper">'
