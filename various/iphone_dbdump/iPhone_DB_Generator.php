@@ -132,10 +132,10 @@ $sql_all_artgroups = '
 ';
 foreach ($results_all_artgroups as $artgroup) {
 	$sql_all_artgroups .= "
-INSERT INTO classification (classification_id, name_de, parent, \"position\", class_level) values
+INSERT INTO classification (classification_id, name_de, parent, class_level) values
 	('" . pg_escape_string($artgroup['classification_id']) . "','"
 			. pg_escape_string($artgroup['name_de']) . "','"
-			. pg_escape_string($artgroup['parent']) . "';";
+			. pg_escape_string($artgroup['parent']) . "', 1);";
 }
 
 echo "build organism sql inserts\n";
