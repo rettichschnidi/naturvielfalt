@@ -10,18 +10,15 @@ function observation_form($observation = false) {
 	global $user;
 	$hidden_fields_arr = array();
 	drupal_set_title(t('Capture a new observation'));
-	// 	die(print_r($observation));
 	$url = base_path() . 'observation/save';
 	if ($observation) {
-		// 		$observation = observation_get($observation_id);
-		// 		print_r($observation);
 		$url = base_path() . 'observation/' . $observation['observation']['id']
 				. '/save';
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 		drupal_set_title('Edit a observation');
 	}
 
-	// if not edit, set standart values
+	// if not edit, set standard values
 	if (!isset($observation['observation']['id']))
 		$observation['observation']['id'] = '';
 	$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
@@ -29,9 +26,10 @@ function observation_form($observation = false) {
 		$observation['observation']['found_as_lang'] = 'false';
 	if (!isset($observation['observation']['found_as_lat']))
 		$observation['observation']['found_as_lat'] = 'false';
-	if (!isset($observation['observation']['organism_artgroup_id']))
+	if (!isset($observation['observation']['organism_artgroup_id'])) {
+		// Assuming artgroup 'all' has the id 1.
 		$observation['observation']['organism_artgroup_id'] = '1';
-	// Assuming artgroup 'all' has the id 1.
+	}
 	if (!isset($observation['observation']['organism_id']))
 		$observation['observation']['organism_id'] = '';
 	if (!isset($observation['organism']['name_lat']))
@@ -67,8 +65,6 @@ function observation_form($observation = false) {
 	drupal_add_js('misc/jquery.form.js');
 	drupal_add_js('misc/ui/jquery.ui.dialog.min.js');
 	$observation_path = drupal_get_path('module', 'observation');
-	// 	drupal_add_js('https://maps.google.com/maps/api/js?sensor=false');
-	// 	drupal_add_js($observation_path . '/js/gmap.js');
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
@@ -140,15 +136,6 @@ function observation_form($observation = false) {
 			. gallery_get_mp3_extensions() . ' '
 			. gallery_get_video_extensions() . ' '
 			. gallery_get_file_extensions();
-	// 	$image['picture']['picture_upload'] = array(
-	// 			'#type' => 'file',
-	// 			'#name' => 'files[]',
-	// 			'#title' => t('Upload new files'),
-	// 			'#size' => 48,
-	// 			'#attributes' => array('onchange' => 'javascript:checkMimeType_metaData(this);'),
-	// 			'#description' => '<a href="javascript:addUploadSlot();">'.t('Click here to add one more file').'</a><p>'
-	// 								.t('Allowed files endings are: '.$file_extensions),
-	// 			'#id' => 'picture_upload',);
 
 	// format the upload field manually, because it's not possible with drupal forms...
 
@@ -284,13 +271,6 @@ function observation_form($observation = false) {
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
 									window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/edit';})}"
-			// 						'rowClickHandler' => "function rowClick(celDiv, id) {
-			// 						jQuery(celDiv).click(
-			// 						function() {
-			// 						observation.selectObservation(id);
-			// 		}
-			// 				)
-			// 		}",
 			)
 	);
 	$formcust .= drupal_render($recent);
@@ -303,7 +283,6 @@ function observation_form($observation = false) {
  * @param array $observation
  */
 function observation_acl_template($observation = NULL) {
-	// 	die(print_r($observation));
 	drupal_set_title('Set permissions on a observation');
 	$output = array();
 	$defaults = array(
@@ -339,7 +318,6 @@ function observation_acl_template($observation = NULL) {
  */
 function observation_show_observation($observationdata = NULL) {
 	$observation_path = drupal_get_path('module', 'observation');
-	// 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
@@ -442,9 +420,6 @@ function observation_show_observation($observationdata = NULL) {
 
 	$output['observation_attributes']['table'] = observation_get_details_table(
 		$observationdata);
-
-	/* Build the content of the table, leave out empty fields */
-	// 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
 	return $output;
 }
