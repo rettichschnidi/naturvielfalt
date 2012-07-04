@@ -116,7 +116,8 @@ CREATE TABLE organism_artgroup_detmethod_subscription
 	id serial NOT NULL UNIQUE,
 	organism_artgroup_id int NOT NULL,
 	organism_artgroup_detmethod_id int NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (organism_artgroup_id, organism_artgroup_detmethod_id)
 ) WITHOUT OIDS;
 
 
@@ -379,17 +380,17 @@ ALTER TABLE organism_attribute_value_subscription
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (prime_father_id)
+	ADD FOREIGN KEY (parent_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE RESTRICT
+	ON UPDATE CASCADE
 	ON DELETE RESTRICT
 ;
 
 
 ALTER TABLE organism_classification
-	ADD FOREIGN KEY (parent_id)
+	ADD FOREIGN KEY (prime_father_id)
 	REFERENCES organism_classification (id)
-	ON UPDATE CASCADE
+	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
 
