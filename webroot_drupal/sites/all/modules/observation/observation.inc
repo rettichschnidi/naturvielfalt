@@ -331,7 +331,7 @@ function observation_get_details_table($observationdata = NULL) {
 					'header' => true
 			),
 			($observationdata['observation']['organism_artgroup_detmethod_name']
-					== '') ? t('Not definied')
+					== '') ? t('Not defined')
 					: t(
 						$observationdata['observation']['organism_artgroup_detmethod_name']),
 	);

@@ -1,7 +1,7 @@
 <?php
 /**
  * do not modify this file, it is generated!
- * To make modifications on the schema alter the file in /doc/module/organism and regenerate it. 
+ * To make modifications on the schema alter the file in /doc/module/<modulename> and regenerate it. 
  * See also description in wiki at 
  * http://www.naturwerk.info/wiki/naturvielfalt:entwicklungsumgebung?s[]=ermaster#drupal_schema_api_beschreibungen_generieren 
  */
@@ -282,6 +282,11 @@ function get_schema() {
       array (
         0 => 'id',
       ),
+      'organism_artgroup_id_AND_organism_artgroup_detmethod_id' => 
+      array (
+        0 => 'organism_artgroup_id',
+        1 => ' organism_artgroup_detmethod_id',
+      ),
     ),
     'primary key' => 
     array (
@@ -555,7 +560,7 @@ function get_schema() {
         'table' => 'organism_classification',
         'columns' => 
         array (
-          'parent_id' => 'id',
+          'prime_father_id' => 'id',
         ),
       ),
       'organism_classification_2_organism_classification_level' => 

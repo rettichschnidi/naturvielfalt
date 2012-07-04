@@ -17,3 +17,4 @@ webroot_drupal/sites/all/themes/zen/
 webroot_drupal/sites/all/modules/date/
 IPhone_DB_.sql
 various/iphone_dbdump/config/database.php
+*.csv#
