@@ -46,12 +46,13 @@ function organism_show_classifiers_json() {
 			'oc.id AS oc_id',
 			'oc.name AS oc_name',
 			'COUNT(ocl.id) - 1 AS levelcount',
-			'organismcount.cnt'
+			'organismcount.cnt AS cnt'
 	);
 
 	$sql['dbSearchColumns'] = array(
 			'oc.id',
-			'oc.name'
+			'oc.name',
+			'organismcount.cnt'
 	);
 
 	/* Original query:
@@ -220,7 +221,8 @@ function organism_show_classification_classificationjson($classificationid) {
 	);
 
 	$sql['dbSearchColumns'] = array(
-			'ds_name'
+			'ds_name',
+			'cnt'
 	);
 
 	/* DB table to use */
