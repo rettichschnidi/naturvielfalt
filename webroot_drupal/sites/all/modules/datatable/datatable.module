@@ -253,18 +253,17 @@ function datatable_dbRequest($sql, $arguments = array(),
 	 * @note This is an expensive operation and should be moved into the
 	 * database at some point.
 	 */
-	$numberOfAccessibleRows = 0;
 	if (isset($fullRecords[0]->acl_id)) {
-		foreach ($fullRecords as $record) {
+		foreach ($fullRecords as $recordKey => $record) {
 			if (check_permission(
 				$record->acl_id,
 				variable_get($sql['acl_level']))) {
-				$numberOfAccessibleRows++;
+			} else {
+				unset($fullRecords[$recordKey]);
 			}
 		}
-	} else {
-		$numberOfAccessibleRows = $fullResult->rowCount();
 	}
+	$numberOfAccessibleRows = count($fullRecords);
 
 	$output = array(
 			'page' => $pageNumber,
@@ -281,15 +280,10 @@ function datatable_dbRequest($sql, $arguments = array(),
 			break;
 		}
 		$row = get_object_vars($aRow);
-		if (!isset($aRow->acl_id)
-				|| check_permission(
-					$aRow->acl_id,
-					variable_get($sql['acl_level']))) {
-			$output['rows'][] = array(
-					'id' => $aRow->$idColumn,
-					'cell' => $row
-			);
-		}
+		$output['rows'][] = array(
+				'id' => $aRow->$idColumn,
+				'cell' => $row
+		);
 	}
 
 	return $output;
