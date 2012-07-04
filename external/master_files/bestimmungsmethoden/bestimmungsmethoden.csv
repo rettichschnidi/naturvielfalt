@@ -1,0 +1,50 @@
+cscf_nr;name
+100;Sichtbeobachtung
+101;Fang
+102;Mit Fernglas bestimmt
+103;Ruf, Schrei, Gesang
+104;Gesang und Sichtbeobachtung
+105;Ultraschall
+106;Ruf (Ohr) und Foto
+107;Video
+108;Radiotelemetriedaten
+109;Foto
+110;Unter Binokular bestimmt
+111;genetisch bestimmt
+112;Genitalbestimmung
+113;Morphologische Bestimmung
+201;Kunstbau Biber
+202;Nest, Biberburg
+203;Puppenkammer
+204;Erdbau, Höhle, Auswurfhügel
+205;Suhle
+206;Damm
+207;Burg eingestürzt
+208;Schwimmende Burg
+209;Mittelbau Biber
+210;Schlupfloch, Fluchtröhre
+300;Totfund
+301;Verunfallt (Strasse)
+302;Abschuss
+303;Schädel
+304;Knochenreste
+305;Haare
+306;Gewölle
+307;Reste Körpergewebe, Muskel, Blut
+308;Lebendiges Tier, frisches Gehäuse
+309;Wahrscheinliches Vorkommen
+310;Status unklar
+311;Vorkommen vermutlich ehemalig
+312;Subfossile Gehäuse
+313;Kot, Losung
+314;Köcher
+400;Ausstieg, Wechsel
+401;Kanal
+402;Fällplatz
+403;Trittsiegel, Spurenfolge
+404;Schäden
+405;Nahrungsreste, Einzelfrassspuren
+406;Wintervorrat
+407;Frassplatz
+408;Raubtierriss
+409;Markierung, Bibergeil
