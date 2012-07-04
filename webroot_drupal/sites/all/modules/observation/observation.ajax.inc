@@ -68,7 +68,7 @@ function observation_save($observation_data = false, $custom_data = false,
 		$values['determination_method_id'] = 0;
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval(
 		$values['determination_method_id']);
-	if ($artgroup_id > 0) {
+	if (isset($artgroup_id) && $artgroup_id > 0) {
 		$determination_methods_db = organism_artgroup_get_determation_methods(
 			$artgroup_id);
 		$artgroup_id_checked = false;
@@ -90,7 +90,7 @@ function observation_save($observation_data = false, $custom_data = false,
 	 * Check observer
 	 */
 	$observation['observer'] = check_plain($values['observer']);
-	$observation['users_uid'] = $values['set_user_uid']
+	$observation['users_uid'] = isset($values['set_user_uid']) && $values['set_user_uid']
 			? $values['set_user_uid'] : $user->uid;
 
 	/**
