@@ -227,7 +227,7 @@ function observation_save($observation_data = false, $custom_data = false,
 					"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
 				$observation['c_time'] = $observation['m_time'];
 				$observation['acl_id'] = new_acl(
-					'singleobservation',
+					'observation',
 					$observation['users_uid']);
 				db_insert('observation')->fields($observation)
 					->execute();

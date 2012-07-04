@@ -20,29 +20,17 @@ function observation_menu() {
 // 			'title' => t('Observations'),
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
-					'singleobservation/show'
+					'observation/show'
 			),
 			'access arguments' => array(
 					ACCESS_OBSERVATION
 			),
 			'type' => MENU_CALLBACK,
 	);
-	$items['singleobservation'] = array(
-			'title' => t('Observations'),
-			'page callback' => 'drupal_goto',
-			'page arguments' => array(
-					'singleobservation/show'
-			),
-			'access arguments' => array(
-					ACCESS_OBSERVATION
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'observation.show.inc',
-	);
-	$items['singleobservation/show'] = array(
+	$items['observation/show'] = array(
 			'title' => t('Observations'),
 			'description' => t('Show all observations'),
-			'page callback' => 'observation_show_all_singleobservations',
+			'page callback' => 'observation_show_all_observations',
 			'access arguments' => array(
 					ACCESS_OBSERVATION
 			),
@@ -52,21 +40,21 @@ function observation_menu() {
 			'weight' => 1,
 	);
 
-	$items['singleobservation/new'] = array(
+	$items['observation/new'] = array(
 			'title' => t('Create'),
-			'description' => t('Create a new singleobservation'),
-			'page callback' => 'singleobservation_new',
+			'description' => t('Create a new observation'),
+			'page callback' => 'observation_new',
 			'access arguments' => array(
 					CREATE_OBSERVATION
 			),
 			'type' => MENU_NORMAL_ITEM | MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'singleobservation.inc',
+			'file' => 'observation.inc',
 			'weight' => 2,
 	);
-	$items['singleobservation/%observation/show'] = array(
+	$items['observation/%observation/show'] = array(
 			'title' => t('Show'),
-			'description' => t('Display a singleobservation'),
+			'description' => t('Display an observation'),
 			'page callback' => 'observation_show_observation',
 			'page arguments' => array(
 					1
@@ -75,14 +63,14 @@ function observation_menu() {
 					1
 			),
 			'access callback' => 'observation_read_access',
-			'file' => 'singleobservation.inc',
+			'file' => 'observation.inc',
 			'type' => MENU_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 1
 	);
-	$items['singleobservation/%observation/edit'] = array(
+	$items['observation/%observation/edit'] = array(
 			'title' => t('Edit'),
-			'description' => t('Edit a singleobservation'),
+			'description' => t('Edit an observation'),
 			'page callback' => 'observation_edit',
 			'access arguments' => array(
 					1
@@ -97,7 +85,7 @@ function observation_menu() {
 			'weight' => 2
 	);
 
-	$items['singleobservation/%observation/permissions'] = array(
+	$items['observation/%observation/permissions'] = array(
 			'title' => t('Permission'),
 			'description' => t('Edit the permission of this observation.'),
 			'page callback' => 'observation_edit_acl',
@@ -113,7 +101,7 @@ function observation_menu() {
 			'file' => 'observation.inc',
 			'weight' => 4
 	);
-	$items['singleobservation/%observation/delete'] = array(
+	$items['observation/%observation/delete'] = array(
 			'title' => t('Delete'),
 			'description' => t('Delete an existing observation.'),
 			'page callback' => 'drupal_get_form',
@@ -169,7 +157,7 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
-	$items['singleobservation/geometry/json'] = array(
+	$items['observation/geometry/json'] = array(
 			'title' => t('Geometry'),
 			'description' => t('Get all geometry data to show'),
 			'page callback' => 'observation_get_geometry_json',

@@ -611,3 +611,9 @@ function observation_get_standart_datatable_headers($init_sort = false,
 	return $tableHeader;
 }
 
+/**
+ * Return the single observation form to add a observation
+ */
+function observation_new() {
+	return observation_form();
+}

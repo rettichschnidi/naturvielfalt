@@ -144,7 +144,7 @@ exit();
 
 
 		/**
-		 * inventory not used, it's just a singleobservation
+		 * inventory not used, it's just a observation
 		 */
 		// get head_inventory_id
 // 		$head = _inventory_single_get_id($user);
@@ -267,7 +267,7 @@ exit();
 
 /**
  * Create a copy of the uploaded image at the right path and create all necesarry
- * db entries to make the image occur at the single observation of the user.
+ * db entries to make the image occur at the observation of the user.
  */
 // function naturvielfalt_webservice_storeImage($entry, $uid, $author) {
 // 	global $webservice_debug;

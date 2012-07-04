@@ -270,7 +270,7 @@ function observation_form($observation = false) {
 							. "observation/get/writeable'",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-									window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/edit';})}"
+									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}"
 			)
 	);
 	$formcust .= drupal_render($recent);
