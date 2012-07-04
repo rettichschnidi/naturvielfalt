@@ -109,8 +109,7 @@ $query_all_artgroups = "
 	SELECT
 		id classification_id,
 		name name_de,
-		parent parent,
-		pos \"position\"
+		parent parent
 	FROM $table_oa";
 
 $query_organism_artgroup_subscription = "
@@ -119,15 +118,15 @@ $query_organism_artgroup_subscription = "
 		oas.organism_artgroup_id classification_id
 	FROM $table_oas oas";
 
-echo "get all organism<br>\n";
+echo "get all organism\n";
 $results_all_organism = pg_fetch_all(pg_query($web_db, $query_all_organism));
-echo "get all artgroups<br>\n";
+echo "get all artgroups\n";
 $results_all_artgroups = pg_fetch_all(pg_query($web_db, $query_all_artgroups));
-echo "get all subscriptions<br/>\n";
+echo "get all subscriptions\n";
 $results_organism_artgroup_subscription = pg_fetch_all(
 	pg_query($web_db, $query_organism_artgroup_subscription));
 
-echo "build artgroups sql inserts<br>\n";
+echo "build artgroups sql inserts\n";
 $sql_all_artgroups = '
 
 ';
@@ -136,11 +135,10 @@ foreach ($results_all_artgroups as $artgroup) {
 INSERT INTO classification (classification_id, name_de, parent, \"position\", class_level) values
 	('" . pg_escape_string($artgroup['classification_id']) . "','"
 			. pg_escape_string($artgroup['name_de']) . "','"
-			. pg_escape_string($artgroup['parent']) . "','"
-			. pg_escape_string($artgroup['position']) . "', 1);";
+			. pg_escape_string($artgroup['parent']) . "';";
 }
 
-echo "build organism sql inserts<br>\n";
+echo "build organism sql inserts\n";
 $sql_all_organism = '
 
 ';
@@ -156,7 +154,7 @@ INSERT INTO organism (organism_id, name_sc, name_de, name_fr, name_it, name_rm, 
 			. pg_escape_string($organism['name_en']) . "');";
 }
 
-echo "build all subscription sql inserts<br>\n";
+echo "build all subscription sql inserts\n";
 
 foreach ($results_organism_artgroup_subscription as $subs) {
 	$sql_all_artgroups .= "
