@@ -511,14 +511,14 @@ function observation_add_attribute_value($entry) {
 }
 
 /**
- * Return the observations standart table headers
+ * Return the observations standard table headers
  * @param int $init_sort
  * 				which header in the array should be the initsort array[$init_sort]
  * @param String $init_sort2
  * 				Sort directions ex. 'asc' or 'desc'
  * @return array
  */
-function observation_get_standart_datatable_headers($init_sort = false,
+function observation_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),

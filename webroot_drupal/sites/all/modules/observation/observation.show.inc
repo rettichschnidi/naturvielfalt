@@ -35,7 +35,7 @@ function observation_show_all_observations() {
 
 	$output['area_table'] = array(
 			'#theme' => 'datatable',
-			'#header' => observation_get_standart_datatable_headers(4, 'desc'),
+			'#header' => observation_get_standard_datatable_headers(4, 'desc'),
 			'#title' => t('Observations'),
 			'#id_table' => 'observations',
 			'#options' => array(
