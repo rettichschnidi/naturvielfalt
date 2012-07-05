@@ -16,17 +16,6 @@ define('CREATE_OBSERVATION', 'create observation');
  * @return array
  */
 function observation_menu() {
-	$items['observation'] = array(
-// 			'title' => t('Observations'),
-			'page callback' => 'drupal_goto',
-			'page arguments' => array(
-					'observation/show'
-			),
-			'access arguments' => array(
-					ACCESS_OBSERVATION
-			),
-			'type' => MENU_CALLBACK,
-	);
 	$items['observation/show'] = array(
 			'title' => t('Observations'),
 			'description' => t('Show all observations'),
