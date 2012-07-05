@@ -2,6 +2,8 @@
  * @author Ramon Gamma, 2012
  * @copyright Naturwerk
  * @file area-edit-geometry.js
+ * 
+ * Edit an existing geometry.
  */
 
 jQuery(document).ready(
@@ -17,7 +19,6 @@ jQuery(document).ready(
 				data[0]['id'] = 0;
 				areabasic.loadOverlaysFromJson(data);
 				var overlayElement = areabasic.overlayElements[0];
-				var overlayData = areabasic.overlayData[0];
 				var map = areabasic.googlemap;
 				var bounds = overlayElement.getBounds();
 				map.fitBounds(bounds);
