@@ -241,7 +241,7 @@ function observation_form($observation = false) {
 	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
 							<span class="fieldset-legend">'
-			. t('Add more Details')
+			. t('Add more details')
 			. '</span>
 							</legend>
 							<div class="fieldset-wrapper">'
@@ -270,7 +270,7 @@ function observation_form($observation = false) {
 							. "observation/get/writeable'",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
-									window.location.href = Drupal.settings.basePath+'singleobservation/'+id+'/edit';})}"
+									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}"
 			)
 	);
 	$formcust .= drupal_render($recent);

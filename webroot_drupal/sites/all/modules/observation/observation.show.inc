@@ -7,7 +7,7 @@ module_load_include('inc', 'observation');
  *
  * @return render array
  */
-function observation_show_all_singleobservations() {
+function observation_show_all_observations() {
 
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
@@ -25,7 +25,7 @@ function observation_show_all_singleobservations() {
 			'#show' => 'custom-show',
 			'#search' => true,
 			'#ch1903' => true,
-			'#json_url' => base_path() . 'singleobservation/geometry/json',
+			'#json_url' => base_path() . 'observation/geometry/json',
 	);
 
 	$output['space'] = array(
@@ -36,7 +36,7 @@ function observation_show_all_singleobservations() {
 	$output['area_table'] = array(
 			'#theme' => 'datatable',
 			'#header' => observation_get_standart_datatable_headers(4, 'desc'),
-			'#title' => t('Singleobservations'),
+			'#title' => t('Observations'),
 			'#id_table' => 'observations',
 			'#options' => array(
 					'jsonUrl' => "'" . base_path() . "observation/get/all'",
@@ -85,7 +85,7 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 				'#type' => 'markup',
 				'#markup' => l(
 					t('Edit'),
-					'singleobservation/'
+					'observation/'
 							. $observationdata['observation']['id'] . '/edit')
 		);
 		$form['addressdata']['whitespace'] = array(
@@ -97,7 +97,7 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 			'#type' => 'markup',
 			'#markup' => l(
 				t('Show'),
-				'singleobservation/' . $observationdata['observation']['id']
+				'observation/' . $observationdata['observation']['id']
 						. '/show')
 	);
 	return $form;

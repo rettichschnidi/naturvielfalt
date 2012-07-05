@@ -15,10 +15,12 @@
  */
 function get_ch1903_coordinates_link($areadata) {
 	assert(is_array($areadata));
+	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
+		? 'https://' : 'http://';
 	global $user;
 	$linkCH1903 = l(
 		"CH1903",
-		'http://' . $user->language . '.wikipedia.org/wiki/CH1903');
+		$area_protocol . $user->language . '.wikipedia.org/wiki/CH1903');
 
 	$coordinates = (int) $areadata['ch1903_center_x'] . '/'
 			. (int) $areadata['ch1903_center_y'];
@@ -36,9 +38,11 @@ function get_ch1903_coordinates_link($areadata) {
 function get_wgs84_coordinates_link($areadata) {
 	assert(is_array($areadata));
 	global $user;
+	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
+		? 'https://' : 'http://';;
 	$linkWGS84 = l(
 		"WGS84",
-		'http://' . $user->language . '.wikipedia.org/wiki/WGS84');
+		$area_protocol . $user->language . '.wikipedia.org/wiki/WGS84');
 
 	$coordinates = round($areadata['wgs84_center_lat'], 2) . '/'
 			. round($areadata['wgs84_center_lng'], 2);
@@ -1015,16 +1019,18 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
  */
 function area_get_geocodeInfo($longitude = false, $latitude = false,
 		$original_response = false) {
-	//print_r(area_get_geocodeInfo('8.209283','47.481280'));
-	if (!$longitude || !$latitude)
+	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
+		? 'https://' : 'http://';
+	if (!$longitude || !$latitude) {
 		return false;
+	}
 
-	$url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
+	$url = $area_protocol . 'maps.googleapis.com/maps/api/geocode/json?latlng='
 			. $latitude . ',' . $longitude . '&sensor=true';
 	$data = @file_get_contents($url);
 	$jsondata = json_decode($data, true);
 
-	$url = 'http://maps.googleapis.com/maps/api/elevation/json?locations='
+	$url = $area_protocol . 'maps.googleapis.com/maps/api/elevation/json?locations='
 			. $latitude . ',' . $longitude . '&sensor=true';
 	$data = @file_get_contents($url);
 	$elevationData = json_decode($data, true);

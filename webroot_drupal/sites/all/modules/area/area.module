@@ -8,6 +8,8 @@
 define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
 define('AREA_MODERATE', 'area moderate');
+$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
+		? 'https://' : 'http://';
 
 /**********************************
  *  Hook implementations
@@ -476,8 +478,11 @@ function area_permission() {
  */
 function area_get_static_image_url($params, $width = 320, $height = 320,
 		$zoom = false) {
-	if (false)
+	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
+		? 'https://' : 'http://';
+	if (false) {
 		die("JSON: " . var_export($params, true));
+	}
 	assert(isset($params['coordinates']));
 	assert(isset($params['type']));
 	assert(
@@ -503,23 +508,23 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 	 **/
 	if ($type == 'POINT') {
 		$center = $coordinates[0][0] . ',' . $coordinates[0][1];
-		return 'http://maps.google.com/maps/api/staticmap?size=' . $width . 'x'
-				. $height . '&sensor=' . $sensor
+		return $area_protocol . 'maps.google.com/maps/api/staticmap?size='
+				. $width . 'x' . $height . '&sensor=' . $sensor
 				. '&maptype=hybrid&markers=color:' . $color . '|' . $center;
 	} else if ($type == 'LINESTRING') {
 		foreach ($coordinates as $coordinate) {
 			$points[] = implode(',', $coordinate);
 		}
-		return 'http://maps.google.com/maps/api/staticmap?' . $zoom . '&size='
-				. $width . 'x' . $height . '&sensor=' . $sensor
+		return $area_protocol . 'maps.google.com/maps/api/staticmap?' . $zoom
+				. '&size=' . $width . 'x' . $height . '&sensor=' . $sensor
 				. '&maptype=hybrid&path=color:' . $color . '|weight:4|'
 				. implode('|', $points);
 	} else if ($type == 'POLYGON') {
 		foreach ($coordinates as $coordinate) {
 			$points[] = implode(',', $coordinate);
 		}
-		return 'http://maps.google.com/maps/api/staticmap?' . $zoom . '&size='
-				. $width . 'x' . $height . '&sensor=' . $sensor
+		return $area_protocol . 'maps.google.com/maps/api/staticmap?' . $zoom
+				. '&size=' . $width . 'x' . $height . '&sensor=' . $sensor
 				. '&maptype=hybrid&path=fillcolor:' . $color . '|color:'
 				. $color . '|' . implode('|', $points);
 	}
