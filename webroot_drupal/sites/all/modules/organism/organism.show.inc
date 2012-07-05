@@ -17,15 +17,17 @@ function organism_show_classifiers() {
 	$kingdoms['CRSF'] = 'Animals';
 	$kingdoms['Fungus'] = 'Mushrooms';
 	$kingdoms['Swisslichens'] = 'Lichens';
-	
+
 	// description text at the beginning
 	$render_array['helptext'] = array(
 			'#type' => 'markup',
-			'#markup' => t('Here you can browse all species of naturvielfalt.ch. Please select first the biological kingdom:')
+			'#markup' => t(
+				'Here you can browse all species of naturvielfalt.ch. Please select first the biological kingdom:')
 	);
-	
+
 	// query classifier and the amount of species
-	$classifiers = db_query("
+	$classifiers = db_query(
+		"
 		SELECT
 	        oc.id AS oc_id,
 	        oc.name AS oc_name,
@@ -49,11 +51,11 @@ function organism_show_classifiers() {
 	        oc_id,
 	        oc_name,
 	        organismcount.cnt;");
-	
+
 	// create list of links
 	$list = array(
-		'#theme' => 'links',
-		'#links' => array(),
+			'#theme' => 'links',
+			'#links' => array(),
 	);
 	foreach ($classifiers as $classifier) {
 		$title = $classifier->oc_name;
@@ -61,12 +63,13 @@ function organism_show_classifiers() {
 			$title = t($kingdoms[$title]);
 		}
 		$list['#links'][] = array(
-			'title' => $title . ' (' . $classifier->organismcount_cnt . ' ' . t('organisms') . ')',
-			'href' => 'organism/classification/' . $classifier->oc_id,
+				'title' => $title . ' (' . $classifier->organismcount_cnt . ' '
+						. t('organisms') . ')',
+				'href' => 'organism/classification/' . $classifier->oc_id,
 		);
 	}
 	$render_array['classifiers'] = $list;
-	
+
 	return $render_array;
 }
 
@@ -213,8 +216,6 @@ function organism_show_classification($classificationid) {
 	return $render_array;
 }
 
-function organism_attributes_form($form, &$form_state, $organism) {}
-
 /**
  * Menu callback. This will be called for visits to /organism/%.
  * @return array
@@ -271,15 +272,16 @@ function organism_show_organism($organismdata) {
 			)
 	);
 
-	if (isset($organismdata['attributes']) && !empty($organismdata['attributes'])) {
+	if (isset($organismdata['attributes'])
+			&& !empty($organismdata['attributes'])) {
 		$attributes = $organismdata['attributes'];
 		foreach ($attributes as $attribute_name => $data) {
 			$attributevaluetype = $data['valuetype'];
-			$attributename = $attribute_name;
+			$attributename = t($attribute_name);
 
 			$render_array['attributes'][$attributename] = array(
 					'#type' => 'markup',
-					'#markup' => "<b>$attributename</b>: ",
+					'#markup' => "<b>$attributename: </b>",
 			);
 			$attributevalues = $data['values'];
 			/**
@@ -288,7 +290,7 @@ function organism_show_organism($organismdata) {
 			 */
 			$render_array['attributes'][$attributename]['#markup'] .= implode(
 				', ',
-				$attributevalues) . "<br/>";
+				$attributevalues) . '<br/>';
 		}
 	} else {
 		$render_array['attributes']['noattribute'] = array(

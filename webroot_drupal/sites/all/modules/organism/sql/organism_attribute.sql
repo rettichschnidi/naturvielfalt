@@ -14,7 +14,7 @@ SET search_path = public, pg_catalog;
 -- Name: {organism_attribute_id_seq}; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('{organism_attribute_id_seq}', 7, true);
+SELECT pg_catalog.setval('{organism_attribute_id_seq}', 8, true);
 
 
 --
@@ -28,6 +28,7 @@ INSERT INTO {organism_attribute} (id, valuetype, name, comment) VALUES (4, 'b', 
 INSERT INTO {organism_attribute} (id, valuetype, name, comment) VALUES (5, 't', 'Flora Helvetica', 'Number which got assigned to this organism by the Flora Helvetica.');
 INSERT INTO {organism_attribute} (id, valuetype, name, comment) VALUES (6, 'n', 'Fungus number', 'Number which got assigned to this organism by the WSL.');
 INSERT INTO {organism_attribute} (id, valuetype, name, comment) VALUES (7, 't', 'First find', 'The year of the first documented sight of this organism.');
+INSERT INTO {organism_attribute} (id, valuetype, name, comment) VALUES (8, 'b', 'Blacklist CPS/SKEW', 'List of invasive alien plants of Switzerland that actually cause damage in the areas of biodiversity, health, and/or economy. The establishment and the spread of these species must be prevented.');
 
 
 --
