@@ -12,7 +12,7 @@ jQuery(document).ready(
 				// show the tools
 				drawingControl : true,
 				drawingControlOptions : {
-					// show the toolbox on the right, middle
+					// show the toolbox on top left
 					position : google.maps.ControlPosition.TOP_LEFT,
 					// enable marker, polyline and polygon as drawing primitves
 					drawingModes :  [ google.maps.drawing.OverlayType.MARKER,

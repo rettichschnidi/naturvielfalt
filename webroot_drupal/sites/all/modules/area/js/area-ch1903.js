@@ -17,8 +17,7 @@ jQuery(document)
 						var googlemap = this.googlemap;
 						var area = this;
 						// create a new div element to hold everything needed
-						// for the
-						// searchbarch1903
+						// for the searchbarch1903
 						var searchdivch1903 = document.createElement('div');
 						// create new input field
 						var searchinputch1903 = document.createElement('input');
