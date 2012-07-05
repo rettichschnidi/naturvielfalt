@@ -2,10 +2,8 @@
  * @author Ramon Gamma, 2012
  * @copyright Naturwerk
  * @file area-show-geometry.js
- */
-
-/**
- * Show custom geometry on a google map
+ * 
+ * Show custom geometry on a google map.
  */
 
 jQuery(document).ready(function() {

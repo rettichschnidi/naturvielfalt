@@ -2,10 +2,8 @@
  * @author Reto Schneider, 2012
  * @copyright Naturwerk
  * @file area-show-myareas.js
- */
-
-/**
- * Show all my areas on a google map
+ * 
+ * Show all my areas on a google map.
  */
 
 jQuery(document).ready(function() {

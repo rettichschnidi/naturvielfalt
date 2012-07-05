@@ -2,9 +2,7 @@
  * @author Reto Schneider, 2012
  * @copyright Naturwerk
  * @file area-show-allareas.js
- */
-
-/**
+ * 
  * Show all accessible areas on a google map
  */
 

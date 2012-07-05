@@ -2,6 +2,9 @@
  * @author Reto Schneider, 2012
  * @copyright Naturwerk
  * @file area-googlemapsapi-extensions.js
+ * 
+ * Add some functions to the google maps overlays to
+ * allow them to be handled in a more generic way.
  */
 
 /**

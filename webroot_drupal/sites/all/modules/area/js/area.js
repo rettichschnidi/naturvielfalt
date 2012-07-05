@@ -5,7 +5,7 @@
  */
 
 /**
- * @Class Contains all the logic to handle a map
+ * @Class Contains all the logic to handle a map.
  */
 function Area(map_id) {
 	/**

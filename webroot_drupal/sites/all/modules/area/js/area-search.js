@@ -3,7 +3,7 @@
  * @copyright Naturwerk
  * @file area-search.js
  *
- * Create a Searchbar using autocomplete-feature by google places api
+ * Create a searchbar using autocomplete-feature by google places api.
  */
 
 jQuery(document).ready(function() {
