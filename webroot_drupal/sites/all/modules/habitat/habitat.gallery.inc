@@ -48,7 +48,7 @@ function habitat_gallery_image_caption($id) {
  */
 function habitat_gallery_manage_title($id, $mediatype) {
 	return t(
-		'@$mediatype of the habitat !title',
+		'@mediatype of the habitat !title',
 		array('!title' => '<em>' . habitat_gallery_caption($id) . '</em>',
 				'@mediatype' => $mediatype
 		));
