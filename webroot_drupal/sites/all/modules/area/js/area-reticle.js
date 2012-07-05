@@ -3,7 +3,12 @@
  * @copyright Naturwerk
  * @file area-reticle.js
  * @note A lot o this code is taken from the Google Maps API Reference: https://developers.google.com/maps/documentation/javascript/overlays#CustomOverlays
- * 
+ *  There is even more code which may be usefull in the future. Examples:
+ *  	- onRemove()
+ *  	- hide()
+ *  	- show()
+ *  	- toggle()
+ *  	- toggleDOM()
  * Create a reticle at the center of the map.
  */
 
@@ -24,8 +29,10 @@ function ReticleOverlay(image, map) {
 
 ReticleOverlay.prototype = new google.maps.OverlayView();
 
+/**
+ * Gets triggered when the overlay is added to a map
+ */
 ReticleOverlay.prototype.onAdd = function() {
-
 	// Note: an overlay's receipt of onAdd() indicates that
 	// the map's panes are now available for attaching
 	// the overlay to the map via the DOM.
@@ -52,36 +59,6 @@ ReticleOverlay.prototype.onAdd = function() {
 	panes.overlayLayer.appendChild(div);
 };
 
-ReticleOverlay.prototype.hide = function() {
-	if (this.div_) {
-		this.div_.style.visibility = "hidden";
-	}
-};
-
-ReticleOverlay.prototype.show = function() {
-	if (this.div_) {
-		this.div_.style.visibility = "visible";
-	}
-};
-
-ReticleOverlay.prototype.toggle = function() {
-	if (this.div_) {
-		if (this.div_.style.visibility == "hidden") {
-			this.show();
-		} else {
-			this.hide();
-		}
-	}
-};
-
-ReticleOverlay.prototype.toggleDOM = function() {
-	if (this.getMap()) {
-		this.setMap(null);
-	} else {
-		this.setMap(this.map_);
-	}
-};
-
 ReticleOverlay.prototype.draw = function() {
 	// Size and position the overlay. We use a southwest and northeast
 	// position of the overlay to peg it to the correct position and size.
@@ -104,11 +81,6 @@ ReticleOverlay.prototype.draw = function() {
 		div.style.width = (ne.x - sw.x) + 'px';
 		div.style.height = (sw.y - ne.y) + 'px';
 	}
-};
-
-ReticleOverlay.prototype.onRemove = function() {
-	this.div_.parentNode.removeChild(this.div_);
-	this.div_ = null;
 };
 
 jQuery(document).ready(function() {
