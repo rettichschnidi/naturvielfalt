@@ -342,7 +342,7 @@
             <text>Land</text>
           </controlProperties>
         </control>
-        <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="361" y="128" w="74" h="21" measuredW="54" measuredH="21" zOrder="10" locked="false" isInGroup="160">
+        <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="361" y="128" w="74" h="21" measuredW="53" measuredH="21" zOrder="10" locked="false" isInGroup="160">
           <controlProperties>
             <text>Schweiz</text>
           </controlProperties>
@@ -439,12 +439,12 @@
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="172" controlTypeID="com.balsamiq.mockups::TabBar" x="470" y="197" w="776" h="1208" measuredW="277" measuredH="100" zOrder="3" locked="false" isInGroup="-1">
+    <control controlID="172" controlTypeID="com.balsamiq.mockups::TabBar" x="470" y="197" w="776" h="1208" measuredW="334" measuredH="100" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>%2Cobservation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22452%2C186%2C532%2C211%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%22172_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22532%2C186%2C597%2C211%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22172_1%22/%3E%0A</map>
+        <hrefs>observation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%2Cobservation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22381%2C186%2C452%2C211%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22172_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22452%2C186%2C532%2C211%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%22172_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22532%2C186%2C600%2C211%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%22172_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22600%2C186%2C665%2C211%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22172_3%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
-        <text>%DCbersicht%2C%20Bearbeiten%2C%20Erfassen</text>
+        <text>%DCbersicht%2C%20Bearbeiten%2C%20Anzeigen%2C%20Erfassen</text>
       </controlProperties>
     </control>
     <control controlID="173" controlTypeID="com.balsamiq.mockups::Tree" x="287" y="170" w="170" h="208" measuredW="300" measuredH="225" zOrder="26" locked="false" isInGroup="-1">
