@@ -12,52 +12,61 @@ module_load_include('inc', 'organism', 'organism');
  * @return array
  */
 function organism_show_classifiers() {
-	// Set the table header
-	$tableHeader[] = array(
-			'name' => t('Internal Id'),
-			'idField' => true,
-			'dbfield' => 'oc_id',
-			'hide' => true,
-			'width' => 100,
+	// Make kingdom (Reich) from classifier
+	$kingdoms['CSCF'] = 'Plants';
+	$kingdoms['CRSF'] = 'Animals';
+	$kingdoms['Fungus'] = 'Mushrooms';
+	$kingdoms['Swisslichens'] = 'Lichens';
+	
+	// description text at the beginning
+	$render_array['helptext'] = array(
+			'#type' => 'markup',
+			'#markup' => t('Here you can browse all species of naturvielfalt.ch. Please select first the biological kingdom:')
 	);
-	$tableHeader[] = array(
-			'name' => t('Classificator name'),
-			'dbfield' => 'oc_name',
-			'dbExactField' => 'oc.name',
-			'width' => 400,
+	
+	// query classifier and the amount of species
+	$classifiers = db_query("
+		SELECT
+	        oc.id AS oc_id,
+	        oc.name AS oc_name,
+	        organismcount.cnt AS organismcount_cnt
+	    FROM
+	        {organism_classification} oc
+	        JOIN (
+	            SELECT
+	                oc.prime_father_id AS prime_father_id,
+	                COUNT(ocs.id) AS cnt
+	            FROM
+			{organism_classification_subscription} ocs
+	                JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
+	            GROUP BY
+	                prime_father_id
+	        )
+	        AS organismcount ON organismcount.prime_father_id = oc.prime_father_id
+	    WHERE
+	        oc.prime_father_id = oc.id
+	    GROUP BY
+	        oc_id,
+	        oc_name,
+	        organismcount.cnt;");
+	
+	// create list of links
+	$list = array(
+		'#theme' => 'links',
+		'#links' => array(),
 	);
-	$tableHeader[] = array(
-			'name' => t('# of levels'),
-			'dbfield' => 'levelcount',
-			'hide' => true,
-			'width' => 100,
-	);
-	$tableHeader[] = array(
-			'name' => t('Number of organisms'),
-			'dbfield' => 'cnt',
-			'dbExactField' => 'organismcount.cnt',
-			'width' => 100,
-	);
-
-	$render_array['classificators'] = array(
-			'#theme' => 'datatable',
-			'#header' => $tableHeader,
-			'#title' => t('Classifiers'),
-			'#id_table' => 'classificators',
-			'#options' => array(
-					'jsonUrl' => "'" . base_path() . "organism/json'",
-					'rowClick' => 'rowClick',
-					'tableWidth' => 900,
-					'tableHeight' => 200,
-					'rowClickHandler' => "function rowClick(celDiv, id) {
-												jQuery(celDiv).click(
-													function() {
-														window.location.href = Drupal.settings.basePath+'organism/classification/' + id;
-													}
-												)
-											}"
-			)
-	);
+	foreach ($classifiers as $classifier) {
+		$title = $classifier->oc_name;
+		if (isset($kingdoms[$title])) {
+			$title = t($kingdoms[$title]);
+		}
+		$list['#links'][] = array(
+			'title' => $title . ' (' . $classifier->organismcount_cnt . ' ' . t('organisms') . ')',
+			'href' => 'organism/classification/' . $classifier->oc_id,
+		);
+	}
+	$render_array['classifiers'] = $list;
+	
 	return $render_array;
 }
 
