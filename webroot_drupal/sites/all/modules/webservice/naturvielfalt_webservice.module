@@ -3,8 +3,6 @@
  *  Hook implementations
  *********************************/
 
-// module_load_include('inc', 'naturvielfalt_webservice');
-
 /**
  * Implements hook_menu()
  *
