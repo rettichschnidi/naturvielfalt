@@ -2292,7 +2292,7 @@ function _gallery_back_link($type, $id) {
 	if ($_SESSION[$gallery_back_url_key])
 		return array(
 				'title' => t('Back'),
-				'href' => $_SESSION[$gallery_back_url_key]
+				'href' => filter_xss($_SESSION[$gallery_back_url_key])
 		);
 	return false;
 }
