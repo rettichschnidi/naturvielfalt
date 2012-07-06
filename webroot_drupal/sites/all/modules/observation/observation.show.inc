@@ -14,7 +14,7 @@ function observation_show_all_observations() {
 
 	$output['div'] = array(
 			'#type' => 'fieldset',
-			'#title' => "Google Map",
+			'#title' => "Map",
 			'#attributes' => array(
 					'style' => 'width: 95%;'
 			)
