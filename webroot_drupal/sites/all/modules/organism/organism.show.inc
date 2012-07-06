@@ -13,8 +13,8 @@ module_load_include('inc', 'organism', 'organism');
  */
 function organism_show_classifiers() {
 	// Make kingdom (Reich) from classifier
-	$kingdoms['CSCF'] = 'Plants';
-	$kingdoms['CRSF'] = 'Animals';
+	$kingdoms['CSCF'] = 'Animals';
+	$kingdoms['CRSF'] = 'Plants';
 	$kingdoms['Fungus'] = 'Mushrooms';
 	$kingdoms['Swisslichens'] = 'Lichens';
 
