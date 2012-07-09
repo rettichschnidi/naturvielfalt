@@ -178,7 +178,7 @@ function inventory_entry_locations($head_inventory_id) {
  *  Drupal render array
  */
 function inventory_entry_location($head_inventory_id, $entry_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 	$render_array['map'] = drupal_get_form('inventory_entry_map', $head_inventory_id, $entry_id);
 	if ($ajax)
 		return drupal_json_output(

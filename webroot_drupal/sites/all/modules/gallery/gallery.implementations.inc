@@ -52,19 +52,25 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 		if ($message != 0)
 			continue;
 		$add_to_gallery = true;
-
+		
+		// prevent xss:
+		$title = filter_xss($_REQUEST['meta_title'][$fkey]);
+		$description = filter_xss($_REQUEST['meta_description'][$fkey]);
+		$author = filter_xss($_REQUEST['meta_author'][$fkey]);
+		$location = filter_xss($_REQUEST['meta_location'][$fkey]);
+		
 		// build the db entry for the gallery module
 		$image = array(
 				'item_type' => $module_name,
 				'item_id' => $entry_array['item_id'],
-				'title' => $_REQUEST['meta_title'][$fkey],
-				'description' => $_REQUEST['meta_description'][$fkey],
-				'author' => empty($_REQUEST['meta_author'][$fkey])
+				'title' => $title,
+				'description' => $description,
+				'author' => empty($author)
 						? $entry_array['author']
-						: $_REQUEST['meta_author'][$fkey],
-				'location' => empty($_REQUEST['meta_location'][$fkey])
+						: $author,
+				'location' => empty($location)
 						? $entry_array['location']
-						: $_REQUEST['meta_location'][$fkey],
+						: $location,
 				'categories' => array(),
 				'subtypes' => array()
 		);

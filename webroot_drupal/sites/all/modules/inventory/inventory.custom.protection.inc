@@ -471,7 +471,7 @@ function inventory_protection_save_entries($plist_id) {
 function inventory_protection_edit_entries_submit($form, &$form_state, $plist_id = false) {
 	if (!$plist_id)
 		$plist_id = $form_state['protection_id'];
-	$ajax = $_GET['ajax'];
+	$ajax = isset($_GET['ajax']);
 
 	_inventory_protection_update_modify_time($plist_id);
 
