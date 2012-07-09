@@ -1,0 +1,35 @@
+<mockup version="1.0" skin="sketch" measuredW="1141" measuredH="671" mockupW="690" mockupH="660">
+  <controls>
+    <control controlID="1" controlTypeID="__group__" x="542" y="142" w="222" h="27" measuredW="222" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::PointyButton" x="0" y="0" w="-1" h="-1" measuredW="62" measuredH="27" zOrder="0" locked="false" isInGroup="1">
+          <controlProperties>
+            <direction>left</direction>
+            <href>amphibien_filter%26bm%3Bamphibien_filter.bmml%26bm%3Bamphibien_filter.bmml%26bm%3Bamphibien_filter.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2291%2C131%2C153%2C158%22%20href%3D%22amphibien_filter.bmml%22%20alt%3D%22amphibien_filter%22%20id%3D%220%22/%3E</map>
+            <text>Zur%FCck</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="77" y="0" w="145" h="21" measuredW="84" measuredH="22" zOrder="1" locked="false" isInGroup="1">
+          <controlProperties>
+            <align>center</align>
+            <bold>true</bold>
+            <size>14</size>
+            <text>Lebensraum</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::iPhone" x="451" y="11" w="465" h="660" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::iPhoneMenu" x="542" y="177" w="279" h="-1" measuredW="215" measuredH="271" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>v%20Gew%E4sser%0AUfer%20und%20Fechtgebiete%0Av%20Gletscher%20Fels%20Schutt%20und%20Mor%E4nen%0Av%20Wiesen%0AKrauts%E4ume%20Hochstaudenfluren%20Geb%FCsche%0AW%E4lder%0APioniervegetation%20oft%20gest%F6rter%20Pl%E4tze%0APflanzungen%20%C4cker%20Kulturen%0ABauten%20und%20Anlagen</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::StickyNote" x="930" y="92" w="211" h="187" measuredW="109" measuredH="123" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Filter%20werden%20auf%20dieser%20Seite%20ODER%20verkn%FCpft%3A%0A%20%0AArt%20muss%20entweder%20im%20Kanton%20AG%20oder%20LU%20oder%20ZH%20oder%20eine%20Kombination%20davon%20vorkommen.</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
