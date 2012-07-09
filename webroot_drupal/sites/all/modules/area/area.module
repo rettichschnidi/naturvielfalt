@@ -404,35 +404,54 @@ function area_theme() {
 			'area' => array(
 					'template' => 'area',
 					'variables' => array(
-							// Requested functionality:
-							//  'create': create a new area
-							//  'edit': edit an existing area geometry ('area_geometry_id' has to be set)
-							//  'getcoordinate': get a position (set a marker and fill
-							//		its data into the hidden fields provided by area_address_hidden_form().
-							//		If 'coordinate_storage_id' given, this field will be updated as well.
-							'action' => NULL,
+							'mapid' => 'map',
+							/**
+							 * Requested functionality:
+							 * 'create': create a new area
+							 * 'edit': edit an existing area geometry ('area_geometry_id' has to be set)
+							 * 'getcoordinate': get a position (set a marker and fill
+							 *    its data into the hidden fields provided by area_address_hidden_form().
+							 *    If 'coordinate_storage_id' is given, this field will be updated as well.
+							 * @note Maybe this should be done with different themes. Have not done it
+							 *    because I fear a lot of duplicated code duplication.
+							 */
+							'action' => false,
 							// enable searchbox
 							'search' => false,
-							// show all areas of ... either 'myareas' or 'allareas'
-							'show' => false,
-							// set to an integer if an (existing) area should be highlighted
-							'area_id' => false,
-							// set to an integer if an area_geometry should be edited
-							'area_geometry_id' => false,
-							// wether to show the scale or not
-							'scalecontrol' => true,
-							// include a filed which shows/sets the CH1903 coordinates
-							'ch1903' => false,
+							// load geometries from this url
+							'geometries_url' => false,
+							// set to an integer if an area_geometry should be edited (note: action needs to be 'edit')
+							'geometry_edit_id' => false,
 							// element id for storage
 							'coordinate_storage_id' => false,
 							// the geometry array
 							'json_url' => false,
 							// the map height
-							'height' => false,
+							'height' => '400px',
 							// the map width
-							'width' => false,
+							'width' => '100%',
+							// wether to show the scale or not
+							'scalecontrol' => true,
+							// include a filed which shows/sets the CH1903 coordinates
+							'ch1903' => false,
 							// show a reticle on the map's center
 							'reticle' => true,
+							// enable streetview
+							'streetview' => true,
+							// enable mapcontrol
+							'mapcontrol' => false,
+							// enable scrollwheel
+							'scrollwheel' => true,
+							// automatically switch from satelit to hybrid view
+							'mapswitch' => true,
+							// switch from satelit to hybrid view at this level
+							'mapswitchlevel' => 12,
+							// default zoom level
+							'defaultzoom' => 8,
+							// load the last saved location (boundaries) when initializing the map
+							'loadlastlocation' => true,
+							// always save the currently viewed location (boundaries) when changing the map boundaries
+							'savelastlocation' => true,
 					)
 			)
 	);

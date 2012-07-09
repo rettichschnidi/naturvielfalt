@@ -28,7 +28,7 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 			'#showall' => false,
 			'#scalecontrol' => true,
 			'#action' => 'edit',
-			'#area_id' => (int) $areadata['id']
+			'#geometry_edit_id' => (int) $areadata['id']
 	);
 	return $output;
 }
