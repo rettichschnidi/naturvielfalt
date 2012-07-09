@@ -27,8 +27,7 @@ function organism_show_classifiers() {
 
 	// query classifier and the amount of species
 	$classifiers = db_query(
-		"
-		SELECT
+		'SELECT
 	        oc.id AS oc_id,
 	        oc.name AS oc_name,
 	        organismcount.cnt AS organismcount_cnt
@@ -50,7 +49,7 @@ function organism_show_classifiers() {
 	    GROUP BY
 	        oc_id,
 	        oc_name,
-	        organismcount.cnt;");
+	        organismcount.cnt;');
 
 	// create list of links
 	$list = array(

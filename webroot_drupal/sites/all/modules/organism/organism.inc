@@ -58,7 +58,7 @@ function organism_get_available_classification_levels($classificationid) {
 }
 
 function organism_get_available_attributes($classificationid) {
-	$sqlGetAttributes = "WITH subclassification_constraints AS (
+	$sqlGetAttributes = 'WITH subclassification_constraints AS (
 	-----------------------------------------------
 	-- Get the left_value and right_value
 	-- Those values will allow us to recieve the subtree
@@ -109,7 +109,7 @@ function organism_get_available_attributes($classificationid) {
 		JOIN drupal_organism_attribute_value_subscription oavs ON oavs.organism_id = io.organism_id
 		JOIN drupal_organism_attribute_value oav ON oav.id = oavs.organism_attribute_value_id
 		JOIN drupal_organism_attribute oa ON oa.id = oav.organism_attribute_id
-	ORDER BY oa.id";
+	ORDER BY oa.id';
 
 	$rows = db_query(
 		$sqlGetAttributes,

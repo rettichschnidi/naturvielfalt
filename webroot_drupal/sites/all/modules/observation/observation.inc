@@ -24,10 +24,10 @@ function observation_edit($observationdata = NULL) {
  * @return array
  */
 function observation_get($observation_id) {
-	$observation_id = db_escape_field(filter_xss($observation_id));
+	$observation_id = db_escape_field($observation_id);
 	if ($observation_id > 0) {
-		$sql = "SELECT * FROM {observation} o
-				WHERE o.id=:observation_id";
+		$sql = 'SELECT * FROM {observation} o
+				WHERE o.id=:observation_id';
 		$result['observation'] = db_query(
 			$sql,
 			array('observation_id' => $observation_id))->fetchAssoc();
@@ -72,7 +72,7 @@ function observation_get($observation_id) {
 		$result['organism'] = organism_get(
 			$result['observation']['organism_id']);
 		$attributes = db_query(
-			"SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id",
+			'SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id',
 			array(':observation_id' => $observation_id))->fetchAllAssoc(
 				'organism_artgroup_attr_id');
 		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '')
@@ -105,9 +105,9 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 	$filter = array();
 	if ($observation_data) {
 		$filter[':observation_id'] = $observation_data['observation']['id'];
-		$where = " WHERE o.id=:observation_id ";
+		$where = ' WHERE o.id=:observation_id ';
 	}
-	$sql = "SELECT o.id, o.area_geometry_id, o.acl_id,
+	$sql = 'SELECT o.id, o.area_geometry_id, o.acl_id,
 	a_s.altitude,
 				a_s.zip,
 				a_s.township,
@@ -134,7 +134,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
 	FROM {observation} o
-	JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id" . $where;
+	JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id' . $where;
 	$results = db_query($sql, $filter)->fetchAllAssoc('id', PDO::FETCH_ASSOC);
 	$items = array();
 	// 		die(print_r($results));
@@ -175,7 +175,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
  * @return array
  */
 function observation_get_geometry($geometry_id) {
-	$sql = "SELECT
+	$sql = 'SELECT
 				a_s.altitude,
 				a_s.zip,
 				a_s.township,
@@ -201,7 +201,7 @@ function observation_get_geometry($geometry_id) {
 				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
-	FROM {area_geometry} a_s WHERE a_s.id=:geometry_id";
+	FROM {area_geometry} a_s WHERE a_s.id=:geometry_id';
 	return db_query($sql, array(':geometry_id' => $geometry_id))->fetchAssoc();
 }
 
@@ -281,7 +281,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Date'),
 						'header' => true
 				),
-				date("j.m.Y", $observationdata['observation']['date']),
+				date('j.m.Y', $observationdata['observation']['date']),
 		);
 	}
 
@@ -291,7 +291,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Last modification'),
 						'header' => true
 				),
-				date("j.m.Y", $observationdata['observation']['m_time'])
+				date('j.m.Y', $observationdata['observation']['m_time'])
 		);
 	}
 
@@ -422,7 +422,7 @@ function observation_get_geometry_table($observationdata = NULL) {
 						'header' => true
 				),
 				get_wgs84_coordinates_link($observationdata['geometry'])
-						. "<br/>"
+						. '<br/>'
 						. get_ch1903_coordinates_link(
 							$observationdata['geometry'])
 		);
@@ -477,9 +477,9 @@ function observation_save_attribute_values($attributes_checked, $observation_id)
  */
 function observation_attribute_value_exist($observation_id, $attr_id) {
 	$result = db_query(
-		"SELECT * FROM {observation_attribute} oa
+		'SELECT * FROM {observation_attribute} oa
 			WHERE oa.observation_id=:observation_id AND
-			oa.organism_artgroup_attr_id=:attr_id",
+			oa.organism_artgroup_attr_id=:attr_id',
 		array(':observation_id' => $observation_id,
 				':attr_id' => $attr_id
 		))->rowCount();

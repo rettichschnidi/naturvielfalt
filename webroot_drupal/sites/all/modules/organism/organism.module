@@ -286,13 +286,13 @@ function organism_permission() {
  */
 function organism_load($organismId) {
 	$result = db_query(
-		"SELECT
+		'SELECT
 			osn.name AS scientific_name,
 			o.id AS organism_id,
 			CASE
-				WHEN oa.valuetype = 'b' THEN oav.boolean_value::text
-				WHEN oa.valuetype = 't' THEN oav.text_value
-				WHEN oa.valuetype = 'n' THEN oav.number_value::text
+				WHEN oa.valuetype = \'b\' THEN oav.boolean_value::text
+				WHEN oa.valuetype = \'t\' THEN oav.text_value
+				WHEN oa.valuetype = \'n\' THEN oav.number_value::text
 			END AS attribute_value,
 			oa.name AS attribute_name,
 			oa.comment AS attribute_comment,
@@ -311,7 +311,7 @@ function organism_load($organismId) {
 		LEFT JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_id = o.id
 		LEFT JOIN {organism_attribute_value} oav ON oav.id=oavs.organism_attribute_value_id
 		LEFT JOIN {organism_attribute} oa ON oa.id = oav.organism_attribute_id
-		LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id;",
+		LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id;',
 		array(':organismId' => $organismId),
 		array('fetch' => PDO::FETCH_ASSOC));
 	$rows = $result->fetchAll();

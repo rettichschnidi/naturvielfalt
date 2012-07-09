@@ -16,7 +16,7 @@ function observation_delete_form($form, &$form_state, $observationdata = NULL) {
 	assert(!empty($observationdata));
 	drupal_set_title(
 		t(
-			"Delete Observation @observation_organism from @observation_date.",
+			'Delete Observation @observation_organism from @observation_date.',
 			array('@observation_organism' => $observationdata['organism']['name_lang']
 							. '(' . $observationdata['organism']['name_lat']
 							. ')',
