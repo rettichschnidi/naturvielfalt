@@ -25,6 +25,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'a_s.township',
 			'a_s.canton',
 			'a_s.country',
+			'a_s.zip',
 			'ST_AsGeoJSON(a_s.geom) AS geom',
 			'u.name AS username'
 	);
@@ -36,6 +37,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'a_s.township',
 			'a_s.canton',
 			'a_s.country',
+			'a_s.zip',
 			'u.name'
 	);
 
@@ -69,6 +71,7 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 			a_s.township,
 			a_s.canton,
 			a_s.country,
+			a_s.zip,
 			ST_AsGeoJSON(a_s.geom) AS geom
 			FROM
 				{area} a
@@ -94,7 +97,8 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 			$item['canton'] = $entry->canton;
 			$item['country'] = $entry->country;
 			$item['comment'] = $entry->comment;
-
+			$item['zip'] = $entry->zip;
+				
 			$item['type'] = '';
 			$item['area_points'] = array();
 			$json = json_decode($entry->geom);

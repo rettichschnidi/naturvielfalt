@@ -10,7 +10,6 @@
  * goodies if you know how to make it working in an overlay.
  */
 
-$mapid = 'area_' . $mapid; // make sure $mapid has an 'area_' prefix, avoid clashes
 $mapid_canvas = $mapid . '_canvas';
 
 $style = '';
@@ -45,6 +44,7 @@ $baseModulPath = base_path() . drupal_get_path('module', 'area') . '/';
 $baseModulJsPath = $baseModulPath . 'js/';
 $baseModulCssPath = $baseModulPath . 'css/';
 
+// Include jQuery.UI for dynamic resizing of the map
 drupal_add_library('system', 'ui.resizable');
 
 /**
@@ -166,6 +166,7 @@ if ($json_url) {
 				coordinatestorageid: <?php echo $coordinate_storage_id
 		? $coordinate_storage_id : 0
 									 ?>,
+				geometriesfetchurl: '<?php echo $geometries_fetch_url ?>',
 				googlemapsoptions: {
 						zoom: <?php echo $defaultzoom ?>,
 						streetViewControl: <?php echo $streetview ? 1 : 0 ?>,

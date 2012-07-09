@@ -29,14 +29,12 @@ function Area(options) {
 	// map holds the google maps object
 	this.googlemap = null;
 	// holds the id of the currently selected overlay/geometry
-	this.selectedGeometryId = null;
+	this.selectedId = null;
 	// points to last created element
-	this.newestElement = null;
+	this.newOverlay = null;
 	// contains all the overlays currently shown on the map
-	this.overlayData = [];
-	this.overlayElements = [];
-
-	this.currentElement = undefined;
+	this.overlaysArray = [];
+	this.geometriesArray = [];
 
 	// there is just one at a time
 	this.infoWindow = undefined;
@@ -64,6 +62,14 @@ function Area(options) {
 		this.geometryEdit(this.options.geometryeditid);
 	}
 	this.createReticle(this.options.reticle);
+	if(this.options.geometriesfetchurl.length > 0) {
+		var this_ = this;
+		jQuery.getJSON(this.options.geometriesfetchurl,
+				function(data) {
+					this_.loadGeometriesAndOverlaysFromJson(data);
+				}
+			);
+	}
 };
 
 /**
@@ -177,23 +183,24 @@ Area.prototype.automaticallySaveLocation = function(enable) {
  * Select the area with the given id. - set style to "selected" - set map to
  * show the given element - open up an info window
  * 
- * @param id
- *            integer area id
+ * @param id integer
+ * 	geometry id
  */
-Area.prototype.selectArea = function(id) {
-	if (id in this.overlayElements) {
-		if (this.currentElement != null) {
-			this.currentElement.deselect();
+Area.prototype.selectGeometry = function(geometryid) {
+	if (geometryid in this.overlayElements) {
+		if (this.selectedId != null) {
+			this.overlayArray[selectedId].deselect();
 		}
-		this.currentElement = this.overlayElements[id];
+		this.selectedId = geometryid;
 
-		this.currentElement.select();
-		var bounds = this.currentElement.getBounds();
+		this.overlayArray[selectedId].select();
+		var bounds = this.overlayArray[selectedId].getBounds();
 		this.googlemap.fitBounds(bounds);
 		this.googlemap.setZoom(this.googlemap.getZoom() - 2);
-		this.showInfoWindow(id);
+		this.showInfoWindow(this.selectedId);
 	} else {
-		console.error("Area not available: " + id);
+		console.error("Geometry not available: " + this.selectedId);
+		this.selectedId = null;
 	}
 };
 
@@ -266,38 +273,6 @@ Area.prototype.createOverlayElementFromJson = function(currentjsonoverlay) {
 	return newoverlay;
 };
 
-/**
- * Add an overlayElement to the google map
- * 
- * @param currentjsonoverlay
- *            overlayElement to add
- */
-Area.prototype.addOverlayFromJsonToGoogleMap = function(currentjsonoverlay) {
-	var newoverlay = this.createOverlayElementFromJson(currentjsonoverlay);
-	this.overlayElements[currentjsonoverlay.id] = newoverlay;
-
-	var latLngs = [];
-	for ( var k in currentjsonoverlay.area_points) {
-		var currentpoint = currentjsonoverlay.area_points[k];
-		var newlatlng = new google.maps.LatLng(currentpoint.lat,
-				currentpoint.lng);
-		/**
-		 * PostGIS requires that the first and last point are the same value
-		 * for polygons - Google closes the map automatically.
-		 * Solution: Drop points which are equal to the first one
-		 */
-		if(k == 0 || !latLngs[0].equals(newlatlng)) {
-			latLngs[k] = newlatlng;
-		}
-	}
-
-	newoverlay.setPath(latLngs);
-	newoverlay.setMap(this.googlemap);
-	newoverlay.setup();
-
-	this.addWindowsListenerForNewElement(currentjsonoverlay.id, newoverlay);
-};
-
 Area.prototype.addWindowsListenerForNewElement = function(area_id, overlay) {
 	var area = this;
 	var infowindow = new google.maps.InfoWindow({
@@ -323,13 +298,45 @@ Area.prototype.addWindowsListenerForNewElement = function(area_id, overlay) {
 };
 
 /**
+ * Add an overlay to the google map
+ * 
+ * @param currentjsonoverlay
+ *            overlayElement to add
+ */
+Area.prototype.addGeometryFromJsonToGoogleMapArray = function(currentjsonoverlay) {
+	var newoverlay = this.createOverlayElementFromJson(currentjsonoverlay);
+	this.overlaysArray[currentjsonoverlay.id] = newoverlay;
+
+	var latLngs = [];
+	for ( var k in currentjsonoverlay.area_points) {
+		var currentpoint = currentjsonoverlay.area_points[k];
+		var newlatlng = new google.maps.LatLng(currentpoint.lat,
+				currentpoint.lng);
+		/**
+		 * PostGIS requires that the first and last point are the same value
+		 * for polygons - Google closes the map automatically.
+		 * Solution: Drop points which are equal to the first one
+		 */
+		if(k == 0 || !latLngs[0].equals(newlatlng)) {
+			latLngs[k] = newlatlng;
+		}
+	}
+
+	newoverlay.setPath(latLngs);
+	newoverlay.setMap(this.googlemap);
+	newoverlay.setup();
+
+	this.addWindowsListenerForNewElement(currentjsonoverlay.id, newoverlay);
+};
+
+/**
  * Add overlayData to this map.
  * 
  * @param currentjsonoverlay
  *            overlayData to add
  */
-Area.prototype.addOverlayFromJsonToArea = function(currentjsonoverlay) {
-	this.overlayData[currentjsonoverlay.id] = currentjsonoverlay;
+Area.prototype.addGeometryFromJsonToGeometryArray = function(currentjsonoverlay) {
+	this.geometriesArray[currentjsonoverlay.id] = currentjsonoverlay;
 };
 
 /**
@@ -338,10 +345,10 @@ Area.prototype.addOverlayFromJsonToArea = function(currentjsonoverlay) {
  * @param json
  *            a json object
  */
-Area.prototype.loadOverlaysFromJson = function(json) {
+Area.prototype.loadGeometriesAndOverlaysFromJson = function(json) {
 	for ( var i in json) {
-		this.addOverlayFromJsonToArea(json[i]);
-		this.addOverlayFromJsonToGoogleMap(json[i]);
+		this.addGeometryFromJsonToGeometryArray(json[i]);
+		this.addGeometryFromJsonToGoogleMapArray(json[i]);
 	}
 };
 
@@ -770,27 +777,27 @@ Area.prototype.createDrawingManagerGetcoordinate = function() {
 
 	var update = function() {
 		jQuery('#' + coordinatestorageid).val(
-				JSON.stringify(this.newestElement.overlay
+				JSON.stringify(this.newOverlay.overlay
 						.getJsonCoordinates()));
-		updateHiddenfields(this.newestElement);
+		updateHiddenfields(this.newOverlay);
 	};
 
 	google.maps.event.addListener(
 			this.drawingManager,
 			'overlaycomplete',
 			function(overlay) {
-				if (this.newestElement) {
-					this.newestElement.overlay.setMap(null);
+				if (this.newOverlay) {
+					this.newOverlay.overlay.setMap(null);
 				}
-				this.newestElement = overlay;
-				this.newestElement.overlay
+				this.newOverlay = overlay;
+				this.newOverlay.overlay
 						.setupGeometryChangedEvent();
 				this.setDrawingMode(null);
 				overlay.overlay.setEditable(true);
 				update();
 
 				google.maps.event.addListener(
-						this.newestElement.overlay,
+						this.newOverlay.overlay,
 						'geometry_changed',
 						update);
 			});
@@ -798,14 +805,14 @@ Area.prototype.createDrawingManagerGetcoordinate = function() {
 			this,
 			'overlaycomplete',
 			function() {
-				this.newestElement.overlay.setupGeometryChangedEvent();
-				this.newestElement.overlay.setMap(this.googlemap);
+				this.newOverlay.overlay.setupGeometryChangedEvent();
+				this.newOverlay.overlay.setMap(this.googlemap);
 				this.drawingManager.setDrawingMode(null);
-				this.newestElement.overlay.setEditable(true);
+				this.newOverlay.overlay.setEditable(true);
 				update();
 
 				google.maps.event.addListener(
-						this.newestElement.overlay,
+						this.newOverlay.overlay,
 						'geometry_changed',
 						update);
 			});
