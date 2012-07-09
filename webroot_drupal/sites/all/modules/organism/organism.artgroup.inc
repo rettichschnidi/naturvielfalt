@@ -11,19 +11,21 @@ define('SPECIESGROUP_ALL', 1);
  */
 function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {
 	if($parent != false) {
-		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent='" . db_escape_field($parent) . "' AND parent != id ORDER BY name";
+		$sql = "SELECT * FROM {organism_artgroup} WHERE parent=:parent AND parent != id ORDER BY name";
+		$sql_args = array (':parent' => $parent);
 	}else{
-		$top_sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL ORDER BY name";
+		$sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL ORDER BY name";
+		$sql_args = array();
 	}
 	if($selected_id == '') $selected_id = false;
 
-	$top_result= db_query($top_sql);
+	$result = db_query($sql, $sql_args);
 
-	$output = "";
-	$spacer = "";
-	for($i=0; $i < $deep; $i++) $spacer = $spacer."&nbsp;&nbsp;&nbsp;";
+	$output = '';
+	$spacer = '';
+	for($i=0; $i < $deep; $i++) $spacer = $spacer.'&nbsp;&nbsp;&nbsp;';
 
-	foreach ($top_result as $top){
+	foreach ($result as $top){
 		$sel = '';
 		if($selected_id && $selected_id == $top->id) $sel = ' selected="selected"';
 		$output .= '<option value="'.$top->id.'"'.$sel.'>'.$spacer.t($top->name).'</option>';
@@ -46,11 +48,11 @@ function organism_artgroup_get_children($artgroup_id = false, $output = false, $
 	}
 	$wooor = array(':parent' => $artgroup_id);
 
-	$join = "JOIN {organism_artgroup_subscription} oas "
-			."ON oas.organism_artgroup_id = oa.id "
-			."AND oas.organism_id=:organism_id ";
+	$join = 'JOIN {organism_artgroup_subscription} oas '
+			.'ON oas.organism_artgroup_id = oa.id '
+			.'AND oas.organism_id=:organism_id ';
 	$wooor[':organism_id'] = $organism_id;
-	$top_sql = "SELECT oa.id id, oas.organism_id organism_id FROM {organism_artgroup} oa ".$join." WHERE oa.parent=:parent AND oa.parent!=oa.id";
+	$top_sql = 'SELECT oa.id id, oas.organism_id organism_id FROM {organism_artgroup} oa '.$join.' WHERE oa.parent=:parent AND oa.parent!=oa.id';
 	$top_result= db_query($top_sql, $wooor);
 
 	if(!$output) {
@@ -100,18 +102,18 @@ function organism_artgroup_get_sql_from_id($ids_as_array, $col_name, $and_or_or 
  * @return object or string
  */
 function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false, $selected_id = false, $visisible_arr = false){
-	$artgroup_filter = "";
+	$artgroup_filter = '';
 	if($artgroup_id){
 		if($artgroup_id > 0 && $artgroup_id < 1000000){
 			$children_ids = organism_artgroup_get_children($artgroup_id);
 			$children_ids[] = $artgroup_id;
 			$children_sql = organism_artgroup_get_sql_from_id($children_ids, 'oads.organism_artgroup_id');
-			$artgroup_filter = "JOIN {organism_artgroup_detmethod_subscription} oads on ".$children_sql
-								."WHERE oad.id=oads.organism_artgroup_detmethod_id";
+			$artgroup_filter = 'JOIN {organism_artgroup_detmethod_subscription} oads on '.$children_sql
+								.'WHERE oad.id=oads.organism_artgroup_detmethod_id';
 		}
 	}
 
-	$determation_sql = "SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad ".$artgroup_filter." ORDER BY oad.name asc";
+	$determation_sql = 'SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '.$artgroup_filter.' ORDER BY oad.name asc';
 	$results = db_query($determation_sql);
 
 	if(!$as_html_option) return $results;
@@ -146,24 +148,24 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 			$children_ids = organism_artgroup_get_children($artgroup_id);
 			$children_ids[] = $artgroup_id;
 			$children_sql = organism_artgroup_get_sql_from_id($children_ids, 'oaas.organism_artgroup_id');
-			$artgroup_filter = " JOIN {organism_artgroup_attr_subscription} oaas on ".$children_sql
-			." WHERE oaa.id=oaas.organism_artgroup_attr_id";
+			$artgroup_filter = ' JOIN {organism_artgroup_attr_subscription} oaas on '.$children_sql
+			.' WHERE oaa.id=oaas.organism_artgroup_attr_id';
 		}
 	}
 
 	if($attribute_id > 0 && $attribute_id < 1000000 && $attribute_id != '0'){
-		$artgroup_filter = " WHERE oaa.id='".db_escape_field($attribute_id)."'";
+		$artgroup_filter = ' WHERE oaa.id=:attribute_id';
 	}
-	($artgroup_filter == "") ? $artgroup_filter = ' WHERE ' : $artgroup_filter .= ' AND ';
+	($artgroup_filter == '') ? $artgroup_filter = ' WHERE ' : $artgroup_filter .= ' AND ';
 	$artgroup_filter .= "(oaa.users_uid=:users_uid OR oaa.users_uid = '0')";
 
-	$attributes_sql = "SELECT oaa.id, oaa.name, oaat.name type_name, oaat.format type_format, oaa.users_uid FROM {organism_artgroup_attr} oaa "
-						."JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id".$artgroup_filter;
-	$attributes_results = db_query($attributes_sql, array(':users_uid' => $user->uid));
+	$attributes_sql = 'SELECT oaa.id, oaa.name, oaat.name type_name, oaat.format type_format, oaa.users_uid FROM {organism_artgroup_attr} oaa '
+						.'JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id'.$artgroup_filter;
+	$attributes_results = db_query($attributes_sql, array(':users_uid' => $user->uid, ':attribute_id' => $attribute_id));
 
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result){
-		$values = db_query("SELECT * FROM {organism_artgroup_attr_values} WHERE organism_artgroup_attr_id='".$attributes_result->id."'");
+		$values = db_query('SELECT * FROM {organism_artgroup_attr_values} WHERE organism_artgroup_attr_id=:attr_id', array(':attr_id' => $attributes_result->id));
 		$tmp_val = false;
 		foreach ($values as $value){
 			$tmp_val[$value->id] = $value->value;
@@ -179,9 +181,8 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 	}
 
 	if(!$as_html) return $attributes_with_values;
-// 	die(print_r($attributes_with_values));
 
-	$attributes_with_values_html = "";
+	$attributes_with_values_html = '';
 	foreach ($attributes_with_values as $tmp){
 		$attributes_with_values_html .= organism_artgroup_parse_html_forms($tmp, $html_before_desc, $html_after_desc, $html_before_form, $html_after_form, $attributes_selected);
 	}
@@ -263,8 +264,8 @@ function organism_artgroup_parse_html_forms($form, $html_before_desc = false, $h
  * @return array
  */
 function organism_artgroup_get_attributes_ids($artgroup_id){
-	return db_query("SELECT organism_artgroup_attr_id id FROM {organism_artgroup_attr_subscription} "
-			."WHERE organism_artgroup_id='".db_escape_field($artgroup_id)."' GROUP BY organism_artgroup_attr_id")
+	return db_query('SELECT organism_artgroup_attr_id id FROM {organism_artgroup_attr_subscription} '
+			.'WHERE organism_artgroup_id=:artgroup_id GROUP BY organism_artgroup_attr_id', array(':artgroup_id' => $artgroup_id))
 			->fetchCol();
 }
 
@@ -276,8 +277,8 @@ function organism_artgroup_get_attributes_ids($artgroup_id){
  */
 function organism_artgroup_get_attributes_value_name($value_id = false){
 	if(!$value_id) return;
-	$attr_val=  db_query("SELECT * FROM {organism_artgroup_attr_values} "
-				."WHERE id=:value_id", array(':value_id' => $value_id))->fetchAssoc();
+	$attr_val=  db_query('SELECT * FROM {organism_artgroup_attr_values} '
+				.'WHERE id=:value_id', array(':value_id' => $value_id))->fetchAssoc();
 	return $attr_val['value'];
 }
 
@@ -287,8 +288,9 @@ function organism_artgroup_get_attributes_value_name($value_id = false){
  * @return array
  */
 function organism_artgroup_get_detmethods_ids($artgroup_id){
-	return db_query("SELECT organism_artgroup_detmethod_id id FROM {organism_artgroup_detmethod_subscription} "
-					."WHERE organism_artgroup_id='".db_escape_field($artgroup_id)."' GROUP BY organism_artgroup_detmethod_id")
+	return db_query('SELECT organism_artgroup_detmethod_id id FROM {organism_artgroup_detmethod_subscription} '
+					.'WHERE organism_artgroup_id=:artgroup_id GROUP BY organism_artgroup_detmethod_id', 
+					array(':artgroup_id' => $artgroup_id))
 					->fetchCol();
 }
 
@@ -321,8 +323,8 @@ function organism_artgroup_get_organsim_in_artgroup($organism_id, $just_the_last
  */
 function organism_artgroup_get_artgroup($artgroup_id, $just_the_name = false){
 	if(!$artgroup_id) return;
-	$artg =  db_query("SELECT * FROM {organism_artgroup} "
-			."WHERE id=:id", array(':id' => $artgroup_id))->fetchAssoc();
+	$artg =  db_query('SELECT * FROM {organism_artgroup} '
+			.'WHERE id=:id', array(':id' => $artgroup_id))->fetchAssoc();
 	if($just_the_name) return $artg['name'];
 	return $artg;
 }
@@ -335,8 +337,8 @@ function organism_artgroup_get_artgroup($artgroup_id, $just_the_name = false){
  */
 function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false){
 	if(!$detmethod_id || $detmethod_id == 0) return '';
-	$detmethod = db_query("SELECT * FROM {organism_artgroup_detmethod} "
-			."WHERE id=:id", array(':id' => $detmethod_id))->fetchAssoc();
+	$detmethod = db_query('SELECT * FROM {organism_artgroup_detmethod} '
+			.'WHERE id=:id', array(':id' => $detmethod_id))->fetchAssoc();
 	if($just_the_name) return $detmethod['name'];
 	return $detmethod;
 }

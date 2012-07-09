@@ -13,8 +13,8 @@ module_load_include('inc', 'organism', 'organism');
  */
 function organism_show_classifiers() {
 	// Make kingdom (Reich) from classifier
-	$kingdoms['CSCF'] = 'Plants';
-	$kingdoms['CRSF'] = 'Animals';
+	$kingdoms['CSCF'] = 'Animals';
+	$kingdoms['CRSF'] = 'Plants';
 	$kingdoms['Fungus'] = 'Mushrooms';
 	$kingdoms['Swisslichens'] = 'Lichens';
 
@@ -27,8 +27,7 @@ function organism_show_classifiers() {
 
 	// query classifier and the amount of species
 	$classifiers = db_query(
-		"
-		SELECT
+		'SELECT
 	        oc.id AS oc_id,
 	        oc.name AS oc_name,
 	        organismcount.cnt AS organismcount_cnt
@@ -50,7 +49,7 @@ function organism_show_classifiers() {
 	    GROUP BY
 	        oc_id,
 	        oc_name,
-	        organismcount.cnt;");
+	        organismcount.cnt;');
 
 	// create list of links
 	$list = array(

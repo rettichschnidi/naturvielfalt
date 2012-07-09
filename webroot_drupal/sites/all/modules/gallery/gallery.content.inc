@@ -949,7 +949,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	$subtypes = _gallery_get_subtypes($type, false);
 
 	if (isset($_REQUEST['camefrom'])) {
-		$_SESSION[md5('camefrom_' . $type . '_' . $id)] = $_REQUEST['camefrom'];
+		$_SESSION[md5('camefrom_' . $type . '_' . $id)] = check_plain($_REQUEST['camefrom']);
 	}
 
 	$form_state['gallery_type'] = $type;
@@ -1234,22 +1234,28 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 }
 
 function gallery_image_form_categories($mediatype, $type, $id) {
-	$prefix = $_REQUEST['prefix'];
+	$prefix = filter_xss($_REQUEST['prefix']);
+	$type = filter_xss($_REQUEST['item_type']);
+	$id = filter_xss($_REQUEST['item_id']);
 	$data = array(
 			'categories' => array(),
-			'item_type' => $_REQUEST['item_type'],
-			'item_id' => $_REQUEST['item_id']
+			'item_type' => $type,
+			'item_id' => $id,
 	);
 	if (is_array($_REQUEST[$prefix]['categories']))
 		foreach ($_REQUEST[$prefix]['categories'] as $cat) {
 			if (is_array($cat)) {
-				foreach ($cat as $value)
+				foreach ($cat as $value) {
+					$value = filter_xss($value);
 					if ($value)
 						$data['categories'][substr($value, 4)] = substr(
 							$value,
 							4);
-			} else
+				}
+			} else {
+				$cat = filter_xss($cat);
 				$data['categories'][substr($cat, 4)] = substr($cat, 4);
+			}
 		}
 	$base_form = drupal_get_form(
 		'gallery_image_form',
@@ -1263,8 +1269,8 @@ function gallery_image_form_categories($mediatype, $type, $id) {
 		drupal_get_form(
 			'gallery_image_form_categories_form',
 			$mediatype,
-			$_REQUEST['item_type'],
-			$_REQUEST['item_id'],
+			$type,
+			$id,
 			$data,
 			$prefix));
 	$form = preg_replace(
@@ -1746,7 +1752,7 @@ function gallery_image_show($image) {
 						'gallery/' . $image['item_type'] . '/'
 								. $image['item_id'] . '/hide/' . $image['id'])
 			));
-	$camefrom = $_REQUEST['camefrom'];
+	$camefrom = filter_xss($_REQUEST['camefrom']);
 	return drupal_goto($camefrom);
 }
 
@@ -1762,7 +1768,7 @@ function gallery_image_hide($image) {
 						'gallery/' . $image['item_type'] . '/'
 								. $image['item_id'] . '/show/' . $image['id'])
 			));
-	$camefrom = $_REQUEST['camefrom'];
+	$camefrom = filter_xss($_REQUEST['camefrom']);
 	return drupal_goto($camefrom);
 }
 
@@ -2292,7 +2298,7 @@ function _gallery_back_link($type, $id) {
 	if ($_SESSION[$gallery_back_url_key])
 		return array(
 				'title' => t('Back'),
-				'href' => $_SESSION[$gallery_back_url_key]
+				'href' => filter_xss($_SESSION[$gallery_back_url_key])
 		);
 	return false;
 }

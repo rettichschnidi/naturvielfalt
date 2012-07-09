@@ -667,9 +667,9 @@ function organism_search_organism_json($classification = false, $term = false,
 
 	$langcode = (isset($user->language) && $user->language != '') ? $user->language : 'de';
 
-	if (!$classification)
-		isset($_REQUEST['inv_id']) ? $classification = $_REQUEST['inv_id']
-				: $classification = false;
+	if (!$classification && isset($_REQUEST['inv_id'])) {
+		$classification = $_REQUEST['inv_id'];
+	}
 	$type_id = $classification;
 
 	$fauna = ($type_id == 16 ? false : true);

@@ -88,7 +88,7 @@ function observation_form($observation = false) {
 
 	$form['div'] = array(
 			'#type' => 'fieldset',
-			'#title' => "Google Map",
+			'#title' => t('Map'),
 			'#attributes' => array(
 					'style' => 'width: 95%;'
 			)

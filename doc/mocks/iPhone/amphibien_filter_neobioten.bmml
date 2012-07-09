@@ -1,0 +1,40 @@
+<mockup version="1.0" skin="sketch" measuredW="1141" measuredH="671" mockupW="960" mockupH="660">
+  <controls>
+    <control controlID="1" controlTypeID="__group__" x="542" y="142" w="204" h="27" measuredW="204" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::PointyButton" x="0" y="0" w="-1" h="-1" measuredW="62" measuredH="27" zOrder="0" locked="false" isInGroup="1">
+          <controlProperties>
+            <direction>left</direction>
+            <href>amphibien_filter%26bm%3Bamphibien_filter.bmml%26bm%3Bamphibien_filter.bmml%26bm%3Bamphibien_filter.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22361%2C131%2C423%2C158%22%20href%3D%22amphibien_filter.bmml%22%20alt%3D%22amphibien_filter%22%20id%3D%220%22/%3E</map>
+            <text>Zur%FCck</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="89" y="0" w="115" h="21" measuredW="70" measuredH="22" zOrder="1" locked="false" isInGroup="1">
+          <controlProperties>
+            <align>center</align>
+            <bold>true</bold>
+            <size>14</size>
+            <text>Neobioten</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::iPhone" x="451" y="11" w="465" h="660" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::iPhoneMenu" x="542" y="177" w="279" h="-1" measuredW="215" measuredH="68" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>v%20Watch%20List%0Av%20Schwarze%20Liste</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::iPhoneMenu" x="181" y="49" w="-1" h="-1" measuredW="215" measuredH="389" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>A%20Simple%20Label%0A+%20Add%20and%20sub-menu%2C%20%3E%0A-%20Delete%5Cr%28Cancel%29%0ATwo%20Labels%5C%2C%20and%20a%20comma%2C%20yup%0Av%20A%20Checkmark%2C%20%28%3E%29%0A*%20A%20Bullet%2C%20%3D%0A_%20Space%20for%20an%20icon%0A__%20Space%20for%20a%20big%20icon%0AOn%20button%2C%20ON%0AOff%20button%2C%20OFF%0A%20%0Av%20An%20empty%20row%2C%20%28above%29</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::StickyNote" x="930" y="92" w="211" h="187" measuredW="109" measuredH="123" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Filter%20werden%20auf%20dieser%20Seite%20ODER%20verkn%FCpft%3A%0A%20%0AArt%20muss%20entweder%20im%20Kanton%20AG%20oder%20LU%20oder%20ZH%20oder%20eine%20Kombination%20davon%20vorkommen.</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

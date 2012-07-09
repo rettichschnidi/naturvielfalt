@@ -368,7 +368,7 @@ function inventory_save_entries($head_inventory_id) {
 function inventory_edit_entries_submit($form, &$form_state, $head_inventory_id = false) {
 	if (!$head_inventory_id)
 		$head_inventory_id = $form_state['head_inventory_id'];
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 
 	_inventory_update_modify_time($head_inventory_id);
 
@@ -506,9 +506,9 @@ function _inventory_save_entries($id, $input, $inventory_table = 'inventory', $i
  */
 function inventory_organism_autocomplete($type_id = false, $term = false, $plain = false) {
 	if (!$type_id)
-		$type_id = $_REQUEST['inv_id'];
+		$type_id = filter_xss($_REQUEST['inv_id']);
 	if (!$term)
-		$term = $_REQUEST['term'];
+		$term = filter_xss($_REQUEST['term']);
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
 	$terms = array_filter($terms);
@@ -635,7 +635,7 @@ function inventory_organism_autocomplete($type_id = false, $term = false, $plain
  * @return form to edit the additional attributes of an inventory entry
  */
 function inventory_edit_entry($head_inventory_id, $inventory_type_id, $entry_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 
 	if (substr($entry_id, 0, 4) == 'new_')
 		$entry_id = false;
@@ -664,7 +664,7 @@ function inventory_edit_entry($head_inventory_id, $inventory_type_id, $entry_id)
  */
 function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inventory_type_id, $entry_id) {
 	_include_js_and_css();
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 	$form_state['head_inventory_id'] = $head_inventory_id;
 	$form_state['inventory_type_id'] = $inventory_type_id;
 	$form_state['entry_id'] = $entry_id;
@@ -696,7 +696,7 @@ function inventory_edit_entry_form($form, &$form_state, $head_inventory_id, $inv
 			continue;
 		// We do not want to edit fields which are visible in the edit entries form
 		$name = 'col_' . $column['id'];
-		$value = array_key_exists($name, $_REQUEST) ? htmlentities($_REQUEST[$name]) : $entry[$name];
+		$value = array_key_exists($name, $_REQUEST) ? check_plain($_REQUEST[$name]) : $entry[$name];
 		$form[$column['head_inventory_id']][$name] = array(
 				'#type' => 'textfield',
 				'#title' => $column['name'],
@@ -807,7 +807,7 @@ function _inventory_save_entry_attributes($entry_id, $columns, $data) {
  * @return form to edit the location of an inventory entry
  */
 function inventory_edit_entry_location($head_inventory_id, $entry_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 
 	if (substr($entry_id, 0, 4) == 'new_')
 		$entry_id = false;
@@ -833,7 +833,7 @@ function inventory_edit_entry_location($head_inventory_id, $entry_id) {
  * @return form to edit the location of an inventory entry
  */
 function inventory_edit_entry_location_form($form, &$form_state, $head_inventory_id, $entry_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 	$form_state['head_inventory_id'] = $head_inventory_id;
 	$form_state['entry_id'] = $entry_id;
 	$form_state['ajax'] = $ajax;
@@ -943,7 +943,7 @@ function inventory_custom_fields($head_inventory_id, $inventory_type_id) {
  * @return Form to edit the custom fields of an inventory
  */
 function inventory_custom_fields_form($form, &$form_state, $head_inventory_id, $inventory_type_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 	if ($ajax && $form_state['storage']['result']) {
 		$form['#result'] = $form_state['storage']['result'];
 		return $form;
@@ -1073,7 +1073,7 @@ function inventory_templates($head_inventory_id) {
  * @param object $head_inventory_id
  */
 function inventory_templates_form($form, &$form_state, $head_inventory_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 	if ($ajax && $form_state['storage']['result']) {
 		$form['#result'] = $form_state['storage']['result'];
 		return $form;
@@ -1217,7 +1217,7 @@ function inventory_templates_form_submit($form, &$form_state) {
 				db_insert('inventory') -> fields($record) -> execute();
 			}
 		} else {
-			$inventory_id = array_search($group['invDesc']['id'], $inventories);
+			$inventory_id = filter_xss(array_search($group['invDesc']['id'], $inventories));
 			if ($ajax) {
 				if (!array_key_exists($inventory_id, $new_entries))
 					$new_entries[$inventory_id] = array();
@@ -1521,7 +1521,7 @@ function inventory_habitat_autocomplete($head_inventory_id) {
  * @param object $form_id
  */
 function _inventory_form_ajax_wrapper($form_id) {
-	$ajax = $_REQUEST['ajax'];
+	$ajax = isset($_REQUEST['ajax']);
 
 	$form = call_user_func_array('drupal_get_form', func_get_args());
 
