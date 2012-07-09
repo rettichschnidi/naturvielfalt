@@ -6,4 +6,4 @@ Naturvielfalt.ch bietet ein vielseitiges Informations- und Erfassungsportal für
 Lizenz
 ======
 
-Siehe LICENSE.txt
+Siehe License.txt
