@@ -129,7 +129,7 @@ function organism_get_available_attributes($classificationid) {
 function organism_check_if_wikipedia_article_exists($organismdata) {
 	global $user;
 	global $language;
-	$langcode = isset($user->language) ? $user->language : $language->language;
+	$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
 	// Take first synonym
 	$organism_name = $organismdata['scientific_names'][0];
 	// Reduce to first two words, as this delivers the best results.
