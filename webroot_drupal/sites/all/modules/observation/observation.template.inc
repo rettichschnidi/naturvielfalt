@@ -132,10 +132,7 @@ function observation_form($observation = false) {
 	} else {
 		$image = '';
 	}
-	$file_extensions = gallery_get_image_extensions() . ' '
-			. gallery_get_mp3_extensions() . ' '
-			. gallery_get_video_extensions() . ' '
-			. gallery_get_file_extensions();
+	$file_extensions = implode(' ', gallery_get_valid_file_extensions());
 
 	// format the upload field manually, because it's not possible with drupal forms...
 

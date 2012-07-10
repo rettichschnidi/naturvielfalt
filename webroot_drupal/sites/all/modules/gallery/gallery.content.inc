@@ -1788,17 +1788,13 @@ function gallery_image_rate($image) {
 		break;
 	}
 	if ($_REQUEST['ajax']) {
-		$sql = 'SELECT
-					gir.gallery_rating_type_id AS id,
-					AVG(gir.rating) AS average,
-					COUNT(gir.rating) AS number
-				FROM
-					{gallery_image_rating} AS gir
-				WHERE
-					gir.gallery_image_id = :id
-				GROUP BY
-					gir.gallery_rating_type_id';
-		$result = db_query($sql, array(':id' => $image['id']));
+		$select = db_select('gallery_image_rating', 'gir');
+		$select->addField('gir', 'gallery_rating_type_id', 'id');
+		$select->addExpression('AVG(gir.rating)', 'average');
+		$select->addExpression('COUNT(gir.rating)', 'number');
+		$select->condition('gir.gallery_image_id', $image['id']);
+		$select->groupBy('gir.gallery_rating_type_id');
+		$result = $select->execute();
 		$image['ratings'] = array();
 		foreach ($result as $record) {
 			$image['ratings'][$record->id] = array(
@@ -2328,45 +2324,22 @@ function gallery_metadata_form() {
 					'class' => array(
 							'collapsible'
 					),
-			// 					'style' => 'width: 100px;',
 			),
 	);
 
-	if (gallery_validate_file_extension(
-		$file_name,
-		gallery_get_image_extensions())
-			|| gallery_validate_file_extension(
-				$file_name,
-				gallery_get_mp3_extensions())
-			|| gallery_validate_file_extension(
-				$file_name,
-				gallery_get_video_extensions())
-			|| gallery_validate_file_extension(
-				$file_name,
-				gallery_get_file_extensions())) {
+	if (gallery_validate_file_extension($file_name)) {
 		$form['metadata']['title'] = array(
 				'#type' => 'textfield',
 				'#title' => t('Title'),
 				'#size' => 50,
 				'#maxlength' => 128,
-				// 			'#default_value' => isset($image['title']) ? $image['title'] : '',
-				// 			'#description' => t('The title of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
-		// 		$form['metadata']['description'] = array(
-		// 				'#type' => 'textarea',
-		// 				'#title' => t('Description'),
-		// 	// 			'#default_value' => isset($image['description']) ? $image['description'] : '',
-		// 	// 			'#description' => t('The description of the ' . $label . '.'),
-		// 				'#required' => FALSE,
-		// 		);
 		$form['metadata']['description'] = array(
 				'#type' => 'textfield',
 				'#title' => t('Description'),
 				'#size' => 50,
 				'#maxlength' => 255,
-				// 				'#description' => t(
-				// 						'The location the ' . $label . ' was taken at.'),
 				'#required' => FALSE,
 		);
 		$form['metadata']['location'] = array(
@@ -2374,8 +2347,6 @@ function gallery_metadata_form() {
 				'#title' => t('Location'),
 				'#size' => 50,
 				'#maxlength' => 255,
-				// 				'#description' => t(
-				// 						'The location the ' . $label . ' was taken at.'),
 				'#required' => FALSE,
 		);
 		$form['metadata']['author'] = array(
@@ -2398,29 +2369,6 @@ function gallery_metadata_form() {
 						)
 				),
 		);
-		// if not an image, show only the description input
-		if (gallery_validate_file_extension(
-			$file_name,
-			gallery_get_file_extensions())) {
-			$form['metadata']['title']['#attributes']['style'] = array(
-					'display: none;',
-					'height: 0px;'
-			);
-			unset($form['metadata']['title']['#title']);
-			unset($form['metadata']['title']['#description']);
-			$form['metadata']['location']['#attributes']['style'] = array(
-					'display: none;',
-					'height: 0px;'
-			);
-			unset($form['metadata']['location']['#title']);
-			unset($form['metadata']['location']['#description']);
-			$form['metadata']['author']['#attributes']['style'] = array(
-					'display: none;',
-					'height: 0px;'
-			);
-			unset($form['metadata']['author']['#title']);
-			unset($form['metadata']['author']['#description']);
-		}
 	} else {
 		$form['metadata'] = t('File not allowed');
 	}

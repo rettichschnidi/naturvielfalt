@@ -6,7 +6,6 @@
  */
 
 module_load_include('inc', 'gallery', 'gallery.content');
-// module_load_include('inc', 'gallery', 'gallery.content');
 
 /**
  * Save images & files on a easy way
@@ -36,22 +35,16 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 
 	// check the directory, create it if not exists
 	$key = $module_name . ':' . $entry_array['item_id'];
-	// 	if (!array_key_exists($key, $destination)) {
 	$destination[$key] = 'public://naturvielfalt/gallery/' . $module_name . '/'
 			. $entry_array['item_id'];
-	// 		$gallery_path = 'public://naturvielfalt/gallery/'.$module_name.'/'.$entry_array['item_id'];
-	// 		die($gallery_path);
 	file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
-	// 	}
 
 	$img_ids = array();
-	// die(print_r($_FILES));
 
 	// save each files
 	foreach ($_FILES['files']['error'] as $fkey => $message) {
 		if ($message != 0)
 			continue;
-		$add_to_gallery = true;
 		
 		// prevent xss:
 		$title = filter_xss($_REQUEST['meta_title'][$fkey]);
@@ -76,66 +69,48 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 		);
 
 		// make the validator for each file
-		if (gallery_validate_file_extension(
-			$_FILES['files']['name'][$fkey],
-			gallery_get_image_extensions())) {
-			$extensions = gallery_get_image_extensions();
-			$file_size = variable_get('gallery_image_size', 2048);
-		} elseif (gallery_validate_file_extension(
-			$_FILES['files']['name'][$fkey],
-			gallery_get_mp3_extensions())) {
-			$extensions = gallery_get_mp3_extensions();
-			$file_size = variable_get('gallery_sound_size', 2048);
-		} elseif (gallery_validate_file_extension(
-			$_FILES['files']['name'][$fkey],
-			gallery_get_video_extensions())) {
-			$extensions = gallery_get_video_extensions();
-			$file_size = variable_get('gallery_video_size', 8192);
-		} elseif (gallery_validate_file_extension(
-			$_FILES['files']['name'][$fkey],
-			gallery_get_file_extensions())) {
-			$extensions = gallery_get_file_extensions();
-			$file_size = variable_get('gallery_video_size', 8192);
-			$add_to_gallery = false;
-		} else {
-			//FIXME
-			// handlich for pdf or others, going only in filemanaged
-			continue;
-		}
-		$file_size = $file_size * 1024;
-		$validators = array(
-				'file_validate_extensions' => array(
-						$extensions
-				),
-				'file_validate_size' => array(
-						parse_size($file_size),
-						0
-				),
-		);
+		$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$fkey]);
+		if ($mediaInfo) {
+			$extensions = implode(' ', $mediaInfo->fileExtensions);
+			$file_size = $mediaInfo->maxFileSize;
 
-		$file = file_save_upload($fkey, $validators, $destination[$key]);
-		if ($file) {
-			$file->status |= FILE_STATUS_PERMANENT;
-			$file = file_save($file);
-			$image['file_managed_fid'] = $file->fid;
-			if ($add_to_gallery) {
-				$img_ids[$fkey] = gallery_image_save($image);
-			} else {
-				$img_ids[$fkey] = $file->fid;
-				if ($file_managed_module_col) {
-					$file_managed_table_entry[$file_managed_module_col] = $entry_array['item_id'];
-					$file_managed_table_entry['file_managed_fid'] = $file->fid;
-					$file_managed_table_entry['description'] = $image['description'];
-					db_insert($module_name . '_file_managed')->fields(
-							$file_managed_table_entry)
-						->execute();
+			// calculate file size to byte
+			$file_size = $file_size * 1024;
+			$validators = array(
+					'file_validate_extensions' => array(
+							$extensions
+					),
+					'file_validate_size' => array(
+							parse_size($file_size),
+							0
+					),
+			);
+	
+			$file = file_save_upload($fkey, $validators, $destination[$key]);
+			if ($file) {
+				$file->status |= FILE_STATUS_PERMANENT;
+				$file = file_save($file);
+				$image['file_managed_fid'] = $file->fid;
+				$add_to_gallery = in_array($mediaInfo->mediaType, array(GALLERY_MEDIATYPE_IMAGE, GALLERY_MEDIATYPE_SOUND, GALLERY_MEDIATYPE_VIDEO));
+				if ($add_to_gallery) {
+					$img_ids[$fkey] = gallery_image_save($image);
+				} else {
+					$img_ids[$fkey] = $file->fid;
+					if ($file_managed_module_col) {
+						$file_managed_table_entry[$file_managed_module_col] = $entry_array['item_id'];
+						$file_managed_table_entry['file_managed_fid'] = $file->fid;
+						$file_managed_table_entry['description'] = $image['description'];
+						db_insert($module_name . '_file_managed')->fields(
+								$file_managed_table_entry)
+							->execute();
+					}
 				}
+			} else {
+				//FIXME
+				// 			error about didn't saved...
+				// die('fehlfer');
+				$img_ids[$fkey] = 'Error! File not saved!';
 			}
-		} else {
-			//FIXME
-			// 			error about didn't saved...
-			// die('fehlfer');
-			$img_ids[$fkey] = 'Error! File not saved!';
 		}
 	}
 	return $img_ids;
