@@ -478,6 +478,8 @@ function area_get_postgis_geometry_object($areaType = NULL,
 	assert($areaType != NULL);
 
 	$points = array();
+	$sql_args = array();
+	
 	foreach ($coordinatesJson as $currentCoordinatesJson) {
 		$points[] = implode(' ', $currentCoordinatesJson);
 	}
@@ -486,7 +488,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
 	switch ($areaType) {
 	case 'polyline':
 		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('LINESTRING($linestring)', 4326)"; // SRID 4326 = WGS 84
+		$sql_args[':geom'] = 'LINESTRING(' . $linestring . ')';
 		break;
 	case 'polygon':
 		if (end($points) != reset($points)) {
@@ -494,10 +496,10 @@ function area_get_postgis_geometry_object($areaType = NULL,
 			$points[] = reset($points);
 		}
 		$linestring = implode(', ', $points);
-		$geom = "ST_GeomFromText('POLYGON(($linestring))', 4326)"; // SRID 4326 = WGS 84
+		$sql_args[':geom'] = 'POLYGON((' . $linestring . '))';
 		break;
 	case 'marker':
-		$geom = "ST_GeomFromText('POINT(" . reset($points) . ")', 4326)"; // SRID 4326 = WGS 84
+		$sql_args[':geom'] = 'POINT(' . reset($points) . ')';
 		break;
 	default:
 		watchdog_exception(
@@ -512,7 +514,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
 	}
 	$transaction = db_transaction();
 	try {
-		$result = db_query("SELECT $geom AS geom");
+		$result = db_query('SELECT ST_GeomFromText(:geom, 4326) AS geom;', $sql_args); // SRID 4326 = WGS 84
 		assert($result->rowCount() == 1);
 		return $result->fetch()
 			->geom;
