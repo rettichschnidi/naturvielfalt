@@ -949,27 +949,7 @@ function gallery_images($mediatype, $type = false, $id = false,
  *   Number of images
  */
 function gallery_images_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM {gallery_image} AS gi INNER JOIN file_managed as fm ON fm.fid = gi.file_managed_fid  ';
-	$id_conditions = array();
-	if ($id) {
-		$id_condition = is_array($id)
-				? 'IN (\'' . implode('\', \'', $id) . '\')'
-				: '= \'' . $id . '\'';
-		array_push($id_conditions, 'gi.item_id ' . $id_condition);
-	}
-	if ($type) {
-		array_push($id_conditions, 'gi.item_type = \'' . $type . '\'');
-	}
-	$sql .= ' WHERE (fm.filemime = \'image/jpeg\' OR fm.filemime = \'image/png\' OR fm.filemime = \'image/jpg\' OR fm.filemime = \'image/gif\')';
-	if ($id_conditions) {
-		$sql .= ' AND ';
-		$sql .= implode(' AND ', $id_conditions);
-	}
-	$sql .= ' LIMIT 1';
-
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
-			0);
-	return $result;
+	return gallery_medias_count($type, $id, array('image/jpeg', 'image/png', 'image/jpg', 'image/gif'));
 }
 /**
  * Get count of all gallery sounds by type and id.
@@ -982,27 +962,9 @@ function gallery_images_count($type = false, $id = false) {
  *   Number of sounds
  */
 function gallery_sounds_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM gallery_image AS gi INNER JOIN file_managed as fm ON fm.fid = gi.file_managed_fid  ';
-	$id_conditions = array();
-	if ($id) {
-		$id_condition = is_array($id)
-				? 'IN (\'' . implode('\', \'', $id) . '\')'
-				: '= \'' . $id . '\'';
-		array_push($id_conditions, 'gi.item_id ' . $id_condition);
-	}
-	if ($type) {
-		array_push($id_conditions, 'gi.item_type = \'' . $type . '\'');
-	}
-	$sql .= ' WHERE (fm.filemime = \'audio/mpeg\')';
-	if ($id_conditions) {
-		$sql .= ' AND ';
-		$sql .= implode(' AND ', $id_conditions);
-	}
-	$sql .= ' LIMIT 1';
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
-			0);
-	return $result;
+	return gallery_medias_count($type, $id, 'audio/mpeg');
 }
+
 /**
  * Get count of all gallery videos by type and id.
  *
@@ -1014,26 +976,7 @@ function gallery_sounds_count($type = false, $id = false) {
  *   Number of videos
  */
 function gallery_videos_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM {gallery_image} AS gi INNER JOIN file_managed as fm ON fm.fid = gi.file_managed_fid ';
-	$id_conditions = array();
-	if ($id) {
-		$id_condition = is_array($id)
-				? 'IN (\'' . implode('\', \'', $id) . '\')'
-				: '= \'' . $id . '\'';
-		array_push($id_conditions, 'gi.item_id ' . $id_condition);
-	}
-	if ($type) {
-		array_push($id_conditions, 'gi.item_type = \'' . $type . '\'');
-	}
-	$sql .= ' WHERE (fm.filemime = \'video/mp4\')';
-	if ($id_conditions) {
-		$sql .= ' AND ';
-		$sql .= implode(' AND ', $id_conditions);
-	}
-	$sql .= ' LIMIT 1';
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
-			0);
-	return $result;
+	return gallery_medias_count($type, $id, 'video/mp4');
 }
 /**
  * Get count of all gallery medias by type and id.
@@ -1042,27 +985,31 @@ function gallery_videos_count($type = false, $id = false) {
  *   The type of the object.
  * @param $id
  *   The ID (or an array of IDs) of the object.
+ * @param $mediaType
+ *   The media mime type.
  * @return
  *   Number of medias
  */
-function gallery_medias_count($type = false, $id = false) {
-	$sql = 'SELECT COUNT(gi.id) FROM {gallery_image} AS gi ';
-	$id_conditions = array();
-	if ($id) {
-		$id_condition = is_array($id)
-				? 'IN (\'' . implode('\', \'', $id) . '\')'
-				: '= \'' . $id . '\'';
-		array_push($id_conditions, 'gi.item_id ' . $id_condition);
+function gallery_medias_count($type = false, $id = false, $mediaType = false) {
+	$select = db_select('gallery_image', 'gi');
+	$select->addExpression('COUNT(id)', 'count');
+	$conditions = db_and();
+	if ($mediaType) {
+		$select->innerJoin('file_managed', 'fm', 'gi.file_managed_fid = fm.fid');
+		if (is_array($mediaType)) {
+			$conditions->condition('fm.filemime', $mediaType, "IN");
+		} else {
+			$conditions->condition('fm.filemime', $mediaType);
+		}
 	}
-	if ($type) {
-		array_push($id_conditions, 'gi.item_type = \'' . $type . '\'');
+	if (is_array($id)) {
+		$conditions->condition('gi.item_id', $id, "IN");
+	} else {
+		$conditions->condition('gi.item_id', $id);
 	}
-	if ($id_conditions) {
-		$sql .= ' WHERE ' . implode(' AND ', $id_conditions);
-	}
-	$sql .= ' LIMIT 1';
-	$result = db_query($sql, array(), array('fetch' => PDO::FETCH_ASSOC))->fetchField(
-			0);
+	$select->condition($conditions);
+	$queryResult = $select->execute();
+	$result = $queryResult->fetchField(0);
 	return $result;
 }
 /**
