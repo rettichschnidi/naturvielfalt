@@ -16,10 +16,10 @@ function area_new_area() {
 	drupal_set_title(t('Create new area'));
 
 	$output['map'] = array(
-			'#search' => true,
 			'#ch1903' => true,
-			'#showall' => true,
 			'#action' => 'create',
+			'#infowindow_createform_fetch_url' => base_path() . 'area/getnewareanameajaxform',
+			'#geometries_fetch_url' => base_path() . 'areas/json',
 			'#theme' => 'area'
 	);
 	return drupal_render($output);

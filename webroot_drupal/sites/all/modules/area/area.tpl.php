@@ -23,21 +23,14 @@ if ($height || $width) {
 }
 ?>
 
-<div id="<?php echo $mapid ?>">
+<div id="<?php echo $mapid ?>_div">
 	<div id="<?php echo $mapid_canvas ?>" <?php echo $style; ?>>
     	<h1><?php print(t('You have to enable Javascript!')) ?></h1>
 	</div>
 </div>
 <?php
 global $user;
-// include CSS ...
-function area_add_js_url($url) {
-	print "<script type='text/javascript' src='$url'></script>\n";
-}
-// ... and JavaScripts
-function area_add_css_url($url) {
-	print "<link href='$url' type='text/css' rel='stylesheet'/>\n";
-}
+global $language;
 
 // Set basepaths for usage later on...
 $baseModulPath = base_path() . drupal_get_path('module', 'area') . '/';
@@ -68,10 +61,10 @@ if ($action == 'create' || $action == 'getcoordinate') {
 
 $area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 		? 'https://' : 'http://';
+$googlelanguage = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
 area_add_js_url(
 	$area_protocol
-			. "maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language="
-			. $user->language . "\n");
+			. "maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language=$googlelanguage\n");
 
 area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
 area_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
@@ -136,16 +129,17 @@ if ($coordinate_storage_id != false) {
 		"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
 }
 
-/**
- * To edit a geometry, the area_id has to be set in javascript.
- */
-if ($json_url) {
-	// should be included before area.js
-	print "<script>json_url = '$json_url';</script>\n";
-}
 ?>
 <script>
 	jQuery(document).ready(function() {
+		jQuery.ajaxSetup({
+			  error: function(xhr, status, error) {
+			    alert("An AJAX error occured: " + status + "\nError: " + error);
+			    console.error(status);
+			    console.error(error);
+			  }
+			});
+		
 		var options = {
 				canvasid: '<?php echo $mapid_canvas ?>',
 				search: <?php echo $search ? 1 : 0 ?>,
@@ -167,6 +161,8 @@ if ($json_url) {
 		? $coordinate_storage_id : 0
 									 ?>,
 				geometriesfetchurl: '<?php echo $geometries_fetch_url ?>',
+				infowindowcontentfetchurl: '<?php echo $infowindow_content_fetch_url ?>',
+				infowindowcreateformfetchurl: '<?php echo $infowindow_createform_fetch_url ?>',
 				googlemapsoptions: {
 						zoom: <?php echo $defaultzoom ?>,
 						streetViewControl: <?php echo $streetview ? 1 : 0 ?>,
@@ -177,8 +173,14 @@ if ($json_url) {
 						mapTypeId : google.maps.MapTypeId.ROADMAP,
 				}
 			};
+
+		if( typeof <?php echo $mapid ?> != 'undefined') {
+			console.error(<?php echo $mapid ?>);
+			alert("'<?php echo $mapid ?>' is already declared! Please use another map id.");
+		}
+		
 		if (jQuery('#' + options.canvasid).length) {
-			var <?php echo $mapid ?> = new Area(options);
+			<?php echo $mapid ?> = new Area(options);
 
 			jQuery( "#<?php echo $mapid_canvas ?>" ).resizable({
 				stop: function(event, ui) {

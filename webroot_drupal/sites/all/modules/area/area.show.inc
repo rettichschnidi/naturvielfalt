@@ -19,7 +19,8 @@ function area_show_all_areas($onlyMyAreas = false) {
 				'#mapid' => 'areamap',
 				'#search' => true,
 				'#ch1903' => true,
-				'#geometries_fetch_url' => base_path() . 'areas/json',
+				'#geometries_fetch_url' => base_path() . 'areas/own/json',
+				'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
 	} else {
@@ -27,7 +28,8 @@ function area_show_all_areas($onlyMyAreas = false) {
 				'#mapid' => 'areamap',
 				'#search' => true,
 				'#ch1903' => true,
-				'#geometries_fetch_url' => base_path() . 'areas/own/json',
+				'#geometries_fetch_url' => base_path() . 'areas/json',
+				'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
 	}

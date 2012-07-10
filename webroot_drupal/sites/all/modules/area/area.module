@@ -413,23 +413,26 @@ function area_theme() {
 							 *    because I fear a lot of duplicated code duplication.
 							 */
 							'action' => false,
-							// enable searchbox
-							'search' => false,
 							// load geometries from this url
-							'geometries_fetch_url' => false,
+							'geometries_fetch_url' => '',
+							// infoWindow content fetch url. {ID} will be swaped with the actual id of the requested geometry.
+							'infowindow_content_fetch_url' => '',
+							// url to get the content for the window when a new element gets created.
+							'infowindow_createform_fetch_url' => '',
 							// set to an integer if an area_geometry should be edited (note: action needs to be 'edit')
+							// and geometry has to be loaded
 							'geometry_edit_id' => false,
 							// element id for storage
 							'coordinate_storage_id' => false,
-							// the geometry array
-							'json_url' => false,
 							// the map height
 							'height' => '400px',
 							// the map width
 							'width' => '100%',
-							// wether to show the scale or not
+							// enable searchbox
+							'search' => false,
+							// whether to show the scale or not
 							'scalecontrol' => true,
-							// include a filed which shows/sets the CH1903 coordinates
+							// include a field which shows/sets the CH1903 coordinates
 							'ch1903' => false,
 							// show a reticle on the map's center
 							'reticle' => true,
