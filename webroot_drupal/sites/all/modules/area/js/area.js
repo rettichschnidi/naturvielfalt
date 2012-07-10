@@ -519,8 +519,8 @@ Area.prototype.createSearchbarCH1903 = function(enable) {
 		};
 		
 		var getFormattedCh1903Value = function(x, y) {
-			return	"Y: " + getValueWithThousandsSeparator(y.toFixed(2), '\'') +
-				", X: " + getValueWithThousandsSeparator(x.toFixed(2), '\'');
+			return	"Y: " + getValueWithThousandsSeparator(y.toFixed(0), '\'') +
+				", X: " + getValueWithThousandsSeparator(x.toFixed(0), '\'');
 		};
 		
 		/**
