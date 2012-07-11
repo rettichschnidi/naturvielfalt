@@ -29,9 +29,8 @@ jQuery(document).ready(function() {
 			}else{
 				observation.hideAttributes();
 				observation.hideDetMethods();
-				areabasic.newestElement.overlay.setMap(null);
-				areabasic.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-				areabasic.initLocation();
+				observationmap.newOverlay.overlay.setMap(null);
+				observationmap.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
 				$('#recent_observations').flexReload();
 			}
 		} else if (responseText != null) {
@@ -245,46 +244,22 @@ jQuery(document).ready(function() {
 		 * get a observation on the map and zoom.. by id
 		 * @param id
 		 */
-		observation.selectObservation = function(id){
-			if (id in areabasic.overlayElements) {
-				if (areabasic.currentElement != null) {
-					areabasic.currentElement.deselect();
+		Area.prototype.selectObservation = function(id) {
+			if (id in this.overlaysArray) {
+				if (this.selectedId != null) {
+					this.overlaysArray[this.selectedId].deselect();
+					this.selectedId = null;
 				}
-				areabasic.currentElement = areabasic.overlayElements[id];
-				areabasic.currentData = areabasic.overlayData[id];
-
-				areabasic.currentElement.select();
-				var bounds = areabasic.currentElement.getBounds();
-				areabasic.googlemap.fitBounds(bounds);
-				areabasic.googlemap.setZoom(areabasic.googlemap.getZoom() - 2);
-				observation.showInfoWindow(id);
+				this.selectedId = id;
+				var currentOverlays = this.overlaysArray[this.selectedId];
+				currentOverlays.select();
+				
+				var bounds = currentOverlays.getBounds();
+				this.googlemap.fitBounds(bounds);
+				this.googlemap.setZoom(this.googlemap.getZoom() - 2);
+				this.showInfoWindow(id);
 			} else {
 				console.error("Observation not available: " + id);
 			}
 		};
-		
-		/**
-		 * Show a info window for a given, existing observation
-		 * @param id
-		 */
-		observation.showInfoWindow = function(id) {
-			var url = Drupal.settings.basePath + 'observation/' + id
-					+ '/overview/ajaxform';
-
-			if (areabasic.visibleInfoWindow != null) {
-				areabasic.visibleInfoWindow.close();
-			}
-			var infowindow = areabasic.visibleInfoWindow = new google.maps.InfoWindow({
-				content : Drupal.t('Loading...'),
-			});
-
-			jQuery.get(url, function(data) {
-				infowindow.setContent(data);
-			});
-			// move marker a little bit down, (approximately)
-			// centers the infowindow
-			areabasic.googlemap.panBy(0, -250);
-			infowindow.open(areabasic.googlemap, areabasic.currentElement);
-		};
-
 });

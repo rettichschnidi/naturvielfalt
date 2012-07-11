@@ -28,7 +28,10 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
 			'#showall' => false,
 			'#scalecontrol' => true,
 			'#action' => 'edit',
-			'#geometry_edit_id' => (int) $areadata['id']
+			'#geometry_edit_id' => (int) $areadata['id'],
+			'#geometry_update_url' => base_path() . 'area/'
+						. $areadata['id'] . '/updategeometry/json',
+			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
 	);
 	return $output;
 }

@@ -409,14 +409,14 @@ function area_address_hidden_form() {
 	$form['addressdata']['area-coords'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-area-coordinates',
+					'id' => 'hiddenfield-geometry-coordinates',
 					'name' => 'area-coords'
 			),
 	);
 	$form['addressdata']['area_type'] = array(
 			'#type' => 'hidden',
 			'#attributes' => array(
-					'id' => 'hiddenfield-area-type',
+					'id' => 'hiddenfield-geometry-type',
 					'name' => 'area_type'
 			),
 	);

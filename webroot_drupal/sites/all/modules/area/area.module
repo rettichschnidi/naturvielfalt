@@ -422,6 +422,9 @@ function area_theme() {
 							// set to an integer if an area_geometry should be edited (note: action needs to be 'edit')
 							// and geometry has to be loaded
 							'geometry_edit_id' => false,
+							// Where to post the updated geometry data
+							// {ID} will be swaped with the actual id of the updated geometry.
+							'geometry_update_url' => '',
 							// element id for storage
 							'coordinate_storage_id' => false,
 							// the map height

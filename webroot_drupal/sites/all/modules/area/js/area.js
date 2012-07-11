@@ -58,18 +58,19 @@ function Area(options) {
 	this.createSearchbar(this.options.search);
 	this.createSearchbarCH1903(this.options.ch1903);
 	this.createDrawingManager(this.options.drawingmanager);
-	if(this.options.geometryedit) {
-		this.geometryEdit(this.options.geometryeditid);
-	}
 	this.createReticle(this.options.reticle);
 	if(this.options.geometriesfetchurl.length > 0) {
 		var this_ = this;
 		jQuery.getJSON(this.options.geometriesfetchurl,
 				function(data) {
 					this_.loadGeometriesAndOverlaysFromJson(data);
+					if(this_.options.geometryedit) {
+						this_.geometryEdit(this_.options.geometryeditid);
+					}
 				}
 			);
 	}
+	this.createDrawingManagerGetcoordinate(this.options.getcoordinate);
 };
 
 /**
@@ -180,8 +181,8 @@ Area.prototype.automaticallySaveLocation = function(enable) {
 };
 
 /**
- * Select the area with the given id. - set style to "selected" - set map to
- * show the given element - open up an info window
+ * Select the geometry with the given id, set style to "selected", set map to
+ * show the given element, open up an info window
  * 
  * @param id integer
  * 	geometry id
@@ -205,43 +206,51 @@ Area.prototype.selectGeometry = function(geometryid) {
 };
 
 /**
- * Show a info window for a given, existing area
+ * Show a info window for a given, existing geometry
  * 
  * @param id integer
  * 	geometry id
  */
 Area.prototype.showInfoWindow = function(id) {
-	var url = this.options.infowindowcontentfetchurl.replace(/{ID}/, id);
-	var this_ = this;
-
-	if (this.infoWindow != null) {
-		google.maps.event.trigger(this_.infoWindow, 'closeclick');
-		this.infoWindow.close();
+	if(id == null) {
+		console.log("Invalid id");
+		return;
 	}
-	var infowindow = this.infoWindow = new google.maps.InfoWindow({
-		content : Drupal.t('Loading...')
-	});
+	if(this.options.infowindowcontentfetchurl) {
+		var url = this.options.infowindowcontentfetchurl.replace(/{ID}/, id);
+		var this_ = this;
 	
-	// Delete overlayElement if window closed
-	google.maps.event.addListener(infowindow, 'closeclick', function() {
-		this_.overlaysArray[id].deselect();
-	});
-
-	jQuery.get(url, function(data) {
-		infowindow.setContent(data);
-	});
+		if (this.infoWindow != null) {
+			google.maps.event.trigger(this_.infoWindow, 'closeclick');
+			this.infoWindow = null;
+		}
+		var infowindow = this.infoWindow = new google.maps.InfoWindow({
+			content : Drupal.t('Loading...')
+		});
+		
+		// Delete overlayElement if window closed
+		google.maps.event.addListener(infowindow, 'closeclick', function() {
+			this_.overlaysArray[id].deselect();
+		});
 	
-	this.googlemap.fitBounds(this.overlaysArray[id].getBounds());
-	infowindow.open(this.googlemap, this.overlaysArray[id]);
+		jQuery.get(url, function(data) {
+			infowindow.setContent(data);
+		});
+		
+		this.googlemap.fitBounds(this.overlaysArray[id].getBounds());
+		infowindow.open(this.googlemap, this.overlaysArray[id]);
+	} else {
+		alert("No infowindowcontentfetchurl given!");
+	}
 };
 
 /**
- * Show a info window for a given area
+ * Show a info window for a new geometry
  * 
  * @param id integer
  *   
  */
-Area.prototype.showInfoWindowToCreateNewArea = function(overlayElement, html) {
+Area.prototype.showInfoWindowToCreateNewGeometry = function(overlayElement, html) {
 	var infowindow = this.infoWindow = new google.maps.InfoWindow({
 		content : html
 	});
@@ -250,7 +259,7 @@ Area.prototype.showInfoWindowToCreateNewArea = function(overlayElement, html) {
 	google.maps.event.addListener(infowindow, 'closeclick', function() {
 		overlayElement.setMap(null);
 	});
-	
+
 	infowindow.open(this.googlemap, overlayElement);
 };
 
@@ -272,17 +281,23 @@ Area.prototype.createOverlayElementFromJson = function(currentjsonoverlay) {
 	return newoverlay;
 };
 
-Area.prototype.addWindowsListenerForNewElement = function(id, overlay) {
+Area.prototype.addWindowsListenerForNewElement = function(id) {
 	var this_ = this;
-	google.maps.event.addListener(overlay, 'click', function() {
-		this_.overlaysArray[id].select();
-		this_.showInfoWindow(id);
-		
-		google.maps.event.addListener(this_.infoWindow, 'closeclick', function() {
-			this_.overlaysArray[id].deselect();
-		});
-		
-	});
+	var currentoverlay = this.overlaysArray[id];
+	
+	if(!currentoverlay.listeners.click) {
+		currentoverlay.listeners.click = [];
+	}
+	currentoverlay.listeners.click.push(
+		google.maps.event.addListener(currentoverlay, 'click', function() {
+			currentoverlay.select();
+			this_.showInfoWindow(id);
+			
+			google.maps.event.addListener(this_.infoWindow, 'closeclick', function() {
+				currentoverlay.deselect();
+			});
+		})
+	);
 };
 
 /**
@@ -312,9 +327,10 @@ Area.prototype.addGeometryFromJsonToGoogleMapArray = function(currentjsonoverlay
 
 	newoverlay.setPath(latLngs);
 	newoverlay.setMap(this.googlemap);
+	newoverlay.listeners = {};
 	newoverlay.setup();
 
-	this.addWindowsListenerForNewElement(currentjsonoverlay.id, newoverlay);
+	this.addWindowsListenerForNewElement(currentjsonoverlay.id);
 };
 
 /**
@@ -335,7 +351,6 @@ Area.prototype.addGeometryFromJsonToGeometriesArray = function(currentjsonoverla
  */
 Area.prototype.loadGeometriesAndOverlaysFromJson = function(json) {
 	var this_ = this;
-	console.log(json.length);
 	json.forEach(function(e) {
 		this_.addGeometryFromJsonToGeometriesArray(e);
 		this_.addGeometryFromJsonToGoogleMapArray(e);
@@ -384,9 +399,11 @@ Area.prototype.createDrawingManager = function(enable) {
 	
 		google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(overlay) {
 			overlay.overlay.setEditable(false);
-			jQuery.get(this.options.infowindowcreateformfetchurl, function(data) {
-				this_.showInfoWindowToCreateNewArea(overlay.overlay, data);
-				updateHiddenfields(overlay);
+			jQuery.get(this_.options.infowindowcreateformfetchurl, function(data) {
+				this_.showInfoWindowToCreateNewGeometry(overlay.overlay, data);
+				//make it look like all our other overlays
+				overlay.overlay.type = overlay.type;
+				updateHiddenfields(overlay.overlay);
 			});
 			this.setDrawingMode(null);
 		});
@@ -594,61 +611,64 @@ Area.prototype.createSearchbarCH1903 = function(enable) {
  * 	Id of the overlay to edit.
  */
 Area.prototype.geometryEdit = function(geometryId) {
-	console.debug("geometry id: " + geometryId);
 	var this_ = this;
-	var url = Drupal.settings.basePath + 'area/' + geometryId + '/json';
-	jQuery.get(url, function(data) {
-		this_.loadGeometriesAndOverlaysFromJson(data);
-		var overlay = this_.overlaysArray[geometryId];
-		var overlayData = this_.geometriesArray[geometryId];
-		var map = this_.googlemap;
-		var bounds = overlay.getBounds();
-		map.fitBounds(bounds);
-		overlay.setEditable(true);
-		google.maps.event.addListener(this_.googlemap, 'rightclick',
-				function(mouseevent) {
-					console.log(mouseevent.latLng);
-					overlay.deleteClosestVertex(mouseevent.latLng);
-			});
+	var currentOverlay = this.overlaysArray[geometryId];
+	var currentGeometry = this.geometriesArray[geometryId];
+	currentOverlay.setEditable(true);
+	
+	if(currentOverlay.listeners.click) {
+		currentOverlay.listeners.click.forEach(function(e) {
+			google.maps.event.removeListener(e);
+		});
+		currentOverlay.listeners.click = [];
+	}
+	
+	google.maps.event.addListener(this_.googlemap, 'rightclick',
+			function(mouseevent) {
+				console.log(mouseevent.latLng);
+				currentOverlay.deleteClosestVertex(mouseevent.latLng);
+		});
 
-		google.maps.event.addListener(
-				overlay,
-				'geometry_changed',
-				function() {
-					var url = Drupal.settings.basePath + 'area/'
-							+ overlayData.id + '/updategeometry/json';
-					var position = overlay.getPosition();
-	
-					console.log("Changed position to: " + position);
-	
-					getAddress(position, function(address) {
-						console.log(address.canton);
-						overlayData.canton = address.canton;
-						overlayData.township = address.township;
-						overlayData.zip = address.zip;
-						overlayData.country = address.country;
-					});
-	
-					getAltitude(position, function(altitude) {
-						console.log(altitude);
-						overlayData.altitude = altitude;
-					});
-	
-					var area_coords = new Array();
-					overlay.getAllCoordinates().forEach(
-							function(position) {
-								area_coords.push([ position.lat(),
-										position.lng() ]);
-							});
-					area_coords = JSON.stringify(area_coords);
-					overlayData.area_points = area_coords;
-	
-					// Ugly hack...
-					setTimeout(function() {
-						jQuery.post(url, overlayData);
-					}, 1500);
+	google.maps.event.addListener(
+			currentOverlay,
+			'geometry_changed',
+			function() {
+				var posturl = this_.options.geometryupdateurl.replace(/{ID}/, geometryId);
+
+				var position = currentOverlay.getPosition();
+
+				getAddress(position, function(address) {
+					console.log(address.canton);
+					currentGeometry.canton = address.canton;
+					currentGeometry.township = address.township;
+					currentGeometry.zip = address.zip;
+					currentGeometry.country = address.country;
 				});
-	});
+
+				getAltitude(position, function(altitude) {
+					console.log(altitude);
+					currentGeometry.altitude = altitude;
+				});
+				
+				updateHiddenfields(currentOverlay, this_.options.coordinatestorageid);
+
+				var geometry_coordinates = new Array();
+				currentOverlay.getAllCoordinates().forEach(
+						function(position) {
+							geometry_coordinates.push([ position.lat(),
+									position.lng() ]);
+						});
+				geometry_coordinates = JSON.stringify(geometry_coordinates);
+				currentGeometry.area_points = geometry_coordinates;
+
+				// Ugly hack... Better to be chained with getAddress & getAltitude
+				setTimeout(function() {
+					jQuery.post(posturl, currentGeometry, function() {
+							console.log("Geometry saved!");
+						});
+				}, 1500);
+			});
+	this.googlemap.setCenter(currentOverlay.getPosition());
 };
 
 /**
@@ -738,72 +758,74 @@ Area.prototype.createReticle = function(enable) {
 
 	if(enable) {
 		var srcImage = this.options.reticleimageurl;
-		overlay = new ReticleOverlay(srcImage, this.googlemap);
+		var reticleoverlay = this.reticleoverlay = new ReticleOverlay(srcImage, this.googlemap);
 		google.maps.event.addListener(this.googlemap, 'center_changed', function() { // change even to e.g. idle if needed
-			overlay.draw();
+			reticleoverlay.draw();
 		});
+	} else {
+		alert("Not implemented!");
 	}
 };
 
-Area.prototype.createDrawingManagerGetcoordinate = function() {
-	this.drawingManager = new google.maps.drawing.DrawingManager({
-		drawingMode : google.maps.drawing.OverlayType.MARKER,
-		// show the tools
-		drawingControl : true,
-		drawingControlOptions : {
-			// show the toolbox on the right, middle
-			position : google.maps.ControlPosition.TOP_LEFT,
-			// enable marker, polyline and polygon as drawing primitves
-			drawingModes : [ google.maps.drawing.OverlayType.MARKER ]
-		},
-		// set options for the 3 elements
-		makerOptions : {
-			draggable : true
-		},
-		map : this.googlemap
-	});
-
-	var update = function() {
-		jQuery('#' + coordinatestorageid).val(
-				JSON.stringify(this.newOverlay.overlay
-						.getJsonCoordinates()));
-		updateHiddenfields(this.newOverlay);
-	};
-
-	google.maps.event.addListener(
-			this.drawingManager,
-			'overlaycomplete',
-			function(overlay) {
-				if (this.newOverlay) {
-					this.newOverlay.overlay.setMap(null);
-				}
-				this.newOverlay = overlay;
-				this.newOverlay.overlay
-						.setupGeometryChangedEvent();
-				this.setDrawingMode(null);
-				overlay.overlay.setEditable(true);
-				update();
-
-				google.maps.event.addListener(
-						this.newOverlay.overlay,
-						'geometry_changed',
-						update);
-			});
-	google.maps.event.addListener(
-			this,
-			'overlaycomplete',
-			function() {
-				this.newOverlay.overlay.setupGeometryChangedEvent();
-				this.newOverlay.overlay.setMap(this.googlemap);
-				this.drawingManager.setDrawingMode(null);
-				this.newOverlay.overlay.setEditable(true);
-				update();
-
-				google.maps.event.addListener(
-						this.newOverlay.overlay,
-						'geometry_changed',
-						update);
-			});
+Area.prototype.createDrawingManagerGetcoordinate = function(enable) {
+	if(enable) {
+		var this_ = this;
+		this.drawingManager = new google.maps.drawing.DrawingManager({
+			drawingMode : google.maps.drawing.OverlayType.MARKER,
+			// show the tools
+			drawingControl : true,
+			drawingControlOptions : {
+				// show the toolbox on the right, middle
+				position : google.maps.ControlPosition.TOP_LEFT,
+				// enable marker, polyline and polygon as drawing primitves
+				drawingModes : [ google.maps.drawing.OverlayType.MARKER ]
+			},
+			// set options for the 3 elements
+			makerOptions : {
+				draggable : true
+			},
+			map : this.googlemap
+		});
+	
+		var update = function() {
+			updateHiddenfields(this_.newOverlay.overlay, this_.options.coordinatestorageid);
+		};
+	
+		google.maps.event.addListener(
+				this.drawingManager,
+				'overlaycomplete',
+				function(overlay) {
+					if (this_.newOverlay) {
+						this_.newOverlay.overlay.setMap(null);
+					}
+					this_.newOverlay = overlay;
+					this_.newOverlay.overlay
+							.setupGeometryChangedEvent();
+					this.setDrawingMode(null);
+					overlay.overlay.setEditable(true);
+					update();
+	
+					google.maps.event.addListener(
+							this_.newOverlay.overlay,
+							'geometry_changed',
+							update);
+				});
+		google.maps.event.addListener(
+				this,
+				'overlaycomplete',
+				function() {
+					this_.newOverlay.overlay.setupGeometryChangedEvent();
+					this_.newOverlay.overlay.setMap(this.googlemap);
+					this_.drawingManager.setDrawingMode(null);
+					this_.newOverlay.overlay.setEditable(true);
+					update();
+	
+					google.maps.event.addListener(
+							this_.newOverlay.overlay,
+							'geometry_changed',
+							update);
+				});
+	}
 };
 
 /**
@@ -877,10 +899,15 @@ getAltitude = function(latlng, callback) {
  * 
  * @param overlay
  */
-updateHiddenfields = function(overlay) {
-	console.log(overlay);
+updateHiddenfields = function(overlay, coordinatestorageid) {
+	if(coordinatestorageid) {
+		jQuery('#' + coordinatestorageid).val(
+				JSON.stringify(overlay
+						.getJsonCoordinates()));
+	}
+	
 	getAddress(
-			overlay.overlay.getPosition(),
+			overlay.getPosition(),
 			function(address) {
 				jQuery('#hiddenfield-canton').val(address.canton);
 				jQuery('#hiddenfield-township').val(address.township);
@@ -889,13 +916,13 @@ updateHiddenfields = function(overlay) {
 				jQuery('#hiddenfield-country').val(address.country);
 				
 				jQuery('#hiddenfield-latitude').val(
-						overlay.overlay.getPosition().lat());
+						overlay.getPosition().lat());
 				jQuery('#hiddenfield-longitude').val(
-						overlay.overlay.getPosition().lng());
-				jQuery('#hiddenfield-area-type').val(overlay.type);
-				jQuery('#hiddenfield-area-coordinates').val(JSON.stringify(overlay.overlay.getJsonCoordinates()));
+						overlay.getPosition().lng());
+				jQuery('#hiddenfield-geometry-type').val(overlay.type);
+				jQuery('#hiddenfield-geometry-coordinates').val(JSON.stringify(overlay.getJsonCoordinates()));
 			});
-	getAltitude(overlay.overlay.getPosition(), function(
+	getAltitude(overlay.getPosition(), function(
 			altitude) {
 		jQuery('#hiddenfield-altitude').val(altitude);
 	});

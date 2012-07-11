@@ -22,10 +22,10 @@ function observation_show_all_observations() {
 
 	$output['div']['map'] = array(
 			'#theme' => 'area',
-			'#show' => 'custom-show',
-			'#search' => true,
 			'#ch1903' => true,
-			'#json_url' => base_path() . 'observation/geometry/json',
+			'#mapid' => 'observationmap',
+			'#geometries_fetch_url' => base_path() . 'observation/geometry/json',
+			'#infowindow_content_fetch_url' => base_path() . '/observation/{ID}/overview/ajaxform'
 	);
 
 	$output['space'] = array(
@@ -44,7 +44,7 @@ function observation_show_all_observations() {
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
-								observation.selectObservation(id);
+								observationmap.selectObservation(id);
 							}
 						)
 					}",

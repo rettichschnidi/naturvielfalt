@@ -96,18 +96,32 @@ function observation_form($observation = false) {
 
 	$form['div']['hiddenfields'] = area_address_hidden_form();
 
-	$form['div']['map'] = array(
-			'#theme' => 'area',
-			'#coordinate_storage_id' => 'coordinate',
-			'#search' => true,
-			'#ch1903' => true,
-			'#height' => '350px',
-	);
-	$form['div']['map']['#action'] = ($observation['observation']['id'] == '')
-			? 'getcoordinate' : 'custom-edit';
-	if ($observation['observation']['id'] != '')
-		$form['div']['map']['#json_url'] = 'observation/'
-				. $observation['observation']['id'] . '/geometry/json';
+	if(empty($observation['observation']['id'])) {
+		$form['div']['map'] = array(
+				'#theme' => 'area',
+				'#mapid' => 'observationmap',
+				'#coordinate_storage_id' => 'coordinate',
+				'#ch1903' => true,
+				'#search' => true,
+				'#height' => '350px',
+				'#action' => 'getcoordinate',
+		);
+	} else {
+		$form['div']['map'] = array(
+				'#theme' => 'area',
+				'#mapid' => 'observationmap',
+				'#coordinate_storage_id' => 'coordinate',
+				'#ch1903' => true,
+				'#search' => true,
+				'#infowindow_content_fetch_url' => base_path() . '/observation/{ID}/overview/ajaxform',
+				'#geometries_fetch_url' => base_path() . 'observation/'
+				. $observation['observation']['id'] . '/geometry/json',
+				'#geometry_edit_id' => $observation['observation']['id'],
+				'#height' => '350px',
+				'#action' => 'edit',
+		);
+		
+	}
 	// warn when leaving with changes not yet saved
 	$form['safetynet'] = array(
 			'#theme' => 'commonstuff.safetynet'

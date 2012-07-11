@@ -55,28 +55,29 @@ $libraries = 'geometry';
 if ($search) {
 	$libraries .= ',places';
 }
-if ($action == 'create' || $action == 'getcoordinate') {
+if ($action == 'create' || $action == 'getcoordinate' || $action == 'edit') {
 	$libraries .= ',drawing';
 }
 
 $area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 		? 'https://' : 'http://';
-$googlelanguage = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
-area_add_js_url(
+$googlelanguage = isset($user->language) && !empty($user->language)
+		? $user->language : $language->language;
+commonstuff_add_js_url(
 	$area_protocol
 			. "maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language=$googlelanguage\n");
 
-area_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
-area_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
-area_add_js_url($baseModulJsPath . 'area.js');
+commonstuff_add_js_url($baseModulJsPath . 'contrib/v3_epoly_sphericalArea.js');
+commonstuff_add_js_url($baseModulJsPath . 'area-googlemapsapi-extensions.js');
+commonstuff_add_js_url($baseModulJsPath . 'area.js');
 
-area_add_css_url($baseModulCssPath . 'area-theme.css');
+commonstuff_add_css_url($baseModulCssPath . 'area-theme.css');
 
 /**
  * Include contributed functions needed by the CH1903 box.
  */
 if ($ch1903) {
-	area_add_js_url($baseModulJsPath . 'contrib/wgs84_ch1903.js');
+	commonstuff_add_js_url($baseModulJsPath . 'contrib/wgs84_ch1903.js');
 }
 
 /**
@@ -86,50 +87,10 @@ if ($reticle) {
 	$reticle_image_url = base_path() . drupal_get_path('module', 'commonstuff')
 			. '/images/reticle.png';
 }
-
-// /**
-//  * If existing area(s) should be shown...
-//  */
-// switch ($show) {
-// /**
-//  * Display just the ones the user owns.
-//  */
-// case 'custom-show':
-// 	area_add_js_url($baseModulJsPath . 'area-show-geometry.js');
-// 	break;
-// }
-
-/**
- * Decide which actions should be exectured...
- */
-switch ($action) {
-/**
- * Create an existing area geometry
- */
-case 'custom-edit':
-	area_add_js_url($baseModulJsPath . 'area-edit-geometry.js');
-	break;
-/**
- * Set a marker and update the hidden fields (provided by the user of this theme)
- */
-case 'getcoordinate':
-	area_add_js_url($baseModulJsPath . 'area-getcoordinate.js');
-	break;
-}
 ?>
+
 <!-- ----------------------------------------------- -->
-<?php
 
-/**
- * Allow the user of this theme to set a hidden field to store the coordinates
- * (encoded as JSON string)
- */
-if ($coordinate_storage_id != false) {
-	print 
-		"<script>coordinate_storage_id = '$coordinate_storage_id';</script>\n";
-}
-
-?>
 <script>
 	jQuery(document).ready(function() {
 		jQuery.ajaxSetup({
@@ -152,17 +113,17 @@ if ($coordinate_storage_id != false) {
 				height: '<?php echo $height ?>',
 				drawingmanager: <?php echo $action == 'create' ? 1 : 0 ?>,
 				geometryedit: <?php echo $action == 'edit' ? 1 : 0 ?>,
+				getcoordinate: <?php echo $action == 'getcoordinate' ? 1 : 0 ?>,
 				geometryeditid: <?php echo $geometry_edit_id ? $geometry_edit_id
 		: 0
 								?>,
 				reticle: <?php echo $reticle ? 1 : 0 ?>,
 				reticleimageurl: '<?php echo $reticle_image_url ?>',
-				coordinatestorageid: <?php echo $coordinate_storage_id
-		? $coordinate_storage_id : 0
-									 ?>,
+				coordinatestorageid: '<?php echo $coordinate_storage_id ?>',
 				geometriesfetchurl: '<?php echo $geometries_fetch_url ?>',
 				infowindowcontentfetchurl: '<?php echo $infowindow_content_fetch_url ?>',
 				infowindowcreateformfetchurl: '<?php echo $infowindow_createform_fetch_url ?>',
+				geometryupdateurl: '<?php echo $geometry_update_url ?>',
 				googlemapsoptions: {
 						zoom: <?php echo $defaultzoom ?>,
 						streetViewControl: <?php echo $streetview ? 1 : 0 ?>,
