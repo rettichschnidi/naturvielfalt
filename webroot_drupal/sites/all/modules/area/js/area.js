@@ -222,7 +222,6 @@ Area.prototype.showInfoWindow = function(id) {
 	
 		if (this.infoWindow != null) {
 			google.maps.event.trigger(this_.infoWindow, 'closeclick');
-			this.infoWindow = null;
 		}
 		var infowindow = this.infoWindow = new google.maps.InfoWindow({
 			content : Drupal.t('Loading...')
@@ -231,6 +230,8 @@ Area.prototype.showInfoWindow = function(id) {
 		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
 			this_.overlaysArray[id].deselect();
+			infowindow.close();
+			this_.infoWindow = null;
 		});
 	
 		jQuery.get(url, function(data) {
