@@ -113,7 +113,7 @@ function observation_form($observation = false) {
 				'#coordinate_storage_id' => 'coordinate',
 				'#ch1903' => true,
 				'#search' => true,
-				'#infowindow_content_fetch_url' => base_path() . '/observation/{ID}/overview/ajaxform',
+				'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform',
 				'#geometries_fetch_url' => base_path() . 'observation/'
 				. $observation['observation']['id'] . '/geometry/json',
 				'#geometry_edit_id' => $observation['observation']['id'],

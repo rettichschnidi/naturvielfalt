@@ -379,7 +379,7 @@ function area_habitat_table($habitatId) {
 			'#id_table' => 'habitats',
 			'#tableWidth' => 900,
 			'#options' => array(
-					'jsonUrl' => "'" . base_path() . '/area/habitat/'
+					'jsonUrl' => "'" . base_path() . 'area/habitat/'
 							. $habitatId . "/datatablejson'",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {

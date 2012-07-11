@@ -25,7 +25,7 @@ function observation_show_all_observations() {
 			'#ch1903' => true,
 			'#mapid' => 'observationmap',
 			'#geometries_fetch_url' => base_path() . 'observation/geometry/json',
-			'#infowindow_content_fetch_url' => base_path() . '/observation/{ID}/overview/ajaxform'
+			'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform'
 	);
 
 	$output['space'] = array(
