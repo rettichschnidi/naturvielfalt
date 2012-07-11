@@ -255,4 +255,19 @@ function commonstuff_showfiles($modulename, $id, $fidarray) {
 	);
 	return $render_array;
 }
+
+/**
+ * Include CSS right at the place we are at this stage. Usefull for themes
+ *  which can not rely on drupal_add_css().
+ */
+function commonstuff_add_js_url($url) {
+	print "<script type='text/javascript' src='$url'></script>\n";
+}
+/**
+ * Include JS right at the place we are at this stage. Usefull for themes
+ *  which can not rely on drupal_add_css().
+ */
+function commonstuff_add_css_url($url) {
+	print "<link href='$url' type='text/css' rel='stylesheet'/>\n";
+}
 ?>

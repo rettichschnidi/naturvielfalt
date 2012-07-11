@@ -18,7 +18,7 @@ $area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 // needed for function area_get_full_dataset_of_specific_area
 module_load_include('inc', 'area', 'area');
 
-// Load gallery integration
+// load gallery integration
 module_load_include('inc', 'area', 'area.gallery');
 
 /**
@@ -33,9 +33,6 @@ function area_menu() {
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
 					'areas/show'
-			),
-			'access arguments' => array(
-					AREA_ACCESS
 			),
 			'type' => MENU_CALLBACK,
 	);
@@ -404,35 +401,60 @@ function area_theme() {
 			'area' => array(
 					'template' => 'area',
 					'variables' => array(
-							// Requested functionality:
-							//  'create': create a new area
-							//  'edit': edit an existing area geometry ('area_geometry_id' has to be set)
-							//  'getcoordinate': get a position (set a marker and fill
-							//		its data into the hidden fields provided by area_address_hidden_form().
-							//		If 'coordinate_storage_id' given, this field will be updated as well.
-							'action' => NULL,
-							// enable searchbox
-							'search' => false,
-							// show all areas of ... either 'myareas' or 'allareas'
-							'show' => false,
-							// set to an integer if an (existing) area should be highlighted
-							'area_id' => false,
-							// set to an integer if an area_geometry should be edited
-							'area_geometry_id' => false,
-							// wether to show the scale or not
-							'scalecontrol' => true,
-							// include a filed which shows/sets the CH1903 coordinates
-							'ch1903' => false,
+							'mapid' => 'map',
+							/**
+							 * Requested functionality:
+							 * 'create': create a new area
+							 * 'edit': edit an existing area geometry ('area_geometry_id' has to be set)
+							 * 'getcoordinate': get a position (set a marker and fill
+							 *    its data into the hidden fields provided by area_address_hidden_form().
+							 *    If 'coordinate_storage_id' is given, this field will be updated as well.
+							 * @note Maybe this should be done with different themes. Have not done it
+							 *    because I fear a lot of duplicated code duplication.
+							 */
+							'action' => false,
+							// load geometries from this url
+							'geometries_fetch_url' => '',
+							// infoWindow content fetch url. {ID} will be swaped with the actual id of the requested geometry.
+							'infowindow_content_fetch_url' => '',
+							// url to get the content for the window when a new element gets created.
+							'infowindow_createform_fetch_url' => '',
+							// set to an integer if an area_geometry should be edited (note: action needs to be 'edit')
+							// and geometry has to be loaded
+							'geometry_edit_id' => false,
+							// Where to post the updated geometry data
+							// {ID} will be swaped with the actual id of the updated geometry.
+							'geometry_update_url' => '',
 							// element id for storage
 							'coordinate_storage_id' => false,
-							// the geometry array
-							'json_url' => false,
 							// the map height
-							'height' => false,
+							'height' => '400px',
 							// the map width
-							'width' => false,
+							'width' => '100%',
+							// enable searchbox
+							'search' => false,
+							// whether to show the scale or not
+							'scalecontrol' => true,
+							// include a field which shows/sets the CH1903 coordinates
+							'ch1903' => false,
 							// show a reticle on the map's center
 							'reticle' => true,
+							// enable streetview
+							'streetview' => true,
+							// enable mapcontrol
+							'mapcontrol' => false,
+							// enable scrollwheel
+							'scrollwheel' => true,
+							// automatically switch from satelit to hybrid view
+							'mapswitch' => true,
+							// switch from satelit to hybrid view at this level
+							'mapswitchlevel' => 12,
+							// default zoom level
+							'defaultzoom' => 8,
+							// load the last saved location (boundaries) when initializing the map
+							'loadlastlocation' => true,
+							// always save the currently viewed location (boundaries) when changing the map boundaries
+							'savelastlocation' => true,
 					)
 			)
 	);

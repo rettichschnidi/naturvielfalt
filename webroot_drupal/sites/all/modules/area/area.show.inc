@@ -16,16 +16,20 @@ module_load_include('inc', 'area', 'area');
 function area_show_all_areas($onlyMyAreas = false) {
 	if ($onlyMyAreas) {
 		$output['map'] = array(
+				'#mapid' => 'areamap',
 				'#search' => true,
-				'#show' => 'myareas',
 				'#ch1903' => true,
+				'#geometries_fetch_url' => base_path() . 'areas/own/json',
+				'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
 	} else {
 		$output['map'] = array(
+				'#mapid' => 'areamap',
 				'#search' => true,
-				'#show' => 'allareas',
 				'#ch1903' => true,
+				'#geometries_fetch_url' => base_path() . 'areas/json',
+				'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
 	}
@@ -98,7 +102,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
-								areabasic.selectArea(id);
+								areamap.selectGeometry(id);
 							}
 						)
 					}"
