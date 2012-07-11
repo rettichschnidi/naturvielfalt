@@ -616,12 +616,17 @@ Area.prototype.geometryEdit = function(geometryId) {
 	var currentGeometry = this.geometriesArray[geometryId];
 	currentOverlay.setEditable(true);
 	
+	/**
+	 * Remove any click listeners on the editable overlay
+	 */
 	if(currentOverlay.listeners.click) {
 		currentOverlay.listeners.click.forEach(function(e) {
 			google.maps.event.removeListener(e);
 		});
 		currentOverlay.listeners.click = [];
 	}
+	
+	updateHiddenfields(currentOverlay, this_.options.coordinatestorageid);
 	
 	google.maps.event.addListener(this_.googlemap, 'rightclick',
 			function(mouseevent) {
