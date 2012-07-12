@@ -121,7 +121,7 @@
     </control>
     <control controlID="25" controlTypeID="com.balsamiq.mockups::StickyNote" x="45" y="58" w="322" h="170" measuredW="109" measuredH="123" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Reihenfolge%20der%20Implementation%3A%0A1.%20Neobioten%0A2.%20Bug%20Bilder%20bei%20Erfassung%0A3.%20Sortierung%20%28DE%20/%20ABC%2C%20LAT%20/%20ABC%2C%20usw.%29%0A4.%20Rote%20Liste%20Status%0A5.%20Filter</text>
+        <text>Reihenfolge%20der%20Implementation%3A%0A1.%20Sortierung%20%28DE%20/%20ABC%2C%20LAT%20/%20ABC%2C%20usw.%29%0A2.%20Rote%20Liste%20Status%0A3.%20Filter</text>
       </controlProperties>
     </control>
   </controls>
