@@ -1810,7 +1810,7 @@ function gallery_validate_file_extension($file_name, $mediaType = GALLERY_MEDIAT
  * @return array
  */
 function gallery_get_all_media_types() {
-	return array(GALLERY_MEDIATYPE_IMAGE, GALLERY_MEDIATYPE_SOUND, GALLERY_MEDIATYPE_VIDEO);
+	return array(GALLERY_MEDIATYPE_IMAGE, GALLERY_MEDIATYPE_SOUND, GALLERY_MEDIATYPE_VIDEO, GALLERY_MEDIATYPE_DOCUMENT);
 }
 
 /**
