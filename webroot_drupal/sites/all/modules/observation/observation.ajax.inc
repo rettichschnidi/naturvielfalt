@@ -375,7 +375,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		if ($row['cell']['organism_l'] == "")
 			$row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
-		$images = gallery_images('image', 'observation', $row['id']);
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
 		$row['cell']['piccount'] = $images['count'];
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {

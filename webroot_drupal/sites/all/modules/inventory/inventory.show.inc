@@ -124,7 +124,7 @@ function inventory_entry_locations($head_inventory_id) {
 			$lng = floatval($location[1]);
 			$image = false;
 			if (function_exists('gallery_images')) {
-				$images = gallery_images('organism', $entry['orgId'], true, false, 1);
+				$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organism', $entry['orgId'], true, false, 1);
 				if ($images['count'])
 					$image = $images['images'][0]['id'];
 			}
