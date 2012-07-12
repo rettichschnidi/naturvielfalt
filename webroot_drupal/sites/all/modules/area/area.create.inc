@@ -16,10 +16,11 @@ function area_new_area() {
 	drupal_set_title(t('Create new area'));
 
 	$output['map'] = array(
-			'#search' => true,
 			'#ch1903' => true,
-			'#showall' => true,
 			'#action' => 'create',
+			'#infowindow_createform_fetch_url' => base_path() . 'area/getnewareanameajaxform',
+			'#geometries_fetch_url' => base_path() . 'areas/json',
+			'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
 			'#theme' => 'area'
 	);
 	return drupal_render($output);
@@ -90,6 +91,8 @@ function area_create_new_area($form, &$form_state) {
 	$jsonCoordinates = filter_xss($form_state['values']['area-coords']);
 
 	if (empty($jsonCoordinates) || empty($areaType)) {
+		debug($jsonCoordinates, 'jsonCoordinates');
+		debug($areaType, 'areaType');
 		drupal_set_message(t('New area could not be created.'), 'error');
 		$form_state['redirect'] = 'area/new';
 		return;

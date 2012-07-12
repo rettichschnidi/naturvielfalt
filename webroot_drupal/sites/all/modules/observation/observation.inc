@@ -103,6 +103,7 @@ function observation_get($observation_id) {
  */
 function observation_get_geometries_acl_checked($observation_data = false) {
 	$filter = array();
+	$where = '';
 	if ($observation_data) {
 		$filter[':observation_id'] = $observation_data['observation']['id'];
 		$where = ' WHERE o.id=:observation_id ';
@@ -145,10 +146,13 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 			$item = array();
 			$item['id'] = (int) $result['id'];
 			$item['altitude'] = (int) $result['altitude'];
-			$item['township'] = $result['township'];
-			$item['canton'] = $result['canton'];
-			$item['country'] = $result['country'];
-			$item['comment'] = $result['comment'];
+			$item['township'] = isset($result['township']) ? $result['township']
+					: '';
+			$item['canton'] = isset($result['canton']) ? $result['canton'] : '';
+			$item['country'] = isset($result['country']) ? $result['country']
+					: '';
+			$item['comment'] = isset($result['comment']) ? $result['comment']
+					: '';
 
 			$item['type'] = '';
 			$item['area_points'] = array();

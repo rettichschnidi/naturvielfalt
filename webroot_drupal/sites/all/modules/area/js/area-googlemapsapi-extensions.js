@@ -215,15 +215,12 @@ google.maps.Polyline.prototype.setupGeometryChangedEvent = function() {
 	var me = this;
 	google.maps.event.addListener(me.getPath(), 'insert_at', function() {
 		google.maps.event.trigger(me, "geometry_changed");
-		console.debug("insert_at triggered.");
 	});
 	google.maps.event.addListener(me.getPath(), 'remove_at', function() {
 		google.maps.event.trigger(me, "geometry_changed");
-		console.debug("remove_at triggered.");
 	});
 	google.maps.event.addListener(me.getPath(), 'set_at', function() {
 		google.maps.event.trigger(me, "geometry_changed");
-		console.debug("set_at triggered.");
 	});
 };
 
