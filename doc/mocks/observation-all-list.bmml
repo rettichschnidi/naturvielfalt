@@ -72,14 +72,16 @@
       <controlProperties>
         <href>observation-edit%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml%26bm%3Bobservation-edit.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22669%2C435%2C739%2C456%22%20href%3D%22observation-edit.bmml%22%20alt%3D%22observation-edit%22%20id%3D%2247%22/%3E</map>
-        <text>Bearbeiten</text>
+        <text>%5BBearbeiten%5D</text>
+        <underline>false</underline>
       </controlProperties>
     </control>
-    <control controlID="48" controlTypeID="com.balsamiq.mockups::Link" x="860" y="443" w="-1" h="-1" measuredW="50" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Link" x="860" y="443" w="-1" h="-1" measuredW="46" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <href>observation-show%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml%26bm%3Bobservation-show.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22738%2C435%2C788%2C456%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%2248%22/%3E</map>
-        <text>/%20%20Detail</text>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22738%2C435%2C784%2C456%22%20href%3D%22observation-show.bmml%22%20alt%3D%22observation-show%22%20id%3D%2248%22/%3E</map>
+        <text>/%20%5BDetail%5D</text>
+        <underline>false</underline>
       </controlProperties>
     </control>
     <control controlID="60" controlTypeID="__group__" x="507" y="244" w="713" h="325" measuredW="713" measuredH="325" zOrder="10" locked="false" isInGroup="-1">
