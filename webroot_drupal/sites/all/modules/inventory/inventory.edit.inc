@@ -1546,7 +1546,7 @@ function inventory_get_entry_image($organism_id, $plain = false) {
 			'class' => 'image'
 	);
 	if ($organism_id && function_exists('gallery_images')) {
-		$images = gallery_images('organism', $organism_id, true, false, 1);
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organism', $organism_id, true, false, 1);
 		if ($images['count']) {
 			$result['data'] = '<a href="' . url('gallery/organism/' . $organism_id . '/thumb/' . $images['images'][0]['id'] . '/gallery_large') . '">' . '<img src="' . url('gallery/organism/' . $organism_id . '/thumb/' . $images['images'][0]['id'] . '/inventory_mini') . '" />' . '</a>';
 		}
