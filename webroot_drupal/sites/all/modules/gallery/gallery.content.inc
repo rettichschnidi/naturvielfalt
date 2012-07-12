@@ -1347,43 +1347,20 @@ function _gallery_image_form_categories($mediatype, $type, $id, $image) {
 function _gallery_images_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
 
-	if (!array_key_exists($name, $_FILES['files']['name'])
-			|| !$_FILES['files']['name'][$name])
-		if ($element['#file_required'])
-			return form_error(
-				$element,
-				t(
-					'!name field is required.',
-					array('!name' => $element['#title'])));
-		else
-			return;
-	if (array_key_exists($name, $_FILES['files']['name'])
-			&& $_FILES['files']['name'][$name]
-			&& !$_FILES['files']['type'][$name])
-		return form_error(
-			$element,
-			t(
-				'The file in !name is exceeding the maximum allowed size of !size.',
-				array('!name' => $element['#title'],
-						'!size' => format_size(
-							parse_size(
-								variable_get('gallery_image_size', 2048) * 1024))
-				)));
-	//'!size' => format_size(parse_size(file_upload_max_size())))));
-
-	if (!in_array(
-		$_FILES['files']['type'][$name],
-		array('image/jpeg',
-				'image/gif',
-				'image/png'
-		)))
-		return form_error(
-			$element,
-			t(
-				'!name requires a file of type jpg, png or gif. You uploaded a file of typ !type',
-				array('!name' => $element['#title'],
-						'!type' => $_FILES['files']['type'][$name]
-				)));
+	$fileName = $_FILES['files']['name'][$name];
+	$fileMimeType = $_FILES['files']['type'][$name];
+	$fileSize = $_FILES['files']['size'][$name];
+	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
+	
+	// validate file extension
+	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_IMAGE, $fileName, $fileMimeType)) {
+		return;
+	}
+	
+	// validate file size
+	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+		return;
+	}
 }
 /**
  * Validator for gallery sound files
@@ -1391,135 +1368,59 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
 function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
 
-	// no name given, bail out...
-	if (!array_key_exists($name, $_FILES['files']['name'])
-			|| !$_FILES['files']['name'][$name])
-		if ($element['#file_required']) {
-			return form_error(
-				$element,
-				t(
-					'!name field is required.',
-					array('!name' => $element['#title'])));
-		} else {
-			return;
-		}
-	// no type given, bail out...
-	if (array_key_exists($name, $_FILES['files']['name'])
-			&& $_FILES['files']['name'][$name]
-			&& !$_FILES['files']['type'][$name]) {
-		return form_error(
-			$element,
-			t(
-				'The file in !name is exceeding the maximum allowed size of !size.',
-				array('!name' => $element['#title'],
-						'!size' => format_size(
-							parse_size(
-								variable_get('gallery_sound_size', 2048) * 1024))
-				)));
+	$fileName = $_FILES['files']['name'][$name];
+	$fileMimeType = $_FILES['files']['type'][$name];
+	$fileSize = $_FILES['files']['size'][$name];
+	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
+	
+	// validate file extension
+	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_SOUND, $fileName, $fileMimeType)) {
+		return;
 	}
-	//'!size' => format_size(parse_size(file_upload_max_size())))));
-
-	if (!in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
-		return form_error(
-			$element,
-			t(
-				'!name requires a file of type mp3. You uploaded a file of typ !type',
-				array('!name' => $element['#title'],
-						'!type' => $_FILES['files']['type'][$name]
-				)));
+	
+	// validate file size
+	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+		return;
+	}
 }
 /**
  * Validator for gallery video files
  */
 function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
-	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
-	if (!array_key_exists($name, $_FILES['files']['name'])
-			|| !$_FILES['files']['name'][$name])
-		if ($element['#file_required'])
-			return form_error(
-				$element,
-				t(
-					'!name field is required.',
-					array('!name' => $element['#title'])));
-		else
-			return;
-	if (array_key_exists($name, $_FILES['files']['name'])
-			&& $_FILES['files']['name'][$name]
-			&& !$_FILES['files']['type'][$name])
-		return form_error(
-			$element,
-			t(
-				'The file in !name is exceeding the maximum allowed size of !size.',
-				array('!name' => $element['#title'],
-						'!size' => format_size(
-							parse_size(
-								variable_get('gallery_video_size', 8192) * 1024))
-				)));
-	//'!size' => format_size(parse_size(file_upload_max_size())))));
+$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
 
-	if (!in_array($_FILES['files']['type'][$name], array('video/mp4')))
-		return form_error(
-			$element,
-			t(
-				'!name requires a file of type mp4. You uploaded a file of typ !type',
-				array('!name' => $element['#title'],
-						'!type' => $_FILES['files']['type'][$name]
-				)));
+	$fileName = $_FILES['files']['name'][$name];
+	$fileMimeType = $_FILES['files']['type'][$name];
+	$fileSize = $_FILES['files']['size'][$name];
+	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
+	
+	// validate file extension
+	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_VIDEO, $fileName, $fileMimeType)) {
+		return;
+	}
+	
+	// validate file size
+	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+		return;
+	}
 }
 function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
-	if (!array_key_exists($name, $_FILES['files']['name'])
-			|| !$_FILES['files']['name'][$name])
-		if ($element['#file_required'])
-			return form_error(
-				$element,
-				t(
-					'!name field is required.',
-					array('!name' => $element['#title'])));
-		else
-			return;
 
-	if (in_array(
-		$_FILES['files']['type'][$name],
-		array('image/jpeg',
-				'image/gif',
-				'image/png'
-		)))
-		$file_size = variable_get('gallery_image_size', 2048);
+	$fileName = $_FILES['files']['name'][$name];
+	$fileMimeType = $_FILES['files']['type'][$name];
+	$fileSize = $_FILES['files']['size'][$name];
+	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
+	
+	// validate file extension
+	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_ALL, $fileName, $fileMimeType)) {
+		return;
+	}
 
-	if (in_array($_FILES['files']['type'][$name], array('audio/mpeg')))
-		$file_size = variable_get('gallery_sound_size', 2048);
-
-	if (in_array($_FILES['files']['type'][$name], array('video/mp4')))
-		$file_size = variable_get('gallery_video_size', 8192);
-
-	$file_size = $file_size * 1024;
-	if (array_key_exists($name, $_FILES['files']['name'])
-			&& $_FILES['files']['name'][$name]
-			&& !$_FILES['files']['type'][$name])
-		return form_error(
-			$element,
-			t(
-				'The file in !name is exceeding the maximum allowed size of !size.',
-				array('!name' => $element['#title'],
-						'!size' => format_size(parse_size($file_size))
-				)));
-
-	if (!in_array(
-		$_FILES['files']['type'][$name],
-		array('video/mp4',
-				'audio/mpeg',
-				'image/jpeg',
-				'image/gif',
-				'image/png'
-		)))
-		return form_error(
-			$element,
-			t(
-				'!name requires a file of type mp4, jpg/jpeg, gif, png, mpeg . (!type)',
-				array('!name' => $element['#title'],
-						'!type' => $_FILES['files']['type'][$name]
-				)));
+	// validate file size
+	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+		return;
+	}
 }
 
 function _gallery_images_form_upload_category_validate($element, &$form_state,
@@ -1540,6 +1441,40 @@ function _gallery_images_form_upload_category_validate($element, &$form_state,
 				'!name field is required.',
 				array('!name' => $element['#category']['name'])));
 	return;
+}
+
+function gallery_form_upload_validate_file_extension($element, $mediaType, $fileName, $fileMimeType) {
+	$mediaInfo = gallery_get_MediaInfo_by_filename($fileName);
+	if ($mediaInfo == FALSE || ($mediaType != GALLERY_MEDIATYPE_ALL && $mediaType != $mediaInfo->mediaType)) {
+		$allowedTypes = implode(', ', _gallery_getMediaInfo($mediaType)->fileExtensions);
+		form_error(
+			$element,
+			t('Files of type @type are not allowed. Try to upload one of these: @allowedTypes.',
+				array('@type' => $fileMimeType,
+				'@allowedTypes' => $allowedTypes,
+				)
+			)
+		);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+function gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo) {
+	$max_file_size = $mediaInfo->maxFileSize;
+	$max_file_size = $max_file_size * 1024; // make bytes
+	if ($fileSize > $max_file_size) {
+		form_error(
+			$element,
+			t('The file in @name is exceeding the maximum allowed size of @size.',
+				array('@name' => $fileName,
+					'@size' => format_size(parse_size($max_file_size))
+				)
+			)
+		);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 /**
