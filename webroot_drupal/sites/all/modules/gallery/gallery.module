@@ -1870,11 +1870,11 @@ function _gallery_getMediaInfo($mediaType = GALLERY_MEDIATYPE_ALL) {
 			GALLERY_MEDIATYPE_VIDEO,
 			$extVideo,
 			variable_get('gallery_video_size', 8192));
-		$gallery_meidaInfo[GALLERY_MEDIATYPE_DOCUMENT] = new MediaInfo(
+		$gallery_mediaInfo[GALLERY_MEDIATYPE_DOCUMENT] = new MediaInfo(
 			GALLERY_MEDIATYPE_DOCUMENT, 
 			$extDoc, 
 			variable_get('gallery_doc_size', 8192));
-		$gallery_meidaInfo[GALLERY_MEDIATYPE_ALL] = new MediaInfo(
+		$gallery_mediaInfo[GALLERY_MEDIATYPE_ALL] = new MediaInfo(
 			GALLERY_MEDIATYPE_ALL,
 			array_merge($extImage, $extSound, $extVideo, $extDoc),
 			variable_get('gallery_video_size', 8192));
