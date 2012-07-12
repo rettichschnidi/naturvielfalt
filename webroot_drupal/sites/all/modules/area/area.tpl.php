@@ -124,6 +124,9 @@ if ($reticle) {
 				infowindowcontentfetchurl: '<?php echo $infowindow_content_fetch_url ?>',
 				infowindowcreateformfetchurl: '<?php echo $infowindow_createform_fetch_url ?>',
 				geometryupdateurl: '<?php echo $geometry_update_url ?>',
+				infowindowoptions: {
+					content: Drupal.t('Loading...'),
+				},
 				googlemapsoptions: {
 						zoom: <?php echo $defaultzoom ?>,
 						streetViewControl: <?php echo $streetview ? 1 : 0 ?>,

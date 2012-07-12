@@ -37,12 +37,12 @@ function Area(options) {
 	this.geometriesArray = [];
 
 	// there is just one at a time
-	this.infoWindow = undefined;
-	this.drawingManager = undefined;
-	this.automaticSaveLocationListener = undefined;
-	this.ch1903MapChangeListener = undefined;
+	this.infoWindow = null;
+	this.drawingManager = null;
+	this.automaticSaveLocationListener = null;
+	this.ch1903MapChangeListener = null;
 	this.mapTypeSwitchListener = null;
-
+	
 	// Initialize a map
 	this.googlemap = new google.maps.Map(document
 			.getElementById(this.options.canvasid), this.options.googlemapsoptions);
@@ -223,9 +223,9 @@ Area.prototype.showInfoWindow = function(id) {
 		if (this.infoWindow != null) {
 			google.maps.event.trigger(this_.infoWindow, 'closeclick');
 		}
-		var infowindow = this.infoWindow = new google.maps.InfoWindow({
-			content : Drupal.t('Loading...')
-		});
+		var infowindow = this.infoWindow = new google.maps.InfoWindow(
+				this.options.infowindowoptions
+			);
 		
 		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
@@ -235,7 +235,10 @@ Area.prototype.showInfoWindow = function(id) {
 		});
 	
 		jQuery.get(url, function(data) {
+			infowindow.close();
 			infowindow.setContent(data);
+			infowindow.open(this_.googlemap, this_.overlaysArray[id]);
+			jQuery(data)
 		});
 		
 		this.googlemap.fitBounds(this.overlaysArray[id].getBounds());
@@ -252,9 +255,9 @@ Area.prototype.showInfoWindow = function(id) {
  *   
  */
 Area.prototype.showInfoWindowToCreateNewGeometry = function(overlayElement, html) {
-	var infowindow = this.infoWindow = new google.maps.InfoWindow({
-		content : html
-	});
+	var infowindow = this.infoWindow = new google.maps.InfoWindow(
+			this.options.infowindowoptions
+		);
 
 	// Delete overlayElement if window closed
 	google.maps.event.addListener(infowindow, 'closeclick', function() {
@@ -291,7 +294,7 @@ Area.prototype.addWindowsListenerForNewElement = function(id) {
 	}
 	currentoverlay.listeners.click.push(
 		google.maps.event.addListener(currentoverlay, 'click', function() {
-			currentoverlay.select();
+			// currentoverlay.select();
 			this_.showInfoWindow(id);
 			
 			google.maps.event.addListener(this_.infoWindow, 'closeclick', function() {

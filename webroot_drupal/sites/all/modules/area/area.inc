@@ -16,7 +16,7 @@
 function get_ch1903_coordinates_link($areadata) {
 	assert(is_array($areadata));
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
-		? 'https://' : 'http://';
+			? 'https://' : 'http://';
 	global $user;
 	$linkCH1903 = l(
 		"CH1903",
@@ -39,7 +39,8 @@ function get_wgs84_coordinates_link($areadata) {
 	assert(is_array($areadata));
 	global $user;
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
-		? 'https://' : 'http://';;
+			? 'https://' : 'http://';
+	;
 	$linkWGS84 = l(
 		"WGS84",
 		$area_protocol . $user->language . '.wikipedia.org/wiki/WGS84');
@@ -330,8 +331,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 	/* add the table with the data prepared above */
 	$form = array(
 			'#theme' => 'table',
-			'#rows' => $rows,
-			'#id_table' => 'area_tabular_data',
+			'#rows' => $rows
 	);
 
 	return $form;
@@ -479,7 +479,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
 
 	$points = array();
 	$sql_args = array();
-	
+
 	foreach ($coordinatesJson as $currentCoordinatesJson) {
 		$points[] = implode(' ', $currentCoordinatesJson);
 	}
@@ -514,7 +514,9 @@ function area_get_postgis_geometry_object($areaType = NULL,
 	}
 	$transaction = db_transaction();
 	try {
-		$result = db_query('SELECT ST_GeomFromText(:geom, 4326) AS geom;', $sql_args); // SRID 4326 = WGS 84
+		$result = db_query(
+			'SELECT ST_GeomFromText(:geom, 4326) AS geom;',
+			$sql_args); // SRID 4326 = WGS 84
 		assert($result->rowCount() == 1);
 		return $result->fetch()
 			->geom;
@@ -1022,7 +1024,7 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 function area_get_geocodeInfo($longitude = false, $latitude = false,
 		$original_response = false) {
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
-		? 'https://' : 'http://';
+			? 'https://' : 'http://';
 	if (!$longitude || !$latitude) {
 		return false;
 	}
@@ -1032,7 +1034,8 @@ function area_get_geocodeInfo($longitude = false, $latitude = false,
 	$data = @file_get_contents($url);
 	$jsondata = json_decode($data, true);
 
-	$url = $area_protocol . 'maps.googleapis.com/maps/api/elevation/json?locations='
+	$url = $area_protocol
+			. 'maps.googleapis.com/maps/api/elevation/json?locations='
 			. $latitude . ',' . $longitude . '&sensor=true';
 	$data = @file_get_contents($url);
 	$elevationData = json_decode($data, true);

@@ -220,9 +220,10 @@ function observation_edit_acl($observation = NULL) {
 /**
  * Return a formated table with the observation details
  * @param array $observationdata
+ * @param boolean $simple
+ *  Return just a few information
  */
 function observation_get_table($observationdata = NULL, $simple = false) {
-
 	if ($observationdata == NULL || !is_array($observationdata)) {
 		return false;
 	}
@@ -234,12 +235,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Organism Name'),
 						'header' => true
 				),
-				$simple
-						? substr(
-							$observationdata['organism']['name_lang'],
-							0,
-							20) . '...'
-						: $observationdata['organism']['name_lang'],
+				$observationdata['organism']['name_lang'],
 		);
 	}
 
@@ -249,12 +245,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Scientific name'),
 						'header' => true
 				),
-				$simple
-						? substr(
-							$observationdata['organism']['name_lat'],
-							0,
-							20) . '...'
-						: $observationdata['organism']['name_lat'],
+				$observationdata['organism']['name_lat'],
 		);
 	}
 

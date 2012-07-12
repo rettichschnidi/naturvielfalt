@@ -22,3 +22,23 @@
 	margin-top: 5px;
 	width: 250px;
 }
+
+#area-overview-form {
+	margin: 0em;
+	font-size: 0.75em;
+}
+
+#infowindow_tabular_data {
+	margin: 0em;
+	margin-bottom: 0.3em;
+	padding: 0;
+}
+
+#infowindow_tabular_data th,#infowindow_tabular_data td {
+	overflow: hidden;
+	padding: 0px;
+	padding-left: 0.5em;
+	white-space: nowrap;
+	max-width: 200px;
+	text-overflow: ellipsis;
+}

@@ -54,7 +54,7 @@ function observation_show_all_observations() {
 }
 
 /**
- * Return a form which shows some important facts about a given area.
+ * Return a form which shows some important facts about a given observation.
  * Intended for usage in a infowindow on a map.
  *
  * @param array $form
@@ -65,35 +65,29 @@ function observation_show_all_observations() {
  * @return array Drupal form
  */
 function observation_map_overview_form($form, &$form_state, $observationdata) {
-	$form['addressdata'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Observation'),
-			'#attributes' => array(
-					'style' => array(
-							'width:400px;'
-					)
-			)
-	);
-	$form['addressdata']['table'] = observation_get_table(
+	$form['table'] = observation_get_table(
 		$observationdata,
 		true);
+	$form['table']['#attributes'] = array(
+			'id' => 'infowindow_tabular_data'
+	);
 	/**
 	 * Display the "edit" button only if user has write permission to this area
 	 */
 	if (observation_write_access($observationdata)) {
-		$form['addressdata']['edit'] = array(
+		$form['edit'] = array(
 				'#type' => 'markup',
 				'#markup' => l(
 					t('Edit'),
 					'observation/'
 							. $observationdata['observation']['id'] . '/edit')
 		);
-		$form['addressdata']['whitespace'] = array(
+		$form['whitespace'] = array(
 				'#type' => 'markup',
 				'#markup' => '&nbsp/&nbsp;'
 		);
 	}
-	$form['addressdata']['show'] = array(
+	$form['show'] = array(
 			'#type' => 'markup',
 			'#markup' => l(
 				t('Show'),

@@ -20,7 +20,8 @@ function area_show_all_areas($onlyMyAreas = false) {
 				'#search' => true,
 				'#ch1903' => true,
 				'#geometries_fetch_url' => base_path() . 'areas/own/json',
-				'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
+				'#infowindow_content_fetch_url' => base_path()
+						. 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
 	} else {
@@ -29,7 +30,8 @@ function area_show_all_areas($onlyMyAreas = false) {
 				'#search' => true,
 				'#ch1903' => true,
 				'#geometries_fetch_url' => base_path() . 'areas/json',
-				'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
+				'#infowindow_content_fetch_url' => base_path()
+						. 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
 	}
@@ -310,11 +312,7 @@ function area_show_specific_area($areadata = NULL) {
  * @return array Drupal form
  */
 function area_overview_form($form, &$form_state, $areadata) {
-	$form['addressdata'] = array(
-			'#type' => 'fieldset',
-			'#title' => $areadata['name'],
-	);
-	$form['addressdata']['table'] = area_get_infotable_of_specific_area(
+	$form['table'] = area_get_infotable_of_specific_area(
 		$areadata,
 		array('create_time' => false,
 				'modify_time' => false,
@@ -322,20 +320,23 @@ function area_overview_form($form, &$form_state, $areadata) {
 				'coordinates' => false,
 				'surface_area' => false
 		));
+	$form['table']['#attributes'] = array(
+					'id' => 'infowindow_tabular_data'
+			);
 	/**
 	 * Display the "edit" button only if user has write permission to this area
 	 */
 	if (check_permission($areadata['acl_id'], variable_get('ACL_WRITE'))) {
-		$form['addressdata']['edit'] = array(
+		$form['edit'] = array(
 				'#type' => 'markup',
 				'#markup' => l(t('Edit'), 'area/' . $areadata['id'] . '/edit')
 		);
-		$form['addressdata']['whitespace'] = array(
+		$form['whitespace'] = array(
 				'#type' => 'markup',
 				'#markup' => '&nbsp;/&nbsp;'
 		);
 	}
-	$form['addressdata']['show'] = array(
+	$form['show'] = array(
 			'#type' => 'markup',
 			'#markup' => l(t('Show'), 'area/' . $areadata['id'] . '/show')
 	);
