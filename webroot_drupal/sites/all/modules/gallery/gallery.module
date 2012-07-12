@@ -668,7 +668,7 @@ function gallery_image_default_styles() {
 /**
  * Get an array of all gallery medias by type and id.
  * @param $mediatype
- * 	 String which represents the media type ('images', 'sounds', 'videos', 'medias')
+ * 	 String which represents the media type (Use constants GALLERY_MEDIATYPE_IMAGE, ...)
  * @param $type
  *   String with the type of the object.
  * @param $id
@@ -1918,6 +1918,7 @@ class MediaInfo {
 		$this->mediaType = $mediaType;
 		$this->fileExtensions = $fileExtensions;
 		$this->maxFileSize = $maxFileSize;
+		$this->mimeTypes = array();
 		// build mime types from file extensions
 		foreach ($fileExtensions as $ext) {
 			$mime = file_get_mimetype('filename.' . $ext);
