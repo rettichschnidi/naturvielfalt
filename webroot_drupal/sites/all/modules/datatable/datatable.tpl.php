@@ -27,13 +27,6 @@ drupal_add_css(
  * add javascript files
  */
 
-// if($langcode == 'de')
-//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
-// elseif ($langcode == 'en')
-//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.en.js');
-// else
-//   drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.de.js');
-
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.' . $langcode . '.js');
 
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
@@ -44,7 +37,7 @@ drupal_add_js(
  * Figure out width/height of table or set default values
  */
 if (!isset($tableWidth) || $tableWidth < 0) {
-	$tableWidth = 950;
+	$tableWidth = 941;
 }
 
 /**
