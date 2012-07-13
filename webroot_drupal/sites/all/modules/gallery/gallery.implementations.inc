@@ -152,7 +152,7 @@ function gallery_implementation_edit_existing_file_list($module = false,
 		drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js');
 	$types = _gallery_types();
 
-	$subtypes = _gallery_get_subtypes($type, false);
+	$subtypes = _gallery_get_subtypes($module, false);
 
 	$header = array(
 			'',
@@ -236,17 +236,12 @@ function gallery_implementation_edit_existing_file_list($module = false,
 		$row[] = $image['author'];
 		$row[] = $image['location'];
 		$row[] = $caption;
-		$row[] = $editable
-				? l(
-					t('edit'),
-					'gallery/' . $image['item_type'] . '/' . $image['item_id']
-							. '/' . $mediatype . '/edit/' . $image['id'],
-					$camefrom
-							? array(
-									'query' => array(
-											'camefrom' => $camefrom
-									)
-							) : array()) : '&nbsp;';
+		if ($editable) {
+			$link = 'gallery/' . $image['item_type'] . '/' . $image['item_id'] . '/' . $mediatype . '/edit/' . $image['id'];
+			$row[] = l(t('edit'), $link);
+		} else {
+			$row[] = '&nbsp;';
+		}
 		$row[] = $editable
 				? '<input type="checkbox" name="delete[' . $image['id']
 						. ']" value="1" />' : '&nbsp;';
