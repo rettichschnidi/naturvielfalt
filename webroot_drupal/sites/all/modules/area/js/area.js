@@ -229,6 +229,7 @@ Area.prototype.showInfoWindow = function(id) {
 		
 		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
+			jQuery('#row' + id).removeClass('trSelected');
 			this_.overlaysArray[id].deselect();
 			infowindow.close();
 			this_.infoWindow = null;
@@ -294,6 +295,7 @@ Area.prototype.addWindowsListenerToGeometry = function(id) {
 	}
 	currentoverlay.listeners.click.push(
 		google.maps.event.addListener(currentoverlay, 'click', function() {
+			jQuery('#row' + id).addClass('trSelected');
 			this_.showInfoWindow(id);
 			currentoverlay.select();
 		})
