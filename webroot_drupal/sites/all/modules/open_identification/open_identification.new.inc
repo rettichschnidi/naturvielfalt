@@ -24,7 +24,7 @@ function open_identification_new($form, &$form_state) {
 			'#title' => t('Type'),
 			'#options' => array(
 					'habitat' => t('habitat'),
-					'organism' => t('organism')
+					'organism' => t('Species')
 			),
 			'#weight' => 2,
 			'#required' => false

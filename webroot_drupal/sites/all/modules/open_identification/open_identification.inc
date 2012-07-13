@@ -341,7 +341,7 @@ function open_identification_details($form, &$form_state, $open_identification) 
 
 			$render_array['suggest']['item_search'] = array(
 					'#type' => 'textfield',
-					'#title' => t('Organism'),
+					'#title' => t('Species'),
 					'#required' => true,
 					'#weight' => 4,
 					'#attributes' => array(
@@ -357,7 +357,7 @@ function open_identification_details($form, &$form_state, $open_identification) 
 			if ($open_identification['type'] == 'organism') {
 				$render_array['suggest']['item_search'] = array(
 						'#type' => 'textfield',
-						'#title' => t('Organism'),
+						'#title' => t('Species'),
 						'#required' => true,
 						'#weight' => 4,
 						'#attributes' => array(
@@ -430,7 +430,7 @@ function open_identification_details($form, &$form_state, $open_identification) 
 					);
 					$header = array(
 							'organismgroup' => t('Organismgroup'),
-							'organism' => t('Organism'),
+							'organism' => t('Species'),
 							'users' => t('Number of Users')
 					);
 				} else {

@@ -63,7 +63,7 @@ function organism_show_classifiers() {
 		}
 		$list['#links'][] = array(
 				'title' => $title . ' (' . $classifier->organismcount_cnt . ' '
-						. t('organisms') . ')',
+						. t('Species') . ')',
 				'href' => 'organism/classification/' . $classifier->oc_id,
 		);
 	}
@@ -115,7 +115,7 @@ function organism_show_classification($classificationid) {
 			'hide' => false
 	);
 	$classificationTableHeader[] = array(
-			'name' => t('Number of organisms'),
+			'name' => t('Number of species'),
 			'dbfield' => 'cnt',
 			'dbExactField' => 'cnt',
 			'width' => 100,
@@ -144,7 +144,7 @@ function organism_show_classification($classificationid) {
 
 	$render_array['organismsTitle'] = array(
 			'#type' => 'markup',
-			'#markup' => '<h1>' . t('Organisms') . '</h1>',
+			'#markup' => '<h1>' . t('Species') . '</h1>',
 	);
 
 	$organismsTableHeader[] = array(
@@ -194,7 +194,7 @@ function organism_show_classification($classificationid) {
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => t('Organisms which are in classification ')
+			'#title' => t('Species which are in classification ')
 					. $classificationName,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
@@ -227,7 +227,7 @@ function organism_show_organism($organismdata) {
 			? $user->language : $language->language;
 
 	if (empty($organismdata)) {
-		drupal_set_title(t('No such organism available'));
+		drupal_set_title(t('No such species available'));
 		$render_array['nosuchorganism'] = null;
 		return $render_array;
 	}
@@ -294,7 +294,7 @@ function organism_show_organism($organismdata) {
 	} else {
 		$render_array['attributes']['noattribute'] = array(
 				'#type' => 'markup',
-				'#markup' => '<b>' . t('No attributes set for this organism')
+				'#markup' => '<b>' . t('No attributes set for this species')
 						. '</b>',
 		);
 	}
