@@ -144,7 +144,7 @@
   </div><!-- /.section, /#header -->
 
   <div id="main-wrapper"><div id="main" class="clearfix<?php if ($main_menu || $page['navigation']) { print ' with-navigation'; } ?>">
-    <div id="content" class="column"><div class="section">
+    <div id="content" class="column">
       <div id="title-wrapper">
 	      <?php print render($page['highlighted']); ?>
 	      <a id="main-content"></a>
@@ -158,6 +158,7 @@
 	        <div class="tabs"><?php print $tabs; ?></div>
 	      <?php endif; ?>
       </div>
+      <div class="section">
       <?php print render($page['help']); ?>
       <?php if ($action_links): ?>
         <ul class="action-links"><?php print render($action_links); ?></ul>
