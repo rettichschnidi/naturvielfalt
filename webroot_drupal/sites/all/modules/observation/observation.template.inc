@@ -228,24 +228,17 @@ function observation_form($observation = false) {
 				0,
 				$observation['observation']['organism_artgroup_id'])
 			. '</select>' . '</td></tr></table>'
-			. '<table class="form-item form-type-textfield" style="width: auto !important;">'
-			. '<tr>' . '<td class="observation_subtitle">' . t('Date')
+			. '<table class="form-item form-type-textfield">'
+			. '<tr>' . '<td class="observation_subtitle">' . t('Date of the obeservation')
 			. '<br><input type="text" id="date" name="date" value="'
 			. date('d.m.Y', $timestamp) . '"></td>'
-			. '<td class="observation_subtitle">' . t('Count')
+			. '<td class="observation_subtitle">' . t('Count of found organisms')
 			. '<br><input type="text" name="count" value="'
 			. $observation['observation']['count'] . '"></td>'
 			. '<td class="observation_subtitle">' . t('Observer')
 			. '<br><input type="text" name="observer" value="'
-			. $observation['observation']['observer'] . '"></td>' . '</tr><tr>'
-			. '<td class="observation_td">'
-			. t('Please enter date for the observation') . '</td>'
-			. '<td class="observation_td">' . t('Please enter number of found')
-			. '</td>' . '<td class="observation_td">'
-			. t('Please enter the username of the observer') . '</td>'
-			. '</tr></table>';
+			. $observation['observation']['observer'] . '"></td>' . '</tr></table>';
 
-	$formcust .= drupal_render($form);
 	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
 							<span class="fieldset-legend">'
@@ -261,8 +254,9 @@ function observation_form($observation = false) {
 				true,
 				$observation['observation']['organism_artgroup_detmethod_id'],
 				$observation['detmethods_vis']) . '</select></td>' . '</tr>'
-			. '</table></div></div></fieldset>'
-			. '<input type="submit" class="edit-submit" value="' . t('Save')
+			. '</table></div></div></fieldset>';
+	$formcust .= drupal_render($form);
+	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')
 			. '" name="op" id="edit-submit">'
 			. '<div style="display: none;" id="message"><div class="messages"></div></div>'
 			. $image . drupal_render($file_list) . '</form>' . '</div>';
