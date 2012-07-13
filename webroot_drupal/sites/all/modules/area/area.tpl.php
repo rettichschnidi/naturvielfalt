@@ -11,20 +11,11 @@
  */
 
 $mapid_canvas = $mapid . '_canvas';
-
-$style = '';
-if ($height || $width) {
-	$style = ' style="';
-	if ($height)
-		$style .= 'height: ' . $height . '; ';
-	if ($width)
-		$style .= 'width: ' . $width . '; ';
-	$style .= '"';
-}
+$mapid_div = $mapid . '_div';
 ?>
 
-<div id="<?php echo $mapid ?>_div">
-	<div id="<?php echo $mapid_canvas ?>" <?php echo $style; ?>>
+<div id="<?php echo $mapid_div ?>" class="area-outer-map-container">
+	<div id="<?php echo $mapid_canvas ?>" style="min-height: <?php echo $min_height; ?>; height: <?php echo $height; ?>; width: <?php echo $width; ?>;" class="area-canvas">
     	<h1><?php print(t('You have to enable Javascript!')) ?></h1>
 	</div>
 </div>
@@ -36,9 +27,6 @@ global $language;
 $baseModulPath = base_path() . drupal_get_path('module', 'area') . '/';
 $baseModulJsPath = $baseModulPath . 'js/';
 $baseModulCssPath = $baseModulPath . 'css/';
-
-// Include jQuery.UI for dynamic resizing of the map
-drupal_add_library('system', 'ui.resizable');
 
 /**
  * Options set for the google maps api:
@@ -100,7 +88,7 @@ if ($reticle) {
 			    console.error(error);
 			  }
 			});
-		
+
 		var options = {
 				canvasid: '<?php echo $mapid_canvas ?>',
 				search: <?php echo $search ? 1 : 0 ?>,
@@ -142,21 +130,37 @@ if ($reticle) {
 			console.error(<?php echo $mapid ?>);
 			alert("'<?php echo $mapid ?>' is already declared! Please use another map id.");
 		}
-		
+
 		if (jQuery('#' + options.canvasid).length) {
 			<?php echo $mapid ?> = new Area(options);
 
-			jQuery( "#<?php echo $mapid_canvas ?>" ).resizable({
-				stop: function(event, ui) {
-					// Update the size of the google map
-					google.maps.event.trigger(<?php echo $mapid ?>.googlemap, "resize");
-					console.log(<?php echo $mapid ?>.googlemap);
-				},
-				maxWidth: jQuery( "#<?php echo $mapid_canvas ?>" ).width(),
-				minHeight: 300,
-				minWidth: 600,
-				// Better alternative, but does not show the cordner:
-				// handles: 'n, s',
+			// The following code is borrowed from  /misc/textarea.js
+			// If you ever need this for any other kind of custom element,
+			// please refactor it into something generic 
+			jQuery('.area-outer-map-container').each(function () {
+				var staticOffset = null;
+				var textarea = jQuery(this).addClass('resizable-textarea').find('.area-canvas');
+				var grippie = jQuery('<div class="grippie"></div>').mousedown(startDrag);
+
+				grippie.insertAfter(textarea);
+
+				function startDrag(e) {
+					staticOffset = textarea.height() - e.pageY;
+					textarea.css('opacity', 0.25);
+					jQuery(document).mousemove(performDrag).mouseup(endDrag);
+					return false;
+				}
+
+				function performDrag(e) {
+					textarea.height(Math.max(32, staticOffset + e.pageY) + 'px');
+					google.maps.event.trigger(<?php echo $mapid ?>.googlemap, 'resize');
+					return false;
+				}
+
+				function endDrag(e) {
+					jQuery(document).unbind('mousemove', performDrag).unbind('mouseup', endDrag);
+					textarea.css('opacity', 1);
+				}
 			});
 		} else {
 			// display errormessage to console log
