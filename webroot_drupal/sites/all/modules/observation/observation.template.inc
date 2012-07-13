@@ -15,7 +15,7 @@ function observation_form($observation = false) {
 		$url = base_path() . 'observation/' . $observation['observation']['id']
 				. '/save';
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
-		drupal_set_title('Edit a observation');
+		drupal_set_title(t('Edit an observation'));
 	}
 
 	// if not edit, set standard values
@@ -215,7 +215,7 @@ function observation_form($observation = false) {
 			. @$hidden_fields . '<table class="form-item form-type-textfield">'
 			. '<tr><td class="observation_td">'
 			. '<span class="observation_title">'
-			. t('Search for organsim or species') . '</span><br>'
+			. t('Search for species') . '</span><br>'
 			. '<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="'
 			. $observation['organism']['name_lang'] . '">'
 			. '<br><span id="species_autocomplete">' . $species_autocomplete
@@ -228,24 +228,17 @@ function observation_form($observation = false) {
 				0,
 				$observation['observation']['organism_artgroup_id'])
 			. '</select>' . '</td></tr></table>'
-			. '<table class="form-item form-type-textfield" style="width: auto !important;">'
-			. '<tr>' . '<td class="observation_subtitle">' . t('Date')
+			. '<table class="form-item form-type-textfield">'
+			. '<tr>' . '<td class="observation_subtitle">' . t('Date of the obeservation')
 			. '<br><input type="text" id="date" name="date" value="'
 			. date('d.m.Y', $timestamp) . '"></td>'
-			. '<td class="observation_subtitle">' . t('Count')
+			. '<td class="observation_subtitle">' . t('Count of found organisms')
 			. '<br><input type="text" name="count" value="'
 			. $observation['observation']['count'] . '"></td>'
 			. '<td class="observation_subtitle">' . t('Observer')
 			. '<br><input type="text" name="observer" value="'
-			. $observation['observation']['observer'] . '"></td>' . '</tr><tr>'
-			. '<td class="observation_td">'
-			. t('Please enter date for the observation') . '</td>'
-			. '<td class="observation_td">' . t('Please enter number of found')
-			. '</td>' . '<td class="observation_td">'
-			. t('Please enter the username of the observer') . '</td>'
-			. '</tr></table>';
+			. $observation['observation']['observer'] . '"></td>' . '</tr></table>';
 
-	$formcust .= drupal_render($form);
 	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
 							<span class="fieldset-legend">'
@@ -261,8 +254,9 @@ function observation_form($observation = false) {
 				true,
 				$observation['observation']['organism_artgroup_detmethod_id'],
 				$observation['detmethods_vis']) . '</select></td>' . '</tr>'
-			. '</table></div></div></fieldset>'
-			. '<input type="submit" class="edit-submit" value="' . t('Save')
+			. '</table></div></div></fieldset>';
+	$formcust .= drupal_render($form);
+	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')
 			. '" name="op" id="edit-submit">'
 			. '<div style="display: none;" id="message"><div class="messages"></div></div>'
 			. $image . drupal_render($file_list) . '</form>' . '</div>';
