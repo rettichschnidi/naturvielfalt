@@ -255,15 +255,15 @@ Area.prototype.showInfoWindow = function(id) {
  *   
  */
 Area.prototype.showInfoWindowToCreateNewGeometry = function(overlayElement, html) {
-	var infowindow = this.infoWindow = new google.maps.InfoWindow(
-			this.options.infowindowoptions
-		);
+	var infowindow = this.infoWindow = new google.maps.InfoWindow({
+				content: html
+		});
 
 	// Delete overlayElement if window closed
 	google.maps.event.addListener(infowindow, 'closeclick', function() {
 		overlayElement.setMap(null);
 	});
-
+	this.googlemap.fitBounds(overlayElement.getBounds());
 	infowindow.open(this.googlemap, overlayElement);
 };
 
@@ -404,9 +404,18 @@ Area.prototype.createDrawingManager = function(enable) {
 		google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(overlay) {
 			overlay.overlay.setEditable(false);
 			jQuery.get(this_.options.infowindowcreateformfetchurl, function(data) {
+				if(this_.infoWindow) {
+					this_.infoWindow.close();
+					this_.infoWindow = null;
+				}
+				if(this_.newOverlay) {
+					this_.newOverlay.setMap(null);
+				}
 				this_.showInfoWindowToCreateNewGeometry(overlay.overlay, data);
 				//make it look like all our other overlays
 				overlay.overlay.type = overlay.type;
+
+				this_.newOverlay = overlay.overlay;
 				updateHiddenfields(overlay.overlay);
 			});
 			this.setDrawingMode(null);

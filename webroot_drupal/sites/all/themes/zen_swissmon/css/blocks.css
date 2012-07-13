@@ -116,6 +116,9 @@ h2.block-title /* Block title */ {
   color: white;
 }
 
+#block-system-navigation a.active {
+  font-weight: bold;
+}
 
 
 #block-system-user-menu /* "User menu" block for Drupal user menu */ {

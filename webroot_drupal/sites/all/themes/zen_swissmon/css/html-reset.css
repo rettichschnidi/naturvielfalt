@@ -420,12 +420,6 @@ a:hover {
   text-decoration: underline;
 }
 
-a:active,
-a.active {
-/*  color: #2c5348; */
-  color: white;
-}
-
 li a.active {
 /*  color: #2c5348; */
   color: white;
