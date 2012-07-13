@@ -294,7 +294,7 @@ Area.prototype.addWindowsListenerForNewElement = function(id) {
 	}
 	currentoverlay.listeners.click.push(
 		google.maps.event.addListener(currentoverlay, 'click', function() {
-			// currentoverlay.select();
+			currentoverlay.select();
 			this_.showInfoWindow(id);
 			
 			google.maps.event.addListener(this_.infoWindow, 'closeclick', function() {
