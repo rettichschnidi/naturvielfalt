@@ -71,6 +71,6 @@ function observation_delete_form_submit($form, &$form_state) {
 		->execute();
 	area_delete_geometry(
 		(int) $form_state['build_info']['args'][0]['observation']['area_geometry_id']);
-	drupal_goto('/observation');
+	drupal_goto('/observation/show');
 }
 ?>

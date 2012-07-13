@@ -82,11 +82,11 @@ google.maps.Marker.prototype.Area = function() {
 };
 
 google.maps.Marker.prototype.deselect = function() {
-	this.setIcon('//chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FF0000');
+	this.setIcon(Drupal.settings.basePath + 'sites/all/modules/area/images/marker_sprite.png');
 };
 
 google.maps.Marker.prototype.select = function() {
-	this.setIcon('//chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|0000FF');
+	this.setIcon(Drupal.settings.basePath + 'sites/all/modules/area/images/marker_sprite-selected.png');
 };
 
 google.maps.Polyline.prototype.deselect = function() {
