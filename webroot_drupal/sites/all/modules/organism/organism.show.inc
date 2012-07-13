@@ -61,9 +61,9 @@ function organism_show_classifiers() {
 		if (isset($kingdoms[$title])) {
 			$title = t($kingdoms[$title]);
 		}
+		$species = format_plural($classifier->organismcount_cnt, '1 Species', '@count Species');
 		$list['#links'][] = array(
-				'title' => $title . ' (' . $classifier->organismcount_cnt . ' '
-						. t('Species') . ')',
+				'title' => $title . ' (' . $species . ')',
 				'href' => 'organism/classification/' . $classifier->oc_id,
 		);
 	}
