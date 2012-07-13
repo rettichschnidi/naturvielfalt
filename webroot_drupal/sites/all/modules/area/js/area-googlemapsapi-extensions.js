@@ -82,9 +82,11 @@ google.maps.Marker.prototype.Area = function() {
 };
 
 google.maps.Marker.prototype.deselect = function() {
+	this.setIcon('//chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FF0000');
 };
 
 google.maps.Marker.prototype.select = function() {
+	this.setIcon('//chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|0000FF');
 };
 
 google.maps.Polyline.prototype.deselect = function() {
