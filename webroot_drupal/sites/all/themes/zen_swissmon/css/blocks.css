@@ -439,8 +439,8 @@ table.inventory_show th  {
 fieldset {
   margin: 1em 0;
   padding: 1em;
-  border: 1px solid #5a8c73;
-  background: #fff url(../images/gradient-inner.png) repeat-x 0 0;
+  border: 1px solid #0a722b;
+  background: #fff;
 }
 
 .fieldset-legend {

@@ -119,8 +119,6 @@ a.naturvielfalt-button /* Lets the header logo become a button */ {
   /* witdh set with jquery in equalheights.js to match that of content*/
   background-color: #DAE5E3;
   color: #3B7066;
-  position: relative;
-  left: -20px; /*compensate padding of "#content .section" in layout-fixed.css*/
   padding-top: 10px;
 }
 

@@ -1140,7 +1140,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 					'#title' => t('Type'),
 					'#options' => array(
 							'habitat' => t('habitat'),
-							'organism' => t('organism')
+							'organism' => t('Species')
 					),
 					'#weight' => 2,
 					'#required' => false, /*'#ajax' => array(

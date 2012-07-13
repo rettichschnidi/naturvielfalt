@@ -40,8 +40,6 @@
 		if($(".region-sidebar-first").length == 0) {
 			$("#title-wrapper").css("margin-left","7px");
 			$("#title-wrapper").width(contentwidth-14);
-		} else {
-			$("#title-wrapper").width(contentwidth-7);
 		}
 		
 		/*

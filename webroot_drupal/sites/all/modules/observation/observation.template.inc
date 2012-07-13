@@ -89,9 +89,6 @@ function observation_form($observation = false) {
 	$form['div'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
-			'#attributes' => array(
-					'style' => 'width: 95%;'
-			)
 	);
 
 	$form['div']['hiddenfields'] = area_address_hidden_form();

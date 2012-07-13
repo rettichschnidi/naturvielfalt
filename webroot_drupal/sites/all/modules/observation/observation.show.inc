@@ -15,9 +15,6 @@ function observation_show_all_observations() {
 	$output['div'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
-			'#attributes' => array(
-					'style' => 'width: 95%;'
-			)
 	);
 
 	$output['div']['map'] = array(
