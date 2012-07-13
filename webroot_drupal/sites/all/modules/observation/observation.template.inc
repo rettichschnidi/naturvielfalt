@@ -284,7 +284,19 @@ function observation_form($observation = false) {
 									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}"
 			)
 	);
-	$formcust .= drupal_render($recent);
+
+	if(observation_admin_access($observation)) {
+		$aclfieldset =  array(
+				'#type' => 'fieldset',
+				'#title' => t('Permissions'),
+				'#weight' => 99,
+		);
+
+		$aclfieldset['content'] = observation_acl_template($observation);
+
+		$formcust .= drupal_render($recent);
+	}
+	$formcust .= drupal_render($aclfieldset);
 
 	return $formcust;
 }
