@@ -227,7 +227,6 @@ Area.prototype.showInfoWindow = function(id) {
 				this.options.infowindowoptions
 			);
 		
-		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
 			jQuery('#row' + id).removeClass('trSelected');
 			this_.overlaysArray[id].deselect();
