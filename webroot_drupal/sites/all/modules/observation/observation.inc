@@ -531,7 +531,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	);
 
 	$tableHeader[] = array(
-			'name' => t('Commen name'),
+			'name' => t('Common name'),
 			'dbfield' => 'organism_l',
 			'width' => 330,
 			'dbExactField' => 'ol.name',
