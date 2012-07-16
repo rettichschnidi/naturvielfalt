@@ -531,14 +531,14 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	);
 
 	$tableHeader[] = array(
-			'name' => t('Organism'),
+			'name' => t('Commen name'),
 			'dbfield' => 'organism_l',
 			'width' => 330,
 			'dbExactField' => 'ol.name',
 	);
 
 	$tableHeader[] = array(
-			'name' => t('Species'),
+			'name' => t('Scientific name'),
 			'dbfield' => 'organism_sc',
 			'width' => 330,
 			'dbExactField' => 'osn.name',
