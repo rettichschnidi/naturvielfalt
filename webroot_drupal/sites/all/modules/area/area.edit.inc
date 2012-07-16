@@ -371,7 +371,7 @@ function area_update_file($form, &$form_state) {
 		$nid = db_insert('area_file_managed')->fields(
 				array('area_id' => $area_id,
 						'file_managed_fid' => $file->fid,
-						'description' => $form_state['values']['file_description']
+						'description' => filter_xss($form_state['values']['file_description'])
 				))
 			->execute();
 		drupal_set_message(t('File saved'));
