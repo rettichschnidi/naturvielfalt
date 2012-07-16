@@ -11,6 +11,8 @@ function observation_show_all_observations() {
 
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
+	
+	drupal_set_title(t('Show all observations'));
 
 	$output['div'] = array(
 			'#type' => 'fieldset',
