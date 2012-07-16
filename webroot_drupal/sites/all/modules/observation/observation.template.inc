@@ -297,7 +297,6 @@ function observation_form($observation = false) {
  * @param array $observation
  */
 function observation_acl_template($observation = NULL) {
-	drupal_set_title('Set permissions on a observation');
 	$output = array();
 	$defaults = array(
 			array(
