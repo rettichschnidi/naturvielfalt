@@ -22,7 +22,6 @@ function naturvielfalt_webservice_menu() {
 
 /**
  * Default permission function
- *
  */
 function naturvielfalt_webservice_permission() {
 	return array(

@@ -893,10 +893,10 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
  * @param long $longitude
  * @param long $latitude
  * @param bool $original_response
- * 				set to true, if you want the original answer from google
+ * 	 set to true, if you want the original answer from google
  * @return array
  */
-function area_get_geocodeInfo($longitude = false, $latitude = false,
+function area_get_geocode_info($longitude = false, $latitude = false,
 		$original_response = false) {
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 			? 'https://' : 'http://';
@@ -916,8 +916,9 @@ function area_get_geocodeInfo($longitude = false, $latitude = false,
 	$elevationData = json_decode($data, true);
 
 	// if we get a placemark array and the status was good, get the address
-	if (!is_array($jsondata) && $jsondata['Status']['code'] != 200)
+	if (!is_array($jsondata) && $jsondata['Status']['code'] != 200) {
 		return false;
+	}
 
 	if ($original_response) {
 		$jsondata['elevationData'] = $elevationData;
