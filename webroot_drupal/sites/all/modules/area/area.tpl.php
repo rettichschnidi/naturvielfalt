@@ -136,7 +136,7 @@ if ($reticle) {
 
 			// The following code is borrowed from  /misc/textarea.js
 			// If you ever need this for any other kind of custom element,
-			// please refactor it into something generic 
+			// please refactor it into something generic.
 			jQuery('.area-outer-map-container').each(function () {
 				var staticOffset = null;
 				var textarea = jQuery(this).addClass('resizable-textarea').find('.area-canvas');

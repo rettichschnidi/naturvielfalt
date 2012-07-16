@@ -221,14 +221,14 @@ Area.prototype.showInfoWindow = function(id) {
 		var this_ = this;
 	
 		if (this.infoWindow != null) {
-			google.maps.event.trigger(this_.infoWindow, 'closeclick');
+			google.maps.event.trigger(this.infoWindow, 'closeclick');
 		}
 		var infowindow = this.infoWindow = new google.maps.InfoWindow(
 				this.options.infowindowoptions
 			);
 		
-		// Delete overlayElement if window closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
+			jQuery('#row' + id).removeClass('trSelected');
 			this_.overlaysArray[id].deselect();
 			infowindow.close();
 			this_.infoWindow = null;
@@ -285,7 +285,7 @@ Area.prototype.createOverlayElementFromJson = function(currentjsonoverlay) {
 	return newoverlay;
 };
 
-Area.prototype.addWindowsListenerForNewElement = function(id) {
+Area.prototype.addWindowsListenerToGeometry = function(id) {
 	var this_ = this;
 	var currentoverlay = this.overlaysArray[id];
 	
@@ -294,12 +294,9 @@ Area.prototype.addWindowsListenerForNewElement = function(id) {
 	}
 	currentoverlay.listeners.click.push(
 		google.maps.event.addListener(currentoverlay, 'click', function() {
-			// currentoverlay.select();
+			jQuery('#row' + id).addClass('trSelected');
 			this_.showInfoWindow(id);
-			
-			google.maps.event.addListener(this_.infoWindow, 'closeclick', function() {
-				currentoverlay.deselect();
-			});
+			currentoverlay.select();
 		})
 	);
 };
@@ -334,7 +331,7 @@ Area.prototype.addGeometryFromJsonToGoogleMapArray = function(currentjsonoverlay
 	newoverlay.listeners = {};
 	newoverlay.setup();
 
-	this.addWindowsListenerForNewElement(currentjsonoverlay.id);
+	this.addWindowsListenerToGeometry(currentjsonoverlay.id);
 };
 
 /**
@@ -482,14 +479,14 @@ Area.prototype.createSearchbar = function(enable) {
 		
 		// do not submit the form when pressing enter
 		searchinput.onkeypress = function(evt) {
-		    evt = evt || window.event;
-		    var charCode = evt.keyCode || evt.which;
-		    if (charCode == 13) {
-		        evt.returnValue = false;
-		        if (evt.preventDefault) {
-		            evt.preventDefault();
-		        }
-		    }
+			evt = evt || window.event;
+			var charCode = evt.keyCode || evt.which;
+			if (charCode == 13) {
+				evt.returnValue = false;
+				if (evt.preventDefault) {
+					evt.preventDefault();
+				}
+			}
 		};
 	}
 };

@@ -82,15 +82,20 @@ google.maps.Marker.prototype.Area = function() {
 };
 
 google.maps.Marker.prototype.deselect = function() {
+	this.setIcon(Drupal.settings.basePath + 'sites/all/modules/area/images/marker_sprite.png');
+	this.setClickable(true);
 };
 
 google.maps.Marker.prototype.select = function() {
+	this.setIcon(Drupal.settings.basePath + 'sites/all/modules/area/images/marker_sprite-selected.png');
+	this.setClickable(false);
 };
 
 google.maps.Polyline.prototype.deselect = function() {
 	this.setOptions({
 		strokeColor : "#FF0000",
 		strokeWeight : 3,
+		clickable: true,
 	});
 };
 
@@ -98,6 +103,7 @@ google.maps.Polyline.prototype.select = function() {
 	this.setOptions({
 		strokeColor : "#0000FF",
 		strokeWeight : 3,
+		clickable: false,
 	});
 };
 
@@ -107,7 +113,8 @@ google.maps.Polygon.prototype.deselect = function() {
 		strokeWeight : 1,
 		strokeOpacity : 0.75,
 		fillColor : "#AA0000",
-		fillOpacity : 0.25
+		fillOpacity : 0.25,
+		clickable: true,
 	});
 };
 
@@ -117,7 +124,8 @@ google.maps.Polygon.prototype.select = function() {
 		strokeWeight : 1,
 		strokeOpacity : 0.25,
 		fillColor : "#0000AA",
-		fillOpacity : 0.4
+		fillOpacity : 0.4,
+		clickable: false,
 	});
 };
 

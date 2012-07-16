@@ -17,6 +17,7 @@ function area_new_area() {
 
 	$output['map'] = array(
 			'#ch1903' => true,
+			'#search' => true,
 			'#action' => 'create',
 			'#infowindow_createform_fetch_url' => base_path() . 'area/getnewareanameajaxform',
 			'#geometries_fetch_url' => base_path() . 'areas/json',
