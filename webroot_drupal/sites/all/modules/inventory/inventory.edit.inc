@@ -65,7 +65,7 @@ function inventory_edit($head_inventory_id, $redirect = true) {
 	//------------------
 	$render_array['entries'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Organisms'),
+			'#title' => t('Species'),
 			'#weight' => 6,
 			'#collapsible' => TRUE,
 			'#collapsed' => FALSE,
@@ -154,7 +154,7 @@ function inventory_add_single() {
 	//------------------
 	$render_array['entries'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Organisms'),
+			'#title' => t('Species'),
 			'#weight' => 6,
 			'#collapsible' => TRUE,
 			'#collapsed' => FALSE,
