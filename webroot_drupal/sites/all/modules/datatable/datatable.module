@@ -88,6 +88,8 @@ function datatable_theme() {
  * 			[iTotalDisplayRecords] => found records with filtering
  * 			[aaData] => Array of filtered and limited data from db as dbfields
  * @note If you do not like this (and you wont like it), do it better and shut up.
+ * @note ALL VALUES DO NOT GET FILTERED BY FILTER_XSS() OR CHECK_PLAIN() - PLEASE MAKE DAMMN SURE THAT YOU ONLY PRINT VALUES
+ * WHICH GOT FILTERED AHEAD!
  */
 function datatable_dbRequest($sql, $arguments = array(),
 		$preArguments = array()) {
