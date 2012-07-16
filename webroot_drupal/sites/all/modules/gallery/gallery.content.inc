@@ -52,7 +52,7 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 				'#markup' => '<p>'
 						. t(
 							'There are no @mediatype available yet.',
-							array('@mediatype' => $mediatype)) . '</p>',
+							array('@mediatype' => t($mediatype))) . '</p>',
 		);
 	}
 	if ($editable)
@@ -60,7 +60,7 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 			$links,
 			array('title' => t(
 						'Manage @mediatype',
-						array('@mediatype' => $mediatype)),
+						array('@mediatype' => t($mediatype))),
 					'href' => 'gallery/' . $type . '/' . $id . '/' . $mediatype
 							. '/edit' //'href' => 'gallery/'.$type.'/'.$id.'/edit'
 			));
@@ -201,7 +201,7 @@ function _gallery_list_links($params, $count, $mediatype) {
 								'Showing first !showing @mediatype of !total',
 								array('!showing' => GALLERY_IMAGE_COUNT,
 										'!total' => $count,
-										'@mediatype' => $mediatype
+										'@mediatype' => t($mediatype)
 								)),
 					'#weight' => 10
 			);
@@ -209,7 +209,7 @@ function _gallery_list_links($params, $count, $mediatype) {
 				$links,
 				array('title' => t(
 							'Show all @mediatype',
-							array('@mediatype' => $mediatype)),
+							array('@mediatype' => t($mediatype))),
 						'href' => $url,
 						'query' => array(
 								$params['key'] => '1'
@@ -235,7 +235,7 @@ function _gallery_list_links($params, $count, $mediatype) {
 				$links,
 				array('title' => t(
 							'Hide linked @mediatype',
-							array('@mediatype' => $mediatype)),
+							array('@mediatype' => t($mediatype))),
 						'href' => $url,
 						'query' => array(
 								$params['key'] . '_crosslinked' => ''
@@ -247,7 +247,7 @@ function _gallery_list_links($params, $count, $mediatype) {
 				$links,
 				array('title' => t(
 							'Show linked @mediatype',
-							array('@mediatype' => $mediatype)),
+							array('@mediatype' => t($mediatype))),
 						'href' => $url,
 						'query' => array(
 								$params['key'] . '_crosslinked' => '1'
@@ -259,7 +259,7 @@ function _gallery_list_links($params, $count, $mediatype) {
 		$links[(!$params['subtype'] ? 'selected' : count($links))] = array(
 				'title' => t(
 					'Show all @mediatype types',
-					array('@mediatype' => $mediatype)),
+					array('@mediatype' => t($mediatype))),
 				'href' => $url,
 				'query' => array(
 						$params['key'] . '_subtype' => ''
@@ -597,7 +597,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 			'#type' => 'fieldset',
 			'#title' => t(
 				'Upload new @mediatype',
-				array('@mediatype' => $mediatype)),
+				array('@mediatype' => t($mediatype))),
 			'#weight' => 1,
 			'#collapsible' => true,
 			'#attached' => array(
@@ -625,7 +625,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 			'#type' => 'fieldset',
 			'#title' => t(
 				'Edit existing @mediatype',
-				array('@mediatype' => $mediatype)),
+				array('@mediatype' => t($mediatype))),
 			'#weight' => 2,
 			'#collapsible' => true,
 			'#attached' => array(
@@ -649,7 +649,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 		false,
 		'gallery/' . $type . '/' . $id . '/' . $mediatype . '');
 
-	$title = t('Manage @mediatype', array('@mediatype' => $mediatype));
+	$title = t('Manage @mediatype', array('@mediatype' => t($mediatype)));
 	drupal_set_title($title, PASS_THROUGH);
 
 	$info = _gallery_get_title_description($type, $id, $mediatype);
@@ -836,7 +836,7 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 				'#markup' => '<p>'
 						. t(
 							'There are no @mediatype available yet.',
-							array('@mediatype' => $mediatype)) . '</p>',
+							array('@mediatype' => t($mediatype))) . '</p>',
 		);
 	else
 		$form['overview'] = array(
@@ -854,7 +854,7 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 				'#type' => 'submit',
 				'#value' => t(
 					'Delete selected @mediatype',
-					array('@mediatype' => $mediatype)),
+					array('@mediatype' => t($mediatype))),
 				'#submit' => array(
 						'gallery_images_form_delete_submit'
 				),
@@ -1838,13 +1838,13 @@ function gallery_own_list($user, $mediatype = "images") {
 				'#markup' => '<p>'
 						. t(
 							'You have not added any @mediatype',
-							array('@mediatype' => $mediatype)) . '</p>',
+							array('@mediatype' => t($mediatype))) . '</p>',
 		);
 	array_push(
 		$links,
 		array('title' => t(
 					'Manage @mediatype',
-					array('@mediatype' => $mediatype)),
+					array('@mediatype' => t($mediatype))),
 				'href' => 'user/' . $user->uid . '/gallery/edit'
 		));
 	if ($backlink) {
@@ -1865,7 +1865,7 @@ function gallery_own_list($user, $mediatype = "images") {
 		t(
 			'@mediatype added by %user',
 			array('%user' => $user->name,
-					'@mediatype' => $mediatype
+					'@mediatype' => t($mediatype)
 			)),
 		PASS_THROUGH);
 	return $page;
@@ -1893,7 +1893,7 @@ function gallery_own_edit($user, $mediatype = "images") {
 		t(
 			'@mediatype added by %user',
 			array('%user' => $user->name,
-					'@mediatype' => $mediatype
+					'@mediatype' => t($mediatype)
 			)),
 		PASS_THROUGH);
 	return $form;

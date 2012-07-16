@@ -253,7 +253,7 @@ function gallery_implementation_edit_existing_file_list($module = false,
 				'#markup' => '<p>'
 						. t(
 							'There are no @mediatype available yet.',
-							array('@mediatype' => $mediatype)) . '</p>',
+							array('@mediatype' => t($mediatype))) . '</p>',
 		);
 	else
 		$form['overview'] = array(
