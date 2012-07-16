@@ -74,22 +74,6 @@ function observation_menu() {
 			'weight' => 2
 	);
 
-	$items['observation/%observation/permissions'] = array(
-			'title' => t('Permission'),
-			'description' => t('Edit the permission of this observation.'),
-			'page callback' => 'observation_edit_acl',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					1
-			),
-			'access callback' => 'observation_admin_access',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'observation.inc',
-			'weight' => 4
-	);
 	$items['observation/%observation/delete'] = array(
 			'title' => t('Delete'),
 			'description' => t('Delete an existing observation.'),
