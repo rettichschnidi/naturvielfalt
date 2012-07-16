@@ -41,6 +41,21 @@ function observation_menu() {
 			'file' => 'observation.inc',
 			'weight' => 2,
 	);
+	$items['observation/%observation'] = array(
+				'title' => t('Show'),
+				'description' => t('Display an observation'),
+				'page callback' => 'observation_show_observation',
+				'page arguments' => array(
+					1
+				),
+				'access arguments' => array(
+					1
+				),
+				'access callback' => 'observation_read_access',
+				'file' => 'observation.inc',
+				'type' => MENU_SUGGESTED_ITEM,
+				'weight' => 1
+	);
 	$items['observation/%observation/show'] = array(
 			'title' => t('Show'),
 			'description' => t('Display an observation'),
@@ -53,8 +68,7 @@ function observation_menu() {
 			),
 			'access callback' => 'observation_read_access',
 			'file' => 'observation.inc',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'type' => MENU_DEFAULT_LOCAL_TASK,
 			'weight' => 1
 	);
 	$items['observation/%observation/edit'] = array(
@@ -70,7 +84,6 @@ function observation_menu() {
 			'access callback' => 'observation_write_access',
 			'file' => 'observation.inc',
 			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'weight' => 2
 	);
 
