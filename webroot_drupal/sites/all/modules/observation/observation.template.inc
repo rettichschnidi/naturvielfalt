@@ -15,7 +15,11 @@ function observation_form($observation = false) {
 		$url = base_path() . 'observation/' . $observation['observation']['id']
 				. '/save';
 		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
-		drupal_set_title(t('Edit an observation'));
+		$species = $observation['organism']['name_lang'];
+		if (!isset($species)) {
+			$species = $observation['organism']['name_lat'];
+		}
+		drupal_set_title(t('Edit observation of <i>@species</i>', array('@species' => check_plain($species))), PASS_THROUGH);
 	}
 
 	// if not edit, set standard values
@@ -334,7 +338,12 @@ function observation_show_observation($observationdata = NULL) {
 	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
-	drupal_set_title('Show an observation');
+	
+	$species = $observationdata['organism']['name_lang'];
+	if (!isset($species)) {
+		$species = $observationdata['organism']['name_lat'];
+	}
+	drupal_set_title(t('Show observation of <i>@species</i>', array('@species' => check_plain($species))), PASS_THROUGH);
 
 	/* call area_get_static_image_url() to get an url to the google maps visualization */
 	$staticimageurl = area_get_static_image_url(
