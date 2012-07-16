@@ -335,6 +335,14 @@ function area_edit_form_submit($form, &$form_state) {
 	drupal_set_message(t("Area Saved"));
 }
 
+/**
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @ This shitty, legacy code will be replaced by the gallery module as soon as it is
+ * able to store documents.
+ */
 function area_update_file($form, &$form_state) {
 	$area_id = $form_state['storage']['area_id'];
 	// File upload
@@ -376,6 +384,12 @@ function area_update_file($form, &$form_state) {
 /**
  * Form to upload and comment new files
  *
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @ This shitty, legacy code will be replaced by the gallery module as soon as it is
+ * able to store documents.
  * @return form to upload files
  */
 function area_edit_files_form($form, &$form_state, $areadata) {
@@ -500,8 +514,12 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 /**
  * Ask user before deleting an area file.
  * 
- * @param $form
- * @param $form_state
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @ This shitty, legacy code will be replaced by the gallery module as soon as it is
+ * able to store documents.
  * @param $area_id
  * @param $file_id
  */
@@ -534,8 +552,13 @@ function area_delete_file($form, &$form_state, $areadata, $file_id) {
 
 /**
  * Delete an area file.
- * @param $form
- * @param $form_state
+ * 
+ *  * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @ This shitty, legacy code will be replaced by the gallery module as soon as it is
+ * able to store documents.
  */
 function area_delete_file_submit($form, &$form_state) {
 	$area_id = $form_state['area_id'];
