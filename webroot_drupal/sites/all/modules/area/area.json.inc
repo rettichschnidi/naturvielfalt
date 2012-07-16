@@ -90,14 +90,14 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 		if (check_permission($entry->acl_id, variable_get($acl_level))) {
 			$item = array();
 			$item['id'] = (int) $entry->id;
-			$item['name'] = $entry->name;
+			$item['name'] = check_plain($entry->name);
 			$item['parcel_nr'] = NULL;
 			$item['altitude'] = (int) $entry->altitude;
-			$item['township'] = $entry->township;
-			$item['canton'] = $entry->canton;
-			$item['country'] = $entry->country;
-			$item['comment'] = $entry->comment;
-			$item['zip'] = $entry->zip;
+			$item['township'] = check_plain($entry->township);
+			$item['canton'] = check_plain($entry->canton);
+			$item['country'] = check_plain($entry->country);
+			$item['comment'] = check_plain($entry->comment);
+			$item['zip'] = check_plain($entry->zip);
 				
 			$item['type'] = '';
 			$item['area_points'] = array();

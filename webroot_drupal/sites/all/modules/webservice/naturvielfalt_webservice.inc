@@ -22,25 +22,32 @@ function naturvielfalt_webservice_parse_import_observations() {
 		return naturvielfalt_webservice_auth();
 	}
 
-	// Set content-length
-	// header('Content-Length: ' . ob_get_length()); <---- MADE THE APP CRASH.... Don't really understand why
-
 	// Authenticate the user (Drupal Authentification)
 	$uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-	if (!$uid)
+	if (!$uid) {
 		return naturvielfalt_webservice_auth();
+	}
 	$user = user_load($uid);
 
-	watchdog(WS_API_LOG_TYPE, 'REQUEST :' . var_export($_POST, true), array(), WATCHDOG_DEBUG);
-	watchdog(WS_API_LOG_TYPE, 'FILES :' . var_export($_FILES, true), array(), WATCHDOG_DEBUG);
+	watchdog(
+		WS_API_LOG_TYPE,
+		'REQUEST :' . var_export($_POST, true),
+		array(),
+		WATCHDOG_DEBUG);
+	watchdog(
+		WS_API_LOG_TYPE,
+		'FILES :' . var_export($_FILES, true),
+		array(),
+		WATCHDOG_DEBUG);
 
 	/**
 	 * parse not useable post vars to be compatible with th eobservation module
 	 * @var unknown_type
 	 */
 
-	$data = area_get_geocodeInfo(filter_xss($_POST['longitude']), filter_xss($_POST['latitude']));
-	// 		die(print_r($data));
+	$data = area_get_geocode_info(
+		filter_xss($_POST['longitude']),
+		filter_xss($_POST['latitude']));
 	$data['organismn_id'] = $_POST['organismn_id'];
 	$data['organism_artgroup_id'] = $_POST['organism_artgroup_id'];
 	$data['count'] = $_POST['count'];
@@ -77,7 +84,7 @@ function naturvielfalt_webservice_parse_import_observations() {
 }
 
 function naturvielfalt_webservice_auth() {
-	header('WWW-Authenticate: Basic realm="Naturvielfalt"'); // FIXME: Use auth-digest instead of auth basic
+	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
 	header('HTTP/1.0 401 Unauthorized');
 
 	watchdog(WS_API_LOG_TYPE, 'Authorization failed.', array(), WATCHDOG_INFO);

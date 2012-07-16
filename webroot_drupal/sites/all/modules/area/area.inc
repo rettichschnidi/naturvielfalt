@@ -210,7 +210,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'header' => true
 				),
 				l(
-					$areadata['username'],
+					check_plain($areadata['username']),
 					base_path() . "user/" . $areadata['userid'],
 					array(
 							'external' => true
@@ -224,7 +224,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Township'),
 						'header' => true
 				),
-				$areadata['township']
+				check_plain($areadata['township'])
 		);
 	}
 	if (!empty($areadata['zip'])
@@ -234,7 +234,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('ZIP'),
 						'header' => true
 				),
-				$areadata['zip']
+				check_plain($areadata['zip'])
 		);
 	}
 	if (!empty($areadata['canton'])
@@ -244,7 +244,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Canton'),
 						'header' => true
 				),
-				$areadata['canton']
+				check_plain($areadata['canton'])
 		);
 	}
 	if (!empty($areadata['country'])
@@ -254,7 +254,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Country'),
 						'header' => true
 				),
-				$areadata['country']
+				check_plain($areadata['country'])
 		);
 	}
 	if (!empty($areadata['altitude'])
@@ -264,7 +264,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Altitude [m.a.s.l.]'),
 						'header' => true
 				),
-				$areadata['altitude']
+				check_plain($areadata['altitude'])
 		);
 	}
 	if ((!empty($areadata['wgs84_center_lat'])
@@ -781,28 +781,28 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 			$groups[t('Habitats')],
 			array(
 					'type' => 'area_habitat',
-					'id' => $habitat['ah_id'],
+					'id' => (int) $habitat['ah_id'],
 					'alternative' => array(
 							'type' => 'habitat',
-							'id' => $habitat['id']
+							'id' => (int) $habitat['id']
 					),
 					'content' => array(
 							'label' => array(
 									'#prefix' => '<h3>',
 									'#suffix' => '</h3>',
-									'#markup' => $habitat['label'],
+									'#markup' => check_plain($habitat['label']),
 							),
 							'name_de' => array(
 									'#prefix' => '<h4>',
 									'#suffix' => '</h4>',
 									'#markup' => l(
-										$habitat['name_de'],
+										check_plain($habitat['name_de']),
 										'habitat/' . $habitat['id'])
 							),
 							'name_scientific' => array(
 									'#prefix' => '<h5>',
 									'#suffix' => '</h5>',
-									'#markup' => $habitat['name_scientific']
+									'#markup' => check_plain($habitat['name_scientific'])
 											? l(
 												$habitat['name_scientific'],
 												'habitat/' . $habitat['id'])
@@ -893,10 +893,10 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
  * @param long $longitude
  * @param long $latitude
  * @param bool $original_response
- * 				set to true, if you want the original answer from google
+ * 	 set to true, if you want the original answer from google
  * @return array
  */
-function area_get_geocodeInfo($longitude = false, $latitude = false,
+function area_get_geocode_info($longitude = false, $latitude = false,
 		$original_response = false) {
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 			? 'https://' : 'http://';
@@ -916,8 +916,9 @@ function area_get_geocodeInfo($longitude = false, $latitude = false,
 	$elevationData = json_decode($data, true);
 
 	// if we get a placemark array and the status was good, get the address
-	if (!is_array($jsondata) && $jsondata['Status']['code'] != 200)
+	if (!is_array($jsondata) && $jsondata['Status']['code'] != 200) {
 		return false;
+	}
 
 	if ($original_response) {
 		$jsondata['elevationData'] = $elevationData;
@@ -925,10 +926,10 @@ function area_get_geocodeInfo($longitude = false, $latitude = false,
 	}
 
 	$output['coordinate'] = '[[' . $latitude . ',' . $longitude . ']]';
-	$output['zip'] = $jsondata['results'][0]['address_components'][6]['long_name'];
-	$output['canton'] = $jsondata['results'][0]['address_components'][4]['long_name'];
-	$output['country'] = $jsondata['results'][0]['address_components'][5]['long_name'];
-	$output['township'] = $jsondata['results'][0]['address_components'][2]['long_name'];
+	$output['zip'] = check_plain($jsondata['results'][0]['address_components'][6]['long_name']);
+	$output['canton'] = check_plain($jsondata['results'][0]['address_components'][4]['long_name']);
+	$output['country'] = check_plain($jsondata['results'][0]['address_components'][5]['long_name']);
+	$output['township'] = check_plain($jsondata['results'][0]['address_components'][2]['long_name']);
 	$output['altitude'] = intval($elevationData['results'][0]['elevation']);
 	$output['area_points'] = $output['coordinate'];
 	$output['marker'] = 'marker';

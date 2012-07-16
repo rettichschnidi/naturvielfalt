@@ -181,7 +181,7 @@ function area_show_specific_area($areadata = NULL) {
 			'#type' => 'item',
 			'#markup' => "<pre>"
 					. (empty($areadata['comment']) ? t("None available")
-							: $areadata['comment']) . "</pre>"
+							: check_plain($areadata['comment'])) . "</pre>"
 	);
 
 	/* Create a fieldset for the strategies text fields */
@@ -206,7 +206,8 @@ function area_show_specific_area($areadata = NULL) {
 			'#markup' => "<pre>"
 					. (empty($areadata['protection_target'])
 							? t("None available")
-							: $areadata['protection_target']) . "</pre>"
+							: check_plain($areadata['protection_target']))
+					. "</pre>"
 	);
 
 	/* add the tending strategies target textarea */
@@ -216,7 +217,8 @@ function area_show_specific_area($areadata = NULL) {
 			'#markup' => "<pre>"
 					. (empty($areadata['tending_strategies'])
 							? t("None available")
-							: $areadata['tending_strategies']) . "</pre>"
+							: check_plain($areadata['tending_strategies']))
+					. "</pre>"
 	);
 
 	/* add the tending strategies target textarea */
@@ -226,7 +228,7 @@ function area_show_specific_area($areadata = NULL) {
 			'#markup' => "<pre>"
 					. (empty($areadata['safety_precautions'])
 							? t("None available")
-							: $areadata['safety_precautions']) . "</pre>"
+							: check_plain($areadata['safety_precautions'])) . "</pre>"
 	);
 
 	/* Create a fieldset for the linked habitats */
@@ -321,8 +323,8 @@ function area_overview_form($form, &$form_state, $areadata) {
 				'surface_area' => false
 		));
 	$form['table']['#attributes'] = array(
-					'id' => 'infowindow_tabular_data'
-			);
+			'id' => 'infowindow_tabular_data'
+	);
 	/**
 	 * Display the "edit" button only if user has write permission to this area
 	 */
