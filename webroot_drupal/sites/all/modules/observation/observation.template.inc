@@ -3,7 +3,7 @@
 module_load_include('inc', 'observation');
 module_load_include('inc', 'gallery', 'gallery.implementations');
 /**
- * Show the form to add or edit a observation
+ * Show the form to add or edit an observation
  * @param array $observation
  */
 function observation_form($observation = false) {
@@ -334,7 +334,7 @@ function observation_show_observation($observationdata = NULL) {
 	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
-	drupal_set_title('Show a observation');
+	drupal_set_title('Show an observation');
 
 	/* call area_get_static_image_url() to get an url to the google maps visualization */
 	$staticimageurl = area_get_static_image_url(
