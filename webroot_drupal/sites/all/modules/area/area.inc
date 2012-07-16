@@ -709,6 +709,13 @@ function area_list($area) {
 		1000000);
 }
 
+/**
+ * @note PLEASE REMOVE THIS SHIT WHEN YOU HAVE REDONE THE GALLYERMODULE
+ * @param unknown_type $areaId
+ * @param unknown_type $size
+ * @param unknown_type $cssClass
+ * @param unknown_type $columns
+ */
 function _area_presentation($areaId, $size = 'gallery_presentation',
 		$cssClass = false, $columns = GALLERY_COLUMNS) {
 	if (!function_exists('gallery_presentation_renderer')) {
