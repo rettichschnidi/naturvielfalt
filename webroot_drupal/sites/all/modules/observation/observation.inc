@@ -232,7 +232,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 	if (!empty($observationdata['organism']['name_lang'])) {
 		$rows[] = array(
 				array(
-						'data' => t('Organism Name'),
+						'data' => t('Common name'),
 						'header' => true
 				),
 				$observationdata['organism']['name_lang'],
