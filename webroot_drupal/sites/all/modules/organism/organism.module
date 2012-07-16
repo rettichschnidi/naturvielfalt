@@ -68,7 +68,7 @@ function organism_menu() {
 	);
 
 	$items['organism/json'] = array(
-			'title' => t('Organisms JSON'),
+			'title' => t('Species JSON'),
 			'page callback' => 'organism_show_classifiers_json',
 			'access arguments' => array(
 					ORGANISMS_ACCESS
@@ -93,7 +93,7 @@ function organism_menu() {
 	);
 
 	$items['organism/classification/%/organismjson'] = array(
-			'title' => t('Organisms withing a classifications json'),
+			'title' => t('Species withing a classifications json'),
 			'page arguments' => array(
 					2
 			),
@@ -101,7 +101,7 @@ function organism_menu() {
 			'access arguments' => array(
 					ORGANISMS_ACCESS
 			),
-			'description' => t('List of organisms with this classifications'),
+			'description' => t('List of species with this classifications'),
 			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
@@ -136,7 +136,7 @@ function organism_menu() {
 	);
 
 	$items['organism/%organism/json'] = array(
-			'title' => t('Organism json'),
+			'title' => t('Species json'),
 			'page arguments' => array(
 					1
 			),
@@ -144,18 +144,18 @@ function organism_menu() {
 			'access arguments' => array(
 					ORGANISMS_ACCESS
 			),
-			'description' => t('Specific organism json'),
+			'description' => t('Specific species json'),
 			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
 
 	$items['organism/search/json'] = array(
-			'title' => t('Organism search json'),
+			'title' => t('Species search json'),
 			'page callback' => 'organism_search_organism_json',
 			'access arguments' => array(
 					ORGANISMS_ACCESS
 			),
-			'description' => t('Specific organism json'),
+			'description' => t('Specific species json'),
 			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
@@ -239,10 +239,10 @@ function organism_menu() {
 function organism_permission() {
 	return array(
 			ORGANISMS_UPLOAD => array(
-					'title' => t('Upload files to organisms.'),
+					'title' => t('Upload files to species.'),
 			),
 			ORGANISMS_ACCESS => array(
-					'title' => t('View organisms'),
+					'title' => t('View species'),
 			)
 	);
 }
