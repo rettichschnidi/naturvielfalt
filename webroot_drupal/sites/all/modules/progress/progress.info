@@ -1,0 +1,5 @@
+name = Progress
+description = Progress indicator
+package = Naturvielfalt
+core = 7.x
+version = "7.0-dev"

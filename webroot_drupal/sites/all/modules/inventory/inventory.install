@@ -1,0 +1,427 @@
+<?php
+/**
+ * do not modify this file, it is generated! 
+ */
+
+function inventory_schema() {
+	return array (
+  'inventory' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'Veraltet, PK wird ersetzt durch inventory_id',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'area_id' => 
+      array (
+        'description' => 'veraltet: PK, wird erstert durch area_id',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'date_start' => 
+      array (
+        'description' => 'No description for column date_start available, please fix',
+        'type' => 'datetime',
+        'pgsql_type' => 'date',
+      ),
+      'date_end' => 
+      array (
+        'description' => 'No description for column date_end available, please fix',
+        'type' => 'datetime',
+        'pgsql_type' => 'date',
+      ),
+      'name' => 
+      array (
+        'description' => 'Name des Inventars',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'comment' => 
+      array (
+        'description' => 'Kommentar',
+        'type' => 'text',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'inventory_entry' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'inventory_id' => 
+      array (
+        'description' => 'Id des Inventars',
+        'type' => 'int',
+      ),
+      'users_uid' => 
+      array (
+        'description' => 'Primary Key: Unique user ID.',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'default' => '0',
+        'size' => 'big',
+      ),
+      'organism_id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'position' => 
+      array (
+        'description' => 'Position in the inventory, Position in der Reihenfolge der Inevntareinträge',
+        'type' => 'int',
+        'size' => 'big',
+      ),
+      'geom' => 
+      array (
+        'description' => 'Localization as Postgis object',
+        'pgsql_type' => 'geometry',
+      ),
+      'locality' => 
+      array (
+        'description' => 'No description for column locality available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'zip' => 
+      array (
+        'description' => 'No description for column zip available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'township' => 
+      array (
+        'description' => 'No description for column township available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'canton' => 
+      array (
+        'description' => 'No description for column canton available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'country' => 
+      array (
+        'description' => 'No description for column country available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'position_accuracy' => 
+      array (
+        'description' => 'Genauigkeit in Meter.',
+        'type' => 'int',
+        'size' => 'big',
+      ),
+      'observation_time' => 
+      array (
+        'description' => 'No description for column observation_time available, please fix',
+        'type' => 'datetime',
+        'pgsql_type' => 'date',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'inventory_entry_2_inventory' => 
+      array (
+        'table' => 'inventory',
+        'columns' => 
+        array (
+          'inventory_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'inventory_entry_attribute_value' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'inventory_entry_id' => 
+      array (
+        'description' => 'Id des Inventareintrags',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'inventory_type_attribute_dropdown_value_id' => 
+      array (
+        'description' => 'Falls es ein Dropdown ist, dann ist es die Id des Dropdownwertes',
+        'type' => 'int',
+      ),
+      'inventory_type_attribute_id' => 
+      array (
+        'description' => 'Die Id des Attributs',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'value' => 
+      array (
+        'description' => 'Der Inhalt des Attributes',
+        'type' => 'text',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      4 => 
+      array (
+        'table' => 'inventory_entry',
+        'columns' => 
+        array (
+          'inventory_entry_id' => 'id',
+        ),
+      ),
+      'inv_e_attr_val_2_inv_t_attr' => 
+      array (
+        'table' => 'inventory_type_attribute',
+        'columns' => 
+        array (
+          'inventory_type_attribute_id' => 'id',
+        ),
+      ),
+      'FK_i_e_a_v_2_i_t_a_d_v' => 
+      array (
+        'table' => 'inventory_type_attribute_dropdown_value',
+        'columns' => 
+        array (
+          'inventory_type_attribute_dropdown_value_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'inventory_template' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a template',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'The name of the template',
+        'type' => 'text',
+      ),
+      'description' => 
+      array (
+        'description' => 'Long description of the tempalte',
+        'type' => 'text',
+      ),
+      'public' => 
+      array (
+        'description' => 'Whether this template is public or not',
+        'type' => 'int',
+        'default' => '0',
+        'size' => 'big',
+      ),
+      'owner_id' => 
+      array (
+        'description' => 'The users.uid of this template',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'create_time' => 
+      array (
+        'description' => 'The date this template was created',
+        'type' => 'datetime',
+        'not null' => 'TRUE',
+        'pgsql_type' => 'date',
+      ),
+      'modify_time' => 
+      array (
+        'description' => 'The date this tempalte was last modified',
+        'type' => 'datetime',
+        'not null' => 'TRUE',
+        'pgsql_type' => 'date',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'inventory_template_inventory' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a template inventory',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'inventory_template_id' => 
+      array (
+        'description' => 'The primary identifier for a template',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'inventory_template_inventory_2_inventory_template' => 
+      array (
+        'table' => 'inventory_template',
+        'columns' => 
+        array (
+          'inventory_template_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'inventory_template_inventory_entry' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'The primary identifier for a template inventory entry',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'inventory_template_inventory_id' => 
+      array (
+        'description' => 'The primary identifier for a template inventory',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'organism_id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'position' => 
+      array (
+        'description' => 'The position of this entry in the inventory',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      'inventory_template_inventory_entry_2_inventory_template_inventory' => 
+      array (
+        'table' => 'inventory_template_inventory',
+        'columns' => 
+        array (
+          'inventory_template_inventory_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+  'inventory_type_attribute' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'name' => 
+      array (
+        'description' => 'Name des Inventars',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+      'attribute_format_id' => 
+      array (
+        'description' => 'Id des Attributformats',
+        'type' => 'int',
+        'not null' => 'TRUE',
+        'size' => 'big',
+      ),
+      'visible' => 
+      array (
+        'description' => 'No description for column visible available, please fix',
+        'type' => 'int',
+        'size' => 'tiny',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+  ),
+  'inventory_type_attribute_dropdown_value' => 
+  array (
+    'fields' => 
+    array (
+      'id' => 
+      array (
+        'description' => 'No description for column id available, please fix',
+        'type' => 'serial',
+        'not null' => 'TRUE',
+      ),
+      'inventory_type_attribute_id' => 
+      array (
+        'description' => 'Id des Inventartyp Attributes',
+        'type' => 'int',
+        'not null' => 'TRUE',
+      ),
+      'value' => 
+      array (
+        'description' => 'Werte des Dropdowneintrages',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
+    ),
+    'primary key' => 
+    array (
+      0 => 'id',
+    ),
+    'foreign keys' => 
+    array (
+      3 => 
+      array (
+        'table' => 'inventory_type_attribute',
+        'columns' => 
+        array (
+          'inventory_type_attribute_id' => 'id',
+        ),
+      ),
+    ),
+  ),
+);
+}
+?>

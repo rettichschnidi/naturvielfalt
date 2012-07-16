@@ -1,0 +1,33 @@
+<?php
+
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_theme()
+ * 
+ * Example of how to use this theme:
+ * ---------------------------------
+ * $progressElements = array(t('Inventory'), t('Area'), t('Element'), t('Completion')); // List of elements
+ * $render_array['test'] = array(
+ *		'#theme' => 'progress_done',
+ *		'#elements' => $progressElements,
+ *		'#active' => 1 		// Indicate active Element
+ * );
+ *----------------------------------
+ *
+ * @return an array with theme template information
+ */
+function progress_theme() {
+	return array(
+			'progress_done' => array(
+					'template' => 'progress_done',
+					'variables' => array(
+							'elements' => NULL,
+							'active' => NULL
+					)
+			)
+	);
+}
+?>

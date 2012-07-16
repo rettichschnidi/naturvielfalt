@@ -1,0 +1,6 @@
+name = inventory
+description = Manage inventories
+package = Naturvielfalt
+core = 7.x
+version = "7.x-current"
+dependencies[] = wysiwyg
