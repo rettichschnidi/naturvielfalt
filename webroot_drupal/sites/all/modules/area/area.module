@@ -563,6 +563,8 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
  * 	String with required ACL permission
  * @return
  * 	True if access granted, false if not
+ * @note All this method needs of $areadata is acl_id - we probably could remove some code
+ * when we make this access check more generic.
  */
 function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
 	if ($areadata == NULL) {
