@@ -16,7 +16,7 @@
       </controlProperties>
     </control>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="4" locked="false" isInGroup="-1"/>
-    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="282" y="89" w="986" h="70" measuredW="1294" measuredH="133" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="282" y="89" w="986" h="70" measuredW="1294" measuredH="50" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/banner_topnav_big.jpg</src>
       </controlProperties>
@@ -34,18 +34,7 @@
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="173" controlTypeID="com.balsamiq.mockups::Tree" x="287" y="170" w="170" h="208" measuredW="300" measuredH="225" zOrder="8" locked="false" isInGroup="-1">
-      <controlProperties>
-        <backgroundAlpha>0</backgroundAlpha>
-        <borderStyle>none</borderStyle>
-        <hrefs>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%2Cobservation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2C%2C</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22178%2C159%2C348%2C182%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22173_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22178%2C182%2C348%2C205%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22173_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22178%2C205%2C348%2C228%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22173_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22178%2C228%2C348%2C251%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22173_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22178%2C251%2C348%2C274%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22173_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22178%2C274%2C348%2C297%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22173_5%22/%3E%0A</map>
-        <selectedIndex>4</selectedIndex>
-        <size>13</size>
-        <text>%3E%20Willkommen%0A%3E%20Arten%20%28Systematik%29%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
-      </controlProperties>
-    </control>
-    <control controlID="176" controlTypeID="__group__" x="490" y="864" w="718" h="275" measuredW="718" measuredH="275" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="176" controlTypeID="__group__" x="490" y="864" w="718" h="275" measuredW="718" measuredH="275" zOrder="8" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="718" h="275" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="176">
           <controlProperties>
@@ -235,7 +224,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="177" controlTypeID="com.balsamiq.mockups::Button" x="490" y="1149" w="-1" h="-1" measuredW="81" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="177" controlTypeID="com.balsamiq.mockups::Button" x="490" y="1149" w="-1" h="-1" measuredW="81" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <href>inventory-edit-new-observation%26bm%3Binventory-edit-new-observation.bmml%26bm%3Binventory-edit-new-observation.bmml%26bm%3Binventory-edit-new-observation.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22381%2C1138%2C462%2C1165%22%20href%3D%22inventory-edit-new-observation.bmml%22%20alt%3D%22inventory-edit-new-observation%22%20id%3D%22177%22/%3E</map>
@@ -243,7 +232,7 @@
         <text>Speichern</text>
       </controlProperties>
     </control>
-    <control controlID="180" controlTypeID="__group__" x="389" y="413" w="830" h="443" measuredW="830" measuredH="443" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="180" controlTypeID="__group__" x="389" y="413" w="830" h="443" measuredW="830" measuredH="443" zOrder="10" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="101" y="0" w="729" h="217" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="180">
           <controlProperties>
@@ -469,7 +458,7 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="185" controlTypeID="__group__" x="490" y="224" w="731" h="179" measuredW="731" measuredH="179" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="185" controlTypeID="__group__" x="490" y="224" w="731" h="179" measuredW="731" measuredH="179" zOrder="11" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="731" h="179" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="185">
           <controlProperties>
@@ -500,12 +489,12 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="186" controlTypeID="com.balsamiq.mockups::Canvas" x="461" y="150" w="807" h="47" measuredW="100" measuredH="70" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="186" controlTypeID="com.balsamiq.mockups::Canvas" x="461" y="150" w="807" h="47" measuredW="100" measuredH="70" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <color>11982760</color>
       </controlProperties>
     </control>
-    <control controlID="187" controlTypeID="com.balsamiq.mockups::Paragraph" x="466" y="156" w="253" h="41" measuredW="200" measuredH="80" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="187" controlTypeID="com.balsamiq.mockups::Paragraph" x="466" y="156" w="253" h="41" measuredW="200" measuredH="80" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Gebiet%3A%20Willisau%2C%20Hangr%FCteli%0AInventar%3A%20Laubfrosch%20Inventar%202011</text>
       </controlProperties>
