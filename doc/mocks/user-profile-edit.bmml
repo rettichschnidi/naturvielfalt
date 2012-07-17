@@ -9,7 +9,7 @@
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="281" y="89" w="987" h="845" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1"/>
-    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="281" y="89" w="987" h="70" measuredW="1278" measuredH="133" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="281" y="89" w="987" h="70" measuredW="1278" measuredH="50" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <borderStyle>none</borderStyle>
         <crop>5%2C0%2C988%2C1000</crop>
@@ -175,7 +175,7 @@
             <text>123%20456%2078%2090</text>
           </controlProperties>
         </control>
-        <control controlID="26" controlTypeID="com.balsamiq.mockups::ComboBox" x="224" y="339" w="175" h="-1" measuredW="80" measuredH="23" zOrder="26" locked="false" isInGroup="205">
+        <control controlID="26" controlTypeID="com.balsamiq.mockups::ComboBox" x="224" y="339" w="175" h="-1" measuredW="79" measuredH="23" zOrder="26" locked="false" isInGroup="205">
           <controlProperties>
             <state>closed</state>
             <text>Schweiz%0ADeutschland%0A%D6sterreich</text>
@@ -381,17 +381,6 @@
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22384%2C158%2C432%2C183%22%20href%3D%22user-profile-show-public.bmml%22%20alt%3D%22user-profile-show-public%22%20id%3D%22206_0%22/%3E%0A</map>
         <selectedIndex>1</selectedIndex>
         <text>Detail%2C%20Bearbeiten</text>
-      </controlProperties>
-    </control>
-    <control controlID="207" controlTypeID="com.balsamiq.mockups::Tree" x="292" y="169" w="170" h="208" measuredW="300" measuredH="225" zOrder="10" locked="false" isInGroup="-1">
-      <controlProperties>
-        <backgroundAlpha>0</backgroundAlpha>
-        <borderStyle>none</borderStyle>
-        <hrefs>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%2Cobservation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2C%2C</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22183%2C158%2C353%2C181%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22207_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22183%2C181%2C353%2C204%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22207_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22183%2C204%2C353%2C227%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22207_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22183%2C227%2C353%2C250%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22207_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22183%2C250%2C353%2C273%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22207_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22183%2C273%2C353%2C296%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22207_5%22/%3E%0A</map>
-        <selectedIndex>-1</selectedIndex>
-        <size>13</size>
-        <text>%3E%20Willkommen%0A%3E%20Arten%20%28Systematik%29%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
       </controlProperties>
     </control>
   </controls>
