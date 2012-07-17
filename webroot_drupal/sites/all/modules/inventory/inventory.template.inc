@@ -32,7 +32,7 @@ function inventory_template_list() {
 
 	$headings = array(
 			t('Template name'),
-			t('Organisms'),
+			t('Species'),
 			t('Created on'),
 			t('Modified on'),
 			t('Public'),
@@ -305,7 +305,7 @@ function inventory_template_edit($template_id) {
 
 	$render_array['entries'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Organisms'),
+			'#title' => t('Species'),
 			'#weight' => 6,
 			'#collapsible' => TRUE,
 			'#collapsed' => FALSE,

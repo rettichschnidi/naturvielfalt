@@ -22,7 +22,7 @@ function inventory_protection_list() {
 
 	$headings = array(
 			t('Protection list name'),
-			t('Organisms'),
+			t('Species'),
 			t('Created on'),
 			t('Modified on'),
 			t('Owner'),
@@ -260,7 +260,7 @@ function inventory_protection_edit($plist_id) {
 
 	$render_array['entries'] = array(
 			'#type' => 'fieldset',
-			'#title' => t('Organisms'),
+			'#title' => t('Species'),
 			'#weight' => 6,
 			'#collapsible' => TRUE,
 			'#collapsed' => FALSE,

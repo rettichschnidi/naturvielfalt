@@ -371,7 +371,7 @@ function area_update_file($form, &$form_state) {
 		$nid = db_insert('area_file_managed')->fields(
 				array('area_id' => $area_id,
 						'file_managed_fid' => $file->fid,
-						'description' => $form_state['values']['file_description']
+						'description' => filter_xss($form_state['values']['file_description'])
 				))
 			->execute();
 		drupal_set_message(t('File saved'));
@@ -439,7 +439,7 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 	if (!empty($result)) {
 		foreach ($result as $record) {
 			$mimeIconMap = array(
-					'path' => drupal_get_path('module', 'inventory')
+					'path' => drupal_get_path('module', 'commonstuff')
 							. '/images/'
 							. commonstuff_get_icon_map($record->filemime)
 							. '.png',
@@ -456,7 +456,7 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 
 			$img_delete = '<img src="'
 					. url(
-						drupal_get_path('module', 'inventory')
+						drupal_get_path('module', 'commonstuff')
 								. '/images/can_delete.png') . '" alt="'
 					. t('Delete') . '" />';
 			$filemime = $img_mime;

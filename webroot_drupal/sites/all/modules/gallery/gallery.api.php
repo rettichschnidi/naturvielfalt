@@ -160,7 +160,7 @@ function hook_gallery_category_conditions() {
 			 * The category will only be available for images of type organism
 			 */
 			'organism' => array(
-					'name' => t('Organisms'),
+					'name' => t('Species'),
 					'type' => 'organism'
 			),
 			/* Simple lookup condition

@@ -179,7 +179,7 @@ function commonstuff_showfiles($modulename, $id, $fidarray) {
 		array(':fids' => $fidarray));
 	foreach ($result as $record) {
 		$mimeIconMap = array(
-				'path' => drupal_get_path('module', 'inventory') . '/images/'
+				'path' => drupal_get_path('module', 'commonstuff') . '/images/'
 						. commonstuff_get_icon_map($record->filemime) . '.png',
 				'alt' => $record->filemime,
 				'title' => $record->filemime,

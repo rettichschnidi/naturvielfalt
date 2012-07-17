@@ -170,7 +170,6 @@ function gallery_implementation_edit_existing_file_list($module = false,
 	$mediatype = 'medias';
 
 	$images = gallery_images($mediatype, $module, $id, 'edit');
-	// die(print_r($images));
 	$rows = array();
 	foreach ($images[$mediatype] as $image) {
 
@@ -253,7 +252,7 @@ function gallery_implementation_edit_existing_file_list($module = false,
 				'#markup' => '<p>'
 						. t(
 							'There are no @mediatype available yet.',
-							array('@mediatype' => $mediatype)) . '</p>',
+							array('@mediatype' => t($mediatype))) . '</p>',
 		);
 	else
 		$form['overview'] = array(
@@ -343,9 +342,7 @@ function gallery_implementation_files_table($modulename = false,
 
 	foreach ($files as $record) {
 		$mimeIconMap = array(
-				//FIXME
-				//why are these images in the inventory module???
-				'path' => drupal_get_path('module', 'inventory') . '/images/'
+				'path' => drupal_get_path('module', 'commonstuff') . '/images/'
 						. commonstuff_get_icon_map($record->filemime) . '.png',
 				'alt' => $record->filemime,
 				'title' => $record->filemime,
@@ -359,8 +356,6 @@ function gallery_implementation_files_table($modulename = false,
 					. $record->filename);
 		$filemime = $img_mime;
 		$filesize = ($record->filesize / 1000) . " KB";
-		// 		$timestamp = date('d.m.Y', $record->timestamp);
-		// 		$author = isset($record->author) ? $record->author : '';
 		$edit
 				? $desc = '<input type="text" name="file_description['
 						. $record->fid . ']" id="file_description['
@@ -371,9 +366,6 @@ function gallery_implementation_files_table($modulename = false,
 		$row[] = $filename;
 		$row[] = $desc;
 		$row[] = $filesize;
-		// 		$row[] = $timestamp;
-		// 		$row[] = '<input type="text" name="file_author['.$record->fid.']" id="file_author['.$record->fid.']" value="'.$author.'">';
-		// 		$row[] = $user->name;
 		if ($edit)
 			$row[] = '<input type="checkbox" value="1" name="file_delete['
 					. $record->fid . ']"';
@@ -384,9 +376,6 @@ function gallery_implementation_files_table($modulename = false,
 	$tableHeader[] = t('Filename');
 	$tableHeader[] = t('Description');
 	$tableHeader[] = t('Size');
-	// 	$tableHeader[] = t('Date');
-	// 	$tableHeader[] = t('Author');
-	// 	$tableHeader[] = t('Owner');
 	if ($edit)
 		$tableHeader[] = t('Delete');
 

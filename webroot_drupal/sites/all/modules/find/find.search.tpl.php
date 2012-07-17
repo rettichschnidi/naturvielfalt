@@ -139,7 +139,7 @@ $parameters = $current->getParameters();
         <?php echo l(t('Areas') . ' (' . $areas->count() . ')', 'find/areas', array('query' => $parameters->filter())); ?>
     </li>
     <li class="<?php echo 'find/organisms' == $_GET['q'] ? 'active' : ''; ?>">
-        <?php echo l(t('Organisms') . ' (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
+        <?php echo l(t('Species') . ' (' . $organisms->count() . ')', 'find/organisms', array('query' => $parameters->filter())); ?>
     </li>
     <li class="<?php echo 'find/images' == $_GET['q'] ? 'active' : ''; ?>">
         <?php echo l(t('Images') . ' (' . $images->count() . ')', 'find/images', array('query' => $parameters->filter())); ?>

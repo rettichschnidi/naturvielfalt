@@ -522,7 +522,7 @@ function area_get_static_image_url($params, $width = 320, $height = 320,
 	/* Type of geometry: POINT, LINESTRING or POLYGON */
 	$type = $params['type'];
 	/* Color of the overlay */
-	$color = isset($params['color']) ? $params['color'] : '0xff0000';
+	$color = isset($params['color']) ? $params['color'] : '0xff867c';
 
 	$coordinates = json_decode($params['coordinates']);
 

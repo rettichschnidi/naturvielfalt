@@ -79,7 +79,7 @@ jQuery(document).ready(function() {
 		 */
 		observation.showLoading = function () {
 			if(!observation.loading) {
-				observation.loading = $('<div><img src="' + Drupal.settings.basePath + 'sites/all/modules/inventory/images/loading.gif" /></div>').hide();
+				observation.loading = $('<div><img src="' + Drupal.settings.basePath + 'sites/all/modules/commonstuff/images/loading.gif" /></div>').hide();
 				$('body').append(observation.loading);
 			}
 			observation.loading.dialog({

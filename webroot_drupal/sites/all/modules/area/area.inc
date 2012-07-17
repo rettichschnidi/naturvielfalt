@@ -160,6 +160,9 @@ function area_get_full_dataset_of_specific_area($area_id) {
 	assert($result->rowCount() == 1);
 	$areadata = (array) $result->fetch();
 
+	// format the username 
+	$areadata['username'] = check_plain(format_username(user_load($areadata['userid'])));
+	
 	/* extract the coordinates of the requested geometry */
 	if ($areadata['geometry_type'] == "POINT") {
 		$areadata['coordinatejson'] = array(
@@ -706,6 +709,13 @@ function area_list($area) {
 		1000000);
 }
 
+/**
+ * @note PLEASE REMOVE THIS SHIT WHEN YOU HAVE REDONE THE GALLYERMODULE
+ * @param unknown_type $areaId
+ * @param unknown_type $size
+ * @param unknown_type $cssClass
+ * @param unknown_type $columns
+ */
 function _area_presentation($areaId, $size = 'gallery_presentation',
 		$cssClass = false, $columns = GALLERY_COLUMNS) {
 	if (!function_exists('gallery_presentation_renderer')) {
@@ -749,7 +759,7 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 
 	$groups = array();
 	$weight = 1;
-	
+
 	$query = db_select('area_habitat', 'ah', array('fetch' => PDO::FETCH_ASSOC))->condition(
 			'area_id',
 			$areaId);
@@ -802,7 +812,8 @@ function _area_presentation($areaId, $size = 'gallery_presentation',
 							'name_scientific' => array(
 									'#prefix' => '<h5>',
 									'#suffix' => '</h5>',
-									'#markup' => check_plain($habitat['name_scientific'])
+									'#markup' => check_plain(
+										$habitat['name_scientific'])
 											? l(
 												$habitat['name_scientific'],
 												'habitat/' . $habitat['id'])
@@ -926,10 +937,14 @@ function area_get_geocode_info($longitude = false, $latitude = false,
 	}
 
 	$output['coordinate'] = '[[' . $latitude . ',' . $longitude . ']]';
-	$output['zip'] = check_plain($jsondata['results'][0]['address_components'][6]['long_name']);
-	$output['canton'] = check_plain($jsondata['results'][0]['address_components'][4]['long_name']);
-	$output['country'] = check_plain($jsondata['results'][0]['address_components'][5]['long_name']);
-	$output['township'] = check_plain($jsondata['results'][0]['address_components'][2]['long_name']);
+	$output['zip'] = check_plain(
+		$jsondata['results'][0]['address_components'][6]['long_name']);
+	$output['canton'] = check_plain(
+		$jsondata['results'][0]['address_components'][4]['long_name']);
+	$output['country'] = check_plain(
+		$jsondata['results'][0]['address_components'][5]['long_name']);
+	$output['township'] = check_plain(
+		$jsondata['results'][0]['address_components'][2]['long_name']);
 	$output['altitude'] = intval($elevationData['results'][0]['elevation']);
 	$output['area_points'] = $output['coordinate'];
 	$output['marker'] = 'marker';

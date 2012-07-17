@@ -232,7 +232,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 	if (!empty($observationdata['organism']['name_lang'])) {
 		$rows[] = array(
 				array(
-						'data' => t('Organism Name'),
+						'data' => t('Common name'),
 						'header' => true
 				),
 				$observationdata['organism']['name_lang'],
@@ -531,14 +531,14 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	);
 
 	$tableHeader[] = array(
-			'name' => t('Organism'),
+			'name' => t('Common name'),
 			'dbfield' => 'organism_l',
 			'width' => 330,
 			'dbExactField' => 'ol.name',
 	);
 
 	$tableHeader[] = array(
-			'name' => t('Species'),
+			'name' => t('Scientific name'),
 			'dbfield' => 'organism_sc',
 			'width' => 330,
 			'dbExactField' => 'osn.name',
