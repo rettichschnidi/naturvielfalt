@@ -16,7 +16,7 @@
       </controlProperties>
     </control>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1"/>
-    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="267" y="89" w="1001" h="70" measuredW="1294" measuredH="133" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="267" y="89" w="1001" h="70" measuredW="1294" measuredH="50" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <src>../../webroot_drupal/sites/all/themes/zen_swissmon/images/banner_topnav_big.jpg</src>
       </controlProperties>
@@ -235,8 +235,6 @@
         </control>
         <control controlID="10" controlTypeID="com.balsamiq.mockups::Label" x="569" y="164" w="-1" h="-1" measuredW="162" measuredH="21" zOrder="10" locked="false" isInGroup="114">
           <controlProperties>
-            <href>popup-media-meta%26bm%3Bpopup-media-meta.bmml%26bm%3Bpopup-media-meta.bmml%26bm%3Bpopup-media-meta.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22860%2C1152%2C1022%2C1173%22%20href%3D%22popup-media-meta.bmml%22%20alt%3D%22popup-media-meta%22%20id%3D%2210%22/%3E</map>
             <text>Details%20zur%20Datei%20hinzuf%FCgen</text>
           </controlProperties>
         </control>
@@ -789,11 +787,10 @@
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
-        <hrefs>naturvielfalt%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%26bm%3Bnaturvielfalt.bmml%2Corganism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%2Cobservation-all-list%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%26bm%3Bobservation-all-list.bmml%2Cobservation-new%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%26bm%3Bobservation-new.bmml%2Careas-all%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%26bm%3Bareas-all.bmml%2Carea-new%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%26bm%3Barea-new.bmml%2C%2C</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22170%2C154%2C340%2C177%22%20href%3D%22naturvielfalt.bmml%22%20alt%3D%22naturvielfalt%22%20id%3D%22196_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22170%2C177%2C340%2C200%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%22196_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22170%2C200%2C340%2C223%22%20href%3D%22observation-all-list.bmml%22%20alt%3D%22observation-all-list%22%20id%3D%22196_2%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22170%2C223%2C340%2C246%22%20href%3D%22observation-new.bmml%22%20alt%3D%22observation-new%22%20id%3D%22196_3%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22170%2C246%2C340%2C269%22%20href%3D%22areas-all.bmml%22%20alt%3D%22areas-all%22%20id%3D%22196_4%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22170%2C269%2C340%2C292%22%20href%3D%22area-new.bmml%22%20alt%3D%22area-new%22%20id%3D%22196_5%22/%3E%0A</map>
-        <selectedIndex>2</selectedIndex>
+        <hrefs/>
+        <selectedIndex>0</selectedIndex>
         <size>13</size>
-        <text>%3E%20Willkommen%0A%3E%20Arten%20%28Systematik%29%0A%3E%20Beobachtungen%0A%20%3E%20erfassen%0A%3E%20Gebiete%0A%20%3E%20erfassen%0A%3E%20%DCber%20Naturvielfalt%0A%3E%20Hilfe</text>
+        <text>%3E%20Beobachtungen</text>
       </controlProperties>
     </control>
   </controls>

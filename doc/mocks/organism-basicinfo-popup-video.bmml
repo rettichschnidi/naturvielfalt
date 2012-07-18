@@ -8,7 +8,7 @@
     </control>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="1011" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1"/>
     <control controlID="3" controlTypeID="com.balsamiq.mockups::Canvas" x="342" y="89" w="926" h="70" measuredW="100" measuredH="70" zOrder="2" locked="false" isInGroup="-1"/>
-    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="342" y="89" w="926" h="70" measuredW="1278" measuredH="133" zOrder="3" locked="false" isInGroup="-1">
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Image" x="342" y="89" w="926" h="70" measuredW="1278" measuredH="50" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
         <borderStyle>none</borderStyle>
         <crop>5%2C0%2C988%2C1000</crop>
@@ -21,12 +21,12 @@
         <text/>
       </controlProperties>
     </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="853" measuredW="273" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::TabBar" x="477" y="210" w="755" h="853" measuredW="226" measuredH="100" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
-        <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-wikipedia%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%26bm%3Borganism-wikipedia.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C511%2C224%22%20href%3D%22organism-wikipedia.bmml%22%20alt%3D%22organism-wikipedia%22%20id%3D%2216_1%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22511%2C199%2C600%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_2%22/%3E%0A</map>
+        <hrefs>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%2Corganism-fileupload%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml%26bm%3Borganism-fileupload.bmml</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22388%2C199%2C453%2C224%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2216_0%22/%3E%0A%3Carea%20shape%3D%22rect%22%20coords%3D%22453%2C199%2C542%2C224%22%20href%3D%22organism-fileupload.bmml%22%20alt%3D%22organism-fileupload%22%20id%3D%2216_1%22/%3E%0A</map>
         <selectedIndex>0</selectedIndex>
-        <text>Basisinfo%2C%20Lexikon%2C%20Datei%20Upload</text>
+        <text>Basisinfo%2C%20Datei%20Upload</text>
       </controlProperties>
     </control>
     <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="480" y="177" w="324" h="19" measuredW="324" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
@@ -71,7 +71,7 @@
                 <icon>SearchIcon%7Csmall</icon>
               </controlProperties>
             </control>
-            <control controlID="2" controlTypeID="com.balsamiq.mockups::ComboBox" x="52" y="7" w="59" h="-1" measuredW="46" measuredH="23" zOrder="2" locked="false" isInGroup="2">
+            <control controlID="2" controlTypeID="com.balsamiq.mockups::ComboBox" x="52" y="7" w="59" h="-1" measuredW="45" measuredH="23" zOrder="2" locked="false" isInGroup="2">
               <controlProperties>
                 <state>closed</state>
                 <text>10%0A15%0A20%0A25%0A40</text>
@@ -172,10 +172,7 @@
       </groupChildrenDescriptors>
     </control>
     <control controlID="51" controlTypeID="__group__" x="498" y="399" w="719" h="122" measuredW="719" measuredH="122" zOrder="9" locked="false" isInGroup="-1">
-      <controlProperties>
-        <href>organism-basicinfo-popup-sound%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22389%2C388%2C1108%2C510%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%2251%22/%3E</map>
-      </controlProperties>
+      <controlProperties/>
       <groupChildrenDescriptors>
         <control controlID="0" controlTypeID="com.balsamiq.mockups::FieldSet" x="0" y="0" w="719" h="122" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="51">
           <controlProperties>
@@ -184,8 +181,6 @@
         </control>
         <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="26" y="19" w="93" h="73" measuredW="188" measuredH="150" zOrder="1" locked="false" isInGroup="51">
           <controlProperties>
-            <href>organism-basicinfo-popup-sound%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22415%2C407%2C508%2C480%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%221%22/%3E</map>
             <src>http%3A//localhost/%7Ereto/naturvielfalt/sites/all/modules/gallery/images/music_icon.png</src>
             <text/>
           </controlProperties>
@@ -201,8 +196,6 @@
         </control>
         <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="26" y="28" w="88" h="80" measuredW="598" measuredH="408" zOrder="1" locked="false" isInGroup="52">
           <controlProperties>
-            <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22415%2C264%2C503%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%221%22/%3E</map>
             <src>./assets/neuseelandspinat.jpg</src>
             <text/>
           </controlProperties>
@@ -210,16 +203,12 @@
         <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="132" y="27" w="101" h="81" measuredW="294" measuredH="208" zOrder="2" locked="false" isInGroup="52">
           <controlProperties>
             <crop>66%2C190%2C850%2C602</crop>
-            <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22521%2C263%2C622%2C344%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%222%22/%3E</map>
             <src>http%3A//www.seeds-samen.eu/img/p/194-268-large.jpg</src>
             <text/>
           </controlProperties>
         </control>
         <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="261" y="33" w="99" h="68" measuredW="598" measuredH="408" zOrder="3" locked="false" isInGroup="52">
           <controlProperties>
-            <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22650%2C269%2C749%2C337%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%223%22/%3E</map>
             <src>http%3A//av-media.netletter.at/to/mmedia/image//2008.04.17/1208433035_1.jpg%3F1277659945</src>
             <text/>
           </controlProperties>
@@ -235,15 +224,13 @@
         </control>
         <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="27" y="24" w="93" h="73" measuredW="188" measuredH="150" zOrder="1" locked="false" isInGroup="53">
           <controlProperties>
-            <href>organism-basicinfo-popup-sound%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml%26bm%3Borganism-basicinfo-popup-sound.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22416%2C544%2C509%2C617%22%20href%3D%22organism-basicinfo-popup-sound.bmml%22%20alt%3D%22organism-basicinfo-popup-sound%22%20id%3D%221%22/%3E</map>
             <src>http%3A//localhost/%7Ereto/naturvielfalt/sites/all/modules/gallery/images/video_icon.png</src>
             <text/>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="54" controlTypeID="__group__" x="120" y="11" w="1403" h="1055" measuredW="1403" measuredH="1055" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="54" controlTypeID="__group__" x="120" y="80" w="1403" h="1055" measuredW="1403" measuredH="1055" zOrder="12" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="1048" y="451" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="1" locked="false" isInGroup="54">
           <controlProperties>
@@ -253,7 +240,7 @@
         <control controlID="13" controlTypeID="com.balsamiq.mockups::ModalScreen" x="0" y="0" w="1403" h="1055" measuredW="320" measuredH="240" zOrder="0" locked="false" isInGroup="54">
           <controlProperties>
             <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2211%2C0%2C1414%2C1055%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2213%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2211%2C69%2C1414%2C1124%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2213%22/%3E</map>
           </controlProperties>
         </control>
         <control controlID="14" controlTypeID="com.balsamiq.mockups::VideoPlayer" x="404" y="322" w="696" h="424" measuredW="300" measuredH="200" zOrder="2" locked="false" isInGroup="54"/>
@@ -261,7 +248,7 @@
           <controlProperties>
             <href>organism-basicinfo%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml%26bm%3Borganism-basicinfo.bmml</href>
             <icon>XIcon%7Csmall</icon>
-            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221086%2C293%2C1110%2C317%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2215%22/%3E</map>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%221086%2C362%2C1110%2C386%22%20href%3D%22organism-basicinfo.bmml%22%20alt%3D%22organism-basicinfo%22%20id%3D%2215%22/%3E</map>
           </controlProperties>
         </control>
       </groupChildrenDescriptors>
@@ -270,9 +257,8 @@
       <controlProperties>
         <backgroundAlpha>0</backgroundAlpha>
         <borderStyle>none</borderStyle>
-        <hrefs>organism-classifiers%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml%26bm%3Borganism-classifiers.bmml</hrefs>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22233%2C198%2C353%2C221%22%20href%3D%22organism-classifiers.bmml%22%20alt%3D%22organism-classifiers%22%20id%3D%2255_0%22/%3E%0A</map>
-        <selectedIndex>-1</selectedIndex>
+        <hrefs/>
+        <selectedIndex>0</selectedIndex>
         <size>13</size>
         <text>%3E%20Klassifizierer</text>
       </controlProperties>
