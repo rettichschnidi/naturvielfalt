@@ -413,15 +413,13 @@ function organism_show_classification_organismjson($classificationid) {
 	$levelnamesdatastring = implode(' text, ', $levelnamearray) . ' text';
 	$levelnamesstring = implode(', ', $levelnamearray);
 
-	
 	// get all attributes for a organismclass
-// 	$classificationattributedata = organism_get_available_attributes(
-// 			$classificationid);
-// 	if (empty($classificationattributedata)) {
-// 		die("NO ATTRIBUTES FOUND - HANDLE THIS CASE PLEASE");
-// 	}
-	
-	
+	// 	$classificationattributedata = organism_get_available_attributes(
+	// 			$classificationid);
+	// 	if (empty($classificationattributedata)) {
+	// 		die("NO ATTRIBUTES FOUND - HANDLE THIS CASE PLEASE");
+	// 	}
+
 	$sql['dbPreStatement'] = "CREATE TEMP VIEW mytempviewdata AS
 		WITH subclassification_constraints AS (
 	        -----------------------------------------------
@@ -665,7 +663,8 @@ function organism_search_organism_json($classification = false, $term = false,
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
-	$langcode = (isset($user->language) && $user->language != '') ? $user->language : 'de';
+	$langcode = (isset($user->language) && $user->language != '')
+			? $user->language : 'de';
 
 	if (!$classification && isset($_REQUEST['inv_id'])) {
 		$classification = $_REQUEST['inv_id'];
@@ -698,10 +697,11 @@ function organism_search_organism_json($classification = false, $term = false,
 	$limit = 30;
 
 	$organisms = array();
-	
+
 	$params = array();
-	if ($type_id)
+	if ($type_id) {
 		$params[':inventoryTypeId'] = $type_id;
+	}
 	$params[':limit'] = $limit;
 	$params[':lang'] = $langcode;
 	$params[':artgroupid'] = $artgroup;
@@ -715,7 +715,6 @@ function organism_search_organism_json($classification = false, $term = false,
 	} else {
 		$params[':term1'] = $terms[0] . '%';
 	}
-	
 
 	$i = 1;
 	$query = 'WITH RECURSIVE anchestors AS

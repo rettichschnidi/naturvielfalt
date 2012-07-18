@@ -54,7 +54,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 	if (!empty($result)) {
 		foreach ($result as $record) {
 			$mimeIconMap = array(
-					'path' => drupal_get_path('module', 'inventory')
+					'path' => drupal_get_path('module', 'commonstuff')
 							. '/images/' . commonstuff_get_icon_map($record->filemime)
 							. '.png',
 					'alt' => $record->filemime,
@@ -70,7 +70,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 
 			$img_delete = '<img src="'
 					. url(
-						drupal_get_path('module', 'inventory')
+						drupal_get_path('module', 'commonstuff')
 								. '/images/can_delete.png') . '" alt="'
 					. t('Delete') . '" />';
 			$filemime = $img_mime;
