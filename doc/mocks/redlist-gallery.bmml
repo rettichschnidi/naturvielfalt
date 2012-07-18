@@ -162,8 +162,6 @@
             </control>
             <control controlID="14" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="152" h="101" measuredW="188" measuredH="125" zOrder="4" locked="false" isInGroup="2">
               <controlProperties>
-                <href>organism-basicinfo-popup-image%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml%26bm%3Borganism-basicinfo-popup-image.bmml</href>
-                <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22420%2C373%2C572%2C474%22%20href%3D%22organism-basicinfo-popup-image.bmml%22%20alt%3D%22organism-basicinfo-popup-image%22%20id%3D%2214%22/%3E</map>
                 <src>./assets/gallery_thumb3.png</src>
                 <text/>
               </controlProperties>

@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1554" measuredH="1200" mockupW="1425" mockupH="1169">
+<mockup version="1.0" skin="sketch" measuredW="1619" measuredH="1200" mockupW="1490" mockupH="1169">
   <controls>
     <control controlID="15" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="129" y="31" w="1425" h="1169" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -19,7 +19,7 @@
         <color>11982760</color>
       </controlProperties>
     </control>
-    <control controlID="19" controlTypeID="com.balsamiq.mockups::TabBar" x="540" y="215" w="812" h="931" measuredW="547" measuredH="100" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::TabBar" x="540" y="215" w="812" h="931" measuredW="546" measuredH="100" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <hrefs>%2C%2C%2C%2C</hrefs>
         <selectedIndex>1</selectedIndex>
@@ -228,17 +228,12 @@
             <color>3355443</color>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="__group__" x="290" y="63" w="1041" h="676" measuredW="1041" measuredH="676" zOrder="1" locked="false" isInGroup="82">
+        <control controlID="1" controlTypeID="__group__" x="290" y="63" w="911" h="676" measuredW="1332" measuredH="676" zOrder="1" locked="false" isInGroup="82">
           <controlProperties>
             <controlName>Overlay%20schliessen</controlName>
           </controlProperties>
           <groupChildrenDescriptors>
-            <control controlID="2" controlTypeID="com.balsamiq.mockups::StickyNote" x="759" y="176" w="282" h="168" measuredW="109" measuredH="123" zOrder="0" locked="false" isInGroup="1">
-              <controlProperties>
-                <text>Klick%20-%3E%20Popup%20overlay%20-%3E%20Geometrie%20bearbeiten%0A%20%0AGeometrie%20kann%20nur%20innerhalb%20eines%20Jahres%20ver%E4ndert%20werden.%20Wurden%20jedoch%20schon%20Beobachtungen%20eingetragen%2C%20ist%20die%20Bearbeitung%20der%20Geometrie%20gesperrt.</text>
-              </controlProperties>
-            </control>
-            <control controlID="4" controlTypeID="__group__" x="0" y="0" w="911" h="676" measuredW="911" measuredH="676" zOrder="1" locked="false" isInGroup="1">
+            <control controlID="4" controlTypeID="__group__" x="0" y="0" w="911" h="676" measuredW="911" measuredH="676" zOrder="0" locked="false" isInGroup="1">
               <groupChildrenDescriptors>
                 <control controlID="0" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="911" h="676" measuredW="1020" measuredH="779" zOrder="0" locked="false" isInGroup="4">
                   <controlProperties>
@@ -264,6 +259,11 @@
           </groupChildrenDescriptors>
         </control>
       </groupChildrenDescriptors>
+    </control>
+    <control controlID="83" controlTypeID="com.balsamiq.mockups::StickyNote" x="1337" y="314" w="282" h="168" measuredW="109" measuredH="123" zOrder="41" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Klick%20-%3E%20Popup%20overlay%20-%3E%20Geometrie%20bearbeiten%0A%20%0AGeometrie%20kann%20nur%20innerhalb%20eines%20Jahres%20ver%E4ndert%20werden.%20Wurden%20jedoch%20schon%20Beobachtungen%20eingetragen%2C%20ist%20die%20Bearbeitung%20der%20Geometrie%20gesperrt.</text>
+      </controlProperties>
     </control>
   </controls>
 </mockup>
