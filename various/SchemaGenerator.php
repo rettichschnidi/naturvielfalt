@@ -375,7 +375,7 @@ if (isset($arguments['o'])) {
 	}
 	fwrite(
 		$outputhandle,
-		"<?php\n/**\n * do not modify this file, it is generated!\n * To make modifications on the schema alter the file in /doc/module/<modulename> and regenerate it. \n * See also description in wiki at \n * http://www.naturwerk.info/wiki/naturvielfalt:entwicklungsumgebung?s[]=ermaster#drupal_schema_api_beschreibungen_generieren \n */\n\nfunction get_schema() {\n\treturn ");
+		"<?php\n/**\n * do not modify this file, it is generated!\n * To make modifications on the schema alter the *erm file in /doc/module/<modulename> and regenerate it. \n * See also description in wiki at \n * http://www.naturwerk.info/wiki/naturvielfalt:entwicklungsumgebung?s[]=ermaster#drupal_schema_api_beschreibungen_generieren \n */\n\nfunction get_schema() {\n\treturn ");
 	fwrite($outputhandle, var_export($schema, true) . ";\n");
 	fwrite($outputhandle, "}\n?>");
 } else {
