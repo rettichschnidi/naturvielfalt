@@ -55,16 +55,6 @@ function observation_schema() {
         'type' => 'int',
         'not null' => 'TRUE',
       ),
-      'organism_artgroup_id' => 
-      array (
-        'description' => 'No description for column organism_artgroup_id available, please fix',
-        'type' => 'int',
-      ),
-      'area_geometry_id' => 
-      array (
-        'description' => 'No description for column area_geometry_id available, please fix',
-        'type' => 'int',
-      ),
       'inventory_id' => 
       array (
         'description' => 'Id des Inventars',
@@ -77,6 +67,16 @@ function observation_schema() {
         'not null' => 'TRUE',
         'default' => '0',
         'size' => 'big',
+      ),
+      'organism_artgroup_id' => 
+      array (
+        'description' => 'No description for column organism_artgroup_id available, please fix',
+        'type' => 'int',
+      ),
+      'area_geometry_id' => 
+      array (
+        'description' => 'No description for column area_geometry_id available, please fix',
+        'type' => 'int',
       ),
       'organism_artgroup_detmethod_id' => 
       array (

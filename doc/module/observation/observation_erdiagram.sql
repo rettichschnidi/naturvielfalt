@@ -24,12 +24,12 @@ CREATE TABLE public.observation
 	id serial NOT NULL,
 	-- No description for column id available, please fix
 	organism_id int NOT NULL,
-	organism_artgroup_id int,
-	area_geometry_id int,
 	-- Id des Inventars
 	inventory_id int,
 	-- Primary Key: Unique user ID.
 	users_uid bigint DEFAULT 0 NOT NULL,
+	organism_artgroup_id int,
+	area_geometry_id int,
 	organism_artgroup_detmethod_id int,
 	observer text,
 	count int,
