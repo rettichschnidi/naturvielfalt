@@ -134,8 +134,9 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
 				-- Geometry as JSON
 				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
-	FROM {observation} o
-	JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id' . $where;
+	FROM
+		{observation} o
+		JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id' . $where;
 	$results = db_query($sql, $filter)->fetchAllAssoc('id', PDO::FETCH_ASSOC);
 	$items = array();
 	// 		die(print_r($results));
@@ -266,7 +267,12 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Observer'),
 						'header' => true
 				),
-				$observationdata['observation']['observer'],
+				l(
+						check_plain($observationdata['observation']['observer']),
+						base_path() . "user/" . $observationdata['observation']['users_uid'],
+						array(
+								'external' => true
+						))
 		);
 	}
 
@@ -548,7 +554,6 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'name' => t('Date'),
 			'dbfield' => 'date',
 			'width' => 60,
-			'dbExactField' => 'o.date',
 	);
 
 	$tableHeader[] = array(
