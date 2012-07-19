@@ -6,7 +6,7 @@
  * http://www.naturwerk.info/wiki/naturvielfalt:entwicklungsumgebung?s[]=ermaster#drupal_schema_api_beschreibungen_generieren 
  */
 
-function get_schema() {
+function organism_get_schema() {
 	return array (
   'organism_artgroup' => 
   array (

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/drupalschema.inc';
+require_once dirname(__FILE__) . '/organism.drupalschema.inc';
 /**
  * @file organism.install
  * @author Reto Schneider, 2012
@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/drupalschema.inc';
  *
  */
 function organism_schema() {
-	return get_schema();
+	return organism_get_schema();
 }
 /**
  * Implement hook_install()
