@@ -1,6 +1,0 @@
-Kleine Gutnachtgeschichte für dich:
-Vor langer, langer Zeit hatte Naturwerk ein paar besonders clevere Zivis. Die hielten es für eine gute Idee, von Drupal Drittmodulen jeweils das aktuellste Dev-Release zu ziehen und dieses dann lokal zu verändern... (Wer braucht denn schon Updates/Bugfixes/Security-Releases?! Sowas ist für Weicheier!)
-
-Da wir nun, wie von jedem Softwareentickler welcher einigermassen klar im Kopf ist zu erwarten, gerne auf die vanilla Version migrieren möchten, stehen wir vor der tollen tolle Aufgabe, lokale Änderungen irgendwie zu archivieren, sodass wir im Fall der Fälle wieder auf den alten Stand zurückkommen könnten. Dummerweise sind die besagten Dev-Releases von damals online nicht mehr zu haben (werden nicht archiviert) und wird dürfen nun für jedes modul das Repository durchforsten um allfällige lokale Änderungen herauszupoppeln.
-
-BREAKING NEWS: werden nur noch die im svn verzeichneten Ändernungen als Patch hier ablegen. Aufwand ist ansonsten zu gross.
