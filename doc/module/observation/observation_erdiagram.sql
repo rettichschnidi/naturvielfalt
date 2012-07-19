@@ -28,8 +28,11 @@ CREATE TABLE public.observation
 	inventory_id int,
 	-- Primary Key: Unique user ID.
 	users_uid bigint DEFAULT 0 NOT NULL,
+	-- Primary Key
+	area_geometry_id int NOT NULL,
+	-- No description for column id available, please fix
 	organism_artgroup_id int,
-	area_geometry_id int,
+	-- No description for column id available, please fix
 	organism_artgroup_detmethod_id int,
 	observer text,
 	count int,
@@ -48,7 +51,9 @@ CREATE TABLE public.observation_attribute
 	id serial NOT NULL,
 	-- der boebachtung
 	observation_id int NOT NULL,
+	-- No description for column id available, please fix
 	organism_artgroup_attr_id int,
+	-- No description for column id available, please fix
 	organism_artgroup_attr_values_id int,
 	-- Der Inhalt des Attributes
 	value text,
@@ -82,7 +87,12 @@ COMMENT ON COLUMN observation_file_managed.file_managed_fid IS 'File ID.';
 COMMENT ON COLUMN public.observation.organism_id IS 'No description for column id available, please fix';
 COMMENT ON COLUMN public.observation.inventory_id IS 'Id des Inventars';
 COMMENT ON COLUMN public.observation.users_uid IS 'Primary Key: Unique user ID.';
+COMMENT ON COLUMN public.observation.area_geometry_id IS 'Primary Key';
+COMMENT ON COLUMN public.observation.organism_artgroup_id IS 'No description for column id available, please fix';
+COMMENT ON COLUMN public.observation.organism_artgroup_detmethod_id IS 'No description for column id available, please fix';
 COMMENT ON COLUMN public.observation_attribute.observation_id IS 'der boebachtung';
+COMMENT ON COLUMN public.observation_attribute.organism_artgroup_attr_id IS 'No description for column id available, please fix';
+COMMENT ON COLUMN public.observation_attribute.organism_artgroup_attr_values_id IS 'No description for column id available, please fix';
 COMMENT ON COLUMN public.observation_attribute.value IS 'Der Inhalt des Attributes';
 
 
