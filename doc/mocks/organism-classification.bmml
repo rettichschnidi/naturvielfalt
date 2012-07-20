@@ -421,7 +421,7 @@
             <text>%20</text>
           </controlProperties>
         </control>
-        <control controlID="28" controlTypeID="com.balsamiq.mockups::LinkBar" x="0" y="4" w="-1" h="-1" measuredW="112" measuredH="21" zOrder="28" locked="false" isInGroup="73">
+        <control controlID="28" controlTypeID="com.balsamiq.mockups::LinkBar" x="0" y="4" w="-1" h="-1" measuredW="113" measuredH="21" zOrder="28" locked="false" isInGroup="73">
           <controlProperties>
             <selectedIndex>0</selectedIndex>
             <text>Tabelle%2C%20Galerie</text>
@@ -444,6 +444,12 @@
         <selectedIndex>-1</selectedIndex>
         <size>13</size>
         <text>%3E%20Infothek%0A%20%3E%20Arten%20%28Systematik%29</text>
+      </controlProperties>
+    </control>
+    <control controlID="77" controlTypeID="com.balsamiq.mockups::RedX" x="973" y="517" w="259" h="217" measuredW="240" measuredH="104" zOrder="18" locked="false" isInGroup="-1"/>
+    <control controlID="78" controlTypeID="com.balsamiq.mockups::StickyNote" x="1127" y="664" w="164" h="123" measuredW="109" measuredH="123" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Erstmal%20nicht%20implementiert%2C%20kommt%20aber%20sp%E4ter.</text>
       </controlProperties>
     </control>
   </controls>
