@@ -127,8 +127,8 @@ function organism_show_classification($classificationid) {
 			'#header' => $classificationTableHeader,
 			'#id_table' => 'classificators',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path()
-							. "organism/classification/$classificationid/classificationjson'",
+					'jsonUrl' => base_path()
+							. "organism/classification/$classificationid/classificationjson",
 					'rowClick' => 'rowClick',
 					'tableWidth' => 900,
 					'tableHeight' => 220,
@@ -199,8 +199,8 @@ function organism_show_classification($classificationid) {
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path()
-							. "organism/classification/$classificationid/organismjson'",
+					'jsonUrl' => base_path()
+							. "organism/classification/$classificationid/organismjson",
 					'rowClick' => 'rowClickOrganism',
 					'tableWidth' => 900,
 					'rowClickHandler' => "function rowClickOrganism(celDiv, id){

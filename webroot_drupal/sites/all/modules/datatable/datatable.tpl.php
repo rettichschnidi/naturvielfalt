@@ -9,8 +9,6 @@
 
 global $user;
 global $language;
-$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
-
 drupal_add_library('system', 'ui.datepicker');
 
 /**
@@ -27,11 +25,8 @@ drupal_add_css(
  * add javascript files
  */
 
-drupal_add_js(drupal_get_path('module', 'datatable') . '/js/localization.' . $langcode . '.js');
-
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
-drupal_add_js(
-	drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
 
 /**
  * Figure out width/height of table or set default values
@@ -52,7 +47,6 @@ $allWidths = 0;
 foreach ($header as $head) {
 	$visible = isset($head['hide']) ? !$head['hide'] : true;
 	if ($visible) {
-
 		if (isset($head['width'])) {
 			$allWidths = $allWidths + $head['width'];
 		} else {
@@ -95,6 +89,8 @@ if ($header) {
 				: $aoColumns .= ",  align : 'left'";
 		if (isset($head['hide']) && $head['hide'] == true)
 			$aoColumns .= ", hide : true";
+		else
+			$aoColumns .= ", hide : false";
 		if (isset($options['rowClick']))
 			$aoColumns .= ", process : " . $options['rowClick'];
 		$aoColumns .= "},";
@@ -130,36 +126,38 @@ print drupal_render($table);
 <!--
 
 jQuery(document).ready(function() {
-
-jQuery("#<?php echo $id_table; ?>").flexigrid
-(
-{
-<?php
-if ($options['jsonUrl']) {
-	echo "url: " . $options['jsonUrl'] . ", dataType: 'json',";
-}
-echo $aoColumns;
-?>
-
-<?php echo $searchColumns; ?>
-singleSelect: true,
-sortname: "<?php echo $sortField; ?>",
-sortorder: "<?php echo $sortOrder; ?>",
-usepager: true,
-<?php if ($title)
-	echo "title: '" . $title . "',"
-?>
-useRp: true,
-rp: 15,
-showTableToggleBtn: true,
-width: <?php echo $tableWidth; ?>,
-height: <?php echo $tableHeight; ?>,
-tableId: '<?php echo $id_table; ?>'
-});
-<?php if (isset($options['rowClick']))
-	echo $options['rowClickHandler'];
-?>
-
+	jQuery("#<?php echo $id_table; ?>").flexigrid ({
+		url: '<?php echo $options['jsonUrl']; ?>',
+		dataType: 'json',
+		<?php $aoColumns ? print "$aoColumns\n" : ''; ?>
+		<?php $searchColumns ? print "$searchColumns\n" : ''; ?>
+		singleSelect: true,
+		sortname: "<?php echo $sortField; ?>",
+		sortorder: "<?php echo $sortOrder; ?>",
+		usepager: true,
+		title: '<?php echo $title ?>',
+		useRp: true,
+		rp: 15,
+		showTableToggleBtn: true,
+		width: <?php echo $tableWidth; ?>,
+		height: <?php echo $tableHeight; ?>,
+		tableId: '<?php echo $id_table; ?>',
+		errormsg: '<?php echo t('Connection Error'); ?>',
+		pagestat: '<?php echo t('Displaying {from} to {to} of {total} items'); ?>',
+		pagetext: '<?php echo t('Page'); ?>',
+		outof: '<?php echo t('of'); ?>',
+		findtext: '<?php echo t('Find'); ?>',
+		procmsg: '<?php echo t('Processing, please wait ...'); ?>',
+		nomsg: '<?php  echo t('No items'); ?>',
+		search : '<?php echo t('Search'); ?>',
+		reset : '<?php echo t('Reset'); ?>',
+		minmax : '<?php echo t('Minimize/Maximize Table'); ?>',
+		hideshow : '<?php echo t('Hide/Show Columns'); ?>',
+		dblClickResize: true,
+		onToggleCol: true,
+		singleSelect: true,
+	});
+	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 });
 
 -->

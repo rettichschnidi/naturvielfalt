@@ -39,7 +39,7 @@ function observation_show_all_observations() {
 			'#title' => t('Observations'),
 			'#id_table' => 'observations',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path() . "observation/get/all'",
+					'jsonUrl' => base_path() . "observation/get/all",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(

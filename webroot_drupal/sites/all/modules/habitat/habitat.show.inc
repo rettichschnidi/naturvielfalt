@@ -53,7 +53,7 @@ function habitat_show_all() {
 			'#id_table' => 'habitats',
 			'#tableWidth' => 900,
 			'#options' => array(
-					'jsonUrl' => "'habitat/datatablejson'",
+					'jsonUrl' => "habitat/datatablejson",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
 					window.location.href = Drupal.settings.basePath+'habitat/'+id;})}"

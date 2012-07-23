@@ -97,9 +97,9 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'#title' => t('Areas'),
 			'#id_table' => 'areas',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path()
-							. ($onlyMyAreas ? "areas/own/datatablejson'"
-									: "areas/all/datatablejson'"),
+					'jsonUrl' => base_path()
+							. ($onlyMyAreas ? "areas/own/datatablejson"
+									: "areas/all/datatablejson"),
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
@@ -382,8 +382,8 @@ function area_habitat_table($habitatId) {
 			'#id_table' => 'habitats',
 			'#tableWidth' => 900,
 			'#options' => array(
-					'jsonUrl' => "'" . base_path() . 'area/habitat/'
-							. $habitatId . "/datatablejson'",
+					'jsonUrl' => base_path() . 'area/habitat/'
+							. $habitatId . "/datatablejson",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
 					window.location.href = Drupal.settings.basePath+'area/'+id + '/show';})}"

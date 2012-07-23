@@ -272,8 +272,8 @@ function observation_form($observation = false) {
 				'Recently recorded and saved observations (click on a row, to edit an entry)'),
 			'#id_table' => 'recent_observations',
 			'#options' => array(
-					'jsonUrl' => "'" . base_path()
-							. "observation/get/writeable'",
+					'jsonUrl' => base_path()
+							. "observation/get/writeable",
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
 									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}"
