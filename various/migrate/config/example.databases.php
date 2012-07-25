@@ -20,4 +20,12 @@ $config['evab'] = array( // 2nd database for import from evab
 		'host' => '',
 		'driver' => 'pgsql'
 );
+
+$config['swissmon'] = array(
+		'name' => '',
+		'user' => '',
+		'password' => '',
+		'host' => '',
+		'driver' => 'pgsql'
+);
 ?>
