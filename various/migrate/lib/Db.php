@@ -12,7 +12,7 @@ require_once($configdir . '/databases.php');
  * Using the MDB2 internally.
  */
 class Db {
-	private $connectionUrl = false;
+	private $dsn = false;
 	private $connection = false;
 
 	/**
@@ -23,10 +23,17 @@ class Db {
 	 * @param unknown_type $user
 	 * @param unknown_type $password
 	 * @param unknown_type $host
+	 * @param unknown_type $port
 	 */
-	public function __construct($dbdriver, $dbname, $user, $password, $host) {
-		$this->connectionUrl = $dbdriver . '://' . $user . ':' . $password
-				. '@' . $host . '/' . $dbname;
+	public function __construct($dbdriver, $dbname, $user, $password, $host, $port = 5432) {
+		$this->dsn = array(
+			'phptype'  => $dbdriver,
+			'username' => $user,
+			'password' => $password,
+			'hostspec' => $host,
+			'database' => $dbname,
+			'port' => $port
+		);
 		Db::connectDbLazy();
 		$this->connection
 			->loadModule('Extended');
@@ -45,13 +52,13 @@ class Db {
 	 * a query gets executed.
 	 */
 	private function connectDbLazy() {
-		$this->connection = MDB2::factory($this->connectionUrl);
+		$this->connection = MDB2::factory($this->dsn);
 		if (PEAR::isError($this->connection)) {
 			die(
-				"Error while lazy connecting\n"
+				"Error while lazy connecting: "
 						. $this->connection
-							->getMessage() . "\n" . "ConnectionURL was: \""
-						. $this->connectionUrl . "\"\n");
+							->getMessage() . "\ndsn was: "
+						. print_r($this->dsn) . "\n");
 		}
 	}
 
