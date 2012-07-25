@@ -36,6 +36,7 @@ $sql = "
 		fm.filename,
 		fm.uri,
 		o.name_sc,
+		o.id AS organism_id,
 		gi.title,
 		gi.description,
 		gi.author,
