@@ -288,9 +288,9 @@ function observation_form($observation = false) {
 		);
 
 		$aclfieldset['content'] = observation_acl_template($observation);
-
-		$formcust .= drupal_render($recent);
 	}
+	
+	$formcust .= drupal_render($recent);
 	$formcust .= drupal_render($aclfieldset);
 
 	return $formcust;
