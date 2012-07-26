@@ -82,11 +82,11 @@ if ($reticle) {
 <script>
 	jQuery(document).ready(function() {
 		jQuery.ajaxSetup({
-			  error: function(xhr, status, error) {
-			    alert("An AJAX error occured: " + status + "\nError: " + error);
-			    console.error(status);
-			    console.error(error);
-			  }
+				error: function(xhr, status, error) {
+					console.error("An AJAX error occured:");
+					console.error(status);
+					console.error(error);
+				}
 			});
 
 		var options = {
