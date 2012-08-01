@@ -7,11 +7,11 @@
  */
 
 require_once(dirname(__FILE__) . '/lib/bootstrap.php');
-require_once($libdir . '/NaturvielfaltDb.php');
+require_once(dirname(__FILE__) . '/lib/Db.php');
 global $drupalprefix;
 global $errors;
 
-$db = new NaturvielfaltDb(
+$db = new Db(
 	$config['naturvielfalt_dev']['driver'],
 	$config['naturvielfalt_dev']['name'],
 	$config['naturvielfalt_dev']['user'],
@@ -92,7 +92,7 @@ foreach ($finallichens as $finallichen) {
 			$finallichen['scientific_name']
 	);
 
-	$rows = $db->query($query, $typesArray, $valuesArray);
+	$rows = $db->query($query, $typesArray, $valuesArray,false);
 	if($rows == 0) {
 			print "Failed, probably already existing: " . var_export($finallichen, true) . "\n";
 			continue;
