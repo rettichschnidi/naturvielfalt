@@ -1277,19 +1277,16 @@ class Classification {
 					'id',
 					'name',
 					'parent',
-					'pos'
 			);
 			$typesArray = array(
 					'integer',
 					'text',
 					'integer',
-					'integer'
 			);
 			$valuesArray = array(
 					$newid,
 					$artgroupName,
 					$newid,
-					1
 			);
 			$rowcount = $this->db
 				->insert_query($columnArray, $table, $typesArray, $valuesArray);
