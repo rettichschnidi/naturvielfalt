@@ -38,6 +38,28 @@ function datatable_theme() {
 }
 
 /**
+ * Gets a total recordcount from a SQL statement with the count() function
+ * 
+ * 
+ * @param $sql array Complete SQL Statement
+ * @param $arguments array
+ * 			Values for the query
+ * @return
+ * 		 Totalrecordcount of the give sql statement
+ */
+function datatable_dbRecordCount($sql, $arguments = array()) {
+	
+	$sql = "SELECT COUNT(*) FROM (".$sql.") AS SUB";
+	
+	/* Data set length after filtering */
+	$fullResult = db_query($sql, $arguments);
+	$fullRecordsCount = $fullResult->fetchField(0);
+	
+	return intval($fullRecordsCount);
+	
+}
+
+/**
  * Function for other modules to progress the data from the db to the json
  * Fields from and for http://datatables.net
  * $_Request is used for filtering
@@ -91,8 +113,7 @@ function datatable_theme() {
  * @note ALL VALUES DO NOT GET FILTERED BY FILTER_XSS() OR CHECK_PLAIN() - PLEASE MAKE DAMMN SURE THAT YOU ONLY PRINT VALUES
  * WHICH GOT FILTERED AHEAD!
  */
-function datatable_dbRequest($sql, $arguments = array(),
-		$preArguments = array()) {
+function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()) {
 
 	/* Set the db fields to select */
 	if (!$sql['dbColumns'] || !$sql['dbTable'])
@@ -101,10 +122,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 	$aColumns = $sql['dbColumns'];
 	if (isset($sql['dbPreStatement'])) {
 		if (false) {
-			$noopeningbrakets = str_replace(
-				'{',
-				'drupal_',
-				$sql['dbPreStatement']); // FIXME
+			$noopeningbrakets = str_replace('{', 'drupal_', $sql['dbPreStatement']); // FIXME
 			$noclosingbrakets = str_replace('}', '', $noopeningbrakets);
 			print "<pre>" . $noclosingbrakets . "</pre>";
 		}
@@ -115,8 +133,7 @@ function datatable_dbRequest($sql, $arguments = array(),
 	}
 
 	$searchColumns = $sql['dbSearchColumns'];
-	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns']
-			: $sql['dbColumns'];
+	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns'] : $sql['dbColumns'];
 
 	/* DB table to use */
 	$Table = $sql['dbTable'];
@@ -234,21 +251,29 @@ function datatable_dbRequest($sql, $arguments = array(),
 			$sWhere = substr_replace($sWhere, "", -3);
 			$sWhere .= ')';
 		} else
-			$sWhere = "WHERE CAST(" . (string) $qtype . " AS TEXT) ILIKE CAST('%"
-					. (string) $query . "%' AS TEXT)";
+			$sWhere = "WHERE CAST(" . (string) $qtype . " AS TEXT) ILIKE CAST('%" . (string) $query
+					. "%' AS TEXT)";
 	}
 
 	/*
-	 * SQL queries
-	 * Get data to display
-	 */
+	* SQL queries
+	* Get data to display
+	*/
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-
+	
+	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
+	
+	/*
+	 * Add limit and offset to improve performance of query runtime
+	 */
+	$fullQuery .= " LIMIT $pagesize OFFSET $offset";
+		
 	/* Data set length after filtering */
 	$fullResult = db_query($fullQuery, $arguments);
 	$fullRecords = $fullResult->fetchAll();
 
+		
 	/**
 	 * Count number of accessible elements if an acl_id available
 	 * 
@@ -257,15 +282,11 @@ function datatable_dbRequest($sql, $arguments = array(),
 	 */
 	if (isset($fullRecords[0]->acl_id)) {
 		foreach ($fullRecords as $recordKey => $record) {
-			if (check_permission(
-				$record->acl_id,
-				variable_get($sql['acl_level']))) {
-			} else {
+			if (check_permission($record->acl_id, variable_get($sql['acl_level']))) {} else {
 				unset($fullRecords[$recordKey]);
 			}
 		}
 	}
-	$numberOfAccessibleRows = count($fullRecords);
 
 	$output = array(
 			'page' => $pageNumber,
@@ -273,14 +294,8 @@ function datatable_dbRequest($sql, $arguments = array(),
 			'rows' => array()
 	);
 
-	$counter = 0;
-	$validElementsCounter = 0;
+
 	foreach ($fullRecords as $aRow) {
-		if (++$counter <= $offset) {
-			continue;
-		} else if (++$validElementsCounter > $pagesize) {
-			break;
-		}
 		$row = get_object_vars($aRow);
 		$output['rows'][] = array(
 				'id' => $aRow->$idColumn,
