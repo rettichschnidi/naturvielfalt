@@ -168,22 +168,29 @@ function _gallery_list_parameters($type, $id) {
 	$params = array();
 	$types = _gallery_types();
 	$key = md5($type . (is_array($id) ? implode('.', $id) : $id));
+
 	if (array_key_exists($key . '_show_all', $_GET))
 		$_SESSION[$key . '_show_all'] = $_GET[$key . '_show_all'] ? true : false;
-	$params['show_all'] = array_key_exists($key . '_show_all', $_SESSION)
-			? $_SESSION[$key . '_show_all'] : false;
+
+	$params['show_all'] = !empty($_SESSION)
+			&& array_key_exists($key . '_show_all', $_SESSION) ? $_SESSION[$key
+					. '_show_all'] : false;
+
 	$params['crosslinking'] = array_key_exists('crosslinked', $types[$type]);
 	if ($params['crosslinking']
 			&& array_key_exists($key . '_crosslinked', $_GET))
 		$_SESSION[$key . '_crosslinked'] = $_GET[$key . '_crosslinked'] ? true
 				: false;
-	$params['crosslinked'] = array_key_exists($key . '_crosslinked', $_SESSION)
-			? $_SESSION[$key . '_crosslinked'] : null;
+	$params['crosslinked'] = !empty($_SESSION)
+			&& array_key_exists($key . '_crosslinked', $_SESSION) ? $_SESSION[$key
+					. '_crosslinked'] : null;
+
 	$params['subtypes'] = _gallery_get_subtypes($type, $params['crosslinked']);
 	if ($params['subtypes'] && array_key_exists($key . '_subtype', $_GET))
 		$_SESSION[$key . '_subtype'] = $_GET[$key . '_subtype'];
-	$params['subtype'] = array_key_exists($key . '_subtype', $_SESSION)
-			? $_SESSION[$key . '_subtype'] : '';
+	$params['subtype'] = !empty($_SESSION)
+			&& array_key_exists($key . '_subtype', $_SESSION) ? $_SESSION[$key
+					. '_subtype'] : '';
 	$params['key'] = $key;
 	return $params;
 }
@@ -814,20 +821,17 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 		$row[] = $image['author'];
 		$row[] = $image['location'];
 		$row[] = $caption;
-		$row[] = $editable
-				? l(
+		$row[] = $editable ? l(
 					t('edit'),
 					'gallery/' . $image['item_type'] . '/' . $image['item_id']
 							. '/' . $mediatype . '/edit/' . $image['id'],
-					$camefrom
-							? array(
+					$camefrom ? array(
 									'query' => array(
 											'camefrom' => $camefrom
 									)
 							) : array()) : '&nbsp;';
-		$row[] = $editable
-				? '<input type="checkbox" name="delete[' . $image['id']
-						. ']" value="1" />' : '&nbsp;';
+		$row[] = $editable ? '<input type="checkbox" name="delete['
+						. $image['id'] . ']" value="1" />' : '&nbsp;';
 		$rows[] = $row;
 	}
 
@@ -935,8 +939,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	drupal_set_title($title, PASS_THROUGH);
 
 	$types = _gallery_types();
-	$item_provider = array_key_exists('item_provider', $types[$type])
-			? $types[$type]['item_provider'] : false;
+	$item_provider = array_key_exists('item_provider', $types[$type]) ? $types[$type]['item_provider']
+			: false;
 	$form_state['item_provider'] = $item_provider;
 	$item_provider_autocomplete = array_key_exists(
 		'item_provider_autocomplete',
@@ -949,7 +953,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	$subtypes = _gallery_get_subtypes($type, false);
 
 	if (isset($_REQUEST['camefrom'])) {
-		$_SESSION[md5('camefrom_' . $type . '_' . $id)] = check_plain($_REQUEST['camefrom']);
+		$_SESSION[md5('camefrom_' . $type . '_' . $id)] = check_plain(
+			$_REQUEST['camefrom']);
 	}
 
 	$form_state['gallery_type'] = $type;
@@ -1019,9 +1024,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 					));
 				$form[$prefix]['item'] = array(
 						'#type' => 'hidden',
-						'#default_value' => $search
-								? $image['item_type'] . ':' . $image['item_id']
-								: '',
+						'#default_value' => $search ? $image['item_type'] . ':'
+										. $image['item_id'] : '',
 						'#attributes' => array(
 								'class' => array(
 										'item'
@@ -1097,8 +1101,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$form[$prefix]['metadata']['description'] = array(
 				'#type' => 'textarea',
 				'#title' => t('Description'),
-				'#default_value' => isset($image['description'])
-						? $image['description'] : '',
+				'#default_value' => isset($image['description']) ? $image['description']
+						: '',
 				'#description' => t('The description of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
@@ -1107,8 +1111,8 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#title' => t('Location'),
 				'#size' => 100,
 				'#maxlength' => 255,
-				'#default_value' => isset($image['location'])
-						? $image['location'] : $default_location,
+				'#default_value' => isset($image['location']) ? $image['location']
+						: $default_location,
 				'#description' => t(
 					'The location the ' . $label . ' was taken at.'),
 				'#required' => FALSE,
@@ -1350,15 +1354,24 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
 	$fileSize = $_FILES['files']['size'][$name];
-	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
-	
+	$mediaInfo = gallery_get_MediaInfo_by_filename(
+		$_FILES['files']['name'][$name]);
+
 	// validate file extension
-	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_IMAGE, $fileName, $fileMimeType)) {
+	if (!gallery_form_upload_validate_file_extension(
+		$element,
+		GALLERY_MEDIATYPE_IMAGE,
+		$fileName,
+		$fileMimeType)) {
 		return;
 	}
-	
+
 	// validate file size
-	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+	if (!gallery_form_upload_validate_file_size(
+		$element,
+		$fileName,
+		$fileSize,
+		$mediaInfo)) {
 		return;
 	}
 }
@@ -1371,15 +1384,24 @@ function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
 	$fileSize = $_FILES['files']['size'][$name];
-	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
-	
+	$mediaInfo = gallery_get_MediaInfo_by_filename(
+		$_FILES['files']['name'][$name]);
+
 	// validate file extension
-	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_SOUND, $fileName, $fileMimeType)) {
+	if (!gallery_form_upload_validate_file_extension(
+		$element,
+		GALLERY_MEDIATYPE_SOUND,
+		$fileName,
+		$fileMimeType)) {
 		return;
 	}
-	
+
 	// validate file size
-	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+	if (!gallery_form_upload_validate_file_size(
+		$element,
+		$fileName,
+		$fileSize,
+		$mediaInfo)) {
 		return;
 	}
 }
@@ -1387,20 +1409,29 @@ function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
  * Validator for gallery video files
  */
 function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
-$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
+	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
 
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
 	$fileSize = $_FILES['files']['size'][$name];
-	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
-	
+	$mediaInfo = gallery_get_MediaInfo_by_filename(
+		$_FILES['files']['name'][$name]);
+
 	// validate file extension
-	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_VIDEO, $fileName, $fileMimeType)) {
+	if (!gallery_form_upload_validate_file_extension(
+		$element,
+		GALLERY_MEDIATYPE_VIDEO,
+		$fileName,
+		$fileMimeType)) {
 		return;
 	}
-	
+
 	// validate file size
-	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+	if (!gallery_form_upload_validate_file_size(
+		$element,
+		$fileName,
+		$fileSize,
+		$mediaInfo)) {
 		return;
 	}
 }
@@ -1410,15 +1441,24 @@ function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
 	$fileSize = $_FILES['files']['size'][$name];
-	$mediaInfo = gallery_get_MediaInfo_by_filename($_FILES['files']['name'][$name]);
-	
+	$mediaInfo = gallery_get_MediaInfo_by_filename(
+		$_FILES['files']['name'][$name]);
+
 	// validate file extension
-	if (!gallery_form_upload_validate_file_extension($element, GALLERY_MEDIATYPE_ALL, $fileName, $fileMimeType)) {
+	if (!gallery_form_upload_validate_file_extension(
+		$element,
+		GALLERY_MEDIATYPE_ALL,
+		$fileName,
+		$fileMimeType)) {
 		return;
 	}
 
 	// validate file size
-	if (!gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo)) {
+	if (!gallery_form_upload_validate_file_size(
+		$element,
+		$fileName,
+		$fileSize,
+		$mediaInfo)) {
 		return;
 	}
 }
@@ -1443,35 +1483,39 @@ function _gallery_images_form_upload_category_validate($element, &$form_state,
 	return;
 }
 
-function gallery_form_upload_validate_file_extension($element, $mediaType, $fileName, $fileMimeType) {
+function gallery_form_upload_validate_file_extension($element, $mediaType,
+		$fileName, $fileMimeType) {
 	$mediaInfo = gallery_get_MediaInfo_by_filename($fileName);
-	if ($mediaInfo == FALSE || ($mediaType != GALLERY_MEDIATYPE_ALL && $mediaType != $mediaInfo->mediaType)) {
-		$allowedTypes = implode(', ', _gallery_getMediaInfo($mediaType)->fileExtensions);
+	if ($mediaInfo == FALSE
+			|| ($mediaType != GALLERY_MEDIATYPE_ALL
+					&& $mediaType != $mediaInfo->mediaType)) {
+		$allowedTypes = implode(
+			', ',
+			_gallery_getMediaInfo($mediaType)->fileExtensions);
 		form_error(
 			$element,
-			t('Files of type @type are not allowed. Try to upload one of these: @allowedTypes.',
+			t(
+				'Files of type @type are not allowed. Try to upload one of these: @allowedTypes.',
 				array('@type' => $fileMimeType,
-				'@allowedTypes' => $allowedTypes,
-				)
-			)
-		);
+						'@allowedTypes' => $allowedTypes,
+				)));
 		return FALSE;
 	}
 	return TRUE;
 }
 
-function gallery_form_upload_validate_file_size($element, $fileName, $fileSize, $mediaInfo) {
+function gallery_form_upload_validate_file_size($element, $fileName, $fileSize,
+		$mediaInfo) {
 	$max_file_size = $mediaInfo->maxFileSize;
 	$max_file_size = $max_file_size * 1024; // make bytes
 	if ($fileSize > $max_file_size) {
 		form_error(
 			$element,
-			t('The file in @name is exceeding the maximum allowed size of @size.',
+			t(
+				'The file in @name is exceeding the maximum allowed size of @size.',
 				array('@name' => $fileName,
-					'@size' => format_size(parse_size($max_file_size))
-				)
-			)
-		);
+						'@size' => format_size(parse_size($max_file_size))
+				)));
 		return FALSE;
 	}
 	return TRUE;
@@ -2066,7 +2110,7 @@ function theme_gallery_list($variables) {
 					. '<img src="' . $url_image . '" alt="' . $image['title']
 					. '" />' . $media_label . '</a>'
 					. (user_access('manage gallery medias') && false /* disables the button */
-							? '<form class="show_hide" method="post" action="'
+ ? '<form class="show_hide" method="post" action="'
 									. url(
 										'gallery/' . $image['item_type'] . '/'
 												. $image['item_id'] . '/'
@@ -2081,8 +2125,7 @@ function theme_gallery_list($variables) {
 					. $captionclass . '">'
 					. ($caption ? '<p class="captionText">' . $caption . '</p>'
 							: '')
-					. ($rating_types
-							? theme(
+					. ($rating_types ? theme(
 								'gallery_image_rating',
 								array('image' => $image,
 										'rating_types' => $rating_types
@@ -2162,8 +2205,7 @@ function theme_gallery_image_rating($variables) {
 	$ratings = '';
 	foreach ($rating_types as $rating_type) {
 		$rating = is_array($image['ratings'])
-				&& array_key_exists($rating_type['id'], $image['ratings'])
-				? $image['ratings'][$rating_type['id']]
+				&& array_key_exists($rating_type['id'], $image['ratings']) ? $image['ratings'][$rating_type['id']]
 				: array(
 						'count' => 0,
 						'average' => 0
@@ -2193,8 +2235,7 @@ function theme_gallery_image_rating($variables) {
 				. '</option>' . '<option value="1">' . t('Good') . '</option>'
 				. '<option value="2">' . t('Perfect') . '</option>'
 				. '</select>'
-				. ($allowed
-						? '<input type="submit" name="rate" value="'
+				. ($allowed ? '<input type="submit" name="rate" value="'
 								. t('Rate') . '" />' : '') . '</form>';
 	}
 	return '<div class="rating">' . $ratings . '</div>';
