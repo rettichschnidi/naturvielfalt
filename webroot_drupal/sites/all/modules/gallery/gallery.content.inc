@@ -97,7 +97,7 @@ function gallery_list_renderer($mediatype, $type, $id, $title = false,
 	if (!gallery_access_callback($type))
 		return '';
 	$gallery = gallery_list($type, $id, false, false, $mediatype);
-	if (!$gallery['gallery_list'])
+	if (isset($gallery['gallery_list']) && !$gallery['gallery_list'])
 		return '';
 	return _gallery_list_fieldset(
 		$gallery,
