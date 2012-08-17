@@ -532,7 +532,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Picture'),
 			'dbfield' => 'thumbnail',
-			'width' => 30,
+			'width' => 80,
 			'noSort' => true,
 	);
 

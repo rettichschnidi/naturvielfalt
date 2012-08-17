@@ -387,7 +387,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 								. $images['images'][0]['id']
 								. '/gallery_thumbnail') . '" alt="'
 					. $images['images'][0]['title']
-					. '" height="30" width="30" />';
+					. '" height="80" width="80" />';
 		}
 
 	}
