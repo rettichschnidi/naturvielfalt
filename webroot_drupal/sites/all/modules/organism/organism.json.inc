@@ -359,7 +359,7 @@ function organism_show_classification_organismjson($classificationid) {
 			UNION ALL			
 			SELECT  q.organism_id, oc1.id, oc1.name as classification_name, ocl.name as organism_classification_level_name, oc1.organism_classification_level_id, oc1.parent_id
 			FROM    q
-			JOIN    organism_classification oc1
+			JOIN    {organism_classification} oc1
 			ON      oc1.id = q.parent_id
 			INNER JOIN {organism_classification_level} ocl
 			ON oc1.organism_classification_level_id = ocl.id			
