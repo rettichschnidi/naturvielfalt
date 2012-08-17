@@ -350,22 +350,19 @@ function organism_show_classification_organismjson($classificationid) {
 			WITH    RECURSIVE
 			q AS
 			(
-			-- Recursion start
 			SELECT  o.id as organism_id, oc.id, oc.name as classification_name, ocl.name as organism_classification_level_name, oc.organism_classification_level_id, oc.parent_id        
-			FROM  organism o
-			INNER JOIN organism_classification_subscription ocs ON o.id = ocs.organism_id
-			INNER JOIN organism_classification oc ON oc.id = ocs.organism_classification_id
-			INNER JOIN organism_classification_level ocl ON oc.organism_classification_level_id = ocl.id
+			FROM  {organism} o
+			INNER JOIN {organism_classification_subscription} ocs ON o.id = ocs.organism_id
+			INNER JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
+			INNER JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id
 			WHERE   oc.prime_father_id = :classificationid
-			UNION ALL
-			-- Recursion step
+			UNION ALL			
 			SELECT  q.organism_id, oc1.id, oc1.name as classification_name, ocl.name as organism_classification_level_name, oc1.organism_classification_level_id, oc1.parent_id
 			FROM    q
 			JOIN    organism_classification oc1
 			ON      oc1.id = q.parent_id
-			INNER JOIN organism_classification_level ocl
-			ON oc1.organism_classification_level_id = ocl.id
-			-- Recursion break condition
+			INNER JOIN {organism_classification_level} ocl
+			ON oc1.organism_classification_level_id = ocl.id			
 			where oc1.parent_id <> q.id
 			)
 			SELECT  organism_id,
