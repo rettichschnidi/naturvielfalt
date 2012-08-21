@@ -130,6 +130,17 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 }
 
 /**
+* Return the id of an  attributes with the given name
+* @param string $attribute_name Name of the Attribute
+* @return array
+*/
+function organism_artgroup_get_attribute_by_name($attribute_name){
+	return db_query('SELECT id id FROM {organism_artgroup_attr} '
+	.'WHERE name=:attribute_name', array(':attribute_name' => $attribute_name))
+	->fetchCol();
+}
+
+/**
  * Return all or a single artgroup as array or as html tags
  * @param int $artgroup_id
  * @param boolean $as_html

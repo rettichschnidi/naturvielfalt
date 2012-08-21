@@ -5,6 +5,7 @@
  * @copyright 2012 Naturwerk, Brugg
  */
 module_load_include('inc', 'observation', 'observation.ajax');
+module_load_include('inc', 'organism', 'organism.artgroup');
 
 define('WS_API_LOG_TYPE', 'webservice api');
 
@@ -29,34 +30,28 @@ function naturvielfalt_webservice_parse_import_observations() {
 	}
 	$user = user_load($uid);
 
-	watchdog(
-		WS_API_LOG_TYPE,
-		'REQUEST :' . var_export($_POST, true),
-		array(),
-		WATCHDOG_DEBUG);
-	watchdog(
-		WS_API_LOG_TYPE,
-		'FILES :' . var_export($_FILES, true),
-		array(),
-		WATCHDOG_DEBUG);
+	watchdog(WS_API_LOG_TYPE, 'REQUEST :' . var_export($_POST, true), array(), WATCHDOG_DEBUG);
+	watchdog(WS_API_LOG_TYPE, 'FILES :' . var_export($_FILES, true), array(), WATCHDOG_DEBUG);
 
 	/**
 	 * parse not useable post vars to be compatible with th eobservation module
 	 * @var unknown_type
 	 */
 
-	$data = area_get_geocode_info(
-		filter_xss($_POST['longitude']),
-		filter_xss($_POST['latitude']));
+	$data = area_get_geocode_info(filter_xss($_POST['longitude']), filter_xss($_POST['latitude']));
 	$data['organismn_id'] = $_POST['organismn_id'];
 	$data['organism_artgroup_id'] = $_POST['organism_artgroup_id'];
 	$data['count'] = $_POST['count'];
 	$data['date'] = $_POST['date'];
 	$data['observer'] = $_POST['observer'];
-	$data['attributes_custom_names'][0] = t('Accuracy');
-	$data['attributes_custom_values'][0] = $_POST['accuracy'] . 'm';
-	$data['attributes_custom_names'][1] = t('Comment');
-	$data['attributes_custom_values'][1] = $_POST['comment'];
+
+	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
+	if (count($accArray) > 0)
+		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
+	$comArray = organism_artgroup_get_attribute_by_name(t('Comment'));
+ 	if (count($comArray) > 0)
+ 		$data['attributes'][$comArray[0]] = $_POST['comment'];
+ 	
 	$data['meta_description'][] = $_POST['comment'];
 	$data['set_user_uid'] = $user->uid;
 
