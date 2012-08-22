@@ -64,7 +64,7 @@ function organism_get_schema() {
         'description' => 'No description for column name available, please fix',
         'type' => 'text',
       ),
-      'user_id' => 
+      'users_id' => 
       array (
         'description' => 'No description for column user_id available, please fix',
         'type' => 'int',

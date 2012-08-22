@@ -58,7 +58,7 @@ function organism_install() {
  * Here's the ticket for this change: https://github.com/naturwerk/naturvielfalt/issues/300
  */
 function organism_update_7101() {
-	db_add_field('organism_artgroup_attr', 'user_id', array(
+	db_add_field('organism_artgroup_attr', 'users_id', array(
 			'type' => 'int', 
 			'not null' => TRUE, 
 			'default' => '0')
