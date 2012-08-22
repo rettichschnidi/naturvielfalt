@@ -71,7 +71,7 @@ CREATE TABLE organism_artgroup_attr
 	id serial NOT NULL UNIQUE,
 	organism_artgroup_attr_type_id int NOT NULL,
 	name text,
-	users_id int DEFAULT 0,
+	users_uid int DEFAULT 0,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
