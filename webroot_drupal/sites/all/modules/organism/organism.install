@@ -52,4 +52,16 @@ function organism_install() {
 		drupal_set_message($filename . ': ' . $e->getMessage(), 'error');
 	}
 }
+
+/**
+ * adds the new column user_id to the organism_artgroup_attr table. 
+ * Here's the ticket for this change: https://github.com/naturwerk/naturvielfalt/issues/300
+ */
+function organism_update_7101() {
+	db_add_field('organism_artgroup_attr', 'user_id', array(
+			'type' => 'int', 
+			'not null' => TRUE, 
+			'default' => '0')
+	);
+}
 ?>
