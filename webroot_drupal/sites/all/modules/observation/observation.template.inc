@@ -258,7 +258,11 @@ function observation_form($observation = false) {
 				true,
 				$observation['observation']['organism_artgroup_detmethod_id'],
 				$observation['detmethods_vis']) . '</select></td>' . '</tr>'
-			. '</table></div></div></fieldset>';
+			.organism_artgroup_get_attributes($observation['observation']['organism_artgroup_id'], true, '<tr><td>#name#', '</td>','<td>','</td></tr>')	
+				
+				
+			. '</table></div></div></fieldset>';	
+	
 	$formcust .= drupal_render($form);
 	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')
 			. '" name="op" id="edit-submit">'
