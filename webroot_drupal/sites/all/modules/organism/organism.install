@@ -54,14 +54,58 @@ function organism_install() {
 }
 
 /**
- * adds the new column user_id to the organism_artgroup_attr table. 
+ * adds the new column users_id to the organism_artgroup_attr table. 
+ * and fills some default artgroup attributes
  * Here's the ticket for this change: https://github.com/naturwerk/naturvielfalt/issues/300
  */
 function organism_update_7102() {
 	db_add_field('organism_artgroup_attr', 'users_uid', array(
-			'type' => 'int', 
-			'not null' => TRUE, 
-			'default' => '0')
+		'type' => 'int', 
+		'not null' => TRUE, 
+		'default' => '0')
 	);
+	
+	// add the default attribute types
+	$attr_types = array(
+		array(
+			id =>1, 
+			name => 'String', 
+			format => 'string'
+		),
+		array(
+			id => 2, 
+			name => 'Textarea', 
+			format => 'textarea'
+		),	
+	);
+	
+	$query = db_insert('organism_artgroup_attr_type')->fields(array('id', 'name', 'format'));
+	foreach($attr_types as $attr){
+		$query->values($attr);
+	}
+	$query->execute();
+	
+	// add two default artgroup attributes
+	$attributes = array(
+		array(
+			id => 1, 
+			organism_artgroup_attr_type_id => 1, 
+			name =>  'Genauigkeit',  
+			users_uid => 0
+		),
+		array(
+			id => 2, 
+			organism_artgroup_attr_type_id => 2, 
+			name =>  'Kommentar',  
+			users_uid => 0
+		),
+	);
+
+	$query = db_insert('organism_artgroup_attr')->fields(array(
+			'id', 'organism_artgroup_attr_type_id', 'name', 'users_uid'));
+	foreach($attributes as $attr){
+		$query->values($attr);
+	}
+	$query->execute();
 }
 ?>
