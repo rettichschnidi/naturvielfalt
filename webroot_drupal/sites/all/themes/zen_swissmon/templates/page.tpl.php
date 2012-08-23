@@ -70,12 +70,7 @@
 ?>
 
 <div id="page-wrapper"><div id="page">
-
   <div id="header"><div class="section clearfix">
-
-    <?php if ($logo): ?>
-      <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo"><img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" /></a>
-    <?php endif; ?>
 
     <?php if ($site_name || $site_slogan): ?>
       <div id="name-and-slogan">
@@ -99,21 +94,7 @@
     
     <a href="<?php print url('<front>'); ?>" class="naturvielfalt-button"></a>
     
-    <?php
-    $user_menu = menu_navigation_links('user-menu'); 
-    print theme('links__system_secondary_menu', array(
-      'links' => $user_menu,
-      'attributes' => array(
-        'id' => 'user-menu',
-        'class' => array('links', 'inline', 'clearfix'),
-      ),
-      'heading' => array(
-        'text' => t('User menu'),
-        'level' => 'h2',
-        'class' => array('element-invisible'),
-      ),
-    ));
-    ?>
+
 
     <?php if ($page['navigation'] || $main_menu): ?>
       <div id="navigation"><div class="section clearfix">
@@ -142,6 +123,37 @@
     print $breadcrumb; 
   }?>
   </div><!-- /.section, /#header -->
+  <div id="logo-wrapper">
+      <div id="logo-wrapper-left">
+      	<a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo">
+			<img src="/sites/all/themes/zen_swissmon/images/logo_naturvielfalt.png" alt="Logo Naturvielfalt">
+		</a>
+      </div>  	
+      <div id="logo-wrapper-right">
+	<div id="logo-wrapper-right-title">
+		<?php if ($title): ?>
+			<h1 class="title" id="page-title"><?php print $title; ?></h1>
+		<?php endif; ?>
+	</div>
+	<div id="logo-wrapper-right-user">
+	    <?php
+	    $user_menu = menu_navigation_links('user-menu'); 
+	    print theme('links__system_secondary_menu', array(
+	      'links' => $user_menu,
+	      'attributes' => array(
+		'id' => 'user-menu',
+		'class' => array('links', 'inline', 'clearfix'),
+	      ),
+	      'heading' => array(
+		'text' => t('User menu'),
+		'level' => 'h2',
+		'class' => array('element-invisible'),
+	      ),
+	    ));
+	    ?>
+	</div>
+      </div>	
+  </div>
 
   <div id="main-wrapper"><div id="main" class="clearfix<?php if ($main_menu || $page['navigation']) { print ' with-navigation'; } ?>">
     <div id="content" class="column">
@@ -149,9 +161,7 @@
 	      <?php print render($page['highlighted']); ?>
 	      <a id="main-content"></a>
 	      <?php print render($title_prefix); ?>
-	      <?php if ($title): ?>
-	        <h2 class="title" id="page-title"><?php print $title; ?></h2>
-	      <?php endif; ?>
+
 	      <?php print render($title_suffix); ?>
 	      <?php print $messages; ?>
 	      <?php if ($tabs = render($tabs)): ?>
@@ -169,9 +179,7 @@
 
     <div id="space"><div class="section clearfix">
       </div></div><!-- /.section, /#space -->
-    
-    <?php print render($page['sidebar_first']); ?>
-
+	<?php print render($page['sidebar_first']); ?>
     <?php print render($page['sidebar_second']); ?>
 
   </div></div><!-- /#main, /#main-wrapper -->

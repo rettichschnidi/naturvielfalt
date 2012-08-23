@@ -10,7 +10,7 @@
  */
 
 body {
-  background-color:#f2f1ed;
+  background-color:#C0C0C0;
 }
 
 #page-wrapper {
@@ -20,10 +20,19 @@ body {
 }
 
 #header {
-  background-color:#598b74;
+  background-color:#C0C0C0;
   background-repeat:no-repeat;
-  background-image:url('../images/banner_topnav_big.jpg');
-  height:50px;
+  background-image:url('/sites/all/themes/zen_swissmon/banner.php');
+  background-size:1200px 80px;
+  background-position:bottom;
+}
+
+#logo-wrapper {
+	background-color: #DAE5E3;
+}
+
+#logo-wrapper-left {
+	background-color: white;
 }
 
 #header .section {
@@ -69,19 +78,20 @@ body {
 }
 
 #main {
+	background-color: #DAE5E3;
 }
 
 #content {
+	background-color: #FFFFFF;
 }
 
-.region-sidebar-first {
-  background: transparent url(../images/sidebar_main-bg2.jpg) no-repeat 7px 0;
+.region-sidebar-first {  
+  background-color: #DAE5E3;
 }
 
 .region-footer {
-  position: relative;
-  background: transparent url(../images/footer-shadows_lighter.jpg) repeat-x 0 0;
-  background-color: #F2F1ED;
+  position: relative;  
+  background-color: #DAE5E3;
 }
 
 .region-footer div#footer-left {
