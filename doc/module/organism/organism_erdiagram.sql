@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS organism_classification_subscription;
 DROP TABLE IF EXISTS organism_classification;
 DROP TABLE IF EXISTS organism_classification_level;
 DROP TABLE IF EXISTS organism_lang;
-DROP TABLE IF EXISTS organism_scientific_name;
+DROP TABLE IF EXISTS organism_synonym;
 DROP TABLE IF EXISTS public.organism_file_managed;
 DROP TABLE IF EXISTS public.organism_habitat_subscription;
 DROP TABLE IF EXISTS public.organism;
@@ -245,7 +245,7 @@ CREATE TABLE organism_lang
 ) WITHOUT OIDS;
 
 
-CREATE TABLE organism_scientific_name
+CREATE TABLE organism_synonym
 (
 	-- Die eigene Id, wird fortlaufend inkrementiert.
 	id serial NOT NULL UNIQUE,
@@ -270,6 +270,7 @@ CREATE TABLE public.organism
 	left_value int DEFAULT 1 NOT NULL,
 	-- Nötig zur Strukturierung, siehe «Baumstrukturen» im Organism-Artikel des Wikis. 
 	right_value int DEFAULT 2 NOT NULL,
+	scientific_name text NOT NULL UNIQUE,
 	PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
@@ -468,7 +469,7 @@ ALTER TABLE organism_lang
 ;
 
 
-ALTER TABLE organism_scientific_name
+ALTER TABLE organism_synonym
 	ADD FOREIGN KEY (organism_id)
 	REFERENCES public.organism (id)
 	ON UPDATE RESTRICT
@@ -534,8 +535,8 @@ CREATE INDEX id ON organism_classification_level (id);
 CREATE INDEX parent_id_index_ocl ON organism_classification_level (parent_id);
 CREATE INDEX index_left_value_ocl ON organism_classification_level (left_value);
 CREATE INDEX index_right_value_ocl ON organism_classification_level (right_value);
-CREATE INDEX index_organism_id_osn ON organism_scientific_name (organism_id);
-CREATE INDEX index_osn ON organism_scientific_name (name);
+CREATE INDEX index_organism_id_osn ON organism_synonym (organism_id);
+CREATE INDEX index_osn ON organism_synonym (name);
 CREATE INDEX FK_organism_11 ON public.organism USING BTREE (id);
 CREATE INDEX FK_organism_2 ON public.organism USING BTREE (left_value, prime_father_id);
 CREATE INDEX idx_name_de ON public.organism USING BTREE (right_value, prime_father_id);
@@ -582,9 +583,9 @@ COMMENT ON COLUMN organism_lang.id IS 'Die eigene Id, wird fortlaufend inkrement
 COMMENT ON COLUMN organism_lang.languages_language IS 'Language code, e.g. ''de'' or ''en-US''.';
 COMMENT ON COLUMN organism_lang.organism_id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN organism_lang.name IS 'Enthält den Klassifizierungsrang als englischer Text (family/order/class/etc.) ';
-COMMENT ON COLUMN organism_scientific_name.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
-COMMENT ON COLUMN organism_scientific_name.organism_id IS 'Fremdschlüssel auf die Tabelle organism. ';
-COMMENT ON COLUMN organism_scientific_name.name IS 'Der lateinische Name. ';
+COMMENT ON COLUMN organism_synonym.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
+COMMENT ON COLUMN organism_synonym.organism_id IS 'Fremdschlüssel auf die Tabelle organism. ';
+COMMENT ON COLUMN organism_synonym.name IS 'Der lateinische Name. ';
 COMMENT ON COLUMN public.organism.id IS 'Die eigene Id, wird fortlaufend inkrementiert.';
 COMMENT ON COLUMN public.organism.parent_id IS 'Eine Referenz auf das Vater-Element. Bei Top-Level-Einträgen ist parent_id = id. ';
 COMMENT ON COLUMN public.organism.prime_father_id IS 'Eine Referenz auf das oberste Elements dieses Baumes. Damit einhält jede Reihe genügend Informationen, um einfach den gesamten Baum abfragen zu können. Bei Top-Level-Einträgen ist prime_father_id = id. ';
