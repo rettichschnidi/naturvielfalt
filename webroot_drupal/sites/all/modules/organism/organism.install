@@ -35,7 +35,7 @@ function organism_install() {
 		'organism_classification.sql',
 		'organism_classification_subscription.sql',
 		'organism_lang.sql',
-		'organism_scientific_name.sql',
+		'organism_synonym.sql',
 		'organism.sql'
 	);
 	try {
@@ -107,5 +107,81 @@ function organism_update_7102() {
 		$query->values($attr);
 	}
 	$query->execute();
+}
+
+/**
+ * renames the table organism_scientific_name to organism_synonym
+ * and adds the attribute scientific_name to the organism table. 
+ */
+function organism_update_7103() {
+	$txn = db_transaction();
+	
+	try{
+		db_add_field('organism', 'scientific_name', array(
+				'type' => 'text',
+				'not null' => TRUE,
+				'unique' => TRUE,
+				'default' => '')
+		);
+		db_rename_table('organism_scientific_name', 'organism_synonym');
+	}catch(Exception $e){
+		$txn->rollback();
+		throw $e;
+	}
+}
+
+/**
+* migrates the old scientific_names into the organism table
+* (for fauna, lichens and mushrooms)
+* the flora-part must be done by another (more complex) migration script 
+*/
+function organism_update_7104(){
+	$txn = db_transaction();
+	
+	try{
+		// get all entries that only have one scientific name
+		$result = db_query('
+			select organism_id, name from {organism_synonym}
+				where organism_id in (
+					select organism_id
+				from organism_synonym 	
+			group by organism_id having count(*) = 1);');
+	
+		/* 
+		* move every scientific name into the organism table
+		* and remove it from the old table
+		*/ 
+		foreach ($result as $record){
+
+			$num_updated = db_update('organism')
+				->fields(array(
+					'scientific_name' => $record->name		
+				))
+				->condition('id', $record->organism_id, '=')
+				->execute();
+			
+			if($num_updated != 1){
+				throw new DrupalUpdateException(
+					"Could not update scientific_name of organism_id: " 
+					. $record->organism_id
+				);
+			}
+			
+			$rows_deleted = db_delete('organism_synonym')
+				->condition('organism_id', $record->organism_id)
+				->execute();
+			
+			if($rows_deleted != 1){
+				throw new DrupalUpdateException(
+					"Could not delete synonym of organism_id: " 
+					. $record->organism_id
+				);
+			}
+		}
+
+	} catch(Exception $e){
+		$txn->rollback();
+		throw $e;
+	}
 }
 ?>

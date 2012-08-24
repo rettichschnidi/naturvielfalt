@@ -66,7 +66,7 @@ function organism_get_schema() {
       ),
       'users_uid' => 
       array (
-        'description' => 'No description for column user_id available, please fix',
+        'description' => 'No description for column users_uid available, please fix',
         'type' => 'int',
         'default' => '0',
       ),
@@ -893,7 +893,7 @@ function organism_get_schema() {
       ),
     ),
   ),
-  'organism_scientific_name' => 
+  'organism_synonym' => 
   array (
     'fields' => 
     array (
@@ -938,7 +938,7 @@ function organism_get_schema() {
     ),
     'foreign keys' => 
     array (
-      'organism_scientific_name_2_organism' => 
+      'organism_synonym_2_organism' => 
       array (
         'table' => 'organism',
         'columns' => 
@@ -995,12 +995,22 @@ function organism_get_schema() {
         'not null' => 'TRUE',
         'default' => '2',
       ),
+      'scientific_name' => 
+      array (
+        'description' => 'No description for column scientific_name available, please fix',
+        'type' => 'text',
+        'not null' => 'TRUE',
+      ),
     ),
     'unique keys' => 
     array (
       'id' => 
       array (
         0 => 'id',
+      ),
+      'scientific_name' => 
+      array (
+        0 => 'scientific_name',
       ),
     ),
     'primary key' => 
