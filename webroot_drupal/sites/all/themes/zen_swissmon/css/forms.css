@@ -136,3 +136,27 @@ a.searchlink {
    font-size: 10px;
    text-decoration: none;
   }
+  
+/*
+* Login Form
+*/
+#block-user-login input{
+	width: 180px;	
+	background-color: white;
+	float: left;		
+}
+
+#edit-submit{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#block-user-login label{
+	font-weight: normal;	
+	text-align: left;
+}
+
+#block-user-login .form-item{
+	margin: 0 0;
+}
+  

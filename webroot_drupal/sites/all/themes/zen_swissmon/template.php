@@ -392,7 +392,7 @@ function zen_swissmon_links($variables) {
 	
 	$links = $variables['links'];	
 	foreach($links as $key => $link) {
-		if ($link['title']== t('My account')) {
+		if ($link['title']== 'My account') {
 
 			global $user;
 			$link['title'] = 'Angemeldet als '.$user->name;					
@@ -405,3 +405,18 @@ function zen_swissmon_links($variables) {
 
 	return theme_links($variables);
 }
+
+function zen_swissmon_theme(&$existing, $type, $theme, $path) {
+   $hooks['user_login_block'] = array(
+     'template' => 'templates/user-login-block',
+     'render element' => 'form',
+   );
+   return $hooks;
+ }
+function zen_swissmon_preprocess_user_login_block(&$vars) {
+  $vars['name'] = render($vars['form']['name']);
+  $vars['pass'] = render($vars['form']['pass']);
+  $vars['submit'] = render($vars['form']['actions']['submit']);
+  $vars['rendered'] = drupal_render_children($vars['form']);
+}
+
