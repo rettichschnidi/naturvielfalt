@@ -23,8 +23,8 @@ require_once(dirname(__FILE__) . '/Db.php');
  * 						'classificationname' => 'Acantholycosa',
  * 				)
  * 		),
- * 		'scientific_names' => array(
- * 				'Acantholycosa pedestris',
+ * 		'scientific_name' => 'Acantholycosa pedestris',
+ *      'synonyms' => array(
  * 				'Acantholycosa pedestris v2'
  * 		),
  * 		'classification_name_translations' => array(
@@ -87,7 +87,7 @@ class Classification {
 	var $classification_table = '';
 	var $classification_level_table = '';
 	var $organism_table = '';
-	var $scientific_name_table = '';
+	var $synonym_table = '';
 	var $organism_lang_table = '';
 	var $organism_classification_subscription_table = '';
 	var $organism_attribute_table = '';
@@ -223,8 +223,7 @@ class Classification {
 		$this->classification_table = $drupalprefix . 'organism_classification';
 		$this->classification_level_table = $drupalprefix
 				. 'organism_classification_level';
-		$this->scientific_name_table = $drupalprefix
-				. 'organism_scientific_name';
+		$this->synonym_table = $drupalprefix . 'organism_synonym';
 		$this->organism_table = $drupalprefix . 'organism';
 		$this->organism_lang_table = $drupalprefix . 'organism_lang';
 		$this->organism_classification_subscription_table = $drupalprefix
@@ -376,16 +375,17 @@ class Classification {
 			}
 		}
 
-		// Create organism (only if scientific names given)
+		// Create organism (only if scientific name is given)
 		$organismId = NULL;
-		if (isset($organism['scientific_names'])) {
+		if (isset($organism['scientific_name'])) {
 			if ($classificationId == NULL) {
 				print_r($organism);
 				assert(false);
 			}
-			$scientificNames = $organism['scientific_names'];
+			$synonyms = $organism['synonyms'];
 			$organismId = $this->getOrCreateOrganism(
-					$scientificNames,
+					$organism['scientific_name'],
+					$synonyms,
 					$classificationId,
 					NULL);
 
@@ -822,38 +822,47 @@ class Classification {
 	}
 
 	/**
-	 * Create organism, add all scientific names and subscribe to its classifier.
+	 * Create organism, and it's synonyms (flora) and subscribe to its classifier.
 	 * 
 	 * @param array of strings $organismNames
 	 * @param integer $classificationId
 	 * @param integer $parentOrganismId
 	 */
-	private function getOrCreateOrganism($organismNames, $classificationId,
-			$parentOrganismId = NULL) {
+	private function getOrCreateOrganism($organismName, $synonyms,
+			$classificationId, $parentOrganismId = NULL) {
 		$primeFatherOrganismId = NULL;
 		$organism_id = NULL;
-		$table = $this->scientific_name_table;
+		$table = $this->synonym_table;
 
 		// if already existing in cache, return the organism id
-		foreach ($organismNames as $organismName) {
-			if (key_exists($organismName, $this->scientific_names)) {
-				print "$organismName already existing in cache.\n";
+		if (key_exists($organismName, $this->scientific_names)) {
+			print "$organismName already existing in cache.\n";
+			print_r($this->scientific_names);
+			assert(false);
+			return $this->scientific_names[$organismName];
+		}
+
+		// the same check for the synonyms
+		foreach ($synonyms as $synonym) {
+			if (key_exists($synonym, $this->scientific_names)) {
+				print "$synonym already existing in cache.\n";
 				print_r($this->scientific_names);
 				assert(false);
-				return $this->scientific_names[$organismName];
+				return $this->scientific_names[$synonym];
 			}
 		}
-		// if existing in DB, return organism id
-		foreach ($organismNames as $organismName) {
+
+		// search for existing synonyms in DB, return organism id
+		foreach ($synonyms as $synonym) {
 			$columnNameArray = array(
 					'organism_id'
 			);
-			$fromQuery = "FROM $table WHERE name = ?";
+			$fromQuery = "FROM $this->synonym_table WHERE name = ?";
 			$typesArray = array(
 					'text'
 			);
 			$valuesArray = array(
-					$organismName
+					$synonym
 			);
 			$rows = $this->db
 				->select_query(
@@ -863,11 +872,34 @@ class Classification {
 					$valuesArray);
 			if (count($rows) == 1) {
 				// print "$organismName already existing.\n";
-				$this->scientific_names[$organismName] = $rows[0]['organism_id'];
+				$this->scientific_names[$synonym] = $rows[0]['organism_id'];
 				$organism_id = $rows[0]['organism_id'];
 			}
 		}
 
+		// search for the give scientific name
+		$columnNameArray = array(
+				'organism_id'
+		);
+		$fromQuery = "FROM $this->organism_table WHERE scientific_name = ?";
+		$typesArray = array(
+				'text'
+		);
+		$valuesArray = array(
+				$organismName
+		);
+		$rows = $this->db
+		->select_query(
+				$columnNameArray,
+				$fromQuery,
+				$typesArray,
+				$valuesArray);
+		if (count($rows) == 1) {
+			// print "$organismName already existing.\n";
+			$this->scientific_names[$organismName] = $rows[0]['organism_id'];
+			$organism_id = $rows[0]['organism_id'];
+		}
+		
 		// If organism not found, create it
 		if ($organism_id == NULL) {
 			$table = $this->organism_table;
@@ -933,6 +965,7 @@ class Classification {
 					'prime_father_id',
 					'left_value',
 					'right_value',
+					'scientific_name'
 			);
 			$typesArray = array(
 					'integer',
@@ -940,22 +973,24 @@ class Classification {
 					'integer',
 					'integer',
 					'integer',
+					'text',
 			);
 			$valuesArray = array(
 					$newid,
 					$parentOrganismId,
 					$primeFatherOrganismId,
 					$leftValue,
-					$rightValue
+					$rightValue,
+					$organismName
 			);
 			$rowcount = $this->db
 				->insert_query($columnArray, $table, $typesArray, $valuesArray);
 			assert(count($rowcount) == 1);
 			$organism_id = $newid;
 
-			// Attach all names to organism			
-			$table = $this->scientific_name_table;
-			foreach ($organismNames as $organismName) {
+			// Attach all synonyms to this organism			
+			$table = $this->synonym_table;
+			foreach ($synonyms as $synonym) {
 				$newid = $this->getNextval($table);
 				$columnArray = array(
 						'organism_id',
@@ -969,7 +1004,7 @@ class Classification {
 				);
 				$valuesArray = array(
 						$organism_id,
-						$organismName,
+						$synonym,
 						$newid
 				);
 				$numrow = $this->db
@@ -979,7 +1014,7 @@ class Classification {
 						$typesArray,
 						$valuesArray);
 				assert($numrow == 1);
-				$this->scientific_names[$organismName] = $organism_id;
+				$this->scientific_names[$synonym] = $organism_id;
 			}
 
 			// subscribe organism to classification

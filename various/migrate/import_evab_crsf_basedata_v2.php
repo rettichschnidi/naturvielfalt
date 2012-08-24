@@ -139,9 +139,7 @@ foreach ($rows as $row) {
 			'classificator' => $classificator,
 			'classifications' => $classifications,
 			'artgroups' => array('Flora'),
-			'scientific_names' => array(
-					$row['name']
-			),
+			'scientific_name' => $row['name'],
 			'classification_name_translations' => array(),
 			'attributes' => array(
 					'CRSF number' => array(
@@ -218,7 +216,7 @@ foreach ($rows as $row) {
 	// 	print_r($organisms[$row['offizielleart']]);
 
 	$organism = &$organisms[$row['offizielleart']];
-	$organism['scientific_names'][] = $row['name'];
+	$organism['synonyms'][] = $row['name'];
 
 	if ($row['deutsch'] != NULL) {
 		$organism['classification_name_translations']['de'][] = $row['deutsch'];
