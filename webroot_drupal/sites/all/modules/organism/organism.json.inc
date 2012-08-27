@@ -537,6 +537,7 @@ function organism_show_organism_json($organism) {
 
 /**
  * Menu callback; AJAX autocomplete for selecting organisms
+ * searches an organism by its german/french/englisch-name, lat-name or synonym-name
  *
  * @return array Array of organisms matching the term having the following keys:
  *  - "id": The ID of the organism
@@ -616,7 +617,10 @@ function organism_search_organism_json($classification = false, $term = false,
 		UNION ALL
 		SELECT child.id, child.name, child.parent FROM {organism_artgroup} child INNER JOIN anchestors p ON p.id = child.parent
 	)
-	SELECT DISTINCT ON (o.id) o.id as organism_id, o.scientific_name, ol.name as ol_name, osy.name as osy_name, oas.organism_artgroup_id artg_id
+	SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, oas.organism_artgroup_id artg_id, osy.id as synonym_id,
+				-- Standardmaessig wird der richtige latienische name angezeigt. organism.scientific_name
+				-- falls aber nach dem synonym gesucht wird, so wird dieses als lateinischer Name verwendet
+				CASE WHEN (osy.name IS NULL) then o.scientific_name ELSE osy.name END AS scientific_name
 				FROM {organism} AS o
 				LEFT JOIN {organism_lang} AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
 				LEFT JOIN {organism_synonym} AS osy ON osy.organism_id = o.id
@@ -639,8 +643,8 @@ function organism_search_organism_json($classification = false, $term = false,
 		$organism = array(
 				'id' => $record->organism_id,
 				'label' => strval($record->ol_name),
-				'scientific_name' => $record->scientific_name,
-				'label_latin' => $record->osy_name,
+				'label_latin' => $record->scientific_name,
+				'synonym_id' => $record->synonym_id,
 				'attributes' => $artg_attr,
 				'det_methods' => $det_methods,
 				'artgr' => $record->artg_id,

@@ -268,7 +268,8 @@ function observation_save($observation_data = false, $custom_data = false, $from
  */
 function observation_get_all_json($acl_level = 'ACL_READ') {
 	global $user;
-
+	global $language;
+	
 	// if the search is for a date, convert it to timestamp to find the results in the db
 	if (isset($_REQUEST['query'])) {
 		$date_split = explode('.', $_REQUEST['query']);
@@ -283,6 +284,8 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		}
 	}
 
+	$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
+	
 	$sql['dbColumns'] = array(
 			'o.id AS id',
 			'o.observer AS observer',
@@ -295,7 +298,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'a_s.canton AS canton',
 			'a_s.country AS country',
 			'a_s.geom AS geom',
-			'osy.name AS organism_sc',
+			'org.scientific_name AS organism_sc',
 			'ol.name AS organism_l',
 			'oa.name AS artgroup_n'
 	);
@@ -311,16 +314,17 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'a_s.canton',
 			'a_s.country',
 			'a_s.geom',
-			'osy.name',
+			'org.scientific_name',
 			'ol.name',
 			'oa.name',
 	);
 
 	$sql['dbTable'] = '{observation} o';
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id '
-			. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
+			//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
 			. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
-			. db_escape_field($user->language) . "' "
+			. db_escape_field($langcode) . "' "
+			. 'JOIN {organism} org on org.id = o.organism_id '
 			. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
