@@ -303,8 +303,8 @@ function organism_show_classification_organismjson($classificationid) {
 	            -- And another one...
 	            CREATE TEMP VIEW mytempfinaltable AS
 	                SELECT
-	                    osn.organism_id AS organism_id,
-	                    osn.name AS osn_name,
+	                    osy.organism_id AS organism_id,
+	                    osy.name AS osy_name,
 	                    ol_name,
 	                    oc_CSCF, oc_class, oc_order, oc_family, oc_genus, oc_subgenus
 	                FROM crosstab
@@ -313,9 +313,9 @@ function organism_show_classification_organismjson($classificationid) {
 	                       'SELECT name FROM mytempviewlevel'
 	                    ) AS nn(
 	                       organism_id integer, oc_CSCF text, oc_class text, oc_order text, oc_family text, oc_genus text, oc_subgenus text
-	                    ) JOIN drupal_organism_scientific_name osn ON osn.organism_id = nn.organism_id
+	                    ) JOIN drupal_organism_synonym osy ON osy.organism_id = nn.organism_id
 	                       LEFT JOIN (SELECT organism_id, name AS ol_name FROM drupal_organism_lang WHERE languages_language = 'de') AS mylang ON mylang.organism_id = nn.organism_id;
-	    SELECT organism_id, osn_name, ol_name, oc_CSCF, oc_class, oc_order, oc_family, oc_genus, oc_subgenus FROM mytempfinaltable;
+	    SELECT organism_id, osy_name, ol_name, oc_CSCF, oc_class, oc_order, oc_family, oc_genus, oc_subgenus FROM mytempfinaltable;
 	    DROP VIEW mytempviewdata;
 	    DROP VIEW mytempviewlevel;
 	    DROP VIEW mytempfinaltable;
@@ -400,8 +400,8 @@ function organism_show_classification_organismjson($classificationid) {
 		-- And another one...
 		CREATE TEMP VIEW final_classification_table AS
 			SELECT
-				osn.organism_id AS organism_id,
-				osn.name AS osn_name,
+				osy.organism_id AS organism_id,
+				osy.name AS osy_name,
 				ol_name,
 				$levelnamesstring
 			FROM crosstab
@@ -410,7 +410,7 @@ function organism_show_classification_organismjson($classificationid) {
 				   'SELECT name FROM mytempviewlevel'
 				) AS nn(
 				   organism_id integer, $levelnamesdatastring
-				) JOIN {organism_scientific_name} osn ON osn.organism_id = nn.organism_id
+				)  LEFT JOIN {organism_synonym} osy ON osy.organism_id = nn.organism_id
 				   LEFT JOIN (
 				   	SELECT
 				   		organism_id,
@@ -423,7 +423,7 @@ function organism_show_classification_organismjson($classificationid) {
 	/* Set the db fields to select */
 	$dbcolumns = array_merge(
 		array('organism_id',
-				'osn_name',
+				'osy_name',
 				'ol_name'
 		),
 		$levelnamearray);
@@ -431,7 +431,7 @@ function organism_show_classification_organismjson($classificationid) {
 
 	$sql['dbSearchColumns'] = array_merge(
 		array('ol_name',
-				'osn_name'
+				'osy_name'
 		),
 		$levelnamearray);
 
@@ -465,22 +465,22 @@ function organism_show_organism_json($organism) {
 	}
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
-			'osn.id AS osn_id',
-			'osn.name AS osn_name',
-			'osn.organism_id AS o_id',
+			'osy.id AS osy_id',
+			'osy.name AS osy_name',
+			'osy.organism_id AS o_id',
 	);
 
 	$sql['dbSearchColumns'] = array(
-			'osn.id',
-			'osn.name',
-			'osn.organism_id'
+			'osy.id',
+			'osy.name',
+			'osy.organism_id'
 	);
 
 	/* DB table to use */
-	$sql['dbTable'] = '{organism_scientific_name} osn';
+	$sql['dbTable'] = '{organism_synonym} osy';
 	/* Group */
-	$sql['dbWhere'] = 'osn.organism_id = :oid';
-	$sql['id'] = 'osn_id';
+	$sql['dbWhere'] = 'osy.organism_id = :oid';
+	$sql['id'] = 'osy_id';
 
 	$arguments = array(
 			':oid' => $organism['id']
@@ -571,13 +571,13 @@ function organism_search_organism_json($classification = false, $term = false,
 		UNION ALL
 		SELECT child.id, child.name, child.parent FROM {organism_artgroup} child INNER JOIN anchestors p ON p.id = child.parent
 	)
-	SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, osn.name as osn_name, oas.organism_artgroup_id artg_id
+	SELECT DISTINCT ON (o.id) o.id as organism_id, o.scientific_name, ol.name as ol_name, osy.name as osy_name, oas.organism_artgroup_id artg_id
 				FROM {organism} AS o
 				LEFT JOIN {organism_lang} AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
-				INNER JOIN {organism_scientific_name} AS osn ON osn.organism_id = o.id
+				LEFT JOIN {organism_synonym} AS osy ON osy.organism_id = o.id
 				LEFT JOIN {organism_artgroup_subscription} AS oas ON oas.organism_id=o.id
 				JOIN anchestors AS a ON a.id=oas.organism_artgroup_id
-				WHERE ol.name ILIKE :term OR osn.name ILIKE :term1
+				WHERE ol.name ILIKE :term OR osy.name ILIKE :term1 OR o.scientific_name ILIKE :term1
 				ORDER BY o.id
 				LIMIT :limit;';
 
@@ -594,7 +594,8 @@ function organism_search_organism_json($classification = false, $term = false,
 		$organism = array(
 				'id' => $record->organism_id,
 				'label' => strval($record->ol_name),
-				'label_latin' => $record->osn_name,
+				'scientific_name' => $record->scientific_name,
+				'label_latin' => $record->osy_name,
 				'attributes' => $artg_attr,
 				'det_methods' => $det_methods,
 				'artgr' => $record->artg_id,
