@@ -20,13 +20,13 @@ function organism_get($organismid) {
 	$resultarray = array();
 	return db_query(
 		'SELECT
-			osn.name name_lat,
+			o.scientific_name name_lat,
 			ol.name name_lang
 		FROM
-			{organism_scientific_name} osn
+			{organism} o
 			LEFT JOIN {organism_lang} ol ON ol.organism_id=:oid AND ol.languages_language=:lang_code
 		WHERE
-			osn.organism_id = :oid',
+			o.id = :oid',
 		array(':oid' => $organismid,
 				':lang_code' => $user->language
 		))->fetchAssoc();
