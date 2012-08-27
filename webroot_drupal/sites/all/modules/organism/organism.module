@@ -253,8 +253,8 @@ function organism_permission() {
  *
  * Example:
  * $organism = array(
- * 		'scientific_names' => array(
- * 				'Acantholycosa pedestris',
+ * 		'scientific_name' => 'Acantholycosa pedestris',
+ * 		'synonyms' => array(
  * 				'Acantholycosa pedestris v2'
  * 		),
  * 		'id' => 123,
@@ -287,8 +287,9 @@ function organism_permission() {
 function organism_load($organismId) {
 	$result = db_query(
 		'SELECT
-			osn.name AS scientific_name,
+			osy.name AS synonym,
 			o.id AS organism_id,
+			o.scientific_name,
 			CASE
 				WHEN oa.valuetype = \'b\' THEN oav.boolean_value::text
 				WHEN oa.valuetype = \'t\' THEN oav.text_value
@@ -307,7 +308,7 @@ function organism_load($organismId) {
 				{organism}
 			WHERE
 				id = :organismId) AS o
-		JOIN {organism_scientific_name} osn ON osn.organism_id=o.id
+		LEFT JOIN {organism_synonym} osy ON osy.organism_id=o.id
 		LEFT JOIN {organism_attribute_value_subscription} oavs ON oavs.organism_id = o.id
 		LEFT JOIN {organism_attribute_value} oav ON oav.id=oavs.organism_attribute_value_id
 		LEFT JOIN {organism_attribute} oa ON oa.id = oav.organism_attribute_id
@@ -316,15 +317,16 @@ function organism_load($organismId) {
 		array('fetch' => PDO::FETCH_ASSOC));
 	$rows = $result->fetchAll();
 	$organism = array();
-	if (isset($rows[0]['scientific_name'])) {
-		$organism['scientific_names'] = array();
+	if (isset($rows[0]['synonym'])) {
+		$organism['synonyms'] = array();
 	}
 
 	foreach ($rows as $row) {
-		if (!in_array($row['scientific_name'], $organism['scientific_names'])) {
-			$organism['scientific_names'][] = $row['scientific_name'];
+		if (!in_array($row['synonym'], $organism['synonyms'])) {
+			$organism['synonyms'][] = $row['synonym'];
 		}
 		$organism['id'] = $row['organism_id'];
+		$organism['scientific_name'] = $row['scientific_name'];
 		// fetch all translations
 		if (isset($row['localized_name'])) {
 			$organism['classification_name_translations'][$row['language']][$row['localized_name']] = $row['localized_name'];
