@@ -246,33 +246,52 @@ function organism_show_classification_organismjson($classificationid) {
 	global $user;
 	global $language;
 	/*
-	 	CREATE TEMP VIEW mytempviewdata AS
-		WITH    RECURSIVE
-		q AS
-		(
-			-- Recursion start
-			SELECT  o.id as organism_id, oc.id, oc.name as classification_name, ocl.name as organism_classification_level_name, oc.organism_classification_level_id, oc.parent_id        
+		-- Get recursive all subclassification for a certain classification
+		-- -------------------------------------------------
+		CREATE TEMP VIEW tmp_classification_recursive AS
+			WITH    RECURSIVE
+			q AS
+			(
+			SELECT  oc.id,  oc.name as classification_name, ocl.name as organism_classification_level_name, oc.organism_classification_level_id
+			FROM  {organism_classification} oc
+			INNER JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id
+			WHERE oc.id = :classificationid			
+			UNION ALL			
+			SELECT  oc1.id,  oc1.name as classification_name, ocl.name as organism_classification_level_name, oc1.organism_classification_level_id
+			FROM    {organism_classification} oc1
+			INNER JOIN {organism_classification_level} ocl ON oc1.organism_classification_level_id = ocl.id
+			INNER JOIN q ON oc1.parent_id = q.id
+			where oc1.parent_id <> oc1.id			
+			)
+		SELECT  * 
+		FROM  q;
+		
+		-- -------------------------------------------------
+		-- Get all classification recursive for all organisms 
+		-- -------------------------------------------------
+		CREATE TEMP VIEW mytempviewdata AS
+			WITH    RECURSIVE
+			q AS
+			(
+			SELECT  o.id as organism_id, oc.id, oc.name as classification_name, tor.organism_classification_level_name, oc.organism_classification_level_id, oc.parent_id        
 			FROM  organism o
-			INNER JOIN organism_classification_subscription ocs ON o.id = ocs.organism_id
-			INNER JOIN organism_classification oc ON oc.id = ocs.organism_classification_id
-			INNER JOIN organism_classification_level ocl ON oc.organism_classification_level_id = ocl.id
-			WHERE   oc.prime_father_id = 1
-			UNION ALL
-			-- Recursion step
+			INNER JOIN {organism_classification_subscription} ocs ON o.id = ocs.organism_id
+			INNER JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
+			INNER JOIN tmp_classification_recursive tor ON tor.id = oc.id
+			UNION ALL			
 			SELECT  q.organism_id, oc1.id, oc1.name as classification_name, ocl.name as organism_classification_level_name, oc1.organism_classification_level_id, oc1.parent_id
 			FROM    q
-			JOIN    organism_classification oc1
+			INNER JOIN    {organism_classification} oc1
 			ON      oc1.id = q.parent_id
-			INNER JOIN organism_classification_level ocl
-			ON oc1.organism_classification_level_id = ocl.id
-			-- Recursion break condition
+			INNER JOIN {organism_classification_level} ocl
+			ON oc1.organism_classification_level_id = ocl.id			
 			where oc1.parent_id <> q.id
 			)
 			SELECT  organism_id,
 	                classification_name,
 	                organism_classification_level_name
-	        FROM q 
-	        ORDER BY organism_id, organism_classification_level_id;
+    	FROM q 
+	        ORDER BY organism_id, organism_classification_level_id;		
 	   
 	            -- -------------------------------------------------
 	            -- Create a view with all classification level names
@@ -319,6 +338,7 @@ function organism_show_classification_organismjson($classificationid) {
 	    DROP VIEW mytempviewdata;
 	    DROP VIEW mytempviewlevel;
 	    DROP VIEW mytempfinaltable;
+	    DROP VIEW tmp_classification_recursive;
 	 */
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
@@ -346,40 +366,45 @@ function organism_show_classification_organismjson($classificationid) {
 	// 	}
 
 	$sql['dbPreStatement'] = "
-		CREATE TEMP VIEW tmp_organism_recursive AS
+		-- -------------------------------------------------
+		-- Get recursive all subclassification for a certain classification
+		-- -------------------------------------------------
+		CREATE TEMP VIEW tmp_classification_recursive AS
 			WITH    RECURSIVE
 			q AS
 			(
 			SELECT  oc.id,  oc.name as classification_name, ocl.name as organism_classification_level_name, oc.organism_classification_level_id
-			FROM  organism_classification oc
-			INNER JOIN organism_classification_level ocl ON oc.organism_classification_level_id = ocl.id
+			FROM  {organism_classification} oc
+			INNER JOIN {organism_classification_level} ocl ON oc.organism_classification_level_id = ocl.id
 			WHERE oc.id = :classificationid			
 			UNION ALL			
 			SELECT  oc1.id,  oc1.name as classification_name, ocl.name as organism_classification_level_name, oc1.organism_classification_level_id
-			FROM    organism_classification oc1
-			INNER JOIN organism_classification_level ocl ON oc1.organism_classification_level_id = ocl.id
+			FROM    {organism_classification} oc1
+			INNER JOIN {organism_classification_level} ocl ON oc1.organism_classification_level_id = ocl.id
 			INNER JOIN q ON oc1.parent_id = q.id
 			where oc1.parent_id <> oc1.id			
 			)
-
 		SELECT  * 
 		FROM  q;
 		
+		-- -------------------------------------------------
+		-- Get all classification recursive for all organisms 
+		-- -------------------------------------------------
 		CREATE TEMP VIEW mytempviewdata AS
 			WITH    RECURSIVE
 			q AS
 			(
 			SELECT  o.id as organism_id, oc.id, oc.name as classification_name, tor.organism_classification_level_name, oc.organism_classification_level_id, oc.parent_id        
 			FROM  organism o
-			INNER JOIN organism_classification_subscription ocs ON o.id = ocs.organism_id
-			INNER JOIN organism_classification oc ON oc.id = ocs.organism_classification_id
-			INNER JOIN tmp_organism_recursive tor ON tor.id = oc.id
+			INNER JOIN {organism_classification_subscription} ocs ON o.id = ocs.organism_id
+			INNER JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
+			INNER JOIN tmp_classification_recursive tor ON tor.id = oc.id
 			UNION ALL			
 			SELECT  q.organism_id, oc1.id, oc1.name as classification_name, ocl.name as organism_classification_level_name, oc1.organism_classification_level_id, oc1.parent_id
 			FROM    q
-			JOIN    organism_classification oc1
+			INNER JOIN    {organism_classification} oc1
 			ON      oc1.id = q.parent_id
-			INNER JOIN organism_classification_level ocl
+			INNER JOIN {organism_classification_level} ocl
 			ON oc1.organism_classification_level_id = ocl.id			
 			where oc1.parent_id <> q.id
 			)
@@ -415,6 +440,7 @@ function organism_show_classification_organismjson($classificationid) {
 	    FROM
 	        oc_level
 	        JOIN {organism_classification_level} ocl ON ocl.prime_father_id = oc_level.prime_father_id;
+	        
 		-- And another one...
 		CREATE TEMP VIEW final_classification_table AS
 			SELECT
