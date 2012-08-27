@@ -295,7 +295,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'a_s.canton AS canton',
 			'a_s.country AS country',
 			'a_s.geom AS geom',
-			'osn.name AS organism_sc',
+			'osy.name AS organism_sc',
 			'ol.name AS organism_l',
 			'oa.name AS artgroup_n'
 	);
@@ -311,14 +311,14 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'a_s.canton',
 			'a_s.country',
 			'a_s.geom',
-			'osn.name',
+			'osy.name',
 			'ol.name',
 			'oa.name',
 	);
 
 	$sql['dbTable'] = '{observation} o';
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id '
-			. 'INNER JOIN {organism_scientific_name} osn ON osn.organism_id = o.organism_id '
+			. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
 			. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
 			. db_escape_field($user->language) . "' "
 			. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
