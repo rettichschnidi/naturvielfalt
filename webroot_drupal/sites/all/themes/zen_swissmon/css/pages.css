@@ -20,6 +20,9 @@ body {
 }
 
 #page {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 100px;
 }
 
 /*
@@ -41,6 +44,8 @@ body {
  */
 #header {
   position:relative;
+  height:110px;
+  margin-top: 30px;
 }
 
 #header .section {
@@ -53,7 +58,7 @@ body {
 }
 
 #logo img {
-  vertical-align: bottom;
+  padding-top: 3px;
 }
 
 #name-and-slogan /* Wrapper for website name and slogan */ {
@@ -93,19 +98,49 @@ a.naturvielfalt-button /* Lets the header logo become a button */ {
   clear: both; /* Clear the logo */
 }
 
+#logo-wrapper {
+	/*padding-top: 5px;
+	padding-bottom: 0px;*/
+	white-space:nowrap;
+	display: block;
+	height: 44px;
+}
+
+#logo-wrapper-left {
+	height: 44px;
+}
+
+#logo-wrapper-right {
+	margin-top: 2px;
+	height: 44px;
+	width: 973px;
+}
+
+#logo-wrapper-right-title {
+	float: left;
+}
+	
+#logo-wrapper-right-user {
+	
+}
+
+
 /*
  * Main (container for everything else)
  */
 #main-wrapper {
+	clear: both;
 }
 
 #main {
+	
 }
 
 /*
  * Content
  */
 #content {
+	min-height: 487px;
 }
 
 #content .section {
@@ -119,12 +154,14 @@ a.naturvielfalt-button /* Lets the header logo become a button */ {
   /* witdh set with jquery in equalheights.js to match that of content*/
   background-color: #DAE5E3;
   color: #3B7066;
-  padding-top: 10px;
+  /* padding-top: 10px; */
 }
 
-h2#page-title {
+h1#page-title {
   padding:5px 0 0 20px;
   font-size: 18px;
+  color: #3B7066;
+  margin-top: 5px;
 }
 
 .breadcrumb,
@@ -152,6 +189,12 @@ h2.node-title /* Title of a piece of content when it is given in a list of conte
 h2.title {
 	margin-left:0;
 	}
+	
+h2.gridsubsection{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 14px;
+}
 
 tr.even /* Some tables have rows marked even or odd. */ {
   /* background-color: #eee; */ /* Drupal core uses a #eee background */
@@ -256,7 +299,8 @@ ul.links li {
 .region-footer {
   padding-top: 7px;
   text-align:center;
-  color: #787878; 
+  color: #3B7066;
+  height: 44px; 
 }
 
 .region-footer p {

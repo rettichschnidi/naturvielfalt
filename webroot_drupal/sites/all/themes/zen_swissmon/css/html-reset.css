@@ -280,11 +280,11 @@ li.leaf {
 }
 
 ul li.expanded {
-  list-style-image: url(../images/menu-expanded.gif);
+  list-style-image: url(../images/menu-expanded.png);
 }
 
 ul li.collapsed {
-  list-style-image: url(../images/menu-collapsed.gif); /* LTR */
+  list-style-image: url(../images/menu-collapsed.png); /* LTR */
 }
 
 ul li.leaf a,
@@ -411,12 +411,12 @@ button {
 
 a:link,
 a:visited {
-  color: #0a722b;
+  color: #3B7066;
   text-decoration: none;
 }
 
 a:hover {
-  color: #0a722b;
+  color: #3B7066;
   text-decoration: underline;
 }
 

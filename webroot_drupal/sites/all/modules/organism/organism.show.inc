@@ -144,7 +144,7 @@ function organism_show_classification($classificationid) {
 
 	$render_array['organismsTitle'] = array(
 			'#type' => 'markup',
-			'#markup' => '<h1>' . t('Species') . '</h1>',
+			'#markup' => '<h2 class="gridsubsection">' . t('Species') . '</h2>',
 	);
 
 	$organismsTableHeader[] = array(

@@ -384,3 +384,24 @@ function zen_swissmon_menu_item_link($item, $link_item) {
   //if ($item['title'] == t('View')) $item['title']=t('Business Profile');
   //return theme_menu_item_link($item, $link_item);
 }
+
+function zen_swissmon_links($variables) {
+	
+	if (!isset($variables['links']))
+		return theme_links($variables);
+	
+	$links = $variables['links'];	
+	foreach($links as $key => $link) {
+		if ($link['title']== t('My account')) {
+
+			global $user;
+			$link['title'] = 'Angemeldet als '.$user->name;					
+
+		}
+
+		$links[$key] = $link;
+	}
+	$variables['links'] = $links;
+
+	return theme_links($variables);
+}

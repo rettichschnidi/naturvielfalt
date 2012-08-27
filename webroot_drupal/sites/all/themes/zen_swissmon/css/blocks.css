@@ -109,16 +109,20 @@ h2.block-title /* Block title */ {
   color: #e65016;
 }
 #block-system-navigation /* "Navigation" block for Drupal navigation menu */ {
-  color: white;
+  color: #3B7066;
 }
 #block-system-navigation a:link,
 #block-system-navigation a:visited {
-  color: white;
+  color: #3B7066;
 }
 
 #block-system-navigation a.active,
 #block-system-navigation a.active-trail {
   font-weight: bold;
+}
+
+#block-system-navigation a.active{
+    background-color: white;
 }
 
 
@@ -142,7 +146,7 @@ h2.block-title /* Block title */ {
 }
 
 #block-user-login /* "User login form" block */ { 
-  color: black;
+  color: #3B7066;
   padding: 10px 0 0 10px;
 }
 
@@ -484,10 +488,10 @@ html.js fieldset.collapsed {
 
 html.js fieldset.collapsible .fieldset-legend {
   padding-left: 2em; /* LTR */
-  background: url(../images/menu-expanded.gif) no-repeat 0% 50%; /* LTR */
+  background: url(../images/menu-expanded.png) no-repeat 0% 50%; /* LTR */
 }
 html.js fieldset.collapsed .fieldset-legend {
-  background: url(../images/menu-collapsed.gif) no-repeat 0% 50%; /* LTR */
+  background: url(../images/menu-collapsed.png) no-repeat 0% 50%; /* LTR */
 }
 
 .fieldset-legend span.summary {
