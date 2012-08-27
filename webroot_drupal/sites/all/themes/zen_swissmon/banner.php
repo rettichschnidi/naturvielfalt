@@ -6,7 +6,7 @@ $PATH = $_SERVER['DOCUMENT_ROOT'];  //Webroot holen
 $imageDirPath = $PATH.'/sites/all/themes/zen_swissmon/images/banner/'; // Zum Ordner mit den Bannern wechseln
 
 $files=array();
-$imageDir = opendir($imageDirPath); // Ordner mit Bannern �ffnen
+$imageDir = opendir($imageDirPath); // Ordner mit Bannern öffnen
 
 while ($f = readdir($imageDir)){
 	if (eregi("\.gif", $f) || eregi("\.jpeg", $f) || eregi("\.jpg", $f) || eregi("\.png", $f)){

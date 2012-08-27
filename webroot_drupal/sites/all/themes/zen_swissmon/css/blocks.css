@@ -150,8 +150,13 @@ h2.block-title /* Block title */ {
   padding: 10px 0 0 10px;
 }
 
-#block-user-login a {
-  color: black;  
+#block-user-login ul{
+	margin: 0 0;
+	padding-left: 0px;
+}
+
+#block-user-login .block-title{
+	visibility: hidden;
 }
 
 #block-user-login ul {
@@ -444,7 +449,7 @@ table.inventory_show th  {
 fieldset {
   margin: 1em 0;
   padding: 1em;
-  border: 1px solid #0a722b;
+  border: 1px solid #dae5e3;
   background: #fff;
 }
 
