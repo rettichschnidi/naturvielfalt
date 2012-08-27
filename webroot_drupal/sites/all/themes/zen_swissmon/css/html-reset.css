@@ -176,20 +176,22 @@ h2,
   line-height: 130%;
 }
 
-h3 {
-  font-size: 140%;
+h3 {  	
+	font-size: 14px;
+	font-weight: bold;  
 }
 
 h4 {
-  font-size: 130%;
+	font-size: 14px;
+  
 }
 
 h5 {
-  font-size: 120%;
+  	font-size: 14px;
 }
 
 h6 {
-  font-size: 110%;
+  font-size: 14px;
 }
 
 quote,
