@@ -178,7 +178,7 @@ function organism_show_classification($classificationid) {
 
 	$organismsTableHeader[] = array(
 			'name' => t('Scientific name'),
-			'dbfield' => 'osn_name',
+			'dbfield' => 'scientific_name',
 			'dbExactField' => 'osn_name',
 			'hide' => false,
 			'width' => 300
@@ -365,7 +365,7 @@ function organism_get_organism_title($organismdata) {
 	$logo_wikipedia_url = base_path()
 			. drupal_get_path('module', 'commonstuff')
 			. '/images/wikipedia.png';
-	$scientific_name = $organismdata['scientific_names'][0]; // just take the first one (we have no preferences so far)
+	$scientific_name = $organismdata['scientific_name']; 
 	$title = $scientific_name;
 	if (isset($organismdata['classification_name_translations'][$langcode])
 			&& !empty(

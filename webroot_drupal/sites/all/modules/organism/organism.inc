@@ -130,8 +130,7 @@ function organism_check_if_wikipedia_article_exists($organismdata) {
 	global $user;
 	global $language;
 	$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
-	// Take first synonym
-	$organism_name = $organismdata['scientific_names'][0];
+	$organism_name = $organismdata['scientific_name'];
 	// Reduce to first two words, as this delivers the best results.
 	if (preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {
 		$organism_name = $matches[1];

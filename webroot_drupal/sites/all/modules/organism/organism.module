@@ -303,7 +303,7 @@ function organism_load($organismId) {
 			ol.languages_language AS language
 		FROM (
 			SELECT
-				id
+				id, scientific_name
 			FROM
 				{organism}
 			WHERE
@@ -322,7 +322,7 @@ function organism_load($organismId) {
 	}
 
 	foreach ($rows as $row) {
-		if (!in_array($row['synonym'], $organism['synonyms'])) {
+		if (isset($row['synonym']) && !in_array($row['synonym'], $organism['synonyms'])) {
 			$organism['synonyms'][] = $row['synonym'];
 		}
 		$organism['id'] = $row['organism_id'];
