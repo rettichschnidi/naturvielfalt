@@ -395,7 +395,7 @@ function organism_show_classification_organismjson($classificationid) {
 			q AS
 			(
 			SELECT  o.id as organism_id, oc.id, oc.name as classification_name, tor.organism_classification_level_name, oc.organism_classification_level_id, oc.parent_id        
-			FROM  organism o
+			FROM  {organism} o
 			INNER JOIN {organism_classification_subscription} ocs ON o.id = ocs.organism_id
 			INNER JOIN {organism_classification} oc ON oc.id = ocs.organism_classification_id
 			INNER JOIN tmp_classification_recursive tor ON tor.id = oc.id
