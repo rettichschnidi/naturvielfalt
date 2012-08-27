@@ -444,9 +444,9 @@ function organism_show_classification_organismjson($classificationid) {
 		-- And another one...
 		CREATE TEMP VIEW final_classification_table AS
 			SELECT
-				osy.organism_id AS organism_id,
-				osy.name AS osy_name,
-				ol_name,
+				nn.organism_id,
+				o.scientific_name,
+				mylang.ol_name,
 				$levelnamesstring
 			FROM crosstab
 				(
@@ -454,7 +454,8 @@ function organism_show_classification_organismjson($classificationid) {
 				   'SELECT name FROM mytempviewlevel'
 				) AS nn(
 				   organism_id integer, $levelnamesdatastring
-				)  LEFT JOIN {organism_synonym} osy ON osy.organism_id = nn.organism_id
+				)  
+				   JOIN organism as o on o.id = nn.organism_id
 				   LEFT JOIN (
 				   	SELECT
 				   		organism_id,
@@ -463,11 +464,11 @@ function organism_show_classification_organismjson($classificationid) {
 				   		{organism_lang}
 				   	WHERE
 				   		languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id";
-	
+
 	/* Set the db fields to select */
 	$dbcolumns = array_merge(
 		array('organism_id',
-				'osy_name',
+				'scientific_name',
 				'ol_name'
 		),
 		$levelnamearray);
@@ -475,7 +476,7 @@ function organism_show_classification_organismjson($classificationid) {
 
 	$sql['dbSearchColumns'] = array_merge(
 		array('ol_name',
-				'osy_name'
+				'scientific_name'
 		),
 		$levelnamearray);
 
