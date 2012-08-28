@@ -101,9 +101,7 @@ foreach ($rows as $row) {
 			'classificator' => $classificator,
 			'classifications' => $classifications,
 			'artgroups' => array('Fungus'),
-			'scientific_names' => array(
-					$row['pilzname']
-			),
+			'scientific_names' => $row['pilzname'],
 			'attributes' => array(
 					'Fungus number' => array(
 							'comment' => 'Number which got assigned to this organism by the WSL.',

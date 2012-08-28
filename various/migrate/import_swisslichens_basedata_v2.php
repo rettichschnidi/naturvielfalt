@@ -101,9 +101,7 @@ foreach ($rows as $row) {
 			'classificator' => $classificator,
 			'classifications' => $classifications,
 			'artgroups' => array('Lichens'),
-			'scientific_names' => array(
-					$row['scientific_name']
-			)
+			'scientific_names' => $row['scientific_name']
 	);
 
 	$organisms[] = $organism;

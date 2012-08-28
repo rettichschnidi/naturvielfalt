@@ -166,9 +166,7 @@ foreach ($rows as $row) {
 			'classificator' => $classificator,
 			'classifications' => $classifications,
 			'artgroups' => array($artgruppe),
-			'scientific_names' => array(
-					$row['name_latin']
-			),
+			'scientific_name' =>  $row['name_latin'],
 			'classification_name_translations' => array(),
 			'attributes' => array(
 					'NUESP' => array(
