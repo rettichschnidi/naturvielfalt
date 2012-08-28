@@ -136,6 +136,8 @@ function organism_update_7103() {
 * the flora-part must be done by another (more complex) migration script 
 */
 function organism_update_7104(){
+	// make sure, this thing finishes... 
+	set_time_limit(120);
 	$txn = db_transaction();
 	
 	try{
