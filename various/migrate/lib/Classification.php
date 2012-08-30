@@ -879,7 +879,7 @@ class Classification {
 
 		// search for the give scientific name
 		$columnNameArray = array(
-				'organism_id'
+				'id'
 		);
 		$fromQuery = "FROM $this->organism_table WHERE scientific_name = ?";
 		$typesArray = array(
