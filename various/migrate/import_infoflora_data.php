@@ -193,7 +193,7 @@ for ($i = 1; $i < count($csv); $i++) { // skip the first row
 
 	} else {
 		// create the array for inserting a new organism
-		$new_organisms[$plant[ORGANISM_CRSF_ID]] = new_organism($plant);
+		$new_organisms[$plant[ORGANISM_CRSF_ID]] = organism_new_organism($plant);
 		echo "NEW: " . $plant[ORGANISM_CRSF_ID] . ", "
 		. $plant[ORGANISM_SCIENTIFIC_NAME] . ", $plant[ORGANISM_DE]\n";
 	}
