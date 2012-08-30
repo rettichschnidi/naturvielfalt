@@ -57,7 +57,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	// set the last value as artgroup
 	// $artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 	// if($observation['organism_artgroup_id'] == 0){
-	if ($observation['organism_id'] > 0) {
+	if (array_key_exists('organism_id',$observation) && $observation['organism_id'] > 0) {
 		$observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
 			$observation['organism_id'],
 			true);
