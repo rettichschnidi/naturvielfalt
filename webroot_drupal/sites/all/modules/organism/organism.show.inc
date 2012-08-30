@@ -306,9 +306,9 @@ function organism_show_organism($organismdata) {
 		$organismdata['classification_name_translations'][$current_language])
 			&& count(
 				$organismdata['classification_name_translations'][$current_language])
-					> 1)
-			|| (isset($organismdata['scientific_names'])
-					&& count($organismdata['scientific_names']) > 1)) {
+					>= 1)
+			|| (isset($organismdata['synonyms'])
+					&& count($organismdata['synonyms']) >= 1)) {
 		$render_array['synonyms-container'] = array(
 				'#prefix' => '<div id="organism-synonyms-container">',
 				'#suffix' => '</div>',
@@ -321,8 +321,10 @@ function organism_show_organism($organismdata) {
 				)
 		);
 
+		$synonym_markup = (isset($organismdata['synonyms'])) ? implode('<br/>', $organismdata['synonyms']) : ''; 
+		
 		$render_array['synonyms-container']['scientific_names']['synonyms'] = array(
-				'#markup' => implode('<br/>', $organismdata['scientific_names']) // there is always one existing
+				'#markup' => $synonym_markup
 		);
 
 		$render_array['synonyms-container']['classification_name_translations'] = array(
