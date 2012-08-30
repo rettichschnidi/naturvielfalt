@@ -146,7 +146,7 @@ function organism_update_7104(){
 			select organism_id, name from {organism_synonym}
 				where organism_id in (
 					select organism_id
-				from organism_synonym 	
+				from {organism_synonym} 	
 			group by organism_id having count(*) = 1);');
 	
 		/* 
