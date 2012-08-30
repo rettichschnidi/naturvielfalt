@@ -179,7 +179,7 @@ function organism_show_classification($classificationid) {
 	$organismsTableHeader[] = array(
 			'name' => t('Scientific name'),
 			'dbfield' => 'scientific_name',
-			'dbExactField' => 'osn_name',
+			'dbExactField' => 'scientific_name',
 			'hide' => false,
 			'width' => 300
 	);
