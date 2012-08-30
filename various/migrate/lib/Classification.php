@@ -286,19 +286,16 @@ class Classification {
 	}
 
 	/**
-	 * Add a single organism to the database, including its attributes and classification.
-	 * 
-	 * @param $organism
-	 * 	Array with organism information. Have a look at the top of this file for further
-	 *  information.
+	 * creates or finds the classificationId for the given organism.
+	 * @param array $organism
 	 */
-	private function addOrganism(array $organism) {
+	public function getClassificationId(array $organism){
 		$this->current_classifier_id = NULL;
 		$this->classifier_name = $organism['classificator'];
 		$classifierName = $this->classifier_name;
-
+		
 		// get classifier and classifier level id (and create them if not yet existing)
- {
+		{
 			if (key_exists($classifierName, $this->tree)) {
 				// is in cache
 				$classifierLevelId = $this->tree[$classifierName]['classificationlevelid'];
@@ -321,59 +318,69 @@ class Classification {
 			$this->current_classifier_id = $classifierId;
 			assert($this->current_classifier_id != NULL);
 		}
-
+		
 		// add all classifications
- {
-			$parentClassificationLevelId = $this->current_classifier_level_id;
-			$parentClassificationId = $this->current_classifier_id;
-			$classificationLevels = &$this->tree[$classifierName]['classificationlevelvalues'];
-			$currentClassifications = &$this->tree[$classifierName]['classificationvalues'];
-			$classificationId = NULL;
-
-			// create all classifications
-			foreach ($organism['classifications'] as $classification) {
-				$classificationLevelName = $classification['classificationlevelname'];
-				// create classification levels //
-				if (key_exists($classificationLevelName, $classificationLevels)) {
-					$classificationLevelId = $classificationLevels[$classificationLevelName];
+		$parentClassificationLevelId = $this->current_classifier_level_id;
+		$parentClassificationId = $this->current_classifier_id;
+		$classificationLevels = &$this->tree[$classifierName]['classificationlevelvalues'];
+		$currentClassifications = &$this->tree[$classifierName]['classificationvalues'];
+		$classificationId = NULL;
+		
+		// create all classifications
+		foreach ($organism['classifications'] as $classification) {
+			$classificationLevelName = $classification['classificationlevelname'];
+			// create classification levels //
+			if (key_exists($classificationLevelName, $classificationLevels)) {
+				$classificationLevelId = $classificationLevels[$classificationLevelName];
+			} else {
+				print
+				"Cache miss for classification level: $classificationLevelName ["
+				. $this->classifier_name . "]\n";
+				$classificationLevelId = $this->getOrCreateClassificationLevelName(
+						$classificationLevelName,
+						$parentClassificationLevelId);
+						$classificationLevels[$classificationLevelName] = $classificationLevelId;
+			}
+			$parentClassificationLevelId = $classificationLevelId;
+		
+			// create classification
+			if (isset($classification['classificationname'])) {
+			$classificationName = $classification['classificationname'];
+			if (key_exists($classificationName, $currentClassifications)) {
+			//print "Hit for classification: $classificationName\n";
+					$classificationId = $currentClassifications[$classificationName]['id'];
 				} else {
-					print 
-						"Cache miss for classification level: $classificationLevelName ["
-								. $this->classifier_name . "]\n";
-					$classificationLevelId = $this->getOrCreateClassificationLevelName(
-							$classificationLevelName,
-							$parentClassificationLevelId);
-					$classificationLevels[$classificationLevelName] = $classificationLevelId;
-				}
-				$parentClassificationLevelId = $classificationLevelId;
-
-				// create classification
-				if (isset($classification['classificationname'])) {
-					$classificationName = $classification['classificationname'];
-					if (key_exists($classificationName, $currentClassifications)) {
-						//print "Hit for classification: $classificationName\n";
-						$classificationId = $currentClassifications[$classificationName]['id'];
-					} else {
-						print 
-							"Cache miss for classification: $classificationName ["
-									. $this->classifier_name . "]\n";
-						$classificationId = $this->getOrCreateClassification(
-								$classificationName,
-								$parentClassificationId,
-								$classificationLevelId);
+				print
+				"Cache miss for classification: $classificationName ["
+				. $this->classifier_name . "]\n";
+				$classificationId = $this->getOrCreateClassification(
+						$classificationName,
+						$parentClassificationId,
+						$classificationLevelId);
 						$currentClassifications[$classificationName]['id'] = $classificationId;
 						$currentClassifications[$classificationName]['values'] = array();
-					}
-					$currentClassifications = &$currentClassifications[$classificationName]['values'];
-					$parentClassificationId = $classificationId;
-
-					if ($classificationId == NULL) {
-						print_r($classification);
-						assert(false);
-					}
 				}
-			}
+				$currentClassifications = &$currentClassifications[$classificationName]['values'];
+				$parentClassificationId = $classificationId;
+		
+				if ($classificationId == NULL) {
+				print_r($classification);
+				assert(false);
 		}
+		}
+		}
+		return $classificationId;
+	}
+	
+	/**
+	 * Add a single organism to the database, including its attributes and classification.
+	 * 
+	 * @param $organism
+	 * 	Array with organism information. Have a look at the top of this file for further
+	 *  information.
+	 */
+	private function addOrganism(array $organism) {
+		$classificationId = $this->getClassificationId($organism);
 
 		// Create organism (only if scientific name is given)
 		$organismId = NULL;
