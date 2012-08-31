@@ -11,10 +11,10 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 --
--- Name: {organism_scientific_name_id_seq}; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: {organism_synonym_id_seq}; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('{organism_scientific_name_id_seq}', 33701, true);
+SELECT pg_catalog.setval('{organism_synonym_id_seq}', 33701, true);
 
 
 --
