@@ -33,6 +33,9 @@ require_once($libdir . '/Classification.php');
 require_once($configdir . '/databases.php');
 global $errors;
 
+// set here your local drupal database prefix
+$drupalprefix = 'naturvielfalt_';
+
 $classifier = new Classification(
 	$config['naturvielfalt_dev']['driver'],
 	$config['naturvielfalt_dev']['name'],
