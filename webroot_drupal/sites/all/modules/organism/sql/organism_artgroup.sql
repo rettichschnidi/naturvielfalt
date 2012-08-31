@@ -11,14 +11,14 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 --
--- Name: organism_artgroup_id_seq; Type: SEQUENCE SET; Schema: public; Owner: swissmon_dev
+-- Name: {organism_artgroup_id_seq}; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('{organism_artgroup_id_seq}', 28, true);
 
 
 --
--- Data for Name: organism_artgroup; Type: TABLE DATA; Schema: public; Owner: swissmon_dev
+-- Data for Name: {organism_artgroup}; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO {organism_artgroup} (id, name, parent) VALUES (1, 'Alle', NULL);
