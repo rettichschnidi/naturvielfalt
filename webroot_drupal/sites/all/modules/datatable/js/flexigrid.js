@@ -75,7 +75,7 @@
 			onSuccess: false,
 			onError: false,
 			onSubmit: false, //using a custom populate function
-			cookies : true,
+			cookies : false,
 			tableId : 'flexigrid',
 			colMove : true,
 			minimize : false,
