@@ -455,7 +455,7 @@ function organism_show_classification_organismjson($classificationid) {
 				) AS nn(
 				   organism_id integer, $levelnamesdatastring
 				)  
-				   JOIN organism as o on o.id = nn.organism_id
+				   JOIN {organism} as o on o.id = nn.organism_id
 				   LEFT JOIN (
 				   	SELECT
 				   		organism_id,
