@@ -392,10 +392,10 @@ function zen_swissmon_links($variables) {
 	
 	$links = $variables['links'];	
 	foreach($links as $key => $link) {
-		if ($link['title']== 'My account') {
+		if ($link['title']== t('My account')) {
 
 			global $user;
-			$link['title'] = 'Angemeldet als '.$user->name;					
+			$link['title'] = t('Signed in as').' '.$user->name;					
 
 		}
 
