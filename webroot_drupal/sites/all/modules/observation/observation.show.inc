@@ -10,10 +10,11 @@ module_load_include('inc', 'observation');
 function observation_show_all_observations() {
 
 	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js($observation_path . '/js/observation.js');
 	
 	drupal_set_title(t('Show all observations'));
-
+	
 	$output['div'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
@@ -35,7 +36,7 @@ function observation_show_all_observations() {
 
 	$output['area_table'] = array(
 			'#theme' => 'datatable',
-			'#header' => observation_get_standard_datatable_headers(4, 'desc'),
+			'#header' => observation_get_standard_datatable_headers(7, 'desc'),
 			'#title' => t('Observations'),
 			'#id_table' => 'observations',
 			'#options' => array(
@@ -43,10 +44,13 @@ function observation_show_all_observations() {
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
-							function() {
-								observationmap.selectObservation(id);
+							function() {							    
+								observationmap.selectObservation(celDiv, id);
 							}
 						)
+					}",
+					'onSuccessHandler' => "function onSuccessHandler() {
+								observation.displayBatchArea();						
 					}",
 			)
 	);

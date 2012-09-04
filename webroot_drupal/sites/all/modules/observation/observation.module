@@ -105,6 +105,16 @@ function observation_menu() {
 			'weight' => 99
 	);
 
+	// Delete one or many observations
+	$items['observation/delete'] = array(
+				'title' => t('ObservationsJSON'),
+				'description' => t('Delete one or many observations'),
+				'access callback' => TRUE,
+				'page callback' => 'observation_delete',
+				'file' => 'observation.ajax.inc',
+				'type' => MENU_CALLBACK,	
+	);
+	
 	$items['observation/save'] = array(
 			'title' => t('Save'),
 			'description' => t('Save a new observation'),
@@ -115,6 +125,7 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
 	$items['observation/%observation/save'] = array(
 			'title' => t('Save'),
 			'description' => t('Save a existing observation'),
@@ -166,7 +177,6 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
-
 	$items['observation/get/writeable'] = array(
 			'title' => t('Writeable Observations JSON'),
 			'description' => t('Get writeable observations'),
@@ -232,6 +242,10 @@ function observation_admin_access($observationdata = NULL) {
 	return false;
 }
 
+function observation_any_access(){
+	return true;
+}
+
 /**
  * Check if user has write access to this observation
  *
@@ -247,6 +261,22 @@ function observation_write_access($observationdata = NULL) {
 		return check_permission(
 			$observationdata['observation']['acl_id'],
 			variable_get('ACL_WRITE'));
+	}
+	return false;
+}
+
+/**
+* Check if user has write access to this observation
+*
+* @param int $aclId
+* @return boolean true if access ok, false if not
+* @todo Implementation
+*/
+function observation_write_access_by_acl_id($aclId = NULL) {
+	if (isset($aclId)) {
+		return check_permission(
+		$aclId,
+		variable_get('ACL_WRITE'));
 	}
 	return false;
 }

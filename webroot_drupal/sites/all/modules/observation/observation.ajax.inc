@@ -8,6 +8,7 @@
 module_load_include('inc', 'observation');
 module_load_include('inc', 'gallery', 'gallery.implementations');
 module_load_include('inc', 'organism', 'organism.artgroup');
+module_load_include('inc', 'observation', 'observation.delete');
 
 /**
  * Save a existing/new observation
@@ -57,7 +58,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	// set the last value as artgroup
 	// $artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 	// if($observation['organism_artgroup_id'] == 0){
-	if (array_key_exists('organism_id',$observation) && $observation['organism_id'] > 0) {
+	if (array_key_exists('organism_id', $observation) && $observation['organism_id'] > 0) {
 		$observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
 			$observation['organism_id'],
 			true);
@@ -145,8 +146,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				$attributes_checked[$key] = $value;
 			} else {
 				if ($value != "") {
-					$errormessages[] = t(
-						'The value of ' . $attribute['name'] . ' should be a date');
+					$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a date');
 				}
 			}
 			break;
@@ -155,8 +155,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			if (is_int($value) && !empty($value)) {
 				$attributes_checked[$key] = $value;
 			} elseif ($value != "") {
-				$errormessages[] = t(
-					'The value of ' . $attribute['name'] . ' should be a number');
+				$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a number');
 			}
 			break;
 		}
@@ -259,7 +258,35 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	}
 
 	return drupal_json_output($output);
-	return print_r($output);
+
+}
+
+/**
+ * Deletes a set of observations. The parameter "observations" is a 
+ * list of all observations to delete separated with a coma and brackets:
+ * {1,23,443,4343)
+ */
+function observation_delete() {
+	global $user;
+	if (!isset($user)) {
+		return drupal_json_output(t('Bitte melden Sie sich an'));
+	}
+
+	if (!isset($_REQUEST['observations'])) {		
+		return drupal_json_output(t('Kein Parameter observations'));
+	}
+
+	$param = filter_xss($_REQUEST['observations']);
+	$observations = explode(',', substr($param, 1, strlen($param) - 2));
+
+	foreach ($observations as $observation_id) {
+		if (observation_write_access_by_acl_id($observation_id)) {
+			observation_delete_by_id($observation_id);
+		}
+	}
+
+	return drupal_json_output("ok");
+
 }
 
 /**
@@ -269,7 +296,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 function observation_get_all_json($acl_level = 'ACL_READ') {
 	global $user;
 	global $language;
-	
+
 	// if the search is for a date, convert it to timestamp to find the results in the db
 	if (isset($_REQUEST['query'])) {
 		$date_split = explode('.', $_REQUEST['query']);
@@ -284,8 +311,9 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		}
 	}
 
-	$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
-	
+	$langcode = isset($user->language) && !empty($user->language) ? $user->language
+			: $language->language;
+
 	$sql['dbColumns'] = array(
 			'o.id AS id',
 			'o.observer AS observer',
@@ -321,10 +349,9 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 
 	$sql['dbTable'] = '{observation} o';
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id '
-			//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
+	//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
 			. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
-			. db_escape_field($langcode) . "' "
-			. 'JOIN {organism} org on org.id = o.organism_id '
+			. db_escape_field($langcode) . "' " . 'JOIN {organism} org on org.id = o.organism_id '
 			. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
@@ -335,9 +362,33 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 	$output = datatable_dbRequest($sql);
 
 	// 	// Add a link to the gallery of each habitat
-	// 	global $base_url;
-	// 	$imageUrl = $base_url . '/' . drupal_get_path('module', 'habitat') . '/images/image.png';
+	global $base_url;
+	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
 	foreach ($output['rows'] as &$row) {
+
+		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="'
+				. $row['id'] . '"/>';
+		// Show Details		
+		$showLink = l(
+			'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
+			$base_url . '/observation/' . $row['id'] . '/show',
+			array(
+					'html' => true
+			));
+		$row['cell']['showColumn'] = $showLink;
+		// Edit details		
+		if (observation_write_access_by_acl_id($row['cell']['acl_id'])) {
+			$editLink = l(
+				'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '"/>',
+				$base_url . '/observation/' . $row['id'] . '/edit',
+				array(
+						'html' => true
+				));
+		}
+		$row['cell']['editColumn'] = $editLink;
+
+		//observation_write_access
+
 		// 		$link = l(
 		// 				"<img src='$imageUrl' />",
 		// 				base_path() . 'gallery/' . $row['id'] . '/images',

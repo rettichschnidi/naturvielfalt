@@ -459,7 +459,8 @@ div.colCopy {
 
 .flexigrid div.bDiv td div {
 	border-top: 0px solid #fff;
-	padding-bottom: 4px;
+	padding-bottom: 1px;
+	padding-top: 1px;
 }
 
 .flexigrid tr td.sorted {
@@ -637,4 +638,11 @@ div.pGroup {
 .flexigrid.ie div.hDiv th div,.flexigrid.ie  div.bDiv td  div,div.colCopy.ie div
 	/* common inner cell properties*/ {
 	overflow: hidden;
+}
+
+/* Checkbox in grid /*
+.gridSelect{
+	padding 0 0 0 0;
+	margin: 0px 0px 0px 0px;
+	
 }

@@ -271,7 +271,7 @@ function observation_form($observation = false) {
 
 	$recent['rencent_observation'] = array(
 			'#theme' => 'datatable',
-			'#header' => observation_get_standard_datatable_headers(4, 'desc'),
+			'#header' => observation_get_standard_datatable_headers(7, 'desc'),
 			'#title' => t(
 				'Recently recorded and saved observations (click on a row, to edit an entry)'),
 			'#id_table' => 'recent_observations',

@@ -17,18 +17,15 @@ function observation_delete_form($form, &$form_state, $observationdata = NULL) {
 	drupal_set_title(
 		t(
 			'Delete Observation @observation_organism from @observation_date.',
-			array('@observation_organism' => $observationdata['organism']['name_lang']
-							. '(' . $observationdata['organism']['name_lat']
-							. ')',
-					'@observation_date' => date(
-						'd.m.Y',
-						$observationdata['observation']['date'])
+			array('@observation_organism' => $observationdata['organism']['name_lang'] . '('
+							. $observationdata['organism']['name_lat'] . ')',
+					'@observation_date' => date('d.m.Y', $observationdata['observation']['date'])
 			)));
 
 	$question = t(
 		'Are you sure that you want to delete this observation «@observation_organism»?',
-		array('@observation_organism' => $observationdata['organism']['name_lang']
-						. '(' . $observationdata['organism']['name_lat'] . ')'
+		array('@observation_organism' => $observationdata['organism']['name_lang'] . '('
+						. $observationdata['organism']['name_lat'] . ')'
 		));
 	/* create a fieldset for the tabular data */
 	$form['question'] = array(
@@ -63,14 +60,22 @@ function observation_delete_form_validate($form, &$form_state) {
 function observation_delete_form_submit($form, &$form_state) {
 	/* Escape values before submitting them to the database */
 	$observation_id = (int) $form_state['build_info']['args'][0]['observation']['id'];
-	db_delete('observation')->condition('id', $observation_id)
-		->execute();
-	db_delete('observation_attribute')->condition(
-			'observation_id',
-			$observation_id)
-		->execute();
+	observation_delete_by_id($observation_id);
 	area_delete_geometry(
 		(int) $form_state['build_info']['args'][0]['observation']['area_geometry_id']);
+
 	drupal_goto('/observation/show');
 }
+
+/**
+ * Deletes an observation
+ * @param $observation_id 
+ */
+function observation_delete_by_id($observation_id) {
+	db_delete('observation')->condition('id', $observation_id)
+		->execute();
+	db_delete('observation_attribute')->condition('observation_id', $observation_id)
+		->execute();
+}
+
 ?>

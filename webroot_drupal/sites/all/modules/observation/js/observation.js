@@ -14,7 +14,6 @@ jQuery(document).ready(function() {
 	if(observation.last_date) jQuery( "#date" ).val(observation.last_date);
 	if($( "#organismn_autocomplete" ).val() == '') $( "#organismn_autocomplete" ).focus();
 	
-	
 	function changeArtGroup(id){
 		alert('not implemented');
 	}
@@ -240,11 +239,73 @@ jQuery(document).ready(function() {
 			});
 		};
 		
+		observation.toggleSelectedRows = function(status){
+			$("input.gridSelect").each( function() {
+				$(this).attr("checked",status);
+			});
+		}
+		
+		observation.deleteSelectedRows = function(){
+		
+			var transportData = "";
+			$("input.gridSelect").each( function() {
+				if ($(this).attr('checked') == true){
+					transportData += $(this).val() + ",";
+				}
+			});
+			transportData = "{" + transportData.substring(0,transportData.length-1) + "}";
+			
+			if (transportData.length == 2){
+				alert(Drupal.t('No records selected'));
+				return;
+			}
+				
+			var really = confirm(Drupal.t('Do you really want to delete the selected records?'));
+			if (really){
+									
+				var data = {
+					observations: transportData
+				};
+				
+				var ajaxurl = Drupal.settings.basePath + 'observation/delete';
+				$.getJSON(ajaxurl, data, function(json){	
+					jQuery("#observations").flexigrid() .flexReload();
+					var orginalText = $('.pPageStat').html(); 
+					$('.pPageStat').html(Drupal.t('Observations deleted'));
+					setTimeout(function delayedAlert() {
+						
+						$('.pPageStat').html(orginalText);				
+				      }, 3000);
+				});								
+			}
+		}
+		
+		
+		observation.displayBatchArea = function(){
+			if ($('#batch-div').length == 0){
+				$('.bDiv').after('<div id="batch-div" style="display: block;"> ' +
+					'	<input type="checkbox" onClick="javascript:observation.toggleSelectedRows(this.checked)"> ' + 
+					'	<input type="button" id="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" onClick="javascript:observation.deleteSelectedRows()"> ' +
+					'</div>');		
+
+				$('.bDiv :checkbox').click(function(){
+					if ($('.bDiv :checked').length == 0)
+						$('#btnDeleteSelected').attr("disabled",true);
+					else
+						$('#btnDeleteSelected').removeAttr("disabled");	
+				});	
+			}
+			
+
+		};
+		
 		/**
 		 * get a observation on the map and zoom.. by id
 		 * @param id
 		 */
-		Area.prototype.selectObservation = function(id) {
+		Area.prototype.selectObservation = function(celDiv, id) {
+			$cell = $(celDiv);
+	
 			if (id in this.overlaysArray) {
 				if (this.selectedId != null) {
 					this.overlaysArray[this.selectedId].deselect();
@@ -262,4 +323,8 @@ jQuery(document).ready(function() {
 				console.error("Observation not available: " + id);
 			}
 		};
+				
 });
+
+
+

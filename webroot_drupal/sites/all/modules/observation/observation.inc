@@ -521,6 +521,7 @@ function observation_add_attribute_value($entry) {
  */
 function observation_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
+	
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
@@ -528,6 +529,31 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'hide' => true,
 			'width' => 30
 	);
+	
+	$tableHeader[] = array(
+		'name' => '',
+		'dbfield' => 'selectColumn',
+		'width' => 20,
+		'dbExactField' => 'selectColumn',
+		'noSort' => true
+	);
+	
+	$tableHeader[] = array(
+		'name' => '',
+		'dbfield' => 'showColumn',
+		'width' => 15,
+		'dbExactField' => 'showColumn',
+		'noSort' => true,
+	);
+
+	$tableHeader[] = array(
+		'name' => '',
+		'dbfield' => 'editColumn',
+		'width' => 15,
+		'dbExactField' => 'editColumn',
+		'noSort' => true,
+				
+	);	
 
 	$tableHeader[] = array(
 			'name' => t('Picture'),
@@ -539,14 +565,14 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Common name'),
 			'dbfield' => 'organism_l',
-			'width' => 330,
+			'width' => 250,
 			'dbExactField' => 'ol.name',
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Scientific name'),
 			'dbfield' => 'organism_sc',
-			'width' => 330,
+			'width' => 250,
 			'dbExactField' => 'osn.name',
 	);
 
