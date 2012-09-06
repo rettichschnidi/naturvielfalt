@@ -52,6 +52,7 @@ function observation_show_all_observations() {
 					'onSuccessHandler' => "function onSuccessHandler() {
 								observation.displayBatchArea();						
 					}",
+					'gallery_buttons' => true
 			)
 	);
 	return $output;

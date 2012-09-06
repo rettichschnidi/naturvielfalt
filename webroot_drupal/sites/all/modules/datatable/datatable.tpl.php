@@ -109,6 +109,20 @@ if ($header) {
 	$aoColumns .= "],";
 	$searchColumns = substr_replace($searchColumns, "", -1);
 	$searchColumns .= "],";
+}	
+
+if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
+	$table[$id_table . '_table_link'] = array(
+			'#markup' => t('Table'),
+			'#prefix' => '<input type="button" onClick="" value="',
+			'#suffix' => '" class="gallery_button" />&nbsp;',
+	);
+	
+	$table[$id_table . '_gallery_link'] = array(
+			'#markup' => t('Gallery'),
+			'#prefix' => '<input type="button" onClick="" value="',
+			'#suffix' => '" class="gallery_button" />&nbsp;',
+	); 
 }
 $table[$id_table] = array(
 		'#theme' => 'table',
@@ -116,9 +130,10 @@ $table[$id_table] = array(
 		'#sticky' => false,
 		'#attributes' => array(
 				'id' => $id_table,
-				'class' => $id_table
+				'class' => $id_table	
 		),
 );
+
 print drupal_render($table);
 ?>
 
@@ -131,7 +146,7 @@ jQuery(document).ready(function() {
 		dataType: 'json',
 		<?php $aoColumns ? print "$aoColumns\n" : ''; ?>
 		<?php $searchColumns ? print "$searchColumns\n" : ''; ?>
-		singleSelect: true,
+		singleSelect: true,		
 		sortname: "<?php echo $sortField; ?>",
 		sortorder: "<?php echo $sortOrder; ?>",
 		usepager: true,
