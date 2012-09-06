@@ -28,6 +28,11 @@ drupal_add_css(
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
 
+
+if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
+	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_buttons.js');
+}
+
 /**
  * Figure out width/height of table or set default values
  */
@@ -114,13 +119,13 @@ if ($header) {
 if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
 	$table[$id_table . '_table_link'] = array(
 			'#markup' => t('Table'),
-			'#prefix' => '<input type="button" onClick="" value="',
+			'#prefix' => '<input type="button" onClick="showGallery(false);" value="',
 			'#suffix' => '" class="gallery_button" />&nbsp;',
 	);
 	
 	$table[$id_table . '_gallery_link'] = array(
 			'#markup' => t('Gallery'),
-			'#prefix' => '<input type="button" onClick="" value="',
+			'#prefix' => '<input type="button" onClick="showGallery(true);" value="',
 			'#suffix' => '" class="gallery_button" />&nbsp;',
 	); 
 }
