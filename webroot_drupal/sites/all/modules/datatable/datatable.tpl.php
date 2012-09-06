@@ -119,13 +119,13 @@ if ($header) {
 if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
 	$table[$id_table . '_table_link'] = array(
 			'#markup' => t('Table'),
-			'#prefix' => '<input type="button" onClick="showGallery(false);" value="',
+			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(false);" value="',
 			'#suffix' => '" class="gallery_button" />&nbsp;',
 	);
 	
 	$table[$id_table . '_gallery_link'] = array(
 			'#markup' => t('Gallery'),
-			'#prefix' => '<input type="button" onClick="showGallery(true);" value="',
+			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(true);" value="',
 			'#suffix' => '" class="gallery_button" />&nbsp;',
 	); 
 }
