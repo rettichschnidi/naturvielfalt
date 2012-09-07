@@ -19,15 +19,19 @@ jQuery(document).ready(function() {
 		var tbody = document.createElement('tbody');				
 		
 		
-		for(i=0;i<data.rows.length;i = i + COL_COUNT){
+		for(i=0;i <= data.rows.length / COL_COUNT;i++){
 			var tr = document.createElement('tr');
-			
 			for (j = 0; j < COL_COUNT; j++){
-				var index = i + j;
+				var index = i * COL_COUNT + j;
 				var td = document.createElement('td');			
-				
+
 				if (data.rows[index] != undefined)
-					$(td).html(data.rows[index].cell['gallery_image']);
+					if(data.rows[index].cell['gallery_image'] != undefined
+							&& data.rows[index].cell['gallery_image'].length > 0 ){
+						$(td).html(data.rows[index].cell['gallery_image']);
+					} else {
+						$(td).html('<img src="/sites/all/modules/datatable/images/no_photo.jpg" />');
+					}
 				
 				$(tr).append(td);
 			}			

@@ -412,17 +412,16 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 					. $images['images'][0]['title'] . '" height="80" width="80" />';
 			
 			// gallery image
-			$row['cell']['gallery_image'] = 
-				'<a rel="lightbox" href="' . url(
-						'gallery/observation/' . $row['id'] . '/thumb/'
-								. $images['images'][0]['id'] .'/gallery_large')
-				. '">'
-				. '<img src="' .url(
-						'gallery/observation/' . $row['id'] . '/thumb/'
-								. $images['images'][0]['id'] . '/gallery_thumbnail'). '" alt="" height="80" width="80">'
-				.'</a>';
-		}
+			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$row['id']);
+			if(count($gallery['edit']['gallery_list']['#images']['images']) > 1){
+				$gallery['edit']['gallery_list']['#images'] = array(
+					$gallery['edit']['gallery_list']['#images']['images'][0]
+				);
+			}
 
+			$row['cell']['gallery_image'] = drupal_render($gallery['edit']['gallery_list']);
+
+		}  
 	}
 	return drupal_json_output($output);
 
