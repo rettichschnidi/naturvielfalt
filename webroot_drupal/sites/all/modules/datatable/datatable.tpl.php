@@ -176,7 +176,8 @@ jQuery(document).ready(function() {
 		dblClickResize: true,
 		onToggleCol: true,
 		singleSelect: true,
-		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>					
+		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>			
+		<?php if(isset($options['gallery_buttons']) && $options['gallery_buttons']) echo "preProcess : datatable_buttons.preProcess,"; ?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>
