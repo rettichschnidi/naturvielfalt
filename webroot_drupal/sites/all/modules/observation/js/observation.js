@@ -287,14 +287,14 @@ jQuery(document).ready(function() {
 					'	<input type="checkbox" onClick="javascript:observation.toggleSelectedRows(this.checked)"> ' + 
 					'	<input type="button" id="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" onClick="javascript:observation.deleteSelectedRows()"> ' +
 					'</div>');		
-
-				$('.bDiv :checkbox').click(function(){
-					if ($('.bDiv :checked').length == 0)
-						$('#btnDeleteSelected').attr("disabled",true);
-					else
-						$('#btnDeleteSelected').removeAttr("disabled");	
-				});	
 			}
+			
+			$('.bDiv :checkbox').click(function(){
+				if ($('.bDiv :checked').length == 0)
+					$('#btnDeleteSelected').attr("disabled",true);
+				else
+					$('#btnDeleteSelected').removeAttr("disabled");	
+			});	
 			
 
 		};
