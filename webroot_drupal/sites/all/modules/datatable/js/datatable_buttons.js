@@ -1,6 +1,8 @@
 jQuery(document).ready(function() {
 	$ = jQuery;
 	datatable_buttons = {};
+	// Amount of rows in image div
+	var COL_COUNT = 4;
 
 	/**
 	 * is called by every refresh before the data is displayed
@@ -9,12 +11,46 @@ jQuery(document).ready(function() {
 		if(!datatable_buttons.__isGalleryActive())
 			return data;
 		
-		// update the pictures...
+		datatable_buttons.__clearGalleryDiv();
+		
+		var table = document.createElement('table');
+		table.className = 'îmgGallery';
+		
+		var tbody = document.createElement('tbody');				
+		
+		
+		for(i=0;i<data.rows.length;i = i + COL_COUNT){
+			var tr = document.createElement('tr');
 			
+			for (j = 0; j < COL_COUNT; j++){
+				var index = i + j;
+				var td = document.createElement('td');			
+				
+				if (data.rows[index] != undefined)
+					$(td).html(data.rows[index].cell['gallery_image']);
+				
+				$(tr).append(td);
+			}			
+			$(tbody).append(tr);			
+			tr = null;
+		}
+	
+		$(table).append(tbody);
+		$('#gallery_images').append(table);
+		
+		// Reregister lightbox
+		gallery_lightbox.registerLightBox();
 		
 		return data;
+			
 	}
 	
+	/**
+	 * Removes all content of the gallery div
+	 */
+	datatable_buttons.__clearGalleryDiv = function () {
+		$('#gallery_images').empty();		
+	}		
 	
 	/**
 	 * displays the gallery or the datatable. 
@@ -29,8 +65,10 @@ jQuery(document).ready(function() {
 		$('#batch-div').toggle();
 		datatable_buttons.__getGalleryDiv().toggle();
 		
-		if(enabled)
-			$("#observations").flexigrid() .flexReload();
+		
+		if(enabled){
+			$("#observations").flexigrid().flexReload();			
+		}
 	}
 	
 	datatable_buttons.__getGalleryDiv = function () {

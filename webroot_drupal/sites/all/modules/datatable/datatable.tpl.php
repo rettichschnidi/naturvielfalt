@@ -31,6 +31,29 @@ drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js
 
 if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
 	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_buttons.js');
+	
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/gallery.css',
+	array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+	));
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
+	array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+	));
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js',
+	array(
+					'weight' => 100
+	));
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
+	array(
+					'weight' => 110
+	));
 }
 
 /**
