@@ -410,6 +410,17 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 						'gallery/observation/' . $row['id'] . '/thumb/'
 								. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
 					. $images['images'][0]['title'] . '" height="80" width="80" />';
+			
+			// gallery image
+			$row['cell']['gallery_image'] = 
+				'<a rel="lightbox" href="' . url(
+						'gallery/observation/' . $row['id'] . '/thumb/'
+								. $images['images'][0]['id'] .'/gallery_large')
+				. '">'
+				. '<img src="' .url(
+						'gallery/observation/' . $row['id'] . '/thumb/'
+								. $images['images'][0]['id'] . '/gallery_thumbnail'). '" alt="" height="80" width="80">'
+				.'</a>';
 		}
 
 	}
