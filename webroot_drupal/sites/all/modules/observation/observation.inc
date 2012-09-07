@@ -531,21 +531,21 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	);
 	
 	$tableHeader[] = array(
-		'name' => '',
+		'name' => 'A',
 		'dbfield' => 'selectColumn',
 		'width' => 20,
 		'noSort' => true,
 	);
 	
 	$tableHeader[] = array(
-		'name' => '',
+		'name' => 'B',
 		'dbfield' => 'showColumn',
 		'width' => 15,
 		'noSort' => true,
 	);
 
 	$tableHeader[] = array(
-		'name' => '',
+		'name' => 'C',
 		'dbfield' => 'editColumn',
 		'width' => 15,
 		'noSort' => true,
