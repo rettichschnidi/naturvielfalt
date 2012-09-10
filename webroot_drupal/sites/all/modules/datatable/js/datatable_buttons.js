@@ -63,12 +63,13 @@ jQuery(document).ready(function() {
 	 *  	true -> show gallery
 	 *  	false -> switch back to the datatable
 	 */
-	datatable_buttons.toggleGallery = function(enabled) {	
+	datatable_buttons.toggleGallery = function(tableid, enabled) {	
+		$('#' + tableid + '_gallery_link').attr('disabled', enabled);
+		$('#' + tableid + '_table_link').attr('disabled', !enabled);
 		$('.bDiv').toggle();
 		$('.hDiv').toggle();
 		$('#batch-div').toggle();
 		datatable_buttons.__getGalleryDiv().toggle();
-		
 		
 		if(enabled){
 			$("#observations").flexigrid().flexReload();			

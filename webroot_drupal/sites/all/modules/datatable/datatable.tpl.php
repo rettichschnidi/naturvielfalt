@@ -161,16 +161,17 @@ if ($header) {
 if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
 	$table[$id_table . '_table_link'] = array(
 			'#markup' => t('Table'),
-			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(false);" value="',
-			'#suffix' => '" class="gallery_button" />&nbsp;',
+			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(\''.$id_table.'\', false);" value="',
+			'#suffix' => '" class="gallery_button" disabled="true" id="' . $id_table . '_table_link"/>&nbsp;',
 	);
 	
 	$table[$id_table . '_gallery_link'] = array(
 			'#markup' => t('Gallery'),
-			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(true);" value="',
-			'#suffix' => '" class="gallery_button" />&nbsp;',
+			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(\''.$id_table.'\', true);" value="',
+			'#suffix' => '" class="gallery_button" id="' . $id_table . '_gallery_link"/>&nbsp;',
 	); 
 }
+
 $table[$id_table] = array(
 		'#theme' => 'table',
 		'#rows' => $rows,
@@ -224,6 +225,10 @@ jQuery(document).ready(function() {
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>
 
+	// unfortunately I don't know the proper drupal way to do this...
+	<?php if (isset($options['gallery_buttons']) && $options['gallery_buttons']){?>
+		$('#observations_table_link').parent().css("margin-bottom",0);
+	<?php }?>
 	
 });
 
