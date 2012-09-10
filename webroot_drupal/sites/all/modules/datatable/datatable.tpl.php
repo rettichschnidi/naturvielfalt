@@ -30,7 +30,16 @@ drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js
 
 
 if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
+	// add all libraries needed by the gallery (rating, lightbox...)
 	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_buttons.js');
+	
+	drupal_add_library('system', 'ui.widget');
+	drupal_add_css(
+			drupal_get_path('module', 'gallery') . '/css/jquery.ui.stars.min.css',
+			array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+			));
 	
 	drupal_add_css(
 	drupal_get_path('module', 'gallery') . '/css/gallery.css',
@@ -45,14 +54,24 @@ if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
 					'every_page' => TRUE
 	));
 	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/jquery.ui.stars.min.js',
+			array(
+					'weight' => 101
+			));
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
+			array(
+					'weight' => 110
+			));
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/gallery.rating.js',
+			array(
+					'weight' => 111
+			));
+	drupal_add_js(
 	drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js',
 	array(
 					'weight' => 100
-	));
-	drupal_add_js(
-	drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
-	array(
-					'weight' => 110
 	));
 }
 
