@@ -45,7 +45,7 @@ function observation_show_all_observations() {
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {							    
-								observationmap.selectObservation(celDiv, id);
+								observationmap.selectObservation(id);
 							}
 						)
 					}",

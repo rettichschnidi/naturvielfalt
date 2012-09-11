@@ -303,9 +303,7 @@ jQuery(document).ready(function() {
 		 * get a observation on the map and zoom.. by id
 		 * @param id
 		 */
-		Area.prototype.selectObservation = function(celDiv, id) {
-			$cell = $(celDiv);
-	
+		Area.prototype.selectObservation = function(id) {
 			if (id in this.overlaysArray) {
 				if (this.selectedId != null) {
 					this.overlaysArray[this.selectedId].deselect();
