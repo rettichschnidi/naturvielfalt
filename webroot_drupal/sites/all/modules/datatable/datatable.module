@@ -160,7 +160,6 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		foreach ($aColumns as $dbColumn) {
 			$matches = array();
 			if (preg_match('/(\w+\.acl_id) as \w+/i', $dbColumn, $matches)) {
-				array_push($aColumns, 'ag.level as aglevel', 'au.level as aulevel');
 				$obs_acl_id = $matches[1];
 				$minLevel = variable_get($sql['acl_level']);
 				
@@ -174,7 +173,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 				$where .= ' OR (au.acl_id = g.acl_id'
 					.' AND ag.level >= ' . $minLevel . ')';
 				// level of user, table also needed for user group
-				$sJoins	.= ' RIGHT JOIN {acl_users} au ON au.users_id = ' . $user->uid;
+				$sJoins	.= ' LEFT JOIN {acl_users} au ON au.users_id = ' . $user->uid;
 				$where .= ' OR (au.acl_id = ' . $obs_acl_id
 					.' AND au.level >= ' . $minLevel . ') )';
 				
