@@ -14,7 +14,7 @@ jQuery(document).ready(function() {
 		datatable_buttons.__clearGalleryDiv();
 		
 		var table = document.createElement('table');
-		table.className = 'îmgGallery';
+		table.className = 'imgGallery';
 		
 		var tbody = document.createElement('tbody');				
 		
@@ -25,14 +25,11 @@ jQuery(document).ready(function() {
 				var index = i * COL_COUNT + j;
 				var td = document.createElement('td');			
 
-				if (data.rows[index] != undefined)
-					if(data.rows[index].cell['gallery_image'] != undefined
-							&& data.rows[index].cell['gallery_image'].length > 0 ){
+				if (data.rows[index] != undefined){
+					if(data.rows[index].cell['gallery_image'] != undefined){
 						$(td).html(data.rows[index].cell['gallery_image']);
-					} else {
-						$(td).html('<img src="/sites/all/modules/datatable/images/no_photo.jpg" />');
 					}
-				
+				}
 				$(tr).append(td);
 			}			
 			$(tbody).append(tr);			
@@ -79,7 +76,7 @@ jQuery(document).ready(function() {
 	datatable_buttons.__getGalleryDiv = function () {
 		var div = $('#gallery_images');
 		if(div.length == 0){
-			$('.mDiv').after('<div id="gallery_images" style="display: none;"> ' 
+			$('.mDiv').after('<div id="gallery_images" style="display: none; padding-left:30px;"> ' 
 					+ '</div>');	
 			return $('#gallery_images');
 		} else {

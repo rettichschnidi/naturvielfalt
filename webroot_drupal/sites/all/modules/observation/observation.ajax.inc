@@ -364,6 +364,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 	// 	// Add a link to the gallery of each habitat
 	global $base_url;
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
+	$no_gallery_photo = $base_url . '/' . drupal_get_path('module', 'datatable') . '/images/no_photo.jpg';
 	foreach ($output['rows'] as &$row) {
 
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="'
@@ -387,15 +388,6 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		}
 		$row['cell']['editColumn'] = $editLink;
 
-		//observation_write_access
-
-		// 		$link = l(
-		// 				"<img src='$imageUrl' />",
-		// 				base_path() . 'gallery/' . $row['id'] . '/images',
-		// 				array(
-		// 						'html' => true
-		// 				));
-		// 		$row['cell']['image_link'] = $link;
 		if ($row['cell']['organism_l'] == "")
 			$row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
@@ -403,25 +395,35 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		$row['cell']['piccount'] = $images['count'];
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {
-			// 			$image = gallery_image_load($images['images'][0]['id']);
-			// 			die(print_r($image));
+			// display the thumbnail (for the table view)
 			$row['cell']['thumbnail'] = '<img src="'
 					. url(
 						'gallery/observation/' . $row['id'] . '/thumb/'
 								. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
 					. $images['images'][0]['title'] . '" height="80" width="80" />';
 			
-			// gallery image
+			// provide a gallery image (for the gallery view)
 			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$row['id']);
 			if(count($gallery['edit']['gallery_list']['#images']['images']) > 1){
-				$gallery['edit']['gallery_list']['#images'] = array(
-					$gallery['edit']['gallery_list']['#images']['images'][0]
+				$img = $gallery['edit']['gallery_list']['#images']['images'][0]; 
+				$gallery['edit']['gallery_list']['#images']['images'] = array(
+					$img
 				);
 			}
-
 			$row['cell']['gallery_image'] = drupal_render($gallery['edit']['gallery_list']);
-
-		}  
+		} else {
+			$row['cell']['gallery_image'] = '<ul class="gallery clearfix"><li><img src="'.$no_gallery_photo.'"/></li></ul>';
+		}
+		// append the observation infos to the gallery image
+		$row['cell']['gallery_image'] = $row['cell']['gallery_image'] 
+			. "<div>" . $row['cell']['artgroup_n'] 
+			. "<img src='$imageBaseUrl/map.png' width='25px' "
+			. "onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'"
+			. " style='cursor: pointer'/>"
+			. $row['cell']['showColumn']
+			. "<br />" . $row['cell']['organism_sc']
+			. "<br />" . $row['cell']['organism_l']
+			. "</div>";
 	}
 	return drupal_json_output($output);
 
