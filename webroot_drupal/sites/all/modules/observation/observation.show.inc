@@ -52,7 +52,26 @@ function observation_show_all_observations() {
 					'onSuccessHandler' => "function onSuccessHandler() {
 								observation.displayBatchArea();						
 					}",
-					'gallery_buttons' => true
+					'gallery_enabled' => true,
+					'gallery_image_sources' => array(
+						'selected' => array(
+							'value' => OBSERVATION_IMGSRC_BELEG,
+							'option' => t('Nur Belegbilder'),
+						),
+					 	array(
+					 		'value' => OBSERVATION_IMGSRC_PORTRAIT,
+					 		'option' => t('Nur Portraitbilder'),
+					 	),
+						array(
+							'value' => OBSERVATION_IMGSRC_BELEG_PORTRAIT,
+							'option' => t('Belegbilder, dann Portraitbilder'),
+						),
+						array(
+							'value' => OBSERVATION_IMGSRC_PORTRAIT_BELEG,
+							'option' => t('Portraitbilder, dann Belegbilder')
+						),
+					),
+					'gallery_json_item' => 'gallery_image',
 			)
 	);
 	return $output;

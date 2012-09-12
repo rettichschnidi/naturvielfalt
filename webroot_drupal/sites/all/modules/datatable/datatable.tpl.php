@@ -29,9 +29,9 @@ drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
 
 
-if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
+if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 	// add all libraries needed by the gallery (rating, lightbox...)
-	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_buttons.js');
+	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_gallery_addon.js');
 	
 	drupal_add_library('system', 'ui.widget');
 	drupal_add_css(
@@ -158,18 +158,58 @@ if ($header) {
 	$searchColumns .= "],";
 }	
 
-if(isset($options['gallery_buttons']) && $options['gallery_buttons']){
-	$table[$id_table . '_table_link'] = array(
-			'#markup' => t('Table'),
-			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(\''.$id_table.'\', false);" value="',
-			'#suffix' => '" class="gallery_button" disabled="true" id="' . $id_table . '_table_link"/>&nbsp;',
+if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
+	$table['gallery_buttons'] = array(
+		'#type' => 'fieldset',
+		'#tree' => TRUE,
+		'#attributes' => array(
+			'style' => 'margin-bottom: 0px; padding: 0px; border: 0;'
+		),
+		'#border' => 0,
 	);
 	
-	$table[$id_table . '_gallery_link'] = array(
-			'#markup' => t('Gallery'),
-			'#prefix' => '<input type="button" onClick="datatable_buttons.toggleGallery(\''.$id_table.'\', true);" value="',
-			'#suffix' => '" class="gallery_button" id="' . $id_table . '_gallery_link"/>&nbsp;',
-	); 
+	$table['gallery_buttons']['table_link'] = array(
+			'#type' => 'button',
+			'#value' => t('Table'),
+			'#attributes' => array(
+					'id' => $id_table . '_table_link',
+					'onClick' => "gallery_addon.toggleGallery('$id_table', false);",
+					'disabled' => 'disabled',
+			)
+	);
+	
+	$table['gallery_buttons']['gallery_link'] = array(
+			'#type' => 'button',
+			'#value' => t('Gallery'),
+			'#attributes' => array(
+				'id' => $id_table . '_gallery_link',
+			  	'onClick' => "gallery_addon.toggleGallery('$id_table', true);",
+					
+			)
+	);
+	
+	if(isset($options['gallery_image_sources'])){
+		$image_sources = '';
+		foreach($options['gallery_image_sources'] as $key=>$val){
+			$selected = '';
+			if($key === "selected"){
+				$selected = "selected='selected'";
+			}
+			$image_sources .= "<option $selected value='".$val['value']."'>".$val['option']."</option>\n";
+		}
+	} else {
+		$image_sources = '<option>-</option>';
+	}
+	
+	$table['gallery_buttons']['image_source_select'] = array(
+			'#markup' => $image_sources,
+			'#prefix' => '<span style="position:absolute; right: 15px; display:none;"'
+							. ' id="' . $id_table . '_gallery_image_source">' 
+							. t('Images') 
+							. ': <select class="form-select"'
+							. ' onChange="javascript:gallery_addon.sourceChanged(this)">',
+			'#suffix' => '</select></span>'
+	);
 }
 
 $table[$id_table] = array(
@@ -220,17 +260,19 @@ jQuery(document).ready(function() {
 		onToggleCol: true,
 		singleSelect: true,
 		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>			
-		<?php if(isset($options['gallery_buttons']) && $options['gallery_buttons']) echo "preProcess : datatable_buttons.preProcess,"; ?>		
+		<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) echo "preProcess : gallery_addon.preProcess,"; ?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>
-
-	// unfortunately I don't know the proper drupal way to do this...
-	<?php if (isset($options['gallery_buttons']) && $options['gallery_buttons']){?>
-		$('#observations_table_link').parent().css("margin-bottom",0);
-	<?php }?>
-	
 });
 
+<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) {?>
+jQuery(window).ready(function() {
+	// switch to the gallery view if #gallery is in the url
+	if (window.location.hash.indexOf('gallery') != -1){
+		gallery_addon.toggleGallery('<?=$id_table;?>', true);
+	}
+});
+<?php }?>
 -->
 </script>

@@ -10,6 +10,11 @@ module_load_include('inc', 'observation', 'observation.gallery');
 define('ACCESS_OBSERVATION', 'access observation');
 define('CREATE_OBSERVATION', 'create observation');
 
+define('OBSERVATION_IMGSRC_BELEG', 1);
+define('OBSERVATION_IMGSRC_PORTRAIT',2);
+define('OBSERVATION_IMGSRC_BELEG_PORTRAIT',3);
+define('OBSERVATION_IMGSRC_PORTRAIT_BELEG',4);
+
 /**
  * Implements hook_menu()
  *

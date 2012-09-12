@@ -320,6 +320,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'o.date AS date',
 			'o.count AS count',
 			'o.acl_id AS acl_id',
+			'o.organism_id AS organism_id',  // used to find portrait-pictures
 			'a_s.altitude AS altitude',
 			'a_s.township AS township',
 			'a_s.zip AS zip',
@@ -336,6 +337,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'o.observer',
 			'o.date',
 			'o.count',
+			'o.organism_id AS organism_id',
 			'a_s.altitude',
 			'a_s.township',
 			'a_s.zip',
@@ -364,7 +366,6 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 	// 	// Add a link to the gallery of each habitat
 	global $base_url;
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
-	$no_gallery_photo = $base_url . '/' . drupal_get_path('module', 'datatable') . '/images/no_photo.jpg';
 	foreach ($output['rows'] as &$row) {
 
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="'
@@ -401,32 +402,101 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 						'gallery/observation/' . $row['id'] . '/thumb/'
 								. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
 					. $images['images'][0]['title'] . '" height="80" width="80" />';
-			
-			// provide a gallery image (for the gallery view)
-			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$row['id']);
-			if(count($gallery['edit']['gallery_list']['#images']['images']) > 1){
-				$img = $gallery['edit']['gallery_list']['#images']['images'][0]; 
-				$gallery['edit']['gallery_list']['#images']['images'] = array(
-					$img
-				);
-			}
-			$row['cell']['gallery_image'] = drupal_render($gallery['edit']['gallery_list']);
-		} else {
-			$row['cell']['gallery_image'] = '<ul class="gallery clearfix"><li><img src="'.$no_gallery_photo.'"/></li></ul>';
-		}
-		// append the observation infos to the gallery image
-		$row['cell']['gallery_image'] = $row['cell']['gallery_image'] 
-			. "<div>" . $row['cell']['artgroup_n'] 
-			. "<img src='$imageBaseUrl/map.png' width='25px' "
+		} 
+		// create the html source for the gallery view
+		$row['cell']['gallery_image'] = observation_get_gallery_image($images, $row['id'], $row['cell']['organism_id']) 
+			. "<div style='position: relative; width: 188px;'>" . $row['cell']['artgroup_n'] 
+			. "<span style='position: absolute; right: 0px;'>
+				<img src='$imageBaseUrl/map.png' width='20px' "
 			. "onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'"
 			. " style='cursor: pointer'/>"
-			. $row['cell']['showColumn']
-			. "<br />" . $row['cell']['organism_sc']
+			. $row['cell']['showColumn'] . '</span>'
+			. "<br /><i>" . $row['cell']['organism_sc'] . "</i>"
 			. "<br />" . $row['cell']['organism_l']
 			. "</div>";
 	}
 	return drupal_json_output($output);
 
+}
+
+/**
+ * returns the html-source (<img> tag and it's caption) for displaying an observation-image.
+ * there are four different states:
+ *  - OBSERVATION_IMGSRC_BELEG
+ *  	--> shows one image of this observation
+ *  - OBSERVATION_IMSGRC_PORTRAIT
+ *  	--> shows one image of this organism
+ *  - OBSERVATION_IMSGRC_BELEG_PORTRAIT
+ *  	--> show an image of this observation or if not available of the organism
+ *  - OBSERVATION_IMSGSRC_PORTRAIT_BELEG
+ *  	--> displays an image of the organism or if not available one of the observation
+ *  
+ *  these states can be controlled using $_REQUEST['imagesource']. flexigrid 
+ *  sends this parameter in the ajax calls (only when the gallery_addon in the datatable is enabled) 
+ *  
+ * @param array $images an array of observation images for this observation_id
+ * @param int $observation_id the id of this observation
+ * @param int $organism_id the id of this organism
+ */
+function observation_get_gallery_image($images, $observation_id, $organism_id){
+	// search for a valid state or set the default to  OBSERVATION_IMGSRC_BELEG
+	$state = (isset($_REQUEST['imagesource']) 
+				&& $_REQUEST['imagesource'] <= OBSERVATION_IMGSRC_PORTRAIT_BELEG
+				&& $_REQUEST['imagesource'] >= OBSERVATION_IMGSRC_BELEG
+			 ) 
+				? $_REQUEST['imagesource'] : OBSERVATION_IMGSRC_BELEG;
+	
+	// get the number of images for this observation and organism
+	$images_observation = $images;
+	$images_organism = array( 'count' => 0); 
+	if($state == OBSERVATION_IMGSRC_PORTRAIT // only search, if they are really needed 
+		|| $state == OBSERVATION_IMGSRC_PORTRAIT_BELEG
+	    || ($state == OBSERVATION_IMGSRC_BELEG_PORTRAIT && $images_observation['count'] == 0)){
+		$images_organism = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism_id);
+	}
+	
+	// return an empty image, if nothing was found
+	if(($images_observation['count'] == 0 && $state == OBSERVATION_IMGSRC_BELEG)
+		|| ($images_organism['count'] == 0 && $state == OBSERVATION_IMGSRC_PORTRAIT)
+		|| ($images_observation['count'] == 0 && $images_organism['count'] == 0)){
+		$manage_org_image = t('Portraitbild erfassen');
+		
+		if(observation_write_access_by_acl_id($observation_id))
+			$manage_obs_image = t('Belegbild erfassen');
+		
+		$bla = <<<EOT
+		<div style="background: #eeeeee; margin-bottom: 15px; width: 188px; height: 150px;">
+			<span style="position: relative; top: 20%;">
+				<center>
+				<!--<a href="/organismreference/$organism_id/images/edit">$manage_org_image</a>//-->
+				<img src="/sites/all/modules/datatable/images/no_photo.png" width="50px" style="padding-bottom:10px;"/><br/>
+				<a href="/gallery/observation/$observation_id/images/edit">$manage_obs_image</a>
+				</center>
+			</span>
+		</div>
+EOT;
+		return $bla;
+	}
+
+	// now render a gallery of either the organism or the observation
+	$gallery = array();
+	if((($state == OBSERVATION_IMGSRC_BELEG || $state == OBSERVATION_IMGSRC_BELEG_PORTRAIT)
+			&& $images_observation['count'] > 0)
+			|| $images_organism['count'] == 0) {
+		$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$observation_id);
+	} else {
+		$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'organismreference',$organism_id);
+	}
+	
+	// if there was more than one image, remove it.
+	if(count($gallery['edit']['gallery_list']['#images']['images']) > 1){
+		$img = $gallery['edit']['gallery_list']['#images']['images'][0];
+		$gallery['edit']['gallery_list']['#images']['images'] = array(
+				$img
+		);
+	}
+	
+	return drupal_render($gallery['edit']['gallery_list']);
 }
 
 /**
