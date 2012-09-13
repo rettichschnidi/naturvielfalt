@@ -66,8 +66,13 @@ jQuery(document).ready(function() {
 		gallery_addon.__getGalleryDiv(gridid).toggle();
 		
 		// remove the batch-command-div (observation) if available
-		if($('#batch-div').length > 0)
-			$('#batch-div').toggle();
+		if($('#batch-div').length > 0){
+			if(enabled){
+				$('#batch-div').css('display', 'none');
+			} else {
+				$('#batch-div').css('display', 'block');
+			}
+		}
 	
 		if(enabled){
 			$('#' + gridid + '_gallery_link').attr('disabled', 'disabled');
