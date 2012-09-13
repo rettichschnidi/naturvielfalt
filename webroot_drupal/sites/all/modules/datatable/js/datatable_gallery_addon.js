@@ -11,7 +11,7 @@ jQuery(document).ready(function() {
 	/**
 	 * is called by every refresh before the data is displayed
 	 */
-	gallery_addon.preProcess = function(gridid, data) {
+	gallery_addon.preProcess = function(gridid, json_item_name, data) {
 		if(!gallery_addon.__isGalleryActive(gridid))
 			return data;
 		
@@ -31,8 +31,8 @@ jQuery(document).ready(function() {
 				$(td).addClass('datatable_gallery_row');
 
 				if (data.rows[index] != undefined){
-					if(data.rows[index].cell['gallery_image'] != undefined){
-						$(td).html(data.rows[index].cell['gallery_image']);
+					if(data.rows[index].cell[json_item_name] != undefined){
+						$(td).html(data.rows[index].cell[json_item_name]);
 					}
 				}
 				$(tr).append(td);

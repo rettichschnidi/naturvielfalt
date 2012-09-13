@@ -262,7 +262,15 @@ jQuery(document).ready(function() {
 		singleSelect: true,
 		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>			
 		// add our own preProcess handler to intercept the json and display the gallery, the gallery_addon needs the tableid
-		<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) echo "preProcess : function(data) {return gallery_addon.preProcess('$id_table', data);},"; ?>		
+		<?php 
+		if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
+			$gallery_json_item = isset($options['gallery_json_item']) ? $options['gallery_json_item'] : 'gallery_image';
+			echo "preProcess : function(data) {
+					return gallery_addon.preProcess('$id_table', '$gallery_json_item', data);
+				  },
+			";
+		}	 
+		?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>

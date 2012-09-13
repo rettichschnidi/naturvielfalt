@@ -209,7 +209,27 @@ function organism_show_classification($classificationid) {
 														window.location.href = Drupal.settings.basePath+'organism/' + id;
 													}
 												)
-											}"
+											}",
+					'gallery_enabled' => true,
+					'gallery_image_sources' => array(
+						'selected' => array(
+							'value' => OBSERVATION_IMGSRC_BELEG,
+							'option' => t('only proof images'), // belegbilder
+						),
+					 	array(
+					 		'value' => OBSERVATION_IMGSRC_PORTRAIT,
+					 		'option' => t('only portrait images'),
+					 	),
+						array(
+							'value' => OBSERVATION_IMGSRC_BELEG_PORTRAIT,
+							'option' => t('proof images, then portrait images'),
+						),
+						array(
+							'value' => OBSERVATION_IMGSRC_PORTRAIT_BELEG,
+							'option' => t('portrait images, then proof images')
+						),
+					),
+					'gallery_json_item' => 'gallery_image',
 			)
 	);
 	return $render_array;
