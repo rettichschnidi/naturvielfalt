@@ -15,6 +15,13 @@ function observation_show_all_observations() {
 	
 	drupal_set_title(t('Show all observations'));
 	
+	$output['message'] = array(
+			'#type' => 'markup',
+			'#markup' => '<div id="message" style="display: none; height: auto;">
+<div class="messages status"></div>
+</div>'
+	);
+	
 	$output['div'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),

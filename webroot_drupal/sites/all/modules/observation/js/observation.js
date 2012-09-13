@@ -18,20 +18,27 @@ jQuery(document).ready(function() {
 		alert('not implemented');
 	}
 
-	observation.showResponse = function(responseText, statusText, xhr, $form)  { 
+	observation.showSaveResponse = function(responseText, statusText, xhr, $form)  { 
 		if(responseText != null && responseText.success == true){
 			observation.setMessage(Drupal.t('Observation saved successfully'), 'status', 3000);
-			$('#observation_form').trigger('reset');
-			$('#species_autocomplete').html('');
-			if(responseText.update) {
-				window.location = window.location.toString().replace("edit", "show");
-			}else{
+			
+			// on add, clear form 
+			if (!responseText.update) {
+				$('#observation_form').trigger('reset');
+				$('#species_autocomplete').html('');
 				observation.hideAttributes();
 				observation.hideDetMethods();
 				observationmap.newOverlay.overlay.setMap(null);
 				observationmap.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-				$('#recent_observations').flexReload();
 			}
+			
+			// reload table
+			$('#recent_observations').flexReload();
+		
+			// scroll to top of form
+			$('body,html').animate({
+				scrollTop: $('#observation_form').offset().top
+			});
 		} else if (responseText != null) {
 			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
 		} else {
@@ -50,7 +57,7 @@ jQuery(document).ready(function() {
 	  }
 
 	  	var options = {
-	        success:   observation.showResponse,
+	        success:   observation.showSaveResponse,
 	        url:       ajaxurl,
 	        type:      'post',
 	        dataType:  'json',
@@ -245,6 +252,16 @@ jQuery(document).ready(function() {
 			});
 		}
 		
+		observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
+			if(responseText != null && responseText.success == true){
+				observation.setMessage(responseText.message, responseText.type, 3000);
+			} else if (responseText != null) {
+				observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
+			} else {
+				observation.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
+			}
+		};
+		
 		observation.deleteSelectedRows = function(){
 		
 			var transportData = "";
@@ -268,15 +285,11 @@ jQuery(document).ready(function() {
 				};
 				
 				var ajaxurl = Drupal.settings.basePath + 'observation/delete';
-				$.getJSON(ajaxurl, data, function(json){	
-					jQuery("#observations").flexigrid() .flexReload();
-					var orginalText = $('.pPageStat').html(); 
-					$('.pPageStat').html(Drupal.t('Observations deleted'));
-					setTimeout(function delayedAlert() {
-						
-						$('.pPageStat').html(orginalText);				
-				      }, 3000);
-				});								
+				$.getJSON(ajaxurl, data, function(json){
+					var orginalText = $('.pPageStat').html();
+					jQuery("#observations").flexReload();
+					observation.showDeleteResponse(json);
+				});
 			}
 		}
 		
