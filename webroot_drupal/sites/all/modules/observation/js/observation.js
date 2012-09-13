@@ -300,6 +300,10 @@ jQuery(document).ready(function() {
 					'	<input type="checkbox" onClick="javascript:observation.toggleSelectedRows(this.checked)"> ' + 
 					'	<input type="button" id="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" onClick="javascript:observation.deleteSelectedRows()"> ' +
 					'</div>');		
+				// hide the batch div, if we are in gallery mode
+				if (window.location.hash.indexOf('gallery') != -1){
+					$('#batch-div').css('display', 'none');
+				}
 			}
 			
 			$('.bDiv :checkbox').click(function(){
@@ -316,9 +320,7 @@ jQuery(document).ready(function() {
 		 * get a observation on the map and zoom.. by id
 		 * @param id
 		 */
-		Area.prototype.selectObservation = function(celDiv, id) {
-			$cell = $(celDiv);
-	
+		Area.prototype.selectObservation = function(id) {
 			if (id in this.overlaysArray) {
 				if (this.selectedId != null) {
 					this.overlaysArray[this.selectedId].deselect();

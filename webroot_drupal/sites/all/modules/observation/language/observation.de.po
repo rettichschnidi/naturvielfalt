@@ -84,6 +84,22 @@ msgstr "Bearbeiten"
 msgid "No translation available"
 msgstr "Keine Übersetzung vorhanden"
 
+#: observation.ajax.inc:494
+msgid "add proof image"
+msgstr "Belegbild erfassen"
+
+#: observation.ajax.inc:501
+msgid "add portrait image"
+msgstr "Portraitbild erfassen"
+
+#: observation.ajax.inc:535
+msgid "Proof image (@num_images)"
+msgstr "Belegbild (@num_images)"
+
+#: observation.ajax.inc:540
+msgid "Portrait image (@num_images)"
+msgstr "Portraitbild (@num_images)"
+
 #: observation.delete.inc:18
 msgid "Delete Observation @observation_organism from @observation_date."
 msgstr "Beobachtung @observation_organism vom @observation_date löschen."
@@ -198,6 +214,25 @@ msgstr "Alle Beobachtungen anzeigen"
 msgid "Map"
 msgstr "Karte"
 
+<<<<<<< HEAD
+=======
+#: observation.show.inc:66
+msgid "only proof images"
+msgstr "Nur Belegbilder"
+
+#: observation.show.inc:70
+msgid "only portrait images"
+msgstr "Nur Portraitbilder"
+
+#: observation.show.inc:74
+msgid "proof images, then portrait images"
+msgstr "Belegbilder, dann Portraitbilder"
+
+#: observation.show.inc:78
+msgid "portrait images, then proof images"
+msgstr "Portraitbilder, dann Belegbilder"
+
+>>>>>>> 6f1b24e308f3720ca58e40e08fe9fab7237626ca
 #: observation.template.inc:12
 msgid "Capture a new observation"
 msgstr "Beobachtung erfassen"

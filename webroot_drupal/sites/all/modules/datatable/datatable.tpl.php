@@ -28,6 +28,54 @@ drupal_add_css(
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
 
+
+if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
+	// add all libraries needed by the gallery (rating, lightbox...)
+	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_gallery_addon.js');
+	drupal_add_css(drupal_get_path('module', 'datatable') . '/css/datatable_gallery_addon.css');
+	
+	drupal_add_library('system', 'ui.widget');
+	drupal_add_css(
+			drupal_get_path('module', 'gallery') . '/css/jquery.ui.stars.min.css',
+			array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+			));
+	
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/gallery.css',
+	array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+	));
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
+	array(
+					'group' => CSS_DEFAULT,
+					'every_page' => TRUE
+	));
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/jquery.ui.stars.min.js',
+			array(
+					'weight' => 101
+			));
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
+			array(
+					'weight' => 110
+			));
+	drupal_add_js(
+			drupal_get_path('module', 'gallery') . '/js/gallery.rating.js',
+			array(
+					'weight' => 111
+			));
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js',
+	array(
+					'weight' => 100
+	));
+}
+
 /**
  * Figure out width/height of table or set default values
  */
@@ -109,16 +157,72 @@ if ($header) {
 	$aoColumns .= "],";
 	$searchColumns = substr_replace($searchColumns, "", -1);
 	$searchColumns .= "],";
+}	
+
+if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
+	$table['gallery_buttons'] = array(
+		'#type' => 'fieldset',
+		'#tree' => TRUE,
+		'#attributes' => array(
+			'style' => 'margin-bottom: 0px; padding: 0px; border: 0;'
+		),
+		'#border' => 0,
+	);
+	
+	$table['gallery_buttons']['table_link'] = array(
+			'#type' => 'button',
+			'#value' => t('Table'),
+			'#attributes' => array(
+					'id' => $id_table . '_table_link',
+					'onClick' => "gallery_addon.toggleGallery('$id_table', false);",
+					'disabled' => 'disabled',
+			)
+	);
+	
+	$table['gallery_buttons']['gallery_link'] = array(
+			'#type' => 'button',
+			'#value' => t('Gallery'),
+			'#attributes' => array(
+				'id' => $id_table . '_gallery_link',
+			  	'onClick' => "gallery_addon.toggleGallery('$id_table', true);",
+					
+			)
+	);
+	
+	if(isset($options['gallery_image_sources'])){
+		$image_sources = '';
+		foreach($options['gallery_image_sources'] as $key=>$val){
+			$selected = '';
+			if($key === "selected"){
+				$selected = "selected='selected'";
+			}
+			$image_sources .= "<option $selected value='".$val['value']."'>".$val['option']."</option>\n";
+		}
+	} else {
+		$image_sources = '<option>-</option>';
+	}
+	
+	$table['gallery_buttons']['image_source_select'] = array(
+			'#markup' => $image_sources,
+			'#prefix' => '<span class="datatable_gallery_imgsource"'
+							. ' id="' . $id_table . '_gallery_image_source">' 
+							. t('Images') 
+							. ': <select class="form-select"'
+							. ' onChange="javascript:gallery_addon.sourceChanged(\''.$id_table.'\',this)">',
+			'#suffix' => '</select></span>'
+	);
 }
+
 $table[$id_table] = array(
 		'#theme' => 'table',
 		'#rows' => $rows,
 		'#sticky' => false,
 		'#attributes' => array(
 				'id' => $id_table,
-				'class' => $id_table
+				'class' => $id_table	
 		),
 );
+
 print drupal_render($table);
 ?>
 
@@ -131,7 +235,7 @@ jQuery(document).ready(function() {
 		dataType: 'json',
 		<?php $aoColumns ? print "$aoColumns\n" : ''; ?>
 		<?php $searchColumns ? print "$searchColumns\n" : ''; ?>
-		singleSelect: true,
+		singleSelect: true,		
 		sortname: "<?php echo $sortField; ?>",
 		sortorder: "<?php echo $sortOrder; ?>",
 		usepager: true,
@@ -156,13 +260,21 @@ jQuery(document).ready(function() {
 		dblClickResize: true,
 		onToggleCol: true,
 		singleSelect: true,
-		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>					
+		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>			
+		// add our own preProcess handler to intercept the json and display the gallery, the gallery_addon needs the tableid
+		<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) echo "preProcess : function(data) {return gallery_addon.preProcess('$id_table', data);},"; ?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>
-
-	
 });
 
+<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) {?>
+jQuery(window).ready(function() {
+	// switch to the gallery view if #gallery is in the url
+	if (window.location.hash.indexOf('gallery') != -1){
+		gallery_addon.toggleGallery('<?=$id_table;?>', true);
+	}
+});
+<?php }?>
 -->
 </script>

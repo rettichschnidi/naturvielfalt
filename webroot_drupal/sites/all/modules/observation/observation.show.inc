@@ -52,13 +52,33 @@ function observation_show_all_observations() {
 					'rowClickHandler' => "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {							    
-								observationmap.selectObservation(celDiv, id);
+								observationmap.selectObservation(id);
 							}
 						)
 					}",
 					'onSuccessHandler' => "function onSuccessHandler() {
 								observation.displayBatchArea();						
 					}",
+					'gallery_enabled' => true,
+					'gallery_image_sources' => array(
+						'selected' => array(
+							'value' => OBSERVATION_IMGSRC_BELEG,
+							'option' => t('only proof images'), // belegbilder
+						),
+					 	array(
+					 		'value' => OBSERVATION_IMGSRC_PORTRAIT,
+					 		'option' => t('only portrait images'),
+					 	),
+						array(
+							'value' => OBSERVATION_IMGSRC_BELEG_PORTRAIT,
+							'option' => t('proof images, then portrait images'),
+						),
+						array(
+							'value' => OBSERVATION_IMGSRC_PORTRAIT_BELEG,
+							'option' => t('portrait images, then proof images')
+						),
+					),
+					'gallery_json_item' => 'gallery_image',
 			)
 	);
 	return $output;

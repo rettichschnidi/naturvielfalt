@@ -339,6 +339,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'o.date AS date',
 			'o.count AS count',
 			'o.acl_id AS acl_id',
+			'o.organism_id AS organism_id',  // used to find portrait-pictures
 			'a_s.altitude AS altitude',
 			'a_s.township AS township',
 			'a_s.zip AS zip',
@@ -355,6 +356,7 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'o.observer',
 			'o.date',
 			'o.count',
+			'o.organism_id AS organism_id',
 			'a_s.altitude',
 			'a_s.township',
 			'a_s.zip',
@@ -406,15 +408,6 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		}
 		$row['cell']['editColumn'] = $editLink;
 
-		//observation_write_access
-
-		// 		$link = l(
-		// 				"<img src='$imageUrl' />",
-		// 				base_path() . 'gallery/' . $row['id'] . '/images',
-		// 				array(
-		// 						'html' => true
-		// 				));
-		// 		$row['cell']['image_link'] = $link;
 		if ($row['cell']['organism_l'] == "")
 			$row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
@@ -422,18 +415,177 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 		$row['cell']['piccount'] = $images['count'];
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {
-			// 			$image = gallery_image_load($images['images'][0]['id']);
-			// 			die(print_r($image));
+			// display the thumbnail (for the table view)
 			$row['cell']['thumbnail'] = '<img src="'
 					. url(
 						'gallery/observation/' . $row['id'] . '/thumb/'
 								. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
 					. $images['images'][0]['title'] . '" height="80" width="80" />';
-		}
-
+		} 
+		// create the html source for the gallery view
+		$row['cell']['gallery_image'] = __observation_get_gallery_image($images, $row['id'], 
+											$row['cell']['organism_id'], 
+											array(
+												'icons' => array(
+													"<img src='$imageBaseUrl/map.png' style='cursor: pointer;' width='16px' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
+													$row['cell']['showColumn'],
+													'&nbsp;'. $editLink,
+												),
+												'data' => array(
+													$row['cell']['artgroup_n'],
+													"<i>" . $row['cell']['organism_sc'] . "</i>",
+													$row['cell']['organism_l']
+												)
+											),
+											$row['cell']['acl_id']);
 	}
 	return drupal_json_output($output);
 
+}
+
+/**
+ * returns the html-source (<img> tag and it's caption) for displaying an observation-image.
+ * there are four different states:
+ *  - OBSERVATION_IMGSRC_BELEG
+ *  	--> shows one image of this observation
+ *  - OBSERVATION_IMSGRC_PORTRAIT
+ *  	--> shows one image of this organism
+ *  - OBSERVATION_IMSGRC_BELEG_PORTRAIT
+ *  	--> show an image of this observation or if not available of the organism
+ *  - OBSERVATION_IMSGSRC_PORTRAIT_BELEG
+ *  	--> displays an image of the organism or if not available one of the observation
+ *  
+ *  these states can be controlled using $_REQUEST['imagesource']. flexigrid 
+ *  sends this parameter in the ajax calls (only when the gallery_addon in the datatable is enabled) 
+ *  
+ * @param array $images an array of observation images for this observation_id
+ * @param int $observation_id the id of this observation
+ * @param int $organism_id the id of this organism
+ * @param array $display_data an array containing two sub-array with the keys "icons" and "data"
+ * 		  example: array(
+ * 						'icons' => array('<a href="">editicon...</a>', ...),
+ * 						'data' => array('Flora', 'Solidago Gigantea', 'Goldrute...')
+ * 				   )
+ * @paramt int $observation_aclId the acl_id of this observation. this controls, whether an edit link is displayed
+ */
+function __observation_get_gallery_image($images, $observation_id, $organism_id, $display_data, $observation_aclId = NULL){
+	// search for a valid state or set the default to  OBSERVATION_IMGSRC_BELEG
+	$state = (isset($_REQUEST['imagesource']) 
+				&& $_REQUEST['imagesource'] <= OBSERVATION_IMGSRC_PORTRAIT_BELEG
+				&& $_REQUEST['imagesource'] >= OBSERVATION_IMGSRC_BELEG
+			 ) 
+				? $_REQUEST['imagesource'] : OBSERVATION_IMGSRC_BELEG;
+	
+	// get the number of images for this observation and organism
+	$images_observation = $images;
+	$images_organism = array( 'count' => 0); 
+	if($state == OBSERVATION_IMGSRC_PORTRAIT // only search, if they are really needed 
+		|| $state == OBSERVATION_IMGSRC_PORTRAIT_BELEG
+	    || ($state == OBSERVATION_IMGSRC_BELEG_PORTRAIT && $images_observation['count'] == 0)){
+		$images_organism = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism_id);
+	}
+
+	// has the user the rigt to upload pictures?
+	$manage_obs_link = '';
+	$manage_obs_url = false;
+	if(observation_write_access_by_acl_id($observation_aclId)){
+		$manage_obs_url = "/gallery/observation/$observation_id/images/edit";
+		// proof = beleg ???
+		$manage_obs_link = "<a href='$manage_obs_url'>" . t('add proof image') . "</a>";
+	}
+	
+	$manage_org_image = '';
+	$manage_org_url = false;
+	if(user_access('organisms upload')){
+		$manage_org_url = "/gallery/organismreference/$organism_id/images/edit";
+		$manage_org_link = "<a href='$manage_org_url'>" . t('add portrait image') . "</a>";
+	}
+	
+	// return an empty image, if nothing was found
+	if(($images_observation['count'] == 0 && $state == OBSERVATION_IMGSRC_BELEG)
+		|| ($images_organism['count'] == 0 && $state == OBSERVATION_IMGSRC_PORTRAIT)
+		|| ($images_observation['count'] == 0 && $images_organism['count'] == 0)){
+			
+		// disply an upload image link (if authorized)
+		if($state == OBSERVATION_IMGSRC_BELEG 
+				|| $state == OBSERVATION_IMGSRC_BELEG_PORTRAIT ){
+			$upload_link = $manage_obs_link;
+		} else {
+			$upload_link = $manage_org_link;
+		}
+		
+		$result = <<<EOT
+		<div class="datatable_gallery_no_image">
+			<span class="datatable_gallery_no_image">
+				<center>
+				<img src="/sites/all/modules/datatable/images/no_photo.png" class="datatable_gallery_no_image"/><br/>
+				$upload_link
+				</center>
+			</span>
+		</div>
+EOT;
+	} else {
+		// render a gallery of either the organism or the observation
+		$gallery = array();
+		$img_type_link = '#';
+		if((($state == OBSERVATION_IMGSRC_BELEG || $state == OBSERVATION_IMGSRC_BELEG_PORTRAIT)
+				&& $images_observation['count'] > 0)
+				|| $images_organism['count'] == 0) {
+			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$observation_id);
+			$img_type = t('Proof image (@num_images)', array('@num_images' => $images_observation['count']));
+			if($manage_obs_url)
+				$img_type_link = $manage_obs_url;
+		} else {
+			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'organismreference',$organism_id);
+			$img_type = t('Portrait image (@num_images)', array('@num_images' => $images_organism['count']));
+			if($manage_org_url)
+				$img_type_link = $manage_org_url;
+		}
+		
+		// if there was more than one image, remove the others.
+		if(count($gallery['edit']['gallery_list']['#images']['images']) > 1){
+			$img = $gallery['edit']['gallery_list']['#images']['images'][0];
+			$gallery['edit']['gallery_list']['#images']['images'] = array(
+					$img
+			);
+		}
+		$result = drupal_render($gallery['edit']['gallery_list']);
+		$result = <<<EOT
+		<div style="position:relative">
+			<span class="datatable_gallery_image_type">
+				<a href="$img_type_link" class="datatable_gallery_image_type">$img_type</a>
+			</span>
+			$result
+		</div>
+EOT;
+	}
+	
+	// now add the edit-icons and the data (scientific name, german name...)
+	// to the result
+	$first_data_row = '';
+	$icons = '';
+	$remaining_data = '';
+	
+	if(array_key_exists('data', $display_data) && count($display_data['data']) > 0){
+		$first_data_row = $display_data['data'][0];
+		for($i=1;$i<count($display_data['data']);$i++)
+			$remaining_data .= '<br />' . $display_data['data'][$i];
+	}
+	
+	if(array_key_exists('icons', $display_data) && is_array($display_data['icons'])){
+			$icons = implode('', $display_data['icons']);
+	}
+	
+	return <<<EOT
+		$result
+		<div class="datatable_gallery_info">
+		$first_data_row
+		<span class="datatable_gallery_icons">
+		$icons
+		</span>
+		$remaining_data
+		</div>
+EOT;
 }
 
 /**
