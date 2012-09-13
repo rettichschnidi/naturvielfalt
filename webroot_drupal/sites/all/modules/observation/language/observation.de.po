@@ -53,6 +53,22 @@ msgstr "Beobachtung konnte nicht gespeichert werden"
 msgid "No translation available"
 msgstr "Keine Übersetzung vorhanden"
 
+#: observation.ajax.inc:494
+msgid "add proof image"
+msgstr "Belegbild erfassen"
+
+#: observation.ajax.inc:501
+msgid "add portrait image"
+msgstr "Portraitbild erfassen"
+
+#: observation.ajax.inc:535
+msgid "Proof image (@num_images)"
+msgstr "Belegbild (@num_images)"
+
+#: observation.ajax.inc:540
+msgid "Portrait image (@num_images)"
+msgstr "Portraitbild (@num_images)"
+
 #: observation.delete.inc:18
 msgid "Delete Observation @observation_organism from @observation_date."
 msgstr "Beobachtung @observation_organism vom @observation_date löschen."
@@ -172,15 +188,21 @@ msgstr "Alle Beobachtungen anzeigen"
 msgid "Map"
 msgstr "Karte"
 
-#: observation.show.inc:81
-#: observation.module:75
-msgid "Edit"
-msgstr "Bearbeiten"
+#: observation.show.inc:66
+msgid "only proof images"
+msgstr "Nur Belegbilder"
 
-#: observation.show.inc:93
-#: observation.module:45;60
-msgid "Show"
-msgstr "Anzeigen"
+#: observation.show.inc:70
+msgid "only portrait images"
+msgstr "Nur Portraitbilder"
+
+#: observation.show.inc:74
+msgid "proof images, then portrait images"
+msgstr "Belegbilder, dann Portraitbilder"
+
+#: observation.show.inc:78
+msgid "portrait images, then proof images"
+msgstr "Portraitbilder, dann Belegbilder"
 
 #: observation.template.inc:12
 msgid "Capture a new observation"
@@ -374,6 +396,10 @@ msgstr "Bitte Datei auswählen"
 #: js/observation.js:0
 msgid "Meta data for uploads"
 msgstr "Metadaten für den Upload"
+
+#: js/observation.js:0
+msgid "Deletion failed due to unknown error."
+msgstr ""
 
 #: js/observation.js:0
 msgid "No records selected"

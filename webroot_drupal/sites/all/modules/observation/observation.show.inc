@@ -63,19 +63,19 @@ function observation_show_all_observations() {
 					'gallery_image_sources' => array(
 						'selected' => array(
 							'value' => OBSERVATION_IMGSRC_BELEG,
-							'option' => t('Nur Belegbilder'),
+							'option' => t('only proof images'), // belegbilder
 						),
 					 	array(
 					 		'value' => OBSERVATION_IMGSRC_PORTRAIT,
-					 		'option' => t('Nur Portraitbilder'),
+					 		'option' => t('only portrait images'),
 					 	),
 						array(
 							'value' => OBSERVATION_IMGSRC_BELEG_PORTRAIT,
-							'option' => t('Belegbilder, dann Portraitbilder'),
+							'option' => t('proof images, then portrait images'),
 						),
 						array(
 							'value' => OBSERVATION_IMGSRC_PORTRAIT_BELEG,
-							'option' => t('Portraitbilder, dann Belegbilder')
+							'option' => t('portrait images, then proof images')
 						),
 					),
 					'gallery_json_item' => 'gallery_image',
