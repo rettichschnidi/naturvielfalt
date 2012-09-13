@@ -32,6 +32,7 @@ drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js
 if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 	// add all libraries needed by the gallery (rating, lightbox...)
 	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_gallery_addon.js');
+	drupal_add_css(drupal_get_path('module', 'datatable') . '/css/datatable_gallery_addon.css');
 	
 	drupal_add_library('system', 'ui.widget');
 	drupal_add_css(
@@ -203,11 +204,11 @@ if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 	
 	$table['gallery_buttons']['image_source_select'] = array(
 			'#markup' => $image_sources,
-			'#prefix' => '<span style="position:absolute; right: 15px; display:none;"'
+			'#prefix' => '<span class="datatable_gallery_imgsource"'
 							. ' id="' . $id_table . '_gallery_image_source">' 
 							. t('Images') 
 							. ': <select class="form-select"'
-							. ' onChange="javascript:gallery_addon.sourceChanged(this)">',
+							. ' onChange="javascript:gallery_addon.sourceChanged(\''.$id_table.'\',this)">',
 			'#suffix' => '</select></span>'
 	);
 }
@@ -260,7 +261,8 @@ jQuery(document).ready(function() {
 		onToggleCol: true,
 		singleSelect: true,
 		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>			
-		<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) echo "preProcess : gallery_addon.preProcess,"; ?>		
+		// add our own preProcess handler to intercept the json and display the gallery, the gallery_addon needs the tableid
+		<?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) echo "preProcess : function(data) {return gallery_addon.preProcess('$id_table', data);},"; ?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>

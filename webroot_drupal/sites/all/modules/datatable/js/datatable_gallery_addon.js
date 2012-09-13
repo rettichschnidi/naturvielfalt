@@ -11,11 +11,11 @@ jQuery(document).ready(function() {
 	/**
 	 * is called by every refresh before the data is displayed
 	 */
-	gallery_addon.preProcess = function(data) {
-		if(!gallery_addon.__isGalleryActive())
+	gallery_addon.preProcess = function(gridid, data) {
+		if(!gallery_addon.__isGalleryActive(gridid))
 			return data;
 		
-		gallery_addon.__clearGalleryDiv();
+		gallery_addon.__clearGalleryDiv(gridid);
 		
 		var table = document.createElement('table');
 		table.className = 'imgGallery';
@@ -27,7 +27,8 @@ jQuery(document).ready(function() {
 			var tr = document.createElement('tr');
 			for (j = 0; j < COL_COUNT; j++){
 				var index = i * COL_COUNT + j;
-				var td = document.createElement('td');			
+				var td = document.createElement('td');
+				$(td).addClass('datatable_gallery_row');
 
 				if (data.rows[index] != undefined){
 					if(data.rows[index].cell['gallery_image'] != undefined){
@@ -41,7 +42,7 @@ jQuery(document).ready(function() {
 		}
 	
 		$(table).append(tbody);
-		$('#gallery_images').append(table);
+		gallery_addon.__getGalleryDiv(gridid).append(table);
 		
 		// Reregister lightbox
 		gallery_lightbox.registerLightBox();
@@ -56,22 +57,28 @@ jQuery(document).ready(function() {
 	 *  	true -> show gallery
 	 *  	false -> switch back to the datatable
 	 */
-	gallery_addon.toggleGallery = function(tableid, enabled) {	
-		$('.bDiv').toggle();
-		$('.hDiv').toggle();
-		$('#batch-div').toggle();
-		gallery_addon.__getGalleryDiv().toggle();
+	gallery_addon.toggleGallery = function(gridid, enabled) {
+		// find the div of this flexigrid
+		var div = $('#' + gridid).parent().parent();
 		
+		div.children('.bDiv').toggle();
+		div.children('.hDiv').toggle();
+		gallery_addon.__getGalleryDiv(gridid).toggle();
+		
+		// remove the batch-command-div (observation) if available
+		if($('#batch-div').length > 0)
+			$('#batch-div').toggle();
+	
 		if(enabled){
-			$('#' + tableid + '_gallery_link').attr('disabled', 'disabled');
-			$('#' + tableid + '_table_link').removeAttr('disabled');
-			$('#' + tableid + '_gallery_image_source').css('display', 'inline');
-			$("#observations").flexigrid().flexReload();
+			$('#' + gridid + '_gallery_link').attr('disabled', 'disabled');
+			$('#' + gridid + '_table_link').removeAttr('disabled');
+			$('#' + gridid + '_gallery_image_source').css('display', 'inline');
+			$("#" + gridid).flexigrid().flexReload();
 			window.location.hash = 'gallery';
 		}else {
-			$('#' + tableid + '_table_link').attr('disabled', 'disabled');
-			$('#' + tableid + '_gallery_link').removeAttr('disabled');
-			$('#' + tableid + '_gallery_image_source').hide();
+			$('#' + gridid + '_table_link').attr('disabled', 'disabled');
+			$('#' + gridid + '_gallery_link').removeAttr('disabled');
+			$('#' + gridid + '_gallery_image_source').hide();
 			window.location.hash = '';
 		}
 	}
@@ -85,28 +92,30 @@ jQuery(document).ready(function() {
 	 * 
 	 * @param the <select> element
 	 */
-	gallery_addon.sourceChanged = function(element) {
+	gallery_addon.sourceChanged = function(gridid, element) {
 		// add the chosen imagesource to the ajax request
-		$("#observations").flexOptions({params:[{name:'imagesource', value: element.value}]});
-		$("#observations").flexigrid().flexReload();
+		$("#" + gridid).flexOptions({params:[{name:'imagesource', value: element.value}]});
+		$("#" + gridid).flexigrid().flexReload();
 	}
 	
 	/**
 	 * Removes all content of the gallery div
 	 */
-	gallery_addon.__clearGalleryDiv = function () {
-		$('#gallery_images').empty();		
+	gallery_addon.__clearGalleryDiv = function (gridid) {
+		gallery_addon.__getGalleryDiv(gridid).empty();		
 	}
 	
 	/**
-	 * returns or creats the div for the gallery images
+	 * returns or creates the div for the gallery images
 	 */
-	gallery_addon.__getGalleryDiv = function () {
-		var div = $('#gallery_images');
+	gallery_addon.__getGalleryDiv = function (gridid) {
+		var div = $('#' + gridid + '_gallery_images');
+		var flexiDiv = $('#' + gridid).parent().parent();
 		if(div.length == 0){
-			$('.mDiv').after('<div id="gallery_images" style="display: none; padding-left:30px;"> ' 
+			flexiDiv.children('.mDiv').after(
+					'<div id="'+gridid+'_gallery_images" class="datatable_gallery"> ' 
 					+ '</div>');	
-			return $('#gallery_images');
+			return $('#' + gridid + '_gallery_images');
 		} else {
 			return div;
 		}
@@ -115,8 +124,8 @@ jQuery(document).ready(function() {
 	/**
 	 * @returns true if the gallery is currently displayed
 	 */
-	gallery_addon.__isGalleryActive = function () {
-		return $('#gallery_images:visible').length > 0;
+	gallery_addon.__isGalleryActive = function (gridid) {
+		return $('#'+gridid+'_gallery_images:visible').length > 0;
 	}
 	
 });
