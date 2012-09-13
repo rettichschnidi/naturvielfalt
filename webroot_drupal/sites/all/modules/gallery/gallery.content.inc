@@ -2053,7 +2053,7 @@ function theme_gallery_list($variables) {
 						. '/thumb/' . $image['id'] . '/gallery_large');
 			$url_image = url(
 				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/gallery_thumbnail');
+						. '/thumb/' . $image['id'] . '/medium');
 			$extras = '';
 			$captionclass = "caption";
 
