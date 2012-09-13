@@ -426,6 +426,10 @@ Area.prototype.createDrawingManager = function(enable) {
 Area.prototype.createSearchbar = function(enable) {
 	if(enable) {
 		var googlemap = this.googlemap;
+		// geocoder
+		var geocoder = new google.maps.Geocoder();
+		// rectangle around switzerland
+		var geocoderBounds = new google.maps.LatLngBounds(new google.maps.LatLng(45.768673, 5.783386), new google.maps.LatLng(47.983671, 10.622864));
 		// create a new div element to hold everything needed for the searchbar
 		var searchdiv = document.createElement('div');
 		// create new input field
@@ -438,8 +442,7 @@ Area.prototype.createSearchbar = function(enable) {
 		searchinput.setAttribute('id', 'search_input');
 	
 		// push the search element on the google map in the top left corner
-		googlemap.controls[google.maps.ControlPosition.TOP_LEFT]
-				.push(searchdiv);
+		googlemap.controls[google.maps.ControlPosition.TOP_LEFT].push(searchdiv);
 	
 		var autocomplete = new google.maps.places.Autocomplete(searchinput, {
 			// available types: 'geocode' for places, 'establishment' for
@@ -452,18 +455,35 @@ Area.prototype.createSearchbar = function(enable) {
 	
 		google.maps.event.addListener(autocomplete,	'place_changed', function() {
 			var place = autocomplete.getPlace();
-			console.log(place);
-			if (typeof place.geometry !== 'undefined') {
-				if (place.geometry.viewport) {
-					googlemap.fitBounds(place.geometry.viewport);
-				} else {
-					console.log(googlemap);
-					googlemap.setCenter(place.geometry.location);
-					googlemap.setZoom(17);
-				}
+			// if not an autocomplete value was selected, geocode the search string
+			if (typeof place.geometry === 'undefined') {
+				geocoder.geocode({
+					'address': place.name,
+					'bounds': geocoderBounds
+				}, function(results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						place = results[0];
+						for (var i = 0; i < results.length; i++) {
+							if(results[i].formatted_address.search(', Schweiz') != -1) {
+								place = results[i];
+								break;
+							}
+						}
+						if (place.geometry.viewport) {
+							googlemap.fitBounds(place.geometry.viewport);
+						} else {
+							googlemap.setCenter(place.geometry.location);
+							googlemap.setZoom(17);
+						}
+					}
+				});
+			}
+			// if an autocomplete value was selected, geometry information is already available
+			else if (place.geometry.viewport) {
+				googlemap.fitBounds(place.geometry.viewport);
 			} else {
-				console.error("Search by pressing enter not yet implemented.");
-				console.error("Query was: " + searchinput.value);
+				googlemap.setCenter(place.geometry.location);
+				googlemap.setZoom(17);
 			}
 		});
 	
@@ -475,18 +495,6 @@ Area.prototype.createSearchbar = function(enable) {
 		// select all text when user focus the searchinput field
 		searchinput.onfocus = function() {
 			searchinput.select();
-		};
-		
-		// do not submit the form when pressing enter
-		searchinput.onkeypress = function(evt) {
-			evt = evt || window.event;
-			var charCode = evt.keyCode || evt.which;
-			if (charCode == 13) {
-				evt.returnValue = false;
-				if (evt.preventDefault) {
-					evt.preventDefault();
-				}
-			}
 		};
 	}
 };

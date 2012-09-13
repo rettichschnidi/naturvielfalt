@@ -269,7 +269,7 @@ function observation_form($observation = false) {
 			. '<div style="display: none;" id="message"><div class="messages"></div></div>'
 			. $image . drupal_render($file_list) . '</form>' . '</div>';
 
-	$recent['rencent_observation'] = array(
+	$recent['recent_observation'] = array(
 			'#theme' => 'datatable',
 			'#header' => observation_get_standard_datatable_headers(7, 'desc'),
 			'#title' => t(

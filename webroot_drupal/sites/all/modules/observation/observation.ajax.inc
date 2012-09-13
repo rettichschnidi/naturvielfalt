@@ -269,23 +269,42 @@ function observation_save($observation_data = false, $custom_data = false, $from
 function observation_delete() {
 	global $user;
 	if (!isset($user)) {
-		return drupal_json_output(t('Bitte melden Sie sich an'));
+		$output['success'] = false;
+		$output['message'] = t('Please log in first');
+		return drupal_json_output($output);
 	}
 
-	if (!isset($_REQUEST['observations'])) {		
-		return drupal_json_output(t('Kein Parameter observations'));
+	if (!isset($_REQUEST['observations'])) {
+		$output['success'] = false;
+		$output['type'] = 'error';
+		$output['message'] = t('Parameter \'observations\' missing');
+		return drupal_json_output($output);
 	}
 
 	$param = filter_xss($_REQUEST['observations']);
 	$observations = explode(',', substr($param, 1, strlen($param) - 2));
 
+	$deleteCount = 0;
 	foreach ($observations as $observation_id) {
-		if (observation_write_access_by_acl_id($observation_id)) {
+		if (observation_write_access_by_id($observation_id)) {
 			observation_delete_by_id($observation_id);
+			$deleteCount++;
 		}
 	}
-
-	return drupal_json_output("ok");
+	
+	$output['success'] = true;
+	if ($deleteCount == count($observations)) {
+		$output['type'] = 'status';
+		$output['message'] = ($deleteCount == 1)
+			? t('Observation deleted')
+			: t('Observations deleted');
+	}
+	else {
+		$output['type'] = 'warning';
+		$output['message'] = t('Some observations could not be deleted (unauthorized access)');
+	}
+	
+	return drupal_json_output($output);
 
 }
 

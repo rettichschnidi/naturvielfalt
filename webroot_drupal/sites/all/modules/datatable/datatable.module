@@ -151,6 +151,36 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	}
 
 	isset($sql['dbWhere']) ? $where = "WHERE " . $sql['dbWhere'] : $where = "";
+	
+	/*
+	 *  Check for permission if acl_id is in the columns array
+	 */
+	global $user;
+	if (!check_admin_permission($user->uid)) {
+		foreach ($aColumns as $dbColumn) {
+			$matches = array();
+			if (preg_match('/(\w+\.acl_id) as \w+/i', $dbColumn, $matches)) {
+				$obs_acl_id = $matches[1];
+				$minLevel = variable_get($sql['acl_level']);
+				
+				$where = ($where == '') ? 'WHERE' : ' AND';
+				// level of ALL group
+				$sJoins .= ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = ' . $obs_acl_id;
+				$where .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')
+					.' AND ag.level >= ' . $minLevel . ')';
+				// level of user group
+				$sJoins .= ' LEFT JOIN {sgroup} g ON g.id = ag.sgroup_id';
+				$where .= ' OR (au.acl_id = g.acl_id'
+					.' AND ag.level >= ' . $minLevel . ')';
+				// level of user, table also needed for user group
+				$sJoins	.= ' LEFT JOIN {acl_users} au ON au.users_id = ' . $user->uid;
+				$where .= ' OR (au.acl_id = ' . $obs_acl_id
+					.' AND au.level >= ' . $minLevel . ') )';
+				
+				break;
+			}
+		}
+	}
 
 	$idColumn = isset($sql['id']) ? $sql['id'] : "id";
 
@@ -260,7 +290,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	* Get data to display
 	*/
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
-	$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
+	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
 	
 	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
 	
@@ -273,21 +303,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$fullResult = db_query($fullQuery, $arguments);
 	$fullRecords = $fullResult->fetchAll();
 
-		
-	/**
-	 * Count number of accessible elements if an acl_id available
-	 * 
-	 * @note This is an expensive operation and should be moved into the
-	 * database at some point.
-	 */
-	if (isset($fullRecords[0]->acl_id)) {
-		foreach ($fullRecords as $recordKey => $record) {
-			if (check_permission($record->acl_id, variable_get($sql['acl_level']))) {} else {
-				unset($fullRecords[$recordKey]);
-			}
-		}
-	}
-
+	
 	$output = array(
 			'page' => $pageNumber,
 			'total' => $numberOfAccessibleRows,

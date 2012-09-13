@@ -271,6 +271,20 @@ function observation_write_access($observationdata = NULL) {
 }
 
 /**
+ * Check if user has write access to this observation
+ * 
+ * @param int $observation_id
+ * @return boolean true if access ok, false if not
+ */
+function observation_write_access_by_id($observation_id = NULL) {
+	if (isset($observation_id)) {
+		$observationdata = observation_load($observation_id);
+		return observation_write_access($observationdata);
+	}
+	return false;
+}
+
+/**
 * Check if user has write access to this observation
 *
 * @param int $aclId
