@@ -3,7 +3,7 @@ require_once(dirname(__FILE__) . '/config/database.php');
 global $drupalprefix;
 global $config;
 
-$table_osn = $drupalprefix . 'organism_scientific_name';
+$table_osn = $drupalprefix . 'organism_synonym';
 $table_ol = $drupalprefix . 'organism_lang';
 $table_oa = $drupalprefix . 'organism_artgroup';
 $table_oas = $drupalprefix . 'organism_artgroup_subscription';
