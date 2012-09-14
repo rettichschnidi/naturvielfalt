@@ -117,7 +117,7 @@ $query_all_organism = "
 		ol_rm.name name_rm,
 		ol_en.name name_en
 
-	FROM $table_osy o
+	FROM $table_osy osy
 		LEFT JOIN $table_ol ol_de ON ol_de.languages_language='de' AND ol_de.organism_id=osy.organism_id
 		LEFT JOIN $table_ol ol_fr ON ol_fr.languages_language='fe' AND ol_fr.organism_id=osy.organism_id
 		LEFT JOIN $table_ol ol_it ON ol_it.languages_language='it' AND ol_it.organism_id=osy.organism_id
