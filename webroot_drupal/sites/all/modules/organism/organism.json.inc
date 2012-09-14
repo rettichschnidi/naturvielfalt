@@ -6,6 +6,7 @@
  */
 
 module_load_include('inc', 'organism', 'organism');
+module_load_include('inc', 'datatable');
 
 /**
  * Menu callback. This will be called for visits to /organism/json.
@@ -494,7 +495,100 @@ function organism_show_classification_organismjson($classificationid) {
 	$arguments = array();
 
 	$output = datatable_dbRequest($sql, $arguments, $prearguments);
+	
+	// add the html-source for the table-gallery-view
+	foreach ($output['rows'] as &$row) {
+		$row['cell']['gallery_image'] = __organism_get_gallery_image($row['cell']);
+	}
+	
 	return drupal_json_output($output);
+}
+
+/**
+ * the datatable gallery addon wants the html code for each image. 
+ * this function returns the html for this. 
+ * the gallery display either a proof image (Belegbild) or a portrait image (organism module).
+ * this function only retuns one image and only proof images for which the user is authorized (read access) 
+ * are displayed
+ * @param array $organism_data and array with data for this organism (the "cell" part of the json)
+ */
+function __organism_get_gallery_image($organism_data){
+	global $user;
+	global $base_url;
+	
+	$organism_id = $organism_data['organism_id'];
+	
+	// let's find an observation for this organism
+	// that meets the following criteria
+	//	- same organism
+	//  - has a picture
+	//  - the user or it's groups have read access 
+	$sql = "SELECT ob.id, ob.acl_id FROM {observation} ob
+			 -- only observations with images
+			 INNER JOIN {gallery_image} gi
+				ON ob.id = gi.item_id and item_type = 'observation' and
+				   ob.organism_id = :organism_id
+			 ";
+	
+	$authrorization_sql = "-- make sure, that we have read rights on this observation
+							 LEFT JOIN {acl_sgroup} ag 
+								ON ag.acl_id = ob.acl_id
+							 LEFT JOIN {sgroup} g 
+								ON g.id = ag.sgroup_id
+							 LEFT JOIN {acl_users} 
+								au ON au.users_id =  :user_id
+							 WHERE 
+								-- the user, one of it's groups or the group 'ALL' need 
+								-- acces to this observation. otherwise we are not allowed 
+								-- to see it's pictures
+								( 
+									(ag.sgroup_id = :acl_group_all AND ag.level >= :acl_read)
+									OR (au.acl_id = g.acl_id AND ag.level >= :acl_read )
+									OR (au.acl_id = ob.acl_id AND au.level >= :acl_read)
+								)";
+	
+	$sql_suffix = "LIMIT 1;";
+	
+	// admins can see all images. users must have the right premissions
+	if(check_admin_permission($user_id)){
+		$query = $sql . ' ' . $sql_suffix; 
+		$params =  array('organism_id' => $organism_id);
+	} else {
+		$query = $sql . ' ' . $authrorization_sql . ' ' . $sql_suffix;
+		$params =  array('organism_id' => $organism_id,
+					 'user_id' => $user->uid,
+					 'acl_group_all' => variable_get('ACL_GROUP_ALL_ID'),
+					 'acl_read' => variable_get('ACL_READ')
+			);
+	}
+	
+	$result = db_query($query, $params);
+	
+	$observation_id = NULL;
+	$observation_aclId = NULL;
+	if($result->rowCount() > 0){
+		$row = $result->fetchObject();
+		$observation_id = $row->id;
+		$observation_aclId = $row->acl_id;
+	}
+			
+	// link to the species detail page
+	$detail = '<a href="' . $base_url . '/organism/' . $organism_id . '" style="color: black; text-decoration:underline">';
+	
+	return datatable_get_gallery_image($observation_id, $organism_id, 
+			array(
+				'icons' => array(
+					// note needed here. (see the observation module for more infos)
+				),
+				'data' => array(
+					$organism_data['oc_family'],
+					$detail . '<i>' . $organism_data['scientific_name'] . '</i></a>',
+					$organism_data['ol_name']
+				)
+			),
+			$observation_aclId,
+			DATATABLE_IMGSRC_PORTRAIT
+			);
 }
 
 /**

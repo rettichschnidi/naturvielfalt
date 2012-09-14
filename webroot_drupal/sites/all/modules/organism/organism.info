@@ -7,3 +7,4 @@ version = "7.x-current"
 dependencies[] = locale
 dependencies[] = datatable
 dependencies[] = commonstuff
+dependencies[] = gallery

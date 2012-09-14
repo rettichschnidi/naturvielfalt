@@ -1,5 +1,6 @@
 <?php
 module_load_include('inc', 'observation');
+module_load_include('inc', 'datatable');
 
 /**
  * Show all existing observations. If $onlyMyObservation is true,
@@ -62,19 +63,19 @@ function observation_show_all_observations() {
 					'gallery_enabled' => true,
 					'gallery_image_sources' => array(
 						'selected' => array(
-							'value' => OBSERVATION_IMGSRC_BELEG,
+							'value' => DATATABLE_IMGSRC_BELEG,
 							'option' => t('only proof images'), // belegbilder
 						),
 					 	array(
-					 		'value' => OBSERVATION_IMGSRC_PORTRAIT,
+					 		'value' => DATATABLE_IMGSRC_PORTRAIT,
 					 		'option' => t('only portrait images'),
 					 	),
 						array(
-							'value' => OBSERVATION_IMGSRC_BELEG_PORTRAIT,
+							'value' => DATATABLE_IMGSRC_BELEG_PORTRAIT,
 							'option' => t('proof images, then portrait images'),
 						),
 						array(
-							'value' => OBSERVATION_IMGSRC_PORTRAIT_BELEG,
+							'value' => DATATABLE_IMGSRC_PORTRAIT_BELEG,
 							'option' => t('portrait images, then proof images')
 						),
 					),

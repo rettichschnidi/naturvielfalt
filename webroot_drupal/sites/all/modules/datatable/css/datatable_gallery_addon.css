@@ -5,13 +5,24 @@ div.datatable_gallery {
 
 div.datatable_gallery_info {
 	position: relative;
-	width: 100%;
+	width: 220px;
 	line-height: 15px;
 }
 
 .datatable_gallery_icons {
 	position: absolute; 
 	right: 0px;
+}
+
+div.datatable_gallery_image_container {
+	width: 220px; 
+	height: 186px;
+	overflow: hidden;
+	margin-bottom: 15px;
+}
+
+.datatable_gallery_image_container img{
+	max-height: 186px;
 }
 
 div.datatable_gallery_no_image {
@@ -21,9 +32,10 @@ div.datatable_gallery_no_image {
 	height: 186px;
 }
 
-span.datatable_gallery_no_image {
+div.datatable_gallery_no_image_info {
 	position: relative; 
 	top: 20%;
+	height: auto;
 }
 
 img.datatable_gallery_no_image {
@@ -40,7 +52,7 @@ span.datatable_gallery_image_type {
 	background-color: #659560;
 	color: #FFFFFF;
 	position: absolute;
-	top: 165px;
+	bottom: 15px;
 	z-index: 1;
 }
 
@@ -50,4 +62,9 @@ a.datatable_gallery_image_type{
 
 td.datatable_gallery_row {
 	padding-bottom: 30px;
+}
+
+input, select {
+    border: 1px solid black;
+    font-size: 12px;
 }
