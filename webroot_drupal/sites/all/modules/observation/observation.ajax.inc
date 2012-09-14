@@ -211,6 +211,9 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				db_insert('observation')->fields($observation)
 					->execute();
 				observation_save_attribute_values($attributes_checked, $observation['id']);
+				
+				// Read access for ALL group
+				add_group_to_acl($observation['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
 			}
 
 			/**
