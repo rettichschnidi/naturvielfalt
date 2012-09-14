@@ -3,7 +3,8 @@ require_once(dirname(__FILE__) . '/config/database.php');
 global $drupalprefix;
 global $config;
 
-$table_osn = $drupalprefix . 'organism_synonym';
+$table_o = $drupalprefix . 'organism';
+$table_osy = $drupalprefix . 'organism_synonym';
 $table_ol = $drupalprefix . 'organism_lang';
 $table_oa = $drupalprefix . 'organism_artgroup';
 $table_oas = $drupalprefix . 'organism_artgroup_subscription';
@@ -89,21 +90,40 @@ $sql_create_iphone_db_structur = '
 	CREATE INDEX idx_classification_taxon_idx2 ON classification_taxon(taxon_id);';
 
 $query_all_organism = "
+	-- Alle Organismen, der richtige wissenschaftliche Namen und die Uebersetzung selektieren
 	SELECT
-		osn.organism_id organism_id,
-		osn.name name_sc,
+		o.id organism_id,
+		o.scientific_name name_sc,
 		ol_de.name name_de,
 		ol_fr.name name_fr,
 		ol_it.name name_it,
 		ol_rm.name name_rm,
 		ol_en.name name_en
 
-	FROM $table_osn osn
-		LEFT JOIN $table_ol ol_de ON ol_de.languages_language='de' AND ol_de.organism_id=osn.organism_id
-		LEFT JOIN $table_ol ol_fr ON ol_fr.languages_language='fe' AND ol_fr.organism_id=osn.organism_id
-		LEFT JOIN $table_ol ol_it ON ol_it.languages_language='it' AND ol_it.organism_id=osn.organism_id
-		LEFT JOIN $table_ol ol_rm ON ol_rm.languages_language='rm' AND ol_rm.organism_id=osn.organism_id
-		LEFT JOIN $table_ol ol_en ON ol_en.languages_language='en' AND ol_en.organism_id=osn.organism_id";
+	FROM $table_o o
+		LEFT JOIN $table_ol ol_de ON ol_de.languages_language='de' AND ol_de.organism_id=o.id
+		LEFT JOIN $table_ol ol_fr ON ol_fr.languages_language='fe' AND ol_fr.organism_id=o.id
+		LEFT JOIN $table_ol ol_it ON ol_it.languages_language='it' AND ol_it.organism_id=o.id
+		LEFT JOIN $table_ol ol_rm ON ol_rm.languages_language='rm' AND ol_rm.organism_id=o.id
+		LEFT JOIN $table_ol ol_en ON ol_en.languages_language='en' AND ol_en.organism_id=o.id
+
+	-- Alle Synonyme hinzuholen
+	UNION SELECT
+		osy.organism_id organism_id,
+		osy.name name_sc,
+		ol_de.name name_de,
+		ol_fr.name name_fr,
+		ol_it.name name_it,
+		ol_rm.name name_rm,
+		ol_en.name name_en
+
+	FROM $table_osy o
+		LEFT JOIN $table_ol ol_de ON ol_de.languages_language='de' AND ol_de.organism_id=osy.organism_id
+		LEFT JOIN $table_ol ol_fr ON ol_fr.languages_language='fe' AND ol_fr.organism_id=osy.organism_id
+		LEFT JOIN $table_ol ol_it ON ol_it.languages_language='it' AND ol_it.organism_id=osy.organism_id
+		LEFT JOIN $table_ol ol_rm ON ol_rm.languages_language='rm' AND ol_rm.organism_id=osy.organism_id
+		LEFT JOIN $table_ol ol_en ON ol_en.languages_language='en' AND ol_en.organism_id=osy.organism_id
+";
 
 $query_all_artgroups = "
 	SELECT
