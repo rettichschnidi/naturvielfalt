@@ -74,7 +74,7 @@ msgstr ""
 
 #: observation.ajax.inc:392 observation.show.inc:104 observation.module:45;60
 msgid "Show"
-msgstr "Anzeigen"
+msgstr "Detailansicht"
 
 #: observation.ajax.inc:401 observation.show.inc:92 observation.module:75
 msgid "Edit"
@@ -214,8 +214,6 @@ msgstr "Alle Beobachtungen anzeigen"
 msgid "Map"
 msgstr "Karte"
 
-<<<<<<< HEAD
-=======
 #: observation.show.inc:66
 msgid "only proof images"
 msgstr "Nur Belegbilder"
@@ -232,7 +230,6 @@ msgstr "Belegbilder, dann Portraitbilder"
 msgid "portrait images, then proof images"
 msgstr "Portraitbilder, dann Belegbilder"
 
->>>>>>> 6f1b24e308f3720ca58e40e08fe9fab7237626ca
 #: observation.template.inc:12
 msgid "Capture a new observation"
 msgstr "Beobachtung erfassen"
