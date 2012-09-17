@@ -69,26 +69,32 @@ function observation_get($observation_id) {
 		 * hack end
 		 */
 
-		$result['organism'] = organism_get(
-			$result['observation']['organism_id']);
-		$attributes = db_query(
-			'SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id',
-			array(':observation_id' => $observation_id))->fetchAllAssoc(
-				'organism_artgroup_attr_id');
-		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '')
-				? organism_artgroup_get_attributes_ids(
-					$result['observation']['organism_artgroup_id']) : array();
+		$result['organism'] = organism_get($result['observation']['organism_id']);
+		
+		$attributes = db_query('SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id',
+			array(':observation_id' => $observation_id))
+			->fetchAllAssoc('organism_artgroup_attr_id');
 		$result['attributes'] = array();
+		// artgroup attributes
+		$attributes_vis = ($result['observation']['organism_artgroup_id'] != '')
+			? organism_artgroup_get_attributes_ids($result['observation']['organism_artgroup_id'])
+			: array();
 		foreach ($attributes_vis as $attribute_vis)
-			$result['attributes'][$attribute_vis] = array(
-					'attribute_name' => organism_artgroup_get_attribute(
-						$attribute_vis,
-						true),
-					'value_id' => @$attributes[$attribute_vis]->organism_artgroup_attr_values_id,
-					'value_id_name' => organism_artgroup_get_attributes_value_name(
-						@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
-					'value' => @$attributes[$attribute_vis]->value
+			$result['attributes']['artgroup_attr_'.$attribute_vis] = array(
+				'attribute_name' => organism_artgroup_get_attribute($attribute_vis, true),
+				'value_id' => @$attributes[$attribute_vis]->organism_artgroup_attr_values_id,
+				'value_id_name' => organism_artgroup_get_attributes_value_name(@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
+				'value' => @$attributes[$attribute_vis]->value
 			);
+		// observation attributes
+		foreach ($attributes as $attribute) {
+			$result['attributes']['observation_attr_'.$attribute->id] = array(
+				'attribute_name' => organism_artgroup_get_attribute($attribute->organism_artgroup_attr_id, true),
+				'value_id' => $attribute->organism_artgroup_attr_values_id,
+				'value_id_name' => organism_artgroup_get_attributes_value_name($attribute->organism_artgroup_attr_values_id),
+				'value' => $attribute->value
+			);
+		}
 
 		return $result;
 	}
@@ -509,6 +515,135 @@ function observation_update_attribute_value($entry) {
 function observation_add_attribute_value($entry) {
 	db_insert('observation_attribute')->fields($entry)
 		->execute();
+}
+
+/**
+* Return all or a single observation attribute as an array or as html tags
+* @param int $observation_id
+* @param boolean $as_html
+* @param string $html_before_desc
+* @param string $html_after_desc
+* @param string $html_before_form
+* @param string $html_after_form
+* @return array OR string
+*/
+function observation_get_attributes(
+		$observation_id = false,
+		$as_html = false,
+		$html_before_desc = false,
+		$html_after_desc = false,
+		$html_before_form = false,
+		$html_after_form = false,
+		$attribute_id = false) {
+	global $user;
+	
+	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
+	$sql_from = ' FROM {organism_artgroup_attr} oaa';
+	$sql_join = ' LEFT JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id';
+	$sql_where = '';
+	
+	if ($observation_id > 0) {
+		$sql_select .= ', oa.id attribute_id, oa.value';
+		$sql_join .= ' LEFT JOIN {observation_attribute} oa ON oa.organism_artgroup_attr_id=oaa.id AND oa.observation_id=:observation_id';
+// 		$attribute_sql = 'SELECT oa.id id, oa.observation_id observation_id, oa.organism_artgroup_attr_id attr_id, oa.value, oaa.name, oaat.name type_name, oaat.format type_format'
+// 			.' FROM {observation_attribute} oa'
+// 			.' LEFT JOIN {organism_artgroup_attr} oaa ON oaa.id=oa.organism_artgroup_attr_id'
+// 			.' LEFT JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id'
+// 			.' WHERE oa.observation_id=:observation_id';
+		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where,
+			array(':observation_id' => $observation_id)
+		);
+	}
+	else
+		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where);
+
+	$attributes_with_values = array();
+	foreach ($attributes_results as $attributes_result) {
+		$attributes_with_values[] = array(
+			'name' => $attributes_result->name,
+			'id' => $attributes_result->id,
+			'type_name' => $attributes_result->type_name,
+			'type_format' => $attributes_result->type_format,
+			'values' => $attributes_result->value
+		);
+	}
+	
+	if (!$as_html)
+		return $attributes_with_values;
+
+	$attributes_with_values_html = '';
+	foreach ($attributes_with_values as $tmp) {
+		$attributes_with_values_html .= observation_parse_html_forms(
+		$tmp,
+		$html_before_desc,
+		$html_after_desc,
+		$html_before_form,
+		$html_after_form);
+	}
+	return $attributes_with_values_html;
+
+}
+
+/**
+* parse a given array of attributes to html form elements
+* @param array $form
+* @param string $html_before_desc
+* @param string $html_after_desc
+* @param string $html_before_form
+* @param string $html_after_form
+* @return string
+*/
+function observation_parse_html_forms($form, $html_before_desc = false,
+$html_after_desc = false, $html_before_form = false, $html_after_form = false) {
+	$output = "";
+	$predefinied_value = $form['values'];
+	$name_trimd = str_replace(' ', '', $form['name']);
+	$form_name = 'id="attributes_' . $name_trimd . '" name="attributes[' . $form['id'] . ']"';
+	if ($html_before_desc) {
+		$output = $html_before_desc;
+		$output = str_replace('#id#', 'attributes_tr_' . $form['id'], $output);
+		$output = str_replace('#name#', $form['name'], $output);
+	}
+	if ($html_after_desc)
+	$output .= $html_after_desc;
+	if ($html_before_form)
+	$output .= $html_before_form;
+
+	switch ($form['type_format']) {
+
+		case 'string':
+			$output .= '<input type="text" ' . $form_name . ' value="' . $predefinied_value . '">';
+			break;
+
+		case 'dropdown':
+			$output .= '
+			<select ' . $form_name . '><option value="0">' . t('Nicht definiert') . '</option>';
+			foreach ($form['values'] as $key => $value) {
+				$selected = '';
+				if (isset($predefinied_value_id) && $predefinied_value_id == $key)
+				$selected = ' selected="selected"';
+				$output .= '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
+			}
+			$output .= '</select>';
+			break;
+
+		case 'date':
+			$output .= '<input type="date" ' . $form_name . ' value="' . $predefinied_value . '">';
+			break;
+
+		case 'int':
+			$output .= '<input type="number" ' . $form_name . ' value="' . $predefinied_value . '">';
+			break;
+
+		case 'textarea':
+			$output .= '<textarea ' . $form_name . ' ">' . $predefinied_value . '</textarea>';
+			break;
+
+	}
+
+	if ($html_after_form)
+	$output .= $html_after_form;
+	return $output;
 }
 
 /**

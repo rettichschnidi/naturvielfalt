@@ -258,7 +258,8 @@ function observation_form($observation = false) {
 				true,
 				$observation['observation']['organism_artgroup_detmethod_id'],
 				$observation['detmethods_vis']) . '</select></td>' . '</tr>'
-			.organism_artgroup_get_attributes($observation['observation']['organism_artgroup_id'], true, '<tr><td>#name#', '</td>','<td>','</td></tr>')	
+			.organism_artgroup_get_attributes($observation['observation']['organism_artgroup_id'], true, '<tr><td>#name#', '</td>','<td>','</td></tr>')
+			.observation_get_attributes($observation['observation']['id'], true, '<tr><td>#name#', '</td>', '<td>', '</td></tr>')	
 				
 				
 			. '</table></div></div></fieldset>';	
@@ -294,8 +295,8 @@ function observation_form($observation = false) {
 		$aclfieldset['content'] = observation_acl_template($observation);
 	}
 	
-	$formcust .= drupal_render($recent);
 	$formcust .= drupal_render($aclfieldset);
+	$formcust .= drupal_render($recent);
 
 	return $formcust;
 }
