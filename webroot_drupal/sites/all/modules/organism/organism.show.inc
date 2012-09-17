@@ -98,7 +98,9 @@ function organism_show_classification($classificationid) {
 			$classificationName = $resultClassificationObject->oc_name;
 		}
 	}
-
+	
+	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
+	
 	// Set the table header
 	$classificationTableHeader[] = array(
 			'name' => t('Internal id'),
