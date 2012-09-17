@@ -706,11 +706,33 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'width' => 250,
 			'dbExactField' => 'scientific_name',
 	);
+	
+	$tableHeader[] = array(
+			'name' => t('Artgroup'),
+			'dbfield' => 'artgroup_n',
+			'width' => 250,
+			'hide' => true,
+			'dbExactField' => 'oa.name'
+	);
 
 	$tableHeader[] = array(
 			'name' => t('Date'),
 			'dbfield' => 'date',
 			'width' => 60,
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('X Coordinate'),
+			'dbfield' => 'ch1903_center_x',
+			'width' => 115,
+			'hide' => true
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Y Coordinate'),
+			'dbfield' => 'ch1903_center_y',
+			'width' => 115,
+			'hide' => true
 	);
 
 	$tableHeader[] = array(

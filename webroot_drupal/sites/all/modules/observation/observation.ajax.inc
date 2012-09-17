@@ -349,7 +349,8 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 			'a_s.zip AS zip',
 			'a_s.canton AS canton',
 			'a_s.country AS country',
-			'a_s.geom AS geom',
+			'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',  // Center of the geometry - CH1903, x value
+			'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
 			'org.scientific_name AS organism_sc',
 			'ol.name AS organism_l',
 			'oa.name AS artgroup_n'
