@@ -28,3 +28,7 @@ div.thumb {
 #organism-attributes {
 	clear: both;
 }
+
+.flexigrid div.bDiv td {
+	height: 16px;
+}
