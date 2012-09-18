@@ -246,12 +246,56 @@ jQuery(document).ready(function() {
 			});
 		};
 		
+		/**
+		 * Select or deselect all rows
+		 */
 		observation.toggleSelectedRows = function(status){
 			$("input.gridSelect").each( function() {
 				$(this).attr("checked",status);
 			});
 		}
 		
+		/**
+		 * Export the selected table rows.
+		 * If none are selected, all rows will be exported.
+		 * 
+		 * @param table id
+		 */
+		observation.exportSelectedRows = function(table) {
+			url = Drupal.settings.basePath + 'observation/export?';
+			
+			// collect shown column header ids, ordered
+			var $flexidiv = $(table).closest('div.flexigrid');
+			$flexidiv.find('div.nDiv:first').find('input.togCol').each(function() {
+				if ($(this).attr('checked'))
+					url += 'columns[]=' + $(this).val() + '&';
+			});
+			
+			// collect selected observations
+			$flexidiv.find('input.gridSelect').each(function() {
+				if ($(this).attr('checked'))
+					url += 'observations[]=' + $(this).val() + '&';
+			});
+			url = url.substring(0, url.length-1);
+			
+			// pass search, order and limit parameters
+			var gridPrefs = $(table)[0].p;
+			url += '&query=' + gridPrefs.query + '&qtype=' + gridPrefs.qtype;
+			url += '&sortname=' + gridPrefs.sortname + '&sortorder=' + gridPrefs.sortorder;
+			url += '&rp=18446744073709551615';  // max limit for sql query, select all (2^64-1) rows
+			
+			// load export url in a hidden iframe to get a download prompt
+			var $status = $flexidiv.find('.pPageStat:first');
+			var oldStatus = $status.text();
+			$status.text(gridPrefs.procmsg);
+			$('<iframe />').attr('src', url).hide().appendTo('body').load(function() {
+				$status.text(oldStatus);
+			});
+		}
+		
+		/**
+		 * Show the message returned from the deletion request
+		 */
 		observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
 			if(responseText != null && responseText.success == true){
 				observation.setMessage(responseText.message, responseText.type, 3000);
@@ -262,8 +306,10 @@ jQuery(document).ready(function() {
 			}
 		};
 		
+		/**
+		 * Delete the selected rows
+		 */
 		observation.deleteSelectedRows = function(){
-		
 			var transportData = "";
 			$("input.gridSelect").each( function() {
 				if ($(this).attr('checked') == true){
@@ -286,20 +332,28 @@ jQuery(document).ready(function() {
 				
 				var ajaxurl = Drupal.settings.basePath + 'observation/delete';
 				$.getJSON(ajaxurl, data, function(json){
-					var orginalText = $('.pPageStat').html();
 					jQuery("#observations").flexReload();
 					observation.showDeleteResponse(json);
 				});
 			}
 		}
 		
-		
+		/**
+		 * Display the batch div, holding the select-toggle, delete and export buttons
+		 */
 		observation.displayBatchArea = function(){
 			if ($('#batch-div').length == 0){
 				$('.bDiv').after('<div id="batch-div" style="display: block;"> ' +
 					'	<input type="checkbox" onClick="javascript:observation.toggleSelectedRows(this.checked)"> ' + 
-					'	<input type="button" id="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" onClick="javascript:observation.deleteSelectedRows()"> ' +
-					'</div>');		
+					'	<input type="button" id="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '"> ' +
+					'   <input type="button" id="btnExportSelected" value="' + Drupal.t('Export all') + '"> ' +
+					'</div>');
+				$('#btnDeleteSelected').click(function() {
+					observation.deleteSelectedRows();
+				});
+				$('#btnExportSelected').click(function() {
+					observation.exportSelectedRows('#observations');
+				});
 				// hide the batch div, if we are in gallery mode
 				if (window.location.hash.indexOf('gallery') != -1){
 					$('#batch-div').css('display', 'none');
@@ -307,10 +361,14 @@ jQuery(document).ready(function() {
 			}
 			
 			$('.bDiv :checkbox').click(function(){
-				if ($('.bDiv :checked').length == 0)
+				if ($('.bDiv :checked').length == 0) {
 					$('#btnDeleteSelected').attr("disabled",true);
-				else
-					$('#btnDeleteSelected').removeAttr("disabled");	
+					$('#btnExportSelected').val(Drupal.t('Export all'));
+				}
+				else {
+					$('#btnDeleteSelected').removeAttr("disabled");
+					$('#btnExportSelected').val(Drupal.t('Export selected'));
+				}
 			});	
 			
 

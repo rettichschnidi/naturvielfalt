@@ -16,6 +16,7 @@ define('CREATE_OBSERVATION', 'create observation');
  * @return array
  */
 function observation_menu() {
+	// Show all observations
 	$items['observation/show'] = array(
 			'title' => t('Observations'),
 			'description' => t('Show all observations'),
@@ -29,6 +30,7 @@ function observation_menu() {
 			'weight' => 1,
 	);
 
+	// Create a new observation
 	$items['observation/new'] = array(
 			'title' => t('Create'),
 			'description' => t('Create a new observation'),
@@ -41,6 +43,8 @@ function observation_menu() {
 			'file' => 'observation.inc',
 			'weight' => 2,
 	);
+	
+	// Display an observation
 	$items['observation/%observation'] = array(
 				'title' => t('Show'),
 				'description' => t('Display an observation'),
@@ -56,6 +60,8 @@ function observation_menu() {
 				'type' => MENU_SUGGESTED_ITEM,
 				'weight' => 1
 	);
+	
+	// Display an observation
 	$items['observation/%observation/show'] = array(
 			'title' => t('Show'),
 			'description' => t('Display an observation'),
@@ -71,6 +77,8 @@ function observation_menu() {
 			'type' => MENU_DEFAULT_LOCAL_TASK,
 			'weight' => 1
 	);
+	
+	// Edit an observation
 	$items['observation/%observation/edit'] = array(
 			'title' => t('Edit'),
 			'description' => t('Edit an observation'),
@@ -87,6 +95,7 @@ function observation_menu() {
 			'weight' => 2
 	);
 
+	// Delete an observation
 	$items['observation/%observation/delete'] = array(
 			'title' => t('Delete'),
 			'description' => t('Delete an existing observation.'),
@@ -115,6 +124,7 @@ function observation_menu() {
 				'type' => MENU_CALLBACK,	
 	);
 	
+	// Save a new observation
 	$items['observation/save'] = array(
 			'title' => t('Save'),
 			'description' => t('Save a new observation'),
@@ -126,6 +136,7 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	
+	// Update an observation
 	$items['observation/%observation/save'] = array(
 			'title' => t('Save'),
 			'description' => t('Save a existing observation'),
@@ -140,6 +151,8 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
+	// Get geometry data for editing
 	$items['observation/%observation/geometry/json'] = array(
 			'title' => t('Geometry'),
 			'description' => t('Get geometry data for editing'),
@@ -154,6 +167,8 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
+	// Get all geometry data to show
 	$items['observation/geometry/json'] = array(
 			'title' => t('Geometry'),
 			'description' => t('Get all geometry data to show'),
@@ -164,6 +179,8 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
+	// Get all readable observations
 	$items['observation/get/all'] = array(
 			'title' => t('ObservationsJSON'),
 			'description' => t('Get readable observations'),
@@ -177,6 +194,8 @@ function observation_menu() {
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
+	// Get all writeable observations
 	$items['observation/get/writeable'] = array(
 			'title' => t('Writeable Observations JSON'),
 			'description' => t('Get writeable observations'),
@@ -191,7 +210,7 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 
-	/* Show some important information about an area. For usage in a infoWindow, ajax. */
+	// Show some important information about an area. For usage in a infoWindow, ajax.
 	$items['observation/%observation/overview/ajaxform'] = array(
 			'title' => t('observation overview form'),
 			'page callback' => 'observation_overview_ajax_callback',
@@ -205,6 +224,17 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'observation.ajax.inc',
 	);
+	
+	// Export one or many observations
+	$items['observation/export'] = array(
+			'title' => t('ObservationsJSON'),
+			'description' => t('Export one or many observations'),
+			'page callback' => 'observation_export',
+			'access callback' => TRUE,
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK
+	);
+	
 	return $items;
 }
 
@@ -228,7 +258,6 @@ function observation_permission() {
  *
  * @param array $observationdata
  * @return boolean true if access ok, false if not
- * @todo Implementation
  */
 function observation_admin_access($observationdata = NULL) {
 	if ($observationdata == NULL) {
@@ -251,7 +280,6 @@ function observation_any_access(){
  *
  * @param array $observationdata
  * @return boolean true if access ok, false if not
- * @todo Implementation
  */
 function observation_write_access($observationdata = NULL) {
 	if ($observationdata == NULL || empty($observationdata)) {
@@ -284,7 +312,6 @@ function observation_write_access_by_id($observation_id = NULL) {
 *
 * @param int $aclId
 * @return boolean true if access ok, false if not
-* @todo Implementation
 */
 function observation_write_access_by_acl_id($aclId = NULL) {
 	if (isset($aclId)) {
@@ -300,7 +327,6 @@ function observation_write_access_by_acl_id($aclId = NULL) {
  *
  * @param array $observationdata
  * @return boolean true if access ok, false if not
- * @todo Implementation
  */
 function observation_read_access($observationdata = NULL) {
 	if ($observationdata == NULL || empty($observationdata)) {

@@ -266,6 +266,59 @@ function observation_save($observation_data = false, $custom_data = false, $from
 }
 
 /**
+* Exports a set of observations.
+* The parameter "columns" is an array of the column indexes to export.
+* The parameter "observations" is an array of all observation ids to export.
+*/
+function observation_export() {
+	// check if user is logged in
+	global $user;
+	if (!isset($user)) {
+		$output['success'] = false;
+		$output['message'] = t('Please log in first');
+		return drupal_json_output($output);
+	}
+	
+	// set header information
+	header('Content-type: text/plain');
+	header('Content-Disposition: attachment; filename="observations.csv"');
+	
+	// get header names and DB field names and echo the headers in a csv format
+	$headers = observation_get_standard_datatable_headers();
+	if (isset($_REQUEST['columns']))
+		$columns = filter_xss($_REQUEST['columns']);
+	else {
+		// if no columns are set, export all columns
+		$columns = array();
+		for ($i = 0; $i < count($headers); $i++)
+			$columns[] = $i;
+	}
+	$dbFields = array();
+	$csv_output = '';
+	foreach ($columns as $column) {
+		if (!isset($headers[$column]['noSort']) || !$headers[$column]['noSort']) {
+			$dbFields[] = $headers[$column]['dbfield'];
+			$csv_output .= '"' . $headers[$column]['name'] . '",';
+		}
+	}
+	echo substr($csv_output, 0, -1) . "\n";
+	
+	// get all observation data, and echo requested columns in a csv format
+	// if no observation ids are set, get all observations
+	// observation_get_tabledata checks for read access
+	$observations = (isset($_REQUEST['observations']))
+		? filter_xss($_REQUEST['observations'])
+		: NULL;
+	$observationdata = observation_get_tabledata('ACL_READ', $observations);
+	foreach ($observationdata['rows'] as $observationrow) {
+		$csv_output = '';
+		foreach ($dbFields as $dbField)
+			$csv_output .= '"' . $observationrow['cell'][$dbField] . '",';
+		echo substr($csv_output, 0, -1) . "\n";
+	}
+}
+
+/**
  * Deletes a set of observations. The parameter "observations" is a 
  * list of all observations to delete separated with a coma and brackets:
  * {1,23,443,4343)
@@ -313,142 +366,166 @@ function observation_delete() {
 }
 
 /**
- * This method handle the request from flexigrid
- * @return JSON
+ * Fetches all observation information and formats the rows for display.
+ * Gets all observations if no $observation_id is given
+ * 
+ * @param string $acl_level
+ * @param array(int) $observation_ids
  */
-function observation_get_all_json($acl_level = 'ACL_READ') {
+function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL) {
 	global $user;
 	global $language;
-
+	
 	// if the search is for a date, convert it to timestamp to find the results in the db
 	if (isset($_REQUEST['query'])) {
 		$date_split = explode('.', $_REQUEST['query']);
 		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
 			$_REQUEST['query'] = mktime(
-				null,
-				null,
-				null,
-				$date_split[1],
-				$date_split[0],
-				$date_split[2]);
+			null,
+			null,
+			null,
+			$date_split[1],
+			$date_split[0],
+			$date_split[2]);
 		}
 	}
-
+	
 	$langcode = isset($user->language) && !empty($user->language) ? $user->language
-			: $language->language;
-
+	: $language->language;
+	
 	$sql['dbColumns'] = array(
-			'o.id AS id',
-			'o.observer AS observer',
-			'o.date AS date',
-			'o.count AS count',
-			'o.acl_id AS acl_id',
-			'o.organism_id AS organism_id',  // used to find portrait-pictures
-			'a_s.altitude AS altitude',
-			'a_s.township AS township',
-			'a_s.zip AS zip',
-			'a_s.canton AS canton',
-			'a_s.country AS country',
-			'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',  // Center of the geometry - CH1903, x value
-			'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
-			'org.scientific_name AS organism_sc',
-			'ol.name AS organism_l',
-			'oa.name AS artgroup_n'
+					'o.id AS id',
+					'o.observer AS observer',
+					'o.date AS date',
+					'o.count AS count',
+					'o.acl_id AS acl_id',
+					'o.organism_id AS organism_id',  // used to find portrait-pictures
+					'a_s.altitude AS altitude',
+					'a_s.township AS township',
+					'a_s.zip AS zip',
+					'a_s.canton AS canton',
+					'a_s.country AS country',
+					'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',  // Center of the geometry - CH1903, x value
+					'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
+					'org.scientific_name AS organism_sc',
+					'ol.name AS organism_l',
+					'oa.name AS artgroup_n'
 	);
-
+	
 	$sql['dbSearchColumns'] = array(
-			'o.id',
-			'o.observer',
-			'o.date',
-			'o.count',
-			'o.organism_id AS organism_id',
-			'a_s.altitude',
-			'a_s.township',
-			'a_s.zip',
-			'a_s.canton',
-			'a_s.country',
-			'a_s.geom',
-			'org.scientific_name',
-			'ol.name',
-			'oa.name',
+					'o.id',
+					'o.observer',
+					'o.date',
+					'o.count',
+					'o.organism_id',
+					'a_s.altitude',
+					'a_s.township',
+					'a_s.zip',
+					'a_s.canton',
+					'a_s.country',
+					'a_s.geom',
+					'org.scientific_name',
+					'ol.name',
+					'oa.name',
 	);
-
+	
 	$sql['dbTable'] = '{observation} o';
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id '
 	//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
-			. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
-			. db_escape_field($langcode) . "' " . 'JOIN {organism} org on org.id = o.organism_id '
-			. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
+	. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
+	. db_escape_field($langcode) . "' " . 'JOIN {organism} org on org.id = o.organism_id '
+	. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
+	
+	if ($observation_ids != NULL) {
+		if (is_int($observation_ids) && $observation_ids > 0)
+			$observation_ids = array($observation_ids);
+		if (is_array($observation_ids) && !empty($observation_ids)) {
+			$sql['dbWhere'] = '';
+			foreach ($observation_ids as $observation_id)
+				$sql['dbWhere'] .= 'o.id = ' . $observation_id . ' OR ';
+		}
+		$sql['dbWhere'] = substr($sql['dbWhere'], 0, - 4);
+	}
+	
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
-	/* Only show writeable observations */
+	/* Only show accessible observations */
 	$sql['acl_level'] = $acl_level;
 	$sql['dbDefaultOrder'] = 'o.date DESC';
-
+	
 	$output = datatable_dbRequest($sql);
-
+	
 	// 	// Add a link to the gallery of each habitat
 	global $base_url;
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
 	foreach ($output['rows'] as &$row) {
-
+	
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="'
-				. $row['id'] . '"/>';
-		// Show Details		
+		. $row['id'] . '"/>';
+		// Show Details
 		$showLink = l(
-			'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
-			$base_url . '/observation/' . $row['id'] . '/show',
-			array(
-					'html' => true
-			));
+					'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
+		$base_url . '/observation/' . $row['id'] . '/show',
+		array(
+							'html' => true
+		));
 		$row['cell']['showColumn'] = $showLink;
-		// Edit details		
+		// Edit details
 		if (observation_write_access_by_acl_id($row['cell']['acl_id'])) {
 			$editLink = l(
-				'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '"/>',
-				$base_url . '/observation/' . $row['id'] . '/edit',
-				array(
-						'html' => true
-				));
+						'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '"/>',
+			$base_url . '/observation/' . $row['id'] . '/edit',
+			array(
+								'html' => true
+			));
 		}
 		$row['cell']['editColumn'] = $editLink;
-
+	
 		if ($row['cell']['organism_l'] == "")
-			$row['cell']['organism_l'] = t('No translation available');
+		$row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
 		$row['cell']['piccount'] = $images['count'];
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {
 			// display the thumbnail (for the table view)
-			$row['cell']['thumbnail'] = '<img src="' 
-					. url(
-						'gallery/observation/' . $row['id'] . '/thumb/'
-								. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
-					. $images['images'][0]['title'] . '" height="80" width="80" />';
-		} 
+			$row['cell']['thumbnail'] = '<img src="'
+			. url(
+								'gallery/observation/' . $row['id'] . '/thumb/'
+			. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
+			. $images['images'][0]['title'] . '" height="80" width="80" />';
+		}
 		// create the html source for the gallery view
 		$detail = '<a href="' . $base_url . '/organism/' . $row['cell']['organism_id'] . '" style="color: black; text-decoration:underline">';
-		$row['cell']['gallery_image'] = datatable_get_gallery_image($row['id'], 
-											$row['cell']['organism_id'], 
-											array(
-												'icons' => array(
-													"<img src='$imageBaseUrl/map.png' style='cursor: pointer;' width='16px' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
-													$row['cell']['showColumn'],
-													'&nbsp;'. $editLink,
-												),
-												'data' => array(
-													$row['cell']['artgroup_n'],
-													$detail. "<i>" . $row['cell']['organism_sc'] . "</i></a>",
-													$row['cell']['organism_l']
-												)
-											),
-											$row['cell']['acl_id'],
-											DATATABLE_IMGSRC_BELEG,
-											$images);
+		$row['cell']['gallery_image'] = datatable_get_gallery_image($row['id'],
+		$row['cell']['organism_id'],
+		array(
+														'icons' => array(
+															"<img src='$imageBaseUrl/map.png' style='cursor: pointer;' width='16px' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
+		$row['cell']['showColumn'],
+															'&nbsp;'. $editLink,
+		),
+														'data' => array(
+		$row['cell']['artgroup_n'],
+		$detail. "<i>" . $row['cell']['organism_sc'] . "</i></a>",
+		$row['cell']['organism_l']
+		)
+		),
+		$row['cell']['acl_id'],
+		DATATABLE_IMGSRC_BELEG,
+		$images);
 	}
-	return drupal_json_output($output);
+	
+	return $output;
+}
 
+/**
+ * This method handle the request from flexigrid
+ * @return JSON
+ */
+function observation_get_all_json($acl_level = 'ACL_READ') {
+	$output = observation_get_tabledata($acl_level);
+	return drupal_json_output($output);
 }
 
 /**

@@ -17,8 +17,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-09-17 09:56+0200\n"
-"PO-Revision-Date: 2012-09-17 09:56+0200\n"
+"POT-Creation-Date: 2012-09-18 10:51+0200\n"
+"PO-Revision-Date: 2012-09-18 10:51+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -50,55 +50,39 @@ msgstr "Bitte markieren Sie einen Punkt auf der Karte"
 msgid "Could not save the observation because of an unknown error."
 msgstr "Beobachtung konnte nicht gespeichert werden"
 
-#: observation.ajax.inc:277
+#: observation.ajax.inc:278;330
 msgid "Please log in first"
 msgstr "Bitte melden Sie sich an"
 
-#: observation.ajax.inc:284
+#: observation.ajax.inc:337
 msgid "Parameter 'observations' missing"
 msgstr "Parameter 'observations' fehlt"
 
-#: observation.ajax.inc:303
+#: observation.ajax.inc:356
 msgid "Observation deleted"
 msgstr "Beobachtung entfernt"
 
-#: observation.ajax.inc:304
+#: observation.ajax.inc:357
 msgid "Observations deleted"
 msgstr "Beobachtungen entfernt"
 
-#: observation.ajax.inc:308
+#: observation.ajax.inc:361
 msgid "Some observations could not be deleted (unauthorized access)"
 msgstr ""
 "Es konnten nicht alle Beobachtungen entfernt werden (keine "
 "Berechtigung)"
 
-#: observation.ajax.inc:399 observation.show.inc:125 observation.module:45;60
+#: observation.ajax.inc:467 observation.show.inc:125 observation.module:49;66
 msgid "Show"
 msgstr "Detailansicht"
 
-#: observation.ajax.inc:408 observation.show.inc:113 observation.module:75
+#: observation.ajax.inc:476 observation.show.inc:113 observation.module:83
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: observation.ajax.inc:417
+#: observation.ajax.inc:485
 msgid "No translation available"
 msgstr "Keine Übersetzung vorhanden"
-
-#: observation.ajax.inc:494
-msgid "add proof image"
-msgstr "Belegbild erfassen"
-
-#: observation.ajax.inc:501
-msgid "add portrait image"
-msgstr "Portraitbild erfassen"
-
-#: observation.ajax.inc:535
-msgid "Proof image (@num_images)"
-msgstr "Belegbild (@num_images)"
-
-#: observation.ajax.inc:540
-msgid "Portrait image (@num_images)"
-msgstr "Portraitbild (@num_images)"
 
 #: observation.delete.inc:18
 msgid "Delete Observation @observation_organism from @observation_date."
@@ -110,7 +94,7 @@ msgstr ""
 "Sind Sie sicher, dass Sie die Beobachtung «@observation_organism» "
 "löschen wollen? "
 
-#: observation.delete.inc:38 observation.module:91 js/observation.js:0
+#: observation.delete.inc:38 observation.module:100 js/observation.js:0
 msgid "Delete"
 msgstr "Löschen"
 
@@ -126,7 +110,7 @@ msgstr "@observation_organism"
 msgid "Add and edit generic @mediatype of this observation."
 msgstr "@mediatype dieser Beobachtung hinzufügen und bearbeiten."
 
-#: observation.gallery.inc:98 observation.show.inc:48 observation.module:20
+#: observation.gallery.inc:98 observation.show.inc:48 observation.module:21
 msgid "Observations"
 msgstr "Beobachtungen"
 
@@ -214,7 +198,7 @@ msgstr "Höhenlage [m] "
 msgid "Number of pictures"
 msgstr "Anzahl Bilder"
 
-#: observation.show.inc:17 observation.module:21
+#: observation.show.inc:17 observation.module:22
 msgid "Show all observations"
 msgstr "Alle Beobachtungen anzeigen"
 
@@ -294,7 +278,7 @@ msgstr "Anzahl Organismen"
 msgid "Add more details"
 msgstr "Weitere Details hinzufügen"
 
-#: observation.template.inc:268 observation.module:119;130
+#: observation.template.inc:268 observation.module:129;141
 msgid "Save"
 msgstr "Speichern"
 
@@ -336,75 +320,79 @@ msgstr "Positionsdaten"
 msgid "Details"
 msgstr "Angaben"
 
-#: observation.module:33
+#: observation.module:35
 msgid "Create"
 msgstr "Erstellen"
 
-#: observation.module:34
+#: observation.module:36
 msgid "Create a new observation"
 msgstr "Neue Beobachtung erstellen"
 
-#: observation.module:46;61
+#: observation.module:50;67
 msgid "Display an observation"
 msgstr "Beobachtung anzeigen"
 
-#: observation.module:76
+#: observation.module:84
 msgid "Edit an observation"
 msgstr "Beobachtung bearbeiten"
 
-#: observation.module:92
+#: observation.module:101
 msgid "Delete an existing observation."
 msgstr "Bestehende Beobachtung löschen"
 
-#: observation.module:110;168
+#: observation.module:119;185;230
 msgid "ObservationsJSON"
 msgstr "ObservationsJSON"
 
-#: observation.module:111
-msgid "Delete one or many observations"
-msgstr ""
-
 #: observation.module:120
+msgid "Delete one or many observations"
+msgstr "Eine oder mehrere Beobachtung(en) löschen"
+
+#: observation.module:130
 msgid "Save a new observation"
 msgstr "Neue Beobachtung speichern"
 
-#: observation.module:131
+#: observation.module:142
 msgid "Save a existing observation"
 msgstr "Bestehende Beobachtung speichern"
 
-#: observation.module:144;158
+#: observation.module:157;173
 msgid "Geometry"
 msgstr "Geometrie"
 
-#: observation.module:145
+#: observation.module:158
 msgid "Get geometry data for editing"
 msgstr "Geometriedaten"
 
-#: observation.module:159
+#: observation.module:174
 msgid "Get all geometry data to show"
 msgstr "Alle Geometriedaten holen"
 
-#: observation.module:169
+#: observation.module:186
 msgid "Get readable observations"
 msgstr "Alle lesbaren Beobachtungen holen"
 
-#: observation.module:181
+#: observation.module:200
 msgid "Writeable Observations JSON"
 msgstr "Writeable Observations JSON"
 
-#: observation.module:182
+#: observation.module:201
 msgid "Get writeable observations"
 msgstr "Alle schreibbaren Beobachtungen holen"
 
-#: observation.module:196
+#: observation.module:215
 msgid "observation overview form"
 msgstr "Überblick Beobachtungen"
 
-#: observation.module:218
+#: observation.module:231
+msgid "Export one or many observations"
+msgstr "Eine oder mehrere Beobachtunge(en) exportieren"
+
+#: observation.module:248
 msgid "can view observations"
 msgstr "Kann Beobachtungen sehen"
 
-#: observation.module:221
+#: observation.module:251
 msgid "can create observations"
 msgstr "Kann Beobachtungen erstellen"
 
@@ -447,4 +435,12 @@ msgstr "Keine Datensätze ausgewählt"
 #: js/observation.js:0
 msgid "Do you really want to delete the selected records?"
 msgstr "Datensätze wirklich löschen"
+
+#: js/observation.js:0;0
+msgid "Export all"
+msgstr "Alle exportieren"
+
+#: js/observation.js:0
+msgid "Export selected"
+msgstr "Ausgewählte exportieren"
 

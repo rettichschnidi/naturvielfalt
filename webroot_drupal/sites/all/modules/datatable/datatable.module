@@ -200,8 +200,8 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 			'desc'
 	);
 
-	if (isset($_POST['sortname'])) {
-		$sortname = $_POST['sortname'];
+	if (isset($_REQUEST['sortname'])) {
+		$sortname = $_REQUEST['sortname'];
 		foreach ($sortColumns as $sortColumn) {
 			foreach (explode(".", $sortColumn) as $sortCol) {
 				$sortColumnsTemp[] = trim($sortCol);
@@ -219,17 +219,17 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 					. implode(", ", $sortColumnsTemp);
 		$sortname = pg_escape_string($sortname);
 	}
-	if (isset($_POST['sortorder'])) {
-		$sortorder = pg_escape_string($_POST['sortorder']);
+	if (isset($_REQUEST['sortorder'])) {
+		$sortorder = pg_escape_string($_REQUEST['sortorder']);
 		if (!is_int(array_search($sortorder, $sortOrders)))
 			return "Error! Sortorder not possible";
 	}
 	// 	Not progressed, always search in all searchable columns
-	if (isset($_POST['qtype'])) {
-		$qtype = pg_escape_string($_POST['qtype']);
+	if (isset($_REQUEST['qtype'])) {
+		$qtype = pg_escape_string($_REQUEST['qtype']);
 	}
-	if (isset($_POST['query'])) {
-		$query = $_POST['query'];
+	if (isset($_REQUEST['query'])) {
+		$query = $_REQUEST['query'];
 		if (!is_string($query))
 			return "Error! Query not a string";
 		$query = pg_escape_string($query);
@@ -246,8 +246,8 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$pageNumber = 1;
 	}
 
-	if (isset($_POST['rp'])) {
-		$pagesize = (int) $_POST['rp'];
+	if (isset($_REQUEST['rp'])) {
+		$pagesize = (int) $_REQUEST['rp'];
 		if ($pagesize < 1)
 			return "Error! Pagesize < 1";
 	}
