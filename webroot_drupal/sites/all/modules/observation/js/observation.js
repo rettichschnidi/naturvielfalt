@@ -342,7 +342,7 @@ jQuery(document).ready(function() {
 		 * Display the batch div, holding the select-toggle, delete and export buttons
 		 */
 		observation.displayBatchArea = function(){
-			if ($('#batch-div').length == 0){
+			if ($('#batch-div').length == 0) {
 				$('.bDiv').after('<div id="batch-div" style="display: block;"> ' +
 					'	<input type="checkbox" onClick="javascript:observation.toggleSelectedRows(this.checked)"> ' + 
 					'	<input type="button" id="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '"> ' +
@@ -359,14 +359,18 @@ jQuery(document).ready(function() {
 					$('#batch-div').css('display', 'none');
 				}
 			}
+			else {
+				$('#btnDeleteSelected').attr('disabled', true);
+				$('#btnExportSelected').val(Drupal.t('Export all'));
+			}
 			
 			$('.bDiv :checkbox').click(function(){
 				if ($('.bDiv :checked').length == 0) {
-					$('#btnDeleteSelected').attr("disabled",true);
+					$('#btnDeleteSelected').attr('disabled', true);
 					$('#btnExportSelected').val(Drupal.t('Export all'));
 				}
 				else {
-					$('#btnDeleteSelected').removeAttr("disabled");
+					$('#btnDeleteSelected').removeAttr('disabled');
 					$('#btnExportSelected').val(Drupal.t('Export selected'));
 				}
 			});	
