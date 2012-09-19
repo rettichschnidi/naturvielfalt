@@ -247,6 +247,13 @@ jQuery(document).ready(function() {
 		};
 		
 		/**
+		 * Reload the table.
+		 */
+		observation.reload = function() {
+			jQuery("#observations").flexReload();
+		}
+		
+		/**
 		 * Select or deselect all rows
 		 */
 		observation.toggleSelectedRows = function(status){
@@ -337,6 +344,36 @@ jQuery(document).ready(function() {
 					observation.showDeleteResponse(json);
 				});
 			}
+		}
+		
+		/**
+		 * Update the map to show only overlays of the given data.
+		 * 
+		 * @param data
+		 */
+		observation.updateMap = function(data) {
+			if (observationmap == undefined)
+				return data;
+			
+			observationmap.clearOverlays();
+			
+			var mapcontains = true;
+			var bounds = new google.maps.LatLngBounds();
+			for (var i in data.rows) {
+				var marker = observationmap.overlaysArray[data.rows[i].id];
+				
+				marker.setMap(observationmap.googlemap);
+				
+				var position = marker.getPosition();
+				bounds.extend(position);
+				// don't touch mapcontains once it changed to false
+				if (mapcontains)
+					mapcontains = observationmap.googlemap.getBounds().contains(position);
+			}
+			if (!mapcontains)
+				observationmap.googlemap.fitBounds(bounds);
+			
+			return data;
 		}
 		
 		/**
@@ -531,7 +568,6 @@ jQuery(document).ready(function() {
 			
 			return pinImage;
 		};
-				
 });
 
 

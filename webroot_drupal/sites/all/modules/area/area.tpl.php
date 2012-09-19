@@ -123,7 +123,8 @@ if ($reticle) {
 						scrollwheel: <?php echo $scrollwheel ? 1 : 0 ?>,
 						center: new google.maps.LatLng(46.77373, 8.25073),
 						mapTypeId : google.maps.MapTypeId.ROADMAP,
-				}
+				},
+				onDataLoaded: <?php echo $onDataLoadedHandler ? $onDataLoadedHandler : 0 ?>
 			};
 
 		if( typeof <?php echo $mapid ?> != 'undefined') {

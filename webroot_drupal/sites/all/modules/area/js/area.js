@@ -68,14 +68,22 @@ function Area(options) {
 	this.createSearchbarCH1903(this.options.ch1903);
 	this.createDrawingManager(this.options.drawingmanager);
 	this.createReticle(this.options.reticle);
+	
+	// optional handlers
+	this.onDataLoaded = this.options.onDataLoaded;
+	console.log(this.onDataLoaded);
+
+	// load data into map
 	if(this.options.geometriesfetchurl.length > 0) {
 		var this_ = this;
 		jQuery.getJSON(this.options.geometriesfetchurl,
 				function(data) {
 					this_.loadGeometriesAndOverlaysFromJson(data);
-					if(this_.options.geometryedit) {
+					if(this_.options.geometryedit)
 						this_.geometryEdit(this_.options.geometryeditid);
-					}
+					
+					if (this_.onDataLoaded)
+						this_.onDataLoaded();
 				}
 			);
 	}
@@ -362,6 +370,16 @@ Area.prototype.loadGeometriesAndOverlaysFromJson = function(json) {
 		this_.addGeometryFromJsonToGoogleMapArray(e);
 	});
 };
+
+/**
+ * Remove all overlays from this map.
+ * @note this function only clears the displayed map but keeps overlays stored in the
+ * Area object to show them again.
+ */
+Area.prototype.clearOverlays = function() {
+	for (var i in this.overlaysArray)
+		this.overlaysArray[i].setMap();
+}
 
 /**
  * Create and show the drawing manager

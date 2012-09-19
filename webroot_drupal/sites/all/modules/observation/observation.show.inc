@@ -34,7 +34,8 @@ function observation_show_all_observations() {
 			'#search' => true,
 			'#mapid' => 'observationmap',
 			'#geometries_fetch_url' => base_path() . 'observation/geometry/json',
-			'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform'
+			'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform',
+			'#onDataLoadedHandler' => 'observation.reload'  // load table data after map is loaded
 	);
 
 	$output['space'] = array(
@@ -48,18 +49,18 @@ function observation_show_all_observations() {
 			'#title' => t('Observations'),
 			'#id_table' => 'observations',
 			'#options' => array(
+					'autoload' => false,  // kickoff load from map, because preprocessor needs map loaded
 					'jsonUrl' => base_path() . "observation/get/all",
 					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, id) {
+					'rowClickHandler' => 'function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {							    
 								observationmap.selectObservation(id);
 							}
 						)
-					}",
-					'onSuccessHandler' => "function onSuccessHandler() {
-								observation.displayBatchArea();						
-					}",
+					}',
+					'preProcessHandler' => 'observation.updateMap',
+					'onSuccessHandler' => 'observation.displayBatchArea',
 					'gallery_enabled' => true,
 					'gallery_image_sources' => array(
 						'selected' => array(

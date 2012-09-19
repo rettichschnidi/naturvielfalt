@@ -457,6 +457,8 @@ function area_theme() {
 							'loadlastlocation' => true,
 							// always save the currently viewed location (boundaries) when changing the map boundaries
 							'savelastlocation' => true,
+							// name of the javascript function to execute after the map has loaded the data
+							'onDataLoadedHandler' => false
 					)
 			)
 	);

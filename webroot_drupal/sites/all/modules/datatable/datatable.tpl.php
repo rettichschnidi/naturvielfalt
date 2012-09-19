@@ -231,6 +231,7 @@ print drupal_render($table);
 
 jQuery(document).ready(function() {
 	jQuery("#<?php echo $id_table; ?>").flexigrid ({
+		autoload: <?php echo (isset($options['autoload']) && !$options['autoload']) ? 0 : 1; ?>,
 		url: '<?php echo $options['jsonUrl']; ?>',
 		dataType: 'json',
 		<?php $aoColumns ? print "$aoColumns\n" : ''; ?>
@@ -253,23 +254,28 @@ jQuery(document).ready(function() {
 		findtext: '<?php echo t('Find'); ?>',
 		procmsg: '<?php echo t('Processing, please wait ...'); ?>',
 		nomsg: '<?php  echo t('No items'); ?>',
-		search : '<?php echo t('Search'); ?>',
-		reset : '<?php echo t('Reset'); ?>',
-		minmax : '<?php echo t('Minimize/Maximize Table'); ?>',
-		hideshow : '<?php echo t('Hide/Show Columns'); ?>',
+		search: '<?php echo t('Search'); ?>',
+		reset: '<?php echo t('Reset'); ?>',
+		minmax: '<?php echo t('Minimize/Maximize Table'); ?>',
+		hideshow: '<?php echo t('Hide/Show Columns'); ?>',
 		dblClickResize: true,
 		onToggleCol: true,
 		singleSelect: true,
-		<?php if (isset($options['onSuccessHandler'])) echo "onSuccess: onSuccessHandler,"; ?>			
-		// add our own preProcess handler to intercept the json and display the gallery, the gallery_addon needs the tableid
+		<?php if (isset($options['onSuccessHandler'])) echo 'onSuccess: ' . $options['onSuccessHandler'] . ','; ?>
 		<?php 
-		if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
-			$gallery_json_item = isset($options['gallery_json_item']) ? $options['gallery_json_item'] : 'gallery_image';
-			echo "preProcess : function(data) {
-					return gallery_addon.preProcess('$id_table', '$gallery_json_item', data);
-				  },
-			";
-		}	 
+			if (isset($options['preProcessHandler'])) {
+				if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
+					$gallery_json_item = isset($options['gallery_json_item']) ? $options['gallery_json_item'] : 'gallery_image';
+					// the gallery_addon needs the tableid
+					echo 'preProcess: function(data) {
+							data = ' . $options['preProcessHandler'] . '(data);
+							return gallery_addon.preProcess(\'' . $id_table . '\', \'' . $gallery_json_item . '\', data);
+						  },
+					';
+				}
+				else
+					echo 'preProcess : ' . $options['preProcessHandler'] . ',';
+			}	 
 		?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
