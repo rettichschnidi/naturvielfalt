@@ -250,8 +250,9 @@ jQuery(document).ready(function() {
 		 * Select or deselect all rows
 		 */
 		observation.toggleSelectedRows = function(status){
-			$("input.gridSelect").each( function() {
-				$(this).attr("checked",status);
+			$('input.gridSelect').each(function() {
+				$(this).attr('checked', status);
+				observationmap.selectMultipleObservation(null, parseInt($(this).val()), !status);
 			});
 		}
 		
@@ -379,26 +380,156 @@ jQuery(document).ready(function() {
 		};
 		
 		/**
-		 * get a observation on the map and zoom.. by id
+		 * Select an observation on the map. A single selection is green (@see area.js).
+		 * 
+		 * Old selected observation is deselected, and the map changes only if the
+		 * observation is out of the current map section.
+		 * 
+		 * This function does not touch observations selected by multiple select.
+		 * 
 		 * @param id
 		 */
 		Area.prototype.selectObservation = function(id) {
+			if (id == this.selectedId) return
+			
+			// check if marker id is available
 			if (id in this.overlaysArray) {
-				if (this.selectedId != null) {
-					this.overlaysArray[this.selectedId].deselect();
-					this.selectedId = null;
-				}
-				this.selectedId = id;
-				var currentOverlays = this.overlaysArray[this.selectedId];
-				currentOverlays.select();
+				var marker = null;
 				
-				var bounds = currentOverlays.getBounds();
-				this.googlemap.fitBounds(bounds);
-				this.googlemap.setZoom(this.googlemap.getZoom() - 2);
-				this.showInfoWindow(id);
+				// deselect previously selected marker
+				// if it is part of multiple select (z-index 3), change color to blue
+				if (this.selectedId != null) {
+					marker = this.overlaysArray[this.selectedId];
+					var z = marker.getZIndex();
+					if (z < 3)
+						marker.deselect(this.pinColor.red);
+					else
+						marker.deselect(this.pinColor.blue, z);
+				}
+				
+				// save reference for future use
+				this.selectedId = id;
+				
+				// get the requested marker
+				marker = this.overlaysArray[id];
+				// and select it
+				var z = marker.getZIndex();
+				marker.select(this.pinColor.green);
+				// set z-index if it was previously part of multiple select
+				if (z >= 3)
+					marker.setZIndex(4);
+
+				// update map only if marker is out of view
+				if (!this.googlemap.getBounds().contains(marker.getPosition())) {
+					this.googlemap.fitBounds(marker.getBounds());
+					this.googlemap.setZoom(this.googlemap.getZoom() - 4);
+				}
 			} else {
 				console.error("Observation not available: " + id);
 			}
+		};
+		
+		/**
+		 * De-/Select multiple observations on the map. Multiple selections are blue.
+		 * 
+		 * The map is zoomed to show all selected observations, and it changes only if 
+		 * one of the selected observations is out of the current map section.
+		 * 
+		 * This function does not touch observations selected by single select.
+		 * 
+		 * @param id of the additional observation
+		 */
+		Area.prototype.selectMultipleObservation = function(event, id, deselect) {
+			// prevent bubbling to row click action (selectObservation())
+			var e = event || window.event;
+			if (e != undefined)	e.stopPropagation();
+			
+			// check if there exists an overlay with the given id
+			if (id in this.overlaysArray) {
+				if (this.selectedIds == null) {
+					this.selectedIds = [];
+				}
+				if (deselect == true) {
+					// deselect
+					var idx = $.inArray(id, $.unique(this.selectedIds))
+					if (idx > -1) {
+						this.selectedIds.splice(idx, 1);
+						this.overlaysArray[id].deselect(this.pinColor.red);
+					}
+				}
+				else {
+					// select
+					this.selectedIds.push(id);
+				}
+				
+				// loop through selected overlays, select them on the map, calculate the
+				// bounds around them, and check if refitting map is needed
+				var mapcontains = true;
+				var bounds = new google.maps.LatLngBounds();
+				for (var i = 0; i < this.selectedIds.length; i++) {
+					var marker = this.overlaysArray[this.selectedIds[i]];
+
+					// set z-index to mark as selected by multiple select
+					marker.select(this.pinColor.blue, 3);
+					
+					var position = marker.getPosition();
+					bounds.extend(position);
+					// don't touch mapcontains once it changed to false
+					if (mapcontains)
+						mapcontains = this.googlemap.getBounds().contains(position);
+				}
+				if (!mapcontains)
+					this.googlemap.fitBounds(bounds);
+			}
+		}
+		
+		/**
+		 * Override default Google Maps Marker select() method to define color and
+		 * z-index
+		 * 
+		 * @param color
+		 * @param zindex
+		 */
+		google.maps.Marker.prototype.select = function(color, zindex) {
+			if (color != undefined)
+				this.setIcon(getMarkerImage(color));
+			
+			if (zindex == undefined)
+				zindex = 2;
+			this.setZIndex(zindex);
+		}
+
+		/**
+		 * Override default Google Maps Marker deselect() method to define color and
+		 * z-index
+		 * 
+		 * @param color
+		 * @param zindex
+		 */
+		google.maps.Marker.prototype.deselect = function(color, zindex) {
+			if (color != undefined)
+				this.setIcon(getMarkerImage(color));
+			
+			if (zindex == undefined)
+				zindex = 1;
+			this.setZIndex(zindex);
+		}
+
+		/**
+		 * Get a custom colored Google marker
+		 * 
+		 * @param color
+		 */
+		getMarkerImage = function(color) {
+			if (color == undefined)
+				return
+			
+			var pinImage = new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + color,
+			        new google.maps.Size(21, 34),
+			        new google.maps.Point(0,0),
+			        new google.maps.Point(10, 34));
+			
+			return pinImage;
 		};
 				
 });

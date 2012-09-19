@@ -28,13 +28,22 @@ function Area(options) {
 	this.options = options;
 	// map holds the google maps object
 	this.googlemap = null;
-	// holds the id of the currently selected overlay/geometry
+	// holds the id of the currently selected overlays/geometrys, for single select
 	this.selectedId = null;
+	// holds the ids of the currently selected overlays/geometrys, for multiple select
+	this.selectedIdsArray = null;
 	// points to last created element
 	this.newOverlay = null;
 	// contains all the overlays currently shown on the map
 	this.overlaysArray = [];
 	this.geometriesArray = [];
+	
+	// pin colors
+	this.pinColor = {
+		'blue': '6F98FF',
+		'green': '34BA46',
+		'red': 'FE7569'
+	};
 
 	// there is just one at a time
 	this.infoWindow = null;
@@ -189,9 +198,8 @@ Area.prototype.automaticallySaveLocation = function(enable) {
  */
 Area.prototype.selectGeometry = function(geometryid) {
 	if (geometryid in this.geometriesArray) {
-		if (this.selectedId != null) {
-			this.overlaysArray[geometryid].deselect();
-		}
+		if (this.selectedId != null)
+			this.overlaysArray[this.selectedId].deselect();
 		this.selectedId = geometryid;
 
 		this.overlaysArray[geometryid].select();
@@ -229,7 +237,6 @@ Area.prototype.showInfoWindow = function(id) {
 		
 		google.maps.event.addListener(infowindow, 'closeclick', function() {
 			jQuery('#row' + id).removeClass('trSelected');
-			this_.overlaysArray[id].deselect();
 			infowindow.close();
 			this_.infoWindow = null;
 		});
@@ -241,7 +248,6 @@ Area.prototype.showInfoWindow = function(id) {
 			jQuery(data)
 		});
 		
-		this.googlemap.fitBounds(this.overlaysArray[id].getBounds());
 		infowindow.open(this.googlemap, this.overlaysArray[id]);
 	} else {
 		alert("No infowindowcontentfetchurl given!");
@@ -296,7 +302,6 @@ Area.prototype.addWindowsListenerToGeometry = function(id) {
 		google.maps.event.addListener(currentoverlay, 'click', function() {
 			jQuery('#row' + id).addClass('trSelected');
 			this_.showInfoWindow(id);
-			currentoverlay.select();
 		})
 	);
 };

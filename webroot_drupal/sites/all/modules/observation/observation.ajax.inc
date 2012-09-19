@@ -461,7 +461,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	foreach ($output['rows'] as &$row) {
 	
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="'
-		. $row['id'] . '"/>';
+		. $row['id'] . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
 		// Show Details
 		$showLink = l(
 					'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
