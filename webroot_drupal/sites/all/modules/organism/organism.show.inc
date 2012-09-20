@@ -78,27 +78,27 @@ function organism_show_classifiers() {
  */
 function organism_show_classification($classificationid) {
 	assert($classificationid != false);
-	// Extract the name, parent and top id of the current classification
-	$classificationName = 'Classifications';
-	$classificationParentId = null;
-	$classificationPrimeFatherId = null;
+	// fetch classification data
+	$classificationObj = null;
 	{
 		$resultClassification = db_query(
 			'SELECT
-				oc.parent_id AS parent_id,
-				oc.prime_father_id AS prime_father_id,
-				oc.name AS oc_name
+				oc.parent_id AS oc_parent_id,
+				oc.prime_father_id AS oc_prime_father_id,
+				oc.name AS oc_name,
+				ocl.name AS ocl_name
 			FROM
 				{organism_classification} oc
+			LEFT JOIN
+				{organism_classification_level} ocl
+			ON
+				ocl.id = oc.organism_classification_level_id
 			WHERE
 				oc.id = :ocid',
 			array(':ocid' => $classificationid));
 
 		if ($resultClassification->rowCount() == 1) {
-			$resultClassificationObject = $resultClassification->fetchObject();
-			$classificationName = $resultClassificationObject->oc_name;
-			$classificationParentId = $resultClassificationObject->parent_id;
-			$classificationPrimeFatherId = $resultClassificationObject->prime_father_id;
+			$classificationObj = $resultClassification->fetchObject();
 		}
 	}
 	
@@ -108,8 +108,8 @@ function organism_show_classification($classificationid) {
 	// hierarchy level up buttons
 	// insert html in title to not change flexigrid.js...
 	$hierarchyLevelUpButtons = '</div>'
-		.'<div class="mUp mButton" data-cid="' . $classificationParentId . '"><span /></div>'
-		.'<div class="mTop mButton" data-cid="' . $classificationPrimeFatherId . '"><span />';
+		.'<div class="mUp mButton" data-cid="' . $classificationObj->oc_parent_id . '"><span /></div>'
+		.'<div class="mTop mButton" data-cid="' . $classificationObj->oc_prime_father_id . '"><span />';
 	
 	// Set the table header
 	$classificationTableHeader[] = array(
@@ -120,7 +120,12 @@ function organism_show_classification($classificationid) {
 			'hide' => true
 	);
 	$classificationTableHeader[] = array(
-			'name' => t('Classificator name'),
+			'name' => t(
+				ucfirst($classificationObj->ocl_name),
+				array(),
+				array(
+					'context' => 'scientific classification'
+				)),
 			'dbfield' => 'ds_name',
 			'dbExactField' => 'ds_name',
 			'width' => 760,
@@ -138,7 +143,7 @@ function organism_show_classification($classificationid) {
 	
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
-			'#title' => t('Subclassifications within') . ' ' . $classificationName . $hierarchyLevelUpButtons,
+			'#title' => t('Subclassifications within') . ' ' . $classificationObj->oc_name . $hierarchyLevelUpButtons,
 			'#header' => $classificationTableHeader,
 			'#id_table' => 'classificators',
 			'#options' => array(
@@ -218,8 +223,7 @@ function organism_show_classification($classificationid) {
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
-			'#title' => t('Species which are in classification ')
-					. $classificationName,
+			'#title' => t('Species which are in classification ') . $classificationObj->oc_name,
 			'#header' => $organismsTableHeader,
 			'#id_table' => 'organisms',
 			'#options' => array(
