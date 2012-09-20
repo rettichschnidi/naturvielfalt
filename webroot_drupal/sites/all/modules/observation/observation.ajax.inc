@@ -283,7 +283,10 @@ function observation_export() {
 	header('Content-type: text/plain');
 	header('Content-Disposition: attachment; filename="observations.csv"');
 	
-	// get header names and DB field names and echo the headers in a csv format
+	// source information in first row
+	echo '"' . t('This export originates from Naturvielfalt, a platform initiated by Naturwerk Brugg www.naturwerk.info') . '"' . "\n";
+	
+	// get header data
 	$headers = observation_get_standard_datatable_headers();
 	if (isset($_REQUEST['columns']))
 		$columns = filter_xss($_REQUEST['columns']);
@@ -293,12 +296,22 @@ function observation_export() {
 		for ($i = 0; $i < count($headers); $i++)
 			$columns[] = $i;
 	}
+	// echo header names in a csv format, get DB field names in the order of the output
 	$dbFields = array();
 	$csv_output = '';
 	foreach ($columns as $column) {
 		if (!isset($headers[$column]['noSort']) || !$headers[$column]['noSort']) {
 			$dbFields[] = $headers[$column]['dbfield'];
 			$csv_output .= '"' . $headers[$column]['name'] . '",';
+		}
+	}
+	// loop through $headers (again) to find columns which we always export
+	// didn't do it in $columns loop in order to add these always exported columns at the
+	// end and don't mix up $dbFields order
+	foreach ($headers as $headerIdx => $header) {
+		if (isset($header['exportAlways']) && $header['exportAlways'] && !in_array($headerIdx, $columns)) {
+			$dbFields[] = $header['dbfield'];
+			$csv_output .= '"' . $header['name'] . '",';
 		}
 	}
 	echo substr($csv_output, 0, -1) . "\n";

@@ -17,8 +17,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-09-18 10:51+0200\n"
-"PO-Revision-Date: 2012-09-18 10:51+0200\n"
+"POT-Creation-Date: 2012-09-20 08:48+0200\n"
+"PO-Revision-Date: 2012-09-20 08:48+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -50,37 +50,41 @@ msgstr "Bitte markieren Sie einen Punkt auf der Karte"
 msgid "Could not save the observation because of an unknown error."
 msgstr "Beobachtung konnte nicht gespeichert werden"
 
-#: observation.ajax.inc:278;330
+#: observation.ajax.inc:278;343
 msgid "Please log in first"
 msgstr "Bitte melden Sie sich an"
 
-#: observation.ajax.inc:337
+#: observation.ajax.inc:287
+msgid "This export originates from Naturvielfalt, a platform initiated by Naturwerk Brugg www.naturwerk.info"
+msgstr "Dieser Export stammt von Naturvielfalt, eine Plattform die vom Naturwerk Brugg www.naturwerk.info ins Leben gerufen wurde"
+
+#: observation.ajax.inc:350
 msgid "Parameter 'observations' missing"
 msgstr "Parameter 'observations' fehlt"
 
-#: observation.ajax.inc:356
+#: observation.ajax.inc:369
 msgid "Observation deleted"
 msgstr "Beobachtung entfernt"
 
-#: observation.ajax.inc:357
+#: observation.ajax.inc:370
 msgid "Observations deleted"
 msgstr "Beobachtungen entfernt"
 
-#: observation.ajax.inc:361
+#: observation.ajax.inc:374
 msgid "Some observations could not be deleted (unauthorized access)"
 msgstr ""
 "Es konnten nicht alle Beobachtungen entfernt werden (keine "
 "Berechtigung)"
 
-#: observation.ajax.inc:467 observation.show.inc:125 observation.module:49;66
+#: observation.ajax.inc:480 observation.show.inc:126 observation.module:49;66
 msgid "Show"
 msgstr "Detailansicht"
 
-#: observation.ajax.inc:476 observation.show.inc:113 observation.module:83
+#: observation.ajax.inc:489 observation.show.inc:114 observation.module:83
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: observation.ajax.inc:485
+#: observation.ajax.inc:498
 msgid "No translation available"
 msgstr "Keine Übersetzung vorhanden"
 
@@ -110,7 +114,7 @@ msgstr "@observation_organism"
 msgid "Add and edit generic @mediatype of this observation."
 msgstr "@mediatype dieser Beobachtung hinzufügen und bearbeiten."
 
-#: observation.gallery.inc:98 observation.show.inc:48 observation.module:21
+#: observation.gallery.inc:98 observation.show.inc:49 observation.module:21
 msgid "Observations"
 msgstr "Beobachtungen"
 
@@ -146,7 +150,7 @@ msgstr "Anzahl"
 msgid "Determination method"
 msgstr "Bestimmungsmethode"
 
-#: observation.inc:341
+#: observation.inc:341;620
 msgid "Not defined"
 msgstr "Nicht definiert"
 
@@ -194,7 +198,7 @@ msgstr "Y-Koordinate"
 msgid "Altitude [m]"
 msgstr "Höhenlage [m] "
 
-#: observation.inc:779
+#: observation.inc:780
 msgid "Number of pictures"
 msgstr "Anzahl Bilder"
 
@@ -206,19 +210,19 @@ msgstr "Alle Beobachtungen anzeigen"
 msgid "Map"
 msgstr "Karte"
 
-#: observation.show.inc:67
+#: observation.show.inc:68
 msgid "only proof images"
 msgstr "Nur Belegbilder"
 
-#: observation.show.inc:71
+#: observation.show.inc:72
 msgid "only portrait images"
 msgstr "Nur Portraitbilder"
 
-#: observation.show.inc:75
+#: observation.show.inc:76
 msgid "proof images, then portrait images"
 msgstr "Belegbilder, dann Portraitbilder"
 
-#: observation.show.inc:79
+#: observation.show.inc:80
 msgid "portrait images, then proof images"
 msgstr "Portraitbilder, dann Belegbilder"
 
@@ -436,7 +440,7 @@ msgstr "Keine Datensätze ausgewählt"
 msgid "Do you really want to delete the selected records?"
 msgstr "Datensätze wirklich löschen"
 
-#: js/observation.js:0;0
+#: js/observation.js:0;0;0
 msgid "Export all"
 msgstr "Alle exportieren"
 

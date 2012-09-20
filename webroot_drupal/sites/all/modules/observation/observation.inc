@@ -617,7 +617,7 @@ $html_after_desc = false, $html_before_form = false, $html_after_form = false) {
 
 		case 'dropdown':
 			$output .= '
-			<select ' . $form_name . '><option value="0">' . t('Nicht definiert') . '</option>';
+			<select ' . $form_name . '><option value="0">' . t('Not defined') . '</option>';
 			foreach ($form['values'] as $key => $value) {
 				$selected = '';
 				if (isset($predefinied_value_id) && $predefinied_value_id == $key)
@@ -773,6 +773,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'width' => 120,
 			'hide' => true,
 			'dbExactField' => 'o.observer',
+			'exportAlways' => true
 	);
 
 	$tableHeader[] = array(

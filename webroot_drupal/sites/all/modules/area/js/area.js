@@ -71,7 +71,6 @@ function Area(options) {
 	
 	// optional handlers
 	this.onDataLoaded = this.options.onDataLoaded;
-	console.log(this.onDataLoaded);
 
 	// load data into map
 	if(this.options.geometriesfetchurl.length > 0) {
