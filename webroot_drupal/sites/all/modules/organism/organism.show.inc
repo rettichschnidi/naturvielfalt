@@ -78,12 +78,15 @@ function organism_show_classifiers() {
  */
 function organism_show_classification($classificationid) {
 	assert($classificationid != false);
-	// Extract the name of the current classification
+	// Extract the name, parent and top id of the current classification
 	$classificationName = 'Classifications';
- {
+	$classificationParentId = null;
+	$classificationPrimeFatherId = null;
+	{
 		$resultClassification = db_query(
 			'SELECT
-				oc.id AS oc_id,
+				oc.parent_id AS parent_id,
+				oc.prime_father_id AS prime_father_id,
 				oc.name AS oc_name
 			FROM
 				{organism_classification} oc
@@ -91,15 +94,22 @@ function organism_show_classification($classificationid) {
 				oc.id = :ocid',
 			array(':ocid' => $classificationid));
 
-		$render_array = array();
-
 		if ($resultClassification->rowCount() == 1) {
 			$resultClassificationObject = $resultClassification->fetchObject();
 			$classificationName = $resultClassificationObject->oc_name;
+			$classificationParentId = $resultClassificationObject->parent_id;
+			$classificationPrimeFatherId = $resultClassificationObject->prime_father_id;
 		}
 	}
 	
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
+	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.js');
+	
+	// hierarchy level up buttons
+	// insert html in title to not change flexigrid.js...
+	$hierarchyLevelUpButtons = '</div>'
+		.'<div class="mUp mButton" data-cid="' . $classificationParentId . '"><span /></div>'
+		.'<div class="mTop mButton" data-cid="' . $classificationPrimeFatherId . '"><span />';
 	
 	// Set the table header
 	$classificationTableHeader[] = array(
@@ -123,9 +133,12 @@ function organism_show_classification($classificationid) {
 			'width' => 100,
 			'hide' => false
 	);
+	
+	$render_array = array();
+	
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
-			'#title' => t('Subclassifications within') . " $classificationName",
+			'#title' => t('Subclassifications within') . ' ' . $classificationName . $hierarchyLevelUpButtons,
 			'#header' => $classificationTableHeader,
 			'#id_table' => 'classificators',
 			'#options' => array(
@@ -140,7 +153,16 @@ function organism_show_classification($classificationid) {
 													window.location.href = Drupal.settings.basePath+'organism/classification/' + id;
 												}
 											)
-										}"
+										}",
+					// add click actions to onSubmit because it's executed after table
+					// layout despite of data loading error
+					// ! has to return true to continue populating the table !
+					'onSubmitHandler' => "function() {
+											jQuery('.mTop, .mUp').click(function() {
+												organism.loadClassification(jQuery(this).data('cid'));
+											});
+											return true;
+										   }"
 			)
 	);
 

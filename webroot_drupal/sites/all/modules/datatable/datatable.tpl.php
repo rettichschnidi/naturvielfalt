@@ -261,8 +261,13 @@ jQuery(document).ready(function() {
 		dblClickResize: true,
 		onToggleCol: true,
 		singleSelect: true,
+		<?php if (isset($options['onDragColHandler'])) echo 'onDragCol: ' . $options['onDragColHandler'] . ','; ?>
+		<?php if (isset($options['onToggleColHandler'])) echo 'onToggleCol: ' . $options['onToggleColHandler'] . ','; ?>
+		<?php if (isset($options['onChangeSortHandler'])) echo 'onChangeSort: ' . $options['onChangeSortHandler'] . ','; ?>
 		<?php if (isset($options['onSuccessHandler'])) echo 'onSuccess: ' . $options['onSuccessHandler'] . ','; ?>
-		<?php 
+		<?php if (isset($options['onErrorHandler'])) echo 'onError: ' . $options['onErrorHandler'] . ','; ?>
+		<?php if (isset($options['onSubmitHandler'])) echo 'onSubmit: ' . $options['onSubmitHandler'] . ','; ?>
+		<?php
 			if (isset($options['preProcessHandler'])) {
 				if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 					$gallery_json_item = isset($options['gallery_json_item']) ? $options['gallery_json_item'] : 'gallery_image';
@@ -279,7 +284,6 @@ jQuery(document).ready(function() {
 		?>		
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
-	<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler']; ?>
 });
 
 <?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) {?>

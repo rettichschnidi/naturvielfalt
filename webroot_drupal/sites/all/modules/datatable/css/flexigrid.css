@@ -130,8 +130,49 @@
 }
 
 .flexigrid div.mDiv div {
+	float: left;
 	padding: 6px;
 	white-space: nowrap;
+}
+
+.flexigrid div.mDiv div.mButton {
+	border: 0px;
+	cursor: pointer;
+	float: left;
+	height: 22px;
+	margin-top: 1px;
+	overflow: hidden;
+	padding: 0;
+	width: 22px;
+}
+
+.flexigrid div.mDiv div.mButton:hover, .flexigrid div.mDiv  div.mButton.mBtnOver {
+	border: 1px solid #ccc;
+	cursor: pointer;
+	height: 20px;
+	width: 20px;
+}
+
+.flexigrid div.mDiv div.mButton span {
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
+}
+
+.flexigrid div.mDiv div.mButton:hover span, .flexigrid div.mDiv div.mButton.mBtnOver span {
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	height: 19px;
+	width: 19px;
+}
+
+.flexigrid .mTop {
+	background: url(images/top.gif) no-repeat center;
+}
+
+.flexigrid .mUp {
+	background: url(images/levelup.gif) no-repeat center;
 }
 
 .flexigrid div.mDiv div.ptogtitle {
