@@ -259,7 +259,6 @@ jQuery(document).ready(function() {
 		minmax: '<?php echo t('Minimize/Maximize Table'); ?>',
 		hideshow: '<?php echo t('Hide/Show Columns'); ?>',
 		dblClickResize: true,
-		onToggleCol: true,
 		singleSelect: true,
 		<?php if (isset($options['onDragColHandler'])) echo 'onDragCol: ' . $options['onDragColHandler'] . ','; ?>
 		<?php if (isset($options['onToggleColHandler'])) echo 'onToggleCol: ' . $options['onToggleColHandler'] . ','; ?>

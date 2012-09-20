@@ -22,8 +22,9 @@ function get_ch1903_coordinates_link($areadata) {
 		"CH1903",
 		$area_protocol . $user->language . '.wikipedia.org/wiki/CH1903');
 
-	$coordinates = (int) $areadata['ch1903_center_x'] . '/'
-			. (int) $areadata['ch1903_center_y'];
+	$coordinates = number_format($areadata['ch1903_center_x'], 0, '.', '\'')
+		.'/'
+		.number_format($areadata['ch1903_center_y'], 0, '.', '\'');
 	return $coordinates . " ($linkCH1903)";
 }
 

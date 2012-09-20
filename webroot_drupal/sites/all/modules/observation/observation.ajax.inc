@@ -497,6 +497,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		if ($row['cell']['organism_l'] == "")
 		$row['cell']['organism_l'] = t('No translation available');
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
+		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
+		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
 		$row['cell']['piccount'] = $images['count'];
 		$row['cell']['thumbnail'] = '';
@@ -514,7 +516,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		$row['cell']['organism_id'],
 		array(
 														'icons' => array(
-															"<img src='$imageBaseUrl/map.png' style='cursor: pointer;' width='16px' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
+															"<img src='$imageBaseUrl/pin.png' style='cursor: pointer;' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
 		$row['cell']['showColumn'],
 															'&nbsp;'. $editLink,
 		),
