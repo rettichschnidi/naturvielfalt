@@ -79,28 +79,25 @@ function organism_show_classifiers() {
 function organism_show_classification($classificationid) {
 	assert($classificationid != false);
 	// fetch classification data
-	$classificationObj = null;
-	{
-		$resultClassification = db_query(
-			'SELECT
-				oc.parent_id AS oc_parent_id,
-				oc.prime_father_id AS oc_prime_father_id,
-				oc.name AS oc_name,
-				ocl.name AS ocl_name
-			FROM
-				{organism_classification} oc
-			LEFT JOIN
-				{organism_classification_level} ocl
+	$resultClassification = db_query(
+		'SELECT
+			oc.parent_id AS oc_parent_id,
+			oc.prime_father_id AS oc_prime_father_id,
+			oc.name AS oc_name,
+			ocl.name AS ocl_name
+		FROM
+			{organism_classification} oc
+		LEFT JOIN
+			{organism_classification_level} ocl
 			ON
-				ocl.id = oc.organism_classification_level_id
-			WHERE
-				oc.id = :ocid',
-			array(':ocid' => $classificationid));
+				ocl.parent_id = oc.organism_classification_level_id
+			AND
+				ocl.id != ocl.parent_id
+		WHERE
+			oc.id = :ocid',
+		array(':ocid' => $classificationid));
 
-		if ($resultClassification->rowCount() == 1) {
-			$classificationObj = $resultClassification->fetchObject();
-		}
-	}
+	$classificationObj = $resultClassification->fetchObject();
 	
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
 	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.js');
