@@ -12,9 +12,6 @@ jQuery(document).ready(function() {
 	 * is called by every refresh before the data is displayed
 	 */
 	gallery_addon.preProcess = function(gridid, json_item_name, data) {
-		if(!gallery_addon.__isGalleryActive(gridid))
-			return data;
-		
 		gallery_addon.__clearGalleryDiv(gridid);
 		
 		var table = document.createElement('table');
@@ -59,26 +56,16 @@ jQuery(document).ready(function() {
 	 */
 	gallery_addon.toggleGallery = function(gridid, enabled) {
 		// find the div of this flexigrid
-		var div = $('#' + gridid).parent().parent();
+		var div = $('#' + gridid).closest('div.flexigrid');
 		
 		div.children('.bDiv').toggle();
 		div.children('.hDiv').toggle();
 		gallery_addon.__getGalleryDiv(gridid).toggle();
-		
-		// remove the batch-command-div (observation) if available
-		if($('#batch-div').length > 0){
-			if(enabled){
-				$('#batch-div').css('display', 'none');
-			} else {
-				$('#batch-div').css('display', 'block');
-			}
-		}
 	
 		if(enabled){
 			$('#' + gridid + '_gallery_link').attr('disabled', 'disabled');
 			$('#' + gridid + '_table_link').removeAttr('disabled');
 			$('#' + gridid + '_gallery_image_source').css('display', 'inline');
-			$("#" + gridid).flexigrid().flexReload();
 			window.location.hash = 'gallery';
 		}else {
 			$('#' + gridid + '_table_link').attr('disabled', 'disabled');
@@ -115,15 +102,12 @@ jQuery(document).ready(function() {
 	 */
 	gallery_addon.__getGalleryDiv = function (gridid) {
 		var div = $('#' + gridid + '_gallery_images');
-		var flexiDiv = $('#' + gridid).parent().parent();
-		if(div.length == 0){
-			flexiDiv.children('.mDiv').after(
-					'<div id="'+gridid+'_gallery_images" class="datatable_gallery"> ' 
-					+ '</div>');	
-			return $('#' + gridid + '_gallery_images');
-		} else {
-			return div;
+		var flexiDiv = $('#' + gridid).closest('div.flexigrid');
+		if(div.length == 0) {
+			div = $('<div />').attr('id', gridid+'_gallery_images').addClass('datatable_gallery');
+			flexiDiv.children('.mDiv').after(div);
 		}
+		return div;
 	}
 	
 	/**

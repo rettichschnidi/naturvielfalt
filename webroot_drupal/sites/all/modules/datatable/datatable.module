@@ -470,7 +470,7 @@ EOT;
 	}
 
 	if(array_key_exists('icons', $display_data) && is_array($display_data['icons'])){
-		$icons = implode('', $display_data['icons']);
+		$icons = implode('&nbsp;', $display_data['icons']);
 	}
 
 	return <<<EOT

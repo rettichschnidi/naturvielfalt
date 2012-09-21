@@ -87,6 +87,10 @@ input, select {
 	clear: both;
 }
 
+span.datatable_gallery_icons input.gridSelect {
+	vertical-align: middle;
+}
+
 /* Section innerhalb des Flexigrids */
 #batch-div {
 	background-color: #DAE5E3;

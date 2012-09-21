@@ -392,28 +392,11 @@ jQuery(document).ready(function() {
 				$('#btnExportSelected').click(function() {
 					observation.exportSelectedRows('#observations');
 				});
-				// hide the batch div, if we are in gallery mode
-				if (window.location.hash.indexOf('gallery') != -1){
-					$('#batch-div').css('display', 'none');
-				}
 			}
 			else {
 				$('#btnDeleteSelected').attr('disabled', true);
 				$('#btnExportSelected').val(Drupal.t('Export all'));
 			}
-			
-			$('.bDiv :checkbox').click(function(){
-				if ($('.bDiv :checked').length == 0) {
-					$('#btnDeleteSelected').attr('disabled', true);
-					$('#btnExportSelected').val(Drupal.t('Export all'));
-				}
-				else {
-					$('#btnDeleteSelected').removeAttr('disabled');
-					$('#btnExportSelected').val(Drupal.t('Export selected'));
-				}
-			});	
-			
-
 		};
 		
 		/**
@@ -469,17 +452,40 @@ jQuery(document).ready(function() {
 		/**
 		 * De-/Select multiple observations on the map. Multiple selections are blue.
 		 * 
+		 * Also selects the corresponding checkbox in the table/gallery respectively and
+		 * handles batch area button values/states depending on selected checkboxes.
+		 * 
 		 * The map is zoomed to show all selected observations, and it changes only if 
 		 * one of the selected observations is out of the current map section.
 		 * 
-		 * This function does not touch observations selected by single select.
+		 * This function does not touch the observation overlay changed by single select.
 		 * 
-		 * @param id of the additional observation
+		 * @param Event event that triggered this function
+		 * @param int id of the de-/selected observation
+		 * @param boolean deselect whether to select or deselect, default: false
 		 */
 		Area.prototype.selectMultipleObservation = function(event, id, deselect) {
 			// prevent bubbling to row click action (selectObservation())
 			var e = event || window.event;
 			if (e != undefined)	e.stopPropagation();
+			
+			if (deselect == undefined)
+				deselect = false;
+			
+			// select both checkboxes in table/gallery
+			$('input.gridSelect[value="'+id+'"]').each(function() {
+				$(this)[0].checked = !deselect;
+			});
+			
+			// update batch area buttons
+			if ($('input.gridSelect:checked').length == 0) {
+				$('#btnDeleteSelected').attr('disabled', true);
+				$('#btnExportSelected').val(Drupal.t('Export all'));
+			}
+			else {
+				$('#btnDeleteSelected').removeAttr('disabled');
+				$('#btnExportSelected').val(Drupal.t('Export selected'));
+			}
 			
 			// check if there exists an overlay with the given id
 			if (id in this.overlaysArray) {

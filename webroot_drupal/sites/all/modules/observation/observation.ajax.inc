@@ -466,69 +466,86 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	$sql['acl_level'] = $acl_level;
 	$sql['dbDefaultOrder'] = 'o.date DESC';
 	
+	/**
+	 * fetch the observation data
+	 */
 	$output = datatable_dbRequest($sql);
 	
-	// 	// Add a link to the gallery of each habitat
+	/**
+	 * format output
+	 */
 	global $base_url;
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
 	foreach ($output['rows'] as &$row) {
-	
-		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="'
-		. $row['id'] . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
-		// Show Details
-		$showLink = l(
-					'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
-		$base_url . '/observation/' . $row['id'] . '/show',
-		array(
-							'html' => true
-		));
-		$row['cell']['showColumn'] = $showLink;
-		// Edit details
-		if (observation_write_access_by_acl_id($row['cell']['acl_id'])) {
-			$editLink = l(
-						'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '"/>',
-			$base_url . '/observation/' . $row['id'] . '/edit',
+		// select box
+		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
+		// show details
+		$row['cell']['showColumn'] = l(
+			'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
+			$base_url . '/observation/' . $row['id'] . '/show',
 			array(
-								'html' => true
-			));
-		}
-		$row['cell']['editColumn'] = $editLink;
-	
-		if ($row['cell']['organism_l'] == "")
-		$row['cell']['organism_l'] = t('No translation available');
+				'html' => true
+			));;
+		// edit details
+		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
+			? l(
+				'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '"/>',
+				$base_url . '/observation/' . $row['id'] . '/edit',
+				array(
+					'html' => true
+				))
+			: '';
+		// translated organism name
+		if (empty($row['cell']['organism_l']))
+			$row['cell']['organism_l'] = t('No translation available');
+		// date, TODO: time
 		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
+		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
+		
+		// get image
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
+		// number of images
 		$row['cell']['piccount'] = $images['count'];
+		// thumbnail
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {
 			// display the thumbnail (for the table view)
-			$row['cell']['thumbnail'] = '<img src="'
-			. url(
-								'gallery/observation/' . $row['id'] . '/thumb/'
-			. $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="'
-			. $images['images'][0]['title'] . '" height="80" width="80" />';
+			$row['cell']['thumbnail'] = '<img src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
 		}
-		// create the html source for the gallery view
-		$detail = '<a href="' . $base_url . '/organism/' . $row['cell']['organism_id'] . '" style="color: black; text-decoration:underline">';
-		$row['cell']['gallery_image'] = datatable_get_gallery_image($row['id'],
-		$row['cell']['organism_id'],
-		array(
-														'icons' => array(
-															"<img src='$imageBaseUrl/pin.png' style='cursor: pointer;' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
-		$row['cell']['showColumn'],
-															'&nbsp;'. $editLink,
-		),
-														'data' => array(
-		$row['cell']['artgroup_n'],
-		$detail. "<i>" . $row['cell']['organism_sc'] . "</i></a>",
-		$row['cell']['organism_l']
-		)
-		),
-		$row['cell']['acl_id'],
-		DATATABLE_IMGSRC_BELEG,
-		$images);
+		
+		/**
+		 * create the html source for the gallery view
+		 */
+		$row['cell']['gallery_image'] = datatable_get_gallery_image(
+			$row['id'],
+			$row['cell']['organism_id'],
+			array(
+				'icons' => array(
+					"<img src='$imageBaseUrl/pin.png' style='cursor: pointer;' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
+					$row['cell']['showColumn'],
+					$row['cell']['editColumn'],
+					$row['cell']['selectColumn']
+				),
+				'data' => array(
+					$row['cell']['artgroup_n'],
+					l(
+						$row['cell']['organism_sc'],
+						'organism/' . $row['cell']['organism_id'],
+						array(
+							'attributes' => array(
+								'style' =>
+									'color: black;
+									text-decoration: underline;
+									font-style: italic;')
+						)),
+					$row['cell']['organism_l']
+				)
+			),
+			$row['cell']['acl_id'],
+			DATATABLE_IMGSRC_BELEG,
+			$images);
 	}
 	
 	return $output;
