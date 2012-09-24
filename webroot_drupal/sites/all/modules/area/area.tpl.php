@@ -109,6 +109,7 @@ if ($reticle) {
 				reticleimageurl: '<?php echo $reticle_image_url ?>',
 				coordinatestorageid: '<?php echo $coordinate_storage_id ?>',
 				geometriesfetchurl: '<?php echo $geometries_fetch_url ?>',
+				geometries_autoload: <?php echo (isset($geometries_autoload) && $geometries_autoload) ? 1 : 0 ?>,
 				infowindowcontentfetchurl: '<?php echo $infowindow_content_fetch_url ?>',
 				infowindowcreateformfetchurl: '<?php echo $infowindow_createform_fetch_url ?>',
 				geometryupdateurl: '<?php echo $geometry_update_url ?>',
@@ -123,8 +124,7 @@ if ($reticle) {
 						scrollwheel: <?php echo $scrollwheel ? 1 : 0 ?>,
 						center: new google.maps.LatLng(46.77373, 8.25073),
 						mapTypeId : google.maps.MapTypeId.ROADMAP,
-				},
-				onDataLoaded: <?php echo $onDataLoadedHandler ? $onDataLoadedHandler : 0 ?>
+				}
 			};
 
 		if( typeof <?php echo $mapid ?> != 'undefined') {

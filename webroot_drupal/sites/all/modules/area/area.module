@@ -415,6 +415,8 @@ function area_theme() {
 							'action' => false,
 							// load geometries from this url
 							'geometries_fetch_url' => '',
+							// automatically load geometries
+							'geometries_autoload' => true,
 							// infoWindow content fetch url. {ID} will be swaped with the actual id of the requested geometry.
 							'infowindow_content_fetch_url' => '',
 							// url to get the content for the window when a new element gets created.

@@ -266,21 +266,7 @@ jQuery(document).ready(function() {
 		<?php if (isset($options['onSuccessHandler'])) echo 'onSuccess: ' . $options['onSuccessHandler'] . ','; ?>
 		<?php if (isset($options['onErrorHandler'])) echo 'onError: ' . $options['onErrorHandler'] . ','; ?>
 		<?php if (isset($options['onSubmitHandler'])) echo 'onSubmit: ' . $options['onSubmitHandler'] . ','; ?>
-		<?php
-			if (isset($options['preProcessHandler'])) {
-				if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
-					$gallery_json_item = isset($options['gallery_json_item']) ? $options['gallery_json_item'] : 'gallery_image';
-					// the gallery_addon needs the tableid
-					echo 'preProcess: function(data) {
-							data = ' . $options['preProcessHandler'] . '(data);
-							return gallery_addon.preProcess(\'' . $id_table . '\', \'' . $gallery_json_item . '\', data);
-						  },
-					';
-				}
-				else
-					echo 'preProcess : ' . $options['preProcessHandler'] . ',';
-			}	 
-		?>		
+		<?php if (isset($options['preProcessHandler'])) echo 'preProcess: ' . $options['preProcessHandler'] . ','; ?>
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 });

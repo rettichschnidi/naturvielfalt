@@ -561,10 +561,14 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 }
 
 /**
- * Returns the JSON data of geometries or a single
+ * Returns the JSON data of geometries. If $observation_data is false, all geometries
+ * are returned.
+ * 
  * @param array $observation_data
  */
 function observation_get_geometry_json($observation_data = false) {
+	if (!$observation_data && isset($_REQUEST['observation_ids']))
+		$observation_data = $_REQUEST['observation_ids'];
 	drupal_json_output(observation_get_geometries_acl_checked($observation_data));
 }
 

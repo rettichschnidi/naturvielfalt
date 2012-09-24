@@ -247,13 +247,6 @@ jQuery(document).ready(function() {
 		};
 		
 		/**
-		 * Reload the table.
-		 */
-		observation.reload = function() {
-			jQuery("#observations").flexReload();
-		}
-		
-		/**
 		 * Select or deselect all rows
 		 */
 		observation.toggleSelectedRows = function(status){
@@ -349,37 +342,53 @@ jQuery(document).ready(function() {
 		/**
 		 * Update the map to show only overlays of the given data.
 		 * 
-		 * @param data
+		 * @param array(int) observation_ids
 		 */
-		observation.updateMap = function(data) {
+		observation.syncMapWithTable = function(observation_ids) {
 			if (observationmap == undefined)
-				return data;
+				return false;
 			
 			observationmap.clearOverlays();
 			
-			var mapcontains = true;
-			var bounds = new google.maps.LatLngBounds();
-			for (var i in data.rows) {
-				var marker = observationmap.overlaysArray[data.rows[i].id];
-				
-				marker.setMap(observationmap.googlemap);
-				
-				var position = marker.getPosition();
-				bounds.extend(position);
-				// don't touch mapcontains once it changed to false
-				if (mapcontains)
-					mapcontains = observationmap.googlemap.getBounds().contains(position);
-			}
-			if (!mapcontains)
-				observationmap.googlemap.fitBounds(bounds);
+			if (observation_ids.length < 1)
+				return true;
 			
-			return data;
+			$.getJSON(
+				observationmap.options.geometriesfetchurl,
+				{
+					observation_ids: observation_ids
+				},
+				function(data) {
+					observationmap.loadGeometriesAndOverlaysFromJson(data);
+
+					var mapcontains = true;
+					var bounds = new google.maps.LatLngBounds();
+					for (var i = 0; i < observation_ids.length; i++) {
+						var id = observation_ids[i];
+						
+						if (!(id in observationmap.overlaysArray))
+							continue;
+						
+						var marker = observationmap.overlaysArray[id];
+						
+						var position = marker.getPosition();
+						bounds.extend(position);
+						// don't touch mapcontains once it changed to false
+						if (mapcontains)
+							mapcontains = observationmap.googlemap.getBounds().contains(position);
+					}
+					if (!mapcontains)
+						observationmap.googlemap.fitBounds(bounds);
+					
+					return true;
+				}
+			);
 		}
 		
 		/**
 		 * Display the batch div, holding the select-toggle, delete and export buttons
 		 */
-		observation.displayBatchArea = function(){
+		observation.displayBatchArea = function() {
 			if ($('#batch-div').length == 0) {
 				$('.bDiv').after('<div id="batch-div" style="display: block;"> ' +
 					'	<input type="checkbox" onClick="javascript:observation.toggleSelectedRows(this.checked)"> ' + 
@@ -397,6 +406,29 @@ jQuery(document).ready(function() {
 				$('#btnDeleteSelected').attr('disabled', true);
 				$('#btnExportSelected').val(Drupal.t('Export all'));
 			}
+		};
+		
+		/**
+		 * Executed before table is populated
+		 * ! must return the data !
+		 */
+		observation.tablePreProcess = function(data) {
+			var observation_ids = [];
+			$(data.rows).each(function(idx, obs) {
+				observation_ids[idx] = obs.id;
+			});
+			observation.syncMapWithTable(observation_ids);
+			
+			data = gallery_addon.preProcess('observations', 'gallery_image', data);
+			
+			return data;
+		};
+		
+		/**
+		 * Executed after table is populated
+		 */
+		observation.onTableSuccess = function(flexigrid) {
+			observation.displayBatchArea();
 		};
 		
 		/**

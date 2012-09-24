@@ -25,7 +25,9 @@ function Area(options) {
 	 *  - an overlay is a Google maps element (Marker, Polyline, Polygon)
 	 */
 	// save the options for later usage
-	this.options = options;
+	this.options = jQuery.extend({
+		geometries_autoload: true
+	}, options);
 	// map holds the google maps object
 	this.googlemap = null;
 	// holds the id of the currently selected overlays/geometrys, for single select
@@ -68,21 +70,15 @@ function Area(options) {
 	this.createSearchbarCH1903(this.options.ch1903);
 	this.createDrawingManager(this.options.drawingmanager);
 	this.createReticle(this.options.reticle);
-	
-	// optional handlers
-	this.onDataLoaded = this.options.onDataLoaded;
 
 	// load data into map
-	if(this.options.geometriesfetchurl.length > 0) {
+	if(this.options.geometries_autoload && this.options.geometriesfetchurl.length > 0) {
 		var this_ = this;
 		jQuery.getJSON(this.options.geometriesfetchurl,
 				function(data) {
 					this_.loadGeometriesAndOverlaysFromJson(data);
 					if(this_.options.geometryedit)
 						this_.geometryEdit(this_.options.geometryeditid);
-					
-					if (this_.onDataLoaded)
-						this_.onDataLoaded();
 				}
 			);
 	}

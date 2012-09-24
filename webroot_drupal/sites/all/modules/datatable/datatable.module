@@ -159,7 +159,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$sGroupBy = ' GROUP BY ' . $sql['dbGroupBy'];
 	}
 
-	isset($sql['dbWhere']) ? $where = "WHERE " . $sql['dbWhere'] : $where = "";
+	isset($sql['dbWhere']) ? $where = 'WHERE ' . $sql['dbWhere'] : $where = '';
 	
 	/*
 	 *  Check for permission if acl_id is in the columns array
@@ -168,11 +168,11 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	if (!check_admin_permission($user->uid)) {
 		foreach ($aColumns as $dbColumn) {
 			$matches = array();
-			if (preg_match('/(\w+\.acl_id) as \w+/i', $dbColumn, $matches)) {
+			if (preg_match('/(\w+\.acl_id)/i', $dbColumn, $matches)) {
 				$obs_acl_id = $matches[1];
 				$minLevel = variable_get($sql['acl_level']);
 				
-				$where = ($where == '') ? 'WHERE' : ' AND';
+				$where .= empty($where) ? 'WHERE' : ' AND';
 				// level of ALL group
 				$sJoins .= ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = ' . $obs_acl_id;
 				$where .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')

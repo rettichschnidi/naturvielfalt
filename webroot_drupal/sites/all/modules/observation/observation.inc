@@ -108,73 +108,98 @@ function observation_get($observation_id) {
  * @return array
  */
 function observation_get_geometries_acl_checked($observation_data = false) {
-	$filter = array();
-	$where = '';
+	$arguments = array();
+	
+	$sql['dbColumns'] = array(
+		'o.id',
+		'o.date',
+		'o.area_geometry_id',
+		'o.acl_id',
+		'a_s.altitude',
+		'a_s.zip',
+		'a_s.township',
+		'a_s.canton',
+		'a_s.country',
+		// either POINT, POLYGON or LINESTRING
+		'GeometryType(a_s.geom) AS geometry_type',
+		// Center of the geometry - CH1903, x value
+		'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',
+		// Center of the geometry - CH1903, y value
+		'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',
+		// Center of the geometry - WGS84, latitude
+		'ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat',
+		// Center of the geometry - WGS84
+		'ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng',
+		// Coordinates of the geometry - CH1903
+		'st_astext(st_transform(a_s.geom, 21781)) AS ch1903_coordinates',
+		// Coordinates of the geometry - WGS84
+		'st_astext(st_transform(a_s.geom, 4326)) AS wgs84_coordinates',
+		// Area surface in m^2
+		'st_area(st_transform(a_s.geom, 21781)) AS surface_area',
+		// Pathlength (if linestring) in meters
+		'ST_Length(st_transform(a_s.geom, 21781)) AS pathlength',
+		// Geometry as JSON
+		'ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json');
+	
+	$sql['dbTable'] = '{observation} o';
+	
+	$sql['dbJoins'] = 'JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id';
+	
 	if ($observation_data) {
-		$filter[':observation_id'] = $observation_data['observation']['id'];
-		$where = ' WHERE o.id=:observation_id ';
-	}
-	$sql = 'SELECT o.id, o.area_geometry_id, o.acl_id,
-	a_s.altitude,
-				a_s.zip,
-				a_s.township,
-				a_s.canton,
-				a_s.country,
-				-- either POINT, POLYGON or LINESTRING
-				GeometryType(a_s.geom) AS geometry_type,
-				-- Center of the geometry - CH1903, x value
-				ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x,
-				-- Center of the geometry - CH1903, y value
-				ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y,
-				-- Center of the geometry - WGS84, latitude
-				ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat,
-				-- Center of the geometry - WGS84
-				ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng,
-				-- Coordinates of the geometry - CH1903
-				st_astext(st_transform(a_s.geom, 21781)) AS ch1903_coordinates,
-				-- Coordinates of the geometry - WGS84
-				st_astext(st_transform(a_s.geom, 4326)) AS wgs84_coordinates,
-				-- Area surface in m^2
-				st_area(st_transform(a_s.geom, 21781)) AS surface_area,
-				-- Pathlength (if linestring) in meters
-				ST_Length(st_transform(a_s.geom, 21781)) AS pathlength,
-				-- Geometry as JSON
-				ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json
-	FROM
-		{observation} o
-		JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id' . $where;
-	$results = db_query($sql, $filter)->fetchAllAssoc('id', PDO::FETCH_ASSOC);
-	$items = array();
-	// 		die(print_r($results));
-
-	foreach ($results as $result) {
-		$tmp['observation'] = $result;
-		if (observation_read_access($tmp) == true) {
-			$item = array();
-			$item['id'] = (int) $result['id'];
-			$item['altitude'] = (int) $result['altitude'];
-			$item['township'] = isset($result['township']) ? $result['township']
-					: '';
-			$item['canton'] = isset($result['canton']) ? $result['canton'] : '';
-			$item['country'] = isset($result['country']) ? $result['country']
-					: '';
-			$item['comment'] = isset($result['comment']) ? $result['comment']
-					: '';
-
-			$item['type'] = '';
-			$item['area_points'] = array();
-			$json = json_decode($result['wgs84_geom_json']);
-			if ($json) {
-				if ($json->type == 'Point') {
-					$item['type'] = 'marker';
-					$item['area_points'][] = array(
-							'lat' => $json->coordinates[1],
-							'lng' => $json->coordinates[0]
-					);
-				}
-			}
-			$items[] = $item;
+		// single observation
+		if (isset($observation_data['observation'])) {
+			$sql['dbWhere'] = 'o.id=:observation_id';
+			$arguments[':observation_id'] = $observation_data['observation']['id'];
 		}
+		// array of observations
+		else {
+			$sql['dbWhere'] = '';
+			foreach ($observation_data as $observation_id) {
+				$sql['dbWhere'] .= 'o.id=:observation_id_' . $observation_id . ' OR ';
+				$arguments[':observation_id_' . $observation_id] = $observation_id;
+			}
+			$sql['dbWhere'] = substr($sql['dbWhere'], 0, -4);
+		}
+	}
+	
+	$sql['id'] = 'id';
+	
+	$sql['acl_level'] = 'ACL_READ';
+	
+	if (!isset($_REQUEST['rp']))
+		$_REQUEST['rp'] = '18446744073709551615';  // max limit for sql query, select all (2^64-1) rows
+	
+	/*
+	 * fetch the data, acl checked
+	 */
+	$results = datatable_dbRequest($sql, $arguments);
+	
+	$items = array();
+	foreach ($results['rows'] as $result) {
+		$item = array();
+		$item['id'] = (int) $result['cell']['id'];
+		$item['altitude'] = (int) $result['cell']['altitude'];
+		$item['township'] = isset($result['cell']['township']) ? $result['cell']['township']
+				: '';
+		$item['canton'] = isset($result['cell']['canton']) ? $result['cell']['canton'] : '';
+		$item['country'] = isset($result['cell']['country']) ? $result['cell']['country']
+				: '';
+		$item['comment'] = isset($result['cell']['comment']) ? $result['cell']['comment']
+				: '';
+
+		$item['type'] = '';
+		$item['area_points'] = array();
+		$json = json_decode($result['cell']['wgs84_geom_json']);
+		if ($json) {
+			if ($json->type == 'Point') {
+				$item['type'] = 'marker';
+				$item['area_points'][] = array(
+						'lat' => $json->coordinates[1],
+						'lng' => $json->coordinates[0]
+				);
+			}
+		}
+		$items[] = $item;
 	}
 	return $items;
 
