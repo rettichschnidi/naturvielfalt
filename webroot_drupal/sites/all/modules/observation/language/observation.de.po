@@ -239,16 +239,16 @@ msgid "Manage existing media for this observation"
 msgstr "Bestehende Medien dieser Beobachtung bearbeiten"
 
 #: observation.template.inc:157
-msgid "Add new media for this observation"
-msgstr "Neue Medien der Beobachtung hinzufügen"
+msgid "Add media for this observation"
+msgstr "Medien der Beobachtung hinzufügen"
 
 #: observation.template.inc:165;177
 msgid "Click here to add details to this file"
 msgstr "Klicken Sie hier, um der Datei Angaben hinzuzufügen"
 
 #: observation.template.inc:172
-msgid "Upload new files"
-msgstr "Neue Dateien hochladen"
+msgid "Upload files"
+msgstr "Dateien hochladen"
 
 #: observation.template.inc:187
 msgid "Click here to add one more file"
@@ -268,7 +268,7 @@ msgstr "Art suchen"
 
 #: observation.template.inc:227
 msgid "Filter on species group"
-msgstr "Artgruppe filtern"
+msgstr "Artengruppe filtern"
 
 #: observation.template.inc:236
 msgid "Date of the obeservation"

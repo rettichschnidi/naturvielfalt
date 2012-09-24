@@ -153,7 +153,7 @@ function observation_form($observation = false) {
 	$image .= '<fieldset id="picture" class="form-wrapper">
 	<legend>
 		<span class="fieldset-legend">'
-			. t('Add new media for this observation')
+			. t('Add media for this observation')
 			. '</span>
 	</legend>
 	<div class="fieldset-wrapper">
@@ -168,7 +168,7 @@ function observation_form($observation = false) {
 				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
 				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
 			</div>
-			<label for="picture_upload__1">' . t('Upload new files')
+			<label for="picture_upload__1">' . t('Upload files')
 			. '</label>
 			<div id="picture_upload__1">
 				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
