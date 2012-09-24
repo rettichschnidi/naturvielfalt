@@ -103,7 +103,7 @@ function observation_form($observation = false) {
 				'#coordinate_storage_id' => 'coordinate',
 				'#ch1903' => true,
 				'#search' => true,
-				'#height' => '350px',
+				'#height' => '250px',
 				'#action' => 'getcoordinate',
 		);
 	} else {
@@ -248,9 +248,9 @@ function observation_form($observation = false) {
 						.'</td>'
 					.'</tr><tr>'
 						.'<td class="observation_subtitle">'
-							.'<label for="observer">' . t('Observer') . '</label>'
+							.t('Observer')
 						.'</td><td>'
-							.'<input type="text" id="observer" name="observer" value="' . $observation['observation']['observer'] . '" />'
+							.'<input type="text" id="observer" name="observer" value="' . $observation['observation']['observer'] . '" disabled="disabled" />'
 						.'</td>'
 					.'</tr>'
 				.'</table>';

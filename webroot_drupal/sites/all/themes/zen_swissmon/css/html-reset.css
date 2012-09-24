@@ -135,7 +135,7 @@ h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
 ul, ol, dl,
 hr, table, fieldset {
-  margin: 1.5em 0;
+  margin: 1em 0;
 }
 
 
@@ -391,9 +391,14 @@ label {
 }
 
 input {
+    border: 1px solid black;
+    font-size: 1em;
 }
 
 select {
+	background-color: #FFFFFF;
+    border: 1px solid black;
+    font-size: 1em;
 }
 
 optgroup {
@@ -403,9 +408,18 @@ option {
 }
 
 textarea {
+    border: 1px solid black;
+    font-size: 1em;
 }
 
-button {
+input[type="button"], input[type="submit"], input[type="reset"], button {
+	background-color: #DEDCDA;
+	color: #000000;
+}
+
+input:disabled, select:disabled, textarea:disabled, button:disabled {
+	background-color: #DEDCDA;
+	color: #666666;
 }
 
 /*

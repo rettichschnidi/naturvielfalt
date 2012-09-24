@@ -48,6 +48,11 @@ span.datatable_gallery_imgsource {
 	display:none;
 }
 
+span.datatable_gallery_imgsource select {
+	background-color: #DEDCDA;
+	color: #000000;
+}
+
 span.datatable_gallery_image_type {
 	background-color: #659560;
 	color: #FFFFFF;
@@ -62,9 +67,4 @@ a.datatable_gallery_image_type{
 
 td.datatable_gallery_row {
 	padding-bottom: 30px;
-}
-
-input, select {
-    border: 1px solid black;
-    font-size: 12px;
 }

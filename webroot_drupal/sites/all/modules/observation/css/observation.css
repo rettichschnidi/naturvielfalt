@@ -65,7 +65,7 @@
     margin: 0;
 }
 #observation_form {
-	margin-top: 
+	margin-top: 20px;
 }
 #artgroup_art_table {
 	border-bottom: 1px solid #DAE5E3;
@@ -81,10 +81,6 @@
 }
 #attributes_table {
 	margin-left: 19px;
-}
-input, textarea, select {
-    border: 1px solid black;
-    font-size: 12px;
 }
 
 #observation-show-details {
