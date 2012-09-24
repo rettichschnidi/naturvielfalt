@@ -228,6 +228,7 @@ function organism_show_classification($classificationid) {
 							. "organism/classification/$classificationid/organismjson",
 					'rowClick' => 'rowClickOrganism',
 					'tableWidth' => 900,
+					'preProcessHandler' => 'organism.tablePreProcess',
 					'rowClickHandler' => "function rowClickOrganism(celDiv, id){
 												jQuery(celDiv).click(
 													function() {
@@ -253,8 +254,7 @@ function organism_show_classification($classificationid) {
 							'value' => DATATABLE_IMGSRC_PORTRAIT_BELEG,
 							'option' => t('portrait images, then proof images')
 						),
-					),
-					'gallery_json_item' => 'gallery_image',
+					)
 			)
 	);
 	return $render_array;
