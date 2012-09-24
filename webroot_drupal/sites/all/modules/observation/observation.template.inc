@@ -57,8 +57,7 @@ function observation_form($observation = false) {
 	$form_id = "observation_form";
 	$hidden_fields = '';
 	foreach ($hidden_fields_arr as $key => $value)
-		$hidden_fields .= '<input type="text" style="display: none; height: 0px;" id="'
-				. $key . '" name="' . $key . '" value="' . $value . '">';
+		$hidden_fields .= '<input type="hidden" id="' . $key . '" name="' . $key . '" value="' . $value . '">';
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
@@ -205,43 +204,56 @@ function observation_form($observation = false) {
 <div class="messages status"></div>
 </div>';
 
-	$formcust .= '<div class="form-item form-type-textfield">' . '<form url="'
-			. $url . '" method="post" name="' . $form_id . '" id="' . $form_id
-			. '" enctype="multipart/form-data">'
-			. '<input type="text" style="display: none; height: 0px;" id="organismn_id" name="organismn_id" value="'
-			. $observation['observation']['organism_id'] . '">'
-			. '<input type="text" style="display: none; height: 0px;" id="observation_found_as_lang" name="observation_found_as_lang" value="'
-			. $observation['observation']['found_as_lang'] . '">'
-			. '<input type="text" style="display: none; height: 0px;" id="observation_found_as_latin" name="observation_found_as_latin" value="'
-			. $observation['observation']['found_as_lat'] . '">'
-			. '<input type="text" style="display: none; height: 0px;" name="artgroup" id="artgroup" value="'
-			. $observation['observation']['organism_artgroup_id'] . '">'
-			. @$hidden_fields . '<table class="form-item form-type-textfield">'
-			. '<tr><td class="observation_td">'
-			. '<span class="observation_title">'
-			. t('Search for species') . '</span><br>'
-			. '<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="'
-			. $observation['organism']['name_lang'] . '">'
-			. '<br><span id="species_autocomplete">' . $species_autocomplete
-			. '</span>' . '</td><td class="observation_td">'
-			. '<span class="observation_title">' . t('Filter on species group')
-			. '</span><br>'
-			. '<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();">'
-			. organism_artgroup_get_all_as_option(
-				false,
-				0,
-				$observation['observation']['organism_artgroup_id'])
-			. '</select>' . '</td></tr></table>'
-			. '<table class="form-item form-type-textfield">'
-			. '<tr>' . '<td class="observation_subtitle">' . t('Date of the obeservation')
-			. '<br><input type="text" id="date" name="date" value="'
-			. date('d.m.Y', $timestamp) . '"></td>'
-			. '<td class="observation_subtitle">' . t('Count of found organisms')
-			. '<br><input type="text" name="count" value="'
-			. $observation['observation']['count'] . '"></td>'
-			. '<td class="observation_subtitle">' . t('Observer')
-			. '<br><input type="text" name="observer" value="'
-			. $observation['observation']['observer'] . '"></td>' . '</tr></table>';
+	$formcust .= '
+		<div class="form-item form-type-textfield">'
+			.'<form url="' . $url . '" method="post" name="' . $form_id . '" id="' . $form_id . '" enctype="multipart/form-data">'
+				.'<input type="hidden" id="organismn_id" name="organismn_id" value="' . $observation['observation']['organism_id'] . '">'
+				.'<input type="hidden" id="observation_found_as_lang" name="observation_found_as_lang" value="' . $observation['observation']['found_as_lang'] . '">'
+				.'<input type="hidden" id="observation_found_as_latin" name="observation_found_as_latin" value="' . $observation['observation']['found_as_lat'] . '">'
+				.'<input type="hidden" name="artgroup" id="artgroup" value="' . $observation['observation']['organism_artgroup_id'] . '">'
+				.@$hidden_fields
+				.'<table id="artgroup_art_table" class="form-item form-type-textfield">'
+					.'<tr>'
+						.'<td class="observation_title">'
+							.'<label for="artgroup_select">' . t('Filter on species group') . '</label>'
+						.'</td><td>'
+							.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();">'
+								.organism_artgroup_get_all_as_option(
+									false,
+									0,
+									$observation['observation']['organism_artgroup_id'])
+							.'</select>'
+						.'</td>'
+					.'</tr><tr>'
+						.'<td class="observation_title">'
+							.'<label for="organism_autocomplete">' . t('Search for species') . '</label>'
+						.'</td><td>'
+							.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="' . $observation['organism']['name_lang'] . '" /><br />'
+							.'<span id="species_autocomplete">' . $species_autocomplete . '</span>'
+						.'</td>'
+					.'</tr>'
+				.'</table>'
+				.'<table class="form-item form-type-textfield">'
+					.'<tr>'
+						.'<td class="observation_subtitle">'
+							.'<label for="date">' . t('Date of the obeservation') . '</label>'
+						.'</td><td>'
+							.'<input type="text" id="date" name="date" value="'	. date('d.m.Y', $timestamp) . '" />'
+						.'</td>'
+					.'</tr><tr>'
+						.'<td class="observation_subtitle">'
+							.'<label for="observation_count">' . t('Count of found individuals')	. '</label>'
+						.'</td><td>'
+							.'<input type="text" id="observation_count" name="count" value="' . $observation['observation']['count'] . '" />'
+						.'</td>'
+					.'</tr><tr>'
+						.'<td class="observation_subtitle">'
+							.'<label for="observer">' . t('Observer') . '</label>'
+						.'</td><td>'
+							.'<input type="text" id="observer" name="observer" value="' . $observation['observation']['observer'] . '" />'
+						.'</td>'
+					.'</tr>'
+				.'</table>';
 
 	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
 							<legend>
@@ -418,8 +430,9 @@ function observation_show_observation($observationdata = NULL) {
 			'#collapsible' => true,
 			'#collapsed' => false,
 			'#attributes' => array(
-					'id' => 'observation-clear',
+					'id' => 'observation-geometry',
 					'class' => array(
+							'clear',
 							'collapsible',
 							'collapsed'
 					),
@@ -437,8 +450,9 @@ function observation_show_observation($observationdata = NULL) {
 			'#collapsible' => true,
 			'#collapsed' => false,
 			'#attributes' => array(
-					'id' => 'observation-clear',
+					'id' => 'observation-attributes',
 					'class' => array(
+							'clear',
 							'collapsible',
 							'collapsed'
 					)

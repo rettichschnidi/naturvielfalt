@@ -3,11 +3,11 @@
     padding: 7px;
 }
 .observation_title {
-    font-size: 14px;
     font-weight: bold;
+    padding-left: 36px;
 }
 .observation_subtitle {
-    font-size: 12px;
+	padding-left: 36px;
     font-weight: bold;
 }
 .edit-submit {
@@ -64,11 +64,25 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     margin: 0;
 }
-#artgroup_select, #organismn_autocomplete {
-    padding: 0.3em;
-    font-size: 13px;
+#observation_form {
+	margin-top: 
 }
-input, select {
+#artgroup_art_table {
+	border-bottom: 1px solid #DAE5E3;
+}
+#observation_form td:first-child, #attributes_table td:first-child {
+	width: 150px;
+}
+#observation_form label {
+	cursor: pointer;
+}
+#observation_count, #observer, #attributes_Positionsgenauigkeit {
+	width: 80px;
+}
+#attributes_table {
+	margin-left: 19px;
+}
+input, textarea, select {
     border: 1px solid black;
     font-size: 12px;
 }
@@ -83,7 +97,11 @@ input, select {
 	width: 450px;
 }
 
-#observation-clear {
+#observation-show-details th, #observation-geometry th, #observation-attributes th {
+	width: 175px;
+}
+
+.clear {
 	clear: both;
 }
 
@@ -101,7 +119,7 @@ span.datatable_gallery_icons input.gridSelect {
 }
 
 #batch-div input{	
-	margin-left: 10px;
+	margin-left: 8px;
 } 
 
 #btnDeleteSelected{

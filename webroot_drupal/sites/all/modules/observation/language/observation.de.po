@@ -264,23 +264,23 @@ msgstr "Es werden maximal 30 Suchresultate angezeigt"
 
 #: observation.template.inc:222
 msgid "Search for species"
-msgstr "Nach Art suchen"
+msgstr "Art suchen"
 
 #: observation.template.inc:227
 msgid "Filter on species group"
-msgstr "Nach Gattungsgruppe filtern"
+msgstr "Artgruppe filtern"
 
 #: observation.template.inc:236
 msgid "Date of the obeservation"
-msgstr "Datum der Beobachtung"
+msgstr "Beobachtungsdatum"
 
 #: observation.template.inc:239
-msgid "Count of found organisms"
-msgstr "Anzahl Organismen"
+msgid "Count of found individuals"
+msgstr "Anzahl Individuen"
 
 #: observation.template.inc:249
 msgid "Add more details"
-msgstr "Weitere Details hinzufügen"
+msgstr "Details hinzufügen"
 
 #: observation.template.inc:268 observation.module:129;141
 msgid "Save"
