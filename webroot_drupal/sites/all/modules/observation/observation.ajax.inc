@@ -288,8 +288,8 @@ function observation_export() {
 	
 	// get header data
 	$headers = observation_get_standard_datatable_headers();
-	if (isset($_REQUEST['columns']))
-		$columns = filter_xss($_REQUEST['columns']);
+	if (isset($_REQUEST['col']))
+		$columns = filter_xss($_REQUEST['col']);
 	else {
 		// if no columns are set, export all columns
 		$columns = array();
@@ -319,10 +319,11 @@ function observation_export() {
 	// get all observation data, and echo requested columns in a csv format
 	// if no observation ids are set, get all observations
 	// observation_get_tabledata checks for read access
-	$observations = (isset($_REQUEST['observations']))
-		? filter_xss($_REQUEST['observations'])
+	$observation_ids = (isset($_REQUEST['oid']))
+		? filter_xss($_REQUEST['oid'])
 		: NULL;
-	$observationdata = observation_get_tabledata('ACL_READ', $observations);
+	
+	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids);
 	foreach ($observationdata['rows'] as $observationrow) {
 		$csv_output = '';
 		foreach ($dbFields as $dbField)
@@ -389,6 +390,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	global $user;
 	global $language;
 	
+	$arguments = array();
+	
 	// if the search is for a date, convert it to timestamp to find the results in the db
 	if (isset($_REQUEST['query'])) {
 		$date_split = explode('.', $_REQUEST['query']);
@@ -403,73 +406,90 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		}
 	}
 	
-	$langcode = isset($user->language) && !empty($user->language) ? $user->language
-	: $language->language;
+	$langcode = (isset($user->language) && !empty($user->language))
+		? $user->language
+		: $language->language;
 	
 	$sql['dbColumns'] = array(
-					'o.id AS id',
-					'o.observer AS observer',
-					'o.date AS date',
-					'o.count AS count',
-					'o.acl_id AS acl_id',
-					'o.organism_id AS organism_id',  // used to find portrait-pictures
-					'a_s.altitude AS altitude',
-					'a_s.township AS township',
-					'a_s.zip AS zip',
-					'a_s.canton AS canton',
-					'a_s.country AS country',
-					'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',  // Center of the geometry - CH1903, x value
-					'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
-					'org.scientific_name AS organism_sc',
-					'ol.name AS organism_l',
-					'oa.name AS artgroup_n'
+		'o.id AS id',
+		'o.observer AS observer',
+		'o.date AS date',
+		'o.count AS count',
+		'o.acl_id AS acl_id',
+		'o.organism_id AS organism_id',  // used to find portrait-pictures
+		'a_s.altitude AS altitude',
+		'a_s.township AS township',
+		'a_s.zip AS zip',
+		'a_s.canton AS canton',
+		'a_s.country AS country',
+		'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',  // Center of the geometry - CH1903, x value
+		'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
+		'org.scientific_name AS organism_sc',
+		'ol.name AS organism_l',
+		'oa.name AS artgroup_n'
 	);
 	
 	$sql['dbSearchColumns'] = array(
-					'o.id',
-					'o.observer',
-					'o.date',
-					'o.count',
-					'o.organism_id',
-					'a_s.altitude',
-					'a_s.township',
-					'a_s.zip',
-					'a_s.canton',
-					'a_s.country',
-					'a_s.geom',
-					'org.scientific_name',
-					'ol.name',
-					'oa.name',
+		'o.id',
+		'o.observer',
+		'o.date',
+		'o.count',
+		'o.organism_id',
+		'a_s.altitude',
+		'a_s.township',
+		'a_s.zip',
+		'a_s.canton',
+		'a_s.country',
+		'a_s.geom',
+		'org.scientific_name',
+		'ol.name',
+		'oa.name'
 	);
 	
 	$sql['dbTable'] = '{observation} o';
+	
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id '
-	//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
-	. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
-	. db_escape_field($langcode) . "' " . 'JOIN {organism} org on org.id = o.organism_id '
-	. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
+		//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
+		. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
+		. db_escape_field($langcode) . "' " . 'JOIN {organism} org on org.id = o.organism_id '
+		. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
 	
 	if ($observation_ids != NULL) {
 		if (is_int($observation_ids) && $observation_ids > 0)
 			$observation_ids = array($observation_ids);
 		if (is_array($observation_ids) && !empty($observation_ids)) {
-			$sql['dbWhere'] = '';
-			foreach ($observation_ids as $observation_id)
-				$sql['dbWhere'] .= 'o.id = ' . $observation_id . ' OR ';
+			$sql['dbWhere'] = empty($sql['dbWhere'])
+				? '('
+				: $sql['dbWhere'] . ' AND (';
+			foreach ($observation_ids as $observation_id) {
+				$sql['dbWhere'] .= 'o.id=:observation_id_' . $observation_id . ' OR ';
+				$arguments[':observation_id_'.$observation_id] = $observation_id;
+			}
 		}
-		$sql['dbWhere'] = substr($sql['dbWhere'], 0, - 4);
+		$sql['dbWhere'] = substr($sql['dbWhere'], 0, - 4) . ')';
 	}
 	
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
+	
 	/* Only show accessible observations */
-	$sql['acl_level'] = $acl_level;
+	if ($acl_level === 'own') {
+		$sql['dbWhere'] = empty($sql['dbWhere'])
+			? ''
+			: $sql['dbWhere'] . ' AND ';
+		$sql['dbWhere'] .= 'users_uid=:uid';
+		$arguments[':uid'] = $user->uid;
+		$sql['acl_level'] = 'ACL_READ';
+	}
+	else
+		$sql['acl_level'] = $acl_level;
+	
 	$sql['dbDefaultOrder'] = 'o.date DESC';
 	
 	/**
 	 * fetch the observation data
 	 */
-	$output = datatable_dbRequest($sql);
+	$output = datatable_dbRequest($sql, $arguments);
 	
 	/**
 	 * format output

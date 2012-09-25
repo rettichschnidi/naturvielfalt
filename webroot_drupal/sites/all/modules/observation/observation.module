@@ -195,6 +195,21 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	
+	// Get all own observations
+	$items['observation/get/own'] = array(
+			'title' => t('ObservationsJSON'),
+			'description' => t('Get own observations'),
+			'page callback' => 'observation_get_all_json',
+			'page arguments' => array(
+					'own'
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK
+	);
+	
 	// Get all writeable observations
 	$items['observation/get/writeable'] = array(
 			'title' => t('Writeable Observations JSON'),

@@ -1,3 +1,19 @@
+div.filterDiv input {
+	float: left;
+}
+div.filterDiv .form-item {
+	float: right;
+	margin: 0 0 0 20px;
+}
+div.filterDiv label {
+	display: inline;
+	font-weight: normal;
+}
+div.form-item-acl-filter select {
+	background-color: #DEDCDA;
+	color: #000000;
+}
+
 .observation_td {
     font-size: 11px;
     padding: 7px;
@@ -10,7 +26,8 @@
 	padding-left: 36px;
     font-weight: bold;
 }
-.edit-submit {
+
+#edit-submit {
     background-color: #659560;
     border: 1px solid #457540;
     border-radius: 5px 5px 5px 5px;
@@ -24,12 +41,14 @@
     right: 10px;
     z-index: 5;
 }
+
 .loading {
     display: none;
     overflow: visible;
     padding: 5px;
     position: fixed;
 }
+
 .organismn_autocomplete {
     background-image: url("../img/search.gif");
     background-position: right center;
@@ -43,12 +62,14 @@
 	font-size: 11px;
     font-style: italic;
 }
+
 .searching {
     background-image: url("../img/searching.gif");
 }
 .notfound {
     background-image: url("../img/notfound.gif");
 }
+
 #message {
     background-repeat: no-repeat;
     left: 50%;
@@ -64,6 +85,7 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     margin: 0;
 }
+
 #observation_form {
 	margin-top: 20px;
 }
@@ -82,21 +104,17 @@
 #attributes_table {
 	margin-left: 19px;
 }
-
 #observation-show-details {
 	float: left;
 	width: 400px;
 }
-
 #observation-show-details-map {
 	float: right;
 	width: 450px;
 }
-
 #observation-show-details th, #observation-geometry th, #observation-attributes th {
 	width: 175px;
 }
-
 .clear {
 	clear: both;
 }
@@ -106,7 +124,7 @@ span.datatable_gallery_icons input.gridSelect {
 }
 
 /* Section innerhalb des Flexigrids */
-#batch-div {
+.batch-div {
 	background-color: #DAE5E3;
 	position: relative;
 	border: 1px solid #CCC;
@@ -114,13 +132,7 @@ span.datatable_gallery_icons input.gridSelect {
 	padding-bottom: 2px;	
 }
 
-#batch-div input{	
+.batch-div input {	
 	margin-left: 8px;
-} 
-
-#btnDeleteSelected{
-	font-size: 10px;
-	height: 18px;
-	width: 55px;	
 }
 

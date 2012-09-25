@@ -3,8 +3,7 @@ module_load_include('inc', 'observation');
 module_load_include('inc', 'datatable');
 
 /**
- * Show all existing observations. If $onlyMyObservation is true,
- * restrict to observation where the current user is admin.
+ * Show all existing observations.
  *
  * @return render array
  */
@@ -78,6 +77,11 @@ function observation_show_all_observations() {
 							'value' => DATATABLE_IMGSRC_PORTRAIT_BELEG,
 							'option' => t('portrait images, then proof images')
 						),
+					),
+					'acl_filter' => array(
+						'all' => t('Public'),
+						'own' => t('Own'),
+						'writeable' => t('Editables')
 					)
 			)
 	);

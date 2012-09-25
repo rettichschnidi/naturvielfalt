@@ -12,7 +12,8 @@
 .flexigrid {
 	font-size: 11px;
 	position: relative;
-	border: 1px solid #dae5e3;
+	border-left: 1px solid #DAE5E3;
+	border-right: 1px solid #DAE5E3;
 	overflow: hidden;
 	color: #000;
 }

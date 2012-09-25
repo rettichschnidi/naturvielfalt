@@ -157,70 +157,83 @@ if ($header) {
 	$aoColumns .= "],";
 	$searchColumns = substr_replace($searchColumns, "", -1);
 	$searchColumns .= "],";
-}	
+}
+
+$table['filterDiv'] = array(
+	'#type'       => 'container',
+	'#attributes' => array(
+						'id'    => $id_table . '_filterDiv',
+						'class' => array(
+										'filterDiv',
+										'clearfix'))
+);
 
 if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
-	$table['gallery_buttons'] = array(
-		'#type' => 'fieldset',
-		'#tree' => TRUE,
+	$table['filterDiv']['table_link'] = array(
+			'#type'       => 'button',
+			'#value'      => t('Table'),
+			'#attributes' => array(
+								'id'       => $id_table . '_table_link',
+								'onClick'  => "gallery_addon.toggleGallery('$id_table', false);",
+								'disabled' => 'disabled')
+	);
+	
+	$table['filterDiv']['gallery_link'] = array(
+		'#type'       => 'button',
+		'#value'      => t('Gallery'),
 		'#attributes' => array(
-			'style' => 'margin-bottom: 0px; padding: 0px; border: 0;'
-		),
-		'#border' => 0,
+							'id'      => $id_table . '_gallery_link',
+						  	'onClick' => "gallery_addon.toggleGallery('$id_table', true);")
 	);
 	
-	$table['gallery_buttons']['table_link'] = array(
-			'#type' => 'button',
-			'#value' => t('Table'),
-			'#attributes' => array(
-					'id' => $id_table . '_table_link',
-					'onClick' => "gallery_addon.toggleGallery('$id_table', false);",
-					'disabled' => 'disabled',
-			)
-	);
-	
-	$table['gallery_buttons']['gallery_link'] = array(
-			'#type' => 'button',
-			'#value' => t('Gallery'),
-			'#attributes' => array(
-				'id' => $id_table . '_gallery_link',
-			  	'onClick' => "gallery_addon.toggleGallery('$id_table', true);",
-					
-			)
-	);
-	
-	if(isset($options['gallery_image_sources'])){
-		$image_sources = '';
-		foreach($options['gallery_image_sources'] as $key=>$val){
-			$selected = '';
-			if($key === "selected"){
-				$selected = "selected='selected'";
-			}
-			$image_sources .= "<option $selected value='".$val['value']."'>".$val['option']."</option>\n";
-		}
-	} else {
-		$image_sources = '<option>-</option>';
+	$gallery_image_sources_options = array();
+	if(isset($options['gallery_image_sources'])) {
+		foreach($options['gallery_image_sources'] as $gallery_image_source_option)
+			$gallery_image_sources_options[$gallery_image_source_option['value']] = $gallery_image_source_option['option'];
+		if (array_key_exists('selected', $options['gallery_image_sources']))
+			$gallery_image_sources_selected_option = $options['gallery_image_sources']['selected']['value'];
 	}
-	
-	$table['gallery_buttons']['image_source_select'] = array(
-			'#markup' => $image_sources,
-			'#prefix' => '<span class="datatable_gallery_imgsource"'
-							. ' id="' . $id_table . '_gallery_image_source">' 
-							. t('Images') 
-							. ': <select class="form-select"'
-							. ' onChange="javascript:gallery_addon.sourceChanged(\''.$id_table.'\',this)">',
-			'#suffix' => '</select></span>'
+	else {
+		$gallery_image_sources_options[0] = '-';
+		$gallery_image_sources_selected_option = 0;
+	}
+	$table['filterDiv']['image_source_select'] = array(
+		'#type'       => 'select',
+		'#name'       => 'image_source',
+		'#title'      => t('Images') . ':',
+		'#options'    => $gallery_image_sources_options,
+		'#value'      => $gallery_image_sources_selected_option,
+		'#attributes' => array(
+							'id'    => $id_table . '_gallery_image_source',
+							'class' => array(
+											'datatable_gallery_imgsource'))
+	);
+}
+
+if (isset($options['acl_filter'])) {
+	$acl_options = array();
+	foreach ($options['acl_filter'] as $acl_const => $acl_text) {
+		$acl_options[$acl_const] = $acl_text;
+	}
+	$table['filterDiv']['acl'] = array(
+		'#type'       => 'select',
+		'#name'       => 'acl_filter',
+		'#title'      => t('Observations') . ':',
+		'#options'    => $acl_options,
+		'#attributes' => array(
+							'class' => array(
+											'acl_filter'))
 	);
 }
 
 $table[$id_table] = array(
-		'#theme' => 'table',
-		'#rows' => $rows,
-		'#sticky' => false,
+		'#theme'      => 'table',
+		'#rows'       => $rows,
+		'#sticky'     => false,
 		'#attributes' => array(
-				'id' => $id_table,
-				'class' => $id_table	
-		),
+							'id' => $id_table,
+							'class' => array(
+											$id_table))
 );
 
 print drupal_render($table);
@@ -273,6 +286,9 @@ jQuery(document).ready(function() {
 
 <?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) {?>
 jQuery(window).ready(function() {
+	// move filterDiv into flexigrid
+	$('#<?=$id_table;?>').closest('div.flexigrid').prepend($('#<?=$id_table;?>_filterDiv'));
+	
 	// switch to the gallery view if #gallery is in the url
 	if (window.location.hash.indexOf('gallery') != -1){
 		gallery_addon.toggleGallery('<?=$id_table;?>', true);

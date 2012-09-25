@@ -11,8 +11,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-09-18 10:55+0200\n"
-"PO-Revision-Date: 2012-09-18 10:55+0200\n"
+"POT-Creation-Date: 2012-09-25 15:44+0200\n"
+"PO-Revision-Date: 2012-09-25 15:44+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -28,55 +28,59 @@ msgstr "Alle"
 msgid "Table"
 msgstr "Tabelle"
 
-#: datatable.tpl.php:184
+#: datatable.tpl.php:183
 msgid "Gallery"
 msgstr "Galerie"
 
-#: datatable.tpl.php:209
+#: datatable.tpl.php:203
 msgid "Images"
 msgstr "Bilder"
 
-#: datatable.tpl.php:249
+#: datatable.tpl.php:221
+msgid "Observations"
+msgstr "Beobachtungen"
+
+#: datatable.tpl.php:263
 msgid "Connection Error"
 msgstr "Verbindungsfehler"
 
-#: datatable.tpl.php:250
+#: datatable.tpl.php:264
 msgid "Displaying {from} to {to} of {total} items"
-msgstr "Zeige {from} bis {to} von {total} Elementen"
+msgstr " Zeige {from} bis {to} von {total} Elementen "
 
-#: datatable.tpl.php:251
+#: datatable.tpl.php:265
 msgid "Page"
 msgstr "Seite"
 
-#: datatable.tpl.php:252
+#: datatable.tpl.php:266
 msgid "of"
 msgstr ""
 
-#: datatable.tpl.php:253
+#: datatable.tpl.php:267
 msgid "Find"
 msgstr ""
 
-#: datatable.tpl.php:254
+#: datatable.tpl.php:268
 msgid "Processing, please wait ..."
 msgstr "Verarbeiten, bitte warten ..."
 
-#: datatable.tpl.php:255
+#: datatable.tpl.php:269
 msgid "No items"
 msgstr "Keine Elemente"
 
-#: datatable.tpl.php:256
+#: datatable.tpl.php:270
 msgid "Search"
 msgstr "Suche"
 
-#: datatable.tpl.php:257
+#: datatable.tpl.php:271
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: datatable.tpl.php:258
+#: datatable.tpl.php:272
 msgid "Minimize/Maximize Table"
 msgstr "Tabelle minimieren/maximieren"
 
-#: datatable.tpl.php:259
+#: datatable.tpl.php:273
 msgid "Hide/Show Columns"
 msgstr "Spalten verstecken/anzeigen"
 

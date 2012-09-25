@@ -62,15 +62,16 @@ jQuery(document).ready(function() {
 		div.children('.hDiv').toggle();
 		gallery_addon.__getGalleryDiv(gridid).toggle();
 	
-		if(enabled){
+		if(enabled) {
 			$('#' + gridid + '_gallery_link').attr('disabled', 'disabled');
 			$('#' + gridid + '_table_link').removeAttr('disabled');
-			$('#' + gridid + '_gallery_image_source').css('display', 'inline');
+			$('#' + gridid + '_gallery_image_source').closest('div').show();
 			window.location.hash = 'gallery';
-		}else {
+		}
+		else {
 			$('#' + gridid + '_table_link').attr('disabled', 'disabled');
 			$('#' + gridid + '_gallery_link').removeAttr('disabled');
-			$('#' + gridid + '_gallery_image_source').hide();
+			$('#' + gridid + '_gallery_image_source').closest('div').hide();
 			window.location.hash = '';
 		}
 	}
@@ -89,6 +90,10 @@ jQuery(document).ready(function() {
 		$("#" + gridid).flexOptions({params:[{name:'imagesource', value: element.value}]});
 		$("#" + gridid).flexigrid().flexReload();
 	}
+	$('.form-item-image-source select').change(function() {
+		var gridid = this.id.substring(0, this.id.length - "_gallery_image_source".length);
+		gallery_addon.sourceChanged(gridid, this);
+	});
 	
 	/**
 	 * Removes all content of the gallery div

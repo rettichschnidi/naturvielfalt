@@ -1,3 +1,23 @@
+/* Control buttons */
+
+div.form-item-image-source {
+	display: none;
+	float: right;
+}
+
+div.form-item-image-source label {
+	display: inline;
+	font-weight: normal;
+}
+
+div.form-item-image-source select {
+	background-color: #DEDCDA;
+	color: #000000;
+}
+
+
+/* The gallery inside the flexigrid */
+
 div.datatable_gallery {
 	display: none; 
 	padding-left:5px;
@@ -40,17 +60,6 @@ div.datatable_gallery_no_image_info {
 
 img.datatable_gallery_no_image {
 	padding-bottom: 10px;
-}
-
-span.datatable_gallery_imgsource {
-	position:absolute; 
-	right: 15px; 
-	display:none;
-}
-
-span.datatable_gallery_imgsource select {
-	background-color: #DEDCDA;
-	color: #000000;
 }
 
 span.datatable_gallery_image_type {
