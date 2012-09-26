@@ -123,6 +123,14 @@ body {
   padding: 0;
 }
 
+.region-sidebar-first .section .block.last {
+	bottom: 0;
+	position: absolute;
+}
+.region-sidebar-first .section .block.last p {
+	margin-bottom: 0;
+}
+
 /*
  * Second sidebar
  */

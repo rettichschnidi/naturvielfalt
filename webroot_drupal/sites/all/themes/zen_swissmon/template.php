@@ -366,7 +366,11 @@ function zen_swissmon_page_alter(&$page) {
   
   $page['footer']['left-bg'] = array(
     '#weight' => -10, 
-    '#markup' => '<div id="footer-left"></div>',
+    '#markup' => '<div id="footer-left">
+    				<a href="http://www.naturwerk.info" title="Naturwerk" id="logo_naturwerk" target="_blank">
+						<img src="/sites/all/themes/zen_swissmon/images/logo_naturwerk.jpg" alt="Logo Naturwerk">
+					</a>
+    			  </div>',
   );
   $page['footer']['right-bg'] = array(
     '#weight' => -10, 

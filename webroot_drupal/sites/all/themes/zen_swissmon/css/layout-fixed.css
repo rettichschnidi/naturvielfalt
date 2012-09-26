@@ -196,6 +196,18 @@ body {
   margin: 0 0 0 7px; /* LTR */ /* margin-top should be the same as margin-top for #content .right-corner .left-corner */
 }
 
+.region-sidebar-first .section .block.last {
+	bottom: 0;
+	height: 2em;
+	left: 0;
+	position: absolute;
+	text-align: center;
+	width: 227px;
+}
+.region-sidebar-first .section .block.last p {
+	margin-bottom: 0;
+}
+
 /*
  * Second sidebar
  */

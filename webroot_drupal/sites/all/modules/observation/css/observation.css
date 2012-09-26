@@ -27,7 +27,7 @@ div.form-item-acl-filter select {
     font-weight: bold;
 }
 
-#edit-submit {
+input[type="submit"].edit-submit {
     background-color: #659560;
     border: 1px solid #457540;
     border-radius: 5px 5px 5px 5px;

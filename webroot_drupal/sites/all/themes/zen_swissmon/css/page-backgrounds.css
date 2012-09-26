@@ -92,21 +92,23 @@ body {
 .region-footer {
   position: relative;  
   background-color: #DAE5E3;
+  border-top: 2px solid #C0C0C0;
 }
 
 .region-footer div#footer-left {
   position:absolute;
   left: 0;
   top: 0;
-  width: 7px;
-  height: 7px;
-  background: transparent url(../images/footer-shadows_left.jpg) no-repeat 0 0;
+  width: 227px;
+  height: 51px;
+  background-color: #FFFFFF;
 }
+
 .region-footer div#footer-right {
   position:absolute;
   right: 0;
   top: 0;
   width: 7px;
   height: 7px;
-  background: transparent url(../images/footer-shadows_right.jpg) no-repeat 0 0;
+  background-color: transparent;
 }
