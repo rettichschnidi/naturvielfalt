@@ -412,6 +412,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$sql['dbColumns'] = array(
 		'o.id AS id',
+		'o.organism_artgroup_id AS artgroup_id',
 		'o.observer AS observer',
 		'o.date AS date',
 		'o.count AS count',
@@ -472,17 +473,32 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
 	
-	/* Only show accessible observations */
+	/*
+	 * Only show accessible observations.
+	 * If own observations are requested, reset ACL level to readable observations. 
+	 */
 	if ($acl_level === 'own') {
 		$sql['dbWhere'] = empty($sql['dbWhere'])
 			? ''
 			: $sql['dbWhere'] . ' AND ';
-		$sql['dbWhere'] .= 'users_uid=:uid';
+		$sql['dbWhere'] .= 'o.users_uid=:uid';
 		$arguments[':uid'] = $user->uid;
 		$sql['acl_level'] = 'ACL_READ';
 	}
 	else
 		$sql['acl_level'] = $acl_level;
+	
+	/*
+	 * Only show observations of a specific artgroup.
+	 * artgroup id 1 means all artgroups.
+	 */
+	if (isset($_REQUEST['oaid']) && is_numeric($_REQUEST['oaid']) && $_REQUEST['oaid'] > 1) {
+		$sql['dbWhere'] = empty($sql['dbWhere'])
+			? ''
+			: $sql['dbWhere'] . ' AND ';
+		$sql['dbWhere'] .= 'o.organism_artgroup_id=:oaid';
+		$arguments[':oaid'] = $_REQUEST['oaid'];
+	}
 	
 	$sql['dbDefaultOrder'] = 'o.date DESC';
 	

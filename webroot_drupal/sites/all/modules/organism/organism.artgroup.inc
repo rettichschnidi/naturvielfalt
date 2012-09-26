@@ -3,10 +3,45 @@
 define('SPECIESGROUP_ALL', 1);
 
 /**
+* Get artgroups, optionally filtered with the parent id, as an id => name array.
+*
+* @param int $parent
+* @param int $deep
+* @return array
+*/
+function organism_artgroup_get_all_as_array($parent = false, $deep = 0) {
+	if ($parent != false) {
+		$sql = "SELECT * FROM {organism_artgroup} WHERE parent=:parent AND parent != id ORDER BY name";
+		$sql_args = array(
+				':parent' => $parent
+		);
+	} else {
+		$sql = "SELECT * FROM {organism_artgroup} WHERE parent IS NULL ORDER BY name";
+		$sql_args = array();
+	}
+
+	$result = db_query($sql, $sql_args);
+
+	$output = array();
+	$spacer = '';
+	for ($i = 0; $i < $deep; $i++)
+	$spacer = $spacer . '&nbsp;&nbsp;&nbsp;';
+
+	foreach ($result as $top) {
+		$output[$top->id] = $spacer . t($top->name);
+		// use + array union operator to not re-index the arrays as with array_merge()
+		$output += organism_artgroup_get_all_as_array($top->id, $deep + 1);
+	}
+
+	return $output;
+}
+
+/**
  * Get artgroups, optionally filtered with the parent id, as html <optio> tag
  * 
  * @param int $parent
  * @param int $deep
+ * @param int $selected_id
  * @return string
  */
 function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {
