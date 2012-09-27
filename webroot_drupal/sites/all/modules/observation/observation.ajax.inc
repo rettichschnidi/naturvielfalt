@@ -514,10 +514,10 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
 	foreach ($output['rows'] as &$row) {
 		// select box
-		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
+		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
 		// show details
 		$row['cell']['showColumn'] = l(
-			'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '"/>',
+			'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 			$base_url . '/observation/' . $row['id'] . '/show',
 			array(
 				'html' => true
@@ -525,7 +525,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		// edit details
 		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
 			? l(
-				'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '"/>',
+				'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
 				$base_url . '/observation/' . $row['id'] . '/edit',
 				array(
 					'html' => true
@@ -559,7 +559,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_id'],
 			array(
 				'icons' => array(
-					"<img src='$imageBaseUrl/pin.png' style='cursor: pointer;' onclick='javascript:observationmap.selectObservation(" . $row['id'] . ");'>",
+					'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');">',
 					$row['cell']['showColumn'],
 					$row['cell']['editColumn'],
 					$row['cell']['selectColumn']

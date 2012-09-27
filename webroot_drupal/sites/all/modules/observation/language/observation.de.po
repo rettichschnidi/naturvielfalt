@@ -17,8 +17,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-09-25 15:42+0200\n"
-"PO-Revision-Date: 2012-09-25 15:42+0200\n"
+"POT-Creation-Date: 2012-09-27 09:25+0200\n"
+"PO-Revision-Date: 2012-09-27 09:25+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -78,17 +78,25 @@ msgstr ""
 "Es konnten nicht alle Beobachtungen entfernt werden (keine "
 "Berechtigung)"
 
-#: observation.ajax.inc:504 observation.show.inc:128 observation.module:49;66
+#: observation.ajax.inc:517
+msgid "Select"
+msgstr "Auswählen"
+
+#: observation.ajax.inc:520;520 observation.show.inc:152 observation.module:49;66
 msgid "Show"
 msgstr "Detailansicht"
 
-#: observation.ajax.inc:512 observation.show.inc:116 observation.module:83
+#: observation.ajax.inc:528;528 observation.show.inc:140 observation.module:83
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: observation.ajax.inc:520
+#: observation.ajax.inc:536
 msgid "No translation available"
 msgstr "Keine Übersetzung vorhanden"
+
+#: observation.ajax.inc:562
+msgid "Position"
+msgstr "Position"
 
 #: observation.delete.inc:18
 msgid "Delete Observation @observation_organism from @observation_date."
@@ -116,7 +124,7 @@ msgstr "@observation_organism"
 msgid "Add and edit generic @mediatype of this observation."
 msgstr "@mediatype dieser Beobachtung hinzufügen und bearbeiten."
 
-#: observation.gallery.inc:98 observation.show.inc:48 observation.module:21
+#: observation.gallery.inc:98 observation.show.inc:49;85 observation.module:21
 msgid "Observations"
 msgstr "Beobachtungen"
 
@@ -128,7 +136,7 @@ msgstr "Name"
 msgid "Scientific name"
 msgstr "Wissenschaftlicher Name"
 
-#: observation.inc:288;736
+#: observation.inc:288;736 observation.show.inc:101
 msgid "Artgroup"
 msgstr "Artengruppe"
 
@@ -208,15 +216,15 @@ msgstr "Anzahl Bilder"
 msgid "Show all observations"
 msgstr "Alle Beobachtungen anzeigen"
 
-#: observation.show.inc:27 observation.template.inc:94;389
+#: observation.show.inc:28 observation.template.inc:94;389
 msgid "Map"
 msgstr "Karte"
 
-#: observation.show.inc:66
+#: observation.show.inc:68
 msgid "only proof images"
 msgstr "Nur Belegbilder"
 
-#: observation.show.inc:70
+#: observation.show.inc:71
 msgid "only portrait images"
 msgstr "Nur Portraitbilder"
 
@@ -224,19 +232,19 @@ msgstr "Nur Portraitbilder"
 msgid "proof images, then portrait images"
 msgstr "Belegbilder, dann Portraitbilder"
 
-#: observation.show.inc:78
+#: observation.show.inc:77
 msgid "portrait images, then proof images"
 msgstr "Portraitbilder, dann Belegbilder"
 
-#: observation.show.inc:82
+#: observation.show.inc:87
 msgid "Public"
 msgstr "Alle"
 
-#: observation.show.inc:83
+#: observation.show.inc:88
 msgid "Own"
 msgstr "Meine"
 
-#: observation.show.inc:84
+#: observation.show.inc:89
 msgid "Editables"
 msgstr "Editierbare"
 
