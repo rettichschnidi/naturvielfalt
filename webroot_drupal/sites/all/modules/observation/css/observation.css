@@ -9,7 +9,7 @@ div.filterDiv label {
 	display: inline;
 	font-weight: normal;
 }
-div.form-item-acl-filter select {
+div.filterDiv select {
 	background-color: #DEDCDA;
 	color: #000000;
 }

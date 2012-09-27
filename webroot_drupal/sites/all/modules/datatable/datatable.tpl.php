@@ -175,7 +175,8 @@ if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 			'#attributes' => array(
 								'id'       => $id_table . '_table_link',
 								'onClick'  => "gallery_addon.toggleGallery('$id_table', false);",
-								'disabled' => 'disabled')
+								'disabled' => 'disabled'),
+			'#weight'     => 4
 	);
 	
 	$table['filterDiv']['gallery_link'] = array(
@@ -183,7 +184,8 @@ if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 		'#value'      => t('Gallery'),
 		'#attributes' => array(
 							'id'      => $id_table . '_gallery_link',
-						  	'onClick' => "gallery_addon.toggleGallery('$id_table', true);")
+						  	'onClick' => "gallery_addon.toggleGallery('$id_table', true);"),
+		'#weight'     => 5
 	);
 	
 	$gallery_image_sources_options = array();
@@ -206,24 +208,14 @@ if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 		'#attributes' => array(
 							'id'    => $id_table . '_gallery_image_source',
 							'class' => array(
-											'datatable_gallery_imgsource'))
+											'datatable_gallery_imgsource')),
+		'#weight'     => 10
 	);
 }
 
-if (isset($options['acl_filter'])) {
-	$acl_options = array();
-	foreach ($options['acl_filter'] as $acl_const => $acl_text) {
-		$acl_options[$acl_const] = $acl_text;
-	}
-	$table['filterDiv']['acl'] = array(
-		'#type'       => 'select',
-		'#name'       => 'acl_filter',
-		'#title'      => t('Observations') . ':',
-		'#options'    => $acl_options,
-		'#attributes' => array(
-							'class' => array(
-											'acl_filter'))
-	);
+if (isset($options['custom_filter'])) {
+	foreach ($options['custom_filter'] as $customFilterKey => $customFilter)
+		$table['filterDiv'][$customFilterKey] = $customFilter;
 }
 
 $table[$id_table] = array(

@@ -10,11 +10,14 @@ jQuery(document).ready(function() {
 	 */
 	
 	/*
-	 * Filter the observations list
+	 * Filter the observations list by access right
 	 */
 	observation.aclFilter = function(tableId, filter) {
+		var url = $('#' + tableId)[0].p.url;
+		// replace string after last slash and preserve query string
+		url = url.replace(/(.+\/)[^?]+(.*)/, '$1' + filter + '$2');
 		$('#' + tableId).flexOptions({
-			url: '/observation/get/' + filter
+			url: url
 		}).flexReload();
 	}
 	$('.acl_filter').change(function(event) {
@@ -22,6 +25,25 @@ jQuery(document).ready(function() {
 		var filter = $(this).val()
 		observation.aclFilter(tableId, filter);
 	});
+	
+	/*
+	 * Filter the observations list by artgroup
+	 */
+	observation.artgroupFilter = function(tableId, filter) {
+		var url = $('#' + tableId)[0].p.url;
+		// if there's already a query string, append the filter
+		url += (url.indexOf('?') == -1) ? '?' : '&';
+		url += 'oaid=' + filter;
+		$('#' + tableId).flexOptions({
+			url: url
+		}).flexReload();
+	}
+	$('.artgroup_filter').change(function(event) {
+		var tableId = $(event.target).closest('div.flexigrid').find('div.bDiv table').first().attr('id');
+		var filter = $(this).val();
+		observation.artgroupFilter(tableId, filter);
+	});
+	
 	
 	/*
 	 * Select or deselect all rows
