@@ -140,7 +140,7 @@ jQuery(document).ready(function() {
 	 */
 	observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
 		if(responseText != null && responseText.success == true){
-			observation.setMessage(responseText.message, responseText.type, 3000);
+			observation.setMessage(responseText.message, responseText.type, 5000);
 		} else if (responseText != null) {
 			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
 		} else {
@@ -455,7 +455,7 @@ jQuery(document).ready(function() {
 	 */
 	observation.showSaveResponse = function(responseText, statusText, xhr, $form)  { 
 		if(responseText != null && responseText.success == true){
-			observation.setMessage(Drupal.t('Observation saved successfully'), 'status', 3000);
+			observation.setMessage(Drupal.t('Observation saved successfully'), 'status', 5000);
 			
 			// on add, clear form 
 			if (!responseText.update) {
@@ -469,15 +469,10 @@ jQuery(document).ready(function() {
 			
 			// reload table
 			$('#recent_observations').flexReload();
-		
-			// scroll to top of form
-			$('body,html').animate({
-				scrollTop: $('#observation_form').offset().top
-			});
 		} else if (responseText != null) {
-			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"),'error', 5000);
+			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
 		} else {
-			observation.setMessage('&bull;&nbsp;' + Drupal.t('Saving failed due to unknown error.'),'error', 5000);
+			observation.setMessage('&bull;&nbsp;' + Drupal.t('Saving failed due to unknown error.'), 'error', 5000);
 		}
 	};
 		
@@ -495,6 +490,11 @@ jQuery(document).ready(function() {
 		if(time) observation.messageTimer = window.setTimeout(function () {
 			observation.message.slideUp('fast');
 		}, time);
+
+		// scroll to message
+		$('body,html').animate({
+			scrollTop: observation.message.offset().top
+		});
 	};
 	  
 	/**

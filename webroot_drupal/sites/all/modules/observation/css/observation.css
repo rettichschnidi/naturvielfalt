@@ -72,11 +72,7 @@ input[type="submit"].edit-submit {
 
 #message {
     background-repeat: no-repeat;
-    left: 50%;
-    margin-left: -600px;
-    position: fixed;
-    top: 0;
-    width: 1200px;
+    width: 100%;
     z-index: 5;
 }
 #message .messages {
