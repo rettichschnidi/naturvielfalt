@@ -5,11 +5,11 @@ jQuery(document).ready(function() {
 	
 	
 	
-	/**
+	/*
 	 * Functions for the observations list page
 	 */
 	
-	/*
+	/**
 	 * Filter the observations list by access right
 	 */
 	observation.aclFilter = function(tableId, filter) {
@@ -26,7 +26,7 @@ jQuery(document).ready(function() {
 		observation.aclFilter(tableId, filter);
 	});
 	
-	/*
+	/**
 	 * Filter the observations list by artgroup
 	 */
 	observation.artgroupFilter = function(tableId, filter) {
@@ -45,7 +45,7 @@ jQuery(document).ready(function() {
 	});
 	
 	
-	/*
+	/**
 	 * Select or deselect all rows
 	 * 
 	 * @param Event object event
@@ -59,7 +59,7 @@ jQuery(document).ready(function() {
 		});
 	}
 	
-	/*
+	/**
 	 * Export the selected table rows.
 	 * If none are selected, all rows will be exported.
 	 * 
@@ -100,7 +100,7 @@ jQuery(document).ready(function() {
 		});
 	}
 	
-	/*
+	/**
 	 * Delete the selected rows
 	 * 
 	 * @param string tableId
@@ -135,7 +135,7 @@ jQuery(document).ready(function() {
 		}
 	}
 	
-	/*
+	/**
 	 * Show the message returned from the deletion request
 	 */
 	observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
@@ -148,7 +148,7 @@ jQuery(document).ready(function() {
 		}
 	};
 	
-	/*
+	/**
 	 * Update the map to show only overlays of the given data.
 	 * 
 	 * @param array(int) observation_ids
@@ -194,7 +194,7 @@ jQuery(document).ready(function() {
 		);
 	}
 	
-	/*
+	/**
 	 * Display the batch div, holding the select-toggle, delete and export buttons
 	 */
 	observation.displayBatchArea = function(tableId) {
@@ -224,7 +224,7 @@ jQuery(document).ready(function() {
 		}
 	};
 	
-	/*
+	/**
 	 * Executed before table is populated
 	 * ! must return the data !
 	 * 
@@ -243,7 +243,7 @@ jQuery(document).ready(function() {
 		return data;
 	};
 	
-	/*
+	/**
 	 * Executed after table is populated
 	 * 
 	 * @param jQuery object flexigrid
@@ -253,7 +253,7 @@ jQuery(document).ready(function() {
 		observation.displayBatchArea(tableId);
 	};
 	
-	/*
+	/**
 	 * Select an observation on the map. A single selection is green (@see area.js).
 	 * 
 	 * Old selected observation is deselected, and the map changes only if the
@@ -303,7 +303,7 @@ jQuery(document).ready(function() {
 		}
 	};
 	
-	/*
+	/**
 	 * De-/Select multiple observations on the map. Multiple selections are blue.
 	 * 
 	 * Also selects the corresponding checkbox in the table/gallery respectively and
@@ -382,7 +382,7 @@ jQuery(document).ready(function() {
 		}
 	}
 	
-	/*
+	/**
 	 * Override default Google Maps Marker select() method to define color and
 	 * z-index
 	 * 
@@ -398,7 +398,7 @@ jQuery(document).ready(function() {
 		this.setZIndex(zindex);
 	}
 
-	/*
+	/**
 	 * Override default Google Maps Marker deselect() method to define color and
 	 * z-index
 	 * 
@@ -414,7 +414,7 @@ jQuery(document).ready(function() {
 		this.setZIndex(zindex);
 	}
 
-	/*
+	/**
 	 * Get a custom colored Google marker
 	 * 
 	 * @param string color
@@ -433,42 +433,11 @@ jQuery(document).ready(function() {
 	
 	
  
-	/**
+	/*
 	 * Functions for the observation edit page
 	 */
 	
-	/*
-	 * Bind the form for observations to the ajax form
-	 */
-	var ajaxurl = Drupal.settings.basePath + 'observation/save';
-	if ($('#observation_id').val() != '') {
-		ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
-	}
-	
-	// bind form using 'ajaxForm'
-	if($('#observation_form').length > 0) $('#observation_form').ajaxForm({
-		success:   observation.showSaveResponse,
-		url:       ajaxurl,
-		type:      'post',
-		dataType:  'json',
-	});
-	
-	/*
-	 * Bind the date picker to the date field
-	 */
-	$('#date').datepicker({
-		dateFormat: 'dd.mm.yy',
-		duration: 0,
-		showButtonPanel: true,
-		onSelect: function (date, inst) {
-			observation.last_date = date;
-		}
-	}).width(80);
-	if(observation.last_date) $('#date').val(observation.last_date);
-	
-	if($('#organismn_autocomplete').val() == '') $('#organismn_autocomplete').focus();
-	
-	/*
+	/**
 	 * Change the determination methods according to the selected art group
 	 * TODO implementation
 	 */
@@ -476,7 +445,7 @@ jQuery(document).ready(function() {
 		console.log('implement me!');
 	}
 
-	/*
+	/**
 	 * Show the message returned from the save request
 	 * 
 	 * @param responseText
@@ -512,7 +481,7 @@ jQuery(document).ready(function() {
 		}
 	};
 		
-	/*
+	/**
 	 * Show a top message banner
 	 * 
 	 * @param string message
@@ -528,7 +497,7 @@ jQuery(document).ready(function() {
 		}, time);
 	};
 	  
-	/*
+	/**
 	 * Show a loading indicator
 	 */
 	observation.showLoading = function () {
@@ -550,7 +519,7 @@ jQuery(document).ready(function() {
 		});
 	};
 		
-	/*
+	/**
 	 * Hide the loading indicator
 	 */
 	observation.hideLoading = function() {
@@ -558,7 +527,7 @@ jQuery(document).ready(function() {
 		observation.loading.dialog('close');
 	};
 
-	/*
+	/**
 	 * Hide all determination methods
 	 */
 	observation.hideDetMethods = function() {
@@ -568,7 +537,7 @@ jQuery(document).ready(function() {
 		observation.showDetMethod('0');
 	};
 	
-	/*
+	/**
 	 * Show a determination method by id
 	 * 
 	 * @param int id
@@ -577,7 +546,7 @@ jQuery(document).ready(function() {
 		$('#artgroup_detmethod_value_'+id).css('display','block');
 	};
 	
-	/*
+	/**
 	 * Hide all attributes
 	 */
 	observation.hideAttributes = function() {
@@ -586,7 +555,7 @@ jQuery(document).ready(function() {
           });
 	};
 	
-	/*
+	/**
 	 * Show an attribute by id
 	 * 
 	 * @param int id
@@ -595,7 +564,7 @@ jQuery(document).ready(function() {
 		$('#attributes_tr_'+id).css('display','table-row');
 	};
 	
-	/*
+	/**
 	 * Reset the input's specially the organism related
 	 */
 	observation.resetOrganism = function() {
@@ -607,7 +576,7 @@ jQuery(document).ready(function() {
 		observation.hideDetMethods();
 	};
 	
-	/*
+	/**
 	 * Reset the autocomplete field, and the organism related
 	 */
 	observation.resetOrganismAutomcomplete = function() {
@@ -615,7 +584,7 @@ jQuery(document).ready(function() {
 		observation.resetOrganism();
 	};
 	
-	/*
+	/**
 	 * Add another upload slot for files
 	 * 
 	 * @param form //unused
@@ -628,7 +597,7 @@ jQuery(document).ready(function() {
 		});
 	};
 	
-	/*
+	/**
 	 * Check the type of the selected file
 	 * 
 	 * @param form
@@ -645,7 +614,7 @@ jQuery(document).ready(function() {
 		}
 	};
 
-	/*
+	/**
 	 * Opens a dialog to add meta data to a fileupload
 	 * 
 	 * @param div
@@ -698,6 +667,37 @@ jQuery(document).ready(function() {
 			observation.hideLoading();
 		});
 	};
+	
+	/**
+	 * Bind the form for observations to the ajax form
+	 */
+	var ajaxurl = Drupal.settings.basePath + 'observation/save';
+	if ($('#observation_id').val() != '') {
+		ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
+	}
+	
+	// bind form using 'ajaxForm'
+	if($('#observation_form').length > 0) $('#observation_form').ajaxForm({
+		success:   observation.showSaveResponse,
+		url:       ajaxurl,
+		type:      'post',
+		dataType:  'json',
+	});
+	
+	/**
+	 * Bind the date picker to the date field
+	 */
+	$('#date').datepicker({
+		dateFormat: 'dd.mm.yy',
+		duration: 0,
+		showButtonPanel: true,
+		onSelect: function (date, inst) {
+			observation.last_date = date;
+		}
+	}).width(80);
+	if(observation.last_date) $('#date').val(observation.last_date);
+	
+	if($('#organismn_autocomplete').val() == '') $('#organismn_autocomplete').focus();
 });
 
 
