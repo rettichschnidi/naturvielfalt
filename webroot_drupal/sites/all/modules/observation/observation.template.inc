@@ -250,7 +250,8 @@ function observation_form($observation = false) {
 						.'<td class="observation_subtitle">'
 							.t('Observer')
 						.'</td><td>'
-							.'<input type="text" id="observer" name="observer" value="' . $observation['observation']['observer'] . '" disabled="disabled" />'
+							.'<input type="hidden" name="observer" value="' . $observation['observation']['observer'] . '" />'
+							.'<input id="observer" disabled="disabled" value="' . $observation['observation']['observer'] . '" />'
 						.'</td>'
 					.'</tr>'
 				.'</table>';
