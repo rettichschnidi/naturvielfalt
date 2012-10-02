@@ -532,11 +532,7 @@ jQuery(document).ready(function() {
 			resizable: false,
 			closeOnEscape: false,
 			closeText: '',
-			dialogClass: 'loading',
-			width: 42,
-			height: 42,
-			minWidth: 42,
-			minHeight: 42
+			dialogClass: 'loading'
 		});
 	};
 		

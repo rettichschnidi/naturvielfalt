@@ -502,3 +502,18 @@ sub {
 
 sup {
 }
+
+/*
+ * jQuery UI styles
+ */
+.ui-dialog.loading {
+	height: auto !important;
+	width: auto !important;
+}
+.ui-dialog.loading .ui-dialog-titlebar {
+	display: none;
+}
+.ui-dialog.loading .ui-dialog-content {
+	min-height: 0 !important;
+	padding: 5px;
+}
