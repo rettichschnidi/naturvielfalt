@@ -109,11 +109,28 @@ jQuery(document).ready(function() {
 		var $table = $('#' + tableId);
 		if ($table.length < 1)
 			return false;
+
+		var pathname = window.location.pathname;
+		var observation_edit_id = pathname.match(/observation\/(\d+)\/edit/);
+		if (observation_edit_id != null) {
+			console.log(observation_edit_id);
+			console.log(observation_edit_id.length);
+			if (observation_edit_id.length >= 2)
+				observation_edit_id = observation_edit_id[1];
+			console.log(observation_edit_id);
+		}
+		else
+			observation_edit_id = 0;
 		
+		var redirect = false;
 		var transportData = '';
 		$table.find('input.gridSelect').each(function() {
-			if (this.checked)
-				transportData += $(this).val() + ',';
+			if (this.checked) {
+				var observation_id = $(this).val();
+				transportData += observation_id + ',';
+				if (observation_id == observation_edit_id)
+					redirect = true;
+			}
 		});
 		if (transportData.length == '') {
 			alert(Drupal.t('No records selected'));
@@ -131,6 +148,10 @@ jQuery(document).ready(function() {
 			$.getJSON(ajaxurl, data, function(json){
 				$table.flexReload();
 				observation.showDeleteResponse(json);
+				if (redirect) {
+					$.safetynet.suppressed(true);
+					window.location.href = '/observation/show';
+				}
 			});
 		}
 	}
