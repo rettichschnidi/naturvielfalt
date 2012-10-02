@@ -27,6 +27,7 @@ drupal_add_css(
 
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
 drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable.js');
 
 
 if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
