@@ -466,8 +466,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 				$sql['dbWhere'] .= 'o.id=:observation_id_' . $observation_id . ' OR ';
 				$arguments[':observation_id_'.$observation_id] = $observation_id;
 			}
+			$sql['dbWhere'] = substr($sql['dbWhere'], 0, -4) . ')';
 		}
-		$sql['dbWhere'] = substr($sql['dbWhere'], 0, - 4) . ')';
 	}
 	
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';

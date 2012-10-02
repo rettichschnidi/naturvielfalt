@@ -143,6 +143,8 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 
 	$searchColumns = $sql['dbSearchColumns'];
 	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns'] : $sql['dbColumns'];
+	
+	$idColumn = isset($sql['id']) ? $sql['id'] : "id";
 
 	/* DB table to use */
 	$Table = $sql['dbTable'];
@@ -191,84 +193,16 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		}
 	}
 
-	$idColumn = isset($sql['id']) ? $sql['id'] : "id";
-
 	$sTable = $Table . " " . $sJoins . " ";
-
-	$sortOrders = array(
-			'asc',
-			'desc'
-	);
-
-	if (isset($_REQUEST['sortname'])) {
-		$sortname = $_REQUEST['sortname'];
-		foreach ($sortColumns as $sortColumn) {
-			foreach (explode(".", $sortColumn) as $sortCol) {
-				$sortColumnsTemp[] = trim($sortCol);
-				//make sure that "oneofmyids AS id" works (BURN AFTER READING!)
-				foreach (explode("AS", $sortCol) as $sortCol2) {
-					$sortColumnsTemp[] = trim($sortCol2);
-				}
-			}
-		}
-		/**
-		 * WARNING: This is an ugly hack.... // FIXME
-		 */
-		if (!is_int(array_search($sortname, $sortColumnsTemp)))
-			return "Error! Sortname not possible. '$sortname' is not in "
-					. implode(", ", $sortColumnsTemp);
-		$sortname = pg_escape_string($sortname);
-	}
-	if (isset($_REQUEST['sortorder'])) {
-		$sortorder = pg_escape_string($_REQUEST['sortorder']);
-		if (!is_int(array_search($sortorder, $sortOrders)))
-			return "Error! Sortorder not possible";
-	}
-	// 	Not progressed, always search in all searchable columns
-	if (isset($_REQUEST['qtype'])) {
+	
+	if (isset($_REQUEST['qtype']) && !empty($_REQUEST['qtype'])) {
 		$qtype = pg_escape_string($_REQUEST['qtype']);
 	}
-	if (isset($_REQUEST['query'])) {
-		$query = $_REQUEST['query'];
-		if (!is_string($query))
+	if (isset($_REQUEST['query']) && !empty($_REQUEST['query'])) {
+		if (!is_string($_REQUEST['query']))
 			return "Error! Query not a string";
-		$query = pg_escape_string($query);
+		$query = pg_escape_string($_REQUEST['query']);
 	}
-
-	/*
-	 * Paging
-	 */
-	if (isset($_POST['page'])) {
-		$pageNumber = (int) $_POST['page'];
-		if ($pageNumber < 1)
-			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
-	} else {
-		$pageNumber = 1;
-	}
-
-	if (isset($_REQUEST['rp'])) {
-		$pagesize = (int) $_REQUEST['rp'];
-		if ($pagesize < 1)
-			return "Error! Pagesize < 1";
-	}
-
-	if (isset($pageNumber) && isset($pagesize)) {
-		$offset = ($pageNumber - 1) * $pagesize;
-	} else {
-		$offset = 0;
-		$pagesize = 100;
-	}
-
-	/*
-	 * Ordering
-	 */
-	$sOrder = '';
-	if (isset($sortname)) {
-		$sOrder = "ORDER BY $sortname $sortorder";
-	} else if (isset($sql['dbDefaultOrder']) && !empty($sql['dbDefaultOrder'])) {
-		$sOrder = 'ORDER BY ' . $sql['dbDefaultOrder'];
-	}
-
 	/*
 	 * Filtering
 	 * NOTE this does not match the built-in DataTables filtering which does it
@@ -293,6 +227,37 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 			$sWhere = "WHERE CAST(" . (string) $qtype . " AS TEXT) ILIKE CAST('%" . (string) $query
 					. "%' AS TEXT)";
 	}
+	
+	/*
+	 * Ordering
+	 */
+	$sortOrders = array(
+			'asc',
+			'desc'
+	);
+	if (isset($_REQUEST['sortname']) && !empty($_REQUEST['sortname'])) {
+		foreach ($sortColumns as $sortColumn) {
+			if (strpos($sortColumn, $_REQUEST['sortname']) !== false) {
+				$sortname = pg_escape_string($_REQUEST['sortname']);
+				break;
+			}
+		}
+		if (!isset($sortname))
+			return 'Error! Sortname not possible. "' . $sortname . '" is not in ' . implode(', ', $sortColumns);
+	}
+	if (isset($_REQUEST['sortorder'])) {
+		$sortorder = strtolower($_REQUEST['sortorder']);
+		if (!in_array($sortorder, $sortOrders))
+			return "Error! Sortorder not possible";
+		$sortorder = pg_escape_string($sortorder);
+	}
+	$sOrder = 'ORDER BY ';
+	if (isset($sortname)) {
+		$sOrder .= $sortname. ' ' . $sortorder . ', ';
+	} else if (isset($sql['dbDefaultOrder']) && !empty($sql['dbDefaultOrder'])) {
+		$sOrder .= $sql['dbDefaultOrder'] . ', ';
+	}
+	$sOrder .= $idColumn . ' desc';
 
 	/*
 	* SQL queries
@@ -302,6 +267,30 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
 	
 	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
+	
+	
+	/*
+	 * Paging
+	*/
+	if (isset($_POST['page'])) {
+		$pageNumber = (int) $_POST['page'];
+		if ($pageNumber < 1)
+			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
+		else
+			$pageNumber = 1;
+	}
+	if (isset($_REQUEST['rp'])) {
+		$pagesize = (int) $_REQUEST['rp'];
+		if ($pagesize < 1)
+			return "Error! Pagesize < 1";
+	}
+	if (isset($pageNumber) && isset($pagesize)) {
+		$offset = ($pageNumber - 1) * $pagesize;
+	}
+	else {
+		$offset = 0;
+		$pagesize = 100;
+	}
 	
 	/*
 	 * Add limit and offset to improve performance of query runtime
