@@ -588,10 +588,19 @@ jQuery(document).ready(function() {
 		$(data).each(function() {
 			if (this.name == 'files[]' && this.value != '') {
 				observation.showProgressbar();
+				if (options.fileAPI) {
+					$.extend(options, {
+						uploadProgress: function(event, position, total, percentComplete) {
+							observation.updateProgressbar(percentComplete);
+						},
+					});
+				}
+				else {
+					// just show full progress bar, since it's an animated gif it still
+					// indicates an upload in progress
+					observation.updateProgressbar(100);
+				}
 				$.extend(options, {
-					uploadProgress: function(event, position, total, percentComplete) {
-						observation.updateProgressbar(percentComplete);
-					},
 					complete: observation.hideProgressbar
 				});
 				return false;
