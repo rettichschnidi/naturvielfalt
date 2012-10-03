@@ -517,3 +517,15 @@ sup {
 	min-height: 0 !important;
 	padding: 5px;
 }
+
+.ui-dialog.progressbar .ui-dialog-titlebar {
+	display: none;
+}
+.ui-dialog.progressbar .ui-dialog-content {
+	min-height: 0 !important;
+	padding: 0;
+}
+.ui-progressbar-value {
+	background: url('/misc/progress.gif') repeat-x;
+	height: 20px;
+}

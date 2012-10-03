@@ -27,7 +27,7 @@ div.filterDiv select {
     font-weight: bold;
 }
 
-input[type="submit"].edit-submit {
+input#edit-submit {
     background-color: #659560;
     border: 1px solid #457540;
     border-radius: 5px 5px 5px 5px;
@@ -40,6 +40,12 @@ input[type="submit"].edit-submit {
     position: fixed;
     right: 10px;
     z-index: 5;
+}
+input#picture_upload_submit {
+	float: right;
+}
+input#acl_submit {
+	float: right;
 }
 
 .loading {
