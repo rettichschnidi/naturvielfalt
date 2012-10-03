@@ -518,6 +518,9 @@ sup {
 	padding: 5px;
 }
 
+#progressbar {
+	overflow: hidden;
+}
 .ui-dialog.progressbar .ui-dialog-titlebar {
 	display: none;
 }
