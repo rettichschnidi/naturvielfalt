@@ -309,8 +309,9 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 			'#type' => 'submit',
 			'#value' => t('Save'),
 			'#submit' => array(
-					'c_acl_form_submit'
-			),
+					'c_acl_form_submit'),
+			'#attributes' => array(
+					'id' => 'acl_submit')
 	);
 
 	return $output;

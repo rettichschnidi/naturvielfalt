@@ -113,11 +113,8 @@ jQuery(document).ready(function() {
 		var pathname = window.location.pathname;
 		var observation_edit_id = pathname.match(/observation\/(\d+)\/edit/);
 		if (observation_edit_id != null) {
-			console.log(observation_edit_id);
-			console.log(observation_edit_id.length);
 			if (observation_edit_id.length >= 2)
 				observation_edit_id = observation_edit_id[1];
-			console.log(observation_edit_id);
 		}
 		else
 			observation_edit_id = 0;
@@ -504,7 +501,7 @@ jQuery(document).ready(function() {
 	 * @param string type
 	 * @param int time
 	 */
-	observation.setMessage = function (message, type, time) {
+	observation.setMessage = function(message, type, time) {
 		if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
 		observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
 		observation.message.stop().css('height', 'auto').slideDown('fast');
@@ -517,12 +514,19 @@ jQuery(document).ready(function() {
 			scrollTop: observation.message.offset().top
 		});
 	};
+	
+	observation.onFormSuccess = function(responseText, statusText, xhr, $form) {
+		if (responseText.success == true)
+			resetUploadSlots();
+		
+		observation.showSaveResponse(responseText, statusText, xhr, $form);
+	}
 	  
 	/**
 	 * Show a loading indicator
 	 */
-	observation.showLoading = function () {
-		if(!observation.loading) {
+	observation.showLoading = function() {
+		if (!observation.loading) {
 			observation.loading = $('<div><img src="' + Drupal.settings.basePath + 'sites/all/modules/commonstuff/images/loading.gif" /></div>').hide();
 			$('body').append(observation.loading);
 		}
@@ -540,8 +544,60 @@ jQuery(document).ready(function() {
 	 * Hide the loading indicator
 	 */
 	observation.hideLoading = function() {
-		if(!observation.loading) return;
+		if (!observation.loading) return;
 		observation.loading.dialog('close');
+	};
+	
+	/**
+	 * Show a progress bar
+	 */
+	observation.showProgressbar = function() {
+		if (!observation.progbar) {
+			observation.progbar = $('<div id="progressbar" />').progressbar();
+		}
+		observation.progbar.progressbar('option', 'value', 0);
+		observation.progbar.dialog({
+			modal: true,
+			draggable: false,
+			resizable: false,
+			closeOnEscape: false,
+			closeText: '',
+			dialogClass: 'progressbar'
+		});
+	};
+	
+	/**
+	 * Update the progress bar
+	 */
+	observation.updateProgressbar = function(percent) {
+		observation.progbar.progressbar('option', 'value', percent);
+	};
+	
+	/**
+	 * Hide the progress bar
+	 */
+	observation.hideProgressbar = function() {
+		if (!observation.progbar) return;
+		observation.progbar.dialog('close');
+	};
+	
+	/**
+	 * Check if files are to be uploaded, and if yes, show progress bar
+	 */
+	observation.conditionalProgressbar = function(data, form, options) {
+		$(data).each(function() {
+			if (this.name == 'files[]' && this.value != '') {
+				observation.showProgressbar();
+				$.extend(options, {
+					uploadProgress: function(event, position, total, percentComplete) {
+						observation.updateProgressbar(percentComplete);
+					},
+					complete: observation.hideProgressbar
+				});
+				return false;
+			}
+		});
+		return true;
 	};
 
 	/**
@@ -607,10 +663,34 @@ jQuery(document).ready(function() {
 	 * @param form //unused
 	 */
 	addUploadSlot = function(form) {
-		$('#picture_upload__0').clone().appendTo('#picture').css('display','block').css('height','auto');
-		elemets_ids=0;
-		$("div[id^='picture_upload__']").each(function () {
-			$(this).attr("id", 'picture_upload__'+(elemets_ids++));
+		$('#picture_upload__0').clone().appendTo($('#picture_upload__0').parent()).css('display','block').css('height','auto');
+		var slot_id = 0;
+		var empty_slots = 0;
+		$('div[id^="picture_upload__"]').each(function() {
+			var $div = $(this);
+			if ($div.find('input:file').first().val() == '') {
+				// we need 2 empty elements because of picture_upload__0 field
+				if(empty_slots >= 2)
+					$div.remove();
+				else
+					empty_slots++;
+			}
+			if ($div)
+				$div.attr('id', 'picture_upload__'+(slot_id++));
+		});
+	};
+	
+	/**
+	 * Reset upload slots
+	 */
+	resetUploadSlots = function() {
+		var element_id = 0;
+		var slots = 0;
+		$('div[id^="picture_upload__"]').each(function() {
+			if(slots >= 2)
+				$(this).remove();
+			else
+				slots++;
 		});
 	};
 	
@@ -642,6 +722,7 @@ jQuery(document).ready(function() {
 		observation.showLoading();
 		if(file_name == ''){
 			alert(Drupal.t('Please select a file'));
+			observation.hideLoading();
 			return;
 		}
 		var data = {
@@ -695,11 +776,17 @@ jQuery(document).ready(function() {
 	
 	// bind form using 'ajaxForm'
 	if($('#observation_form').length > 0) $('#observation_form').ajaxForm({
-		success:   observation.showSaveResponse,
-		url:       ajaxurl,
-		type:      'post',
-		dataType:  'json',
+		beforeSubmit: observation.conditionalProgressbar,
+		success:      observation.onFormSuccess,
+		url:          ajaxurl,
+		type:         'post',
+		dataType:     'json',
 	});
+	
+	// if files are to be uploaded, show progress bar
+	
+	// automatically add upload slot
+	$('.form-file').live('change', addUploadSlot);
 	
 	/**
 	 * Bind the date picker to the date field

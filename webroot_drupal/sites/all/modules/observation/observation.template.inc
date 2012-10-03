@@ -67,6 +67,7 @@ function observation_form($observation = false) {
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js('misc/jquery.form.js');
 	drupal_add_js('misc/ui/jquery.ui.dialog.min.js');
+	drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
@@ -158,35 +159,33 @@ function observation_form($observation = false) {
 	</legend>
 	<div class="fieldset-wrapper">
 		<div class="form-item form-type-file form-item-files-">
-			<div id="picture_upload__0" style="display: none; height: 0px;">
-				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-				<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '
-			. t('Click here to add details to this file')
-			. '</a>
-				<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
-				<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
-				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
-				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
-			</div>
-			<label for="picture_upload__1">' . t('Upload files')
-			. '</label>
-			<div id="picture_upload__1">
-				<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-				<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '
-			. t('Click here to add details to this file')
-			. '</a>
-				<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
-				<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
-				<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
-				<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+			<div>
+				<div id="picture_upload__0" style="display: none; height: 0px;">
+					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '	. t('Click here to add details to this file') . '</a>
+					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+				</div>
+				<label for="picture_upload__1">' . t('Upload files')
+				. '</label>
+				<div id="picture_upload__1">
+					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  ' . t('Click here to add details to this file') . '</a>
+					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+				</div>
 			</div>
 
 			<div class="description">
-				<a href="javascript:addUploadSlot();">'
-			. t('Click here to add one more file') . '</a>
-				<p>' . t('Allowed files endings are: ') . $file_extensions
-			. '</p>
+				<a href="javascript:addUploadSlot();">' . t('Click here to add one more file') . '</a>
+				<p>' . t('Allowed files endings are: ') . $file_extensions . '</p>
 			</div>
+			
+			<input type="submit" value="' . t('Save') . '" id="picture_upload_submit" />
 		</div>
 	</div>
 </fieldset>';
