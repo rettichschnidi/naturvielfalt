@@ -784,7 +784,7 @@ jQuery(document).ready(function() {
 	}
 	
 	// bind form using 'ajaxForm'
-	if($('#observation_form').length > 0) $('#observation_form').ajaxForm({
+	if ($('#observation_form').length > 0) $('#observation_form').ajaxForm({
 		beforeSubmit: observation.conditionalProgressbar,
 		success:      observation.onFormSuccess,
 		url:          ajaxurl,
@@ -792,7 +792,14 @@ jQuery(document).ready(function() {
 		dataType:     'json',
 	});
 	
-	// if files are to be uploaded, show progress bar
+	/**
+	 * Bind acl form using 'ajaxForm'
+	 * TODO: return and display response message
+	 */
+	if ($('#c-acl-form').length > 0) $('#c-acl-form').ajaxForm({
+		beforeSubmit: observation.showLoading,
+		complete: observation.hideLoading
+	});
 	
 	// automatically add upload slot
 	$('.form-file').live('change', addUploadSlot);
