@@ -11,6 +11,21 @@
     display: none; /* keeps the popup hidden if no JS available */
 }
 
+div.filterDiv input {
+	float: left;
+}
+div.filterDiv .form-item {
+	float: right;
+	margin: 0 0 0 20px;
+}
+div.filterDiv label {
+	display: inline;
+	font-weight: normal;
+}
+div.filterDiv select {
+	background-color: #DEDCDA;
+	color: #000000;
+}
 
 .flexigrid {
 	font: inherit;
