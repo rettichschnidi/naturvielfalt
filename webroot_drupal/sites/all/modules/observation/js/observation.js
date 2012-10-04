@@ -32,6 +32,7 @@ jQuery(document).ready(function() {
 	observation.artgroupFilter = function(tableId, filter) {
 		var url = $('#' + tableId)[0].p.url;
 		// if there's already a query string, append the filter
+		url = url.replace(/[&?]oaid=\d+/, '');
 		url += (url.indexOf('?') == -1) ? '?' : '&';
 		url += 'oaid=' + filter;
 		$('#' + tableId).flexOptions({
