@@ -276,14 +276,16 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$pageNumber = (int) $_POST['page'];
 		if ($pageNumber < 1)
 			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
-		else
-			$pageNumber = 1;
 	}
+	else
+		$pageNumber = 1;
+	
 	if (isset($_REQUEST['rp'])) {
 		$pagesize = (int) $_REQUEST['rp'];
 		if ($pagesize < 1)
 			return "Error! Pagesize < 1";
 	}
+	
 	if (isset($pageNumber) && isset($pagesize)) {
 		$offset = ($pageNumber - 1) * $pagesize;
 	}
