@@ -219,12 +219,12 @@ jQuery(document).ready(function() {
 		$flexiDiv = $('#' + tableId).closest('div.flexigrid');
 		
 		if ($flexiDiv.find('.batch-div').length == 0) {
-			$batchDiv = $('<div class="batch-div" />');
 			$checkbox = $('<input type="checkbox" />');
 			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
 			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
-			$batchDiv.append($checkbox, $btnDeleteSelected, $btnExportSelected);
-			$flexiDiv.find('.bDiv').after($batchDiv);
+			$batchDiv = $('<div class="batch-div" />')
+				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
+				.insertBefore($flexiDiv.find('.sDiv'));
 			
 			$checkbox.click(function(event) {
 				observation.toggleSelectedRows(event, this.checked);
@@ -248,7 +248,7 @@ jQuery(document).ready(function() {
 	 * 
 	 * @param JSON object data
 	 */
-	observation.tablePreProcess = function(data) {
+	observation.tablePreProcess = function(data, flexigridOptions) {
 		var observation_ids = [];
 		$(data.rows).each(function(idx, obs) {
 			observation_ids[idx] = obs.id;
@@ -256,7 +256,7 @@ jQuery(document).ready(function() {
 		observation.syncMapWithTable(observation_ids);
 		
 		// FIXME table id 'observations' should not be hard-coded
-		data = gallery_addon.preProcess('observations', 'gallery_image', data);
+		data = gallery_addon.preProcess('observations', 'gallery_image', data, flexigridOptions);
 		
 		return data;
 	};

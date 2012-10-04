@@ -278,7 +278,7 @@ jQuery(document).ready(function() {
 			return true;
 		},
 		preProcess: function(data) {
-			<?php if (isset($options['preProcessHandler'])) echo 'data = ' . $options['preProcessHandler'] . '(data);'; ?>
+			<?php if (isset($options['preProcessHandler'])) echo 'data = ' . $options['preProcessHandler'] . '(data, this);'; ?>
 			if (data.total <= 0)
 				$.addFlex.hideLoading(this);
 			return data;

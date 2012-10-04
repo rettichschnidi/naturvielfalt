@@ -6,8 +6,9 @@ jQuery(document).ready(function() {
 	 * Executed before table is populated
 	 * ! must return the data !
 	 */
-	organism.tablePreProcess = function(data) {
-		data = gallery_addon.preProcess('organisms', 'gallery_image', data);
+	organism.tablePreProcess = function(datay) {
+		// FIXME table id 'organisms' should not be hard-coded
+		data = gallery_addon.preProcess('organisms', 'gallery_image', data, flexigridOptions);
 		return data;
 	};
 	

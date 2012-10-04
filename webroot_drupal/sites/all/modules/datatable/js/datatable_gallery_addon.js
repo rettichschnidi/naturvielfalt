@@ -11,35 +11,49 @@ jQuery(document).ready(function() {
 	/**
 	 * is called by every refresh before the data is displayed
 	 */
-	gallery_addon.preProcess = function(gridid, json_item_name, data) {
-		gallery_addon.__clearGalleryDiv(gridid);
+	gallery_addon.preProcess = function(gridid, json_item_name, data, flexigridOptions) {
+		var $galleryTable = gallery_addon.__clearGalleryTable(gridid);
 		
-		var table = document.createElement('table');
-		table.className = 'imgGallery';
+		if (data.total <= 0) {
+			// rebuild flexigrid's 'no elements' div
+			if ($galleryTable.siblings('div.nomsg').length <= 0) {
+				$('<div class="nomsg">' + flexigridOptions.nomsg + '</div>')
+					.insertAfter($galleryTable);
+			}
+			// set height of gallery div because table is empty
+			$galleryDiv = gallery_addon.__getGalleryDiv(gridid).height(flexigridOptions.height);
+			// adjust flexidiv blocker element's position due to missing column headers
+			if (gallery_addon.__isGalleryActive(gridid)) {
+				$gBlock = $galleryDiv.siblings('.gBlock');
+				if ($gBlock.length > 0) {
+					$gBlock.css({
+						top: $galleryDiv.offset().top - $galleryDiv.offsetParent().offset().top
+					});
+				}
+			}
+			// let flexigrid finish
+			return data;
+		}
 		
-		var tbody = document.createElement('tbody');				
+		var $tbody = $('<tbody />');				
 		
-		
-		for(i=0;i <= data.rows.length / COL_COUNT;i++){
-			var tr = document.createElement('tr');
-			for (j = 0; j < COL_COUNT; j++){
+		for (var i = 0; i <= data.rows.length / COL_COUNT; i++) {
+			var $tr = $('<tr />');
+			for (var j = 0; j < COL_COUNT; j++) {
 				var index = i * COL_COUNT + j;
-				var td = document.createElement('td');
-				$(td).addClass('datatable_gallery_row');
+				var $td = $('<td class="datatable_gallery_row" />');
 
 				if (data.rows[index] != undefined){
 					if(data.rows[index].cell[json_item_name] != undefined){
-						$(td).html(data.rows[index].cell[json_item_name]);
+						$td.html(data.rows[index].cell[json_item_name]);
 					}
 				}
-				$(tr).append(td);
-			}			
-			$(tbody).append(tr);			
-			tr = null;
+				$tr.append($td);
+			}
+			$tbody.append($tr);
 		}
 	
-		$(table).append(tbody);
-		gallery_addon.__getGalleryDiv(gridid).append(table);
+		$tbody.appendTo(gallery_addon.__getGalleryTable(gridid));
 		
 		// Reregister lightbox
 		gallery_lightbox.registerLightBox();
@@ -56,22 +70,35 @@ jQuery(document).ready(function() {
 	 */
 	gallery_addon.toggleGallery = function(gridid, enabled) {
 		// find the div of this flexigrid
-		var div = $('#' + gridid).closest('div.flexigrid');
+		var $flexiDiv = $('#' + gridid).closest('div.flexigrid');
 		
-		div.children('.bDiv').toggle();
-		div.children('.hDiv').toggle();
+		$flexiDiv.children('.bDiv').toggle();
+		$flexiDiv.children('.hDiv').toggle();
+		$flexiDiv.children('.cDrag').toggle();
 		gallery_addon.__getGalleryDiv(gridid).toggle();
-	
+		
+		$gBlock = $flexiDiv.children('.gBlock');
+		
 		if(enabled) {
 			$('#' + gridid + '_gallery_link').attr('disabled', 'disabled');
 			$('#' + gridid + '_table_link').removeAttr('disabled');
 			$('#' + gridid + '_gallery_image_source').closest('div').show();
+			if ($gBlock.length > 0) {
+				$gBlock.css({
+					top: $('#' + gridid + '_gallery_images').offset().top - $flexiDiv.offset().top
+				});
+			}
 			window.location.hash = 'gallery';
 		}
 		else {
 			$('#' + gridid + '_table_link').attr('disabled', 'disabled');
 			$('#' + gridid + '_gallery_link').removeAttr('disabled');
 			$('#' + gridid + '_gallery_image_source').closest('div').hide();
+			if ($gBlock.length > 0) {
+				$gBlock.css({
+					top: $('#' + gridid).offset().top - $flexiDiv.offset().top
+				});
+			}
 			window.location.hash = '';
 		}
 	}
@@ -96,30 +123,43 @@ jQuery(document).ready(function() {
 	});
 	
 	/**
-	 * Removes all content of the gallery div
+	 * Removes all content of the gallery table, and returns the table jQuery object
 	 */
-	gallery_addon.__clearGalleryDiv = function (gridid) {
-		gallery_addon.__getGalleryDiv(gridid).empty();		
-	}
+	gallery_addon.__clearGalleryTable = function(gridid) {
+		return gallery_addon.__getGalleryTable(gridid).empty();		
+	};
 	
 	/**
-	 * returns or creates the div for the gallery images
+	 * Returns (and creates if neccessary) the table for the gallery images as jQuery
+	 * object
 	 */
-	gallery_addon.__getGalleryDiv = function (gridid) {
-		var div = $('#' + gridid + '_gallery_images');
-		var flexiDiv = $('#' + gridid).closest('div.flexigrid');
-		if(div.length == 0) {
-			div = $('<div />').attr('id', gridid+'_gallery_images').addClass('datatable_gallery');
-			flexiDiv.children('.mDiv').after(div);
+	gallery_addon.__getGalleryTable = function(gridid) {
+		var $galleryDiv = gallery_addon.__getGalleryDiv(gridid);
+		var $galleryTable = $galleryDiv.find('table.imgGallery');
+		if ($galleryTable.length <= 0) {
+			$galleryTable = $('<table class="imgGallery" />')
+				.appendTo($galleryDiv);
 		}
-		return div;
-	}
+		return $galleryTable;
+	};
+	
+	/**
+	 * Returns (and creates if neccessary) the div for the gallery table as jQuery object
+	 */
+	gallery_addon.__getGalleryDiv = function(gridid) {
+		var $galleryDiv = $('#' + gridid + '_gallery_images');
+		if ($galleryDiv.length == 0) {
+			$galleryDiv = $('<div id="' + gridid + '_gallery_images" class="datatable_gallery" />')
+				.insertAfter($('#' + gridid).parent());
+		}
+		return $galleryDiv;
+	};
 	
 	/**
 	 * @returns true if the gallery is currently displayed
 	 */
-	gallery_addon.__isGalleryActive = function (gridid) {
-		return $('#'+gridid+'_gallery_images:visible').length > 0;
-	}
+	gallery_addon.__isGalleryActive = function(gridid) {
+		return $('#' + gridid + '_gallery_images:visible').length > 0;
+	};
 	
 });

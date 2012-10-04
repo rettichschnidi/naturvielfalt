@@ -181,3 +181,10 @@ div.colCopy {
 	top: 160px;
 	z-index: 2;
 }
+
+/* no elements to display message */
+.nomsg {
+	 text-align: center;
+	 margin-top: 90px;
+	 font-size: 2em;
+}
