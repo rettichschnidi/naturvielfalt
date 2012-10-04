@@ -17,9 +17,15 @@ drupal_add_library('system', 'ui.datepicker');
 drupal_add_css(
 	drupal_get_path('module', 'datatable') . '/css/flexigrid.css',
 	array(
-			'group' => CSS_DEFAULT,
-			'every_page' => TRUE
-	));
+		'group' => CSS_DEFAULT,
+		'every_page' => TRUE)
+);
+drupal_add_css(
+	drupal_get_path('module', 'datatable') . '/css/datatable.css',
+	array(
+		'group' => CSS_DEFAULT,
+		'every_page' => TRUE)
+);
 
 /**
  * add javascript files
@@ -266,13 +272,28 @@ jQuery(document).ready(function() {
 		hideshow: '<?php echo t('Hide/Show Columns'); ?>',
 		dblClickResize: true,
 		singleSelect: true,
+		onSubmit: function() {
+			$.addFlex.showLoading(this);
+			<?php if (isset($options['onSubmitHandler'])) echo $options['onSubmitHandler'] . '();'; ?>
+			return true;
+		},
+		preProcess: function(data) {
+			<?php if (isset($options['preProcessHandler'])) echo 'data = ' . $options['preProcessHandler'] . '(data);'; ?>
+			if (data.total <= 0)
+				$.addFlex.hideLoading(this);
+			return data;
+		},
+		onSuccess: function(flexigrid) {
+			<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler'] . '(flexigrid);'; ?>
+			$.addFlex.hideLoading(this);
+		},
+		onError: function(XMLHttpRequest, textStatus, errorThrown) {
+			<?php if (isset($options['onErrorHandler'])) echo $options['onErrorHandler'] . '(XMLHttpRequest, textStatus, errorThrown);'; ?>
+			$.addFlex.hideLoading(this);
+		},
 		<?php if (isset($options['onDragColHandler'])) echo 'onDragCol: ' . $options['onDragColHandler'] . ','; ?>
 		<?php if (isset($options['onToggleColHandler'])) echo 'onToggleCol: ' . $options['onToggleColHandler'] . ','; ?>
 		<?php if (isset($options['onChangeSortHandler'])) echo 'onChangeSort: ' . $options['onChangeSortHandler'] . ','; ?>
-		<?php if (isset($options['onSuccessHandler'])) echo 'onSuccess: ' . $options['onSuccessHandler'] . ','; ?>
-		<?php if (isset($options['onErrorHandler'])) echo 'onError: ' . $options['onErrorHandler'] . ','; ?>
-		<?php if (isset($options['onSubmitHandler'])) echo 'onSubmit: ' . $options['onSubmitHandler'] . ','; ?>
-		<?php if (isset($options['preProcessHandler'])) echo 'preProcess: ' . $options['preProcessHandler'] . ','; ?>
 	});
 	<?php if (isset($options['rowClick'])) echo $options['rowClickHandler']; ?>
 });

@@ -1,19 +1,10 @@
-#bubleinfo css
-.bubbleInfo {
-    position: relative;
-}
-
-.popup {
-    position: absolute;
-    display: none; /* keeps the popup hidden if no JS available */
-}
-
-
+@charset "UTF-8";
+/* CSS Document */
 .flexigrid {
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	position: relative;
-	border-left: 1px solid #DAE5E3;
-	border-right: 1px solid #DAE5E3;
+	border: 0px solid #eee;
 	overflow: hidden;
 	color: #000;
 }
@@ -41,24 +32,20 @@
 
 .flexigrid div.nDiv table {
 	margin: 2px;
-	width: auto;
 }
 
 .flexigrid div.hDivBox {
 	float: left;
 	padding-right: 40px;
-	background-color: #F2EFEF; 	
 }
 
 .flexigrid div.bDiv table {
 	margin-bottom: 10px;
-	width: auto;
 }
 
 .flexigrid div.bDiv table.autoht {
 	border-bottom: 0px;
 	margin-bottom: 0px;
-	width: auto;
 }
 
 .flexigrid div.nDiv td {
@@ -119,61 +106,20 @@
 }
 
 .flexigrid div.mDiv {
-	font-size: 14px;
-	background-color: #dae5e3;
-	margin-left: 1px;
-	margin-right: 1px;
+	background: url(images/wbg.gif) repeat-x top;
+	border: 1px solid #ccc;
+	border-bottom: 0px;
+	border-top: 0px;
+	font-weight: bold;
 	display: block;
 	overflow: hidden;
 	white-space: nowrap;
 	position: relative;
-	line-height: 1em;
 }
 
 .flexigrid div.mDiv div {
-	float: left;
 	padding: 6px;
 	white-space: nowrap;
-}
-
-.flexigrid div.mDiv div.mButton {
-	border: 0px;
-	cursor: pointer;
-	float: left;
-	height: 22px;
-	margin-top: 1px;
-	overflow: hidden;
-	padding: 0;
-	width: 22px;
-}
-
-.flexigrid div.mDiv div.mButton:hover, .flexigrid div.mDiv  div.mButton.mBtnOver {
-	border: 1px solid #ccc;
-	cursor: pointer;
-	height: 20px;
-	width: 20px;
-}
-
-.flexigrid div.mDiv div.mButton span {
-	display: block;
-	float: left;
-	height: 20px;
-	width: 20px;
-}
-
-.flexigrid div.mDiv div.mButton:hover span, .flexigrid div.mDiv div.mButton.mBtnOver span {
-	border-top: 1px solid #fff;
-	border-left: 1px solid #fff;
-	height: 19px;
-	width: 19px;
-}
-
-.flexigrid .mTop {
-	background: url(images/top.gif) no-repeat center;
-}
-
-.flexigrid .mUp {
-	background: url(images/levelup.gif) no-repeat center;
 }
 
 .flexigrid div.mDiv div.ptogtitle {
@@ -222,7 +168,7 @@
 }
 
 .flexigrid div.sDiv /*toolbar*/ {
-	background-color: #f5f5f5;
+	background: #fafafa url(images/bg.gif) repeat-x top;
 	position: relative;
 	border: 1px solid #ccc;
 	border-top: 0px;
@@ -245,6 +191,8 @@
 .flexigrid div.btnseparator {
 	float: left;
 	height: 22px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #fff;
 	margin: 1px;
 }
 
@@ -281,18 +229,15 @@
 
 /* end toolbar*/
 .flexigrid div.hDiv {
-	background-color: #f5f5f5;
+	background: #fafafa url(images/fhbg.gif) repeat-x bottom;
 	position: relative;
 	border: 1px solid #ccc;
 	border-bottom: 0px;
 	overflow: hidden;
-	line-height: 11px;
 }
 
 .flexigrid div.hDiv table {
 	border-right: 1px solid #fff;
-	margin: 0;
-	width: auto;
 }
 
 .flexigrid div.cDrag {
@@ -325,6 +270,8 @@
 
 .flexigrid div.iDiv input,.flexigrid div.iDiv select,.flexigrid div.iDiv textarea
 	{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
 }
 
 .flexigrid div.iDiv input.tb {
@@ -337,18 +284,15 @@
 }
 
 .flexigrid div.bDiv {
-	margin: 0px 1px 1px 1px;
-	border: 0px;
+	border: 1px solid #ccc;
+	border-top: 0px;
 	background: #fff;
 	overflow: auto;
 	position: relative;
-	height: 500px;
 }
 
 .flexigrid div.bDiv table {
 	border-bottom: 1px solid #ccc;
-	width: auto;
-	margin-top: 0px;
 }
 
 .flexigrid div.hGrip {
@@ -395,12 +339,9 @@
 	border-right: 1px solid #ddd;
 	border-left: 1px solid #fff;
 	overflow: hidden;
-	vertical-align: middle !important;
+	vertical-align: top !important;
 	padding-left: 0;
 	padding-right: 0;
-	padding-top: 0;
-	padding-bottom: 0;
-	line-height: 1em;
 }
 
 .flexigrid div.hDiv th div,.flexigrid  div.bDiv td  div,div.colCopy div
@@ -418,6 +359,8 @@
 }
 
 div.colCopy {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
 	background: #fafafa url(images/fhbg.gif) repeat-x bottom;
 	border: 1px solid #ccc;
 	border-bottom: 0px;
@@ -425,7 +368,7 @@ div.colCopy {
 }
 
 .flexigrid div.hDiv th.sorted {
-	background: #E3E3E3;
+	background: url(images/wbg.gif) repeat-x 0px -1px;
 	border-bottom: 0px solid #ccc;
 }
 
@@ -470,11 +413,10 @@ div.colCopy {
 	border-bottom: 1px solid #fff;
 	vertical-align: top;
 	white-space: nowrap;
-	cursor: pointer;
 }
 
 .flexigrid div.hDiv th div {
-	line-height: 11px;
+	
 }
 
 .flexigrid span.cdropleft {
@@ -501,8 +443,7 @@ div.colCopy {
 
 .flexigrid div.bDiv td div {
 	border-top: 0px solid #fff;
-	padding-bottom: 0px;
-	padding-top: 0px;
+	padding-bottom: 4px;
 }
 
 .flexigrid tr td.sorted {
@@ -516,8 +457,8 @@ div.colCopy {
 }
 
 .flexigrid tr.erow td {
-	background: #dedcda;
-	border-bottom: 1px solid #e7e7e7;
+	background: #f7f7f7;
+	border-bottom: 1px solid #f7f7f7;
 }
 
 .flexigrid tr.erow td.sorted {
@@ -538,7 +479,7 @@ div.colCopy {
 
 .flexigrid div.bDiv tr.trSelected:hover td,.flexigrid div.bDiv tr.trSelected:hover td.sorted,.flexigrid div.bDiv tr.trOver.trSelected td.sorted,.flexigrid div.bDiv tr.trOver.trSelected td,.flexigrid tr.trSelected td.sorted,.flexigrid tr.trSelected td
 	{
-	background: #d9ebf5;
+	background: #d5effc url(images/hl.png) repeat-x top;
 	border-right: 1px solid #d2e3ec;
 	border-left: 1px solid #eef8ff;
 	border-bottom: 1px solid #a8d8eb;
@@ -548,7 +489,6 @@ div.colCopy {
 .flexigrid.novstripe .bDiv table {
 	border-bottom: 1px solid #ccc;
 	border-right: 1px solid #ccc;
-	width: auto;
 }
 
 .flexigrid.novstripe  div.bDiv td {
@@ -582,7 +522,7 @@ div.colCopy {
 
 /* end novstripe */
 .flexigrid div.pDiv {
-	background-color: #dae5e3;
+	background: url(images/wbg.gif) repeat-x 0 -1px;
 	border: 1px solid #ccc;
 	border-top: 0px;
 	overflow: hidden;
@@ -680,11 +620,4 @@ div.pGroup {
 .flexigrid.ie div.hDiv th div,.flexigrid.ie  div.bDiv td  div,div.colCopy.ie div
 	/* common inner cell properties*/ {
 	overflow: hidden;
-}
-
-/* Checkbox in grid */
-.gridSelect {
-	padding 0 0 0 0;
-	margin: 0px 0px 0px 0px;
-	
 }
