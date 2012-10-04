@@ -20,4 +20,15 @@ jQuery(document).ready(function() {
 		if (parseInt(currentId) != parseInt(id))
 			window.location = '/organism/classification/' + id;
 	};
+	
+	/**
+	 * onSubmit handler for the classificators datatable
+	 * ! has to return true to continue populating the table !
+	 */
+	organism.onClassificatorsSubmit = function() {
+		$('.mTop, .mUp').click(function() {
+			organism.loadClassification($(this).data('cid'));
+		});
+		return true;
+	};
 });

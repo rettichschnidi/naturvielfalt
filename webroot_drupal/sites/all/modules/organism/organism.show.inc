@@ -156,15 +156,7 @@ function organism_show_classification($classificationid) {
 												}
 											)
 										}",
-					// add click actions to onSubmit because it's executed after table
-					// layout despite of data loading error
-					// ! has to return true to continue populating the table !
-					'onSubmitHandler' => "function() {
-											jQuery('.mTop, .mUp').click(function() {
-												organism.loadClassification(jQuery(this).data('cid'));
-											});
-											return true;
-										   }"
+					'onSubmitHandler' => "organism.onClassificatorsSubmit"
 			)
 	);
 
