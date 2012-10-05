@@ -518,7 +518,7 @@ Area.prototype.createSearchbar = function(enable) {
 };
 
 /**
- * Create a searchbar on top left of the google maps
+ * Create a coordinates searchbar on top of the google maps
  */
 Area.prototype.createSearchbarCH1903 = function(enable) {
 	if(enable) {
@@ -529,7 +529,7 @@ Area.prototype.createSearchbarCH1903 = function(enable) {
 		// create new input field
 		var searchinputch1903 = document.createElement('input');
 		// regex to extract values
-		var regexch1903 = /^[yY:\ ]*([+-]?[0-9]+\.?[0-9]*)[\ ,]+[xX:\ ]*([+-]?[0-9]+\.?[0-9]*)$/;
+		var regexch1903 = /^[yY:\s]*([+-]?[0-9']+\.?[0-9]*)[\s,\/\\\|]+[xX:\s]*([+-]?[0-9']+\.?[0-9]*)$/;
 	
 		// add searchdivch1903 to searchdiv
 		searchdivch1903.appendChild(searchinputch1903);
