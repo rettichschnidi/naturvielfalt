@@ -396,7 +396,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	if (isset($_REQUEST['query'])) {
 		$date_split = explode('.', $_REQUEST['query']);
 		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
-			$_REQUEST['query'] = mktime(
+			// cast to string because datatable_dbRequest checks for query to be a string
+			$_REQUEST['query'] = (string) mktime(
 			null,
 			null,
 			null,
