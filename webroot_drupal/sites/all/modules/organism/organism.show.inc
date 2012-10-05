@@ -215,7 +215,7 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'imagescount',
 			'width' => 20,
 			'hide' => true,
-			'noSort' => false,
+			'noSort' => true,
 	);
 
 	$organismsTableHeader[] = array(
@@ -223,7 +223,7 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'videoscount',
 			'width' => 20,
 			'hide' => true,
-			'noSort' => false,
+			'noSort' => true,
 	);
 
 	$organismsTableHeader[] = array(
@@ -231,7 +231,7 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'soundscount',
 			'width' => 20,
 			'hide' => true,
-			'noSort' => false,
+			'noSort' => true,
 	);
 
 	$organismsTableHeader[] = array(
@@ -239,7 +239,7 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'documentscount',
 			'width' => 20,
 			'hide' => true,
-			'noSort' => false,
+			'noSort' => true,
 	);
 
 	$render_array['organisms'] = array(
