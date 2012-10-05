@@ -1,0 +1,318 @@
+# $Id$
+#
+# German translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  organism.artgroup.inc: n/a
+#  organism.edit.inc: n/a
+#  organism.module: n/a
+#  organism.gallery.inc: n/a
+#  organism.json.inc: n/a
+#  organism.info: n/a
+#  organism.show.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2012-10-05 14:35+0200\n"
+"PO-Revision-Date: 2012-10-05 14:35+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: German <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: organism.artgroup.inc:169;336
+msgid "Not defined"
+msgstr "Nicht definiert"
+
+#: organism.edit.inc:14
+msgid "File"
+msgstr "Datei"
+
+#: organism.edit.inc:20
+msgid "Description of File"
+msgstr "Beschreibung der Datei"
+
+#: organism.edit.inc:27 organism.module:435
+msgid "Author"
+msgstr "Autor"
+
+#: organism.edit.inc:35
+msgid "Upload"
+msgstr "Hochladen"
+
+#: organism.edit.inc:83
+msgid "File saved"
+msgstr "Datei gespeichert"
+
+#: organism.edit.inc:85
+msgid "File could not be saved!"
+msgstr "Datei konnte nicht gespeichert werden!"
+
+#: organism.edit.inc:110
+msgid "Delete %name?"
+msgstr "%name löschen?"
+
+#: organism.edit.inc:112
+msgid "Are you sure you want to delete the file %name?"
+msgstr "Wollen Sie die Datei %name wirklich löschen?"
+
+#: organism.edit.inc:115 organism.module:393
+msgid "Delete"
+msgstr "Löschen"
+
+#: organism.edit.inc:116
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: organism.edit.inc:129
+msgid "The file was successfully deleted!"
+msgstr "Die Datei wurde erfolgreich gelöscht!"
+
+#: organism.edit.inc:131
+msgid "The file could not be deleted!"
+msgstr "Die Datei konnte nicht gelöscht werden!"
+
+#: organism.gallery.inc:49
+msgid "@mediatype of the organism !title"
+msgstr "@mediatype der Art !title"
+
+#: organism.gallery.inc:85
+msgid "Add and edit generic @mediatype of this organism."
+msgstr "Generisches @mediatype dieser Art hinzufügen und ändern"
+
+#: organism.gallery.inc:99
+msgid "Organisms References"
+msgstr "Art Referenzen"
+
+#: organism.json.inc:602
+msgid "No such organism available."
+msgstr "Die Art ist nicht vorhanden"
+
+#: organism.json.inc:668
+msgid "No search term"
+msgstr "Kein Suchbegriff"
+
+#: organism.json.inc:676 organism.info:0
+msgid "organism"
+msgstr "Art"
+
+#: organism.json.inc:676
+msgid "No argroup id got submitted. Please fix."
+msgstr "Keine Artgruppen-ID übermittelt"
+
+#: organism.show.inc:24
+msgid "Here you can browse all species of naturvielfalt.ch. Please select first the biological kingdom:"
+msgstr ""
+"Hier können Sie die verschiedenen Organismen auf naturvielfalt.ch "
+"durchstöbern. Bitte wählen Sie als erstes das biologische Reich:"
+
+#: organism.show.inc:113
+msgid "Internal id"
+msgstr "Interne ID"
+
+#: organism.show.inc:132
+msgid "Number of species"
+msgstr "Anzahl Arten"
+
+#: organism.show.inc:143
+msgid "Subclassifications within"
+msgstr "Unterklassifizierung in "
+
+#: organism.show.inc:165
+msgid "Species"
+msgstr "Art"
+
+#: organism.show.inc:169
+msgid "Organism id"
+msgstr "Art ID"
+
+#: organism.show.inc:198
+msgid "Scientific name"
+msgstr "Wissenschaftlicher Name"
+
+#: organism.show.inc:206
+msgid "Common name"
+msgstr "Name"
+
+#: organism.show.inc:215
+msgid "Species which are in classification "
+msgstr "Arten der Klassifikation "
+
+#: organism.show.inc:235
+msgid "only proof images"
+msgstr "Nur Belegbilder"
+
+#: organism.show.inc:239
+msgid "only portrait images"
+msgstr "Nur Portraitbilder"
+
+#: organism.show.inc:243
+msgid "proof images, then portrait images"
+msgstr "Belegbilder, dann Portraitbilder"
+
+#: organism.show.inc:247
+msgid "portrait images, then proof images"
+msgstr "Portraitbilder, dann Belegbilder"
+
+#: organism.show.inc:267
+msgid "No such species available"
+msgstr "Die Art ist nicht verfügbar"
+
+#: organism.show.inc:277
+msgid "Attributes"
+msgstr "Attribute"
+
+#: organism.show.inc:308
+msgid "No attributes set for this species"
+msgstr "Keine Attribute für diese Art gesetzt"
+
+#: organism.show.inc:330
+msgid "Scientific synonyms"
+msgstr "Wissenschaftliche Synonyme"
+
+#: organism.show.inc:344
+msgid "Synonyms @language"
+msgstr "Synonyme @language"
+
+#: organism.show.inc:360
+msgid "None available"
+msgstr "Nichts verfügbar"
+
+#: organism.show.inc:421
+msgid "Wikipedia article available"
+msgstr "Wikipedia Artikel verfügbar"
+
+#: organism.show.inc:64
+msgid "1 Species"
+msgid_plural "@count Species"
+msgstr[0] "1 Art"
+msgstr[1] "@count Arten"
+
+#: organism.module:46
+msgid "Classifiers"
+msgstr "Klassifizierer"
+
+#: organism.module:51
+msgid "List of classifiers"
+msgstr "Liste der Klassifizierungen"
+
+#: organism.module:57
+msgid "Classification"
+msgstr "Klassifizierung"
+
+#: organism.module:65
+msgid "List of organisms classifications"
+msgstr "Liste der Arten-Klassifikationen"
+
+#: organism.module:71
+msgid "Species JSON"
+msgstr "Art JSON"
+
+#: organism.module:76
+msgid "Json of classifiers"
+msgstr "Art-Klassifikationen JSON"
+
+#: organism.module:82
+msgid "Classifications json"
+msgstr "Klassifizierungen JSON"
+
+#: organism.module:90
+msgid "List of subclassifications"
+msgstr "Liste der Sub-Klassifizierungen"
+
+#: organism.module:96
+msgid "Species withing a classifications json"
+msgstr "Arten der Klassifikation JSON"
+
+#: organism.module:104
+msgid "List of species with this classifications"
+msgstr "Liste der Arten der Klassifikation"
+
+#: organism.module:110;124
+msgid "Basisinfo"
+msgstr "Basisinfo"
+
+#: organism.module:118
+msgid "Specific organism"
+msgstr "Spezifische Art"
+
+#: organism.module:139
+msgid "Species json"
+msgstr "Arten JSON"
+
+#: organism.module:147;158
+msgid "Specific species json"
+msgstr "Spezifische Art JSON"
+
+#: organism.module:153
+msgid "Species search json"
+msgstr "Art Suche JSON"
+
+#: organism.module:164
+msgid "File upload"
+msgstr "Datei Upload"
+
+#: organism.module:165
+msgid "Delete or edit files"
+msgstr "Dateien löschen oder bearbeiten"
+
+#: organism.module:181
+msgid "Delete file"
+msgstr "Datei löschen"
+
+#: organism.module:182
+msgid "Delete an existing file"
+msgstr "Eine vorhandene Datei löschen"
+
+#: organism.module:242
+msgid "Upload files to species."
+msgstr "Dateien zur Art hochladen"
+
+#: organism.module:245
+msgid "View species"
+msgstr "Arten anzeigen"
+
+#: organism.module:420
+msgid "Description"
+msgstr "Beschreibung"
+
+#: organism.module:423
+msgid "Filename"
+msgstr "Dateiname"
+
+#: organism.module:426
+msgid "Typ"
+msgstr "Typ"
+
+#: organism.module:429
+msgid "Size"
+msgstr "Grösse"
+
+#: organism.module:432
+msgid "Date"
+msgstr "Datum"
+
+#: organism.module:438
+msgid "Owner"
+msgstr "Besitzer"
+
+#: organism.module:446
+msgid "Files"
+msgstr "Dateien"
+
+#: organism.module:125
+msgid "Show organism"
+msgstr "Art anzeigen"
+
+#: organism.info:0
+msgid "Manage organisms"
+msgstr "Arten verwalten"
+
+#: organism.info:0
+msgid "Naturvielfalt"
+msgstr "Naturvielfalt"
+

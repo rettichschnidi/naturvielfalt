@@ -11,7 +11,7 @@ function organism_edit_files_form($form, &$form_state, $organism_id) {
 
 	$form['OrganismFileForm']['upload'] = array(
 			'#type' => 'file',
-			'#title' => t('Upload File'),
+			'#title' => t('File'),
 			'#size' => 100
 	);
 

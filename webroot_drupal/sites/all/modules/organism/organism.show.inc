@@ -5,7 +5,7 @@
  * @copyright 2012 Naturwerk, Brugg
  */
 
-module_load_include('inc', 'organism', 'organism');
+module_load_include('inc', 'organism');
 
 /**
  * Menu callback. This will be called for visits to /organism.
