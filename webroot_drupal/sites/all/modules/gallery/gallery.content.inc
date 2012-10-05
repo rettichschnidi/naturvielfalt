@@ -85,12 +85,12 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 /**
  * Renders the medias of a given object type and id
  *
- * @return
- * @param object $type
- * @param object $id
- * @param object $title[optional]
- * @param object $weight[optional]
- * @param object $collapsed[optional]
+ * @param String $mediatype
+ * @param String $type
+ * @param array(int)|int $id
+ * @param String $title [optional]
+ * @param int $weight [optional]
+ * @param boolean $collapsed [optional]
  */
 function gallery_list_renderer($mediatype, $type, $id, $title = false,
 		$weight = 10, $collapsed = false) {

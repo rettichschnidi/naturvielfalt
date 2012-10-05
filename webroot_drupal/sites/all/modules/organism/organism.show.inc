@@ -269,8 +269,98 @@ function organism_show_organism($organismdata) {
 		return $render_array;
 	}
 	drupal_set_title(organism_get_organism_title($organismdata), PASS_THROUGH);
-	// include the datatable javascript
+	
 	$render_array = array();
+	
+	$render_array['attributes'] = array(
+				'#type' => 'fieldset',
+				'#title' => t('Attributes'),
+				'#weight' => 1,
+				'#tree' => true,
+				'#attributes' => array(
+						'id' => 'organism-attributes' // required for CSS
+	)
+	);
+	
+	if (isset($organismdata['attributes'])
+	&& !empty($organismdata['attributes'])) {
+		$attributes = $organismdata['attributes'];
+		foreach ($attributes as $attribute_name => $data) {
+			$attributevaluetype = $data['valuetype'];
+			$attributename = t($attribute_name);
+	
+			$render_array['attributes'][$attributename] = array(
+						'#type' => 'markup',
+						'#markup' => "<b>$attributename: </b>",
+			);
+			$attributevalues = $data['values'];
+			/**
+			 * This is untested, but should generate a reasonable output
+			 * even if there is more than a single value
+			 */
+			$render_array['attributes'][$attributename]['#markup'] .= implode(
+					', ',
+			$attributevalues) . '<br/>';
+		}
+	} else {
+		$render_array['attributes']['noattribute'] = array(
+					'#type' => 'markup',
+					'#markup' => '<b>' . t('No attributes set for this species')
+		. '</b>',
+		);
+	}
+	
+	/**
+	 * Show all synonyms of this organism (but only, if there are any).
+	 */
+	if ((isset(
+	$organismdata['classification_name_translations'][$current_language])
+	&& count(
+	$organismdata['classification_name_translations'][$current_language])
+	>= 1)
+	|| (isset($organismdata['synonyms'])
+	&& count($organismdata['synonyms']) >= 1)) {
+		$render_array['synonyms-container'] = array(
+					'#prefix' => '<div id="organism-synonyms-container">',
+					'#suffix' => '</div>',
+					'#weight' => 2
+		);
+		$render_array['synonyms-container']['scientific_names'] = array(
+					'#type' => 'fieldset',
+					'#title' => t('Scientific synonyms'),
+					'#attributes' => array(
+							'id' => 'organism-synonyms-scientific' // required for CSS
+		)
+		);
+	
+		$synonym_markup = (isset($organismdata['synonyms'])) ? implode('<br/>', $organismdata['synonyms']) : '';
+	
+		$render_array['synonyms-container']['scientific_names']['synonyms'] = array(
+					'#markup' => $synonym_markup
+		);
+	
+		$render_array['synonyms-container']['classification_name_translations'] = array(
+					'#type' => 'fieldset',
+					'#title' => t(
+						'Synonyms @language',
+		array('@language' => $language->native)),
+					'#attributes' => array(
+							'id' => 'organism-synonyms-localized' // required for CSS
+		)
+		);
+		if (isset(
+		$organismdata['classification_name_translations'][$current_language])) {
+			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
+						'#markup' => implode(
+							'<br/>',
+			$organismdata['classification_name_translations'][$current_language])
+			);
+		} else {
+			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
+						'#markup' => t('None available')
+			);
+		}
+	}
 
 	if (function_exists('gallery_list_renderer')) {
 		$render_array['ImageGallery'] = gallery_list_renderer(
@@ -278,114 +368,26 @@ function organism_show_organism($organismdata) {
 			'organismreference',
 			$organismdata['id'],
 			false,
-			-1,
-			false);
+			3,
+			true);
 		$render_array['VideoGallery'] = gallery_list_renderer(
 			'videos',
 			'organismreference',
 			$organismdata['id'],
 			false,
-			-1,
+			4,
 			true);
 		$render_array['SoundGallery'] = gallery_list_renderer(
 			'sounds',
 			'organismreference',
 			$organismdata['id'],
 			false,
-			-1,
+			5,
 			true);
 	}
-	$render_array = array_merge(
-		$render_array,
-		organism_files($organismdata['id']));
+	
+	$render_array['file_overview'] = organism_files($organismdata['id'], 6, true);
 
-	$render_array['attributes'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Attributes'),
-			'#tree' => TRUE,
-			'#attributes' => array(
-					'id' => 'organism-attributes' // required for CSS
-			)
-	);
-
-	if (isset($organismdata['attributes'])
-			&& !empty($organismdata['attributes'])) {
-		$attributes = $organismdata['attributes'];
-		foreach ($attributes as $attribute_name => $data) {
-			$attributevaluetype = $data['valuetype'];
-			$attributename = t($attribute_name);
-
-			$render_array['attributes'][$attributename] = array(
-					'#type' => 'markup',
-					'#markup' => "<b>$attributename: </b>",
-			);
-			$attributevalues = $data['values'];
-			/**
-			 * This is untested, but should generate a reasonable output 
-			 * even if there is more than a single value
-			 */
-			$render_array['attributes'][$attributename]['#markup'] .= implode(
-				', ',
-				$attributevalues) . '<br/>';
-		}
-	} else {
-		$render_array['attributes']['noattribute'] = array(
-				'#type' => 'markup',
-				'#markup' => '<b>' . t('No attributes set for this species')
-						. '</b>',
-		);
-	}
-
-	/**
-	 * Show all synonyms of this organism (but only, if there are any).
-	 */
-	if ((isset(
-		$organismdata['classification_name_translations'][$current_language])
-			&& count(
-				$organismdata['classification_name_translations'][$current_language])
-					>= 1)
-			|| (isset($organismdata['synonyms'])
-					&& count($organismdata['synonyms']) >= 1)) {
-		$render_array['synonyms-container'] = array(
-				'#prefix' => '<div id="organism-synonyms-container">',
-				'#suffix' => '</div>',
-		);
-		$render_array['synonyms-container']['scientific_names'] = array(
-				'#type' => 'fieldset',
-				'#title' => t('Scientific synonyms'),
-				'#attributes' => array(
-						'id' => 'organism-synonyms-scientific' // required for CSS
-				)
-		);
-
-		$synonym_markup = (isset($organismdata['synonyms'])) ? implode('<br/>', $organismdata['synonyms']) : ''; 
-		
-		$render_array['synonyms-container']['scientific_names']['synonyms'] = array(
-				'#markup' => $synonym_markup
-		);
-
-		$render_array['synonyms-container']['classification_name_translations'] = array(
-				'#type' => 'fieldset',
-				'#title' => t(
-					'Synonyms @language',
-					array('@language' => $language->native)),
-				'#attributes' => array(
-						'id' => 'organism-synonyms-localized' // required for CSS
-				)
-		);
-		if (isset(
-			$organismdata['classification_name_translations'][$current_language])) {
-			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
-					'#markup' => implode(
-						'<br/>',
-						$organismdata['classification_name_translations'][$current_language])
-			);
-		} else {
-			$render_array['synonyms-container']['classification_name_translations']['synonyms'] = array(
-					'#markup' => t('None available')
-			);
-		}
-	}
 	return $render_array;
 }
 

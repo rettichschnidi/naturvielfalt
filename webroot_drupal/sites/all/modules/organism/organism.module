@@ -343,24 +343,132 @@ function organism_load($organismId) {
 /**
  * Return an array that contains a table which shows all documents for this organism.
  * 
- * @param $organism_id
- * 	Integer containing the id of the desired organism.
+ * @param int $organism_id The id of the desired organism
+ * @param int $weight [optional] (default: 10)
+ * @param boolean $collapsed [optional] (default: false)
+ * @return Drupal render array
  */
-function organism_files($organism_id) {
+function organism_files($organism_id, $weight = 10, $collapsed = false) {
 	global $user;
-	$render_array = array();
+	
 	$result = db_query(
 		'SELECT
-			file_managed_fid
+  			fm.filename,
+			fm.filemime,
+			fm.timestamp,
+			fm.fid,
+			fm.filesize,
+			ofm.description,
+			ofm.author
 		FROM
-			{organism_file_managed} ofm
+			{organism_file_managed} ofm,
+			{file_managed} fm
 		WHERE
-			organism_id = :oid',
-		array(':oid' => $organism_id),
-		array('fetch' => PDO::FETCH_ASSOC));
-	return commonstuff_showfiles(
-		'organism',
-		$organism_id,
-		$result->fetchAllKeyed(0, 0));
+			fm.fid = ofm.file_managed_fid
+            AND ofm.organism_id = :id
+  			AND fm.uid = :uid;',
+		array(
+			':id' => $organism_id,
+			':uid' => $user->uid
+		)
+	);
+
+	if (!empty($result)) {
+		foreach ($result as $record) {
+			$mimeIconMap = array(
+				'path'  => drupal_get_path('module', 'commonstuff') . '/images/' . commonstuff_get_icon_map($record->filemime) . '.png',
+				'alt'   => $record->filemime,
+				'title' => $record->filemime,
+			);
+			$img_mime = theme('image', $mimeIconMap);
+
+			$description = $record->description;
+			$filename = l(
+				$record->filename,
+				'sites/default/files/naturvielfalt/organism/' . $organism_id . '/' . $record->filename
+			);
+
+			$img_delete = '<img'
+				.' src="' . url(drupal_get_path('module', 'commonstuff') . '/images/can_delete.png') . '"'
+				.' alt="' . t('Delete') . '"'
+				.' />'
+			;
+			$filemime = $img_mime;
+			$filesize = ($record->filesize / 1024) . " KB";
+			$timestamp = date('d.m.Y', $record->timestamp);
+			$author = isset($record->author) ? $record->author : '';
+			
+			$row = array();
+			$row[] = $description;
+			$row[] = $filename;
+			$row[] = $filemime;
+			$row[] = $filesize;
+			$row[] = $timestamp;
+			$row[] = $author;
+			$row[] = $user->name;
+			$row[] = l(
+				$img_delete,
+				'organism/' . $organism_id . '/delete_file/' . $record->fid,
+				array('html' => true)
+			);
+			
+			$rows[] = $row;
+		}
+	}
+	
+	$tableHeader[] = array(
+				'name' => t('Description')
+	);
+	$tableHeader[] = array(
+				'name' => t('Filename')
+	);
+	$tableHeader[] = array(
+				'name' => t('Typ')
+	);
+	$tableHeader[] = array(
+				'name' => t('Size')
+	);
+	$tableHeader[] = array(
+				'name' => t('Date')
+	);
+	$tableHeader[] = array(
+				'name' => t('Author')
+	);
+	$tableHeader[] = array(
+				'name' => t('Owner')
+	);
+	$tableHeader[] = array(
+				'name' => ''
+	);
+
+	$render_array = array(
+			'#type' => 'fieldset',
+			'#title' => t('Files'),
+			'#weight' => $weight,
+			'#collapsible' => true,
+			'#collapsed' => $collapsed,
+			'#attached' => array(
+					'js' => array(
+							'misc/form.js',
+							'misc/collapse.js',
+					),
+			),
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					),
+			),
+	);
+	
+	$render_array['data'] = array(
+		'#theme' => 'datatable',
+		'#header' => $tableHeader,
+		'#rows' => $rows,
+		'#tableWidth' => 900,
+		'#id_table' => 'files',
+	);
+		
+	return $render_array;
 }
+
 ?>

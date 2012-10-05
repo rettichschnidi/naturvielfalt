@@ -1,110 +1,18 @@
 <?php
 
+/**
+ * @param array $form
+ * @param array $form_state
+ * @param int $organism_id
+ * @return Drupal form
+ */
 function organism_edit_files_form($form, &$form_state, $organism_id) {
 	global $user;
-	$form['OrganismFileForm'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Files'),
-			'#weight' => 1,
-			'#collapsible' => TRUE,
-			'#collapsed' => FALSE,
-			'#attached' => array(
-					'js' => array(
-							'misc/form.js',
-							'misc/collapse.js',
-					),
-			),
-			'#attributes' => array(
-					'class' => array(
-							'collapsible'
-					),
-					'id' => 'organism-files'
-			),
-	);
-
-	$tableHeader[] = t('Description');
-	$tableHeader[] = t('Filename');
-	$tableHeader[] = t('Typ');
-	$tableHeader[] = t('Size');
-	$tableHeader[] = t('Date');
-	$tableHeader[] = t('Author');
-	$tableHeader[] = t('Owner');
-	$tableHeader[] = '&nbsp;';
-
-	$result = db_query(
-		'SELECT
-  			fm.filename,
-			fm.filemime,
-			fm.timestamp,
-			fm.fid,
-			fm.filesize,
-			ofm.description,
-			ofm.author
-		FROM
-			{organism_file_managed} ofm,
-			{file_managed} fm
-		WHERE
-			fm.fid = ofm.file_managed_fid
-            AND ofm.organism_id = :id
-  			AND fm.uid = :uid;',
-		array(':id' => $organism_id,
-				':uid' => $user->uid
-		));
-
-	if (!empty($result)) {
-		foreach ($result as $record) {
-			$mimeIconMap = array(
-					'path' => drupal_get_path('module', 'commonstuff')
-							. '/images/' . commonstuff_get_icon_map($record->filemime)
-							. '.png',
-					'alt' => $record->filemime,
-					'title' => $record->filemime,
-			);
-			$img_mime = theme('image', $mimeIconMap);
-
-			$description = $record->description;
-			$filename = l(
-				$record->filename,
-				'sites/default/files/naturvielfalt/organism/' . $organism_id
-						. '/' . $record->filename);
-
-			$img_delete = '<img src="'
-					. url(
-						drupal_get_path('module', 'commonstuff')
-								. '/images/can_delete.png') . '" alt="'
-					. t('Delete') . '" />';
-			$filemime = $img_mime;
-			$filesize = ($record->filesize / 1024) . " KB";
-			$timestamp = date('d.m.Y', $record->timestamp);
-			$author = isset($record->author) ? $record->author : '';
-			$row = array();
-			$row[] = $description;
-			$row[] = $filename;
-			$row[] = $filemime;
-			$row[] = $filesize;
-			$row[] = $timestamp;
-			$row[] = $author;
-			$row[] = $user->name;
-			$row[] = l(
-				$img_delete,
-				'organism/' . $organism_id . '/delete_file/' . $record->fid,
-				array('html' => true));
-			$rows[] = $row;
-		}
-
-		if (isset($rows)) {
-			$form['AreaFileForm']['file_overview'] = array(
-					'#theme' => 'table',
-					'#header' => $tableHeader,
-					'#rows' => $rows,
-			);
-		}
-	}
 
 	$form['OrganismFileForm']['upload'] = array(
 			'#type' => 'file',
 			'#title' => t('Upload File'),
-			'#size' => 100,
+			'#size' => 100
 	);
 
 	$form['OrganismFileForm']['file_description'] = array(
@@ -112,24 +20,25 @@ function organism_edit_files_form($form, &$form_state, $organism_id) {
 			'#title' => t('Description of File'),
 			'#size' => 100,
 			'#maxlength' => 128,
-			'#required' => FALSE,
+			'#required' => false
 	);
 	$form['OrganismFileForm']['author'] = array(
 			'#type' => 'textfield',
 			'#title' => t('Author'),
 			'#size' => 100,
 			'#maxlength' => 128,
-			'#required' => FALSE,
+			'#required' => false
 	);
 
-	$form['upload_submit'] = array(
+	$form['OrganismFileForm']['upload_submit'] = array(
 			'#type' => 'submit',
 			'#value' => t("Upload"),
 			'#submit' => array(
 					'organism_edit_file'
 			),
-			'#weight' => 2,
 	);
+
+	$form['file_overview'] = organism_files($organism_id);
 
 	// Saving something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
