@@ -60,6 +60,7 @@ function observation_show_all_observations() {
 						}
 					)
 				}',
+			'rpShowAll'             => true,
 			'preProcessHandler'     => 'observation.tablePreProcess',
 			'onSuccessHandler'      => 'observation.onTableSuccess',
 			'gallery_enabled'       => true,

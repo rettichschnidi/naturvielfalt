@@ -4,6 +4,7 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  datatable.tpl.php: n/a
+#  js/datatable.js: n/a
 #  datatable.module: n/a
 #  datatable.info: n/a
 #
@@ -11,8 +12,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-09-25 15:44+0200\n"
-"PO-Revision-Date: 2012-09-25 15:44+0200\n"
+"POT-Creation-Date: 2012-10-05 11:04+0200\n"
+"PO-Revision-Date: 2012-10-05 11:04+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -20,25 +21,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
-#: datatable.tpl.php:118
-msgid "ALL"
+#: datatable.tpl.php:125 js/datatable.js:0
+msgid "All"
 msgstr "Alle"
 
-#: datatable.tpl.php:174
+#: datatable.tpl.php:181
 msgid "Table"
 msgstr "Tabelle"
 
-#: datatable.tpl.php:183
+#: datatable.tpl.php:191
 msgid "Gallery"
 msgstr "Galerie"
 
-#: datatable.tpl.php:203
+#: datatable.tpl.php:212
 msgid "Images"
 msgstr "Bilder"
-
-#: datatable.tpl.php:221
-msgid "Observations"
-msgstr "Beobachtungen"
 
 #: datatable.tpl.php:263
 msgid "Connection Error"
@@ -84,19 +81,19 @@ msgstr "Tabelle minimieren/maximieren"
 msgid "Hide/Show Columns"
 msgstr "Spalten verstecken/anzeigen"
 
-#: datatable.module:387
+#: datatable.module:378
 msgid "add proof image"
 msgstr "Belegbild erfassen"
 
-#: datatable.module:394
+#: datatable.module:385
 msgid "add portrait image"
 msgstr "Portraitbild erfassen"
 
-#: datatable.module:428
+#: datatable.module:419
 msgid "Proof image (@num_images)"
 msgstr "Belegbild (@num_images)"
 
-#: datatable.module:433
+#: datatable.module:424
 msgid "Portrait image (@num_images)"
 msgstr "Portraitbild (@num_images)"
 

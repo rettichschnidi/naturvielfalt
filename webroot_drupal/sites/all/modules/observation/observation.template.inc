@@ -293,7 +293,8 @@ function observation_form($observation = false) {
 					'rowClick' => 'rowClick',
 					'rowClickHandler' => "function rowClick(celDiv, id){jQuery(celDiv).click(function() {
 									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}",
-					'onSuccessHandler'      => 'observation.onTableSuccess',
+					'rpShowAll' => true,
+					'onSuccessHandler' => 'observation.onTableSuccess',
 			)
 	);
 

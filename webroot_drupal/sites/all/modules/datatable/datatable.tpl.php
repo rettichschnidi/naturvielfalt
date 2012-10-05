@@ -122,7 +122,7 @@ $colsized = (7 > $charTableSize) ? 8 : $charTableSize;
  */
 if ($header) {
 	$aoColumns = "colModel : [";
-	$searchColumns = "searchitems : [{display: '" . t('ALL') . "', name: '*', isdefault: true},";
+	$searchColumns = "searchitems : [{display: '" . t('All') . "', name: '*', isdefault: true},";
 	$headers = array();
 	$sortField = isset($header[0]['dbfield']) ? $header[0]['dbfield'] : '';
 	$sortOrder = "asc";
@@ -255,6 +255,7 @@ jQuery(document).ready(function() {
 		title: '<?php echo $title ?>',
 		useRp: true,
 		rp: 15,
+		<?php if ($options['rpOtions'] && is_array($options['rpOptions'])) echo 'rpOptions: [' . implode(', ', $options['rpOptions']) . '],'; ?>
 		showTableToggleBtn: true,
 		width: <?php echo $tableWidth; ?>,
 		height: <?php echo $tableHeight; ?>,
@@ -275,6 +276,7 @@ jQuery(document).ready(function() {
 		onSubmit: function() {
 			$.addFlex.showLoading(this);
 			<?php if (isset($options['onSubmitHandler'])) echo $options['onSubmitHandler'] . '();'; ?>
+			<?php if (isset($options['rpShowAll']) && $options['rpShowAll']) echo '$.addFlex.rpOptionsShowAllOnSubmit(this);'; ?>
 			return true;
 		},
 		preProcess: function(data) {
