@@ -1,6 +1,6 @@
 <?php
 
-function organism_edit_files_form($form, &$form_state, $organism) {
+function organism_edit_files_form($form, &$form_state, $organism_id) {
 	global $user;
 	$form['OrganismFileForm'] = array(
 			'#type' => 'fieldset',
@@ -47,7 +47,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			fm.fid = ofm.file_managed_fid
             AND ofm.organism_id = :id
   			AND fm.uid = :uid;',
-		array(':id' => $organism['id'],
+		array(':id' => $organism_id,
 				':uid' => $user->uid
 		));
 
@@ -65,7 +65,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			$description = $record->description;
 			$filename = l(
 				$record->filename,
-				'sites/default/files/naturvielfalt/organism/' . $organism['id']
+				'sites/default/files/naturvielfalt/organism/' . $organism_id
 						. '/' . $record->filename);
 
 			$img_delete = '<img src="'
@@ -87,7 +87,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 			$row[] = $user->name;
 			$row[] = l(
 				$img_delete,
-				'organism/' . $organism['id'] . '/delete_file/' . $record->fid,
+				'organism/' . $organism_id . '/delete_file/' . $record->fid,
 				array('html' => true));
 			$rows[] = $row;
 		}
@@ -133,7 +133,7 @@ function organism_edit_files_form($form, &$form_state, $organism) {
 
 	// Saving something to the form_state makes it accessible in the submit function.
 	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-	$form_state['storage']['organism_id'] = $organism['id'];
+	$form_state['storage']['organism_id'] = $organism_id;
 
 	return $form;
 }
