@@ -800,6 +800,14 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbExactField' => 'o.observer',
 			'exportAlways' => true
 	);
+	
+	$tableHeader[] = array(
+			'name' => t('Comment'),
+			'dbfield' => 'comment',
+			'width' => 120,
+			'hide' => true,
+			'dbExactField' => 'oattr.value'
+	);
 
 	$tableHeader[] = array(
 			'name' => t('Number of pictures'),

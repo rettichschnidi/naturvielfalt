@@ -428,7 +428,9 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
 		'org.scientific_name AS organism_sc',
 		'ol.name AS organism_l',
-		'oa.name AS artgroup_n'
+		'oa.name AS artgroup_n',
+		// FIXME get more attributes than just Bemerkung
+		'oattr.value AS comment'
 	);
 	
 	$sql['dbSearchColumns'] = array(
@@ -445,16 +447,20 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'a_s.geom',
 		'org.scientific_name',
 		'ol.name',
-		'oa.name'
+		'oa.name',
+		'oattr.value'
 	);
 	
 	$sql['dbTable'] = '{observation} o';
 	
-	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id '
-		//. 'LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
-		. "LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language='"
-		. db_escape_field($langcode) . "' " . 'JOIN {organism} org on org.id = o.organism_id '
-		. 'LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id ';
+	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
+		//.' LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
+		.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
+		.' JOIN {organism} org ON org.id=o.organism_id'
+		.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
+		// FIXME get more attributes than just Bemerkung
+		.' LEFT JOIN {observation_attribute} oattr ON oattr.observation_id=o.id AND oattr.organism_artgroup_attr_id=2'
+	;
 	
 	if ($observation_ids != NULL) {
 		if (is_int($observation_ids) && $observation_ids > 0)
