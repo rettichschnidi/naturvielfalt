@@ -944,6 +944,7 @@ function gallery_sounds_count($type = false, $id = false) {
 function gallery_videos_count($type = false, $id = false) {
 	return gallery_medias_count($type, $id, GALLERY_MEDIATYPE_VIDEO);
 }
+
 /**
  * Get count of all gallery medias by type and id.
  *
@@ -967,6 +968,8 @@ function gallery_medias_count($type = false, $id = false, $mediaType = false) {
 				_gallery_getMediaInfo($mediaType)->mimeTypes,
 				"IN");
 	}
+	if ($type)
+		$conditions->condition('gi.item_type', $type);
 	if (is_array($id)) {
 		$conditions->condition('gi.item_id', $id, "IN");
 	} else {

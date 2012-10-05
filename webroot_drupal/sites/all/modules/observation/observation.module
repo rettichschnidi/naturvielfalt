@@ -370,4 +370,27 @@ function observation_load($arg) {
 	return $observationdata;
 }
 
+/**
+* Get count of all documents of an observation.
+*
+* @param int|array(int) $id
+*   The ID (or an array of IDs) of the object.
+* @return
+*   Number of documents
+*/
+function observation_documents_count($id) {
+	$select = db_select('observation_file_managed', 'ofm');
+	$select->addExpression('COUNT(observation_id)', 'count');
+	$conditions = db_and();
+	if (is_array($id)) {
+		$conditions->condition('ofm.observation_id', $id, "IN");
+	} else {
+		$conditions->condition('ofm.observation_id', $id);
+	}
+	$select->condition($conditions);
+	$queryResult = $select->execute();
+	$result = $queryResult->fetchField(0);
+	return $result;
+}
+
 ?>

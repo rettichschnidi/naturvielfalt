@@ -811,10 +811,34 @@ function observation_get_standard_datatable_headers($init_sort = false,
 
 	$tableHeader[] = array(
 			'name' => t('Number of pictures'),
-			'dbfield' => 'piccount',
+			'dbfield' => 'imagescount',
 			'width' => 20,
 			'hide' => true,
 			'noSort' => true,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of videos'),
+			'dbfield' => 'videoscount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of sounds'),
+			'dbfield' => 'soundscount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of documents'),
+			'dbfield' => 'documentscount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
 	);
 
 	if ($init_sort && $init_sort2) {

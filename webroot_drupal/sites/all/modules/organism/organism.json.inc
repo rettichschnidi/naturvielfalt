@@ -496,8 +496,20 @@ function organism_show_classification_organismjson($classificationid) {
 
 	$output = datatable_dbRequest($sql, $arguments, $prearguments);
 	
-	// add the html-source for the table-gallery-view
 	foreach ($output['rows'] as &$row) {
+		// number of images
+		$row['cell']['imagescount'] = gallery_images_count('organismreference', $row['id']);
+		
+		// number of videos
+		$row['cell']['videoscount'] = gallery_videos_count('organismreference', $row['id']);
+		
+		// number of sounds
+		$row['cell']['soundscount'] = gallery_sounds_count('organismreference', $row['id']);
+		
+		// number of documents
+		$row['cell']['documentscount'] = organism_documents_count($row['id']);
+		
+		// add the html-source for the table-gallery-view
 		$row['cell']['gallery_image'] = __organism_get_gallery_image($row['cell']);
 	}
 	

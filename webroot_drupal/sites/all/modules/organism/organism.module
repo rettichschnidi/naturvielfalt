@@ -471,4 +471,27 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 	return $render_array;
 }
 
+/**
+* Get count of all documents of an organism.
+*
+* @param int|array(int) $id
+*   The ID (or an array of IDs) of the object.
+* @return
+*   Number of documents
+*/
+function organism_documents_count($id) {
+	$select = db_select('organism_file_managed', 'ofm');
+	$select->addExpression('COUNT(organism_id)', 'count');
+	$conditions = db_and();
+	if (is_array($id)) {
+		$conditions->condition('ofm.organism_id', $id, "IN");
+	} else {
+		$conditions->condition('ofm.organism_id', $id);
+	}
+	$select->condition($conditions);
+	$queryResult = $select->execute();
+	$result = $queryResult->fetchField(0);
+	return $result;
+}
+
 ?>

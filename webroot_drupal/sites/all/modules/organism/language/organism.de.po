@@ -15,8 +15,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-10-05 14:35+0200\n"
-"PO-Revision-Date: 2012-10-05 14:35+0200\n"
+"POT-Creation-Date: 2012-10-05 16:31+0200\n"
+"PO-Revision-Date: 2012-10-05 16:31+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -88,19 +88,19 @@ msgstr "Generisches @mediatype dieser Art hinzufügen und ändern"
 msgid "Organisms References"
 msgstr "Art Referenzen"
 
-#: organism.json.inc:602
+#: organism.json.inc:614
 msgid "No such organism available."
 msgstr "Die Art ist nicht vorhanden"
 
-#: organism.json.inc:668
+#: organism.json.inc:680
 msgid "No search term"
 msgstr "Kein Suchbegriff"
 
-#: organism.json.inc:676 organism.info:0
+#: organism.json.inc:688 organism.info:0
 msgid "organism"
 msgstr "Art"
 
-#: organism.json.inc:676
+#: organism.json.inc:688
 msgid "No argroup id got submitted. Please fix."
 msgstr "Keine Artgruppen-ID übermittelt"
 
@@ -138,51 +138,67 @@ msgstr "Wissenschaftlicher Name"
 msgid "Common name"
 msgstr "Name"
 
-#: organism.show.inc:215
+#: organism.show.inc:214
+msgid "Number of pictures"
+msgstr "Anzahl Bilder"
+
+#: organism.show.inc:222
+msgid "Number of videos"
+msgstr "Anzahl Videos"
+
+#: organism.show.inc:230
+msgid "Number of sounds"
+msgstr "Anzahl Sounds"
+
+#: organism.show.inc:238
+msgid "Number of documents"
+msgstr "Anzahl Dokumente"
+
+#: organism.show.inc:247
 msgid "Species which are in classification "
 msgstr "Arten der Klassifikation "
 
-#: organism.show.inc:235
+#: organism.show.inc:267
 msgid "only proof images"
 msgstr "Nur Belegbilder"
 
-#: organism.show.inc:239
+#: organism.show.inc:271
 msgid "only portrait images"
 msgstr "Nur Portraitbilder"
 
-#: organism.show.inc:243
+#: organism.show.inc:275
 msgid "proof images, then portrait images"
 msgstr "Belegbilder, dann Portraitbilder"
 
-#: organism.show.inc:247
+#: organism.show.inc:279
 msgid "portrait images, then proof images"
 msgstr "Portraitbilder, dann Belegbilder"
 
-#: organism.show.inc:267
+#: organism.show.inc:299
 msgid "No such species available"
 msgstr "Die Art ist nicht verfügbar"
 
-#: organism.show.inc:277
+#: organism.show.inc:309
 msgid "Attributes"
 msgstr "Attribute"
 
-#: organism.show.inc:308
+#: organism.show.inc:340
 msgid "No attributes set for this species"
 msgstr "Keine Attribute für diese Art gesetzt"
 
-#: organism.show.inc:330
+#: organism.show.inc:362
 msgid "Scientific synonyms"
 msgstr "Wissenschaftliche Synonyme"
 
-#: organism.show.inc:344
+#: organism.show.inc:376
 msgid "Synonyms @language"
 msgstr "Synonyme @language"
 
-#: organism.show.inc:360
+#: organism.show.inc:392
 msgid "None available"
 msgstr "Nichts verfügbar"
 
-#: organism.show.inc:421
+#: organism.show.inc:453
 msgid "Wikipedia article available"
 msgstr "Wikipedia Artikel verfügbar"
 

@@ -17,8 +17,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-10-05 11:54+0200\n"
-"PO-Revision-Date: 2012-10-05 11:54+0200\n"
+"POT-Creation-Date: 2012-10-05 16:31+0200\n"
+"PO-Revision-Date: 2012-10-05 16:31+0200\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -94,7 +94,7 @@ msgstr "Bearbeiten"
 msgid "No translation available"
 msgstr "Keine Übersetzung vorhanden"
 
-#: observation.ajax.inc:569
+#: observation.ajax.inc:579
 msgid "Position"
 msgstr "Position"
 
@@ -215,6 +215,18 @@ msgstr "Bemerkung"
 #: observation.inc:813
 msgid "Number of pictures"
 msgstr "Anzahl Bilder"
+
+#: observation.inc:821
+msgid "Number of videos"
+msgstr "Anzahl Videos"
+
+#: observation.inc:829
+msgid "Number of sounds"
+msgstr "Anzahl Sounds"
+
+#: observation.inc:837
+msgid "Number of documents"
+msgstr "Anzahl Dokumente"
 
 #: observation.show.inc:16 observation.module:22
 msgid "Show all observations"

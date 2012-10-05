@@ -210,6 +210,38 @@ function organism_show_classification($classificationid) {
 			'width' => 200
 	);
 
+	$organismsTableHeader[] = array(
+			'name' => t('Number of pictures'),
+			'dbfield' => 'imagescount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
+	);
+
+	$organismsTableHeader[] = array(
+			'name' => t('Number of videos'),
+			'dbfield' => 'videoscount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
+	);
+
+	$organismsTableHeader[] = array(
+			'name' => t('Number of sounds'),
+			'dbfield' => 'soundscount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
+	);
+
+	$organismsTableHeader[] = array(
+			'name' => t('Number of documents'),
+			'dbfield' => 'documentscount',
+			'width' => 20,
+			'hide' => true,
+			'noSort' => false,
+	);
+
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
 			'#title' => t('Species which are in classification ') . $classificationObj->oc_name,

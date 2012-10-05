@@ -547,16 +547,26 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
 		
-		// get image
+		// get images
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
 		// number of images
-		$row['cell']['piccount'] = $images['count'];
+		$row['cell']['imagescount'] = $images['count'];
+		
 		// thumbnail
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {
 			// display the thumbnail (for the table view)
 			$row['cell']['thumbnail'] = '<img src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
 		}
+		
+		// number of videos
+		$row['cell']['videoscount'] = gallery_videos_count('observation', $row['id']);
+		
+		// number of sounds
+		$row['cell']['soundscount'] = gallery_sounds_count('observation', $row['id']);
+		
+		// number of documents
+		$row['cell']['documentscount'] = observation_documents_count($row['id']);
 		
 		/**
 		 * create the html source for the gallery view

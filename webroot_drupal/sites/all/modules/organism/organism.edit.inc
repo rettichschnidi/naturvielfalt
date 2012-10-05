@@ -53,7 +53,7 @@ function organism_edit_file($form, &$form_state) {
 	// File upload
 	$validators = array(
 			'file_validate_extensions' => array(
-					'doc txt pdf docx mp3'
+					'doc docx pdf txt xls xlsx'
 			),
 			'file_validate_size' => array(
 					8388608,
