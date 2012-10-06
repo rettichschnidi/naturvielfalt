@@ -26,8 +26,15 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 				'every_page' => TRUE
 		));
 	$page = array();
-	$editable = gallery_edit_access_callback($type, $id);
-	//	$editable = false;
+	
+	// FIXME gallery.api.php > hook_gallery_types()
+	if ($type === 'observation') {
+		module_load_include('module', 'observation');
+		observation_write_access_by_id($id);
+	}
+	else
+		gallery_edit_access_callback($type, $id);
+	
 	$params = _gallery_list_parameters($type, $id);
 	$images = gallery_images(
 		$mediatype,
