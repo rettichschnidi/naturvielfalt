@@ -50,13 +50,14 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$output = datatable_dbRequest($sql);
 
 	global $base_url;
-	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/enabled/';
+	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
+		
 	foreach ($output['rows'] as &$row) {
 		// select box
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:areamap.selectMultipleAreas(event, ' . $row['id'] . ', !this.checked);" />';
 		// show details
 		$row['cell']['showColumn'] = l(
-			'<img src="' . $iconBaseUrl . 'zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+			'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 			$base_url . '/area/' . $row['id'] . '/show',
 			array(
 				'html' => true
@@ -64,14 +65,14 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		// edit details
 		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
 			? l(
-				'<img src="' . $iconBaseUrl . 'modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
 				$base_url . '/area/' . $row['id'] . '/edit',
 				array(
 					'html' => true
 				))
 			: '';
 		// zoom in
-		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:areamap.zoomIn(event, ' . $row['id'] . ');" />';
+		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:areamap.zoomIn(event, ' . $row['id'] . ');" />';
 	}
 
 

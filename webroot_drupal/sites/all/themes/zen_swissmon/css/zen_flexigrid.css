@@ -198,43 +198,43 @@ div.colCopy {
 }
 
 .flexigrid .pViewRecord {
-	background: url(../images/icons/enabled/zoom.png) no-repeat;
+	background: url(../images/icons/enabled/Zoom.png) no-repeat;
 	margin: 0;
 	padding: 0;	
 }
 
 .flexigrid .pSearch {
-	background: url(../images/icons/enabled/search.png) no-repeat;
+	background: url(../images/icons/enabled/Search.png) no-repeat;
 }
 
 .flexigrid .pFirst {
-	background: url(../images/icons/enabled/first.png) no-repeat center;
+	background: url(../images/icons/enabled/First.png) no-repeat center;
 }
 
 .flexigrid .pPrev {
-	background: url(../images/icons/enabled/back.png) no-repeat center;
+	background: url(../images/icons/enabled/Back.png) no-repeat center;
 }
 
 .flexigrid .pNext {
-	background: url(../images/icons/enabled/forward.png) no-repeat center;
+	background: url(../images/icons/enabled/Forward.png) no-repeat center;
 }
 
 .flexigrid .pLast {
-	background: url(../images/icons/enabled/last.png) no-repeat center;
+	background: url(../images/icons/enabled/Last.png) no-repeat center;
 }
 
 .flexigrid .pReload {
-	background: url(../images/icons/enabled/refresh.png) no-repeat center;
+	background: url(../images/icons/enabled/Refresh.png) no-repeat center;
 }
 
 .flexigrid .pReload.loading {
-	background: url(../images/icons/enabled/refresh.png) no-repeat center;
+	background: url(../images/icons/enabled/Refresh.png) no-repeat center;
 }
 
 .flexigrid .mTop {
-	background: url(../images/icons/enabled/top.png) no-repeat center;
+	background: url(../images/icons/enabled/Top.png) no-repeat center;
 }
 
 .flexigrid .mUp {
-	background: url(../images/icons/enabled/up.png) no-repeat center;
+	background: url(../images/icons/enabled/Up.png) no-repeat center;
 }

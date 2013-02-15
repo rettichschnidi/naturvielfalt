@@ -55,21 +55,21 @@ function area_show_all_areas($onlyMyAreas = false) {
 	);
 	
 	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/zoom.png" />',
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom.png" />',
 			'dbfield' => 'showColumn',
 			'width' => 16,
 			'noSort' => true,
 	);
 	
 	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/modify.png" />',
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Modify.png" />',
 			'dbfield' => 'editColumn',
 			'width' => 16,
 			'noSort' => true,
 	);
 	
 	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/zoom in.png" />',
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
 			'dbfield' => 'zoominColumn',
 			'width' => 16,
 			'noSort' => true,
