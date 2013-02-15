@@ -9,11 +9,11 @@ module_load_include('inc', 'area', 'area');
 
 /**
  * Generate a JSON with all areas which are available to the user.
- * 
+ *
  * @param $acl_level
  * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
  * @todo Include the user's nickname
- */
+*/
 function area_datatable_json($acl_level = 'ACL_READ') {
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
@@ -48,13 +48,41 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$sql['id'] = 'id';
 	$sql['acl_level'] = $acl_level;
 	$output = datatable_dbRequest($sql);
+
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/enabled/';
+	foreach ($output['rows'] as &$row) {
+		// select box
+		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:areamap.selectMultipleAreas(event, ' . $row['id'] . ', !this.checked);" />';
+		// show details
+		$row['cell']['showColumn'] = l(
+			'<img src="' . $iconBaseUrl . 'zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+			$base_url . '/area/' . $row['id'] . '/show',
+			array(
+				'html' => true
+			));;
+		// edit details
+		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
+			? l(
+				'<img src="' . $iconBaseUrl . 'modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+				$base_url . '/area/' . $row['id'] . '/edit',
+				array(
+					'html' => true
+				))
+			: '';
+		// zoom in
+		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:areamap.zoomIn(event, ' . $row['id'] . ');" />';
+	}
+
+
+
 	return drupal_json_output($output);
 }
 
 /**
  * Return one or all viewable areas as JSON.
- * 
- * @param $area_id 
+ *
+ * @param $area_id
  * 	Id of requested area
  * @param $acl_level
  * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
@@ -62,7 +90,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
  */
 function area_json($area_id = false, $acl_level = 'ACL_READ') {
 	$areas = db_query(
-		'SELECT
+			'SELECT
 			a.id AS id,
 			a.acl_id AS acl_id,
 			a.name,
@@ -74,16 +102,16 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 			a_s.zip,
 			ST_AsGeoJSON(a_s.geom) AS geom
 			FROM
-				{area} a
-				JOIN {area_geometry} a_s ON a.area_geometry_id = a_s.id
+			{area} a
+			JOIN {area_geometry} a_s ON a.area_geometry_id = a_s.id
 			WHERE
-				-- let this condition always be true if no id set
-				(a.id = :areaid OR :have_no_area_id)
+			-- let this condition always be true if no id set
+			(a.id = :areaid OR :have_no_area_id)
 			ORDER BY
-				id',
-		array(':areaid' => $area_id,
-				':have_no_area_id' => !$area_id
-		));
+			id',
+			array(':areaid' => $area_id,
+					':have_no_area_id' => !$area_id
+			));
 
 	$items = array();
 	foreach ($areas as $entry) {
@@ -98,7 +126,7 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 			$item['country'] = check_plain($entry->country);
 			$item['comment'] = check_plain($entry->comment);
 			$item['zip'] = check_plain($entry->zip);
-				
+
 			$item['type'] = '';
 			$item['area_points'] = array();
 			$json = json_decode($entry->geom);
@@ -140,7 +168,7 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 
 /**
  * Take JSON and update existing area geometry.
- * 
+ *
  * @param $areadata
  * 	Array with required area data
  */
@@ -157,32 +185,32 @@ function area_updategeometry_json($areadata = NULL) {
 	$transaction = db_transaction();
 	try {
 		area_update_geometry(
-			$areadata['area_geometry_id'],
-			array('zip' => filter_xss($_POST['zip']),
-					'canton' => filter_xss($_POST['canton']),
-					'country' => filter_xss($_POST['country']),
-					'township' => filter_xss($_POST['township']),
-					'altitude' => filter_xss($_POST['altitude']),
-					'area_points' => $jsonCoords,
-					'type' => $areaType
-			));
+		$areadata['area_geometry_id'],
+		array('zip' => filter_xss($_POST['zip']),
+		'canton' => filter_xss($_POST['canton']),
+		'country' => filter_xss($_POST['country']),
+		'township' => filter_xss($_POST['township']),
+		'altitude' => filter_xss($_POST['altitude']),
+		'area_points' => $jsonCoords,
+		'type' => $areaType
+		));
 		db_update('area')->fields(array('modify_time' => 'NOW()',))
-			->condition('id', $areadata['id'])
-			->execute();
+		->condition('id', $areadata['id'])
+		->execute();
 	} catch (Exception $e) {
 		$transaction->rollback();
 		watchdog_exception('area', $e);
 		drupal_set_message(
-			t(
-				'Changed geometry on area «@areaname» could not be saved.',
-				array('@areaname' => $areadata['name'])),
-			'error');
+		t(
+		'Changed geometry on area «@areaname» could not be saved.',
+		array('@areaname' => $areadata['name'])),
+		'error');
 	}
 }
 
 /**
  * Get a all habitats within an area as datatable json.
- * 
+ *
  * @param $areadata
  * 	Array with all data about the area
  */
@@ -216,20 +244,20 @@ function area_linked_to_habitat_datatable_json($habitatId) {
 	assert($habitatId != NULL);
 	/* Create a temporary view to avoid the shortcommings of the datatable module */
 	$sql['dbPreStatement'] = 'CREATE TEMPORARY VIEW linkedareas AS (
-		SELECT
+			SELECT
 			DISTINCT ON (a.id)
 			a.id,
 			a.name AS areaname,
 			a_s.township AS township,
 			a_s.zip AS zip,
 			u.name AS username
-		FROM
+			FROM
 			{area_habitat} AS a_h
 			JOIN {area} AS a ON a_h.area_id = a.id
-			JOIN {area_geometry} AS a_s ON a_s.id = a.area_geometry_id 
+			JOIN {area_geometry} AS a_s ON a_s.id = a.area_geometry_id
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id
-		WHERE
+			WHERE
 			a_h.habitat_id=:habitatId )';
 
 	$sql['dbColumns'] = array(
@@ -249,9 +277,9 @@ function area_linked_to_habitat_datatable_json($habitatId) {
 	$sql['dbTable'] = 'linkedareas';
 	$sql['id'] = 'id';
 	$output = datatable_dbRequest(
-		$sql,
-		array(),
-		array(':habitatId' => $habitatId));
+			$sql,
+			array(),
+			array(':habitatId' => $habitatId));
 	return drupal_json_output($output);
 }
 ?>

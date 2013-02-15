@@ -1,5 +1,8 @@
 @charset "UTF-8";
 /* CSS Document */
+
+/* TODO: Move parts of this to the zen_swissmon fledigrid css. */
+
 .flexigrid {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 11px;
@@ -586,34 +589,6 @@ div.pGroup {
 	height: 19px;
 	border-top: 1px solid #fff;
 	border-left: 1px solid #fff;
-}
-
-.flexigrid .pSearch {
-	background: url(images/magnifier.png) no-repeat center;
-}
-
-.flexigrid .pFirst {
-	background: url(images/first.gif) no-repeat center;
-}
-
-.flexigrid .pPrev {
-	background: url(images/prev.gif) no-repeat center;
-}
-
-.flexigrid .pNext {
-	background: url(images/next.gif) no-repeat center;
-}
-
-.flexigrid .pLast {
-	background: url(images/last.gif) no-repeat center;
-}
-
-.flexigrid .pReload {
-	background: url(images/load.png) no-repeat center;
-}
-
-.flexigrid .pReload.loading {
-	background: url(images/load.gif) no-repeat center;
 }
 
 /* ie adjustments */

@@ -519,12 +519,13 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	 */
 	global $base_url;
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
-	foreach ($output['rows'] as &$row) {
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/enabled/';
+	foreach ($output['rows'] as &$row) {	 	
 		// select box
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
 		// show details
 		$row['cell']['showColumn'] = l(
-			'<img src="' . $imageBaseUrl . 'magnifier.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+			'<img src="' . $iconBaseUrl . 'zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 			$base_url . '/observation/' . $row['id'] . '/show',
 			array(
 				'html' => true
@@ -532,12 +533,16 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		// edit details
 		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
 			? l(
-				'<img src="' . $imageBaseUrl . 'edit.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+				'<img src="' . $iconBaseUrl . 'modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
 				$base_url . '/observation/' . $row['id'] . '/edit',
 				array(
 					'html' => true
 				))
 			: '';
+		
+		// zoom in
+		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');" />';
+				
 		// translated organism name
 		if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
@@ -600,7 +605,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			DATATABLE_IMGSRC_BELEG,
 			$images);
 	}
-	
+			
 	return $output;
 }
 

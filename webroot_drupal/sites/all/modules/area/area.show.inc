@@ -44,6 +44,37 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'width' => 30
 	);
 
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
+	
+	$tableHeader[] = array(
+			'name' => '<input class="gridSelect" type="checkbox" disabled />',
+			'dbfield' => 'selectColumn',
+			'width' => 20,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/zoom.png" />',
+			'dbfield' => 'showColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/modify.png" />',
+			'dbfield' => 'editColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/zoom in.png" />',
+			'dbfield' => 'zoominColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',

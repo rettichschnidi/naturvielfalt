@@ -21,6 +21,7 @@
 /sites/all/README.txt
 /sites/all/modules/README.txt
 /sites/all/modules/addressfield/
+/sites/all/modules/captcha/
 /sites/all/modules/commerce/
 /sites/all/modules/commerce_paypal/
 /sites/all/modules/ctools/
@@ -33,6 +34,7 @@
 /sites/all/modules/menu_firstchild/
 /sites/all/modules/nice_menus/
 /sites/all/modules/oauth/
+/sites/all/modules/recaptcha/
 /sites/all/modules/restws/
 /sites/all/modules/rules/
 /sites/all/modules/services/

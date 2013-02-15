@@ -7,6 +7,12 @@
  * allow them to be handled in a more generic way.
  */
 
+colors = {
+	'blue': '6F98FF',
+	'green': '34BA46',
+	'red': 'FE7569'
+};
+
 /**
  * Add getPosition to google.maps.Polygon - required to set a
  * google.maps.InfoWindow on a polygon
@@ -81,52 +87,40 @@ google.maps.Marker.prototype.Area = function() {
 	return 0;
 };
 
-google.maps.Marker.prototype.deselect = function() {
-	this.setIcon(Drupal.settings.basePath + 'sites/all/modules/area/images/marker_sprite.png');
-	this.setClickable(true);
-};
+
+/*** Marker Selection Stuff ***/
 
 google.maps.Marker.prototype.select = function() {
-	this.setIcon(Drupal.settings.basePath + 'sites/all/modules/area/images/marker_sprite-selected.png');
-	this.setClickable(false);
+	var color = colors.blue; 
+	if(this.inMultiSelection)
+	{
+		color = colors.green;
+	}	
+	this.setIcon(getMarkerImage(color));
 };
 
-google.maps.Polyline.prototype.deselect = function() {
-	this.setOptions({
-		strokeColor : "#FF0000",
-		strokeWeight : 3,
-		clickable: true,
-	});
+google.maps.Marker.prototype.deselect = function() {
+	if(!this.inMultiSelection)
+	{
+		this.setIcon(getMarkerImage(colors.red));
+	}
 };
 
-google.maps.Polyline.prototype.select = function() {
-	this.setOptions({
-		strokeColor : "#0000FF",
-		strokeWeight : 3,
-		clickable: false,
-	});
-};
-
-google.maps.Polygon.prototype.deselect = function() {
-	this.setOptions({
-		strokeColor : "#FF0000",
-		strokeWeight : 1,
-		strokeOpacity : 0.75,
-		fillColor : "#AA0000",
-		fillOpacity : 0.25,
-		clickable: true,
-	});
-};
-
-google.maps.Polygon.prototype.select = function() {
-	this.setOptions({
-		strokeColor : "#0000FF",
-		strokeWeight : 1,
-		strokeOpacity : 0.25,
-		fillColor : "#0000AA",
-		fillOpacity : 0.4,
-		clickable: false,
-	});
+/**
+ * Get a custom colored Google marker
+ * 
+ * @param string color
+ */
+getMarkerImage = function(color) {
+	if (color == undefined)
+		return
+	
+	var pinImage = new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + color,
+	        new google.maps.Size(21, 34),
+	        new google.maps.Point(0,0),
+	        new google.maps.Point(10, 34));
+	
+	return pinImage;
 };
 
 google.maps.Marker.prototype.getBounds = function() {
@@ -137,13 +131,71 @@ google.maps.Marker.prototype.getBounds = function() {
 	return bound;
 };
 
-google.maps.Polyline.prototype.getBounds = google.maps.Marker.prototype.getBounds;
-google.maps.Polygon.prototype.getBounds = google.maps.Marker.prototype.getBounds;
-
 google.maps.Marker.prototype.setEditable = function(e) {
 	this.setDraggable(e);
 	this.setClickable(e);
 };
+
+/*** Polyline Selection Stuff ***/
+
+google.maps.Polyline.prototype.select = function() {
+	var color = colors.blue; 
+	if(this.inMultiSelection)
+	{
+		color = colors.green;
+	}
+	
+	this.setOptions({
+		strokeColor : '#' + color,
+		strokeWeight : 3,
+	});
+};
+
+google.maps.Polyline.prototype.deselect = function() {
+	if(!this.inMultiSelection)
+	{
+		this.setOptions({
+			strokeColor : '#' + colors.red,
+			strokeWeight : 3,
+		});
+	}
+};
+
+google.maps.Polyline.prototype.getBounds = google.maps.Marker.prototype.getBounds;
+
+
+/*** Polygon Selection Stuff ***/
+
+google.maps.Polygon.prototype.select = function() {
+	var color = colors.blue; 
+	if(this.inMultiSelection)
+	{
+		color = colors.green;
+	}
+	
+	this.setOptions({
+		strokeColor : '#' + color,
+		strokeWeight : 1,
+		strokeOpacity : 0.75,
+		fillColor : '#' + color,
+		fillOpacity : 0.25,
+	});
+};
+
+google.maps.Polygon.prototype.deselect = function() {
+	if(!this.inMultiSelection)
+	{
+		this.setOptions({
+			strokeColor : '#' + colors.red,
+			strokeWeight : 1,
+			strokeOpacity : 0.75,
+			fillColor : '#' + colors.red,
+			fillOpacity : 0.25,
+		});
+	}
+};
+
+google.maps.Polygon.prototype.getBounds = google.maps.Marker.prototype.getBounds;
 
 /**
  * Fire the even 'geometry_changed' every time the marker got moved

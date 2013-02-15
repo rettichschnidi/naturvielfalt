@@ -372,7 +372,8 @@ jQuery(document).ready(function() {
 				var idx = $.inArray(id, $.unique(this.selectedIds))
 				if (idx > -1) {
 					this.selectedIds.splice(idx, 1);
-					this.overlaysArray[id].deselect(this.pinColor.red);
+					this.overlaysArray[id].inMultiSelection = false;
+					this.overlaysArray[id].deselect();					
 				}
 			}
 			else {
@@ -387,8 +388,8 @@ jQuery(document).ready(function() {
 			for (var i = 0; i < this.selectedIds.length; i++) {
 				var marker = this.overlaysArray[this.selectedIds[i]];
 
-				// set z-index to mark as selected by multiple select
-				marker.select(this.pinColor.blue, 3);
+				marker.inMultiSelection = true;
+				marker.select();
 				
 				var position = marker.getPosition();
 				bounds.extend(position);
@@ -408,14 +409,17 @@ jQuery(document).ready(function() {
 	 * @param string color
 	 * @param int zindex
 	 */
-	google.maps.Marker.prototype.select = function(color, zindex) {
+	/*google.maps.Marker.prototype.select = function(color, zindex) {
+		
+		this.select();
+		//setMarkerSelectedOptions(this);
 		if (color != undefined)
 			this.setIcon(getMarkerImage(color));
 		
 		if (zindex == undefined)
 			zindex = 2;
 		this.setZIndex(zindex);
-	}
+	}*/
 
 	/**
 	 * Override default Google Maps Marker deselect() method to define color and
@@ -424,33 +428,18 @@ jQuery(document).ready(function() {
 	 * @param string color
 	 * @param int zindex
 	 */
-	google.maps.Marker.prototype.deselect = function(color, zindex) {
+/*	google.maps.Marker.prototype.deselect = function(color, zindex) {
+		
+		this.deselect();
+		//setMarkerDeselectedOptions(this);
 		if (color != undefined)
 			this.setIcon(getMarkerImage(color));
 		
 		if (zindex == undefined)
 			zindex = 1;
 		this.setZIndex(zindex);
-	}
+	}*/
 
-	/**
-	 * Get a custom colored Google marker
-	 * 
-	 * @param string color
-	 */
-	getMarkerImage = function(color) {
-		if (color == undefined)
-			return
-		
-		var pinImage = new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + color,
-		        new google.maps.Size(21, 34),
-		        new google.maps.Point(0,0),
-		        new google.maps.Point(10, 34));
-		
-		return pinImage;
-	};
-	
-	
  
 	/*
 	 * Functions for the observation edit page

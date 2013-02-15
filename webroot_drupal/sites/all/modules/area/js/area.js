@@ -8,6 +8,8 @@
  * @Class Contains all the logic to handle a map.
  */
 function Area(options) {
+	$ = jQuery;
+	
 	/**
 	 * Member variable initialisation
 	 * Short explanation:
@@ -194,7 +196,7 @@ Area.prototype.automaticallySaveLocation = function(enable) {
 
 /**
  * Select the geometry with the given id, set style to "selected", set map to
- * show the given element, open up an info window
+ * show the given element
  * 
  * @param id integer
  * 	geometry id
@@ -205,15 +207,109 @@ Area.prototype.selectGeometry = function(geometryid) {
 			this.overlaysArray[this.selectedId].deselect();
 		this.selectedId = geometryid;
 
-		this.overlaysArray[geometryid].select();
-		var bounds = this.overlaysArray[geometryid].getBounds();
-		this.googlemap.fitBounds(bounds);
-		this.googlemap.setZoom(this.googlemap.getZoom() - 2);
-		this.showInfoWindow(geometryid);
+		item = this.overlaysArray[geometryid];
+		item.select();
+		this.deselectOtherGeometries(item);
+		
 	} else {
 		console.error("Geometry not available: " + geometryid);
 		this.selectedId = null;
 	}
+};
+
+
+Area.prototype.deselectOtherGeometries = function(current) {
+	for (var i = 0; i < this.overlaysArray.length; i++) {
+		var overlay = this.overlaysArray[i];
+		if(overlay && overlay != current)
+		{
+			overlay.deselect();					
+		}
+	}
+};
+
+Area.prototype.zoomIn = function(event, id) {
+	var e = event || window.event;
+	if (e != undefined)	e.stopPropagation();
+	
+	this.selectGeometry(id);
+	var bounds = this.overlaysArray[id].getBounds();
+	this.googlemap.fitBounds(bounds);
+	
+	if(this.googlemap.getZoom() > 19)
+	{
+		this.googlemap.setZoom(19);		
+	}
+};
+
+Area.prototype.selectMultipleAreas = function(event, id, deselect) {
+	var e = event || window.event;
+	if (e != undefined)	e.stopPropagation();
+	
+	if (deselect == undefined)
+		deselect = false;
+	
+	$flexiDiv = $(event.target).closest('div.flexigrid');
+	
+	// select both checkboxes in table/gallery
+	$flexiDiv.find('input.gridSelect[value="'+id+'"]').each(function() {
+		$(this)[0].checked = !deselect;
+	});
+	
+	// update batch area buttons
+	if ($flexiDiv.find('input.gridSelect:checked').length == 0) {
+		$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
+		$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+	}
+	else {
+		$flexiDiv.find('.btnDeleteSelected').removeAttr('disabled');
+		$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export selected'));
+	}
+	
+	// check if there exists an overlay with the given id
+	if (id in this.overlaysArray) {
+		if (this.selectedIds == null) {
+			this.selectedIds = [];
+		}
+		if (deselect == true) {
+			// deselect
+			var idx = $.inArray(id, $.unique(this.selectedIds));
+			if (idx > -1) {
+				this.selectedIds.splice(idx, 1);
+				//this.overlaysArray[id].deselect(this.pinColor.red);
+				item = this.overlaysArray[id];
+				item.inMultiSelection = false;
+				item.deselect();
+			}
+		}
+		else {
+			// select
+			this.selectedIds.push(id);
+		}
+		
+		// loop through selected overlays, select them on the map, calculate the
+		// bounds around them, and check if refitting map is needed
+		var mapcontains = true;
+		var bounds = new google.maps.LatLngBounds();
+		for (var i = 0; i < this.selectedIds.length; i++) {
+			var item = this.overlaysArray[this.selectedIds[i]];
+
+			item.inMultiSelection = true;
+			item.select();
+			
+			var position = item.getPosition();
+			bounds.extend(position);
+			// don't touch mapcontains once it changed to false
+			if (mapcontains)
+			{
+				mapcontains = this.googlemap.getBounds().contains(position);
+			}
+		}
+		if (!mapcontains)
+		{
+			this.googlemap.fitBounds(bounds);
+		}
+	}	
 };
 
 /**
@@ -282,11 +378,18 @@ Area.prototype.showInfoWindowToCreateNewGeometry = function(overlayElement, html
 Area.prototype.createOverlayElementFromJson = function(currentjsonoverlay) {
 	var newoverlay;
 	if (currentjsonoverlay.type == 'polygon') {
-		newoverlay = new google.maps.Polygon();
+		newoverlay = new google.maps.Polygon( { inMultiSelection: false} );
+		newoverlay.setOptions({
+			zIndex : 0,
+		});		
 	} else if (currentjsonoverlay.type == 'polyline') {
-		newoverlay = new google.maps.Polyline();
+		newoverlay = new google.maps.Polyline( { inMultiSelection: false} );
+		newoverlay.setOptions({
+			zIndex : 1,
+		});
 	} else if (currentjsonoverlay.type == 'marker') {
-		newoverlay = new google.maps.Marker();
+		newoverlay = new google.maps.Marker( { inMultiSelection: false} );
+		newoverlay.setZIndex(2);
 	} else {
 		console.error('Unknown type of overlay!');
 		return;
@@ -305,6 +408,8 @@ Area.prototype.addWindowsListenerToGeometry = function(id) {
 		google.maps.event.addListener(currentoverlay, 'click', function() {
 			jQuery('#row' + id).addClass('trSelected');
 			this_.showInfoWindow(id);
+			currentoverlay.select();
+			this_.deselectOtherGeometries(currentoverlay);
 		})
 	);
 };

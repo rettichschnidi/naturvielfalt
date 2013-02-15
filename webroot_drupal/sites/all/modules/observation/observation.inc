@@ -687,29 +687,39 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'idField' => true,
 			'dbfield' => 'id',
 			'hide' => true,
-			'width' => 30
+			'width' => 30,
 	);
+
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
 	
 	$tableHeader[] = array(
-		'name' => 'A',
+		'name' => '<input class="gridSelect" type="checkbox" disabled />',
 		'dbfield' => 'selectColumn',
-		'width' => 20,
+		'width' => 20,			
 		'noSort' => true,
 	);
 	
 	$tableHeader[] = array(
-		'name' => 'B',
+		'name' => '<img src="' . $iconBaseUrl . 'disabled/zoom.png" />',
 		'dbfield' => 'showColumn',
-		'width' => 15,
+		'width' => 16,
 		'noSort' => true,
 	);
 
 	$tableHeader[] = array(
-		'name' => 'C',
+		'name' => '<img src="' . $iconBaseUrl . 'disabled/modify.png" />',
 		'dbfield' => 'editColumn',
-		'width' => 15,
+		'width' => 16,
 		'noSort' => true,
-	);	
+	);
+		
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/zoom in.png" />',
+			'dbfield' => 'zoominColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
 
 	$tableHeader[] = array(
 			'name' => t('Picture'),
