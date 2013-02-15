@@ -519,7 +519,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	 */
 	global $base_url;
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
-	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/enabled/';
+	//$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/enabled/';
+	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	foreach ($output['rows'] as &$row) {	 	
 		// select box
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
