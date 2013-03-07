@@ -424,3 +424,73 @@ function zen_swissmon_preprocess_user_login_block(&$vars) {
   $vars['rendered'] = drupal_render_children($vars['form']);
 }
 
+/* http://drupal.org/project/user_stats */
+/* Get Number of forum posts for user with id $uid */
+function zen_swissmon_get_user_posts_count($uid) {
+	$query = db_select('node', 'n');
+	$query->condition('uid',$uid,'=');
+	$query->condition('type','forum','=');
+	$query->addExpression('COUNT(nid)', 'posts_count');
+	$result = $query->execute();
+
+	if ($record = $result->fetchAssoc())
+		return $record['posts_count'];
+	 
+	return 0;
+}
+
+/* Get Number of comments for user with id $uid */
+function zen_swissmon_get_user_comments_count($uid) {
+	$query = db_select('comment', 'c');
+	$query->condition('uid',$uid,'=');
+	$query->addExpression('COUNT(cid)', 'comments_count');
+	$result = $query->execute();
+
+	if ($record = $result->fetchAssoc())
+		return $record['comments_count'];
+	 
+	return 0;
+}
+
+/**
+ * Helper function to get the last forum post created by the user.
+ *
+ * @param $account
+ *   User object.
+ *
+ * @return
+ *   Unix timestamp: date of the last forum post.
+ */
+function zen_swissmon_get_user_stats_last_forum_post($uid) {
+	$query = db_select('node', 'n');
+	$query->condition('uid',$uid,'=');
+	$query->condition('type','forum','=');
+	$query->addExpression('MAX(changed)', 'last_timestamp');
+	$result = $query->execute();
+	
+	if($record = $result->fetchField()){
+			return $record;
+	}
+	return 0;
+}
+
+/**
+ * Helper function to get the last post created by the user.
+ *
+ * @param $uid
+ *   User object.
+ *
+ * @return
+ *   Unix timestamp: date of the last node.
+ */
+function zen_swissmon_get_user_stats_last_comment_post($uid) {
+	$query = db_select('comment', 'c');
+	$query->condition('uid',$uid,'=');
+	$query->addExpression('MAX(changed)', 'last_timestamp');
+	$result = $query->execute();
+	
+	if($record = $result->fetchField()){ // Check if we received a valid result or empty
+			return $record;
+	}
+	return 0;
+}

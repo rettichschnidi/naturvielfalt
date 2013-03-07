@@ -1,0 +1,675 @@
+<?php
+// $Id: remove_user.module
+
+/**
+ * @file
+ * Removes a user together with all his comments and nodes
+ */
+ 
+
+/**
+ * Valid permissions for this module
+ * @return array An array of valid permissions for the onthisdate module
+ */
+function remove_user_perm() {
+	return array('access remove_user','administer remove_user');
+} // function remove_user_perm()
+
+/**
+ * Implements hook_library_info().
+ */
+function remove_user_library_info() {
+	$path = drupal_get_path('module', 'remove_user');
+	$libraries['drupal.remove_user'] = array(
+			'title' => 'Mymodule widget',
+			'css' => array(
+					$path . 'remove_user.css' => array(),
+			),
+			'dependencies' => array(
+					array('system', 'drupal'),
+					array('system', 'drupalSettings'),
+			),
+	);
+	return $libraries;
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function remove_user_page_build(&$page) {
+	$path = drupal_get_path('module', 'remove_user');
+
+	// Declaring a proper library including its dependencies, and
+	// attaching it is the recommended way:
+	//$page['#attached']['library'][] = array('remove_user', 'drupal.remove_user');
+
+	// Deprecated: Add individual CSS/JS files to every page:
+	//$page['#attached']['css'][$path . '/theme/foo.css'] = array('every_page' => TRUE);
+	//$page['#attached']['js'][$path . '/js/foo.js'] = array('every_page' => TRUE);
+
+	//$page['#attached']['css'][$path . '/remove_user.css'] = array('every_page' => TRUE);
+	//$page['#attached']['css'] = array($path . '/remove_user.css');
+	//$page['content']['#attached']['css'][] = array($path . '/remove_user.css');
+}
+
+function remove_user_confirm($form, &$form_state, $uid) {
+
+	$last_page_visited = $_SERVER['HTTP_REFERER'];	
+	$current_user = user_load($uid);
+	
+	if($current_user){
+		$form['#user'] = $current_user;
+		
+		$form['test'] = array(
+				'#type' => 'value',
+				'#value' => 'testValue',
+		);
+		
+		$form['uid'] = array(
+				'#type' => 'value',
+				'#value' => $current_user->uid,
+		);
+		
+		$form['name'] = array(
+				'#type' => 'value',
+				'#value' => $current_user->name,
+		);
+		
+		
+		$form['url'] = array(
+				'#type' => 'value',
+				'#value' => $last_page_visited,
+		);
+		//drupal_set_message("uid not found. " . $last_page_visited,'error');
+		return confirm_form($form, 
+				t('Are you sure you want to delete User %title?', array('%title' => $current_user->name)), 
+				$last_page_visited, t('This action cannot be undone.'), t('Delete'), t('Cancel')); 
+		}
+	else{
+		drupal_goto('forum');
+	}
+}
+
+function remove_user_confirm_validate($form, &$form_state) {
+	if(!isset($form_state['storage']['confirm'])) {
+		// put any initial validation here. This only be called the first time through, not when the confirm button has been pushed.
+		//drupal_set_message(t("UID: " . $uid));
+
+		if(empty($uid)){
+			//drupal_set_message("uid not found. " . $last_page_visited,'error');
+			//drupal_goto("forum");
+		}
+		
+		print "Irgendwas";
+		//drupal_set_message(t("TEST " . $uid));
+		
+		//$account = user_load($uid);
+	}
+}
+
+function remove_user_confirm_submit($form, &$form_state) {
+	
+	//verify that the form was confirmed
+	if ($form_state['values']['confirm']) {
+		
+		$uid = $form_state['values']['uid'];
+		$name = $form_state['values']['name'];
+		
+		//Do something here
+			$account = user_load($uid);
+			
+			try {
+				
+				if (!user_access('administer users')) {
+					throw new Exception("Not enough rights");
+				}
+				
+				if(!$account){				
+					throw new Exception('User does not exist.');
+				}
+
+				if (is_array($account->roles) && in_array('administrator', $account->roles)) {	
+					throw new Exception('Cannot delete admin');
+				}
+						
+				$startTime = microtime(true); // time in Microseconds
+			
+				print "SELECT for user with ID " . $uid;
+				echo "<br/>";
+	
+				$query = db_select('comment', 'c');
+				$query->condition('uid',$uid,'=');
+				$query->fields('c',array('cid'));
+				$result = $query->execute();
+	
+				$commentIds = $result->fetchCol();
+				$num_comments = count($commentIds);
+				
+				//BATCH 1
+				if($num_comments > 0) {
+					$commentId_chunk = array_chunk($commentIds, 4);
+					$comment_operations = array();
+					
+					foreach ($commentId_chunk as $key => $value) {
+						$comment_operations[] = array('remove_user_batch_op1', array($value));
+					}
+					
+					$batch1 = array(
+							'operations' => $comment_operations,
+							'finished' => 'remove_user_batch_finished',
+							'title' => t('Processing Comment Removal Batch'),
+							'progress_message' => t('Processed @current out of @total.'),
+							'error_message' => t('Comment Delete Batch has encountered an error.'),
+					);
+					batch_set($batch1);
+					
+					// Non-progressive batch job (run in-scope).
+					//$batch =& batch_get();
+					//$batch['progressive'] = FALSE;
+				}
+				//END BATCH 1
+	
+				//node_user_delete($account);
+				//Own implementation of node delete to circumvent sql timeout
+	
+				//Remove Nodes
+				$nodeIds = db_select('node', 'n')->fields('n', array('nid'))->condition('uid', $uid)->execute()->fetchCol();
+				$num_nodes = count($nodeIds);
+				
+				//BATCH 2
+				if($num_nodes > 0) {
+					$nodeId_chunk = array_chunk($nodeIds, 4);
+					$node_operations = array();
+					
+					foreach ($nodeId_chunk as $key => $value) {
+						$node_operations[] = array('remove_user_batch_op2', array($value));
+					}
+					
+					$batch2 = array(
+							'operations' => $node_operations,
+							'finished' => 'remove_user_batch_finished',
+							'title' => t('Processing Node Removal Batch'),
+							'progress_message' => t('Processed @current out of @total. Estimated: @estimate and elapsed: @elapsed.' - $status),
+							//'progress_message' => t('Processed %current out of %total.', array('%current' => @current*4, '%total' => @total*4 )),
+							'error_message' => t('Node Delete Batch has encountered an error.'),
+					);
+					batch_set($batch2);
+					
+					// Non-progressive batch job (run in-scope).
+					//$batch =& batch_get();
+					//$batch['progressive'] = FALSE;
+						
+				}
+				//END BATCH 2
+					
+				$revisionIds = db_query('SELECT vid FROM {node_revision} WHERE uid = :uid', array(':uid' => $uid))->fetchCol();
+				$num_revisions = count($revisionIds);
+				
+				//BATCH 3
+				if($num_revisions > 0) {
+					$revisionId_chunk = array_chunk($revisionIds, 4);
+					$revision_operations = array();
+					
+					foreach ($revisionId_chunk as $key => $value) {
+						$revision_operations[] = array('remove_user_batch_op3', array($value));
+					}
+					
+					$batch3 = array(
+							'operations' => $revision_operations,
+							'finished' => 'remove_user_batch_finished',
+							'title' => t('Processing Revision Removal Batch'),
+							'progress_message' => t('Processed @current out of @total.'),
+							'error_message' => t('Revision Delete Batch has encountered an error.'),
+					);
+					batch_set($batch3);
+					
+					// Non-progressive batch job (run in-scope).
+					//$batch =& batch_get();
+					//$batch['progressive'] = FALSE;
+				}
+				//END BATCH 3
+
+				//BATCH 4
+				$batch4 = array(
+						'operations' => array(
+						    array('remove_user_batch_op4', array($account->uid)),
+						  ),
+						'finished' => 'remove_user_batch_finished',
+						'title' => t('Processing History Removal Batch'),
+						'progress_message' => t('Processed @current out of @total.'),
+						'error_message' => t('Delete History Batch has encountered an error.'),
+				);
+				batch_set($batch4);		
+				//END BATCH 4
+				
+				//BATCH 5
+				$batch5 = array(
+						'operations' => array(
+								array('remove_user_batch_op5', array($account->uid)),
+						),
+						'finished' => 'remove_user_batch_finished',
+						'title' => t('Processing User Removal Batch'),
+						'progress_message' => t('Processed @current out of @total.'),
+						'error_message' => t('Delete User has encountered an error.'),
+				);
+				batch_set($batch5);
+				
+				// END BATCH 5
+				
+				$endTime = microtime(true);
+				$timeText = number_format($endTime - $startTime, 5) . ' seconds elapsed.';
+				$statusText = "Removed " . count($commentIds) . " comments. " . "Removed " . count($nodeIds) . " nodes. " . "Removed " . count($revisionIds) . " revisions.";
+				$msg = t('Successfully removed user ' . $name . ' (uid: ' . ' ' . $uid .'). ' . $timeText . " " . $statusText);
+				//BATCH 6
+				$batch6 = array(
+						'operations' => array(
+								array('remove_user_batch_op6', array($msg)),
+						),
+						'finished' => 'remove_user_batch_finished',
+						'title' => t('Processing Message Batch'),
+						'progress_message' => t('Processed @current out of @total.'),
+						'error_message' => t('Show message has encountered an error.'),
+				);
+				batch_set($batch6);
+				//END BATCH 6
+				
+				//drupal_goto("forum");
+			}
+			catch (Exception $e) {
+				drupal_set_message(t(check_plain($e->getMessage())), 'error');
+				//print 'Error while trying to remove user with ID ' . $uid;$
+				drupal_goto('forum');
+			}		
+		///////////////////// End work
+	
+		//Redirect to Forum
+		//
+	}
+}
+
+function remove_user_batch_op1($value, &$context){
+	foreach ($value as $commentId){
+		//comment_delete($commentId);
+		$context['message'] = t('Removing comment with cid %cid', array('%cid' => $commentId));
+		$context['results'][] = 'comment : ' . $commentId;
+	}
+}
+
+function remove_user_batch_op2($value, &$context){
+	foreach ($value as $nodeId) {
+		//node_delete($nodeId);
+		$context['message'] = t('Removing node with nid %nid', array('%nid' => $nodeId));
+		$context['results'][] = 'node : ' . $nodeId;
+	}
+	// wait for 2 seconds
+	usleep(2000000);
+}
+
+function remove_user_batch_op3($value, &$context){
+	foreach ($value as $revisionId) {
+		//node_revision_delete($revisionId);
+		$context['message'] = t('Removing revision with vid %vid', array('%vid' => $revisionId));
+		$context['results'][] = 'revision : ' . ($revisionId);
+	}
+}
+
+function remove_user_batch_op4($uid, &$context){
+	// Clean history.
+	$context['message'] = t('Removing history for uid %uid', array('%uid' => $uid));
+	//db_delete('history')->condition('uid', $uid)->execute();
+	$context['results'][] = 'history for user with uid ' . $uid . '.';
+	$context['results'][] = 'Removed history for user with ' . $uid . '.';
+}
+
+function remove_user_batch_op5($uid, &$context){
+	//Delete User.
+	$context['message'] = t('Removing user with uid %uid', array('%uid' => $uid));
+	//user_delete($uid);
+	$context['results'][] = 'user with uid ' . $uid . '.';
+	$context['results'][] = 'Removed user with uid ' . $uid . '.';
+}
+
+function remove_user_batch_op6($msg, &$context){
+	$context['message'] = t('Cleaning up tasks.');
+	$context['results'][] = 'done';
+	$context['results'][] = $msg;
+}
+
+/**
+ * Batch is finished.
+ */
+function remove_user_batch_finished($success, $results, $operations) {
+	if ($success) {	
+		$beginsWitch = substr($results[0], 0, 3);
+		$NrOfProcessedElements = count($results);
+		$type = "";
+		
+		switch($beginsWitch){
+			case 'com': 
+				$type = 'Comments';
+				break;
+			case 'nod':
+				$type = 'Nodes';
+				break;
+			case 'rev':
+				$type = 'Revisions';
+				break;
+			case 'his':
+				$type = 'History';
+				$NrOfProcessedElements = 1;
+				break;
+			case 'use':
+				$type = 'User';
+				$NrOfProcessedElements = 1;
+				break;
+			case 'don':
+				$type = 'FINISHED';
+				$NrOfProcessedElements = 1;
+				break;
+		}
+		
+		switch($type){
+			case 'User':
+				$text = 'SUCCESSFULLY REMOVED USER.';
+				break;
+			case 'FINISHED':
+				$text = $results[1];
+				break;
+			default: 
+				$text = t("Successfully removed %anzahl %type.", array('%anzahl' => $NrOfProcessedElements, '%type' => $type));
+				break;
+		}
+		
+		//drupal_set_message(t('Processed: %proce', array('%proce' => $NrOfProcessedElements)));
+		drupal_set_message($text);
+		//dpm($results);
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		drupal_set_message(t('An error occurred while processing @operation with arguments : @args', array('@operation' => $error_operation[0], '@args' => print_r($error_operation[0], TRUE))));
+	}
+}
+
+
+/**
+* Implements hook_menu().
+*/
+function remove_user_menu() {
+	variable_set('theme_link', FALSE);
+ 	$items = array();
+
+ 	$items['remove/user/uid/%'] = array( 
+    'title' => 'Remove',
+    'page callback' => 'remove_user_function',
+    'page arguments' => array(3), 
+    'access arguments' => array('administer users'), 
+    'type' => MENU_CALLBACK
+  	);
+ 	
+ 	$items['remove/user/uid/confirm/%'] = array(
+    'title' => 'Confirm',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('remove_user_confirm', 4),  
+    'access arguments' => array('administer users'), 
+    'type' => MENU_CALLBACK
+  	);
+
+	variable_del('theme_link');
+ 	return $items;
+}
+
+function remove_user_function($uidToDelete) {
+	if (user_access('administer users')) {
+
+		$account = user_load($uidToDelete);
+		global $user;
+		if (is_array($user->roles) && in_array('administrator', $user->roles)) {
+			
+			$startTime = microtime(true); // time in Microseconds
+			
+			try {
+				
+				$user_id = $account->uid;
+				print "SELECT for user with ID " . $user_id;
+				echo "<br/>";
+				
+				$query = db_select('comment', 'c');
+				$query->condition('uid',$user_id,'=');
+				$query->fields('c',array('cid'));
+				$result = $query->execute();
+				
+				$resArray = $result->fetchCol();
+				
+				foreach ($resArray as $value){
+					comment_delete($value);
+					drupal_set_message(t('Removing comment with id ' . $form_id));
+				}
+				
+				/*
+				if(!empty($resArray))
+				{
+					comment_delete_multiple($cids);
+					print "Deleting comments";
+					echo "<br />";
+				}
+				else{
+					print "No comments to delete.";
+					echo "<br />";
+				}
+				*/
+				
+				//node_user_delete($account);
+				//Own implementation of node delete to circumvent sql timeout		
+				
+				//Remove Nodes
+				$nodes = db_select('node', 'n')->fields('n', array('nid'))->condition('uid', $account->uid)->execute()->fetchCol();
+				foreach ($nodes as $node) {
+					//node_delete($node);
+					drupal_set_message(t('Removing comment with nid ' . $node->nid));
+				}
+					
+				$revisions = db_query('SELECT vid FROM {node_revision} WHERE uid = :uid', array(':uid' => $account->uid))->fetchCol();
+				foreach ($revisions as $revision) {
+					//node_revision_delete($revision);
+					print "Remove revision " . $revision;
+					echo "<br />";
+				}
+				
+				echo "<br />";echo "<br />";
+				print "Removed " . count($resArray) . " comments";
+				echo "<br />";
+				print "Removed " . count($nodes) . " nodes";
+				echo "<br />";
+				print "Removed " . count($revisions) . " revisions";
+				echo "<br />";
+					
+				// Clean history.
+				//db_delete('history')->condition('uid', $account->uid)->execute();
+			
+			} catch (Exception $e) {
+				
+				print 'Error while trying to remove user with ID ' . $uidToDelete; 
+				echo '<br />';
+			}
+			//user_delete($account->uid);
+			$endTime = microtime(true);
+			echo number_format($endTime - $startTime, 5) . ' seconds elapsed';
+			
+			return 'User with ID ' . $uidToDelete; //text to return to display
+		}
+		else{
+			
+			return 'Cannot delete admin';
+		}
+		
+	}
+	else{
+		return 'Nothing to see';
+	}
+}
+
+/*
+function remove_user_form_alter(&$form, &$form_state, $form_id) {
+	drupal_set_message($form_id);  // print form ID to messages
+	drupal_set_message(print_r($form, TRUE));  // print array to messages
+}
+*/
+
+function remove_user_node_view($node, $view_mode, $langcode) {
+	//drupal_set_message($node->type);  
+	//drupal_set_message($view_mode); 
+
+	if ($node->type == 'forum' && $view_mode == 'full') {
+		// Code here.	
+
+		/*
+		$account = user_load($node->uid);
+		
+		$additional_field = '<div class="messages error">' .
+				'<h3>Admin Info</h3>' .	
+				'<span class="adminInfoDescription">Userid:</span>' . $account->uid . '<br/>' .
+				'<span class="adminInfoDescription">User:</span>' . $account->name . '<br />' .
+				'<span class="adminInfoDescription">Account created on:</span>' . format_date($account->created) . '<br />' .
+				'<span class="adminInfoDescription">Days ago:</span>' . floor((time() - $account->created) / 86400) . '<br />' .
+				'<span class="adminInfoDescription">Last login:</span>' . format_date($account->login) . '<br />' .
+				'<span class="adminInfoDescription">Nr of comments:</span>' . zen_swissmon_get_user_comments_count($uid) . '<br />' .
+				'<span class="adminInfoDescription">Forum posts:</span>' . zen_swissmon_get_user_posts_count($uid) . '<br/>' .
+				//<span class="adminInfoDescription">Path to theme:</span> print path_to_theme() <br />
+				'<span class="adminInfoDescription">Last forum post:</span>' . format_date(zen_swissmon_get_user_stats_last_forum_post($uid)) . '<br />' .
+				'<span class="adminInfoDescription">Last comment:</span>' . format_date(zen_swissmon_get_user_stats_last_comment_post($uid)) . '<br />' .
+				'<span class="adminInfoDescription">REMOVE USER</span>' . l("REMOVE", 'remove/user/uid/confirm/'. $account->uid) . '<br />' .		
+		'</div>';
+		
+  		$node->content['myComponent'] = array(
+    		'#markup' => $additional_field,
+    		'#weight' => 0,
+    		//'#theme' => 'links__node__book',
+  		);
+  		
+  		*/
+			
+		$uid = $node->uid;
+		$account = user_load($uid);
+		$nrOfForumPosts = remove_user_get_user_posts_count($uid);
+		$nrOfComments = remove_user_get_user_comments_count($uid);
+		$dateOfLastForumPost = remove_user_get_user_stats_last_forum_post($uid);
+		$dateOfLastComment = remove_user_get_user_stats_last_comment_post($uid);
+		
+  		$node->content['inform'] = array(
+  			//'#markup' => '',
+  			'#field_type' => 'text',
+  			'#weight' => 10,
+  			'#theme' => 'admin_foruminfo',
+  			'#node' => $node,
+  			'#account' => $account,	
+  			'#nrOfForumPosts' => $nrOfForumPosts,
+  			'#nrOfComments' => $nrOfComments,
+  			'#dateOfLastForumPost' => $dateOfLastForumPost,
+  			'#dateOfLastComment' => $dateOfLastComment,
+  		);
+  		
+		
+		//$strBody = $node->content['body'][0]['#markup'];
+		//$node->content['body'][0]['#markup'] = 'my additional text' . $strBody;
+		
+		return $node;
+	}
+}
+
+function remove_user_theme($existing, $type, $theme, $path){
+	$themes = array (
+			'admin_foruminfo' => array(
+					'template' => 'admin-foruminfo',
+					'variables' => array('node' => NULL, 'account' => NULL,
+							'nrOfForumPosts' => NULL, 'nrOfComments' => NULL, 'dateOfLastForumPost' => NULL, 'dateOfLastComment' => NULL, ),
+			),
+	);
+	return $themes;
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function template_preprocess_admin_foruminfo(&$variables){
+	///
+	
+	/*
+	drupal_set_message("Preprocess Template");
+	echo "<pre>";
+	print_r($variables);
+	echo "</pre>";
+	*/
+}
+
+/* http://drupal.org/project/user_stats */
+/* Get Number of forum posts for user with id $uid */
+function remove_user_get_user_posts_count($uid) {
+	$query = db_select('node', 'n');
+	$query->condition('uid',$uid,'=');
+	$query->condition('type','forum','=');
+	$query->addExpression('COUNT(nid)', 'posts_count');
+	$result = $query->execute();
+
+	if ($record = $result->fetchAssoc())
+		return $record['posts_count'];
+	 
+	return 0;
+}
+
+/* Get Number of comments for user with id $uid */
+function remove_user_get_user_comments_count($uid) {
+	$query = db_select('comment', 'c');
+	$query->condition('uid',$uid,'=');
+	$query->addExpression('COUNT(cid)', 'comments_count');
+	$result = $query->execute();
+
+	if ($record = $result->fetchAssoc())
+		return $record['comments_count'];
+	 
+	return 0;
+}
+
+/**
+ * Helper function to get the last forum post created by the user.
+ *
+ * @param $account
+ *   User object.
+ *
+ * @return
+ *   Unix timestamp: date of the last forum post.
+ */
+function remove_user_get_user_stats_last_forum_post($uid) {
+	$query = db_select('node', 'n');
+	$query->condition('uid',$uid,'=');
+	$query->condition('type','forum','=');
+	$query->addExpression('MAX(changed)', 'last_timestamp');
+	$result = $query->execute();
+	
+	if($record = $result->fetchField()){
+			return $record;
+	}
+	return 0;
+}
+
+/**
+ * Helper function to get the last post created by the user.
+ *
+ * @param $uid
+ *   User object.
+ *
+ * @return
+ *   Unix timestamp: date of the last node.
+ */
+function remove_user_get_user_stats_last_comment_post($uid) {
+	$query = db_select('comment', 'c');
+	$query->condition('uid',$uid,'=');
+	$query->addExpression('MAX(changed)', 'last_timestamp');
+	$result = $query->execute();
+	
+	if($record = $result->fetchField()){ // Check if we received a valid result or empty
+			return $record;
+	}
+	return 0;
+}
