@@ -3,3 +3,12 @@ span.adminInfoDescription {
 	display:block;
 	float:left;
 }
+
+/*
+* User login form.
+* Needed for correct display in IE.
+*/
+
+#user-login-block-form-fields{
+	width: 15em;
+}
