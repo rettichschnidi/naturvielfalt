@@ -11,7 +11,7 @@
     font-weight: bold;
 }
 
-input#edit-submit {
+#observation_form input#edit-submit {
     background-color: #659560;
     border: 1px solid #457540;
     border-radius: 5px 5px 5px 5px;
