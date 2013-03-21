@@ -47,7 +47,6 @@ stylesheets[all][]        = css/comments.css
 stylesheets[all][]        = css/forms.css
 stylesheets[all][]        = css/fields.css
 stylesheets[all][]        = css/zen_flexigrid.css
-stylesheets[all][]        = css/custom.css
 stylesheets[print][]      = css/print.css
 
 ; Example of adding handheld stylesheets. The iPhone's preferred media type
