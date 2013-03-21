@@ -3,3 +3,61 @@ span.tabulator {
 	display:block;
 	float:left;
 }
+
+div.appearsWrapper{
+	position: relative;
+}
+
+div.spam_appears_0{
+	position: absolute;
+	float:left;
+	opacity: 0.2;
+	background-color: green;
+	width : 200px;
+	z-index: 1;
+	overflow:hidden; 
+	margin-left: 150px;
+	color: #fff;
+	top: 0px;
+	left: 0px;
+	pointer-events: none;
+}
+
+div.spam_appears_0 a:link, 
+div.spam_appears_0 a:visited, 
+div.spam_appears_0 a:hover,
+div.spam_appears_1 a:link, 
+div.spam_appears_1 a:visited, 
+div.spam_appears_1 a:hover { 
+ color: black; 
+ text-decoration: none; 
+} 
+
+div.spam_appears_1{
+	position: absolute;
+	float:left;
+	opacity: 0.2;	
+	background-color : red;
+	width : 200px;
+	z-index: 1;
+	overflow:hidden;	
+	margin-left: 150px;
+	color: #fff;
+	top: 0px;
+	left: 0px;
+	pointer-events: none;
+}
+
+hr.hr_style{
+	border: 0; 
+	height: 1px; 
+	background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image: -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image: -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image: -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	margin:10px 0px 10px 0px;
+}
+
+form#remove-user-confirm input#edit-submit{
+	margin-right: 20px;
+}
