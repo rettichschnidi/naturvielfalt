@@ -71,7 +71,8 @@ function observation_form($observation = false) {
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
-	drupal_add_css('misc/ui/jquery.ui.dialog.css');
+	drupal_add_css('misc/ui/jquery.ui.dialog.css');drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
+	drupal_add_js($observation_path . '/js/tooltip.js');
 	$formcust = "";
 
 	/**
@@ -197,6 +198,16 @@ function observation_form($observation = false) {
 	$species_autocomplete = ($observation['organism']['name_lat'] == '')
 			? t('Maximum 30 search results will be showed')
 			: $observation['organism']['name_lat'];
+	
+	/* Tooltip texts */
+	$tooltip['text']['artengruppe'] = t('Select a specimen group from the dropdown menu to constrain the search.');
+	$tooltip['text']['art'] = t('Search for the specimen by inputing at least 2 chars.');
+	$tooltip['text']['datum'] = t('Date of observation (dd/mm/yyyy)');
+	$tooltip['text']['anzahl'] = t('Number of observed specimens.');
+	$tooltip['text']['observer'] = t('Name of observer (You)');
+	$tooltip['text']['methode'] = t('Select a method for determination from the dropdown menu.');
+	$tooltip['text']['bemerkung'] = t('Provide any additional information.');
+	$tooltip['text']['position'] = t('Precision of place of observation.');
 
 	$formcust .= '<div id="message" style="display: none; height: auto;">
 <div class="messages status"></div>
@@ -215,7 +226,7 @@ function observation_form($observation = false) {
 						.'<td class="observation_title">'
 							.'<label for="artgroup_select">' . t('Filter on species group') . '</label>'
 						.'</td><td>'
-							.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();">'
+							.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();" title="' . $tooltip['text']['artengruppe'] . '" class="qtip_element">'
 								.organism_artgroup_get_all_as_option(
 									false,
 									0,
@@ -226,7 +237,7 @@ function observation_form($observation = false) {
 						.'<td class="observation_title">'
 							.'<label for="organism_autocomplete">' . t('Search for species') . '</label>'
 						.'</td><td>'
-							.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete" type="text" maxlength="64" size="40" value="' . $observation['organism']['name_lang'] . '" /><br />'
+							.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete qtip_element" type="text" maxlength="64" size="40" value="' . $observation['organism']['name_lang'] . '" title="' . $tooltip['text']['art'] . '" /><br />'
 							.'<span id="species_autocomplete">' . $species_autocomplete . '</span>'
 						.'</td>'
 					.'</tr>'
@@ -236,20 +247,20 @@ function observation_form($observation = false) {
 						.'<td class="observation_subtitle">'
 							.'<label for="date">' . t('Date of the obeservation') . '</label>'
 						.'</td><td>'
-							.'<input type="text" id="date" name="date" value="'	. date('d.m.Y', $timestamp) . '" />'
+							.'<input type="text" id="date" name="date" value="'	. date('d.m.Y', $timestamp) . '" title="' . $tooltip['text']['datum'] . '" class="qtip_element" />'
 						.'</td>'
 					.'</tr><tr>'
 						.'<td class="observation_subtitle">'
 							.'<label for="observation_count">' . t('Count of found individuals')	. '</label>'
 						.'</td><td>'
-							.'<input type="text" id="observation_count" name="count" value="' . $observation['observation']['count'] . '" />'
+							.'<input type="text" id="observation_count" name="count" value="' . $observation['observation']['count'] . '" title="' . $tooltip['text']['anzahl'] . '" class="qtip_element" />'
 						.'</td>'
 					.'</tr><tr>'
 						.'<td class="observation_subtitle">'
 							.t('Observer')
-						.'</td><td>'
+						.'</td><td >'
 							.'<input type="hidden" name="observer" value="' . $observation['observation']['observer'] . '" />'
-							.'<input id="observer" disabled="disabled" value="' . $observation['observation']['observer'] . '" />'
+							.'<div class="qtip_wrapper"><div class="qtip_element qtip_overlay" title="' . $tooltip['text']['observer'] . '" ></div><input id="observer" disabled="disabled" value="' . $observation['observation']['observer'] . '" /></div>'
 						.'</td>'
 					.'</tr>'
 				.'</table>';
@@ -263,7 +274,7 @@ function observation_form($observation = false) {
 							<div class="fieldset-wrapper">'
 			. '<div><table id="attributes_table"><tr>' . '<td>'
 			. t('Determination method')
-			. ':</td><td> <select name="determination_method_id" id="determination_method_id">'
+			. ':</td><td> <select name="determination_method_id" id="determination_method_id" title="' . $tooltip['text']['methode'] . '" class="qtip_element">'
 			. organism_artgroup_get_determation_methods(
 				false,
 				true,
@@ -273,7 +284,8 @@ function observation_form($observation = false) {
 			.observation_get_attributes($observation['observation']['id'], true, '<tr><td>#name#', '</td>', '<td>', '</td></tr>')	
 				
 				
-			. '</table></div></div></fieldset>';	
+			. '</table></div></div></fieldset>
+			.<div id="qtipBemerkung" title="' . $tooltip['text']['bemerkung'] . '"></div><div id="qtipPosition" title="' . $tooltip['text']['position'] . '"></div>';	
 	
 	$formcust .= drupal_render($form);
 	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')

@@ -1,3 +1,6 @@
+/*
+* Administrator infos in view of forum topic
+*/
 span.adminInfoDescription {
 	width:150px;
 	display:block;
@@ -11,4 +14,26 @@ span.adminInfoDescription {
 
 #user-login-block-form-fields{
 	width: 15em;
+}
+
+/*
+* qTip styling.
+* Needed for disabled elements.
+*/
+
+div.qtip_wrapper{
+	position: relative;
+}
+div.qtip_overlay{
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: .1;
+	background-color: blue;
+	z-index: 1;
+	width:80px;
+	height:20px;
+}
+input#observer{
+	z-index: -10000;
 }
