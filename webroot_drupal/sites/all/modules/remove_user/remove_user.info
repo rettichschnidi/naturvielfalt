@@ -1,0 +1,11 @@
+; $Id$
+name = Remove user
+description = Removes a user together with all his comments and nodes
+core = 7.x
+package = Administration
+dependencies[] = user
+dependencies[] = comment
+stylesheets[all][] = remove_user.css 
+;above should be changed for drupal 8+
+;files[] = remove_user.module
+;configure = admin/config/content/example

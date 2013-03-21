@@ -1,7 +1,4 @@
 <?php
-
-
-
 $PATH = $_SERVER['DOCUMENT_ROOT'];  //Webroot holen
 $imageDirPath = $PATH.'/sites/all/themes/zen_swissmon/images/banner/'; // Zum Ordner mit den Bannern wechseln
 
@@ -9,7 +6,7 @@ $files=array();
 $imageDir = opendir($imageDirPath); // Ordner mit Bannern öffnen
 
 while ($f = readdir($imageDir)){
-	if (eregi("\.gif", $f) || eregi("\.jpeg", $f) || eregi("\.jpg", $f) || eregi("\.png", $f)){
+	if (preg_match("/\.gif/i", $f) || preg_match("/\.jpeg/i", $f) || preg_match("/\.jpg/i", $f) || preg_match("/\.png/i", $f)){
 		array_push($files, "$f");
 	}
 }
@@ -23,28 +20,28 @@ if (empty($bannerNr)){
 	echo $a;
 }
 
-if (eregi("\.gif", $files[$bannerNr])){
+if (preg_match("/\.gif/i", $files[$bannerNr])){
 	header("Content-type: image/gif");
 	$image = imagecreatefromgif($imageDirPath.$files[$bannerNr]);
 	imagegif($image);
 	imagedestroy($image);
 }
 
-if (eregi("\.jpeg", $files[$bannerNr])){
+if (preg_match("/\.jpeg/i", $files[$bannerNr])){
 	header("Content-type: image/jpg");
 	$image = imagecreatefromjpeg($imageDirPath.$files[$bannerNr]);
 	imagejpeg($image);
 	imagedestroy($image);
 }
 
-if (eregi("\.jpg", $files[$bannerNr])){
+if (preg_match("/\.jpg/i", $files[$bannerNr])){
 	header("Content-type: image/jpg");
 	$image = imagecreatefromjpeg($imageDirPath.$files[$bannerNr]);
 	imagejpeg($image);
 	imagedestroy($image);
 }
 
-if (eregi("\.png", $files[$bannerNr])){
+if (preg_match("/\.png/i", $files[$bannerNr])){
 	header("Content-type: image/png");
 	$image = imagecreatefrompng($imageDirPath.$files[$bannerNr]);
 	imagepng($image);

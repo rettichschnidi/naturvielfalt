@@ -422,5 +422,131 @@ function zen_swissmon_preprocess_user_login_block(&$vars) {
   $vars['pass'] = render($vars['form']['pass']);
   $vars['submit'] = render($vars['form']['actions']['submit']);
   $vars['rendered'] = drupal_render_children($vars['form']);
+  
 }
 
+/** http://drupal.org/project/user_stats
+ * Get Number of forum posts for user with id $uid 
+**/
+function zen_swissmon_get_user_posts_count($uid) {
+	$query = db_select('node', 'n');
+	$query->condition('uid',$uid,'=');
+	$query->condition('type','forum','=');
+	$query->addExpression('COUNT(nid)', 'posts_count');
+	$result = $query->execute();
+
+	if ($record = $result->fetchAssoc())
+		return $record['posts_count'];
+	 
+	return 0;
+}
+
+/** 
+ * Get Number of comments for user with id $uid 
+ * */
+function zen_swissmon_get_user_comments_count($uid) {
+	$query = db_select('comment', 'c');
+	$query->condition('uid',$uid,'=');
+	$query->addExpression('COUNT(cid)', 'comments_count');
+	$result = $query->execute();
+
+	if ($record = $result->fetchAssoc())
+		return $record['comments_count'];
+	 
+	return 0;
+}
+
+/**
+ * Helper function to get the last forum post created by the user.
+ *
+ * @param $account
+ *   User object.
+ *
+ * @return
+ *   Unix timestamp: date of the last forum post.
+ */
+function zen_swissmon_get_user_stats_last_forum_post($uid) {
+	$query = db_select('node', 'n');
+	$query->condition('uid',$uid,'=');
+	$query->condition('type','forum','=');
+	$query->addExpression('MAX(changed)', 'last_timestamp');
+	$result = $query->execute();
+	
+	if($record = $result->fetchField()){
+			return $record;
+	}
+	return 0;
+}
+
+/**
+ * Helper function to get the last post created by the user.
+ *
+ * @param $uid
+ *   User object.
+ *
+ * @return
+ *   Unix timestamp: date of the last node.
+ */
+function zen_swissmon_get_user_stats_last_comment_post($uid) {
+	$query = db_select('comment', 'c');
+	$query->condition('uid',$uid,'=');
+	$query->addExpression('MAX(changed)', 'last_timestamp');
+	$result = $query->execute();
+	
+	if($record = $result->fetchField()){ // Check if we received a valid result or empty
+			return $record;
+	}
+	return 0;
+}
+
+/**
+ * Implements hook_preprocess_user_profile()
+ * Creates array for display on user profile page with number of posts for user
+ * and for admin users also displays user email address that was used to sign up.
+ * 
+ * @param unknown $variables
+ */
+function zen_swissmon_preprocess_user_profile(&$variables) {
+	// Fetch relevant user account
+	$account = $variables['elements']['#account'];
+	
+	$nr_of_posts = zen_swissmon_get_user_posts_count($account->uid);
+	$variables['user_profile']['posts'] = _zen_swissmon_createArray('posts', 'Posts', $nr_of_posts);
+	
+	if (is_array($account->roles) && in_array('administrator', $account->roles)) {
+		$variables['user_profile']['initmail'] = _zen_swissmon_createArray('initmail', 'Mail', $account->init);
+	}
+}
+
+/**
+ * Helper function to prepare new outout to show in User Profile view.
+ * 
+ * @param unknown $variable
+ * @param unknown $title
+ * @param unknown $text
+ * @return Ambigous <string, multitype:multitype: , multitype:string , Ambigous <The, A, Optional>>
+ */
+function _zen_swissmon_createArray($variable, $title, $text){
+	$output = array(
+			'#theme' => 'field',
+			'#title' => t($title),
+			'#label_display' => 'above',
+			'#entity_type' => '',
+			'#language' => 'und',
+			'#view_mode' => 'full',
+			'#field_name' => 'field_' . $variable,
+			'#field_type' => '',
+			'#formatter' => '',
+			'#items' => array
+			(
+					array
+					(
+					)
+			),
+			'#access' => 'true',
+			'#bundle' => '',
+			'0' => array( '#markup' => '<span class="text-display-single">' . t($text) .'</span>')
+	);
+	$form["'. $variable.'"] = $output;
+	return $form["'. $variable.'"];
+}
