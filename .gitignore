@@ -20,3 +20,5 @@ various/iphone_dbdump/config/database.php
 *.csv#
 webroot_drupal/sites/all/modules/potx/
 webroot_drupal/sites/default/files/simpletest/
+
+webroot_drupal/sites/default/files/witzig/trust_you.css
