@@ -9,7 +9,7 @@
  * because a user may connect through an anonymizing proxy, or may be in
  * an unusual case, such as getting service from a neighboring country,
  * or using an IP block leased from a company in another country.
- * Additionaly, users accessing a server on a local network may be using
+ * Additionally, users accessing a server on a local network may be using
  * an IP that is not assigned to any country (e.g. 192.168.x.x).
  *
  * @author Tim Rohaly.    <http://drupal.org/user/202830>
@@ -45,7 +45,7 @@ function ip2country_test_menu() {
   $items = array();
 
   $items['admin/config/location/ip2country'] = array(
-    'title'            => 'IP to Country Settings',
+    'title'            => 'IP to Country settings',
     'description'      => 'Configure the IP/Country settings',
     'access arguments' => array('administer ip2country'),
     'page callback'    => 'drupal_get_form',
@@ -54,14 +54,14 @@ function ip2country_test_menu() {
     'file'             => 'ip2country.admin.inc',
   );
   $items['admin/config/location/ip2country/update'] = array(
-    'title'            => 'Update Database',
+    'title'            => 'Update database',
     'access arguments' => array('administer ip2country'),
     'page callback'    => '_ip2country_update',
     'type'             => MENU_CALLBACK,
     'file'             => 'ip2country.admin.inc',
   );
   $items['admin/config/location/ip2country/lookup'] = array(
-    'title'            => 'Lookup IP Address in Database',
+    'title'            => 'Lookup IP address in database',
     'access arguments' => array('administer ip2country'),
     'page callback'    => '_ip2country_lookup',
     'type'             => MENU_CALLBACK,
