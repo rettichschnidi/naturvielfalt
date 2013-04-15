@@ -273,7 +273,9 @@ function observation_save($observation_data = false, $custom_data = false, $from
 function observation_export() {
 	// check if user is logged in
 	global $user;
-	if (!isset($user)) {
+//	if (!isset($user)) {
+//	if ($user->uid == 0) {
+	if (!user_is_logged_in()) {
 		$output['success'] = false;
 		$output['message'] = t('Please log in first');
 		return drupal_json_output($output);
@@ -339,8 +341,10 @@ function observation_export() {
  */
 function observation_delete() {
 	global $user;
-	if (!isset($user)) {
-		$output['success'] = false;
+//	if (!isset($user)) {
+	if ($user->uid == 0) {
+		$output['success'] = true;
+		$output['type'] = 'error';
 		$output['message'] = t('Please log in first');
 		return drupal_json_output($output);
 	}
@@ -542,7 +546,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			: '';
 		
 		// zoom in
-		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');" />';
+		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
 				
 		// translated organism name
 		if (empty($row['cell']['organism_l']))
@@ -582,7 +586,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_id'],
 			array(
 				'icons' => array(
-					'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');">',
+					'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');window.scrollTo(0,0);">',
+					$row['cell']['zoominColumn'],
 					$row['cell']['showColumn'],
 					$row['cell']['editColumn'],
 					$row['cell']['selectColumn']

@@ -71,7 +71,8 @@ function observation_form($observation = false) {
 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
-	drupal_add_css('misc/ui/jquery.ui.dialog.css');drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
+	drupal_add_css('misc/ui/jquery.ui.dialog.css');
+//	drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
 	drupal_add_js($observation_path . '/js/tooltip.js');
 	$formcust = "";
 
