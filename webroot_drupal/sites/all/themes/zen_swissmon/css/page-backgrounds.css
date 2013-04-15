@@ -22,7 +22,7 @@ body {
 #header {
   background-color:#C0C0C0;
   background-repeat:no-repeat;
-  background-image:url('/sites/all/themes/zen_swissmon/banner.php');
+  background-image:url('/sites/all/themes/zen_swissmon/bgimg.php');
   background-size:1200px 80px;
   background-position:bottom;
 }
