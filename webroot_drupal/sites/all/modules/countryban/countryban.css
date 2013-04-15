@@ -1,0 +1,8 @@
+
+#countryban-admin .form-radios .form-item {
+  float: left;
+  width: 33%;
+  display: inline;
+  border-bottom:1px solid white;
+  padding-bottom: 10px;
+}

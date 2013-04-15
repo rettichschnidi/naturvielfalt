@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Update hooks.
+ */
+
+/**
+ * Drop countryban_iptocountry table.
+ */
+function countryban_update_1() {
+  db_drop_table('countryban_iptocountry');
+  return t('countryban_iptocountry table dropped.');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function countryban_uninstall() {
+  // Remove the module from the system table
+  db_delete('variable')
+  ->condition('name', 'countryban_%', 'LIKE')
+  ->execute();
+}

@@ -1,0 +1,5 @@
+name = Country Ban
+description = Set countries to read only or ban them entirely.
+;dependencies[] = countries_api
+dependencies[] = ip2country
+core = 7.x

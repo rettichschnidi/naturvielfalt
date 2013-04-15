@@ -1,0 +1,195 @@
+<?php
+
+/**
+ * @file
+ * Ban users based on the country associated with their IP address.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function countryban_permission() {
+  return array(
+    'ignore countryban' => array(
+      'title' => t('ignore countryban'),
+      'description' => t('Bypass country ban settings'),
+    ),
+  );
+}
+
+/**
+ * Country Ban administration settings.
+ *
+ * @return
+ *   Forms for administrator to set configuration options.
+ */
+function countryban_admin($form, &$form_state) {
+  $form = array();
+  $form['countryban_accounts_disabled_message'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Accounts disabled message'),
+    '#default_value' => variable_get('countryban_accounts_disabled_message', t('Account access is currently disabled.')),
+    '#size' => 60,
+    '#weight' => -10,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+  );
+
+  $form['countryban_readonly_message'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Read only message'),
+    '#default_value' => variable_get('countryban_readonly_message', t('This form is currently disabled.')),
+    '#size' => 60,
+    '#weight' => -10,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+  );
+
+  $form['countryban_completeban_message'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Complete ban message'),
+    '#default_value' => variable_get('countryban_completeban_message', t('Access denied.')),
+    '#size' => 60,
+    '#weight' => -9,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+  );
+
+  // TODO - add in option to configure list of forms to protect.
+
+  include_once DRUPAL_ROOT . '/includes/locale.inc';
+  $countries = country_get_list();
+  foreach ($countries as $country_code => $country_name) {
+    $variable_name = 'countryban_' . $country_code;
+    $form[$variable_name] = array(
+      '#type' => 'radios',
+      '#title' => t($country_name),
+      '#default_value' => variable_get($variable_name, 0),
+      '#options' => array(0 => t('No Ban'), 1 => t('Read Only'), 2 => t('Complete Ban')),
+    );
+  }
+
+  $path = drupal_get_path('module', 'countryban');
+  drupal_add_css($path . '/countryban.css', array('preprocess' => FALSE));
+
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function countryban_menu() {
+  $items = array();
+  $items['admin/config/people/countryban'] = array(
+    'title' => 'Country Ban',
+    'description' => 'Set countries to read only or ban them entirely.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('countryban_admin'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ *
+ * Prevent user from creating new account.
+ */
+function countryban_form_user_register_form_alter(&$form, &$form_state) {
+  if (!user_access('ignore countryban')) {
+    $banvalue = countryban_get_banned_level();
+    if ($banvalue) {
+      drupal_access_denied();
+      module_invoke_all('exit');
+      exit();
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function countryban_form_alter(&$form, &$form_state, $form_id) {
+  $form['countryban'] = array(
+    '#type' => 'hidden',
+    '#element_validate' => array('_countryban_form_validate'),
+  );
+}
+
+/**
+ * Validation handler for forms.
+ *
+ * Every time a form is submitted, check if the user has read-only access or
+ * not.
+ */
+function _countryban_form_validate($element, &$form_state) {
+  if (!user_access('ignore countryban')) {
+    $banvalue = countryban_get_banned_level();
+    if ($banvalue) {
+      $message = check_plain(variable_get('countryban_readonly_message', t('This form is currently disabled.')));
+      form_set_error('', $message);
+    }
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ *
+ * Logout banned users on login.
+ */
+function countryban_user_login(&$edit, $account) {
+  if (!user_access('ignore countryban')) {
+    $banvalue = countryban_get_banned_level();
+    if ($banvalue) {
+      $message = check_plain(variable_get('countryban_accounts_disabled_message', t('Account access is currently disabled.')));
+      drupal_set_message($message, 'error');
+      user_logout();
+    }
+  }
+}
+
+/**
+ * Implements hook_init().
+ */
+function countryban_init() {
+  if (!user_access('ignore countryban')) {
+    $banvalue = countryban_get_banned_level();
+    // Allow access to 'user/login' in case its the main admin - suppress all other pages.
+    if ($banvalue == 2 && $_GET['q'] != 'user/login') {
+      header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
+      $message = check_plain(variable_get('countryban_completeban_message', t('Access denied.')));
+      echo('<p>' . $message . '</p>');
+      exit();
+    }
+  }
+}
+
+/**
+ * Return the banned level for the current user.
+ *
+ * @return
+ *   0 : No ban
+ *   1 : Read only
+ *   2 : Complete ban
+ */
+function countryban_get_banned_level() {
+  // If ip2country_debug enabled, use test IP / country details.
+  if (user_access('administer ip2country') && variable_get('ip2country_debug', FALSE)) {
+    $type = variable_get('ip2country_test_type', 0);
+    if ($type == 0) {  // Debug Country entered.
+      $country_code = variable_get('ip2country_test_country', 'US');
+    }
+    else {  // Debug IP entered.
+      $ip = variable_get('ip2country_test_ip_address', ip_address());
+      $country_code = ip2country_get_country($ip);
+    }
+  }
+  // Otherwise, proceed as normal.
+  else {
+    $ip = ip_address();
+    $country_code = ip2country_get_country($ip);
+  }
+  return variable_get('countryban_' . $country_code, 0);
+}
+
