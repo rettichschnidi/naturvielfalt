@@ -9,7 +9,7 @@
  * because a user may connect through an anonymizing proxy, or may be in
  * an unusual case, such as getting service from a neighboring country,
  * or using an IP block leased from a company in another country.
- * Additionaly, users accessing a server on a local network may be using
+ * Additionally, users accessing a server on a local network may be using
  * an IP that is not assigned to any country (e.g. 192.168.x.x).
  *
  * Country determination occurs upon user login.  If a country can be
@@ -22,7 +22,7 @@
  * one of the 5 official Regional Internet Registries (RIR) responsible
  * for assigning IP addresses.  The claim is the database is 98% accurate,
  * with most of the problems coming from users in less-developed countries.
- * Regardless, there's no more-authoritive source of this information.
+ * Regardless, there's no more-authoritative source of this information.
  *
  * @author Tim Rohaly.    <http://drupal.org/user/202830>
  */
@@ -46,7 +46,7 @@ include_once DRUPAL_ROOT . '/includes/locale.inc';
  */
 function _ip2country_update($rir) {
 
-  // Update DB from RIR
+  // Update DB from RIR.
   ip2country_update_database($rir);
 
   if (variable_get('ip2country_watchdog', 1)) {
@@ -74,7 +74,7 @@ function _ip2country_update($rir) {
  */
 function _ip2country_lookup($arg) {
 
-  // Return results of manual lookup
+  // Return results of manual lookup.
   $country_code = ip2country_get_country($arg);
   if ($country_code) {
     $country_list = country_get_list();
@@ -110,29 +110,29 @@ function _ip2country_lookup($arg) {
  * @see ip2country_admin_settings_submit()
  * @ingroup forms
  */
-function ip2country_admin_settings(&$form_state) {
+function ip2country_admin_settings() {
   drupal_add_js(drupal_get_path('module', 'ip2country') . '/ip2country.js');
   drupal_add_css(drupal_get_path('module', 'ip2country') . '/ip2country.css');
 
-  // Define submit handler function
+  // Define submit handler function.
   $form['#submit'][] = 'ip2country_admin_settings_submit';
 
-  // Container for database update preference forms
+  // Container for database update preference forms.
   $form['ip2country_database_update'] = array(
     '#type'         => 'fieldset',
-    '#title'        => t('Database Updates'),
+    '#title'        => t('Database updates'),
     '#collapsible'  => FALSE,
     '#collapsed'    => FALSE,
   );
 
-  // Form to enable watchdog logging of updates
+  // Form to enable watchdog logging of updates.
   $form['ip2country_database_update']['ip2country_watchdog'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Log database updates to watchdog'),
     '#default_value' => variable_get('ip2country_watchdog', 1),
   );
 
-  // Form to choose RIR
+  // Form to choose RIR.
   $form['ip2country_database_update']['ip2country_rir'] = array(
     '#type'          => 'select',
     '#title'         => t('Regional Internet Registry to use'),
@@ -143,7 +143,7 @@ function ip2country_admin_settings(&$form_state) {
 
   $period = drupal_map_assoc(array(86400, 302400, 604800, 1209600, 2419200), 'format_interval');
 
-  // Form to set automatic update interval
+  // Form to set automatic update interval.
   $form['ip2country_database_update']['ip2country_update_interval'] = array(
     '#type'          => 'select',
     '#title'         => t('Database update frequency'),
@@ -160,7 +160,7 @@ function ip2country_admin_settings(&$form_state) {
     $message = t('Database is empty.  You may fill the database by pressing the @update button.', array('@update' => t('Update')));
   }
 
-  // Form to initiate manual updating of the IP-Country database
+  // Form to initiate manual updating of the IP-Country database.
   $form['ip2country_database_update']['ip2country_update_database'] = array(
     '#type'        => 'button',
     '#value'       => t('Update'),
@@ -169,23 +169,23 @@ function ip2country_admin_settings(&$form_state) {
     '#suffix'      => '<span id="dbthrobber" class="message">' . $message . '</span>',
   );
 
-  // Container for manual lookup
+  // Container for manual lookup.
   $form['ip2country_manual_lookup'] = array(
     '#type'        => 'fieldset',
-    '#title'       => t('Manual Lookup'),
+    '#title'       => t('Manual lookup'),
     '#description' => t('Examine database values'),
     '#collapsible' => FALSE,
     '#collapsed'   => FALSE,
   );
 
-  // Form for IP address for manual lookup
+  // Form for IP address for manual lookup.
   $form['ip2country_manual_lookup']['ip2country_lookup'] = array(
     '#type'        => 'textfield',
-    '#title'       => t('Manual Lookup'),
+    '#title'       => t('Manual lookup'),
     '#description' => t('Enter IP address'),
   );
 
-  // Form to initiate manual lookup
+  // Form to initiate manual lookup.
   $form['ip2country_manual_lookup']['ip2country_lookup_button'] = array(
     '#type'        => 'button',
     '#value'       => t('Lookup'),
@@ -194,24 +194,24 @@ function ip2country_admin_settings(&$form_state) {
     '#suffix'      => '<span id="lookup-message" class="message"></span>',
   );
 
-  // Container for debugging preference forms
+  // Container for debugging preference forms.
   $form['ip2country_debug_preferences'] = array(
     '#type'        => 'fieldset',
-    '#title'       => t('Debug Preferences'),
+    '#title'       => t('Debug preferences'),
     '#description' => t('Set debugging values'),
     '#collapsible' => FALSE,
     '#collapsed'   => FALSE,
   );
 
-  // Form to turn on debugging
+  // Form to turn on debugging.
   $form['ip2country_debug_preferences']['ip2country_debug'] = array(
     '#type'          => 'checkbox',
-    '#title'         => t('Admin Debug'),
+    '#title'         => t('Admin debug'),
     '#default_value' => variable_get('ip2country_debug', FALSE),
     '#description'   => t('Enables administrator to spoof an IP Address or Country for debugging purposes.'),
   );
 
-  // Form to select Dummy Country or Dummy IP Address for testing
+  // Form to select Dummy Country or Dummy IP Address for testing.
   $form['ip2country_debug_preferences']['ip2country_test_type'] = array(
     '#type'          => 'radios',
     '#title'         => t('Select which parameter to spoof'),
@@ -222,7 +222,7 @@ function ip2country_admin_settings(&$form_state) {
   $default_country = variable_get('ip2country_test_country',
                                   ip2country_get_country(ip_address()));
 
-  // Form to enter Country to spoof
+  // Form to enter Country to spoof.
   $form['ip2country_debug_preferences']['ip2country_test_country'] = array(
     '#type'          => 'select',
     '#title'         => t('Country to use for testing'),
@@ -230,7 +230,7 @@ function ip2country_admin_settings(&$form_state) {
     '#options'       => country_get_list(),
   );
 
-  // Form to enter IP address to spoof
+  // Form to enter IP address to spoof.
   $form['ip2country_debug_preferences']['ip2country_test_ip_address'] = array(
     '#type'          => 'textfield',
     '#title'         => t('IP address to use for testing'),
@@ -249,21 +249,23 @@ function ip2country_admin_settings(&$form_state) {
 function ip2country_admin_settings_submit($form, &$form_state) {
   global $user;
 
-  // Exclude unnecessary elements from being saved in variable table
-  unset($form_state['values']['ip2country_update_database'],
-        $form_state['values']['ip2country_lookup'],
-        $form_state['values']['ip2country_lookup_button']);
+  // Exclude unnecessary elements from being saved in variable table.
+  unset(
+    $form_state['values']['ip2country_update_database'],
+    $form_state['values']['ip2country_lookup'],
+    $form_state['values']['ip2country_lookup_button']
+  );
 
-  // Check to see if debug set
+  // Check to see if debug set.
   if ($form_state['values']['ip2country_debug']) {
-    // Debug on
+    // Debug on.
     if ($form_state['values']['ip2country_test_type']) {
-      // Dummy IP Address
+      // Dummy IP Address.
       $ip = $form_state['values']['ip2country_test_ip_address'];
       $country_code = ip2country_get_country($ip);
     }
     else {
-      // Dummy Country
+      // Dummy Country.
       $country_code = $form_state['values']['ip2country_test_country'];
     }
     $country_list = country_get_list();
@@ -271,15 +273,15 @@ function ip2country_admin_settings_submit($form, &$form_state) {
     drupal_set_message(t('Using DEBUG value for Country - @country (@code)', array('@country' => $country_name, '@code'    => $country_code)));
   }
   else {
-    // Debug off - make sure we set/reset IP/Country to their real values
+    // Debug off - make sure we set/reset IP/Country to their real values.
     $ip = ip_address();
     $country_code = ip2country_get_country($ip);
     drupal_set_message(t('Using ACTUAL value for Country - @country', array('@country' => $country_code)));
   }
 
-  // Finally, save country, if it has been determined
+  // Finally, save country, if it has been determined.
   if ($country_code) {
-    // Store the ISO country code in the $user object
+    // Store the ISO country code in the $user object.
     user_save($user, array('country_iso_code_2' => $country_code));
   }
 }
