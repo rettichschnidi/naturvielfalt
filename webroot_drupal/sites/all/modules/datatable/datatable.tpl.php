@@ -25,14 +25,25 @@ drupal_add_css(
  * add javascript files
  */
 
-drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js');
-drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js');
-drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable.js');
-
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/flexigrid.js',
+	array(
+		'weight' => 10
+	));
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/lib/jquery.cookie.js',
+	array(
+		'weight' => 11
+	));
+drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable.js',
+	array(
+		'weight' => 12
+	));
 
 if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 	// add all libraries needed by the gallery (rating, lightbox...)
-	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_gallery_addon.js');
+	drupal_add_js(drupal_get_path('module', 'datatable') . '/js/datatable_gallery_addon.js',
+		array(
+			'weight' => 25
+		));
 	drupal_add_css(drupal_get_path('module', 'datatable') . '/css/datatable_gallery_addon.css');
 
 	drupal_add_library('system', 'ui.widget');
