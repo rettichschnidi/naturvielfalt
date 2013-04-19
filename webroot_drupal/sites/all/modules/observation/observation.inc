@@ -687,7 +687,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'idField' => true,
 			'dbfield' => 'id',
 			'hide' => true,
-			'width' => 30,
+			'width' => 30
 	);
 
 	global $base_url;
@@ -697,158 +697,158 @@ function observation_get_standard_datatable_headers($init_sort = false,
 		'name' => '<input class="gridSelect" type="checkbox" disabled />',
 		'dbfield' => 'selectColumn',
 		'width' => 20,			
-		'noSort' => true,
+		'noSort' => true
 	);
 	
 	$tableHeader[] = array(
 		'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom.png" />',
 		'dbfield' => 'showColumn',
 		'width' => 16,
-		'noSort' => true,
+		'noSort' => true
 	);
 
 	$tableHeader[] = array(
 		'name' => '<img src="' . $iconBaseUrl . 'disabled/Modify.png" />',
 		'dbfield' => 'editColumn',
 		'width' => 16,
-		'noSort' => true,
+		'noSort' => true
 	);
 		
 	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
-			'dbfield' => 'zoominColumn',
-			'width' => 16,
-			'noSort' => true,
+		'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
+		'dbfield' => 'zoominColumn',
+		'width' => 16,
+		'noSort' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Picture'),
 			'dbfield' => 'thumbnail',
 			'width' => 80,
-			'noSort' => true,
+			'noSort' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Common name'),
 			'dbfield' => 'organism_l',
 			'width' => 250,
-			'dbExactField' => 'ol.name',
+			'dbExactField' => 'ol.name'
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Scientific name'),
 			'dbfield' => 'organism_sc',
 			'width' => 250,
-			'dbExactField' => 'scientific_name',
+			'dbExactField' => 'scientific_name'
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Artgroup'),
 			'dbfield' => 'artgroup_n',
-			'width' => 250,
-			'hide' => true,
-			'dbExactField' => 'oa.name'
+			'width' => 100,
+			'dbExactField' => 'oa.name',
+/*			'hide' => true					// Albert will nun alle Spalten standardmässig anzeigen lassen (19. April 2013) */
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Date'),
 			'dbfield' => 'date',
-			'width' => 60,
+			'width' => 60
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('X Coordinate'),
 			'dbfield' => 'ch1903_center_x',
-			'width' => 115,
-			'hide' => true
+			'width' => 90,
+//			'hide' => true
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Y Coordinate'),
 			'dbfield' => 'ch1903_center_y',
-			'width' => 115,
-			'hide' => true
+			'width' => 90,
+//			'hide' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
 			'width' => 60,
-			'hide' => true,
 			'dbExactField' => 'a_s.altitude',
+//			'hide' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
-			'width' => 150,
-			'hide' => true,
+			'width' => 120,
 			'dbExactField' => 'a_s.township',
+//			'hide' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
 			'width' => 40,
-			'hide' => true,
 			'dbExactField' => 'a_s.canton',
+//			'hide' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
-			'width' => 180,
-			'hide' => true,
+			'width' => 120,
 			'dbExactField' => 'a_s.country',
+//			'hide' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Observer'),
 			'dbfield' => 'observer',
-			'width' => 120,
-			'hide' => true,
+			'width' => 100,
 			'dbExactField' => 'o.observer',
-			'exportAlways' => true
+			'exportAlways' => true,
+//			'hide' => true
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Comment'),
 			'dbfield' => 'comment',
-			'width' => 120,
-			'hide' => true,
-			'dbExactField' => 'oattr.value'
+			'width' => 200,
+			'dbExactField' => 'oattr.value',
+//			'hide' => true,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Number of pictures'),
 			'dbfield' => 'imagescount',
 			'width' => 20,
-			'hide' => true,
-			'noSort' => true,
+			'noSort' => true			// alle "Number of (pictures|videos|sounds|documents)" sind momentan nicht sortierbar, weil keine Tabellen-Felder
+//			'hide' => true,
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Number of videos'),
 			'dbfield' => 'videoscount',
 			'width' => 20,
-			'hide' => true,
-			'noSort' => true,
+//			'hide' => true,
+			'noSort' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Number of sounds'),
 			'dbfield' => 'soundscount',
 			'width' => 20,
-			'hide' => true,
-			'noSort' => true,
+//			'hide' => true,
+			'noSort' => true
 	);
 
 	$tableHeader[] = array(
 			'name' => t('Number of documents'),
 			'dbfield' => 'documentscount',
 			'width' => 20,
-			'hide' => true,
-			'noSort' => true,
+//			'hide' => true,
+			'noSort' => true
 	);
 
 	if ($init_sort && $init_sort2) {
