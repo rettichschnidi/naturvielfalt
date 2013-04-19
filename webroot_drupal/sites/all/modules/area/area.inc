@@ -936,18 +936,47 @@ function area_get_geocode_info($longitude = false, $latitude = false,
 		$jsondata['elevationData'] = $elevationData;
 		return $jsondata;
 	}
-
+	
+	// get the correct values for 'zip', 'country', 'township' and 'canton'
+	$myArray[] = array('zip', 'postal_code','long_name');
+	$myArray[] = array('country', 'country','short_name');
+	$myArray[] = array('township', 'locality','long_name');
+	$myArray[] = array('canton', 'administrative_area_level_1','short_name');
+	
+	$output = getCorrectValues($jsondata, $myArray);
+	
 	$output['coordinate'] = '[[' . $latitude . ',' . $longitude . ']]';
-	$output['zip'] = check_plain(
+/*	$output['zip'] = check_plain(
 		$jsondata['results'][0]['address_components'][6]['long_name']);
 	$output['canton'] = check_plain(
 		$jsondata['results'][0]['address_components'][4]['long_name']);
 	$output['country'] = check_plain(
 		$jsondata['results'][0]['address_components'][5]['long_name']);
 	$output['township'] = check_plain(
-		$jsondata['results'][0]['address_components'][2]['long_name']);
+		$jsondata['results'][0]['address_components'][2]['long_name']);	*/
 	$output['altitude'] = intval($elevationData['results'][0]['elevation']);
 	$output['area_points'] = $output['coordinate'];
 	$output['marker'] = 'marker';
+	return $output;
+}
+
+// helper function used in area_get_geocode_info() to always return the correct values,
+// since the data from the Google Maps API sometimes contains stuff like street number and sometimes not.
+// for example the previous solution (in the comment block in area_get_geocode_info() above) sometimes returned country instead of zip, township instead of country etc.
+function getCorrectValues($jsondata, $myArr) {
+	$myCount = count($myArr);	// speed up the for loop
+	for ($a = 0; $a < $myCount; $a++) {
+		$myResultsCount = count($jsondata['results']);	// speed up the for loop
+		for ($i = 0; $i < $myResultsCount; $i++) {	// go through every result block to get the correct values
+			$myAddrCompsCount = count($jsondata['results'][$i]['address_components']);		// speed up the for loop
+			for ($j = 0; $j < $myAddrCompsCount; $j++) {
+				if ($jsondata['results'][$i]['address_components'][$j]['types'][0] === $myArr[$a][1] ) {
+					//echo "{$myArr[$a][0]}: " . $jsondata['results'][$i]['address_components'][$j][$myArr[$a][2]] . " -> found in results[$i][address_components][$j]<br>\n";
+					$output[$myArr[$a][0]] = check_plain($jsondata['results'][$i]['address_components'][$j][$myArr[$a][2]]);
+					break 2;	// we found what we were looking for so continue with the next $myArr record
+				}
+			}
+		}
+	}
 	return $output;
 }
