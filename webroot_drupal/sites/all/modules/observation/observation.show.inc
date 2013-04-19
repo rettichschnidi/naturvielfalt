@@ -8,6 +8,7 @@ module_load_include('inc', 'datatable');
  * @return render array
  */
 function observation_show_all_observations() {
+	global $user;
 
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_css($observation_path . '/css/observation.css');
@@ -46,7 +47,7 @@ function observation_show_all_observations() {
 
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
-		'#header'   => observation_get_standard_datatable_headers(8, 'desc'),
+		'#header'   => observation_get_standard_datatable_headers(9, 'desc'),
 		'#title'    => t('Observations'),
 		'#id_table' => 'observations',
 		'#options'  => array(
@@ -62,7 +63,7 @@ function observation_show_all_observations() {
 				}',
 			'rpShowAll'             => true,
 			'preProcessHandler'     => 'observation.tablePreProcess',
-			'onSuccessHandler'      => 'observation.onTableSuccess',
+			'onSuccessHandler'      => ( ($user->uid == 0) ? '' : 'observation.onTableSuccess' ),	/* only show the delete and export buttons if user is logged in */
 			'gallery_enabled'       => true,
 			'gallery_image_sources' => array(
 				'selected'  => array(
