@@ -274,9 +274,9 @@ function observation_export() {
 	// check if user is logged in
 	global $user;
 //	if (!isset($user)) {
-//	if ($user->uid == 0) {
-	if (!user_is_logged_in()) {
+	if ($user->uid == 0) {
 		$output['success'] = false;
+		$output['type'] = 'error';
 		$output['message'] = t('Please log in first');
 		return drupal_json_output($output);
 	}
@@ -290,8 +290,17 @@ function observation_export() {
 	
 	// get header data
 	$headers = observation_get_standard_datatable_headers();
-	if (isset($_REQUEST['col']))
-		$columns = filter_xss($_REQUEST['col']);
+	if (isset($_REQUEST['col'])) {
+		if (is_array($_REQUEST['col'])) {
+			$adummy = $_REQUEST['col'];
+			$columns = array();
+			for ($i = 0; $i < count($adummy); $i++)
+				$columns[] = filter_xss($adummy[$i]);
+		}
+		else {
+			$columns = filter_xss($_REQUEST['col']);
+		}
+	}
 	else {
 		// if no columns are set, export all columns
 		$columns = array();
@@ -316,22 +325,43 @@ function observation_export() {
 			$csv_output .= '"' . $header['name'] . '",';
 		}
 	}
-	echo substr($csv_output, 0, -1) . "\n";
+	//echo substr($csv_output, 0, -1) . "\n";
+	$ausgabe = substr($csv_output, 0, -1) . "\n";
 	
 	// get all observation data, and echo requested columns in a csv format
 	// if no observation ids are set, get all observations
 	// observation_get_tabledata checks for read access
-	$observation_ids = (isset($_REQUEST['oid']))
+/*	$observation_ids = (isset($_REQUEST['oid']))
 		? filter_xss($_REQUEST['oid'])
 		: NULL;
+*/	
+	$observation_ids = NULL;	// default value if no ids are set
+	if (isset($_REQUEST['oid'])) {
+		if (is_array($_REQUEST['oid'])) {
+			$adummy = $_REQUEST['oid'];
+			$observation_ids = array();
+			for ($i = 0; $i < count($adummy); $i++)
+				$observation_ids[] = filter_xss($adummy[$i]);
+		}
+		else {
+			$observation_ids = filter_xss($_REQUEST['oid']);
+		}
+	}
 	
 	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids);
 	foreach ($observationdata['rows'] as $observationrow) {
 		$csv_output = '';
-		foreach ($dbFields as $dbField)
-			$csv_output .= '"' . $observationrow['cell'][$dbField] . '",';
-		echo substr($csv_output, 0, -1) . "\n";
+		foreach ($dbFields as $dbField) {
+			$feld = mb_convert_encoding($observationrow['cell'][$dbField], 'pass', 'HTML-ENTITIES');
+			$feld = str_replace('"', "''", $feld); // replace double quotes with two single quotes to make it look the same and still be csv compatible
+			//$feld = str_replace(";", "", $feld); // if exported with IE then Excel doesn't like semikolons
+			$csv_output .= '"' . $feld . '",';
+		}
+		$ausgabe .= substr($csv_output, 0, -1) . "\n";
 	}
+
+	$ausgabe = mb_convert_encoding($ausgabe, 'pass', 'UTF-8');
+	echo $ausgabe;
 }
 
 /**
@@ -343,7 +373,7 @@ function observation_delete() {
 	global $user;
 //	if (!isset($user)) {
 	if ($user->uid == 0) {
-		$output['success'] = true;
+		$output['success'] = false;
 		$output['type'] = 'error';
 		$output['message'] = t('Please log in first');
 		return drupal_json_output($output);
