@@ -285,8 +285,8 @@ function observation_form($observation = false) {
 			.observation_get_attributes($observation['observation']['id'], true, '<tr><td>#name#', '</td>', '<td>', '</td></tr>')	
 				
 				
-			. '</table></div></div></fieldset>
-			.<div id="qtipBemerkung" title="' . $tooltip['text']['bemerkung'] . '"></div><div id="qtipPosition" title="' . $tooltip['text']['position'] . '"></div>';	
+			. '</table></div></div></fieldset>'
+			. '<div id="qtipBemerkung" title="' . $tooltip['text']['bemerkung'] . '"></div><div id="qtipPosition" title="' . $tooltip['text']['position'] . '"></div>';	
 	
 	$formcust .= drupal_render($form);
 	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')
