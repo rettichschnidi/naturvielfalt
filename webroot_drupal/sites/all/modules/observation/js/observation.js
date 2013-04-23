@@ -641,7 +641,7 @@ jQuery(document).ready(function() {
 	 */
 	observation.resetOrganism = function() {
 		$('#organismn_id').val('');
-		$('#species_autocomplete').html('');
+		//$('#species_autocomplete').html('');
 		$('#observation_found_as_latin').val('false');
 		$('#observation_found_as_lang').val('false');
 		observation.hideAttributes();
