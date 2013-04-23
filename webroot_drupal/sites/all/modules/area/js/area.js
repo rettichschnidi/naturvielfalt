@@ -998,7 +998,7 @@ getAddress = function(latlng, callback) {
 					address.zip = result.address_components[0].long_name;
 					address.locality = result.address_components[1].long_name;
 					address.canton = result.address_components[length - 2].short_name;
-					address.country = result.address_components[length - 1].long_name;
+					address.country = result.address_components[length - 1].short_name;
 				}
 				if (result.types == 'locality,political') {
 					address.township = result.address_components[0].long_name;
