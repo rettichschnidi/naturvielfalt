@@ -200,11 +200,11 @@ function observation_form($observation = false) {
 			: $observation['organism']['name_lat'];
 	
 	/* Tooltip texts */
-	$tooltip['text']['artengruppe'] = ''; // t('Select a specimen group from the dropdown menu to constrain the search.');
+	$tooltip['text']['artengruppe'] = t('Select a specimen group from the dropdown menu to constrain the search.');
 	$tooltip['text']['art'] = t('Search for the specimen by inputing at least 2 chars.');
-	$tooltip['text']['datum'] = ''; // t('Date of observation (dd/mm/yyyy)');
-	$tooltip['text']['anzahl'] = ''; // t('Number of observed specimens.');
-	$tooltip['text']['observer'] = ''; // t('Name of observer (You)');
+	$tooltip['text']['datum'] = t('Date of observation (dd/mm/yyyy)');
+	$tooltip['text']['anzahl'] = t('Number of observed specimens.');
+	$tooltip['text']['observer'] = t('Name of observer (You)');
 	$tooltip['text']['methode'] = t('Select a method for determination from the dropdown menu.');
 	$tooltip['text']['bemerkung'] = t('Provide any additional information.');
 	$tooltip['text']['position'] = t('Precision of place of observation.');
