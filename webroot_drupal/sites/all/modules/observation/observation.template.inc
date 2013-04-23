@@ -186,10 +186,9 @@ function observation_form($observation = false) {
 				<p>' . t('Allowed files endings are: ') . $file_extensions . '</p>
 			</div>
 			
-			<input type="submit" value="' . t('Save') . '" id="picture_upload_submit" />
 		</div>
 	</div>
-</fieldset>';
+</fieldset><input type="submit" value="' . t('Save') . '" id="picture_upload_submit" /><br />';
 
 	$file_list['files'] = gallery_implementation_files_table(
 		'observation',
