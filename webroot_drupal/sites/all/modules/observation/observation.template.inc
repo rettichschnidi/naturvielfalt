@@ -288,9 +288,8 @@ function observation_form($observation = false) {
 			. '<div id="qtipBemerkung" title="' . $tooltip['text']['bemerkung'] . '"></div><div id="qtipPosition" title="' . $tooltip['text']['position'] . '"></div>';	
 	
 	$formcust .= drupal_render($form);
-	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')
-			. '" name="op" id="edit-submit">'
-			. '<div style="display: none;" id="message"><div class="messages"></div></div>'
+//	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')	. '" name="op" id="edit-submit" />';
+	$formcust .= '<div style="display: none;" id="message"><div class="messages"></div></div>'
 			. $image . drupal_render($file_list) . '</form>' . '</div>';
 
 	$recent['recent_observation'] = array(
