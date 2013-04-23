@@ -90,6 +90,9 @@ input#acl_submit {
 #attributes_table {
 	margin-left: 19px;
 }
+#attributes_Bemerkung {
+	width: 350px;
+}
 #observation-show-details {
 	float: left;
 	width: 400px;
