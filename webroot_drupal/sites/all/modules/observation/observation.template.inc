@@ -265,7 +265,7 @@ function observation_form($observation = false) {
 					.'</tr>'
 				.'</table>';
 
-	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper collapsed">
+	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper">
 							<legend>
 							<span class="fieldset-legend">'
 			. t('Add more details')
