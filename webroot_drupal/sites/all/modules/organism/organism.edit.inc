@@ -76,8 +76,8 @@ function organism_edit_file($form, &$form_state) {
 		$nid = db_insert('organism_file_managed')->fields(
 				array('organism_id' => $organism_id,
 						'file_managed_fid' => $file->fid,
-						'description' => $form_state['values']['file_description'],
-						'author' => $form_state['values']['author']
+						'description' => check_plain($form_state['values']['file_description']),
+						'author' => check_plain($form_state['values']['author'])
 				))
 			->execute();
 		drupal_set_message(t('File saved'));
@@ -97,12 +97,14 @@ function organism_delete_file($form, &$form_state, $organism_id, $file_id) {
 		->fields('ofm', array('description'));
 	$query->join('file_managed', 'fm', 'fm.fid = ofm.file_managed_fid');
 	$query->fields('fm', array('filename'));
-	$query->condition('fm.uid', $user->uid);
+	// make sure administrators can delete every file -> if user != admin only allow to delete their own files
+	if (!user_access('bypass node access'))
+		$query->condition('fm.uid', $user->uid);
 	$file = $query->execute()
 		->fetch();
-
+	
 	$form_state['organism_id'] = $organism_id;
-	$form_state['file_id'] = $file_id;
+	$form_state['file_id'] = ($file) ? $file_id : '';	// !!! this prevents non-fileowners from deleting a file if they know the correct address
 
 	$name = $file->description ? $file->description : $file->filename;
 	return confirm_form(
@@ -120,7 +122,7 @@ function organism_delete_file_submit($form, &$form_state) {
 	$organism_id = $form_state['organism_id'];
 	$file_id = $form_state['file_id'];
 
-	$file = file_load($file_id);
+	$file = ($file_id != '') ? file_load($file_id) : false;		// !!! also needs this line to prevent file deletion if not owner of the file to be deleted
 	if($file) {
 		file_delete($file);
 		db_delete('organism_file_managed')->condition('organism_id', $organism_id)
@@ -128,7 +130,7 @@ function organism_delete_file_submit($form, &$form_state) {
 		->execute();
 		drupal_set_message(t('The file was successfully deleted!'));
 	} else {
-		drupal_set_message(t('The file could not be deleted!'));
+		drupal_set_message(t('The file could not be deleted!'), 'error');
 	}
 	$form_state['redirect'] = 'organism/' . $organism_id . '/edit';
 }

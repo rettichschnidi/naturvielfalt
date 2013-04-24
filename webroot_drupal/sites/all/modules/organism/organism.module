@@ -358,6 +358,7 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 			fm.timestamp,
 			fm.fid,
 			fm.filesize,
+			fm.uid,
 			ofm.description,
 			ofm.author
 		FROM
@@ -365,11 +366,9 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 			{file_managed} fm
 		WHERE
 			fm.fid = ofm.file_managed_fid
-            AND ofm.organism_id = :id
-  			AND fm.uid = :uid;',
+            AND ofm.organism_id = :id;',
 		array(
-			':id' => $organism_id,
-			':uid' => $user->uid
+			':id' => $organism_id
 		)
 	);
 
@@ -394,9 +393,18 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 				.' />'
 			;
 			$filemime = $img_mime;
-			$filesize = ($record->filesize / 1024) . " KB";
+			$filesize = intval($record->filesize / 1024) . " KB";
 			$timestamp = date('d.m.Y', $record->timestamp);
 			$author = isset($record->author) ? $record->author : '';
+			$owner = db_query("SELECT name FROM {users} WHERE uid = :owner_uid", array(':owner_uid' => $record->uid))->fetchField();
+			
+			$link_img_delete = ( (user_access('bypass node access')) || ($user->uid === $record->uid) )
+				? l(
+					$img_delete,
+					'organism/' . $organism_id . '/delete_file/' . $record->fid,
+						array('html' => true)
+					)
+				: '';
 			
 			$row = array();
 			$row[] = $description;
@@ -405,12 +413,8 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 			$row[] = $filesize;
 			$row[] = $timestamp;
 			$row[] = $author;
-			$row[] = $user->name;
-			$row[] = l(
-				$img_delete,
-				'organism/' . $organism_id . '/delete_file/' . $record->fid,
-				array('html' => true)
-			);
+			$row[] = $owner;
+			$row[] = $link_img_delete;
 			
 			$rows[] = $row;
 		}
