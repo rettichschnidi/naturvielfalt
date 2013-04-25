@@ -384,8 +384,8 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 			$description = $record->description;
 			$filename = l(
 				$record->filename,
-				'sites/default/files/naturvielfalt/organism/' . $organism_id . '/' . $record->filename
-			);
+				'http://naturvielfalt.ch/sites/default/files/naturvielfalt/organism/' . $organism_id . '/' . $record->filename
+			);	// mit voller Adresse inkl. http werden die Files in einem neuen Fenster bzw. Tab geöffnet
 
 			$img_delete = '<img'
 				.' src="' . url(drupal_get_path('module', 'commonstuff') . '/images/can_delete.png') . '"'
