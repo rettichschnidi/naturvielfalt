@@ -468,7 +468,7 @@ jQuery(document).ready(function() {
 			// on add, clear form 
 			if (!responseText.update) {
 				$('#observation_form').trigger('reset');
-				$('#species_autocomplete').html('');
+				$('#species_autocomplete').html('Es werden maximal 30 Suchresultate angezeigt');
 				observation.hideAttributes();
 				observation.hideDetMethods();
 				observationmap.newOverlay.overlay.setMap(null);
