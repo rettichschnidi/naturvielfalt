@@ -64,7 +64,7 @@ function organism_show_classifiers() {
 		$species = format_plural($classifier->organismcount_cnt, '1 Species', '@count Species');
 		$list['#links'][] = array(
 				'title' => $title . ' (' . $species . ')',
-				'href' => 'organism/classification/' . $classifier->oc_id,
+				'href' => 'organism/classification/' . $classifier->oc_id
 		);
 	}
 	$render_array['classifiers'] = $list;
@@ -176,6 +176,22 @@ function organism_show_classification($classificationid) {
 	$classificationleveldata = organism_get_available_classification_levels(
 		$classificationid);
 
+	$organismsTableHeader[] = array(
+			'name' => t('Common name'),
+			'dbfield' => 'ol_name',
+			'dbExactField' => 'ol_name',
+			'hide' => false,
+			'width' => 180
+	);
+	
+	$organismsTableHeader[] = array(
+			'name' => t('Scientific name'),
+			'dbfield' => 'scientific_name',
+			'dbExactField' => 'scientific_name',
+			'hide' => false,
+			'width' => 300
+	);
+	
 	foreach ($classificationleveldata as $index => $value) {
 		if ($index == 0) {
 			continue;
@@ -190,31 +206,14 @@ function organism_show_classification($classificationid) {
 				'dbfield' => 'oc_' . $value->name,
 				'dbExactField' => 'oc_' . $value->name,
 				'hide' => false,
-				'width' => 200
+				'width' => 140
 		);
 	}
-
-	$organismsTableHeader[] = array(
-			'name' => t('Scientific name'),
-			'dbfield' => 'scientific_name',
-			'dbExactField' => 'scientific_name',
-			'hide' => false,
-			'width' => 300
-	);
-
-	$organismsTableHeader[] = array(
-			'name' => t('Common name'),
-			'dbfield' => 'ol_name',
-			'dbExactField' => 'ol_name',
-			'hide' => false,
-			'width' => 200
-	);
 
 	$organismsTableHeader[] = array(
 			'name' => t('Number of pictures'),
 			'dbfield' => 'imagescount',
 			'width' => 20,
-			'hide' => true,
 			'noSort' => true,
 	);
 
@@ -222,7 +221,6 @@ function organism_show_classification($classificationid) {
 			'name' => t('Number of videos'),
 			'dbfield' => 'videoscount',
 			'width' => 20,
-			'hide' => true,
 			'noSort' => true,
 	);
 
@@ -230,7 +228,6 @@ function organism_show_classification($classificationid) {
 			'name' => t('Number of sounds'),
 			'dbfield' => 'soundscount',
 			'width' => 20,
-			'hide' => true,
 			'noSort' => true,
 	);
 
@@ -238,7 +235,6 @@ function organism_show_classification($classificationid) {
 			'name' => t('Number of documents'),
 			'dbfield' => 'documentscount',
 			'width' => 20,
-			'hide' => true,
 			'noSort' => true,
 	);
 
@@ -290,6 +286,7 @@ function organism_show_classification($classificationid) {
  */
 function organism_show_organism($organismdata) {
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
+	drupal_add_js('jQuery(document).ready(function () { jQuery("#files a").attr("target", "_blank"); });', 'inline');
 	global $user;
 	global $language;
 	$current_language = isset($user->language) && !empty($user->language)
