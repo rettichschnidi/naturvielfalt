@@ -448,7 +448,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	$sql['dbColumns'] = array(
 		'o.id AS id',
 		'o.organism_artgroup_id AS artgroup_id',
-		'o.observer AS observer',
+		'usrs.name AS observer',
 		'o.date AS date',
 		'o.count AS count',
 		'o.acl_id AS acl_id',
@@ -469,7 +469,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$sql['dbSearchColumns'] = array(
 		'o.id',
-		'o.observer',
+//		'o.observer',
 		'o.date',
 		'o.count',
 		'o.organism_id',
@@ -482,7 +482,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'org.scientific_name',
 		'ol.name',
 		'oa.name',
-		'oattr.value'
+		'oattr.value',
+		'usrs.name'
 	);
 	
 	$sql['dbTable'] = '{observation} o';
@@ -494,6 +495,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
 		// FIXME get more attributes than just Bemerkung
 		.' LEFT JOIN {observation_attribute} oattr ON oattr.observation_id=o.id AND oattr.organism_artgroup_attr_id=2'
+		.' JOIN {users} usrs ON usrs.uid=o.users_uid'
 	;
 	
 	if ($observation_ids != NULL) {
