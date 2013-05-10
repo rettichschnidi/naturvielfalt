@@ -157,13 +157,14 @@ function area_show_specific_area($areadata = NULL) {
 	drupal_add_js('misc/collapse.js');
 	drupal_set_title($areadata['name']);
 
+	//TODO: DELETE
 	/* call area_get_static_image_url() to get an url to the google maps visualization */
-	$staticimageurl = area_get_static_image_url(
-		array('coordinates' => json_encode($areadata['coordinatejson']),
-				'type' => $areadata['geometry_type']
-		),
-		450,
-		320);
+// 	$staticimageurl = area_get_static_image_url(
+// 		array('coordinates' => json_encode($areadata['coordinatejson']),
+// 				'type' => $areadata['geometry_type']
+// 		),
+// 		450,
+// 		320);
 
 	/* Create a fieldset for the tabular data */
 	$output['area'] = array(
@@ -176,7 +177,7 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* Create a fieldset for the static google maps */
-	$output['area_static_map'] = array(
+	$output['area_map'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
 			'#weight' => 3,
@@ -186,9 +187,20 @@ function area_show_specific_area($areadata = NULL) {
 	);
 
 	/* add the picture */
-	$output['area_static_map']['image'] = array(
-			'#type' => 'markup',
-			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
+// 	$output['area_map']['image'] = array(
+// 			'#type' => 'markup',
+// 			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
+// 	);
+	
+	$output['area_map']['map'] = array(
+			'#theme' => 'area',
+			'#showall' => false,
+			'#scalecontrol' => true,
+			'#action' => 'show',
+			'#reticle' => false,
+			'#geometry_edit_id' => (int) $areadata['id'],
+			'#defaultzoom' => '15',
+			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
 	);
 
 	/* Create a fieldset for the comment text field */

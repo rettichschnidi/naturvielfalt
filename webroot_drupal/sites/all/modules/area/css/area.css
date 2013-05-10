@@ -1,10 +1,11 @@
 #area-show-details {
 	float: left;
-	width: 400px;
+	width: 440px;
 }
 
 #area-show-map {
 	float: right;
+	width: 440px;
 }
 
 #area-show-comment {
@@ -13,11 +14,12 @@
 
 #area-edit-details {
 	float: left;
-	width: 400px;
+	width: 440px;
 }
 
 #area-edit-map {
 	float: right;
+	width: 440px;
 }
 
 #area-edit-comment {

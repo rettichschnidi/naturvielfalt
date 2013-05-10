@@ -81,10 +81,13 @@ function Area(options) {
 					this_.loadGeometriesAndOverlaysFromJson(data);
 					if(this_.options.geometryedit)
 						this_.geometryEdit(this_.options.geometryeditid);
+					if(this_.options.showandcenter)
+						this_.showAndCenter(this_.options.geometryeditid);
 				}
 			);
 	}
 	this.createDrawingManagerGetcoordinate(this.options.getcoordinate);
+
 };
 
 /**
@@ -121,6 +124,7 @@ Area.prototype.mapTypeSwitch = function(enable) {
 Area.prototype.loadLastLocation = function(enable) {
 	var googlemap = this.googlemap;
 	if(enable) {
+		
 		if (window.localStorage) {
 			var bounds = window.localStorage.getItem('naturvielfalt_ne_lat');
 			if (bounds != null) {
@@ -344,7 +348,7 @@ Area.prototype.showInfoWindow = function(id) {
 			infowindow.close();
 			infowindow.setContent(data);
 			infowindow.open(this_.googlemap, this_.overlaysArray[id]);
-			jQuery(data)
+			jQuery(data);
 		});
 		
 		infowindow.open(this.googlemap, this.overlaysArray[id]);
@@ -479,7 +483,7 @@ Area.prototype.loadGeometriesAndOverlaysFromJson = function(json) {
 Area.prototype.clearOverlays = function() {
 	for (var i in this.overlaysArray)
 		this.overlaysArray[i].setMap();
-}
+};
 
 /**
  * Create and show the drawing manager
@@ -746,6 +750,20 @@ Area.prototype.createSearchbarCH1903 = function(enable) {
 };
 
 /**
+ * Only show and center map.
+ * 
+ * @param geometryId Integer
+ * 	Id of the overlay to edit.
+ */
+Area.prototype.showAndCenter = function(geometryId) {
+	var position = this.overlaysArray[geometryId].getPosition();
+	
+	this.googlemap.setCenter(position);
+	this.googlemap.setZoom(this.options.googlemapsoptions.zoom);
+};
+	
+
+/**
  * Edit an existing geometry.
  * 
  * @param geometryId Integer
@@ -908,8 +926,6 @@ Area.prototype.createReticle = function(enable) {
 		google.maps.event.addListener(this.googlemap, 'center_changed', function() { // change even to e.g. idle if needed
 			reticleoverlay.draw();
 		});
-	} else {
-		alert("Not implemented!");
 	}
 };
 
@@ -982,7 +998,7 @@ Area.prototype.createDrawingManagerGetcoordinate = function(enable) {
  * @param callback
  *            callback function
  */
-getAddress = function(latlng, callback) {
+getAddress = function(latlng, callback) {	
 	var geocoder = new google.maps.Geocoder();
 
 	geocoder.geocode({'latLng' : latlng }, function(results, status) {

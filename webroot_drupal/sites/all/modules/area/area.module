@@ -29,7 +29,7 @@ function area_menu() {
 	/* Show all available areas */
 	$items['area'] = array(
 			'title' => t('All areas'),
-			'description' => t('Show all areas'),
+			'description' => t('Show'),
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
 					'areas/show'
@@ -40,7 +40,7 @@ function area_menu() {
 	/* Show all available areas */
 	$items['areas/show'] = array(
 			'title' => t('All areas'),
-			'description' => t('Show all areas'),
+			'description' => t('Show'),
 			'page callback' => 'area_show_all_areas',
 			'page arguments' => array(
 					false
@@ -212,7 +212,7 @@ function area_menu() {
 
 	/* Show a specific area */
 	$items['area/%area/show'] = array(
-			'title' => t('Show area'),
+			'title' => t('Show'),
 			'description' => t('Show a specific area'),
 			'page arguments' => array(
 					1
@@ -231,7 +231,7 @@ function area_menu() {
 
 	/* Edit an area */
 	$items['area/%area/edit'] = array(
-			'title' => t('Edit area details'),
+			'title' => t('Edit'),
 			'description' => t('Edit details of an existing area.'),
 			'page callback' => 'area_edit',
 			'page arguments' => array(
@@ -248,29 +248,9 @@ function area_menu() {
 			'weight' => 2
 	);
 
-	/* Edit an area geometry */
-	$items['area/%area/editgeometry'] = array(
-			'title' => t('Edit geometry'),
-			'description' => t('Edit the geometry of an existing geometry.'),
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'area_edit_geometry_form',
-					1
-			),
-			'access arguments' => array(
-					1,
-					'ACL_WRITE'
-			),
-			'access callback' => 'area_check_access',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.edit.inc',
-			'weight' => 3
-	);
-
 	/* Delete an area */
 	$items['area/%area/delete'] = array(
-			'title' => t('Delete area'),
+			'title' => t('Delete'),
 			'description' => t('Delete an existing area.'),
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array(

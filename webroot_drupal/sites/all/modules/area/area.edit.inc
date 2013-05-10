@@ -9,29 +9,34 @@ module_load_include('inc', 'area', 'area');
 
 /**
  * Create a form which lets the user edit the geometry of an area.
- * 
+ *
  * @param array $form
  *  Drupal form
  * @param $form_state
  *  An associative array containing the current state of the form.
  * @param $areadata
  * 	Array with area data
- */
-function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
-	$output['helptext'] = array(
-			'#type' => 'markup',
-			'#markup' => t(
-				'<p>Please note: Changes will be saved instantly.</p>')
-	);
-	$output['map'] = array(
-			'#theme' => 'area',
-			'#showall' => false,
-			'#scalecontrol' => true,
-			'#action' => 'edit',
-			'#geometry_edit_id' => (int) $areadata['id'],
-			'#geometry_update_url' => base_path() . 'area/'
-						. $areadata['id'] . '/updategeometry/json',
-			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
+*/
+
+/**
+ * Return a form which allows all textual data of an area to be edited.
+ *
+ * @param array $form
+ *  Drupal form
+ * @param array $form_state
+ *  An associative array containing the current state of the form.
+ * @param array $areadata
+*/
+function area_edit($areadata = NULL) {
+	assert(!empty($areadata));
+	drupal_set_title($areadata['name']);
+	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
+	$output['area'] = drupal_get_form('area_edit_form', $areadata);
+	$output['file']['upload'] = drupal_get_form(
+			'area_edit_files_form',
+			$areadata);
+	$output['safetynet'] = array(
+			'#theme' => 'commonstuff.safetynet'
 	);
 	return $output;
 }
@@ -45,42 +50,7 @@ function area_edit_geometry_form($form, &$form_state, $areadata = NULL) {
  *  An associative array containing the current state of the form.
  * @param array $areadata
  */
-function area_edit($areadata = NULL) {
-	assert(!empty($areadata));
-	drupal_set_title($areadata['name']);
-	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
-	$output['area'] = drupal_get_form('area_edit_form', $areadata);
-	$output['file']['upload'] = drupal_get_form(
-		'area_edit_files_form',
-		$areadata);
-	$output['safetynet'] = array(
-			'#theme' => 'commonstuff.safetynet'
-	);
-	return $output;
-}
-
-/**
- * Return a form which allows all textual data of an area to be edited.
- * 
- * @param array $form
- *  Drupal form
- * @param array $form_state
- *  An associative array containing the current state of the form.
- * @param array $areadata
- */
 function area_edit_form($form, &$form_state, $areadata = NULL) {
-	/* call area_get_static_image_url() to get an url to the google maps visualization */
-	$staticimageurl = area_get_static_image_url(
-		array('coordinates' => json_encode($areadata['coordinatejson']),
-				'type' => $areadata['geometry_type']
-		),
-		450,
-		320);
-	$editgeometryurl = l(
-		"<img src='$staticimageurl' alt='Static Map'/>",
-		'area/' . $areadata['id'] . '/editgeometry',
-		array('html' => true));
-
 	/* create a fieldset for the tabular data */
 	$form['area_edit'] = array(
 			'#type' => 'fieldset',
@@ -93,6 +63,16 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 
 	/* add a table with the most imporant information, leave out empty fields */
 	$form['area_edit']['table'] = area_get_infotable_of_specific_area($areadata);
+
+	/* add a submit button to save the changes */
+	$form['area_edit']['save'] = array(
+			'#type' => 'submit',
+			'#weight' => 102,
+			'#value' => t('Save Now'),
+			'#submit' => array(
+					'area_edit_save'
+			)
+	);
 
 	/* Create a fieldset for the comment text field */
 	$form['area_description_edit'] = array(
@@ -120,6 +100,15 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 			'#type' => 'textarea',
 			'#title' => t('Description'),
 			'#default_value' => $areadata['comment']
+	);
+
+	$form['area_description_edit']['save'] = array(
+			'#type' => 'submit',
+			'#weight' => 102,
+			'#value' => t('Save'),
+			'#submit' => array(
+					'area_edit_save'
+			)
 	);
 
 	/* create a fieldset for the strategies text fields */
@@ -152,6 +141,16 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 			'#default_value' => $areadata['safety_precautions']
 	);
 
+	/* add a save button */
+	$form['area_concept_edit']['save'] = array(
+			'#type' => 'submit',
+			'#weight' => 101,
+			'#value' => t('Save'),
+			'#submit' => array(
+					'area_edit_save'
+			)
+	);
+
 	/* create a fieldset for the strategies text fields */
 	$form['area_habitats_edit'] = array(
 			'#type' => 'fieldset',
@@ -165,7 +164,7 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 	$form['area_habitats_edit']['table'] = area_edit_habitat($areadata);
 
 	/* create a fieldset for the static google maps */
-	$form['area_static_map'] = array(
+	$form['area_map'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
 			'#weight' => 3,
@@ -174,33 +173,81 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 			)
 	);
 
-	/* add the picture */
-	$form['area_static_map']['image'] = array(
+	$form['area_map']['helptext'] = array(
 			'#type' => 'markup',
-			'#markup' => $editgeometryurl
+			'#markup' => t(
+					'<p>Please note: Changes will be saved instantly.</p>')
+	);
+	$form['area_map']['map'] = array(
+			'#theme' => 'area',
+			'#showall' => false,
+			'#scalecontrol' => true,
+			'#action' => 'edit',
+			'#defaultzoom' => '15',
+			'#geometry_edit_id' => (int) $areadata['id'],
+			'#geometry_update_url' => base_path() . 'area/'
+			. $areadata['id'] . '/updategeometry/json',
+			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
 	);
 
 	if (function_exists('gallery_list_renderer')) {
 		$output['area_videos'] = gallery_list_renderer(
-			'videos',
-			'area',
-			$areadata['id']);
+				'videos',
+				'area',
+				$areadata['id']);
 		$output['area_images'] = gallery_list_renderer(
-			'images',
-			'area',
-			$areadata['id']);
+				'images',
+				'area',
+				$areadata['id']);
 	}
 
 	$form['actions'] = array(
 			'#type' => 'actions'
 	);
-
-	/* add a submit button to save the changes */
-	$form['actions']['submit'] = array(
-			'#type' => 'submit',
-			'#weight' => 101,
-			'#value' => t('Save changes')
+		
+	/* create a fieldset for the strategies text fields */
+	$form['area_permission'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Permission'),
+			'#weight' => 23,
+			'#collapsible' => true,
+			'#collapsed' => true,
 	);
+
+	//TODO add permission to here
+	//if(observation_admin_access($observation)) {
+	if(false) {
+		$aclfieldset =  array(
+				'#type' => 'fieldset',
+				'#title' => t('Permissions'),
+				'#weight' => 99,
+		);
+			
+		$defaults = array(
+				array(
+						'type' => variable_get("ACL_READ"),
+						'name' => t('Read'),
+						'value' => FALSE,
+				),
+				array(
+						'type' => variable_get("ACL_WRITE"),
+						'name' => t('Write'),
+						'value' => FALSE,
+				),
+				array(
+						'type' => variable_get("ACL_ADMIN"),
+						'name' => t('Administration'),
+						'value' => FALSE,
+				)
+		);
+
+		$form['area_permission']['acl'] = array(
+				'#theme' => 'c_acl',
+				'#defaults' => $defaults,
+				'#acl_id' => $areadata['acl_id'],
+				'#add_element' => true,
+		);
+	}
 
 	return $form;
 }
@@ -219,35 +266,35 @@ function area_edit_form_validate($form, &$form_state) {
 
 /**
  * Return a drupal render array with the habitats linked to the given area.
- * 
+ *
  * @param $areadata
  * 	Array with all data about an area
  */
 function area_edit_habitat($areadata = NULL) {
 	$results = db_query(
-		'SELECT
+			'SELECT
 			h.id AS id,
 			h.label AS label,
 			h.name AS name,
 			CASE
-				WHEN ah.id IS NOT NULL
-					THEN 1
-					ELSE 0
-				END
+			WHEN ah.id IS NOT NULL
+			THEN 1
+			ELSE 0
+			END
 			AS selected
-		FROM
+			FROM
 			{habitat} h
 			LEFT JOIN (
-				SELECT
-					id,
-					habitat_id,
-					area_id
-				FROM
-					{area_habitat}
-				WHERE
-					area_id = :areaid
-			) AS ah ON h.id = ah.habitat_id;',
-		array('areaid' => $areadata['id']));
+			SELECT
+			id,
+			habitat_id,
+			area_id
+			FROM
+			{area_habitat}
+			WHERE
+			area_id = :areaid
+	) AS ah ON h.id = ah.habitat_id;',
+			array('areaid' => $areadata['id']));
 
 	$habitats = array();
 	foreach ($results->fetchAll() as $habitatAsObject) {
@@ -293,21 +340,22 @@ function area_edit_habitat($areadata = NULL) {
  * @param array $form_state
  *  An associative array containing the current state of the form.
  */
-function area_edit_form_submit($form, &$form_state) {
+function area_edit_save($form, &$form_state) {
+	
 	/* Escape values before submitting them to the database */
 	$area_id = (int) $form_state['build_info']['args'][0]['id'];
 	$name = filter_xss($form_state['values']['areaname']);
 	$comment = filter_xss($form_state['values']['comment']);
 	$protection_target = filter_xss($form_state['values']['protection_target']);
 	$tending_strategies = filter_xss(
-		$form_state['values']['tending_strategies']);
+			$form_state['values']['tending_strategies']);
 	$safety_precautions = filter_xss(
-		$form_state['values']['safety_precautions']);
+			$form_state['values']['safety_precautions']);
 	$selectedhabitatIds = isset($_POST['selectedhabitats'])
-			? $_POST['selectedhabitats'] : array();
+	? $_POST['selectedhabitats'] : array();
 	// flush all existing area_habitat records for this area...
 	db_delete('area_habitat')->condition('area_id', $area_id)
-		->execute();
+	->execute();
 	// ...and populate them with the current new ones
 	$values = array();
 	$insert = db_insert('area_habitat')->fields(
@@ -323,15 +371,15 @@ function area_edit_form_submit($form, &$form_state) {
 	$insert->execute();
 
 	db_update('area')->fields(
-			array('name' => $name,
-					'comment' => $comment,
-					'protection_target' => $protection_target,
-					'tending_strategies' => $tending_strategies,
-					'safety_precautions' => $safety_precautions,
-					'modify_time' => 'NOW()',
-			))
-		->condition('id', $area_id)
-		->execute();
+	array('name' => $name,
+	'comment' => $comment,
+	'protection_target' => $protection_target,
+	'tending_strategies' => $tending_strategies,
+	'safety_precautions' => $safety_precautions,
+	'modify_time' => 'NOW()',
+	))
+	->condition('id', $area_id)
+	->execute();
 	drupal_set_message(t("Area Saved"));
 }
 
@@ -373,7 +421,7 @@ function area_update_file($form, &$form_state) {
 						'file_managed_fid' => $file->fid,
 						'description' => filter_xss($form_state['values']['file_description'])
 				))
-			->execute();
+				->execute();
 		drupal_set_message(t('File saved'));
 	} else {
 		drupal_set_message(t('File could not be saved!'), 'error');
@@ -422,27 +470,27 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 	$tableHeader[] = '&nbsp;';
 
 	$result = db_query(
-		'SELECT
-				fm.filename,
-				fm.filemime,
-				fm.timestamp,
-				fm.fid,
-				fm.filesize,
-				afm.description
+			'SELECT
+			fm.filename,
+			fm.filemime,
+			fm.timestamp,
+			fm.fid,
+			fm.filesize,
+			afm.description
 			FROM
-				{area_file_managed} AS afm
-				JOIN {file_managed} AS fm ON afm.file_managed_fid = fm.fid
+			{area_file_managed} AS afm
+			JOIN {file_managed} AS fm ON afm.file_managed_fid = fm.fid
 			WHERE
-				afm.area_id = :id;',
-		array(':id' => $area_id));
+			afm.area_id = :id;',
+			array(':id' => $area_id));
 
 	if (!empty($result)) {
 		foreach ($result as $record) {
 			$mimeIconMap = array(
 					'path' => drupal_get_path('module', 'commonstuff')
-							. '/images/'
-							. commonstuff_get_icon_map($record->filemime)
-							. '.png',
+					. '/images/'
+					. commonstuff_get_icon_map($record->filemime)
+					. '.png',
 					'alt' => $record->filemime,
 					'title' => $record->filemime,
 			);
@@ -450,15 +498,15 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 
 			$description = $record->description;
 			$filename = l(
-				$record->filename,
-				'sites/default/files/naturvielfalt/area/' . $area_id . '/'
-						. $record->filename);
+					$record->filename,
+					'sites/default/files/naturvielfalt/area/' . $area_id . '/'
+					. $record->filename);
 
 			$img_delete = '<img src="'
 					. url(
-						drupal_get_path('module', 'commonstuff')
-								. '/images/can_delete.png') . '" alt="'
-					. t('Delete') . '" />';
+							drupal_get_path('module', 'commonstuff')
+							. '/images/can_delete.png') . '" alt="'
+									. t('Delete') . '" />';
 			$filemime = $img_mime;
 			$filesize = ($record->filesize / 1000) . " KB";
 			$timestamp = date('d.m.Y', $record->timestamp);
@@ -469,9 +517,9 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 			$row[] = $filesize;
 			$row[] = $timestamp;
 			$row[] = l(
-				$img_delete,
-				'area/' . $area_id . '/delete_file/' . $record->fid,
-				array('html' => true));
+					$img_delete,
+					'area/' . $area_id . '/delete_file/' . $record->fid,
+					array('html' => true));
 			$rows[] = $row;
 		}
 
@@ -513,7 +561,7 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 
 /**
  * Ask user before deleting an area file.
- * 
+ *
  * @param array $form
  *  Drupal form
  * @param array $form_state
@@ -528,31 +576,31 @@ function area_delete_file($form, &$form_state, $areadata, $file_id) {
 	$query = db_select('area_file_managed', 'afm')->condition(
 			'afm.area_id',
 			$area_id)
-		->condition('afm.file_managed_fid', $file_id)
-		->fields('afm', array('description'));
+			->condition('afm.file_managed_fid', $file_id)
+			->fields('afm', array('description'));
 	$query->join('file_managed', 'fm', 'fm.fid = afm.file_managed_fid');
 	$query->fields('fm', array('filename'));
 	$file = $query->execute()
-		->fetch();
+	->fetch();
 
 	$form_state['area_id'] = $area_id;
 	$form_state['file_id'] = $file_id;
 
 	$name = $file->description ? $file->description : $file->filename;
 	return confirm_form(
-		$form,
-		t('Delete %name?', array('%name' => $name)),
-		'area/' . $area_id . '/edit',
-		t(
-			'Are you sure you want to delete the file %name?',
-			array('%name' => $name)),
-		t('Delete'),
-		t('Cancel'));
+			$form,
+			t('Delete %name?', array('%name' => $name)),
+			'area/' . $area_id . '/edit',
+			t(
+					'Are you sure you want to delete the file %name?',
+					array('%name' => $name)),
+			t('Delete'),
+			t('Cancel'));
 }
 
 /**
  * Delete an area file.
- * 
+ *
  *  * @param array $form
  *  Drupal form
  * @param array $form_state
@@ -568,8 +616,8 @@ function area_delete_file_submit($form, &$form_state) {
 	if ($file) {
 		file_delete($file);
 		db_delete('area_file_managed')->condition('area_id', $area_id)
-			->condition('file_managed_fid', $file_id)
-			->execute();
+		->condition('file_managed_fid', $file_id)
+		->execute();
 		drupal_set_message(t('The file was successfully deleted'));
 	} else {
 		drupal_set_message(t('The file could not be deleted.'), 'error');

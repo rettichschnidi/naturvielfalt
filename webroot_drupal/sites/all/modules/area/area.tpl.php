@@ -71,6 +71,7 @@ if ($ch1903) {
 /**
  * Show a reticle in the middle of the map.
  */
+$reticle_image_url = null;
 if ($reticle) {
 	$reticle_image_url = base_path() . drupal_get_path('module', 'commonstuff')
 			. '/images/reticle.png';
@@ -101,6 +102,7 @@ if ($reticle) {
 				height: '<?php echo $height ?>',
 				drawingmanager: <?php echo $action == 'create' ? 1 : 0 ?>,
 				geometryedit: <?php echo $action == 'edit' ? 1 : 0 ?>,
+				showandcenter: <?php echo $action == 'show' ? 1 : 0 ?>,
 				getcoordinate: <?php echo $action == 'getcoordinate' ? 1 : 0 ?>,
 				geometryeditid: <?php echo $geometry_edit_id ? $geometry_edit_id
 		: 0
