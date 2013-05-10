@@ -118,6 +118,13 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'dbExactField' => 'u.name',
 			'width' => 120
 	);
+	
+	$tableHeader[] = array(
+			'name' => t('Type'),
+			'dbfield' => 'geometry_type',
+			'dbExactField' => 'a_s.geom',
+			'width' => 120
+	);
 
 	$output['space'] = array(
 			'#type' => 'markup',
