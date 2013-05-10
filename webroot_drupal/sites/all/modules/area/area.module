@@ -267,6 +267,16 @@ function area_menu() {
 			'file' => 'area.delete.inc',
 			'weight' => 99
 	);
+	
+	// Delete many areas
+	$items['area/delete'] = array(
+			'title' => t('AreaJSON'),
+			'description' => t('Delete many areas'),
+			'access callback' => TRUE,
+			'page callback' => 'area_delete',
+			'file' => 'area.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
 
 	/* Edit an area */
 	$items['area/%area/permissions'] = array(
@@ -561,6 +571,7 @@ function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
 	}
 	return false;
 }
+
 
 /**
  * Return an array with all required information about an area.

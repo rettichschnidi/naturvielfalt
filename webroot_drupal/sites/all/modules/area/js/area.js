@@ -4,6 +4,140 @@
  * @file area.js
  */
 
+jQuery(document).ready(function() {
+	$ = jQuery;
+	area = {};
+	area.message = $('#message');
+	
+	/**
+	 * Toggle the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.toggleSelectedRows = function(event, status) {
+		alert(Drupal.t('Not implemented yet'));
+	};
+	
+	/**
+	 * Export the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.exportSelectedRows = function(tableId) {
+		alert(Drupal.t('Not implemented yet'));
+	};
+	
+	/**
+	 * Delete the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.deleteSelectedRows = function(tableId) {
+		
+		var $table = $('#' + tableId);
+		if ($table.length < 1)
+			return false;
+		
+		var pathname = window.location.pathname;
+		var area_edit_id = pathname.match(/area\/(\d+)\/edit/);
+		if (area_edit_id != null) {
+			if (area_edit_id.length >= 2)
+				area_edit_id = area_edit_id[1];
+		}
+		else
+			area_edit_id = 0;
+		
+		var redirect = false;
+		var transportData = '';
+		$table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				var area_id = $(this).val();
+				transportData +=area_id + ',';
+				if (area_id == area_edit_id)
+					redirect = true;
+			}
+		});
+		
+		if (transportData.length == '') {
+			alert(Drupal.t('No records selected'));
+			return false;
+		}
+		transportData = '{' + transportData.substring(0,transportData.length-1) + '}';
+			
+		var really = confirm(Drupal.t('Do you really want to delete the selected records?'));
+		if (really){
+			var data = {
+				areas: transportData
+			};
+			
+			var ajaxurl = Drupal.settings.basePath + 'area/delete';
+
+			$.getJSON(ajaxurl, data, function(json){
+				$table.flexReload();
+				area.showDeleteResponse(json);
+				if (redirect) {
+					$.safetynet.suppressed(true);
+					window.location.href = '/areas/show';
+				}
+			});
+		}
+	};
+	
+	/**
+	 * Show the message returned from the deletion request
+	 */
+	area.showDeleteResponse = function(responseText, statusText, xhr, $form)  {
+		alert('show delete response');
+		if(responseText != null && responseText.success == true){
+			area.setMessage(responseText.message, responseText.type, 5000);
+		} else if (responseText != null) {
+			area.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
+		} else {
+			area.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
+		}
+	};
+	
+	/**
+	 * Executed after table is populated
+	 * 
+	 * @param jQuery object flexigrid
+	 */
+	area.onTableSuccess = function(flexigrid) {
+		var tableId = $(flexigrid.bDiv).find('table').first().attr('id');
+		area.displayBatchArea(tableId);
+	};
+	
+	/**
+	 * Display the batch div, holding the select-toggle, delete and export buttons
+	 */
+	area.displayBatchArea = function(tableId) {
+		$flexiDiv = $('#' + tableId).closest('div.flexigrid');
+		
+		if ($flexiDiv.find('.batch-div').length == 0) {
+			$checkbox = $('<input type="checkbox" />');
+			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
+			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
+			$batchDiv = $('<div class="batch-div" />')
+				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
+				.insertBefore($flexiDiv.find('.sDiv'));
+			
+			$checkbox.click(function(event) {
+				area.toggleSelectedRows(event, this.checked);
+			});
+			$btnDeleteSelected.click(function() {
+				area.deleteSelectedRows(tableId);
+			});
+			$btnExportSelected.click(function() {
+				area.exportSelectedRows(tableId);
+			});
+		}
+		else {
+			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
+			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+		}
+	};
+});
+
 /**
  * @Class Contains all the logic to handle a map.
  */

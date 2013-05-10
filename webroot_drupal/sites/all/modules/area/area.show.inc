@@ -14,6 +14,8 @@ module_load_include('inc', 'area', 'area');
  * @return render array
  */
 function area_show_all_areas($onlyMyAreas = false) {
+	global $user;
+	
 	if ($onlyMyAreas) {
 		$output['map'] = array(
 				'#mapid' => 'areamap',
@@ -121,26 +123,59 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'#type' => 'markup',
 			'#markup' => '<p/>'
 	);
-
+					
 	$output['area_table'] = array(
-			'#theme' => 'datatable',
-			'#header' => $tableHeader,
-			'#title' => t('Areas'),
-			'#id_table' => 'areas',
-			'#options' => array(
-					'jsonUrl' => base_path()
-							. ($onlyMyAreas ? "areas/own/datatablejson"
-									: "areas/all/datatablejson"),
-					'rowClick' => 'rowClick',
-					'rowClickHandler' => "function rowClick(celDiv, id) {
+		'#theme'    => 'datatable',
+		'#header'   =>  $tableHeader,
+		'#title'    => t('Areas'),
+		'#id_table' => 'areas',
+		'#options'  => array(
+					'jsonUrl' => base_path() . ($onlyMyAreas ? "areas/own/datatablejson": "areas/all/datatablejson"),
+					'rowClick'              => 'rowClick',
+					'rowClickHandler' 		=> "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
 							function() {
 								areamap.selectGeometry(id);
 							}
 						)
-					}"
-			)
+					}",
+			'rpShowAll'             => true,
+ 			'onSuccessHandler'      => ( ($user->uid == 0) ? '' : 'area.onTableSuccess' ),	/* only show the delete and export buttons if user is logged in */
+// 			'onSuccessHandler'      => 'area.onTableSuccess',
+			// Filters to add to the filterDiv above the table. The gallery image source
+			// filter has a weight of 10, the table/gallery buttons 4 and 5 respectively.
+// 			'custom_filter' => array(
+// 				'acl_filter' => array(
+// 					'#type' => 'select',
+// 					'#name' => 'acl_filter',
+// 					'#title' => t('Areas') . ':',
+// 					'#options' => array(
+// 						'all'       => t('Public'),
+// 						'own'       => t('Own'),
+// 						'writeable' => t('Editables')),
+// 					'#attributes' => array(
+// 						'class' => array('acl_filter')),
+// 					'#weight' => 8
+// 				),
+				// Artgroup filter is made as markup because of white spaces in the options.
+				// Drupal_render converts &nbsp; into &amp;nbsp; and because indenting
+				// options with &nbsp; is the most reliable way, it's done with #markup.
+// 				'artgroup' => array(
+// 					'#type'   => 'markup',
+// 					'#markup' => '
+// 						<div class="form-item form-type-select form-item-artgroup-filter">
+// 							<label>' . t('Artgroup') . ':</label>
+// 							<select name="artgroup_filter" class="artgroup_filter form-select">
+// 								' . organism_artgroup_get_all_as_option() . '
+// 							</select>
+// 						</div>',
+// 					'#weight' => 9
+// 				)
+// 			)
+		)
 	);
+					
+					
 	return $output;
 }
 
