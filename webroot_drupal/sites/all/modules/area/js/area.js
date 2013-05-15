@@ -24,7 +24,42 @@ jQuery(document).ready(function() {
 	 * @param string tableId
 	 */
 	area.exportSelectedRows = function(tableId) {
-		alert(Drupal.t('Not implemented yet'));
+		url = Drupal.settings.basePath + 'area/export?';
+		var $table = $('#' + tableId);
+		if ($table.length < 1)
+			return false;
+		var $flexidiv = $table.closest('div.flexigrid');
+		
+		var areas = '';
+		var $num_areas = 0;
+		$table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				var area_id = $(this).val();
+				areas +=area_id + ',';
+				$num_areas++;
+			}
+		});
+		
+		if (areas.length == '') {
+			alert(Drupal.t('No records selected'));
+			return false;
+		}
+		areas = '(' +areas.substring(0,areas.length-1) + ')';
+		
+		// pass params
+		var gridPrefs = $table[0].p;
+		url += '&areas=' + areas + '&shape=' + "mixed";
+		
+		var really = confirm('There will be ' + $num_areas + ' area(s) exported!');
+		if (really){
+			// load export url in a hidden iframe to get a download prompt
+			var $status = $flexidiv.find('.pPageStat');
+			var oldStatus = $status.text();
+			$status.text(gridPrefs.procmsg);
+			$('<iframe />').attr('src', url).hide().appendTo('body').load(function() {
+				$status.text(oldStatus);
+		});
+		}
 	};
 	
 	/**

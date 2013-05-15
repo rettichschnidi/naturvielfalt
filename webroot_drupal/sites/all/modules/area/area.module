@@ -277,6 +277,16 @@ function area_menu() {
 			'file' => 'area.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
+	// Export one or many areas
+	$items['area/export'] = array(
+			'title' => t('AreaJSON'),
+			'description' => t('Export one or many areas'),
+			'page callback' => 'area_export',
+			'access callback' => TRUE,
+			'file' => 'area.ajax.inc',
+			'type' => MENU_CALLBACK
+	);
 
 	/* Edit an area */
 	$items['area/%area/permissions'] = array(
