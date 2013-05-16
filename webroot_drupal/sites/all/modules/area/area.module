@@ -8,6 +8,10 @@
 define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
 define('AREA_MODERATE', 'area moderate');
+
+define("AREA_PATH_ZIP", "C:\\Program Files\\7-Zip\\");
+define("AREA_PATH_OGR2OGR", "C:\\Program Files (x86)\\FWTools2.4.7\\bin\\");
+
 $area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 		? 'https://' : 'http://';
 
@@ -26,6 +30,8 @@ module_load_include('inc', 'area', 'area.gallery');
  * @return array
  */
 function area_menu() {
+	$items = array();
+		
 	/* Show all available areas */
 	$items['area'] = array(
 			'title' => t('All areas'),

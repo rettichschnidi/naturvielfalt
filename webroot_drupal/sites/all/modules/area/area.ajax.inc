@@ -88,6 +88,7 @@ function area_delete() {
 	return drupal_json_output($output);
 }
 
+
 /**
  * Exports a set of areas.
  * The parameter "columns" is an array of the column indexes to export.
@@ -104,27 +105,30 @@ function area_export() {
 		return drupal_json_output($output);
 	}
 	
+	$failed = true;
+	
 	// get the areas of the request
 	$param = filter_xss($_REQUEST['areas']);
 		
 	$export_id = uniqid();
 	$base_query = "SELECT geom FROM area_geometry a_g, area a WHERE a_g.id = a.area_geometry_id AND a.id in $param AND GeometryType(geom)=";
-	
-	export_shape( "POINT", $base_query, $export_id);
-	export_shape( "LINESTRING", $base_query, $export_id);
-	export_shape( "POLYGON", $base_query, $export_id);;
+
+	export_shape_ogr2ogr( "POINT", $base_query, $export_id);
+	export_shape_ogr2ogr( "LINESTRING", $base_query, $export_id);
+	export_shape_ogr2ogr( "POLYGON", $base_query, $export_id);
 
  	// zip
 	$tempdir = file_directory_temp();
 
-	$cmd = strtr('"C:\Program Files\7-Zip\7z.exe" a %archive %shapefile'
+	$cmd = strtr('"%path7z.exe" a %archive %shapefile'
 			, array(
-					'%archive' => $tempdir .'/'.$export_id .'.zip' ,
-					'%shapefile' => file_directory_temp() .'/'. $export_id.'*.*'
+					'%path' => variable_get('area_path_zip', AREA_PATH_ZIP),
+					'%archive' => $tempdir .'\\'.$export_id .'.zip' ,
+					'%shapefile' => file_directory_temp() .'\\'. $export_id.'*.*'
 			)
 	);
 	
-	$answer = shell_exec($cmd);
+	shell_exec($cmd);
 	
 	// open for return
 	$filename = $tempdir .'/'.$export_id .'.zip'; 
@@ -141,8 +145,7 @@ function area_export() {
 			)
 	);
 	
-	//echo $cmd.'<br>';
-	$answer = shell_exec($cmd);
+	shell_exec($cmd);
 
 	// delete 
 	// TODO use drupal function
@@ -151,34 +154,15 @@ function area_export() {
 					'%files' => file_directory_temp() ."\\". $export_id.'*.*'
 			)
 	);
-	
-	//echo $cmd.'<br>';	
-	$answer = shell_exec($cmd);
-	
-	// log to db (necessary?)
-	
-	$date = "12.05.2013, 11:12:13";
-	$split = explode(', ', $date);
-	$split_date = explode('.', $split[0]);
-	$split_time = explode(':', $split[1]);
-	
-	$unixtime = mktime($split_time[0],$split_time[1],$split_time[2],$split_date[1],$split_date[0],$split_date[2]).'<br>';	
-	echo date("d.m.y G:i:s", $unixtime).'<br>';
-
+	shell_exec($cmd);
 	
 	// set header information
 	header('Content-type: application/zip');
 	header('Content-Disposition: attachment; filename="export.zip"');
 	echo $contents;
-
-// 	header('Content-type: text/plain');
-// 	header('Content-Disposition: attachment; filename="response.text"');
-	
-
 }
 
-function export_shape($geometrytype, $base_query, $export_Id){
-	
+function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 	$query = $base_query."'".$geometrytype."'";
 	
 	// check if there are any shapes at all for this type
@@ -188,22 +172,55 @@ function export_shape($geometrytype, $base_query, $export_Id){
 	{
 		global $databases;
 		
-		$cmd = strtr('%postgresql_bin%exe -f %shapefile -h %host -u %user -P %password %database %query'
+		$cmd = strtr('"%ogr2ogr_pathogr2ogr.exe" -f "ESRI Shapefile" %shapefile "PG:dbname=%database host=%host port=%port user=%user password=%password tables=%tables" -sql  %query'
 				, array(
-						'%postgresql_bin' => '"C:\Program Files (x86)\PostgreSQL\8.4\bin\pgsql2shp'
-						, '%shapefile' => file_directory_temp() .'\\'. $export_Id.$geometrytype
+						'%ogr2ogr_path' => variable_get('area_path_ogr2ogr', AREA_PATH_OGR2OGR)
+						, '%shapefile' => '"'.file_directory_temp() .'\\'. $export_Id.$geometrytype.'.shp"'
 						, '%query' => '"'.$query.'"'
+						, '%port' =>  5432 //TODO
 						, '%host' =>  $databases['default']['default']['host']
 						, '%user' => $databases['default']['default']['username']
 						, '%password' => $databases['default']['default']['password']
 						, '%database' =>  $databases['default']['default']['database']
-						, '%exe' => '.exe"'
+						, '%tables' => 'area_geometry'
 				)
 		);
 		
+		echo  $databases['default']['default']['port'];
+		
 		$cmd = 'echo . | ' . $cmd.' 2>&1';
-	 	//echo $cmd.'<br>';	
-		shell_exec($cmd).'<br>';
+		shell_exec($cmd);
 	}
 }
+
+// Old function with pgsql2shp which files were not importable to ArcGIS
+// function export_shape($geometrytype, $base_query, $export_Id){
+	
+// 	$query = $base_query."'".$geometrytype."'";
+	
+// 	// check if there are any shapes at all for this type
+// 	$result = db_query($query);
+	
+// 	if($result->rowCount() > 0)
+// 	{
+// 		global $databases;
+		
+// 		$cmd = strtr('%postgresql_bin%exe -f %shapefile -h %host -u %user -P %password %database %query'
+// 				, array(
+// 						'%postgresql_bin' => '"C:\Program Files (x86)\PostgreSQL\8.4\bin\pgsql2shp'
+// 						, '%shapefile' => file_directory_temp() .'\\'. $export_Id.$geometrytype
+// 						, '%query' => '"'.$query.'"'
+// 						, '%host' =>  $databases['default']['default']['host']
+// 						, '%user' => $databases['default']['default']['username']
+// 						, '%password' => $databases['default']['default']['password']
+// 						, '%database' =>  $databases['default']['default']['database']
+// 						, '%exe' => '.exe"'
+// 				)
+// 		);
+		
+// 		$cmd = 'echo . | ' . $cmd.' 2>&1';
+// 	 	echo $cmd.'<br>';	
+// 		shell_exec($cmd).'<br>';
+// 	}
+// }
 ?>
