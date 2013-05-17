@@ -1250,11 +1250,11 @@ updateHiddenfields = function(overlay, coordinatestorageid) {
 						overlay.getPosition().lat());
 				jQuery('#hiddenfield-longitude').val(
 						overlay.getPosition().lng());
-				jQuery('#hiddenfield-geometry-type').val(overlay.type);
-				jQuery('#hiddenfield-geometry-coordinates').val(JSON.stringify(overlay.getJsonCoordinates()));
 			});
 	getAltitude(overlay.getPosition(), function(
 			altitude) {
 		jQuery('#hiddenfield-altitude').val(altitude);
+		jQuery('#hiddenfield-geometry-type').val(overlay.type);
+		jQuery('#hiddenfield-geometry-coordinates').val(JSON.stringify(overlay.getJsonCoordinates()));
 	});
 };
