@@ -509,7 +509,7 @@ function area_edit_files_form($form, &$form_state, $areadata) {
 									. t('Delete') . '" />';
 			$filemime = $img_mime;
 			$filesize = ($record->filesize / 1000) . " KB";
-			$timestamp = date('d.m.Y', $record->timestamp);
+			$timestamp = date('d.m.Y H:i:s', $record->timestamp);
 			$row = array();
 			$row[] = $description;
 			$row[] = $filename;

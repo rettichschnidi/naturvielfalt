@@ -313,7 +313,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Date'),
 						'header' => true
 				),
-				date('j.m.Y', $observationdata['observation']['date']),
+				date('d.m.Y H:i:s', $observationdata['observation']['date']),
 		);
 	}
 
@@ -323,7 +323,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Last modification'),
 						'header' => true
 				),
-				date('j.m.Y', $observationdata['observation']['m_time'])
+				date('d.m.Y H:i:s', $observationdata['observation']['m_time'])
 		);
 	}
 

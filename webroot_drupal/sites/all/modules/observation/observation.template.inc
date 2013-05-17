@@ -247,7 +247,7 @@ function observation_form($observation = false) {
 						.'<td class="observation_subtitle">'
 							.'<label for="date">' . t('Date of the obeservation') . '</label>'
 						.'</td><td>'
-							.'<input type="text" id="date" name="date" value="'	. date('d.m.Y', $timestamp) . '" title="' . $tooltip['text']['datum'] . '" class="qtip_element" />'
+							.'<input type="text" id="date" name="date" value="'	. date('d.m.Y H:i:s', $timestamp) . '" title="' . $tooltip['text']['datum'] . '" class="qtip_element" />'
 						.'</td>'
 					.'</tr><tr>'
 						.'<td class="observation_subtitle">'
@@ -373,15 +373,6 @@ function observation_show_observation($observationdata = NULL) {
 		$species .= ' / ' . $observationdata['organism']['name_lang'];
 	drupal_set_title(t('Show observation of <i>@species</i>', array('@species' => check_plain($species))), PASS_THROUGH);
 
-	/* call area_get_static_image_url() to get an url to the google maps visualization */
-	$staticimageurl = area_get_static_image_url(
-		array('coordinates' => json_encode(
-					$observationdata['geometry']['coordinatejson']),
-				'type' => $observationdata['geometry']['geometry_type']
-		),
-		450,
-		320);
-
 	/* Create a fieldset for the tabular data */
 	$output['observation'] = array(
 			'#type' => 'fieldset',
@@ -394,8 +385,8 @@ function observation_show_observation($observationdata = NULL) {
 
 	$output['observation']['table'] = observation_get_table($observationdata);
 
-	/* Create a fieldset for the static google maps */
-	$output['observation_static_map'] = array(
+	/* Create a fieldset for the google maps */
+	$output['observation_map'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
 			'#weight' => 3,
@@ -403,11 +394,19 @@ function observation_show_observation($observationdata = NULL) {
 					'id' => 'observation-show-details-map' // required for CSS
 			)
 	);
-
-	/* add the picture */
-	$output['observation_static_map']['image'] = array(
-			'#type' => 'markup',
-			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
+	
+	$output['observation_map']['map'] = array(
+			'#theme' => 'area',
+			'#mapid' => 'observationmap',
+			'#scalecontrol' => true,
+			'#defaultzoom' => '15',
+			'#reticle' => false,
+			'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform',
+			'#geometries_fetch_url' => base_path() . 'observation/'
+			. $observationdata['observation']['id'] . '/geometry/json',
+			'#geometry_edit_id' => $observationdata['observation']['id'],
+			'#height' => '350px',
+			'#action' => 'show',
 	);
 
 	$output['observation_images'] = gallery_list_renderer(
