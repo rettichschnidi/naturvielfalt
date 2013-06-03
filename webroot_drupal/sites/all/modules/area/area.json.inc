@@ -26,7 +26,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'a_s.canton',
 			'a_s.country',
 			'a_s.zip',
-			'ST_AsGeoJSON(a_s.geom) AS geom',
+			'GeometryType(a_s.geom) AS geometry_type',
 			'u.name AS username'
 	);
 
@@ -62,20 +62,27 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			array(
 				'html' => true
 			));;
+		//TODO, check if write access
 		// edit details
-		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
-			? l(
-				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
-				$base_url . '/area/' . $row['id'] . '/edit',
-				array(
-					'html' => true
-				))
-			: '';
-		// zoom in
+// 		$row['cell']['editColumn'] = (area_write_access_by_acl_id($row['cell']['acl_id']))
+// 			? l(
+// 				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+// 				$base_url . '/area/' . $row['id'] . '/edit',
+// 				array(
+// 					'html' => true
+// 				))
+// 			: '';
+			$row['cell']['editColumn'] = l('<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+					$base_url . '/area/' . $row['id'] . '/edit',
+					array(
+						'html' => true
+					));
+		//zoom in
 		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:areamap.zoomIn(event, ' . $row['id'] . ');" />';
+		
+		// type of area (picture)
+		$row['cell']['geometry_type'] = '<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['geometry_type'] . '.png') . '" alt="'. t('type') . '" />';
 	}
-
-
 
 	return drupal_json_output($output);
 }

@@ -4,6 +4,175 @@
  * @file area.js
  */
 
+jQuery(document).ready(function() {
+	$ = jQuery;
+	area = {};
+	area.message = $('#message');
+	
+	/**
+	 * Toggle the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.toggleSelectedRows = function(event, status) {
+		alert(Drupal.t('Not implemented yet'));
+	};
+	
+	/**
+	 * Export the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.exportSelectedRows = function(tableId) {
+		url = Drupal.settings.basePath + 'area/export?';
+		var $table = $('#' + tableId);
+		if ($table.length < 1)
+			return false;
+		var $flexidiv = $table.closest('div.flexigrid');
+		
+		var areas = '';
+		var $num_areas = 0;
+		$table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				var area_id = $(this).val();
+				areas +=area_id + ',';
+				$num_areas++;
+			}
+		});
+		
+		if (areas.length == '') {
+			alert(Drupal.t('No records selected'));
+			return false;
+		}
+		areas = '(' +areas.substring(0,areas.length-1) + ')';
+		
+		// pass params
+		var gridPrefs = $table[0].p;
+		url += '&areas=' + areas + '&shape=' + "mixed";
+		
+		var really = confirm('There will be ' + $num_areas + ' area(s) exported!');
+		if (really){
+			// load export url in a hidden iframe to get a download prompt
+			var $status = $flexidiv.find('.pPageStat');
+			var oldStatus = $status.text();
+			$status.text(gridPrefs.procmsg);
+			$('<iframe />').attr('src', url).hide().appendTo('body').load(function() {
+				$status.text(oldStatus);
+		});
+		}
+	};
+	
+	/**
+	 * Delete the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.deleteSelectedRows = function(tableId) {
+		
+		var $table = $('#' + tableId);
+		if ($table.length < 1)
+			return false;
+		
+		var pathname = window.location.pathname;
+		var area_edit_id = pathname.match(/area\/(\d+)\/edit/);
+		if (area_edit_id != null) {
+			if (area_edit_id.length >= 2)
+				area_edit_id = area_edit_id[1];
+		}
+		else
+			area_edit_id = 0;
+		
+		var redirect = false;
+		var transportData = '';
+		$table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				var area_id = $(this).val();
+				transportData +=area_id + ',';
+				if (area_id == area_edit_id)
+					redirect = true;
+			}
+		});
+		
+		if (transportData.length == '') {
+			alert(Drupal.t('No records selected'));
+			return false;
+		}
+		transportData = '{' + transportData.substring(0,transportData.length-1) + '}';
+			
+		var really = confirm(Drupal.t('Do you really want to delete the selected records?'));
+		if (really){
+			var data = {
+				areas: transportData
+			};
+			
+			var ajaxurl = Drupal.settings.basePath + 'area/delete';
+
+			$.getJSON(ajaxurl, data, function(json){
+				$table.flexReload();
+				area.showDeleteResponse(json);
+				if (redirect) {
+					$.safetynet.suppressed(true);
+					window.location.href = '/areas/show';
+				}
+			});
+		}
+	};
+	
+	/**
+	 * Show the message returned from the deletion request
+	 */
+	area.showDeleteResponse = function(responseText, statusText, xhr, $form)  {
+		alert('show delete response');
+		if(responseText != null && responseText.success == true){
+			area.setMessage(responseText.message, responseText.type, 5000);
+		} else if (responseText != null) {
+			area.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
+		} else {
+			area.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
+		}
+	};
+	
+	/**
+	 * Executed after table is populated
+	 * 
+	 * @param jQuery object flexigrid
+	 */
+	area.onTableSuccess = function(flexigrid) {
+		var tableId = $(flexigrid.bDiv).find('table').first().attr('id');
+		area.displayBatchArea(tableId);
+	};
+	
+	/**
+	 * Display the batch div, holding the select-toggle, delete and export buttons
+	 */
+	area.displayBatchArea = function(tableId) {
+		$flexiDiv = $('#' + tableId).closest('div.flexigrid');
+		
+		if ($flexiDiv.find('.batch-div').length == 0) {
+			$checkbox = $('<input type="checkbox" />');
+			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
+			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
+			$batchDiv = $('<div class="batch-div" />')
+				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
+				.insertBefore($flexiDiv.find('.sDiv'));
+			
+			$checkbox.click(function(event) {
+				area.toggleSelectedRows(event, this.checked);
+			});
+			$btnDeleteSelected.click(function() {
+				area.deleteSelectedRows(tableId);
+			});
+			$btnExportSelected.click(function() {
+				area.exportSelectedRows(tableId);
+			});
+		}
+		else {
+			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
+			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+		}
+	};
+});
+
 /**
  * @Class Contains all the logic to handle a map.
  */
@@ -81,10 +250,13 @@ function Area(options) {
 					this_.loadGeometriesAndOverlaysFromJson(data);
 					if(this_.options.geometryedit)
 						this_.geometryEdit(this_.options.geometryeditid);
+					if(this_.options.showandcenter)
+						this_.showAndCenter(this_.options.geometryeditid);
 				}
 			);
 	}
 	this.createDrawingManagerGetcoordinate(this.options.getcoordinate);
+
 };
 
 /**
@@ -121,6 +293,7 @@ Area.prototype.mapTypeSwitch = function(enable) {
 Area.prototype.loadLastLocation = function(enable) {
 	var googlemap = this.googlemap;
 	if(enable) {
+		
 		if (window.localStorage) {
 			var bounds = window.localStorage.getItem('naturvielfalt_ne_lat');
 			if (bounds != null) {
@@ -344,7 +517,7 @@ Area.prototype.showInfoWindow = function(id) {
 			infowindow.close();
 			infowindow.setContent(data);
 			infowindow.open(this_.googlemap, this_.overlaysArray[id]);
-			jQuery(data)
+			jQuery(data);
 		});
 		
 		infowindow.open(this.googlemap, this.overlaysArray[id]);
@@ -479,7 +652,7 @@ Area.prototype.loadGeometriesAndOverlaysFromJson = function(json) {
 Area.prototype.clearOverlays = function() {
 	for (var i in this.overlaysArray)
 		this.overlaysArray[i].setMap();
-}
+};
 
 /**
  * Create and show the drawing manager
@@ -746,6 +919,20 @@ Area.prototype.createSearchbarCH1903 = function(enable) {
 };
 
 /**
+ * Only show and center map.
+ * 
+ * @param geometryId Integer
+ * 	Id of the overlay to edit.
+ */
+Area.prototype.showAndCenter = function(geometryId) {
+	var position = this.overlaysArray[geometryId].getPosition();
+	
+	this.googlemap.setCenter(position);
+	this.googlemap.setZoom(this.options.googlemapsoptions.zoom);
+};
+	
+
+/**
  * Edit an existing geometry.
  * 
  * @param geometryId Integer
@@ -908,8 +1095,6 @@ Area.prototype.createReticle = function(enable) {
 		google.maps.event.addListener(this.googlemap, 'center_changed', function() { // change even to e.g. idle if needed
 			reticleoverlay.draw();
 		});
-	} else {
-		alert("Not implemented!");
 	}
 };
 
@@ -982,7 +1167,7 @@ Area.prototype.createDrawingManagerGetcoordinate = function(enable) {
  * @param callback
  *            callback function
  */
-getAddress = function(latlng, callback) {
+getAddress = function(latlng, callback) {	
 	var geocoder = new google.maps.Geocoder();
 
 	geocoder.geocode({'latLng' : latlng }, function(results, status) {
@@ -1065,11 +1250,11 @@ updateHiddenfields = function(overlay, coordinatestorageid) {
 						overlay.getPosition().lat());
 				jQuery('#hiddenfield-longitude').val(
 						overlay.getPosition().lng());
-				jQuery('#hiddenfield-geometry-type').val(overlay.type);
-				jQuery('#hiddenfield-geometry-coordinates').val(JSON.stringify(overlay.getJsonCoordinates()));
 			});
 	getAltitude(overlay.getPosition(), function(
 			altitude) {
 		jQuery('#hiddenfield-altitude').val(altitude);
+		jQuery('#hiddenfield-geometry-type').val(overlay.type);
+		jQuery('#hiddenfield-geometry-coordinates').val(JSON.stringify(overlay.getJsonCoordinates()));
 	});
 };

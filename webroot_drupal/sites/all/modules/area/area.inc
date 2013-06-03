@@ -18,9 +18,15 @@ function get_ch1903_coordinates_link($areadata) {
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 			? 'https://' : 'http://';
 	global $user;
+	
+	$language = 'de';
+	if( $user->language <> ''){
+		$language=$user->language;
+	}
+	
 	$linkCH1903 = l(
 		"CH1903",
-		$area_protocol . $user->language . '.wikipedia.org/wiki/CH1903');
+		$area_protocol . $language . '.wikipedia.org/wiki/CH1903');
 
 	$coordinates = number_format($areadata['ch1903_center_x'], 0, '.', '\'')
 		.'/'
@@ -39,12 +45,18 @@ function get_ch1903_coordinates_link($areadata) {
 function get_wgs84_coordinates_link($areadata) {
 	assert(is_array($areadata));
 	global $user;
+	
+	$language = 'de';
+	if( $user->language <> ''){
+ 		$language=$user->language;
+	}
+	
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 			? 'https://' : 'http://';
 	;
 	$linkWGS84 = l(
 		"WGS84",
-		$area_protocol . $user->language . '.wikipedia.org/wiki/WGS84');
+		$area_protocol . $language . '.wikipedia.org/wiki/WGS84');
 
 	$coordinates = round($areadata['wgs84_center_lat'], 2) . '/'
 			. round($areadata['wgs84_center_lng'], 2);

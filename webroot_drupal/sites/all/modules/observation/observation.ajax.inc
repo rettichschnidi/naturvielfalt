@@ -582,7 +582,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
 		// date, TODO: time
-		$row['cell']['date'] = date('d.m.Y', $row['cell']['date']);
+		$row['cell']['date'] = date('d.m.Y H:i:s', $row['cell']['date']);
 		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
