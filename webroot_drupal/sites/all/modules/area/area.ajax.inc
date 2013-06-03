@@ -120,10 +120,19 @@ function area_export() {
  	// zip
 	$tempdir = file_directory_temp();
 
-	$cmd = strtr('"%path7z.exe" a %archive %shapefile'
+	// FOR WINDOWS
+	// 	$cmd = strtr('"%path7z.exe" a %archive %shapefile'
+	// 			, array(
+	// 					'%path' => variable_get('area_path_zip', AREA_PATH_ZIP),
+	// 					'%archive' => $tempdir .'\\'.$export_id .'.zip' ,
+	// 					'%shapefile' => file_directory_temp() .'\\'. $export_id.'*.*'
+	// 			)
+	// 	);
+
+	$cmd = strtr('tar -zcvf %shapefile %archive'
 			, array(
 					'%path' => variable_get('area_path_zip', AREA_PATH_ZIP),
-					'%archive' => $tempdir .'\\'.$export_id .'.zip' ,
+					'%archive' => $tempdir .'\\'.$export_id .'.tar' ,
 					'%shapefile' => file_directory_temp() .'\\'. $export_id.'*.*'
 			)
 	);
@@ -172,7 +181,22 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 	{
 		global $databases;
 		
-		$cmd = strtr('"%ogr2ogr_pathogr2ogr.exe" -f "ESRI Shapefile" %shapefile "PG:dbname=%database host=%host port=%port user=%user password=%password tables=%tables" -sql  %query'
+		// FOR WINDOWS
+// 		$cmd = strtr('"%ogr2ogr_pathogr2ogr.exe" -f "ESRI Shapefile" %shapefile "PG:dbname=%database host=%host port=%port user=%user password=%password tables=%tables" -sql  %query'
+// 				, array(
+// 						'%ogr2ogr_path' => variable_get('area_path_ogr2ogr', AREA_PATH_OGR2OGR)
+// 						, '%shapefile' => '"'.file_directory_temp() .'\\'. $export_Id.$geometrytype.'.shp"'
+// 						, '%query' => '"'.$query.'"'
+// 						, '%port' =>  5432 //TODO
+// 						, '%host' =>  $databases['default']['default']['host']
+// 						, '%user' => $databases['default']['default']['username']
+// 						, '%password' => $databases['default']['default']['password']
+// 						, '%database' =>  $databases['default']['default']['database']
+// 						, '%tables' => 'area_geometry'
+// 				)
+// 		);
+		
+		$cmd = strtr('ogr2ogr -f "ESRI Shapefile" %shapefile "PG:dbname=%database host=%host port=%port user=%user password=%password tables=%tables" -sql  %query'
 				, array(
 						'%ogr2ogr_path' => variable_get('area_path_ogr2ogr', AREA_PATH_OGR2OGR)
 						, '%shapefile' => '"'.file_directory_temp() .'\\'. $export_Id.$geometrytype.'.shp"'

@@ -130,7 +130,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'#type' => 'markup',
 			'#markup' => '<p/>'
 	);
-					
+	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
 		'#header'   =>  $tableHeader,
