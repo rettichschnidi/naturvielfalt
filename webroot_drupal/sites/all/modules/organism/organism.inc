@@ -28,8 +28,57 @@ function organism_get($organismid) {
 		WHERE
 			o.id = :oid',
 		array(':oid' => $organismid,
-				':lang_code' => $user->language
+				'lang_code' => 'de',
+// 				':lang_code' => $user->language
 		))->fetchAssoc();
+}
+
+function organism_get_byname($organism) {
+	global $user;
+	
+// 	$result = db_query('SELECT o.id, o.scientific_name name_lat, ol.name name_lang
+// 			 FROM {organism} o, {organism_lang} ol 
+// 			 WHERE o.id = ol.organism_id AND ol.languages_language = :lang_code AND ol.name = :o_name;',
+// 			array(		':o_name' =>   $organism,
+// 						':lang_code' => 'de',
+// 			));
+	
+// 	foreach ($result as $record) {
+// 		return $record;
+// 	}
+
+	// TODO take language of the user (if exists)
+// 	$language = $user->language;
+	$language = 'de';
+	
+	$result = db_query(
+			'SELECT o.id, o.scientific_name name_lat, ol.name name_lang
+			 FROM {organism} o, {organism_lang} ol 
+			 WHERE o.id = ol.organism_id AND ol.languages_language = :lang_code AND ol.name = :o_name;',
+			array( ':lang_code' => $language,
+					':o_name' => $organism,
+			))->fetchAssoc();
+	
+	return $result;
+}
+
+function organism_artgroup_byname($organism) {
+	global $user;
+
+	// TODO take language of the user (if exists)
+	// 	$language = $user->language;
+	$language = 'de';
+
+	$result = db_query(
+			'SELECT oas.organism_artgroup_id, ol.organism_id 
+			 FROM {organism_artgroup_subscription} oas, {organism_lang} ol
+			 WHERE oas.organism_id = ol.organism_id 
+			AND ol.languages_language = :lang_code AND ol.name ILIKE :o_name;',
+			array( ':lang_code' => $language,
+					':o_name' => $organism,
+			))->fetchAssoc();
+
+	return $result;
 }
 
 /**

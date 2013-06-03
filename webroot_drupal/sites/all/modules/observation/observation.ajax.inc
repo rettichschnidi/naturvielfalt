@@ -21,11 +21,16 @@ module_load_include('inc', 'datatable');
  */
 function observation_save($observation_data = false, $custom_data = false, $from_api = false) {
 	global $user;
-
+	
 	$values = $_POST;
-	if ($custom_data) {
-		$values = $custom_data;
-	}
+
+// 	if ($custom_data) {
+// 		$values = $custom_data;
+// 	}
+
+	if($from_api) $values = $custom_data;
+	
+// 	debug($values);
 
 	$errormessages = array();
 	$observation = array();
@@ -33,6 +38,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	if (isset($values['observation_id'])) {
 		$observation['id'] = $values['observation_id'];
 	}
+	else $observation['id'] = 0;
 	if (isset($values['area_geometry_id'])) {
 		$observation['area_geometry_id'] = $values['area_geometry_id'];
 	}
@@ -40,18 +46,26 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	/**
 	 * check the organism id
 	 */
-	if (!organism_get(filter_xss($values['organismn_id']))) {
-		$errormessages[] = t('This organism is not permitted!');
-	} else {
-		$observation['organism_id'] = filter_xss($values['organismn_id']);
-	}
-	if (is_bool((bool) $values['observation_found_as_lang'])) {
-		$observation['found_as_lang'] = $values['observation_found_as_lang'];
-	}
-	if (is_bool((bool) $values['observation_found_as_latin'])) {
-		$observation['found_as_lat'] = $values['observation_found_as_latin'];
-	}
+// 	if (!organism_get(filter_xss($values['organismn_id']))) {
+// 		$errormessages[] = t('This organism is not permitted!');
+// 	} else {
+// 		$observation['organism_id'] = filter_xss($values['organismn_id']);
+// 	}
 
+
+	$result = organism_get_byname(filter_xss($values['organism_name']));
+	
+	$organism = filter_xss($values['organism']);
+	
+	$observation['organism_id'] = $result['id'];
+	
+// 		if (is_bool((bool) $values['observation_found_as_lang'])) {
+// 			$observation['found_as_lang'] = $values['observation_found_as_lang'];
+// 		}
+// 		if (is_bool((bool) $values['observation_found_as_latin'])) {
+// 			$observation['found_as_lat'] = $values['observation_found_as_latin'];
+// 		}
+	
 	/**
 	 * Check the determation and artgroup value
 	 */
@@ -104,7 +118,8 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	 * Check the date
 	 */
 	$date = $values['date'];
-	$date_split = explode('.', $date);
+// 	$date_split = explode('.', $date);
+	$date_split = explode('/', $date);
 	$observation['date'] = mktime(null, null, null, $date_split[1], $date_split[0], $date_split[2]);
 	if (empty($date) || !checkdate($date_split[1], $date_split[0], $date_split[2])) {
 		$errormessages[] = t('Please enter a valid date');
@@ -179,10 +194,13 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	$geometry['area_points'] = filter_xss($values['coordinate']);
 	$geometry['type'] = 'marker';
 
+	debug($errormessages);
 	/**
 	 * Save to the DB
 	 */
 	if (empty($errormessages)) {
+		
+		debug('lets save the shizzle');
 		/**
 		 * save the observation
 		 */
@@ -191,7 +209,8 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		// done leads to such smells. :( At least there is no loop in it :)
 		// Feel free to refactor it.
 		try {
-			if ($observation['id']) {
+// 			if ($observation['id']) {
+			if ($observation['id'] > 0) {
 				// do update
 				area_update_geometry($observation['area_geometry_id'], $geometry);
 				observation_save_attribute_values($attributes_checked, $observation['id']);
@@ -225,6 +244,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 					'author' => $observation['observer'],
 					'location' => $geometry['township'] . ' ' . $geometry['canton'],
 			);
+			
 			gallery_implementation_save_manual('observation', $image, 'observation_id');
 
 			if (isset($values['file_description'])) {
@@ -240,7 +260,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			if (isset($values['file_delete'])) {
 				gallery_implementation_files_delete($values['file_delete'], 'observation');
 			}
-
+			debug('success');
 			// Set the return statement
 			$output['success'] = true;
 		} catch (Exception $e) {
@@ -250,10 +270,12 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$output['message'] = array(
 					t('Could not save the observation because of an unknown error.')
 			);
+			debug($e->getMessage());
 		}
 	} else {
 		$output['success'] = false;
 		$output['message'] = $errormessages;
+		debug('failed: '.$errormessages);
 	}
 
 	//

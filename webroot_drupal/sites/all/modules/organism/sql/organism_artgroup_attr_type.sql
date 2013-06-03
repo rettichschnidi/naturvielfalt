@@ -23,6 +23,14 @@ SELECT pg_catalog.setval('{organism_artgroup_attr_type_id_seq}', 1, false);
 
 INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (1, 'String', 'string');
 INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (2, 'Textarea', 'textarea');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (3, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (4, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (5, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (6, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (7, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (8, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (9, 'String', 'string');
+INSERT INTO {organism_artgroup_attr_type} (id, name, format) VALUES (10, 'String', 'string');
 
 
 --

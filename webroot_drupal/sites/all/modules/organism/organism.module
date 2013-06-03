@@ -149,7 +149,7 @@ function organism_menu() {
 			'file' => 'organism.json.inc',
 	);
 
-	$items['organism/search/json'] = array(
+	$items['organism/search/json/%artgroup'] = array(
 			'title' => t('Species search json'),
 			'page callback' => 'organism_search_organism_json',
 			'access arguments' => array(

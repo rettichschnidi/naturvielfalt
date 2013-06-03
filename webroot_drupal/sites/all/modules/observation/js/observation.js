@@ -451,6 +451,7 @@ jQuery(document).ready(function() {
 	 */
 	observation.changeArtGroup = function(id) {
 		console.log('implement me!');
+		alert('change art group');
 	}
 
 	/**
