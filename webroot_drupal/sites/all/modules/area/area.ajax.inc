@@ -109,9 +109,9 @@ function area_export() {
 	
 	// get the areas of the request
 	$param = filter_xss($_REQUEST['areas']);
-		
+	//$param = '(1)';	
 	$export_id = uniqid();
-	$base_query = "SELECT geom FROM area_geometry a_g, area a WHERE a_g.id = a.area_geometry_id AND a.id in $param AND GeometryType(geom)=";
+	$base_query = "SELECT geom FROM naturvielfalt_area_geometry a_g, naturvielfalt_area a WHERE a_g.id = a.area_geometry_id AND a.id in $param AND GeometryType(geom)=";
 
 	export_shape_ogr2ogr( "POINT", $base_query, $export_id);
 	export_shape_ogr2ogr( "LINESTRING", $base_query, $export_id);
@@ -129,45 +129,48 @@ function area_export() {
 	// 			)
 	// 	);
 
-	$cmd = strtr('tar -zcvf %shapefile %archive'
+	$cmd = strtr('tar -zcvf %archive %shapefile'
 			, array(
 					'%path' => variable_get('area_path_zip', AREA_PATH_ZIP),
-					'%archive' => $tempdir .'\\'.$export_id .'.tar' ,
-					'%shapefile' => file_directory_temp() .'\\'. $export_id.'*.*'
+					'%archive' => $tempdir .'/'.$export_id .'.tar' ,
+					'%shapefile' => file_directory_temp() .'/'. $export_id.'*.*'
 			)
 	);
 	
 	shell_exec($cmd);
+	//echo($cmd.'<br>');
 	
 	// open for return
-	$filename = $tempdir .'/'.$export_id .'.zip'; 
+	$filename = $tempdir .'/'.$export_id .'.tar'; 
 	$handle = fopen($filename, "r");
 	$contents = fread($handle, filesize($filename));
 	fclose($handle);
 	
 	// move to archive
 	// TODO use drupal function
-	$cmd = strtr('MOVE %file %archive '
+	$cmd = strtr('mv %file %archive '
 			, array(
-					'%file' => $tempdir ."\\".$export_id .'.zip' ,
-					'%archive' => file_directory_temp() .'/export_archive'
+					'%file' => $tempdir ."/".$export_id .'.tar' ,
+					'%archive' => file_directory_temp() .'/export_archive/'
 			)
 	);
 	
 	shell_exec($cmd);
+	//echo($cmd.'<br>');
 
 	// delete 
 	// TODO use drupal function
-	$cmd = strtr('DEL %files'
+	$cmd = strtr('rm %files'
 			, array(
-					'%files' => file_directory_temp() ."\\". $export_id.'*.*'
+					'%files' => file_directory_temp() ."/". $export_id.'*.*'
 			)
 	);
 	shell_exec($cmd);
+	//echo($cmd.'<br>');
 	
 	// set header information
-	header('Content-type: application/zip');
-	header('Content-Disposition: attachment; filename="export.zip"');
+	header('Content-Type: application/octet-stream');
+	header('Content-Disposition: attachment; filename="export.tar"');
 	echo $contents;
 }
 
@@ -206,14 +209,15 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 						, '%user' => $databases['default']['default']['username']
 						, '%password' => $databases['default']['default']['password']
 						, '%database' =>  $databases['default']['default']['database']
-						, '%tables' => 'area_geometry'
+						, '%tables' => 'naturvielfalt_area_geometry'
 				)
 		);
 		
 		echo  $databases['default']['default']['port'];
 		
-		$cmd = 'echo . | ' . $cmd.' 2>&1';
+		//$cmd = 'echo . | ' . $cmd.' 2>&1';
 		shell_exec($cmd);
+		//echo($cmd.'<br>');
 	}
 }
 
@@ -229,7 +233,7 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 // 	{
 // 		global $databases;
 		
-// 		$cmd = strtr('%postgresql_bin%exe -f %shapefile -h %host -u %user -P %password %database %query'
+// 		$cmd = strtr('%postgresql_bin%exe -f %shapefile -h %host -u %user -P %password %query'
 // 				, array(
 // 						'%postgresql_bin' => '"C:\Program Files (x86)\PostgreSQL\8.4\bin\pgsql2shp'
 // 						, '%shapefile' => file_directory_temp() .'\\'. $export_Id.$geometrytype
@@ -242,9 +246,9 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 // 				)
 // 		);
 		
-// 		$cmd = 'echo . | ' . $cmd.' 2>&1';
+// 		// $cmd = 'echo . | ' . $cmd.' 2>&1';
 // 	 	echo $cmd.'<br>';	
-// 		shell_exec($cmd).'<br>';
+// 		shell_exec($cmd);
 // 	}
 // }
 ?>
