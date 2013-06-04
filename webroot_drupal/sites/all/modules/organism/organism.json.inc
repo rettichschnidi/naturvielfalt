@@ -798,7 +798,6 @@ function organism_search_organism_json($artgroup, $string) {
 // 	if (!$plain)
 // 		$organisms = drupal_json_output($organisms);
 	
-// 	debug($organisms, 'JSON_OUTPUT', true);
 	drupal_json_output($matches);
 // 	drupal_json_output($term);
 }
@@ -909,7 +908,6 @@ function organism_search_organism_json($artgroup, $string) {
 // 	if (!$plain)
 // 		$organisms = drupal_json_output($organisms);
 
-// 	debug($organisms, 'JSON_OUTPUT', true);
 // 	return $organisms;
 // }
 

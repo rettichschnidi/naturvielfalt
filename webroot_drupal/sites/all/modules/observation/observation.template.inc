@@ -93,22 +93,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$form = observation_organism(null, null, $observation['organism']['name_lang']);
 
 	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
-	if(!$edit) {
-		$form['artgroup_id'] = array(
-				'#id' => 'area_artgroup',
-				'#title' => t('Filter on species group'),
-				'#type' => 'select',
-				'#options' => organism_artgroup_get_all_as_array(),
-				'#default_value' => $observation['observation']['organism_artgroup_id'],
-				'#ajax' => array(
-						'event' => 'change',
-						'callback' => 'observation_organism',
-						'wrapper' => 'organism_replace'
-				),
-				'#weight' => -1,
-		);
-	}
-	else {
+	if($edit) {
 		$artgroup_name = organism_artgroup_get_artgroup($observation['observation']['organism_artgroup_id'],true);
 		
 		$form['artgroup_text'] = array(
@@ -130,9 +115,21 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#type' => 'hidden',
 				'#default_value' => $observation['observation']['organism_artgroup_id'],
 		);
-		
-		// show the details according the artgroup
-		//$form['d'] = observation_details(null, null, $observation);
+	}
+	else {
+		$form['artgroup_id'] = array(
+				'#id' => 'artgroup_id',
+				'#title' => t('Filter on species group'),
+				'#type' => 'select',
+				'#options' => organism_artgroup_get_all_as_array(),
+				'#default_value' => $observation['observation']['organism_artgroup_id'],
+				'#ajax' => array(
+						'event' => 'change',
+						'callback' => 'observation_organism',
+						'wrapper' => 'organism_replace'
+				),
+				'#weight' => -1,
+		);
 	}
 	
 	$form['date'] = array(
@@ -298,15 +295,16 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		'#title'=> t('Media'),	
 		'#markup'=> $image,
 	);
-
+	
+	
 	$file_list['files'] = gallery_implementation_files_table(
 		'observation',
 		$observation['observation']['id'],
 		true);
 
-	$species_autocomplete = ($observation['organism']['name_lat'] == '')
-			? t('Maximum 30 search results will be showed')
-			: $observation['organism']['name_lat'];
+// 	$species_autocomplete = ($observation['organism']['name_lat'] == '')
+// 			? t('Maximum 30 search results will be showed')
+// 			: $observation['organism']['name_lat'];
 	
 	/* Tooltip texts */
 	$tooltip['text']['artengruppe'] = t('Select a specimen group from the dropdown menu to constrain the search.');
@@ -391,7 +389,6 @@ function observation_acl_template($observation = NULL) {
  * @param array $observationdata
  */
 function observation_show_observation($observationdata = NULL) {
-	debug('show an observation');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js('misc/form.js');
@@ -506,9 +503,10 @@ function observation_show_observation($observationdata = NULL) {
 
 function observation_organism($form2 = null, $form_state = null, $organism_name = null) {
 	
-	$artgroup_id = !empty($form_state['values']['artgroup']) ? $form_state['values']['artgroup'] : 1;
 	
-	$form['artgroup_id'] = array('#type' => 'hidden', '#id' => 'artgroup_id', '#name' => 'artgroup_id', '#value' => $artgroup_id);
+	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	
+// 	$form['artgroup_id'] = array('#type' => 'hidden', '#id' => 'artgroup_id', '#name' => 'artgroup_id', '#value' => $artgroup_id);
 // 	$form['organism_name'] = array('#type' => 'hidden', '#id' => 'organism_name', '#name' => 'organism_name', '#value' => 'Laubfrosch');
 	
 	$form['organism'] = array(
@@ -563,16 +561,18 @@ function observation_details($form2, $form_state, $observation = null) {
 // 			'#type' => 'textfield',
 // 			'#value' => $observation['observation']['organism_artgroup_id'],
 // 	);
-// 	$form['d3'] = array(
-// 			'#id' => 'd3',
-// 			'#title' => 'ArtgroupId',
-// 			'#type' => 'textfield',
-// 			'#value' => $artgroup_id ,
-// 	);
+
 
 	$observation_id = null;
 	
-	$artgroup_id = !empty($form_state['values']['artgroup']) ? $form_state['values']['artgroup'] : 1;
+	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	
+	$form['d3'] = array(
+			'#id' => 'd3',
+			'#title' => 'ArtgroupId',
+			'#type' => 'textfield',
+			'#value' => $artgroup_id ,
+	);
 	
 	if(!$observation)
 		$observation_id = $observation['observation']['id'];

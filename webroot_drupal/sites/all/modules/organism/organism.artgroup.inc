@@ -168,9 +168,9 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 	if (!$as_html_option)
 	{
 		foreach ($results as $result) {
-			$backi[$result->id] = $result->name;
+			$res[$result->id] = $result->name;
 		}
-		return $backi;
+		return $res;
 	}
 		
 	$html = '<option value="0" id="artgroup_detmethod_value_0">' . t('Not defined') . '</option>';
