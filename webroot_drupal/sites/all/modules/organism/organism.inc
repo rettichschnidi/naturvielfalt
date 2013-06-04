@@ -52,7 +52,7 @@ function organism_get_byname($organism) {
 	$language = 'de';
 	
 	$result = db_query(
-			'SELECT o.id, o.scientific_name name_lat, ol.name name_lang
+			'SELECT o.id
 			 FROM {organism} o, {organism_lang} ol 
 			 WHERE o.id = ol.organism_id AND ol.languages_language = :lang_code AND ol.name = :o_name;',
 			array( ':lang_code' => $language,

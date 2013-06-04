@@ -53,12 +53,12 @@ function observation_save($observation_data = false, $custom_data = false, $from
 // 	}
 
 
-	$result = organism_get_byname(filter_xss($values['organism_name']));
+	$result = organism_get_byname(filter_xss($values['organism']));
 	
 	$organism = filter_xss($values['organism']);
 	
 	$observation['organism_id'] = $result['id'];
-	
+	debug($observation['organism_id']);
 // 		if (is_bool((bool) $values['observation_found_as_lang'])) {
 // 			$observation['found_as_lang'] = $values['observation_found_as_lang'];
 // 		}

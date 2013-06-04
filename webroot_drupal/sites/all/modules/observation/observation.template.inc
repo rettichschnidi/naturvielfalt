@@ -90,11 +90,30 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 // 	);
 
 	
-
+	$form = array();
+	$json = ($form_state['values']['artgroup_id'] == NULL) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
+	$form['organism'] = array(
+			'#id' => 'organism_name',
+			'#title' => t('Search for species'),
+			'#type' => 'textfield',
+			'#autocomplete_path' => $json,
+			'#description' => t('Maximum 30 search results will be showed.'),
+			'#attributes' => array(
+					'placeholder' => t('Start typing to see the species...'),
+			),
+			'#prefix' => '<div id="organism_replace">',
+			'#suffix' => '</div>',
+			'#ajax' => array(
+					'event' => 'change',
+					'callback' => 'observation_details',
+					'wrapper' => 'replace_details'
+			),
+			'#default_value' => $observation['organism']['name_lang'],
+	);
+  
 	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
 	if($edit) {
 		// get the organism selection box
-		$form = observation_organism(null, null, $observation['organism']['name_lang'], false);
 		
 		$artgroup_name = organism_artgroup_get_artgroup($observation['observation']['organism_artgroup_id'],true);
 		
@@ -120,7 +139,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	}
 	else {
 		// get the organism selection box
-		$form = observation_organism(null, null, $observation['organism']['name_lang'], true);
 		
 		$form['artgroup_id'] = array(
 				'#id' => 'artgroup_id',
@@ -130,7 +148,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#default_value' => $observation['observation']['organism_artgroup_id'],
 				'#ajax' => array(
 						'event' => 'change',
-						'callback' => 'observation_organism',
+						'callback' => 'observation_organism_callback',
 						'wrapper' => 'organism_replace'
 				),
 				'#weight' => -1,
@@ -356,6 +374,14 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	return $form;
 }
 
+
+function ajax_example_simplest_callback($form, $form_state) {
+	// The form has already been submitted and updated. We can return the replaced
+	// item as it is.
+	return $form['replace_textfield'];
+}
+
+
 /**
  * ACL permission template
  * @param array $observation
@@ -506,36 +532,9 @@ function observation_show_observation($observationdata = NULL) {
 	return $output;
 }
 
-function observation_organism($form2 = null, $form_state = null, $organism_name = null, $disabled = false) {
+function observation_organism_callback($form, &$form_state) {
 	
-	
-	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
-	
-// 	$form['artgroup_id'] = array('#type' => 'hidden', '#id' => 'artgroup_id', '#name' => 'artgroup_id', '#value' => $artgroup_id);
-// 	$form['organism_name'] = array('#type' => 'hidden', '#id' => 'organism_name', '#name' => 'organism_name', '#value' => 'Laubfrosch');
-	
-	$form['organism'] = array(
-			'#id' => 'organism_name',
-			'#title' => t('Search for species'),
-			'#type' => 'textfield',
-			'#autocomplete_path' => 'organism/search/json/'.$artgroup_id,
-			'#description' => t('Maximum 30 search results will be showed.'),
-			'#attributes' => array(
-					'placeholder' => t('Start typing to see the species...'),
-					'style' => $disabled ? array(
-							'display: none;',
-					) : array()			
-				),
-			'#prefix' => '<div id="organism_replace">',
-			'#suffix' => '</div>',
-			'#ajax' => array(
-					'event' => 'change',
-					'callback' => 'observation_details',
-					'wrapper' => 'replace_details'
-			),
-			'#default_value' => $organism_name,
-	);
-	return $form;
+	return $form['organism'];
 }
 
 function observation_details($form2, $form_state, $observation = null) {
