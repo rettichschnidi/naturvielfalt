@@ -164,27 +164,12 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 	$determation_sql = 'SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '
 			. $artgroup_filter . ' ORDER BY oad.name asc';
 	$results = db_query($determation_sql);
-	
-	if (!$as_html_option)
-	{
-		foreach ($results as $result) {
-			$res[$result->id] = $result->name;
-		}
-		return $res;
-	}
-		
-	$html = '<option value="0" id="artgroup_detmethod_value_0">' . t('Not defined') . '</option>';
+	$res = array();
 	foreach ($results as $result) {
-		$selected = "";
-		if ($selected_id && $selected_id == $result->id)
-			$selected = ' selected="selected"';
-		$style = 'style="display: none;" ';
-		if ($visisible_arr && array_search($result->id, $visisible_arr))
-			$style = 'style="display: block;" ';
-		$html .= '<option value="' . $result->id . '" id="artgroup_detmethod_value_' . $result->id
-				. '"  ' . $style . $selected . '>' . t($result->name) . '</option>';
+		$res[$result->id] = $result->name;
 	}
-	return $html;
+	return $res;
+	
 }
 
 /**

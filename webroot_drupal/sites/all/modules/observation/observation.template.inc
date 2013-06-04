@@ -90,7 +90,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 // 	);
 
 	// get the organism selection box
-	$form = observation_organism(null, null, $observation['organism']['name_lang']);
+	$form = observation_organism(null, null, $observation['organism']['name_lang'], true);
 
 	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
 	if($edit) {
@@ -501,7 +501,7 @@ function observation_show_observation($observationdata = NULL) {
 	return $output;
 }
 
-function observation_organism($form2 = null, $form_state = null, $organism_name = null) {
+function observation_organism($form2 = null, $form_state = null, $organism_name = null, $disabled = false) {
 	
 	
 	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
@@ -513,6 +513,7 @@ function observation_organism($form2 = null, $form_state = null, $organism_name 
 			'#id' => 'area_organism',
 			'#title' => t('Search for species'),
 			'#type' => 'textfield',
+			'#disabled' => $disabled,
 			'#autocomplete_path' => 'organism/search/json/'.$artgroup_id,
 			'#description' => t('Maximum 30 search results will be showed.'),
 // 			'#description' => $artgroup_id,
@@ -534,45 +535,10 @@ function observation_organism($form2 = null, $form_state = null, $organism_name 
 }
 
 function observation_details($form2, $form_state, $observation = null) {
-// 	$form['details'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => t('Details'),
-// 			'#collapsible' => true,
-// 			'#collapsed' => false,
-// 			'#weight' => 30,
-// 			'#prefix' => '<div id="details_replace">',
-// 			'#suffix' => '</div>',
-// 	);
-
-// 	$result = organism_artgroup_byname($form_state['values']['organism']);
 	
-// 	$artgroup_id = $result['organism_artgroup_id'];
-// 	$organism_id = $result['organism_id'];
-	
-// 	$form['organism_id'] = array(
-// 			'#type' => 'hidden', 
-// 			'#id' => 'organism_id',  
-// 			'#value' => $result['organism_id ']
-// 	);
-	
-// 	$form['d1'] = array(
-// 			'#id' => 'd1',
-// 			'#title' => 'Artgroup_ID',
-// 			'#type' => 'textfield',
-// 			'#value' => $observation['observation']['organism_artgroup_id'],
-// 	);
-
-
 	$observation_id = null;
 	
 	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
-	
-	$form['d3'] = array(
-			'#id' => 'd3',
-			'#title' => 'ArtgroupId',
-			'#type' => 'textfield',
-			'#value' => $artgroup_id ,
-	);
 	
 	if(!$observation)
 		$observation_id = $observation['observation']['id'];
@@ -585,15 +551,17 @@ function observation_details($form2, $form_state, $observation = null) {
 			'#prefix' => '<div id="replace_details">',
 			'#suffix' => '</div>',
 	);
+	$options = organism_artgroup_get_determation_methods($artgroup_id);
+	if(!empty($options)) { // don't show determination method if no options
+		$form['details']['determination'] = array(
+				'#title' => t('Determination method'),
+				'#type' => 'select',
+				'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
+				'#weight' => 11,
+				'#description' => 'Determination Method'
+		);
+	}
 
-	$form['details']['determination'] = array(
-			'#title' => t('Determination method'),
-			'#type' => 'select',
-			'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
-			'#weight' => 11,
-			'#description' => 'Determination Method'
-	);
-	
 	$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
 	foreach ($observation_attributes as $key => $attribute) {
 		$form['details'][$key] = array(

@@ -275,7 +275,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	} else {
 		$output['success'] = false;
 		$output['message'] = $errormessages;
-		debug('failed: '.$errormessages);
 	}
 
 	//
