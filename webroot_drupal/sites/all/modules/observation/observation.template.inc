@@ -101,15 +101,55 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#attributes' => array(
 					'placeholder' => t('Start typing to see the species...'),
 			),
+			'#disabled' => $form_state['values']['artgroup_id'] == NULL ? TRUE : FALSE,
 			'#prefix' => '<div id="organism_replace">',
 			'#suffix' => '</div>',
 			'#ajax' => array(
 					'event' => 'change',
-					'callback' => 'observation_details',
+					'callback' => 'observation_details_callback',
 					'wrapper' => 'replace_details'
 			),
 			'#default_value' => $observation['organism']['name_lang'],
 	);
+	
+	$observation_id = null;
+	
+	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	
+	if(!$observation)
+		$observation_id = $observation['observation']['id'];
+	
+	$form['details'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Details'),
+			'#prefix' => '<div id="replace_details">',
+			'#suffix' => '</div>',
+	);
+	debug($artgroup_id);
+	if($artgroup_id > 1) {
+		$options = organism_artgroup_get_determation_methods($artgroup_id);
+		if(!empty($options)) { // don't show determination method if no options
+			$form['details']['determination'] = array(
+					'#title' => t('Determination method'),
+					'#type' => 'select',
+					'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
+					'#weight' => 11,
+					'#description' => 'Determination Method'
+			);
+		}
+		
+		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
+		foreach ($observation_attributes as $key => $attribute) {
+			$form['details'][$key] = array(
+					'#id' => $attribute['id'],
+					'#title' => $attribute['name'],
+					'#type' => $attribute['type_drupal'],
+					'#weight' =>$attribute['id']+12,
+			);
+		}
+		debug($form['details']);
+	}
+
   
 	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
 	if($edit) {
@@ -124,11 +164,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#default_value' => $artgroup_name,
 				'#weight' => -1,
 				'#disabled' => false,
-				'#ajax' => array(
-						'event' => 'click',
-						'callback' => 'observation_details',
-						'wrapper' => 'replace_details'
-				),
 		);
 		
 		$form['artgroup_id'] = array(
@@ -174,8 +209,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'placeholder' => t('Some text'),
 			),
 	);
-	$form['observer2'] = array(
-			'#id' => 'observerd2',
+	$form['observer'] = array(
+			'#id' => 'observer',
 			'#title' => t('Observer'),
 			'#type' => 'textfield',
 			'#disabled' => true,
@@ -183,15 +218,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#attributes' => array(
 					'placeholder' => t('Some text'),
 			),
-	);
-	
-	$form['details'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Details'),
-			'#collapsible' => true,
-			'#collapsed' => true,
-			'#prefix' => '<div id="replace_details">',
-			'#suffix' => '</div>',
 	);
 	
 	$form['#after_build'] = array('observation_form_uidatepicker');
@@ -537,44 +563,8 @@ function observation_organism_callback($form, &$form_state) {
 	return $form['organism'];
 }
 
-function observation_details($form2, $form_state, $observation = null) {
-	
-	$observation_id = null;
-	
-	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
-	
-	if(!$observation)
-		$observation_id = $observation['observation']['id'];
-	
-	$form['details'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Details'),
-			'#collapsible' => true,
-			'#collapsed' => false,
-			'#prefix' => '<div id="replace_details">',
-			'#suffix' => '</div>',
-	);
-	$options = organism_artgroup_get_determation_methods($artgroup_id);
-	if(!empty($options)) { // don't show determination method if no options
-		$form['details']['determination'] = array(
-				'#title' => t('Determination method'),
-				'#type' => 'select',
-				'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
-				'#weight' => 11,
-				'#description' => 'Determination Method'
-		);
-	}
-
-	$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
-	foreach ($observation_attributes as $key => $attribute) {
-		$form['details'][$key] = array(
-				'#id' => $attribute['id'],
-				'#title' => $attribute['name'],
-				'#type' => $attribute['type_drupal'],
-				'#weight' =>$attribute['id']+12,
-		);
-	}
-	return $form;
+function observation_details_callback($form, &$form_state) {
+	return $form['details'];
 }
 
 function observation_form_uidatepicker($form, $form_state) {
