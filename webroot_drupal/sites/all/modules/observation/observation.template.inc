@@ -89,11 +89,13 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 // 			'#weight' => 10,
 // 	);
 
-	// get the organism selection box
-	$form = observation_organism(null, null, $observation['organism']['name_lang'], true);
+	
 
 	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
 	if($edit) {
+		// get the organism selection box
+		$form = observation_organism(null, null, $observation['organism']['name_lang'], false);
+		
 		$artgroup_name = organism_artgroup_get_artgroup($observation['observation']['organism_artgroup_id'],true);
 		
 		$form['artgroup_text'] = array(
@@ -117,6 +119,9 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		);
 	}
 	else {
+		// get the organism selection box
+		$form = observation_organism(null, null, $observation['organism']['name_lang'], true);
+		
 		$form['artgroup_id'] = array(
 				'#id' => 'artgroup_id',
 				'#title' => t('Filter on species group'),
@@ -510,18 +515,17 @@ function observation_organism($form2 = null, $form_state = null, $organism_name 
 // 	$form['organism_name'] = array('#type' => 'hidden', '#id' => 'organism_name', '#name' => 'organism_name', '#value' => 'Laubfrosch');
 	
 	$form['organism'] = array(
-			'#id' => 'area_organism',
+			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
 			'#type' => 'textfield',
-			'#disabled' => $disabled,
 			'#autocomplete_path' => 'organism/search/json/'.$artgroup_id,
 			'#description' => t('Maximum 30 search results will be showed.'),
-// 			'#description' => $artgroup_id,
 			'#attributes' => array(
 					'placeholder' => t('Start typing to see the species...'),
-			),
-			'#required' => true,
-//  			'#default_value' => $organism_id,
+					'style' => $disabled ? array(
+							'display: none;',
+					) : array()			
+				),
 			'#prefix' => '<div id="organism_replace">',
 			'#suffix' => '</div>',
 			'#ajax' => array(

@@ -30,7 +30,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 
 	if($from_api) $values = $custom_data;
 	
-	debug($values);
+	debug($_POST);
 
 	$errormessages = array();
 	$observation = array();
