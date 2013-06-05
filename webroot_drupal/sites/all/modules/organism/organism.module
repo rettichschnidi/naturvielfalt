@@ -148,8 +148,8 @@ function organism_menu() {
 			'type' => MENU_CALLBACK,
 			'file' => 'organism.json.inc',
 	);
-
-	$items['organism/search/json/%artgroup'] = array(
+	
+	$items['organism/search/json'] = array(
 			'title' => t('Species search json'),
 			'page callback' => 'organism_search_organism_json',
 			'access arguments' => array(
@@ -284,7 +284,7 @@ function organism_permission() {
  * @param $organismId
  * 	String which should contain an integer and represents the Id of the requested organism.
  */
-function organism_load($organismId) {
+function organism_data($organismId) {
 	$result = db_query(
 		'SELECT
 			osy.name AS synonym,
