@@ -68,7 +68,7 @@ function organism_reference_gallery_manage_title($id, $mediatype) {
  */
 function organism_reference_gallery_caption($id) {
 	global $user;
-	$result = organism_load($id);
+	$result = organism_data($id);
 	debug('result is: '. $result);
 	return $result['scientific_names'][0]
 			. (isset(

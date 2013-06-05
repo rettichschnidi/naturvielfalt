@@ -658,31 +658,6 @@ function organism_show_organism_json($organism) {
  *    (only available if the found organism has a reference to an official one)
  */
 function organism_search_organism_json($artgroup, $string) {
-// 	$matches = array();
-	
-// 	$langcode = (isset($user->language) && $user->language != '')
-// 	? $user->language : 'de';
-	
-// 	//drupal_json_output($string);
-  
-// // 	$result = db_query_range("SELECT scientific_name FROM {organism} WHERE LOWER(scientific_name) LIKE LOWER('%s%');", $string, 0, 10);
-
-// 	$result = db_select('organism', 'o')
-// 	->fields('o', array('scientific_name'))
-// 	->condition('scientific_name', '%' . db_like($string) . '%', 'LIKE')
-// 	->execute();
-	
-// 	//drupal_json_output($result);
-	
-// 	// save the query to matches
-// 	foreach ($result as $row) {
-// 		$matches[$row->scientific_name] = check_plain($row->scientific_name);
-// 		//drupal_json_output($row->scientific_name);
-// 	}
-
-// 	// Return the result to the form in json
-// 	drupal_json_output($matches);
-
 	global $user;
 	
 	module_load_include('inc', 'organism', 'organism.artgroup');
@@ -690,28 +665,6 @@ function organism_search_organism_json($artgroup, $string) {
 	$langcode = (isset($user->language) && $user->language != '')
 	? $user->language : 'de';
 	
-// 	if (!$classification && isset($_REQUEST['inv_id'])) {
-// 		$classification = $_REQUEST['inv_id'];
-// 	}
-// 	$type_id = $classification;
-	
-// 	$fauna = ($type_id == 16 ? false : true);
-	
-// 	if (!$term) {
-// 		if (isset($_REQUEST['term'])) {
-// 			$term = $_REQUEST['term'];
-// 		} else {
-// 			return drupal_json_output(array('label' => t('No search term')));
-// 		}
-// 	}
-	
-// 	$artgroup_join = "";
-// 	if (isset($_REQUEST['artgroup'])) {
-// 		$artgroup = (integer) $_REQUEST['artgroup'];
-// 	} else {
-// 		watchdog('organism', 'No argroup id got submitted. Please fix.');
-// 		$artgroup = 1; // UGLY: artgroup_id 1 == 'all'. If this changes in the future, our default value goes boooom.
-// 	}
 	$term = $string;
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
@@ -723,9 +676,7 @@ function organism_search_organism_json($artgroup, $string) {
 	$organisms = array();
 	
 	$params = array();
-// 	if ($type_id) {
-// 		$params[':inventoryTypeId'] = $type_id;
-// 	}
+
 	$params[':limit'] = $limit;
 	$params[':lang'] = $langcode;
 	$params[':artgroupid'] = $artgroup;
@@ -762,153 +713,12 @@ function organism_search_organism_json($artgroup, $string) {
 	
 	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
 	
-// 	foreach ($result as $record) {
-	
-// 		$artg_attr = '';
-// 		$det_methods = '';
-// 		if ($record->artg_id) {
-// 			$artg_attr = organism_artgroup_get_attributes_ids($record->artg_id);
-// 			$det_methods = organism_artgroup_get_detmethods_ids(
-// 					$record->artg_id);
-// 		}
-// // 		$organism = array(
-// // 				'id' => $record->organism_id,
-// // 				'label' => strval($record->ol_name),
-// // 				'label_latin' => $record->scientific_name,
-// // 				'synonym_id' => $record->synonym_id,
-// // 				'attributes' => $artg_attr,
-// // 				'det_methods' => $det_methods,
-// // 				'artgr' => $record->artg_id,
-// // 		);
-// 				$organism = array(
-// 						'id' => $record->organism_id,
-// 						'organism' => strval($record->ol_name)
-// 				);
-	
-// 		$organisms[] = $organism;
-// 	}
-	
 		foreach ($result as $row) {
 			$matches[$row->ol_name] = strval($row->ol_name).'<br><em>'.strval($row->scientific_name).'</em>';
-			//$matches[$row->ol_name] = $string.'h';
-			//drupal_json_output($row->scientific_name);
 			
 		}
 	
-// 	if (!$plain)
-// 		$organisms = drupal_json_output($organisms);
-	
 	drupal_json_output($matches);
-// 	drupal_json_output($term);
 }
-
-// function _organism_search_organism_json($classification = false, $term = false,
-// 		$plain = false) {
-// 	global $user;
-
-// 	module_load_include('inc', 'organism', 'organism.artgroup');
-
-// 	$langcode = (isset($user->language) && $user->language != '')
-// 			? $user->language : 'de';
-
-// 	if (!$classification && isset($_REQUEST['inv_id'])) {
-// 		$classification = $_REQUEST['inv_id'];
-// 	}
-// 	$type_id = $classification;
-
-// 	$fauna = ($type_id == 16 ? false : true);
-
-// 	if (!$term) {
-// 		if (isset($_REQUEST['term'])) {
-// 			$term = $_REQUEST['term'];
-// 		} else {
-// 			return drupal_json_output(array('label' => t('No search term')));
-// 		}
-// 	}
-
-// 	$artgroup_join = "";
-// 	if (isset($_REQUEST['artgroup'])) {
-// 		$artgroup = (integer) $_REQUEST['artgroup'];
-// 	} else {
-// 		watchdog('organism', 'No argroup id got submitted. Please fix.');
-// 		$artgroup = 1; // UGLY: artgroup_id 1 == 'all'. If this changes in the future, our default value goes boooom.
-// 	}
-
-// 	$term = strtolower($term);
-// 	$terms = explode(' ', trim($term));
-
-// 	// why limit result with the length of the search term??
-// 	// $limit = strlen(trim($term)) > 3 ? 100000 : 20;
-// 	$limit = 30;
-
-// 	$organisms = array();
-
-// 	$params = array();
-// 	if ($type_id) {
-// 		$params[':inventoryTypeId'] = $type_id;
-// 	}
-// 	$params[':limit'] = $limit;
-// 	$params[':lang'] = $langcode;
-// 	$params[':artgroupid'] = $artgroup;
-// 	$params[':term'] = '%' . trim($term) . '%';
-
-// 	if (count($terms) > 2) {
-// 		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '% ' . $terms[2]
-// 				. '%';
-// 	} elseif (count($terms) > 1) {
-// 		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '%';
-// 	} else {
-// 		$params[':term1'] = $terms[0] . '%';
-// 	}
-
-// 	$i = 1;
-// 	$query = 'WITH RECURSIVE anchestors AS
-// 	(
-// 		SELECT oa.id, oa.name, oa.parent FROM {organism_artgroup} oa WHERE id = :artgroupid
-// 		UNION ALL
-// 		SELECT child.id, child.name, child.parent FROM {organism_artgroup} child INNER JOIN anchestors p ON p.id = child.parent
-// 	)
-// 	SELECT DISTINCT ON (o.id) o.id as organism_id, ol.name as ol_name, oas.organism_artgroup_id artg_id, osy.id as synonym_id,
-// 				-- Standardmaessig wird der richtige latienische name angezeigt. organism.scientific_name
-// 				-- falls aber nach dem synonym gesucht wird, so wird dieses als lateinischer Name verwendet
-// 				CASE WHEN (osy.name IS NULL) then o.scientific_name ELSE osy.name END AS scientific_name
-// 				FROM {organism} AS o
-// 				LEFT JOIN {organism_lang} AS ol ON ol.organism_id = o.id AND ol.languages_language = :lang
-// 				LEFT JOIN {organism_synonym} AS osy ON osy.organism_id = o.id
-// 				LEFT JOIN {organism_artgroup_subscription} AS oas ON oas.organism_id=o.id
-// 				JOIN anchestors AS a ON a.id=oas.organism_artgroup_id
-// 				WHERE ol.name ILIKE :term OR osy.name ILIKE :term1 OR o.scientific_name ILIKE :term1
-// 				ORDER BY o.id
-// 				LIMIT :limit;';
-
-// 	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
-	
-// 	foreach ($result as $record) {
-
-// 		$artg_attr = '';
-// 		$det_methods = '';
-// 		if ($record->artg_id) {
-// 			$artg_attr = organism_artgroup_get_attributes_ids($record->artg_id);
-// 			$det_methods = organism_artgroup_get_detmethods_ids(
-// 				$record->artg_id);
-// 		}
-// 		$organism = array(
-// 				'id' => $record->organism_id,
-// 				'label' => strval($record->ol_name),
-// 				'label_latin' => $record->scientific_name,
-// 				'synonym_id' => $record->synonym_id,
-// 				'attributes' => $artg_attr,
-// 				'det_methods' => $det_methods,
-// 				'artgr' => $record->artg_id,
-// 		);
-
-// 		$organisms[] = $organism;
-// 	}
-
-// 	if (!$plain)
-// 		$organisms = drupal_json_output($organisms);
-
-// 	return $organisms;
-// }
 
 ?>
