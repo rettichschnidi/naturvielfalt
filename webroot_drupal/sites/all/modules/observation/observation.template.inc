@@ -64,35 +64,18 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
-// 	drupal_add_library('system', 'ui.autocomplete');
-// 	drupal_add_library('system', 'ui.datepicker');
-// 	drupal_add_js('misc/form.js');
-// 	drupal_add_js('misc/collapse.js');
-// 	drupal_add_js('misc/jquery.form.js');
-// 	drupal_add_js('misc/ui/jquery.ui.dialog.min.js');
-// 	drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
-	$observation_path = drupal_get_path('module', 'observation');
-// 	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
-	drupal_add_js($observation_path . '/js/observation.js');
-// 	drupal_add_css($observation_path . '/css/observation.css');
-// 	drupal_add_css('misc/ui/jquery.ui.dialog.css');
-// //	drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
-// 	drupal_add_js($observation_path . '/js/tooltip.js');
-// 	$formcust = "";
-	
-	//drupal_add_js(drupal_get_path('module', 'mymodule') .'/mymodule.js');
-	
-	// Sections
-// 	$form['species'] = array(
-// 			'#type' => 'fieldset',
-// 			'#title' => t('Select species'),
-// 			'#weight' => 10,
-// 	);
 
 	
 	$form = array();
+	$form['group'] = array(
+			'#id' => 'organism_group',
+			'#prefix' => '<div id="organism_replace">',
+			'#suffix' => '</div>',
+	);	
+	
+	
 	$json = ($form_state['values']['artgroup_id'] == NULL) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
-	$form['organism'] = array(
+	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
 			'#type' => 'textfield',
@@ -102,14 +85,37 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'placeholder' => t('Start typing to see the species...'),
 			),
 			'#disabled' => $form_state['values']['artgroup_id'] == NULL ? TRUE : FALSE,
-			'#prefix' => '<div id="organism_replace">',
-			'#suffix' => '</div>',
-			'#ajax' => array(
-					'event' => 'change',
-					'callback' => 'observation_details_callback',
-					'wrapper' => 'replace_details'
-			),
 			'#default_value' => $observation['organism']['name_lang'],
+	);
+	
+	$form['group']['date'] = array(
+			'#id' => 'date',
+			'#title' => t('Date of the obeservation'),
+			'#type' => 'textfield',
+			'#attributes' => array('class' => array('datepicker')),
+			'#required' => true,
+			'#default_value' => date('m/d/Y', $timestamp),
+	);
+	
+	$form['group']['count'] = array(
+			'#id' => 'count',
+			'#title' => t('Count of found individuals'),
+			'#type' => 'textfield',
+			'#required' => true,
+			'#default_value' => $observation['observation']['count'],
+			'#attributes' => array(
+					'placeholder' => t('Some text'),
+			),
+	);
+	$form['group']['observer'] = array(
+			'#id' => 'observer',
+			'#title' => t('Observer'),
+			'#type' => 'textfield',
+			'#disabled' => true,
+			'#default_value' => $observation['observation']['observer'],
+			'#attributes' => array(
+					'placeholder' => t('Some text'),
+			),
 	);
 	
 	$observation_id = null;
@@ -119,17 +125,15 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	if(!$observation)
 		$observation_id = $observation['observation']['id'];
 	
-	$form['details'] = array(
+	$form['group']['details'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Details'),
-			'#prefix' => '<div id="replace_details">',
-			'#suffix' => '</div>',
 	);
-	debug($artgroup_id);
+
 	if($artgroup_id > 1) {
 		$options = organism_artgroup_get_determation_methods($artgroup_id);
 		if(!empty($options)) { // don't show determination method if no options
-			$form['details']['determination'] = array(
+			$form['group']['details']['determination'] = array(
 					'#title' => t('Determination method'),
 					'#type' => 'select',
 					'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
@@ -140,20 +144,18 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		
 		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
 		foreach ($observation_attributes as $key => $attribute) {
-			$form['details'][$key] = array(
+			$form['group']['details'][$key] = array(
 					'#id' => $attribute['id'],
 					'#title' => $attribute['name'],
 					'#type' => $attribute['type_drupal'],
 					'#weight' =>$attribute['id']+12,
 			);
 		}
-		debug($form['details']);
 	}
 
   
 	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
 	if($edit) {
-		// get the organism selection box
 		
 		$artgroup_name = organism_artgroup_get_artgroup($observation['observation']['organism_artgroup_id'],true);
 		
@@ -173,7 +175,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		);
 	}
 	else {
-		// get the organism selection box
 		
 		$form['artgroup_id'] = array(
 				'#id' => 'artgroup_id',
@@ -189,36 +190,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#weight' => -1,
 		);
 	}
-	
-	$form['date'] = array(
-			'#id' => 'date',
-			'#title' => t('Date of the obeservation'),
-			'#type' => 'textfield',
-			'#attributes' => array('class' => array('datepicker')),
-			'#required' => true,
-			'#default_value' => date('m/d/Y', $timestamp),
-	);
-	
-	$form['count'] = array(
-			'#id' => 'count',
-			'#title' => t('Count of found individuals'),
-			'#type' => 'textfield',
-			'#required' => true,
-			'#default_value' => $observation['observation']['count'],
-			'#attributes' => array(
-					'placeholder' => t('Some text'),
-			),
-	);
-	$form['observer'] = array(
-			'#id' => 'observer',
-			'#title' => t('Observer'),
-			'#type' => 'textfield',
-			'#disabled' => true,
-			'#default_value' => $observation['observation']['observer'],
-			'#attributes' => array(
-					'placeholder' => t('Some text'),
-			),
-	);
 	
 	$form['#after_build'] = array('observation_form_uidatepicker');
 	
@@ -350,10 +321,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		'observation',
 		$observation['observation']['id'],
 		true);
-
-// 	$species_autocomplete = ($observation['organism']['name_lat'] == '')
-// 			? t('Maximum 30 search results will be showed')
-// 			: $observation['organism']['name_lat'];
 	
 	/* Tooltip texts */
 	$tooltip['text']['artengruppe'] = t('Select a specimen group from the dropdown menu to constrain the search.');
@@ -560,11 +527,7 @@ function observation_show_observation($observationdata = NULL) {
 
 function observation_organism_callback($form, &$form_state) {
 	
-	return $form['organism'];
-}
-
-function observation_details_callback($form, &$form_state) {
-	return $form['details'];
+	return $form['group'];
 }
 
 function observation_form_uidatepicker($form, $form_state) {

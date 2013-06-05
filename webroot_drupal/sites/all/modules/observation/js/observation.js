@@ -3,8 +3,6 @@ jQuery(document).ready(function() {
 	observation = {};
 	observation.message = $('#message');
 	
-	
-	
 	/*
 	 * Functions for the observations list page
 	 */
