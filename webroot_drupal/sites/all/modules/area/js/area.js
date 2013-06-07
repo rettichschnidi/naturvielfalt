@@ -50,7 +50,7 @@ jQuery(document).ready(function() {
 		var gridPrefs = $table[0].p;
 		url += '&areas=' + areas + '&shape=' + "mixed";
 		
-		var really = confirm('There will be ' + $num_areas + ' area(s) exported!');
+		var really = confirm('Es werden ' + $num_areas + ' Gebiete exportiert!');
 		if (really){
 			// load export url in a hidden iframe to get a download prompt
 			var $status = $flexidiv.find('.pPageStat');
@@ -122,7 +122,6 @@ jQuery(document).ready(function() {
 	 * Show the message returned from the deletion request
 	 */
 	area.showDeleteResponse = function(responseText, statusText, xhr, $form)  {
-		alert('show delete response');
 		if(responseText != null && responseText.success == true){
 			area.setMessage(responseText.message, responseText.type, 5000);
 		} else if (responseText != null) {
@@ -255,6 +254,7 @@ function Area(options) {
 				}
 			);
 	}
+	
 	this.createDrawingManagerGetcoordinate(this.options.getcoordinate);
 
 };

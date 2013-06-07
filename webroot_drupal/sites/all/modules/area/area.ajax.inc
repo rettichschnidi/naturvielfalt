@@ -109,7 +109,7 @@ function area_export() {
 	
 	// get the areas of the request
 	$param = filter_xss($_REQUEST['areas']);
-	//$param = '(1)';	
+	
 	$export_id = uniqid();
 	$base_query = "SELECT geom FROM naturvielfalt_area_geometry a_g, naturvielfalt_area a WHERE a_g.id = a.area_geometry_id AND a.id in $param AND GeometryType(geom)=";
 
@@ -220,35 +220,4 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 		//echo($cmd.'<br>');
 	}
 }
-
-// Old function with pgsql2shp which files were not importable to ArcGIS
-// function export_shape($geometrytype, $base_query, $export_Id){
-	
-// 	$query = $base_query."'".$geometrytype."'";
-	
-// 	// check if there are any shapes at all for this type
-// 	$result = db_query($query);
-	
-// 	if($result->rowCount() > 0)
-// 	{
-// 		global $databases;
-		
-// 		$cmd = strtr('%postgresql_bin%exe -f %shapefile -h %host -u %user -P %password %query'
-// 				, array(
-// 						'%postgresql_bin' => '"C:\Program Files (x86)\PostgreSQL\8.4\bin\pgsql2shp'
-// 						, '%shapefile' => file_directory_temp() .'\\'. $export_Id.$geometrytype
-// 						, '%query' => '"'.$query.'"'
-// 						, '%host' =>  $databases['default']['default']['host']
-// 						, '%user' => $databases['default']['default']['username']
-// 						, '%password' => $databases['default']['default']['password']
-// 						, '%database' =>  $databases['default']['default']['database']
-// 						, '%exe' => '.exe"'
-// 				)
-// 		);
-		
-// 		// $cmd = 'echo . | ' . $cmd.' 2>&1';
-// 	 	echo $cmd.'<br>';	
-// 		shell_exec($cmd);
-// 	}
-// }
 ?>

@@ -199,15 +199,6 @@ function area_show_specific_area($areadata = NULL) {
 	drupal_add_js('misc/collapse.js');
 	drupal_set_title($areadata['name']);
 
-	//TODO: DELETE
-	/* call area_get_static_image_url() to get an url to the google maps visualization */
-// 	$staticimageurl = area_get_static_image_url(
-// 		array('coordinates' => json_encode($areadata['coordinatejson']),
-// 				'type' => $areadata['geometry_type']
-// 		),
-// 		450,
-// 		320);
-
 	/* Create a fieldset for the tabular data */
 	$output['area'] = array(
 			'#type' => 'fieldset',
@@ -227,12 +218,6 @@ function area_show_specific_area($areadata = NULL) {
 					'id' => 'area-show-map' // required for CSS
 			)
 	);
-
-	/* add the picture */
-// 	$output['area_map']['image'] = array(
-// 			'#type' => 'markup',
-// 			'#markup' => "<img src='$staticimageurl' alt='Static Map'/>"
-// 	);
 	
 	$output['area_map']['map'] = array(
 			'#theme' => 'area',
