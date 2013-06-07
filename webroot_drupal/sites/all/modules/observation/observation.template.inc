@@ -3,11 +3,15 @@ module_load_include('inc', 'observation');
 module_load_include('inc', 'observation', 'observation.ajax');
 module_load_include('inc', 'organism');
 module_load_include('inc', 'gallery', 'gallery.implementations');
+module_load_include('inc', 'observation', 'observation.validate');
+
 /**
  * Show the form to add or edit an observation
  * @param array $observation
  */
 function observation_form($form = null, &$form_state = null, $observation = false) {
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/observation.js');
 	global $user;
 	
 	$edit = false;
@@ -24,7 +28,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		drupal_set_title(t('Edit observation of <i>@species</i>', array('@species' => check_plain($species))), PASS_THROUGH);
 		$edit = true;
 	}
-
 	// if not edit, set standard values
 	if (!isset($observation['observation']['id']))
 		$observation['observation']['id'] = '';
@@ -64,17 +67,15 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
-
-	
 	$form = array();
 	$form['group'] = array(
 			'#id' => 'organism_group',
 			'#prefix' => '<div id="organism_replace">',
 			'#suffix' => '</div>',
+			'#tree' => true,
 	);	
-	
-	
-	$json = ($form_state['values']['artgroup_id'] == NULL) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
+
+	$json = !isset($form_state['values']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
 	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
@@ -84,9 +85,12 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#attributes' => array(
 					'placeholder' => t('Start typing to see the species...'),
 			),
-			'#disabled' => $form_state['values']['artgroup_id'] == NULL ? TRUE : FALSE,
+			'#tree' => true,
+			'#required' => true,
 			'#default_value' => $observation['organism']['name_lang'],
 	);
+	
+
 	
 	$form['group']['date'] = array(
 			'#id' => 'date',
@@ -94,8 +98,11 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#type' => 'textfield',
 			'#attributes' => array('class' => array('datepicker')),
 			'#required' => true,
-			'#default_value' => date('m/d/Y', $timestamp),
+			'#tree' => true,
+			'#default_value' => date('m.d.Y', $timestamp),
 	);
+	
+	$form['#after_build'] = array('observation_form_uidatepicker');
 	
 	$form['group']['count'] = array(
 			'#id' => 'count',
@@ -106,21 +113,25 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#attributes' => array(
 					'placeholder' => t('Some text'),
 			),
+			'#element_validate' => array('element_validate_number'),
+			'#tree' => true,
 	);
-	$form['group']['observer'] = array(
-			'#id' => 'observer',
-			'#title' => t('Observer'),
-			'#type' => 'textfield',
-			'#disabled' => true,
-			'#default_value' => $observation['observation']['observer'],
-			'#attributes' => array(
-					'placeholder' => t('Some text'),
-			),
-	);
+// 	$form['group']['observer'] = array(
+// 			'#id' => 'observer',
+// 			'#title' => t('Observer'),
+// 			'#type' => 'textfield',
+// 			'#disabled' => true,
+// 			'#default_value' => $observation['observation']['observer'],
+// 			'#attributes' => array(
+// 					'placeholder' => t('Some text'),
+// 			),
+// 	);
 	
 	$observation_id = null;
 	
-	$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	if(!$edit)
+		$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	else $artgroup_id = $observation['observation']['organism_artgroup_id'] ;
 	
 	if(!$observation)
 		$observation_id = $observation['observation']['id'];
@@ -128,6 +139,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$form['group']['details'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Details'),
+			'#tree' => true,
 	);
 
 	if($artgroup_id > 1) {
@@ -138,7 +150,9 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'#type' => 'select',
 					'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
 					'#weight' => 11,
-					'#description' => 'Determination Method'
+					'#description' => 'Determination Method',
+					'#default_value' => $observation['detmethods_vis'],
+					'#tree' => true,
 			);
 		}
 		
@@ -149,6 +163,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'#title' => $attribute['name'],
 					'#type' => $attribute['type_drupal'],
 					'#weight' =>$attribute['id']+12,
+					'#tree' => true,
+					//'#default_value' => $attribute['attributes'][$key],
 			);
 		}
 	}
@@ -190,8 +206,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#weight' => -1,
 		);
 	}
-	
-	$form['#after_build'] = array('observation_form_uidatepicker');
 	
 	$form['button'] = array(
 			'#type' => 'submit',
@@ -532,6 +546,9 @@ function observation_organism_callback($form, &$form_state) {
 
 function observation_form_uidatepicker($form, $form_state) {
 	drupal_add_library('system', 'ui.datepicker');
-	drupal_add_js("(function ($) { $('.datepicker').datepicker(); })(jQuery);", array('type' => 'inline', 'scope' => 'footer', 'weight' => 5));
+	 drupal_add_js('jQuery(document).ready(function(){jQuery( ".datepicker" ).datepicker({
+      dateFormat: "dd.mm.yy",
+      autoSize: true
+    });});', 'inline'); 
 	return $form;
 }

@@ -1,4 +1,9 @@
 jQuery(document).ready(function() {
+//	var marker = observationmap.overlaysArray[id];
+//	
+//	var position = marker.getPosition();
+//	alert(position);
+	
 	$ = jQuery;
 	observation = {};
 	observation.message = $('#message');
@@ -792,19 +797,6 @@ jQuery(document).ready(function() {
 	
 	// automatically add upload slot
 	$('.form-file').live('change', addUploadSlot);
-	
-	/**
-	 * Bind the date picker to the date field
-	 */
-	$('#date').datepicker({
-		dateFormat: 'dd.mm.yy',
-		duration: 0,
-		showButtonPanel: true,
-		onSelect: function (date, inst) {
-			observation.last_date = date;
-		}
-	}).width(80);
-	if(observation.last_date) $('#date').val(observation.last_date);
 	
 	if($('#organismn_autocomplete').val() == '') $('#organismn_autocomplete').focus();
 });

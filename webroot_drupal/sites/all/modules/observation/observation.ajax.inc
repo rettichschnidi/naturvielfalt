@@ -21,16 +21,11 @@ module_load_include('inc', 'datatable');
  */
 function observation_save($observation_data = false, $custom_data = false, $from_api = false) {
 	global $user;
+	module_load_include('inc', 'observation', 'observation.validate');
 	
 	$values = $_POST;
 
-// 	if ($custom_data) {
-// 		$values = $custom_data;
-// 	}
-
 	if($from_api) $values = $custom_data;
-	
-	debug($_POST);
 
 	$errormessages = array();
 	$observation = array();
@@ -46,25 +41,23 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	/**
 	 * check the organism id
 	 */
-// 	if (!organism_get(filter_xss($values['organismn_id']))) {
-// 		$errormessages[] = t('This organism is not permitted!');
-// 	} else {
-// 		$observation['organism_id'] = filter_xss($values['organismn_id']);
-// 	}
-
-
-	$result = organism_get_byname(filter_xss($values['organism']));
 	
-	$organism = filter_xss($values['organism']);
+	//some form elements are nested: see observation_form.inc
+	if(!$from_api) {
+		$values['organism'] = $values['group']['organism'];
+		$values['date'] = $values['group']['date'];
+		$values['count'] = $values['group']['count'];
+		$values['details'] = $values['group']['details'];
+	}
+	isset($values['organism']) ?
+	$result = organism_get_byname(filter_xss($values['organism'])) : array();
 	
-	$observation['organism_id'] = $result['id'];
-	debug($observation['organism_id']);
-// 		if (is_bool((bool) $values['observation_found_as_lang'])) {
-// 			$observation['found_as_lang'] = $values['observation_found_as_lang'];
-// 		}
-// 		if (is_bool((bool) $values['observation_found_as_latin'])) {
-// 			$observation['found_as_lat'] = $values['observation_found_as_latin'];
-// 		}
+	isset($values['organism']) ?
+	$organism = filter_xss($values['organism']) : array();
+	
+	if(isset($result['id']))
+		$observation['organism_id'] = $result['id'];
+	else $errormessages['group][organism'] = t('Please enter an existing organism.');
 	
 	/**
 	 * Check the determation and artgroup value
@@ -94,7 +87,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				}
 			}
 			if (!$artgroup_id_checked) {
-				$errormessages[] = t('Artgroup with this determination method not allowed');
+				$errormessages['group][determination_method_id'] = t('Artgroup with this determination method not allowed');
 			}
 		}
 	}
@@ -111,7 +104,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	 */
 	$count = (integer) $observation['count'] = $values['count'];
 	if ($count < 1 || empty($count) || !is_int($count)) {
-		$errormessages[] = t('The count has to be a number and bigger than zero');
+		$errormessages['group][count'] = t('The count has to be a number and bigger than zero');
 	}
 
 	/**
@@ -119,10 +112,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	 */
 	$date = $values['date'];
 // 	$date_split = explode('.', $date);
-	$date_split = explode('/', $date);
+	$date_split = explode('.', $date);
 	$observation['date'] = mktime(null, null, null, $date_split[1], $date_split[0], $date_split[2]);
 	if (empty($date) || !checkdate($date_split[1], $date_split[0], $date_split[2])) {
-		$errormessages[] = t('Please enter a valid date');
+		$errormessages['group][date'] = t('Please enter a valid date');
 	}
 
 	/**
@@ -147,7 +140,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				if (array_key_exists($value, $attribute['values'])) {
 					$attributes_checked[$key] = 'db_id-->' . $value;
 				} else {
-					$errormessages[] = t('The value of ' . $attribute['name'] . ' not permitted');
+					$errormessages['group][details][attributes'] = t('The value of ' . $attribute['name'] . ' not permitted');
 				}
 			}
 			break;
@@ -162,7 +155,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				$attributes_checked[$key] = $value;
 			} else {
 				if ($value != "") {
-					$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a date');
+					$errormessages['group][details][attributes'] = t('The value of ' . $attribute['name'] . ' should be a date');
 				}
 			}
 			break;
@@ -171,7 +164,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			if (is_int($value) && !empty($value)) {
 				$attributes_checked[$key] = $value;
 			} elseif ($value != "") {
-				$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a number');
+				$errormessages['group][details][attributes'] = t('The value of ' . $attribute['name'] . ' should be a number');
 			}
 			break;
 		}
@@ -183,7 +176,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	 */
 
 	if (filter_xss($values['coordinate']) == "") {
-		$errormessages[] = t('Please mark a point on the map');
+		$errormessages['coordinate'] = t('Please mark a point on the map');
 	}
 
 	$geometry['zip'] = intval(filter_xss($values['zip']));
@@ -194,13 +187,11 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	$geometry['area_points'] = filter_xss($values['coordinate']);
 	$geometry['type'] = 'marker';
 
-	debug($errormessages);
 	/**
 	 * Save to the DB
 	 */
 	if (empty($errormessages)) {
-		
-		debug('lets save the shizzle');
+	
 		/**
 		 * save the observation
 		 */
@@ -260,7 +251,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			if (isset($values['file_delete'])) {
 				gallery_implementation_files_delete($values['file_delete'], 'observation');
 			}
-			debug('success');
 			// Set the return statement
 			$output['success'] = true;
 		} catch (Exception $e) {
@@ -270,7 +260,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$output['message'] = array(
 					t('Could not save the observation because of an unknown error.')
 			);
-			debug($e->getMessage());
+			$errormessages['observation_form'] = t('Could not save the observation because of an unknown error.');
 		}
 	} else {
 		$output['success'] = false;
@@ -281,7 +271,17 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	if ($from_api) {
 		return $output;
 	}
-
+	
+	if($output['success']) {
+		drupal_set_message(t('successfull saved'));
+		drupal_goto('observation/'.$observation['id'].'/edit');
+	} else {
+		foreach($errormessages as $error => $key) {
+			form_set_error($error, $key);
+		}
+		$observation_data['redirect'] = FALSE;
+	}
+	
 	return drupal_json_output($output);
 
 }

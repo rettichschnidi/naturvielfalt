@@ -1117,11 +1117,21 @@ Area.prototype.createDrawingManagerGetcoordinate = function(enable) {
 			},
 			map : this.googlemap
 		});
-	
+
+		//set marker on map again, if validation fails
+		if(this.options.getcoordinate && (document.getElementById('hiddenfield-longitude').value != '')) {
+			var long = document.getElementById('hiddenfield-longitude').value;
+			var lat = document.getElementById('hiddenfield-latitude').value;
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng(lat, long),
+				map: this.googlemap
+			});
+		}
+		
 		var update = function() {
 			updateHiddenfields(this_.newOverlay.overlay, this_.options.coordinatestorageid);
 		};
-	
+		
 		google.maps.event.addListener(
 				this.drawingManager,
 				'overlaycomplete',
