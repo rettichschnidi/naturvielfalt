@@ -660,42 +660,42 @@ jQuery(document).ready(function() {
 		observation.resetOrganism();
 	};
 	
-	/**
-	 * Add another upload slot for files
-	 * 
-	 * @param form //unused
-	 */
-	addUploadSlot = function(form) {
-		$('#picture_upload__0').clone().appendTo($('#picture_upload__0').parent()).css('display','block').css('height','auto');
-		var slot_id = 0;
-		var empty_slots = 0;
-		$('div[id^="picture_upload__"]').each(function() {
-			var $div = $(this);
-			if ($div.find('input:file').first().val() == '') {
-				// we need 2 empty elements because of picture_upload__0 field
-				if(empty_slots >= 2)
-					$div.remove();
-				else
-					empty_slots++;
-			}
-			if ($div)
-				$div.attr('id', 'picture_upload__'+(slot_id++));
-		});
-	};
+//	/**
+//	 * Add another upload slot for files
+//	 * 
+//	 * @param form //unused
+//	 */
+//	addUploadSlot = function(form) {
+//		$('#picture_upload__0').clone().appendTo($('#picture_upload__0').parent()).css('display','block').css('height','auto');
+//		var slot_id = 0;
+//		var empty_slots = 0;
+//		$('div[id^="picture_upload__"]').each(function() {
+//			var $div = $(this);
+//			if ($div.find('input:file').first().val() == '') {
+//				// we need 2 empty elements because of picture_upload__0 field
+//				if(empty_slots >= 2)
+//					$div.remove();
+//				else
+//					empty_slots++;
+//			}
+//			if ($div)
+//				$div.attr('id', 'picture_upload__'+(slot_id++));
+//		});
+//	};
 	
-	/**
-	 * Reset upload slots
-	 */
-	resetUploadSlots = function() {
-		var element_id = 0;
-		var slots = 0;
-		$('div[id^="picture_upload__"]').each(function() {
-			if(slots >= 2)
-				$(this).remove();
-			else
-				slots++;
-		});
-	};
+//	/**
+//	 * Reset upload slots
+//	 */
+//	resetUploadSlots = function() {
+//		var element_id = 0;
+//		var slots = 0;
+//		$('div[id^="picture_upload__"]').each(function() {
+//			if(slots >= 2)
+//				$(this).remove();
+//			else
+//				slots++;
+//		});
+//	};
 	
 	/**
 	 * Check the type of the selected file
@@ -720,8 +720,9 @@ jQuery(document).ready(function() {
 	 * @param div
 	 */
 	observation.galleryMetaDataDialog = function(div) {
-		file_name = div.children('input#file_input.form-file').val();
 		div_id = div.attr("id");
+		id = div_id.replace('picture_upload__','');
+		file_name = document.getElementById('file_input' + id).value;
 		observation.showLoading();
 		if(file_name == ''){
 			alert(Drupal.t('Please select a file'));
@@ -795,8 +796,8 @@ jQuery(document).ready(function() {
 		complete: observation.hideLoading
 	});
 	
-	// automatically add upload slot
-	$('.form-file').live('change', addUploadSlot);
+//	// automatically add upload slot
+//	$('.form-file').live('change', addUploadSlot);
 	
 	if($('#organismn_autocomplete').val() == '') $('#organismn_autocomplete').focus();
 });

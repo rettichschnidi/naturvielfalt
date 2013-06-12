@@ -10,18 +10,16 @@ module_load_include('inc', 'observation', 'observation.validate');
  * @param array $observation
  */
 function observation_form($form = null, &$form_state = null, $observation = false) {
+	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
 	global $user;
-	
 	$edit = false;
-	
-	$hidden_fields_arr = array();
+
 	drupal_set_title(t('Capture a new observation'));
 	$url = base_path() . 'observation/save';
 	if ($observation) {
 		$url = base_path() . 'observation/' . $observation['observation']['id']. '/save';
-		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 		$species = $observation['organism']['name_lat'];
 		if (isset($observation['organism']['name_lang']))
 			$species .= ' / ' . $observation['organism']['name_lang'];
@@ -31,7 +29,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	// if not edit, set standard values
 	if (!isset($observation['observation']['id']))
 		$observation['observation']['id'] = '';
-	$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 	if (!isset($observation['observation']['found_as_lang']))
 		$observation['observation']['found_as_lang'] = 'false';
 	if (!isset($observation['observation']['found_as_lat']))
@@ -55,15 +52,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		$observation['observation']['observer'] = $user->name;
 	if (!isset($observation['observation']['organism_artgroup_detmethod_id']))
 		$observation['observation']['organism_artgroup_detmethod_id'] = false;
-	if (!isset($observation['detmethods_vis']))
-		$observation['detmethods_vis'] = array();
-	if (!isset($observation['attributes']))
-		$observation['attributes'] = array();
 
 	$form_id = "observation_form";
-	$hidden_fields = '';
-	foreach ($hidden_fields_arr as $key => $value)
-		$hidden_fields .= '<input type="hidden" id="' . $key . '" name="' . $key . '" value="' . $value . '">';
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
 
@@ -99,7 +89,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#attributes' => array('class' => array('datepicker')),
 			'#required' => true,
 			'#tree' => true,
-			'#default_value' => date('m.d.Y', $timestamp),
+			'#default_value' => date('d.m.Y', $timestamp),
 	);
 	
 	$form['#after_build'] = array('observation_form_uidatepicker');
@@ -116,25 +106,22 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#element_validate' => array('element_validate_number'),
 			'#tree' => true,
 	);
-// 	$form['group']['observer'] = array(
-// 			'#id' => 'observer',
-// 			'#title' => t('Observer'),
-// 			'#type' => 'textfield',
-// 			'#disabled' => true,
-// 			'#default_value' => $observation['observation']['observer'],
-// 			'#attributes' => array(
-// 					'placeholder' => t('Some text'),
-// 			),
-// 	);
-	
-	$observation_id = null;
+	$form['group']['observer'] = array(
+			'#id' => 'observer',
+			'#title' => t('Observer'),
+			'#type' => 'textfield',
+			'#disabled' => true,
+			'#default_value' => $observation['observation']['observer'],
+			'#attributes' => array(
+					'placeholder' => t('Some text'),
+			),
+	);
 	
 	if(!$edit)
 		$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
 	else $artgroup_id = $observation['observation']['organism_artgroup_id'] ;
 	
-	if(!$observation)
-		$observation_id = $observation['observation']['id'];
+
 	
 	$form['group']['details'] = array(
 			'#type' => 'fieldset',
@@ -143,28 +130,27 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	);
 
 	if($artgroup_id > 1) {
-		$options = organism_artgroup_get_determation_methods($artgroup_id);
+		$options = organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id);
 		if(!empty($options)) { // don't show determination method if no options
 			$form['group']['details']['determination'] = array(
 					'#title' => t('Determination method'),
 					'#type' => 'select',
-					'#options' => 	organism_artgroup_get_determation_methods($artgroup_id),
-					'#weight' => 11,
+					'#options' => 	organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id),
 					'#description' => 'Determination Method',
-					'#default_value' => $observation['detmethods_vis'],
+					'#default_value' => $observation['observation']['organism_artgroup_detmethod_id'],
 					'#tree' => true,
 			);
 		}
 		
-		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
+		$observation_attributes = observation_get_attributes($observation['observation']['id'], $artgroup_id);
 		foreach ($observation_attributes as $key => $attribute) {
-			$form['group']['details'][$key] = array(
+			$form['group']['details']['attributes'][$attribute['id']] = array(
 					'#id' => $attribute['id'],
 					'#title' => $attribute['name'],
 					'#type' => $attribute['type_drupal'],
 					'#weight' =>$attribute['id']+12,
 					'#tree' => true,
-					//'#default_value' => $attribute['attributes'][$key],
+					'#default_value' => $attribute['value'],
 			);
 		}
 	}
@@ -285,50 +271,100 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	}
 	$file_extensions = implode(' ', gallery_get_valid_file_extensions());
 	
-	// format the upload field manually, because it's not possible with drupal forms...
-	$image = '<fieldset id="picture" class="form-wrapper">
-	<legend>
-		<span class="fieldset-legend">'
-			. t('Add media for this observation')
-			. '</span>
-	</legend>
-	<div class="fieldset-wrapper">
-		<div class="form-item form-type-file form-item-files-">
-			<div>
-				<div id="picture_upload__0" style="display: none; height: 0px;">
-					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '	. t('Click here to add details to this file') . '</a>
-					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
-				</div>
-				<label for="picture_upload__1">' . t('Upload files')
-				. '</label>
-				<div id="picture_upload__1">
-					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  ' . t('Click here to add details to this file') . '</a>
-					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
-				</div>
-			</div>
-
-			<div class="description">
-				<a href="javascript:addUploadSlot();">' . t('Click here to add one more file') . '</a>
-				<p>' . t('Allowed files endings are: ') . $file_extensions . '</p>
-			</div>
-			
-		</div>
-	</div>
-</fieldset><input type="submit" value="' . t('Save') . '" id="picture_upload_submit" /><br />';
-				
 	$form['media'] = array(
-		'#type'=> 'item',	
-		'#title'=> t('Media'),	
-		'#markup'=> $image,
+		'#type'=> 'fieldset',
+		'#title'=> t('Add media for this observation'),
+		'#collapsible' => true,
+		'#collapsed' => false,
+		'#tree' => true,
 	);
+	
+	$numbers = array();
+	for($i=1; $i <= 10; $i++) {
+		$numbers[$i] = $i;
+	}
+	$default = !empty($form_state['values']['media']['image_number']) ? $form_state['values']['media']['image_number'] : 1;
+	$form['media']['image_number'] = array(
+			'#title' => t('Number of images to upload?'),
+			'#type' => 'select',
+			'#options' => $numbers,
+			'#default_value' => $default,
+			'#ajax' => array(
+					'callback' => 'observation_add_uploadslot',
+					'wrapper' => 'upload-div',
+					'method' => 'replace',
+					'effect' => 'fade',
+			),
+			'#tree' => true,
+	);
+	
+	$form['media']['upload'] = array(
+			'#prefix' => '<div id="upload-div">',
+			'#suffix' => '</div>',
+			'#type' => 'fieldset',
+			'#tree' => true,
+	);
+	for ($i=0; $i<$default; $i++) {
+		$form['media']['upload'][$i] = array(
+			'#name' => 'files['.$i.']',
+			'#id' => 'file_input'.$i,
+			'#type' => 'file',
+			'#prefix' => '<div id="picture_upload__'.$i.'">
+						 <input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+ 						 <input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+ 					     <input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+					     <input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+						',
+			'#suffix' => '<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '	. t('Click here to add details to this file') . '</a></div>',
+			'#title' => t('Choose a file'),
+			'#attributes' => array(
+					'onchange' => 'javascript:checkMimeType_metaData(this);',
+					'enctype' => 'multipart/form-data',
+			),
+			'#size' => 40,
+			'#tree' => true,
+		);
+	}
+	
+// format the upload field manually, because it's not possible with drupal forms...
+// 	$image = '<fieldset id="picture" class="form-wrapper">
+// 	<legend>
+// 		<span class="fieldset-legend">'
+// 			. t('Add media for this observation')
+// 			. '</span>
+// 	</legend>
+// 	<div class="fieldset-wrapper">
+// 		<div class="form-item form-type-file form-item-files-">
+// 			<div>
+// 				<div id="picture_upload__0" style="display: none; height: 0px;">
+// 					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+// 					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '	. t('Click here to add details to this file') . '</a>
+// 					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+// 					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+// 					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+// 					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+// 				</div>
+// 				<label for="picture_upload__1">' . t('Upload files')
+// 				. '</label>
+// 				<div id="picture_upload__1">
+// 					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
+// 					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  ' . t('Click here to add details to this file') . '</a>
+// 					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+// 					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+// 					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+// 					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+// 				</div>
+// 			</div>
+
+// 			<div class="description">
+// 				<p>' . t('Allowed files endings are: ') . $file_extensions . '</p>
+// 			</div>
+			
+// 		</div>
+// 	</div>
+// </fieldset><br />';
+	
+
 	
 	
 	$file_list['files'] = gallery_implementation_files_table(
@@ -348,7 +384,13 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	
 	/* Hidden fields */
 	$form['observer'] = array('#type' => 'hidden', '#id' => 'observer', '#name' => 'observer', '#value' => $observation['observation']['observer']);
-
+	
+	
+	$form['observation_id'] = array('#type' => 'hidden', '#id' => 'observation_id', '#name' => 'observation_id', '#value' => $observation['observation']['id']);
+	
+	if(isset($observation['observation']['area_geometry_id']))
+		$form['area_geometry_id'] = array('#type' => 'hidden', '#id' => 'area_geometry_id', '#name' => 'area_geometry_id', '#value' => $observation['observation']['area_geometry_id']);
+	
 	$form['recent_observation'] = array(
 			'#theme' => 'datatable',
 			'#header' => observation_get_standard_datatable_headers(9, 'desc'),
@@ -368,33 +410,28 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			
 	);
 
-	if(observation_admin_access($observation)) {
-		$aclfieldset =  array(
-				'#type' => 'fieldset',
-				'#title' => t('Permissions'),
-				'#weight' => 99,
-		);
+// 	if(observation_admin_access($observation)) {
+// 		$form['acl'] =  array(
+// 				'#type' => 'fieldset',
+// 				'#title' => t('Permissions'),
+// 				'#weight' => 99,
+// 				'#tree' => true,
+// 		);
 
-		$aclfieldset['content'] = observation_acl_template($observation);
-	}
+// 		$form['acl']['content'] = observation_acl_template($observation);
+// 	}
 	
 	return $form;
 }
 
-
-function ajax_example_simplest_callback($form, $form_state) {
-	// The form has already been submitted and updated. We can return the replaced
-	// item as it is.
-	return $form['replace_textfield'];
+function observation_add_uploadslot($form, &$form_state) {
+	return $form['media']['upload'];
 }
-
-
 /**
  * ACL permission template
  * @param array $observation
  */
 function observation_acl_template($observation = NULL) {
-	$output = array();
 	$defaults = array(
 			array(
 					'type' => variable_get("ACL_READ"),
@@ -413,13 +450,14 @@ function observation_acl_template($observation = NULL) {
 			)
 	);
 
-	$output['acl'] = array(
+	$acl = array(
 			'#theme' => 'c_acl',
 			'#defaults' => $defaults,
 			'#acl_id' => $observation['observation']['acl_id'],
 			'#add_element' => true,
+			'#tree' => true,
 	);
-	return $output;
+	return $acl;
 }
 
 /**

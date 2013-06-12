@@ -2340,7 +2340,7 @@ function gallery_metadata_form() {
 				'#description' => t('The author or copyright of the file'),
 				'#required' => FALSE,
 		);
-		$form['metadata']['fomr'] = array(
+		$form['metadata']['form'] = array(
 				'#type' => 'textfield',
 				'#attributes' => array(
 						'id' => 'uploadform',

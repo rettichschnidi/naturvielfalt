@@ -146,7 +146,7 @@ function organism_artgroup_get_sql_from_id($ids_as_array, $col_name, $and_or_or 
  * @param array visisible_arr id's as value
  * @return object or string
  */
-function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false,
+function organism_artgroup_get_determation_methods($observation_id = 0, $artgroup_id = false, $as_html_option = false,
 		$selected_id = false, $visisible_arr = false) {
 	$artgroup_filter = '';
 	if ($artgroup_id) {
@@ -169,7 +169,6 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 		$res[$result->id] = $result->name;
 	}
 	return $res;
-	
 }
 
 /**

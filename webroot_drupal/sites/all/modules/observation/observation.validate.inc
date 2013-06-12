@@ -14,39 +14,31 @@ module_load_include('inc', 'organism', 'organism.artgroup');
  * @param array $form_state
  */
 function observation_form_validate($form, &$form_state) {
-	$error = false;
 	/**
 	 * Check the date
 	 */
 	if(!observation_validate_date($form_state['values']['group']['date'])) {
 		form_set_error('group][date', t('Please enter a valid date (dd.mm.yyyy)'));
-		$error = true;
 	}
 	/**
 	 * Check the count value
 	 */
 	if(!observation_validate_count($form_state['values']['group']['count'])) {
 		form_set_error('group][count', t('The count has to be a number and bigger than zero'));
-		$error = true;
 	}
 	/**
 	 * Check the organism value
 	 */
 	if(!observation_validate_organism($form_state['values']['group']['organism'])) {
 		form_set_error('group][organism', t('Please enter an existing organism.'));
-		$error = true;
 	}
 	/**
 	 * check the coordinate
 	 */
-// 	if(!observation_validate_coordinate($_POST['coordinate'])) {
-// 		form_set_error('observation_form', t('Please mark a point on the map'));
-// 	}
-	/**
-	 * set coordinates 
-	 */
-	if($error && isset($_POST['coordinate'])) {
+	if(!observation_validate_coordinate($_POST['coordinate'])) {
+		form_set_error('observation_form', t('Please mark a point on the map'));
 	}
+	
 }
 
 /**
@@ -59,9 +51,9 @@ function observation_validate_date ($input) {
 	$date_parts = explode('.', $input);
 	if(count($date_parts) != 3) return false;
 	else {
-		$day = intval($date_parts[0]);
-		$month = intval($date_parts[1]);
-		$year = intval($date_parts[2]);
+		$day = $date_parts[0];
+		$month = $date_parts[1];
+		$year = $date_parts[2];
 		return checkdate($month, $day, $year);
 	}
 }
@@ -102,12 +94,12 @@ function observation_validate_coordinate ($input) {
 }
 
 /**
- * Attributes Validation
+ * Determination Method Validation
  *
  * @param array $input
  * @return true if valid attributes
  */
-function observation_validate_attributes ($input) {
+function observation_validate_determination_method ($input) {
 	/**
 	 * Check the determation and artgroup value
 	 */
@@ -126,7 +118,7 @@ function observation_validate_attributes ($input) {
 	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval(
 			$values['determination_method_id']);
 	if (isset($artgroup_id) && $artgroup_id > 0) {
-		$determination_methods_db = organism_artgroup_get_determation_methods($artgroup_id);
+		$determination_methods_db = organism_artgroup_get_determation_methods($observation_id, $artgroup_id);
 		$artgroup_id_checked = false;
 	
 		if ($determination_method_id > 0) {
@@ -139,5 +131,60 @@ function observation_validate_attributes ($input) {
 				$errormessages['group][determination_method_id'] = t('Artgroup with this determination method not allowed');
 			}
 		}
+	}
+}
+
+/**
+ * Check if all attributes are permitted
+ */
+function observation_validate_attributes ($input) {
+	$attributes = isset($values['attributes']) ? $values['attributes'] : array();
+	$attributes_checked = array();
+	foreach ($attributes as $key => $value) {
+		$attribute = organism_artgroup_get_attribute($key);
+	
+		$attribute = $attribute[0];
+		switch ($attribute['type_format']) {
+			case 'textarea':
+			case 'string':
+				$value = check_plain($value);
+				if (!empty($value)) {
+					$attributes_checked[$key] = $value;
+				}
+				break;
+			case 'dropdown':
+				if ($value != '0') {
+					if (array_key_exists($value, $attribute['values'])) {
+						$attributes_checked[$key] = 'db_id-->' . $value;
+					} else {
+						$errormessages[] = t('The value of ' . $attribute['name'] . ' not permitted');
+					}
+				}
+				break;
+			case 'date':
+				$value_split = explode('.', $value);
+	
+				if (count($value_split) == '3'
+						&& checkdate(
+								intval($value_split[1]),
+								intval($value_split[0]),
+								intval($value_split[2]))) {
+					$attributes_checked[$key] = $value;
+				} else {
+					if ($value != "") {
+						$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a date');
+					}
+				}
+				break;
+			case 'int':
+				$value = intval($value);
+				if (is_int($value) && !empty($value)) {
+					$attributes_checked[$key] = $value;
+				} elseif ($value != "") {
+					$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a number');
+				}
+				break;
+		}
+		// 		$output['attr'][] = $attribute;
 	}
 }

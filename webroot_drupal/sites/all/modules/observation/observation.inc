@@ -516,9 +516,7 @@ function observation_attribute_value_exist($observation_id, $attr_id) {
 		array(':observation_id' => $observation_id,
 				':attr_id' => $attr_id
 		))->rowCount();
-	if ($result == 1)
-		return true;
-	return false;
+	return ($result == 1);
 }
 
 /**
@@ -557,30 +555,22 @@ function observation_get_attributes(
 		$observation_id = false,
 		$artgroup_id) {
 	global $user;
-	
 	// TODO: make this conversion nicer (in a db)
-	$drupal_fields['textarea'] = 'textfield';
-	$drupal_fields['string'] = 'textarea';
+	$drupal_fields['textarea'] = 'textarea';
+	$drupal_fields['string'] = 'textfield';
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
 	$sql_join = ' LEFT JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id';
 	$sql_where = '';
 	
-	$attribute_value = '';
-	
 	if ($observation_id > 0) {
 		$sql_select .= ', oa.id attribute_id, oa.value';
-		$sql_join .= ' LEFT JOIN {observation_attribute} oa ON oa.organism_artgroup_attr_id=oaa.id AND oa.observation_id=:observation_id';
-// 		$attribute_sql = 'SELECT oa.id id, oa.observation_id observation_id, oa.organism_artgroup_attr_id attr_id, oa.value, oaa.name, oaat.name type_name, oaat.format type_format'
-// 			.' FROM {observation_attribute} oa'
-// 			.' LEFT JOIN {organism_artgroup_attr} oaa ON oaa.id=oa.organism_artgroup_attr_id'
-// 			.' LEFT JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id'
-// 			.' WHERE oa.observation_id=:observation_id';
+		$sql_join .= ' LEFT JOIN {observation_attribute} oa ON oa.organism_artgroup_attr_id=oaa.id AND oa.observation_id=:observation_id'.
+					 ' LEFT JOIN {organism_artgroup_attr_subscription} oaas ON oaa.id = oaas.organism_artgroup_attr_id';
+		$sql_where .= ' WHERE oaas.organism_artgroup_id =:artgroup_id OR oaas.organism_artgroup_id = 0';
 		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where,
-			array(':observation_id' => $observation_id)
-		);
-// 		$attribute_value = $attributes_results->value;
+			array(':observation_id' => $observation_id, ':artgroup_id' => $artgroup_id));
 	}
 	else
 	{
@@ -589,7 +579,6 @@ function observation_get_attributes(
 		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where,
 			array(':artgroup_id' => $artgroup_id)
 		);
-// 		return($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where);
 	}
 	
 	$attributes_with_values = array();
@@ -600,10 +589,9 @@ function observation_get_attributes(
 			'type_name' => $attributes_result->type_name,
 			'type_format' => $attributes_result->type_format,
 			'type_drupal' => $drupal_fields[$attributes_result->type_format],
-			'values' => $attribute_value
+			'value' => ($observation_id > 0) ? $attributes_result->value : '',
 		);
 	}
-	
 // 	if (!$as_html)
 		return $attributes_with_values;
 
