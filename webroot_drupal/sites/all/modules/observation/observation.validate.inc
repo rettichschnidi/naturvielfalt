@@ -38,9 +38,23 @@ function observation_form_validate($form, &$form_state) {
 	if(!observation_validate_coordinate($_POST['coordinate'])) {
 		form_set_error('observation_form', t('Please mark a point on the map'));
 	}
+
+	if(isset($_FILES['files'])) {
+		foreach($_FILES['files']['name'] as $fkey => $filename) {
+			if($_FILES['files']['name'][$fkey] != '') {
+				$fileextension = array_pop(explode('.', $_FILES['files']['name'][$fkey]));
+				if(!observation_validate_fileextension($_FILES['files']['name'][$fkey])) {
+					form_set_error('media][upload]['.$fkey, t('.@extension is an unallowed fileextension!', array('@extension' => $fileextension)));
+				}
+			}
+		}
+	}
 	
 }
 
+function observation_validate_fileextension($input) {
+	return gallery_get_MediaInfo_by_filename($input);
+}
 /**
  * Date validation
  *

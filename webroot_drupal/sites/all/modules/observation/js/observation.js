@@ -1,8 +1,4 @@
 jQuery(document).ready(function() {
-//	var marker = observationmap.overlaysArray[id];
-//	
-//	var position = marker.getPosition();
-//	alert(position);
 	
 	$ = jQuery;
 	observation = {};
@@ -148,7 +144,6 @@ jQuery(document).ready(function() {
 			var ajaxurl = Drupal.settings.basePath + 'observation/delete';
 			$.getJSON(ajaxurl, data, function(json){
 				$table.flexReload();
-				observation.showDeleteResponse(json);
 				if (redirect) {
 					$.safetynet.suppressed(true);
 					window.location.href = '/observation/show';
@@ -157,18 +152,18 @@ jQuery(document).ready(function() {
 		}
 	}
 	
-	/**
-	 * Show the message returned from the deletion request
-	 */
-	observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
-		if(responseText != null && responseText.success == true){
-			observation.setMessage(responseText.message, responseText.type, 5000);
-		} else if (responseText != null) {
-			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
-		} else {
-			observation.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
-		}
-	};
+//	/**
+//	 * Show the message returned from the deletion request
+//	 */
+//	observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
+//		if(responseText != null && responseText.success == true){
+//			observation.setMessage(responseText.message, responseText.type, 5000);
+//		} else if (responseText != null) {
+//			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
+//		} else {
+//			observation.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
+//		}
+//	};
 	
 	/**
 	 * Update the map to show only overlays of the given data.
@@ -404,117 +399,6 @@ jQuery(document).ready(function() {
 				this.googlemap.fitBounds(bounds);
 		}
 	}
-	
-	/**
-	 * Override default Google Maps Marker select() method to define color and
-	 * z-index
-	 * 
-	 * @param string color
-	 * @param int zindex
-	 */
-	/*google.maps.Marker.prototype.select = function(color, zindex) {
-		
-		this.select();
-		//setMarkerSelectedOptions(this);
-		if (color != undefined)
-			this.setIcon(getMarkerImage(color));
-		
-		if (zindex == undefined)
-			zindex = 2;
-		this.setZIndex(zindex);
-	}*/
-
-	/**
-	 * Override default Google Maps Marker deselect() method to define color and
-	 * z-index
-	 * 
-	 * @param string color
-	 * @param int zindex
-	 */
-/*	google.maps.Marker.prototype.deselect = function(color, zindex) {
-		
-		this.deselect();
-		//setMarkerDeselectedOptions(this);
-		if (color != undefined)
-			this.setIcon(getMarkerImage(color));
-		
-		if (zindex == undefined)
-			zindex = 1;
-		this.setZIndex(zindex);
-	}*/
-
- 
-	/*
-	 * Functions for the observation edit page
-	 */
-	
-	/**
-	 * Change the determination methods according to the selected art group
-	 * TODO implementation
-	 */
-	observation.changeArtGroup = function(id) {
-		console.log('implement me!');
-		alert('change art group');
-	}
-
-	/**
-	 * Show the message returned from the save request
-	 * 
-	 * @param responseText
-	 * @param statusText
-	 * @param xhr
-	 * @param $form
-	 */
-	observation.showSaveResponse = function(responseText, statusText, xhr, $form)  { 
-		if(responseText != null && responseText.success == true){
-			observation.setMessage(Drupal.t('Observation saved successfully'), 'status', 5000);
-			
-			// on add, clear form 
-			if (!responseText.update) {
-				$('#observation_form').trigger('reset');
-				$('#species_autocomplete').html('Es werden maximal 30 Suchresultate angezeigt');
-				observation.hideAttributes();
-				observation.hideDetMethods();
-				observationmap.newOverlay.overlay.setMap(null);
-				observationmap.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
-			}
-			
-			// reload table
-			$('#recent_observations').flexReload();
-		} else if (responseText != null) {
-			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
-		} else {
-			observation.setMessage('&bull;&nbsp;' + Drupal.t('Saving failed due to unknown error.'), 'error', 5000);
-		}
-	};
-		
-	/**
-	 * Show a top message banner
-	 * 
-	 * @param string message
-	 * @param string type
-	 * @param int time
-	 */
-	observation.setMessage = function(message, type, time) {
-		if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
-		observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
-		observation.message.stop().css('height', 'auto').slideDown('fast');
-		if(time) observation.messageTimer = window.setTimeout(function () {
-			observation.message.slideUp('fast');
-		}, time);
-
-		// scroll to message
-		$('body,html').animate({
-			scrollTop: observation.message.offset().top
-		});
-	};
-	
-	observation.onFormSuccess = function(responseText, statusText, xhr, $form) {
-		if (responseText.success == true)
-			resetUploadSlots();
-		
-		observation.showSaveResponse(responseText, statusText, xhr, $form);
-	}
 	  
 	/**
 	 * Show a loading indicator
@@ -604,117 +488,6 @@ jQuery(document).ready(function() {
 	};
 
 	/**
-	 * Hide all determination methods
-	 */
-	observation.hideDetMethods = function() {
-		$("#determination_method_id option").each(function () {
-            $(this).css('display','none');
-          });
-		observation.showDetMethod('0');
-	};
-	
-	/**
-	 * Show a determination method by id
-	 * 
-	 * @param int id
-	 */
-	observation.showDetMethod = function(id) {
-		$('#artgroup_detmethod_value_'+id).css('display','block');
-	};
-	
-	/**
-	 * Hide all attributes
-	 */
-	observation.hideAttributes = function() {
-		$("tr[id^='attributes_tr_']").each(function () {
-            $(this).css('display','none');
-          });
-	};
-	
-	/**
-	 * Show an attribute by id
-	 * 
-	 * @param int id
-	 */
-	observation.showAttribute = function(id) {
-		$('#attributes_tr_'+id).css('display','table-row');
-	};
-	
-	/**
-	 * Reset the input's specially the organism related
-	 */
-	observation.resetOrganism = function() {
-		$('#organismn_id').val('');
-		//$('#species_autocomplete').html('');
-		$('#observation_found_as_latin').val('false');
-		$('#observation_found_as_lang').val('false');
-		observation.hideAttributes();
-		observation.hideDetMethods();
-	};
-	
-	/**
-	 * Reset the autocomplete field, and the organism related
-	 */
-	observation.resetOrganismAutomcomplete = function() {
-		$('#organismn_autocomplete').val('');
-		observation.resetOrganism();
-	};
-	
-//	/**
-//	 * Add another upload slot for files
-//	 * 
-//	 * @param form //unused
-//	 */
-//	addUploadSlot = function(form) {
-//		$('#picture_upload__0').clone().appendTo($('#picture_upload__0').parent()).css('display','block').css('height','auto');
-//		var slot_id = 0;
-//		var empty_slots = 0;
-//		$('div[id^="picture_upload__"]').each(function() {
-//			var $div = $(this);
-//			if ($div.find('input:file').first().val() == '') {
-//				// we need 2 empty elements because of picture_upload__0 field
-//				if(empty_slots >= 2)
-//					$div.remove();
-//				else
-//					empty_slots++;
-//			}
-//			if ($div)
-//				$div.attr('id', 'picture_upload__'+(slot_id++));
-//		});
-//	};
-	
-//	/**
-//	 * Reset upload slots
-//	 */
-//	resetUploadSlots = function() {
-//		var element_id = 0;
-//		var slots = 0;
-//		$('div[id^="picture_upload__"]').each(function() {
-//			if(slots >= 2)
-//				$(this).remove();
-//			else
-//				slots++;
-//		});
-//	};
-	
-	/**
-	 * Check the type of the selected file
-	 * 
-	 * @param form
-	 */
-	checkMimeType_metaData = function(form) {
-		mimeType = form.files["0"].type;
-		re = new RegExp('image/', 'ig');
-		re2 = new RegExp('video/mp4', 'ig');
-		re3 = new RegExp('audio/mpeg', 'ig');
-		if(mimeType.match(re) || mimeType.match(re2) || mimeType.match(re3)) {
-			return 'media';
-		}else{
-			return 'file';
-		}
-	};
-
-	/**
 	 * Opens a dialog to add meta data to a fileupload
 	 * 
 	 * @param div
@@ -771,23 +544,6 @@ jQuery(document).ready(function() {
 	};
 	
 	/**
-	 * Bind the form for observations to the ajax form
-	 */
-	var ajaxurl = Drupal.settings.basePath + 'observation/save';
-	if ($('#observation_id').val() != '') {
-		ajaxurl = Drupal.settings.basePath + 'observation/'+ $('#observation_id').val() +'/save';
-	}
-	
-	// bind form using 'ajaxForm'
-	if ($('#observation_form').length > 0) $('#observation_form').ajaxForm({
-		beforeSubmit: observation.conditionalProgressbar,
-		success:      observation.onFormSuccess,
-		url:          ajaxurl,
-		type:         'post',
-		dataType:     'json',
-	});
-	
-	/**
 	 * Bind acl form using 'ajaxForm'
 	 * TODO: return and display response message
 	 */
@@ -795,11 +551,7 @@ jQuery(document).ready(function() {
 		beforeSubmit: observation.showLoading,
 		complete: observation.hideLoading
 	});
-	
-//	// automatically add upload slot
-//	$('.form-file').live('change', addUploadSlot);
-	
-	if($('#organismn_autocomplete').val() == '') $('#organismn_autocomplete').focus();
+
 });
 
 
