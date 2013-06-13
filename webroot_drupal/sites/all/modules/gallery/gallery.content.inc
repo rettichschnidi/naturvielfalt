@@ -2310,51 +2310,48 @@ function gallery_metadata_form() {
 			),
 	);
 
-	if (gallery_validate_file_extension($file_name)) {
-		$form['metadata']['title'] = array(
-				'#type' => 'textfield',
-				'#title' => t('Title'),
-				'#size' => 50,
-				'#maxlength' => 128,
-				'#required' => FALSE,
-		);
-		$form['metadata']['description'] = array(
-				'#type' => 'textfield',
-				'#title' => t('Description'),
-				'#size' => 50,
-				'#maxlength' => 255,
-				'#required' => FALSE,
-		);
-		$form['metadata']['location'] = array(
-				'#type' => 'textfield',
-				'#title' => t('Location'),
-				'#size' => 50,
-				'#maxlength' => 255,
-				'#required' => FALSE,
-		);
-		$form['metadata']['author'] = array(
-				'#type' => 'textfield',
-				'#title' => t('Author'),
-				'#size' => 50,
-				'#maxlength' => 255,
-				'#description' => t('The author or copyright of the file'),
-				'#required' => FALSE,
-		);
-		$form['metadata']['form'] = array(
-				'#type' => 'textfield',
-				'#attributes' => array(
-						'id' => 'uploadform',
-						'name' => 'uploadform',
-						'value' => $div_id,
-						'style' => array(
-								'display: none;',
-								'height: 0px;'
-						)
-				),
-		);
-	} else {
-		$form['metadata'] = t('File not allowed');
-	}
+	$form['metadata']['title'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Title'),
+			'#size' => 50,
+			'#maxlength' => 128,
+			'#required' => FALSE,
+	);
+	$form['metadata']['description'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Description'),
+			'#size' => 50,
+			'#maxlength' => 255,
+			'#required' => FALSE,
+	);
+	$form['metadata']['location'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Location'),
+			'#size' => 50,
+			'#maxlength' => 255,
+			'#required' => FALSE,
+	);
+	$form['metadata']['author'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Author'),
+			'#size' => 50,
+			'#maxlength' => 255,
+			'#description' => t('The author or copyright of the file'),
+			'#required' => FALSE,
+	);
+	$form['metadata']['form'] = array(
+			'#type' => 'textfield',
+			'#attributes' => array(
+					'id' => 'uploadform',
+					'name' => 'uploadform',
+					'value' => $div_id,
+					'style' => array(
+							'display: none;',
+							'height: 0px;'
+					)
+			),
+	);
+	
 	$form['actions'] = array(
 			'#type' => 'actions'
 	);

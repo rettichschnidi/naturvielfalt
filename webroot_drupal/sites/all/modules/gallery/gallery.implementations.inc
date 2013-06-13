@@ -86,16 +86,13 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 			);
 			$file = file_save_upload($fkey, $validators, $destination[$key], FILE_EXISTS_RENAME);
 			if ($file) {
-				debug('ok');
 				$file->status |= FILE_STATUS_PERMANENT;
 				$file = file_save($file);
 				$image['file_managed_fid'] = $file->fid;
 				$add_to_gallery = in_array($mediaInfo->mediaType, array(GALLERY_MEDIATYPE_IMAGE, GALLERY_MEDIATYPE_SOUND, GALLERY_MEDIATYPE_VIDEO));
 				if ($add_to_gallery) {
-					debug('add to gallery');
 					$img_ids[$fkey] = gallery_image_save($image);
 				} else {
-					debug('not add to gallery');
 					$img_ids[$fkey] = $file->fid;
 					if ($file_managed_module_col) {
 						$file_managed_table_entry[$file_managed_module_col] = $entry_array['item_id'];
@@ -113,6 +110,10 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 				$img_ids[$fkey] = 'Error! File not saved!';
 			}
 		}
+		//FIXME
+		// 			error about didn't saved...
+		// die('fehlfer');
+		$img_ids[$fkey] = 'Error! File not saved!';
 	}
 	return $img_ids;
 }
@@ -353,7 +354,7 @@ function gallery_implementation_files_table($modulename = false,
 		$description = isset($record->description) ? $record->description : '';
 		$filename = l(
 			$record->filename,
-			"sites/default/files/naturvielfalt/$modulename/" . $id . '/'
+			"sites/default/files/naturvielfalt/$modulename/" . $item_id . '/'
 					. $record->filename);
 		$filemime = $img_mime;
 		$filesize = ($record->filesize / 1000) . " KB";
