@@ -13,7 +13,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
-	drupal_add_js($observation_path . '/js/tooltip.js');
 	global $user;
 	$edit = false;
 
@@ -57,7 +56,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$form_id = "observation_form";
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
-
+	
 	$form = array();
 	$form['group'] = array(
 			'#id' => 'organism_group',
@@ -65,7 +64,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#suffix' => '</div>',
 			'#tree' => true,
 	);	
-
 	$json = !isset($form_state['values']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
 	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
@@ -78,7 +76,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			),
 			'#tree' => true,
 			'#required' => true,
-			'#default_value' => $observation['organism']['name_lang'],
+			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
 	);
 	
 
@@ -93,7 +91,17 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#default_value' => date('d.m.Y', $timestamp),
 	);
 	
-	$form['#after_build'] = array('observation_form_uidatepicker');
+	$form['group']['time'] = array(
+			'#id' => 'time',
+			'#title' => t('Time of the observation'),
+			'#attributes' => array('class' => array('timepicker')),
+			'#type' => 'textfield',
+			'#required' => true,
+			'#tree' => true,
+			'#default_value' => date('H:i', $timestamp),
+	);
+	
+	$form['#after_build'] = array('observation_form_add_js_tools');
 	
 	$form['group']['count'] = array(
 			'#id' => 'count',
@@ -121,9 +129,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	if(!$edit)
 		$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
 	else $artgroup_id = $observation['observation']['organism_artgroup_id'] ;
-	
 
-	
 	$form['group']['details'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Details'),
@@ -136,6 +142,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		$options = organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id);
 		if(!empty($options)) { // don't show determination method if no options
 			$form['group']['details']['determination'] = array(
+					'#id' => 'detmethod',
 					'#title' => t('Determination method'),
 					'#type' => 'select',
 					'#options' => 	organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id),
@@ -341,16 +348,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#tree' => true
 	);
 	
-	/* Tooltip texts */
-	$tooltip['text']['artengruppe'] = t('Select a specimen group from the dropdown menu to constrain the search.');
-	$tooltip['text']['art'] = t('Search for the specimen by inputing at least 2 chars.');
-	$tooltip['text']['datum'] = t('Date of observation (dd/mm/yyyy)');
-	$tooltip['text']['anzahl'] = t('Number of observed specimens.');
-	$tooltip['text']['observer'] = t('Name of observer (You)');
-	$tooltip['text']['methode'] = t('Select a method for determination from the dropdown menu.');
-	$tooltip['text']['bemerkung'] = t('Provide any additional information.');
-	$tooltip['text']['position'] = t('Precision of place of observation.');
-	
 	/* Hidden fields */
 	$form['observer'] = array('#type' => 'hidden', '#id' => 'observer', '#name' => 'observer', '#value' => $observation['observation']['observer']);
 	
@@ -548,15 +545,173 @@ function observation_show_observation($observationdata = NULL) {
 }
 
 function observation_organism_callback($form, &$form_state) {
-	
+	//empty organism field
+	$form['group']['organism']['#value'] = '';
 	return $form['group'];
 }
 
-function observation_form_uidatepicker($form, $form_state) {
+function observation_form_add_js_tools($form, $form_state) {
+	//add date and timepicker
 	drupal_add_library('system', 'ui.datepicker');
-	 drupal_add_js('jQuery(document).ready(function(){jQuery( ".datepicker" ).datepicker({
-      dateFormat: "dd.mm.yy",
-      autoSize: true
-    });});', 'inline'); 
+	drupal_add_library('system', 'ui.slider');
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/timepicker.js');
+
+	
+	drupal_add_css('/* css for timepicker */
+					.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+					.ui-timepicker-div dl { text-align: left; }
+					.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+					.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+					.ui-timepicker-div td { font-size: 90%; }
+					.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+			
+					.ui-timepicker-rtl{ direction: rtl; }
+					.ui-timepicker-rtl dl { text-align: right; }
+					.ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; })', 'inline');
+	 
+	drupal_add_js($observation_path . '/js/qtip_tooltip.js');
+	/* Tooltip texts */
+	$tooltip['text']['artgroup_id'] = t('Select a specimen group from the dropdown menu to constrain the search.');
+	$tooltip['text']['organism_name'] = t('Search for the specimen by inputing at least 2 chars.');
+	$tooltip['text']['date'] = t('Date of observation (dd.mm.yyyy)');
+	$tooltip['text']['time'] = t('Time of observation (hh:mm)');
+	$tooltip['text']['count'] = t('Number of observed specimens.');
+	$tooltip['text']['observer'] = t('Name of observer (You)');
+	$tooltip['text']['detmethod'] = t('Select a method for determination from the dropdown menu.');
+	$tooltip['text']['Kommentar'] = t('Provide any additional information.');
+	$tooltip['text']['Genauigkeit'] = t('Precision of place of observation.');
+	
+	$tooltip_options = 'position: {
+					      corner: {
+					         target: "center",
+					         tooltip: "bottomLeft"
+					      }
+				     },
+	 				 style: {
+	 				 		name: "light",
+	 				 		tip: true,
+							border: {
+						         width: 1,
+						         radius: 3,
+						         color: "#C0C0C0"
+							}
+					}';
+	
+
+	
+	$attributes_tooltips = '';
+	$observation_id = isset($form_state['values']['observation_id']) ? $form_state['values']['observation_id'] : 0;
+	$artgroup_id = isset($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 0;
+	if($artgroup_id) {
+		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
+		foreach ($observation_attributes as $key => $attribute) {
+			$attributes_tooltips.= 'jQuery("#'.$attribute['id'].'").live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text'][$attribute['name']].'",
+	 				'.$tooltip_options.',
+				 overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+			 });';
+		}
+	}
+	
+	 drupal_add_js('jQuery(document).ready(function(){
+	 		jQuery( ".datepicker" ).live("focus", function() {
+	 				$(this).datepicker({
+			      dateFormat: "dd.mm.yy"
+    			});
+	 		});
+			jQuery( ".timepicker" ).live("focus", function() {
+	 			$(this).timepicker({
+			 	timeFormat: "HH:mm",
+	 			showButtonPanel: false
+			 });
+	 		});
+	 		jQuery( "#artgroup_id" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['artgroup_id'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#organism_name" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['organism_name'].'",
+	 			'.$tooltip_options.',
+	 			overwrite: false,
+	 			show: {
+					event: event.type,
+					ready: true
+	 			}
+			 }, event);
+	 		});
+	 		jQuery( "#date" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['date'].'",
+	 			'.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#time" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['time'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#count" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['count'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#observer" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['observer'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});		
+	 		jQuery( "#detmethod" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['detmethod'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});'			
+	 		.$attributes_tooltips.
+'});'
+, 'inline'); 
+	
 	return $form;
 }

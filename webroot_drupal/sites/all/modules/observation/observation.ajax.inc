@@ -46,6 +46,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	if(!$from_api) {
 		$values['organism'] = filter_xss($values['group']['organism']);
 		$values['date'] = filter_xss($values['group']['date']);
+		$values['time'] = filter_xss($values['group']['time']);
 		$values['count'] = filter_xss($values['group']['count']);
 		if(isset($values['group']['details']))
 			$values['details'] = $values['group']['details'];
@@ -78,7 +79,9 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	$observation['count'] = filter_xss($values['count']);
 	
 	$date_parts = explode('.', filter_xss($values['date']));
-	$observation['date'] = mktime(null, null, null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	$timesplit = array(null, null);
+	if(isset($values['time'])) $timesplit = explode(':', $values['time']);
+	$observation['date'] = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
 	
 	
 	if (!isset($values['details']['determination']))

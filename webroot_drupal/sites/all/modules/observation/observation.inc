@@ -752,7 +752,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Date'),
 			'dbfield' => 'date',
-			'width' => 60
+			'width' => 120
 	);
 	
 	$tableHeader[] = array(

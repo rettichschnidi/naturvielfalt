@@ -20,6 +20,9 @@ function observation_form_validate($form, &$form_state) {
 	if(!observation_validate_date($form_state['values']['group']['date'])) {
 		form_set_error('group][date', t('Please enter a valid date (dd.mm.yyyy)'));
 	}
+	if(!observation_validate_time($form_state['values']['group']['time'])) {
+		form_set_error('group][time', t('Please enter a valid time (hh:mm)'));
+	}
 	/**
 	 * Check the count value
 	 */
@@ -70,6 +73,18 @@ function observation_validate_date ($input) {
 		$year = $date_parts[2];
 		return checkdate($month, $day, $year);
 	}
+}
+
+/**
+ * Time validation
+ *
+ * @param string $input
+ * @return true if $input is a valid time (HH:mm)
+ */
+function observation_validate_time ($input) {
+ //matches hh:mm (00:00 - 23:59)
+ $pattern = "@^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$@";
+ return preg_match($pattern,$input);
 }
 
 /**
