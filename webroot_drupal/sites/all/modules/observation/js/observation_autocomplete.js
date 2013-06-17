@@ -63,7 +63,7 @@ jQuery( "#organismn_autocomplete" ).autocomplete({
 		for (var i in ui.item.det_methods){
 			observation.showDetMethod(ui.item.det_methods[i]);
 		}
-		
+
 		if(event.keyCode == 9 || event.keyCode == 13) { // TAB, ENTER
 			$( "#date" ).focus();
 		}

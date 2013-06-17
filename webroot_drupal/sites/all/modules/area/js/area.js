@@ -1117,11 +1117,11 @@ Area.prototype.createDrawingManagerGetcoordinate = function(enable) {
 			},
 			map : this.googlemap
 		});
-	
+		
 		var update = function() {
 			updateHiddenfields(this_.newOverlay.overlay, this_.options.coordinatestorageid);
 		};
-	
+		
 		google.maps.event.addListener(
 				this.drawingManager,
 				'overlaycomplete',

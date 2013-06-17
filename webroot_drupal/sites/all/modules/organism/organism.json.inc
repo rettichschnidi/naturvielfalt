@@ -657,65 +657,40 @@ function organism_show_organism_json($organism) {
  *  - "old_label_latin"[Optional]: The latin name of the initially found organism
  *    (only available if the found organism has a reference to an official one)
  */
-function organism_search_organism_json($classification = false, $term = false,
-		$plain = false) {
+function organism_search_organism_json($artgroup, $string) {
 	global $user;
-
+	
 	module_load_include('inc', 'organism', 'organism.artgroup');
-
+	
 	$langcode = (isset($user->language) && $user->language != '')
-			? $user->language : 'de';
-
-	if (!$classification && isset($_REQUEST['inv_id'])) {
-		$classification = $_REQUEST['inv_id'];
-	}
-	$type_id = $classification;
-
-	$fauna = ($type_id == 16 ? false : true);
-
-	if (!$term) {
-		if (isset($_REQUEST['term'])) {
-			$term = $_REQUEST['term'];
-		} else {
-			return drupal_json_output(array('label' => t('No search term')));
-		}
-	}
-
-	$artgroup_join = "";
-	if (isset($_REQUEST['artgroup'])) {
-		$artgroup = (integer) $_REQUEST['artgroup'];
-	} else {
-		watchdog('organism', 'No argroup id got submitted. Please fix.');
-		$artgroup = 1; // UGLY: artgroup_id 1 == 'all'. If this changes in the future, our default value goes boooom.
-	}
-
+	? $user->language : 'de';
+	
+	$term = $string;
 	$term = strtolower($term);
 	$terms = explode(' ', trim($term));
-
+	
 	// why limit result with the length of the search term??
 	// $limit = strlen(trim($term)) > 3 ? 100000 : 20;
 	$limit = 30;
-
+	
 	$organisms = array();
-
+	
 	$params = array();
-	if ($type_id) {
-		$params[':inventoryTypeId'] = $type_id;
-	}
+
 	$params[':limit'] = $limit;
 	$params[':lang'] = $langcode;
 	$params[':artgroupid'] = $artgroup;
 	$params[':term'] = '%' . trim($term) . '%';
-
+	
 	if (count($terms) > 2) {
 		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '% ' . $terms[2]
-				. '%';
+		. '%';
 	} elseif (count($terms) > 1) {
 		$params[':term1'] = $terms[0] . '% ' . $terms[1] . '%';
 	} else {
 		$params[':term1'] = $terms[0] . '%';
 	}
-
+	
 	$i = 1;
 	$query = 'WITH RECURSIVE anchestors AS
 	(
@@ -735,35 +710,15 @@ function organism_search_organism_json($classification = false, $term = false,
 				WHERE ol.name ILIKE :term OR osy.name ILIKE :term1 OR o.scientific_name ILIKE :term1
 				ORDER BY o.id
 				LIMIT :limit;';
-
+	
 	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
-	foreach ($result as $record) {
-
-		$artg_attr = '';
-		$det_methods = '';
-		if ($record->artg_id) {
-			$artg_attr = organism_artgroup_get_attributes_ids($record->artg_id);
-			$det_methods = organism_artgroup_get_detmethods_ids(
-				$record->artg_id);
+	
+		foreach ($result as $row) {
+			$matches[$row->ol_name] = strval($row->ol_name).'<br><em>'.strval($row->scientific_name).'</em>';
+			
 		}
-		$organism = array(
-				'id' => $record->organism_id,
-				'label' => strval($record->ol_name),
-				'label_latin' => $record->scientific_name,
-				'synonym_id' => $record->synonym_id,
-				'attributes' => $artg_attr,
-				'det_methods' => $det_methods,
-				'artgr' => $record->artg_id,
-		);
-
-		$organisms[] = $organism;
-	}
-
-	if (!$plain)
-		$organisms = drupal_json_output($organisms);
-
-	debug($organisms, 'JSON_OUTPUT', true);
-	return $organisms;
+	
+	drupal_json_output($matches);
 }
 
 ?>

@@ -25,7 +25,8 @@ function organism_artgroup_get_all_as_array($parent = false, $deep = 0) {
 	$output = array();
 	$spacer = '';
 	for ($i = 0; $i < $deep; $i++)
-	$spacer = $spacer . '&nbsp;&nbsp;&nbsp;';
+	//$spacer = $spacer . '&nbsp;&nbsp;&nbsp;';
+	$spacer = $spacer.'...';
 
 	foreach ($result as $top) {
 		$output[$top->id] = $spacer . t($top->name);
@@ -44,7 +45,8 @@ function organism_artgroup_get_all_as_array($parent = false, $deep = 0) {
  * @param int $selected_id
  * @return string
  */
-function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {
+//MAGIC
+function organism_artgroup_get_all_as_option($parent = false, $deep = 0, $selected_id = false) {	
 	if ($parent != false) {
 		$sql = "SELECT * FROM {organism_artgroup} WHERE parent=:parent AND parent != id ORDER BY name";
 		$sql_args = array(
@@ -144,7 +146,7 @@ function organism_artgroup_get_sql_from_id($ids_as_array, $col_name, $and_or_or 
  * @param array visisible_arr id's as value
  * @return object or string
  */
-function organism_artgroup_get_determation_methods($artgroup_id = false, $as_html_option = false,
+function organism_artgroup_get_determation_methods($observation_id = 0, $artgroup_id = false, $as_html_option = false,
 		$selected_id = false, $visisible_arr = false) {
 	$artgroup_filter = '';
 	if ($artgroup_id) {
@@ -162,22 +164,11 @@ function organism_artgroup_get_determation_methods($artgroup_id = false, $as_htm
 	$determation_sql = 'SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '
 			. $artgroup_filter . ' ORDER BY oad.name asc';
 	$results = db_query($determation_sql);
-
-	if (!$as_html_option)
-		return $results;
-
-	$html = '<option value="0" id="artgroup_detmethod_value_0">' . t('Not defined') . '</option>';
+	$res = array();
 	foreach ($results as $result) {
-		$selected = "";
-		if ($selected_id && $selected_id == $result->id)
-			$selected = ' selected="selected"';
-		$style = 'style="display: none;" ';
-		if ($visisible_arr && array_search($result->id, $visisible_arr))
-			$style = 'style="display: block;" ';
-		$html .= '<option value="' . $result->id . '" id="artgroup_detmethod_value_' . $result->id
-				. '"  ' . $style . $selected . '>' . t($result->name) . '</option>';
+		$res[$result->id] = $result->name;
 	}
-	return $html;
+	return $res;
 }
 
 /**
@@ -236,7 +227,7 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 			));
 	else
 		$attributes_results = db_query($attributes_sql, array(':users_uid' => $user->uid));
-
+	
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result) {
 		$values = db_query(
@@ -269,6 +260,7 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 			$html_after_form,
 			$attributes_selected);
 	}
+	//debug($attributes_with_values_html);
 	return $attributes_with_values_html;
 
 }

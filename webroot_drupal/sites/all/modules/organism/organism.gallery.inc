@@ -24,11 +24,13 @@ function organism_gallery_types() {
 
 /**
  * Helper function referenced in organism_reference_gallery_types to define the caption
- * for images added to intentory entries
+ * for images added to inventory entries
  *
  * @return string
  */
 function organism_reference_gallery_image_caption($id) {
+	
+	debug('organism_reference_gallery_image');
 	return l(
 		organism_reference_gallery_caption($id),
 		'organism/' . $id,
@@ -46,6 +48,9 @@ function organism_reference_gallery_image_caption($id) {
  * @return string
  */
 function organism_reference_gallery_manage_title($id, $mediatype) {
+	
+	debug('organism_reference_gallery_manage_title');
+	
 	return t(
 		'@mediatype of the organism !title',
 		array('!title' => '<em>' . organism_reference_gallery_caption($id)
@@ -63,7 +68,8 @@ function organism_reference_gallery_manage_title($id, $mediatype) {
  */
 function organism_reference_gallery_caption($id) {
 	global $user;
-	$result = organism_load($id);
+	$result = organism_data($id);
+	debug('result is: '. $result);
 	return $result['scientific_names'][0]
 			. (isset(
 				$result['classification_name_translations'][$user->language])

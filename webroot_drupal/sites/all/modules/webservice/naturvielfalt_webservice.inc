@@ -5,6 +5,7 @@
  * @copyright 2012 Naturwerk, Brugg
  */
 module_load_include('inc', 'observation', 'observation.ajax');
+module_load_include('inc', 'observation', 'observation.validate');
 module_load_include('inc', 'organism', 'organism.artgroup');
 
 define('WS_API_LOG_TYPE', 'webservice api');
@@ -34,7 +35,7 @@ function naturvielfalt_webservice_parse_import_observations() {
 	watchdog(WS_API_LOG_TYPE, 'FILES :' . var_export($_FILES, true), array(), WATCHDOG_DEBUG);
 
 	/**
-	 * parse not useable post vars to be compatible with th eobservation module
+	 * parse not useable post vars to be compatible with th observation module
 	 * @var unknown_type
 	 */
 
@@ -44,7 +45,8 @@ function naturvielfalt_webservice_parse_import_observations() {
 	$data['count'] = $_POST['count'];
 	$data['date'] = $_POST['date'];
 	$data['observer'] = $_POST['observer'];
-
+	
+	
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
 		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
@@ -60,21 +62,35 @@ function naturvielfalt_webservice_parse_import_observations() {
 		'Rewrited Request :' . var_export($data, true),
 		array(),
 		WATCHDOG_DEBUG);
-
-	$observation_status = observation_save(false, $data, true);
-	// get the data
-	if ($observation_status['success'] == true) {
-		print('SUCCESS');
-	} else {
+	
+	$validationerrors = naturvielfalt_webservice_validate($data);
+	if(!empty($validationerrors)) {
 		watchdog(
+			WS_API_LOG_TYPE,
+			'Validation of arguments failed, please provide all mandatory fields in the correct format:',
+			array(),
+			WATCHDOG_ERROR);
+		foreach ($validationerrors as $message) {
+			watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
+		}
+		print('ERROR: Validation errors detected. Check the log file for details');
+	}
+	else {
+		$observation_status = observation_save(false, $data, true);
+		// get the data
+		if ($observation_status['success'] == true) {
+			print('SUCCESS');
+		} else {
+			watchdog(
 			WS_API_LOG_TYPE,
 			'Something went wrong... see following error messages.',
 			array(),
 			WATCHDOG_ERROR);
-		foreach ($observation_status['message'] as $key => $message) {
-			watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
+			foreach ($observation_status['message'] as $key => $message) {
+				watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
+			}
+			print('ERROR: Something went wrong.. check the log file for details');
 		}
-		print('ERROR: Some went wrong.. check the log file for details');
 	}
 }
 
@@ -84,4 +100,25 @@ function naturvielfalt_webservice_auth() {
 
 	watchdog(WS_API_LOG_TYPE, 'Authorization failed.', array(), WATCHDOG_INFO);
 	die('ERROR: Please authorize');
+}
+
+function naturvielfalt_webservice_validate($data) {
+	$validationerrors = array();
+	if(!isset($data['organismn_id'])) $validationerrors[] = t("Please pass key 'organismn_id'.");
+	else if(!observation_validate_organism($data['organism']))  $validationerrors[] = t('Please enter an existing organism.');
+	
+	if(!isset($data['organism_artgroup_id'])) $validationerrors[] = t("Please pass key 'organism_artgroup_id'.");
+	
+	if(!isset($data['count'])) $validationerrors[] = t("Please pass key 'count'.");
+	else if(!observation_validate_count($data['count']))  $validationerrors[] = t('The count has to be a number and bigger than zero');
+	
+	if(!isset($data['date'])) $validationerrors[] = t("Please pass key 'date'.");
+	else if(!observation_validate_date($data['data']))  $validationerrors[] = t('Please pass a valid date (dd.mm.yyyy)');
+	
+	if(!isset($data['observer'])) $validationerrors[] = t("Please pass key 'observer'.");
+	
+	if(!isset($data['coordinate'])) $validationerrors[] = t("Please pass key'coordinate'.");
+	else if(!observation_validate_coordinate($data['coordinate'])) $validationerrors[] = t("Please pass a correct location.");
+	
+	return $validationerrors;
 }

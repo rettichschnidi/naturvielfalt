@@ -1,30 +1,34 @@
 <?php
-// function observation_new_form($form, $form_state) {
 module_load_include('inc', 'observation');
+module_load_include('inc', 'observation', 'observation.ajax');
+module_load_include('inc', 'organism');
 module_load_include('inc', 'gallery', 'gallery.implementations');
+module_load_include('inc', 'observation', 'observation.validate');
+
 /**
  * Show the form to add or edit an observation
  * @param array $observation
  */
-function observation_form($observation = false) {
+function observation_form($form = null, &$form_state = null, $observation = false) {
+	drupal_add_library('system', 'ui.dialog');
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/observation.js');
 	global $user;
-	$hidden_fields_arr = array();
+	$edit = false;
+
 	drupal_set_title(t('Capture a new observation'));
 	$url = base_path() . 'observation/save';
 	if ($observation) {
-		$url = base_path() . 'observation/' . $observation['observation']['id']
-				. '/save';
-		$hidden_fields_arr['area_geometry_id'] = $observation['observation']['area_geometry_id'];
+		$url = base_path() . 'observation/' . $observation['observation']['id']. '/save';
 		$species = $observation['organism']['name_lat'];
 		if (isset($observation['organism']['name_lang']))
 			$species .= ' / ' . $observation['organism']['name_lang'];
 		drupal_set_title(t('Edit observation of <i>@species</i>', array('@species' => check_plain($species))), PASS_THROUGH);
+		$edit = true;
 	}
-
 	// if not edit, set standard values
 	if (!isset($observation['observation']['id']))
 		$observation['observation']['id'] = '';
-	$hidden_fields_arr['observation_id'] = $observation['observation']['id'];
 	if (!isset($observation['observation']['found_as_lang']))
 		$observation['observation']['found_as_lang'] = 'false';
 	if (!isset($observation['observation']['found_as_lat']))
@@ -48,34 +52,170 @@ function observation_form($observation = false) {
 		$observation['observation']['observer'] = $user->name;
 	if (!isset($observation['observation']['organism_artgroup_detmethod_id']))
 		$observation['observation']['organism_artgroup_detmethod_id'] = false;
-	if (!isset($observation['detmethods_vis']))
-		$observation['detmethods_vis'] = array();
-	if (!isset($observation['attributes']))
-		$observation['attributes'] = array();
 
 	$form_id = "observation_form";
-	$hidden_fields = '';
-	foreach ($hidden_fields_arr as $key => $value)
-		$hidden_fields .= '<input type="hidden" id="' . $key . '" name="' . $key . '" value="' . $value . '">';
 
 	module_load_include('inc', 'organism', 'organism.artgroup');
+	
+	$form = array();
+	$form['group'] = array(
+			'#id' => 'organism_group',
+			'#prefix' => '<div id="organism_replace">',
+			'#suffix' => '</div>',
+			'#tree' => true,
+	);	
+	$json = !isset($form_state['values']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
+	$form['group']['organism'] = array(
+			'#id' => 'organism_name',
+			'#title' => t('Search for species'),
+			'#type' => 'textfield',
+			'#autocomplete_path' => $json,
+			'#description' => t('Maximum 30 search results will be showed.'),
+			'#attributes' => array(
+					'placeholder' => t('Start typing to see the species...'),
+			),
+			'#tree' => true,
+			'#required' => true,
+			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
+	);
+	
 
-	drupal_add_library('system', 'ui.autocomplete');
-	drupal_add_library('system', 'ui.datepicker');
-	drupal_add_js('misc/form.js');
-	drupal_add_js('misc/collapse.js');
-	drupal_add_js('misc/jquery.form.js');
-	drupal_add_js('misc/ui/jquery.ui.dialog.min.js');
-	drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
-	$observation_path = drupal_get_path('module', 'observation');
-	drupal_add_js($observation_path . '/js/observation_autocomplete.js');
-	drupal_add_js($observation_path . '/js/observation.js');
-	drupal_add_css($observation_path . '/css/observation.css');
-	drupal_add_css('misc/ui/jquery.ui.dialog.css');
-//	drupal_add_js('misc/ui/jquery.ui.progressbar.min.js');
-	drupal_add_js($observation_path . '/js/tooltip.js');
-	$formcust = "";
+	
+	$form['group']['date'] = array(
+			'#id' => 'date',
+			'#title' => t('Date of the observation'),
+			'#type' => 'textfield',
+			'#attributes' => array('class' => array('datepicker')),
+			'#required' => true,
+			'#tree' => true,
+			'#default_value' => date('d.m.Y', $timestamp),
+	);
+	
+	$form['group']['time'] = array(
+			'#id' => 'time',
+			'#title' => t('Time of the observation'),
+			'#attributes' => array('class' => array('timepicker')),
+			'#type' => 'textfield',
+			'#required' => true,
+			'#tree' => true,
+			'#default_value' => date('H:i', $timestamp),
+	);
+	
+	$form['#after_build'] = array('observation_form_add_js_tools');
+	
+	$form['group']['count'] = array(
+			'#id' => 'count',
+			'#title' => t('Count of found individuals'),
+			'#type' => 'textfield',
+			'#required' => true,
+			'#default_value' => $observation['observation']['count'],
+			'#attributes' => array(
+					'placeholder' => t('Some text'),
+			),
+			'#element_validate' => array('element_validate_number'),
+			'#tree' => true,
+	);
+	$form['group']['observer'] = array(
+			'#id' => 'observer',
+			'#title' => t('Observer'),
+			'#type' => 'textfield',
+			'#disabled' => true,
+			'#default_value' => $observation['observation']['observer'],
+			'#attributes' => array(
+					'placeholder' => t('Some text'),
+			),
+	);
+	
+	if(!$edit)
+		$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	else $artgroup_id = $observation['observation']['organism_artgroup_id'] ;
 
+	$form['group']['details'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Details'),
+			'#tree' => true,
+			'#collapsible' => true,
+			'#collapsed' => false,
+	);
+
+	if($artgroup_id > 1) {
+		$options = organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id);
+		if(!empty($options)) { // don't show determination method if no options
+			$form['group']['details']['determination'] = array(
+					'#id' => 'detmethod',
+					'#title' => t('Determination method'),
+					'#type' => 'select',
+					'#options' => 	organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id),
+					'#description' => 'Determination Method',
+					'#default_value' => $observation['observation']['organism_artgroup_detmethod_id'],
+					'#tree' => true,
+			);
+		}
+		
+		$observation_attributes = observation_get_attributes($observation['observation']['id'], $artgroup_id);
+		foreach ($observation_attributes as $key => $attribute) {
+			$form['group']['details']['attributes'][$attribute['id']] = array(
+					'#id' => $attribute['id'],
+					'#title' => $attribute['name'],
+					'#type' => $attribute['type_drupal'],
+					'#weight' =>$attribute['id']+12,
+					'#tree' => true,
+					'#default_value' => $attribute['value'],
+			);
+		}
+	}
+
+  
+	// show artgroup select if new observation, otherwise show the selected artgroup (not changeable)
+	if($edit) {
+		
+		$artgroup_name = organism_artgroup_get_artgroup($observation['observation']['organism_artgroup_id'],true);
+		
+		$form['artgroup_text'] = array(
+				'#id' => 'artgroup_text',
+				'#title' => t('Artgroup'),
+				'#type' => 'textfield',
+				'#default_value' => $artgroup_name,
+				'#weight' => -1,
+				'#disabled' => true,
+		);
+		
+		$form['artgroup_id'] = array(
+				'#id' => 'area_artgroup',
+				'#type' => 'hidden',
+				'#default_value' => $observation['observation']['organism_artgroup_id'],
+		);
+	}
+	else {
+		
+		$form['artgroup_id'] = array(
+				'#id' => 'artgroup_id',
+				'#title' => t('Filter on species group'),
+				'#type' => 'select',
+				'#options' => organism_artgroup_get_all_as_array(),
+				'#default_value' => $observation['observation']['organism_artgroup_id'],
+				'#ajax' => array(
+						'event' => 'change',
+						'callback' => 'observation_organism_callback',
+						'wrapper' => 'organism_replace'
+				),
+				'#weight' => -1,
+		);
+	}
+	
+	$form['button'] = array(
+			'#type' => 'submit',
+			'#value' => t('Save'),
+			'#submit' => array(
+					'observation_save'
+			)
+	);
+	
+	$form['div'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Map'),
+	);
+	
 	/**
 	 * Area map include
 	 */
@@ -90,12 +230,7 @@ function observation_form($observation = false) {
 					)
 			),
 	);
-
-	$form['div'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Map'),
-	);
-
+	
 	$form['div']['hiddenfields'] = area_address_hidden_form();
 
 	if(empty($observation['observation']['id'])) {
@@ -133,166 +268,96 @@ function observation_form($observation = false) {
 	 * include a upload form for images
 	 */
 	// Product picture
-
 	if ($observation['observation']['id'] != '') {
-		$image['picture'] = array(
+		$form['picture'] = array(
 				'#type' => 'fieldset',
 				'#title' => t('Manage existing media for this observation'),
 				'#collapsible' => true,
 				'#collapsed' => false,
 		);
-		$image['picture']['media_table'] = gallery_implementation_edit_existing_file_list(
+	$form['picture']['media_table'] = gallery_implementation_edit_existing_file_list(
 			'observation',
 			$observation['observation']['id']);
-		$image = drupal_render($image);
-	} else {
-		$image = '';
+	$form['files'] = gallery_implementation_files_table(
+			'observation',
+			$observation['observation']['id'],
+			true);
 	}
 	$file_extensions = implode(' ', gallery_get_valid_file_extensions());
-
-	// format the upload field manually, because it's not possible with drupal forms...
-
-	$image .= '<fieldset id="picture" class="form-wrapper">
-	<legend>
-		<span class="fieldset-legend">'
-			. t('Add media for this observation')
-			. '</span>
-	</legend>
-	<div class="fieldset-wrapper">
-		<div class="form-item form-type-file form-item-files-">
-			<div>
-				<div id="picture_upload__0" style="display: none; height: 0px;">
-					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  '	. t('Click here to add details to this file') . '</a>
-					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
-				</div>
-				<label for="picture_upload__1">' . t('Upload files')
-				. '</label>
-				<div id="picture_upload__1">
-					<input id="file_input" onchange="javascript:checkMimeType_metaData(this);" name="files[]" size="48" class="form-file" type="file">
-					<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" >  ' . t('Click here to add details to this file') . '</a>
-					<input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
-					<input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
-				</div>
-			</div>
-
-			<div class="description">
-				<a href="javascript:addUploadSlot();">' . t('Click here to add one more file') . '</a>
-				<p>' . t('Allowed files endings are: ') . $file_extensions . '</p>
-			</div>
-			
-		</div>
-	</div>
-</fieldset><input type="submit" value="' . t('Save') . '" id="picture_upload_submit" /><br />';
-
-	$file_list['files'] = gallery_implementation_files_table(
-		'observation',
-		$observation['observation']['id'],
-		true);
-
-	$species_autocomplete = ($observation['organism']['name_lat'] == '')
-			? t('Maximum 30 search results will be showed')
-			: $observation['organism']['name_lat'];
 	
-	/* Tooltip texts */
-	$tooltip['text']['artengruppe'] = t('Select a specimen group from the dropdown menu to constrain the search.');
-	$tooltip['text']['art'] = t('Search for the specimen by inputing at least 2 chars.');
-	$tooltip['text']['datum'] = t('Date of observation (dd/mm/yyyy)');
-	$tooltip['text']['anzahl'] = t('Number of observed specimens.');
-	$tooltip['text']['observer'] = t('Name of observer (You)');
-	$tooltip['text']['methode'] = t('Select a method for determination from the dropdown menu.');
-	$tooltip['text']['bemerkung'] = t('Provide any additional information.');
-	$tooltip['text']['position'] = t('Precision of place of observation.');
-
-	$formcust .= '<div id="message" style="display: none; height: auto;">
-<div class="messages status"></div>
-</div>';
-
-	$formcust .= '
-		<div class="form-item form-type-textfield">'
-			.'<form url="' . $url . '" method="post" name="' . $form_id . '" id="' . $form_id . '" enctype="multipart/form-data">'
-				.'<input type="hidden" id="organismn_id" name="organismn_id" value="' . $observation['observation']['organism_id'] . '">'
-				.'<input type="hidden" id="observation_found_as_lang" name="observation_found_as_lang" value="' . $observation['observation']['found_as_lang'] . '">'
-				.'<input type="hidden" id="observation_found_as_latin" name="observation_found_as_latin" value="' . $observation['observation']['found_as_lat'] . '">'
-				.'<input type="hidden" name="artgroup" id="artgroup" value="' . $observation['observation']['organism_artgroup_id'] . '">'
-				.@$hidden_fields
-				.'<table id="artgroup_art_table" class="form-item form-type-textfield">'
-					.'<tr>'
-						.'<td class="observation_title">'
-							.'<label for="artgroup_select">' . t('Filter on species group') . '</label>'
-						.'</td><td>'
-							.'<select name="artgroup_select" id="artgroup_select" onChange="$(\'#artgroup\').val(this.options[this.selectedIndex].value);observation.resetOrganismAutomcomplete();" title="' . $tooltip['text']['artengruppe'] . '" class="qtip_element">'
-								.organism_artgroup_get_all_as_option(
-									false,
-									0,
-									$observation['observation']['organism_artgroup_id'])
-							.'</select>'
-						.'</td>'
-					.'</tr><tr>'
-						.'<td class="observation_title">'
-							.'<label for="organism_autocomplete">' . t('Search for species') . '</label>'
-						.'</td><td>'
-							.'<input id="organismn_autocomplete" class="ui-autocomplete-input organismn_autocomplete qtip_element" type="text" maxlength="64" size="40" value="' . $observation['organism']['name_lang'] . '" title="' . $tooltip['text']['art'] . '" /><br />'
-							.'<span id="species_autocomplete">' . $species_autocomplete . '</span>'
-						.'</td>'
-					.'</tr>'
-				.'</table>'
-				.'<table class="form-item form-type-textfield">'
-					.'<tr>'
-						.'<td class="observation_subtitle">'
-							.'<label for="date">' . t('Date of the obeservation') . '</label>'
-						.'</td><td>'
-							.'<input type="text" id="date" name="date" value="'	. date('d.m.Y H:i:s', $timestamp) . '" title="' . $tooltip['text']['datum'] . '" class="qtip_element" />'
-						.'</td>'
-					.'</tr><tr>'
-						.'<td class="observation_subtitle">'
-							.'<label for="observation_count">' . t('Count of found individuals')	. '</label>'
-						.'</td><td>'
-							.'<input type="text" id="observation_count" name="count" value="' . $observation['observation']['count'] . '" title="' . $tooltip['text']['anzahl'] . '" class="qtip_element" />'
-						.'</td>'
-					.'</tr><tr>'
-						.'<td class="observation_subtitle">'
-							.t('Observer')
-						.'</td><td >'
-							.'<input type="hidden" name="observer" value="' . $observation['observation']['observer'] . '" />'
-							.'<div class="qtip_wrapper"><div class="qtip_element qtip_overlay" title="' . $tooltip['text']['observer'] . '" ></div><input id="observer" disabled="disabled" value="' . $observation['observation']['observer'] . '" /></div>'
-						.'</td>'
-					.'</tr>'
-				.'</table>';
-
-	$formcust .= '<fieldset id="observation-edit-options" class="collapsible form-wrapper">
-							<legend>
-							<span class="fieldset-legend">'
-			. t('Add more details')
-			. '</span>
-							</legend>
-							<div class="fieldset-wrapper">'
-			. '<div><table id="attributes_table"><tr>' . '<td>'
-			. t('Determination method')
-			. ':</td><td> <select name="determination_method_id" id="determination_method_id" title="' . $tooltip['text']['methode'] . '" class="qtip_element">'
-			. organism_artgroup_get_determation_methods(
-				false,
-				true,
-				$observation['observation']['organism_artgroup_detmethod_id'],
-				$observation['detmethods_vis']) . '</select></td>' . '</tr>'
-			.organism_artgroup_get_attributes($observation['observation']['organism_artgroup_id'], true, '<tr><td>#name#', '</td>','<td>','</td></tr>')
-			.observation_get_attributes($observation['observation']['id'], true, '<tr><td>#name#', '</td>', '<td>', '</td></tr>')	
-				
-				
-			. '</table></div></div></fieldset>'
-			. '<div id="qtipBemerkung" title="' . $tooltip['text']['bemerkung'] . '"></div><div id="qtipPosition" title="' . $tooltip['text']['position'] . '"></div>';	
+	$form['media'] = array(
+		'#type'=> 'fieldset',
+		'#title'=> t('Add media for this observation'),
+		'#collapsible' => true,
+		'#collapsed' => false,
+		'#tree' => true,
+	);
 	
-	$formcust .= drupal_render($form);
-//	$formcust .= '<input type="submit" class="edit-submit" value="' . t('Save')	. '" name="op" id="edit-submit" />';
-	$formcust .= '<div style="display: none;" id="message"><div class="messages"></div></div>'
-			. $image . drupal_render($file_list) . '</form>' . '</div>';
-
-	$recent['recent_observation'] = array(
+	$numbers = array();
+	for($i=1; $i <= 10; $i++) {
+		$numbers[$i] = $i;
+	}
+	$default = !empty($form_state['values']['media']['file_number']) ? $form_state['values']['media']['file_number'] : 1;
+	$form['media']['file_number'] = array(
+			'#title' => t('Number of files to upload?'),
+			'#type' => 'select',
+			'#options' => $numbers,
+			'#default_value' => $default,
+			'#ajax' => array(
+					'event' => 'change',
+					'callback' => 'observation_add_uploadslot',
+					'wrapper' => 'upload-div',
+					'method' => 'replace',
+					'effect' => 'fade',
+			),
+			'#tree' => true,
+	);
+	
+	$form['media']['upload'] = array(
+			'#prefix' => '<div id="upload-div"> <p>' . t('Allowed files endings are: ') . $file_extensions . '</p>',
+			'#suffix' => '</div>',
+			'#type' => 'fieldset',
+			'#tree' => true,
+	);
+	for ($i=0; $i<$default; $i++) {	
+		$form['media']['upload'][$i] = array(
+			'#name' => 'files['.$i.']',
+			'#id' => 'file_input'.$i,
+			'#type' => 'file',
+			'#prefix' => '<div id="picture_upload__'.$i.'">
+						 <input type="text" style="display: none; height: 0px;" id="meta_title" name="meta_title[]" value="">
+ 						 <input type="text" style="display: none; height: 0px;" id="meta_description" name="meta_description[]" value="">
+ 					     <input type="text" style="display: none; height: 0px;" id="meta_location" name="meta_location[]" value="">
+					     <input type="text" style="display: none; height: 0px;" id="meta_author" name="meta_author[]" value="">
+						',
+			'#suffix' => ($i+1 < $default) ? '<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" > '	. t('Click here to add details to this file') . '</a><hr></div>' 
+										 : '<a onclick="observation.galleryMetaDataDialog($(this).parent());return false;" > '	. t('Click here to add details to this file') . '</a></div>',
+											
+			'#title' => t('Choose a file'),
+			'#size' => 60,
+			'#tree' => true,
+		);
+	}
+	
+	$form['media']['button'] = array(
+			'#type' => 'submit',
+			'#value' => t('Save'),
+			'#submit' => array(
+					'observation_save'
+			),
+			'#tree' => true
+	);
+	
+	/* Hidden fields */
+	$form['observer'] = array('#type' => 'hidden', '#id' => 'observer', '#name' => 'observer', '#value' => $observation['observation']['observer']);
+	
+	
+	$form['observation_id'] = array('#type' => 'hidden', '#id' => 'observation_id', '#name' => 'observation_id', '#value' => $observation['observation']['id']);
+	
+	if(isset($observation['observation']['area_geometry_id']))
+		$form['area_geometry_id'] = array('#type' => 'hidden', '#id' => 'area_geometry_id', '#name' => 'area_geometry_id', '#value' => $observation['observation']['area_geometry_id']);
+	
+	$form['recent_observation'] = array(
 			'#theme' => 'datatable',
 			'#header' => observation_get_standard_datatable_headers(9, 'desc'),
 			'#title' => t(
@@ -306,31 +371,34 @@ function observation_form($observation = false) {
 									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}",
 					'rpShowAll' => true,
 					'onSuccessHandler' => 'observation.onTableSuccess',
-			)
+			),
+			'#weight' => 100,
 	);
 
 	if(observation_admin_access($observation)) {
-		$aclfieldset =  array(
+		$form['acl'] =  array(
 				'#type' => 'fieldset',
 				'#title' => t('Permissions'),
 				'#weight' => 99,
+				'#prefix' => '</form>',
+				'#collapsible' => true,
+				'#collapsed' => false,
+				'#tree' => true,
 		);
-
-		$aclfieldset['content'] = observation_acl_template($observation);
+		$form['acl']['content'] = observation_acl_template($observation);
 	}
 	
-	$formcust .= drupal_render($aclfieldset);
-	$formcust .= drupal_render($recent);
-
-	return $formcust;
+	return $form;
 }
 
+function observation_add_uploadslot($form, &$form_state) {
+	return $form['media']['upload'];
+}
 /**
  * ACL permission template
  * @param array $observation
  */
 function observation_acl_template($observation = NULL) {
-	$output = array();
 	$defaults = array(
 			array(
 					'type' => variable_get("ACL_READ"),
@@ -349,13 +417,14 @@ function observation_acl_template($observation = NULL) {
 			)
 	);
 
-	$output['acl'] = array(
+	$acl = array(
 			'#theme' => 'c_acl',
 			'#defaults' => $defaults,
 			'#acl_id' => $observation['observation']['acl_id'],
 			'#add_element' => true,
+			'#tree' => true,
 	);
-	return $output;
+	return $acl;
 }
 
 /**
@@ -475,3 +544,174 @@ function observation_show_observation($observationdata = NULL) {
 	return $output;
 }
 
+function observation_organism_callback($form, &$form_state) {
+	//empty organism field
+	$form['group']['organism']['#value'] = '';
+	return $form['group'];
+}
+
+function observation_form_add_js_tools($form, $form_state) {
+	//add date and timepicker
+	drupal_add_library('system', 'ui.datepicker');
+	drupal_add_library('system', 'ui.slider');
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/timepicker.js');
+
+	
+	drupal_add_css('/* css for timepicker */
+					.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+					.ui-timepicker-div dl { text-align: left; }
+					.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+					.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+					.ui-timepicker-div td { font-size: 90%; }
+					.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+			
+					.ui-timepicker-rtl{ direction: rtl; }
+					.ui-timepicker-rtl dl { text-align: right; }
+					.ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; })', 'inline');
+	 
+	drupal_add_js($observation_path . '/js/qtip_tooltip.js');
+	/* Tooltip texts */
+	$tooltip['text']['artgroup_id'] = t('Select a specimen group from the dropdown menu to constrain the search.');
+	$tooltip['text']['organism_name'] = t('Search for the specimen by inputing at least 2 chars.');
+	$tooltip['text']['date'] = t('Date of observation (dd.mm.yyyy)');
+	$tooltip['text']['time'] = t('Time of observation (hh:mm)');
+	$tooltip['text']['count'] = t('Number of observed specimens.');
+	$tooltip['text']['observer'] = t('Name of observer (You)');
+	$tooltip['text']['detmethod'] = t('Select a method for determination from the dropdown menu.');
+	$tooltip['text']['Kommentar'] = t('Provide any additional information.');
+	$tooltip['text']['Genauigkeit'] = t('Precision of place of observation.');
+	
+	$tooltip_options = 'position: {
+					      corner: {
+					         target: "center",
+					         tooltip: "bottomLeft"
+					      }
+				     },
+	 				 style: {
+	 				 		name: "light",
+	 				 		tip: true,
+							border: {
+						         width: 1,
+						         radius: 3,
+						         color: "#C0C0C0"
+							}
+					}';
+	
+
+	
+	$attributes_tooltips = '';
+	$observation_id = isset($form_state['values']['observation_id']) ? $form_state['values']['observation_id'] : 0;
+	$artgroup_id = isset($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 0;
+	if($artgroup_id) {
+		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
+		foreach ($observation_attributes as $key => $attribute) {
+			$attributes_tooltips.= 'jQuery("#'.$attribute['id'].'").live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text'][$attribute['name']].'",
+	 				'.$tooltip_options.',
+				 overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+			 });';
+		}
+	}
+	
+	 drupal_add_js('jQuery(document).ready(function(){
+	 		jQuery( ".datepicker" ).live("focus", function() {
+	 				$(this).datepicker({
+			      dateFormat: "dd.mm.yy"
+    			});
+	 		});
+			jQuery( ".timepicker" ).live("focus", function() {
+	 			$(this).timepicker({
+			 	timeFormat: "HH:mm",
+	 			showButtonPanel: false
+			 });
+	 		});
+	 		jQuery( "#artgroup_id" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['artgroup_id'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#organism_name" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['organism_name'].'",
+	 			'.$tooltip_options.',
+	 			overwrite: false,
+	 			show: {
+					event: event.type,
+					ready: true
+	 			}
+			 }, event);
+	 		});
+	 		jQuery( "#date" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['date'].'",
+	 			'.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#time" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['time'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#count" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['count'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});
+	 		jQuery( "#observer" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['observer'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});		
+	 		jQuery( "#detmethod" ).live("mouseover", function(event) {
+	 			$(this).qtip({
+			 	 content: "'.$tooltip['text']['detmethod'].'",
+			 '.$tooltip_options.',
+				overwrite: false,
+		 			show: {
+						event: event.type,
+						ready: true
+		 			}
+				 }, event);
+	 		});'			
+	 		.$attributes_tooltips.
+'});'
+, 'inline'); 
+	
+	return $form;
+}

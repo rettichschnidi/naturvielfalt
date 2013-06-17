@@ -15,7 +15,8 @@ module_load_include('inc', 'area', 'area');
  * @param array $observationdata
  */
 function observation_edit($observationdata = NULL) {
-	return observation_form($observationdata);
+	return drupal_get_form('observation_form', $observationdata);
+// 	return observation_form($observationdata);
 }
 
 /**
@@ -86,8 +87,9 @@ function observation_get($observation_id) {
 				'value_id_name' => organism_artgroup_get_attributes_value_name(@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
 				'value' => @$attributes[$attribute_vis]->value
 			);
+
 		// observation attributes
-		foreach ($attributes as $attribute) {
+		foreach ($attributes as $attribute) {		
 			$result['attributes']['observation_attr_'.$attribute->id] = array(
 				'attribute_name' => organism_artgroup_get_attribute($attribute->organism_artgroup_attr_id, true),
 				'value_id' => $attribute->organism_artgroup_attr_values_id,
@@ -95,7 +97,6 @@ function observation_get($observation_id) {
 				'value' => $attribute->value
 			);
 		}
-
 		return $result;
 	}
 	return false;
@@ -515,9 +516,7 @@ function observation_attribute_value_exist($observation_id, $attr_id) {
 		array(':observation_id' => $observation_id,
 				':attr_id' => $attr_id
 		))->rowCount();
-	if ($result == 1)
-		return true;
-	return false;
+	return ($result == 1);
 }
 
 /**
@@ -554,13 +553,11 @@ function observation_add_attribute_value($entry) {
 */
 function observation_get_attributes(
 		$observation_id = false,
-		$as_html = false,
-		$html_before_desc = false,
-		$html_after_desc = false,
-		$html_before_form = false,
-		$html_after_form = false,
-		$attribute_id = false) {
+		$artgroup_id) {
 	global $user;
+	// TODO: make this conversion nicer (in a db)
+	$drupal_fields['textarea'] = 'textarea';
+	$drupal_fields['string'] = 'textfield';
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
@@ -569,19 +566,21 @@ function observation_get_attributes(
 	
 	if ($observation_id > 0) {
 		$sql_select .= ', oa.id attribute_id, oa.value';
-		$sql_join .= ' LEFT JOIN {observation_attribute} oa ON oa.organism_artgroup_attr_id=oaa.id AND oa.observation_id=:observation_id';
-// 		$attribute_sql = 'SELECT oa.id id, oa.observation_id observation_id, oa.organism_artgroup_attr_id attr_id, oa.value, oaa.name, oaat.name type_name, oaat.format type_format'
-// 			.' FROM {observation_attribute} oa'
-// 			.' LEFT JOIN {organism_artgroup_attr} oaa ON oaa.id=oa.organism_artgroup_attr_id'
-// 			.' LEFT JOIN {organism_artgroup_attr_type} oaat ON oaat.id=oaa.organism_artgroup_attr_type_id'
-// 			.' WHERE oa.observation_id=:observation_id';
+		$sql_join .= ' LEFT JOIN {observation_attribute} oa ON oa.organism_artgroup_attr_id=oaa.id AND oa.observation_id=:observation_id'.
+					 ' LEFT JOIN {organism_artgroup_attr_subscription} oaas ON oaa.id = oaas.organism_artgroup_attr_id';
+		$sql_where .= ' WHERE oaas.organism_artgroup_id =:artgroup_id OR oaas.organism_artgroup_id = 0';
 		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where,
-			array(':observation_id' => $observation_id)
-		);
+			array(':observation_id' => $observation_id, ':artgroup_id' => $artgroup_id));
 	}
 	else
-		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where);
-
+	{
+		$sql_join .= ' LEFT JOIN {organism_artgroup_attr_subscription} oaas ON oaa.id = oaas.organism_artgroup_attr_id';
+		$sql_where .= ' WHERE oaas.organism_artgroup_id =:artgroup_id OR oaas.organism_artgroup_id = 0';
+		$attributes_results = db_query($sql_select . ' ' . $sql_from . ' ' . $sql_join . ' ' . $sql_where,
+			array(':artgroup_id' => $artgroup_id)
+		);
+	}
+	
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result) {
 		$attributes_with_values[] = array(
@@ -589,23 +588,23 @@ function observation_get_attributes(
 			'id' => $attributes_result->id,
 			'type_name' => $attributes_result->type_name,
 			'type_format' => $attributes_result->type_format,
-			'values' => $attributes_result->value
+			'type_drupal' => $drupal_fields[$attributes_result->type_format],
+			'value' => ($observation_id > 0) ? $attributes_result->value : '',
 		);
 	}
-	
-	if (!$as_html)
+// 	if (!$as_html)
 		return $attributes_with_values;
 
-	$attributes_with_values_html = '';
-	foreach ($attributes_with_values as $tmp) {
-		$attributes_with_values_html .= observation_parse_html_forms(
-		$tmp,
-		$html_before_desc,
-		$html_after_desc,
-		$html_before_form,
-		$html_after_form);
-	}
-	return $attributes_with_values_html;
+// 	$attributes_with_values_html = '';
+// 	foreach ($attributes_with_values as $tmp) {
+// 		$attributes_with_values_html .= observation_parse_html_forms(
+// 		$tmp,
+// 		$html_before_desc,
+// 		$html_after_desc,
+// 		$html_before_form,
+// 		$html_after_form);
+// 	}
+// 	return $attributes_with_values_html;
 
 }
 
@@ -753,7 +752,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Date'),
 			'dbfield' => 'date',
-			'width' => 60
+			'width' => 120
 	);
 	
 	$tableHeader[] = array(
@@ -862,5 +861,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
  * Return the single observation form to add a observation
  */
 function observation_new() {
-	return observation_form();
+	return drupal_get_form('observation_form');
+// 	return observation_form();
 }
+?>

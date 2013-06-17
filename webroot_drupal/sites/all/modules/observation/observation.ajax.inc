@@ -21,18 +21,19 @@ module_load_include('inc', 'datatable');
  */
 function observation_save($observation_data = false, $custom_data = false, $from_api = false) {
 	global $user;
-
+	module_load_include('inc', 'observation', 'observation.validate');
+	
 	$values = $_POST;
-	if ($custom_data) {
-		$values = $custom_data;
-	}
+	if($from_api) $values = $custom_data;
 
-	$errormessages = array();
 	$observation = array();
 	$observation['m_time'] = time();
+	$edit = false;
 	if (isset($values['observation_id'])) {
+		$edit = true;
 		$observation['id'] = $values['observation_id'];
 	}
+	else $observation['id'] = 0;
 	if (isset($values['area_geometry_id'])) {
 		$observation['area_geometry_id'] = $values['area_geometry_id'];
 	}
@@ -40,18 +41,21 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	/**
 	 * check the organism id
 	 */
-	if (!organism_get(filter_xss($values['organismn_id']))) {
-		$errormessages[] = t('This organism is not permitted!');
+	
+	//some form elements are nested: see observation_template.inc
+	if(!$from_api) {
+		$values['organism'] = filter_xss($values['group']['organism']);
+		$values['date'] = filter_xss($values['group']['date']);
+		$values['time'] = filter_xss($values['group']['time']);
+		$values['count'] = filter_xss($values['group']['count']);
+		if(isset($values['group']['details']))
+			$values['details'] = $values['group']['details'];
+		$result = organism_get_byname(filter_xss($values['organism']));
+		$observation['organism_id'] = $result['id'];
 	} else {
-		$observation['organism_id'] = filter_xss($values['organismn_id']);
+		$observation['organism_id'] = filter_xss($values['organism_id']);
 	}
-	if (is_bool((bool) $values['observation_found_as_lang'])) {
-		$observation['found_as_lang'] = $values['observation_found_as_lang'];
-	}
-	if (is_bool((bool) $values['observation_found_as_latin'])) {
-		$observation['found_as_lat'] = $values['observation_found_as_latin'];
-	}
-
+	
 	/**
 	 * Check the determation and artgroup value
 	 */
@@ -65,26 +69,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			true);
 	}
 
-	if (!isset($values['determination_method_id']))
-		$values['determination_method_id'] = 0;
-	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval(
-		$values['determination_method_id']);
-	if (isset($artgroup_id) && $artgroup_id > 0) {
-		$determination_methods_db = organism_artgroup_get_determation_methods($artgroup_id);
-		$artgroup_id_checked = false;
-
-		if ($determination_method_id > 0) {
-			foreach ($determination_methods_db as $determination_method_db) {
-				if ($determination_method_db->id == $determination_method_id) {
-					$artgroup_id_checked = true;
-				}
-			}
-			if (!$artgroup_id_checked) {
-				$errormessages[] = t('Artgroup with this determination method not allowed');
-			}
-		}
-	}
-
 	/**
 	 * Check observer
 	 */
@@ -92,83 +76,26 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	$observation['users_uid'] = isset($values['set_user_uid']) && $values['set_user_uid'] ? $values['set_user_uid']
 			: $user->uid;
 
-	/**
-	 * Check the count value
-	 */
-	$count = (integer) $observation['count'] = $values['count'];
-	if ($count < 1 || empty($count) || !is_int($count)) {
-		$errormessages[] = t('The count has to be a number and bigger than zero');
-	}
-
-	/**
-	 * Check the date
-	 */
-	$date = $values['date'];
-	$date_split = explode('.', $date);
-	$observation['date'] = mktime(null, null, null, $date_split[1], $date_split[0], $date_split[2]);
-	if (empty($date) || !checkdate($date_split[1], $date_split[0], $date_split[2])) {
-		$errormessages[] = t('Please enter a valid date');
-	}
-
+	$observation['count'] = filter_xss($values['count']);
+	
+	$date_parts = explode('.', filter_xss($values['date']));
+	$timesplit = array(null, null);
+	if(isset($values['time'])) $timesplit = explode(':', $values['time']);
+	$observation['date'] = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	
+	
+	if (!isset($values['details']['determination']))
+		$values['details']['determination'] = 0;
+	$observation['organism_artgroup_detmethod_id'] = intval(
+			$values['details']['determination']);
+	
 	/**
 	 * Check if all attributes are permitted
 	 */
-	$attributes = isset($values['attributes']) ? $values['attributes'] : array();
+	$attributes = isset($values['details']['attributes']) ? $values['details']['attributes'] : array();
 	$attributes_checked = array();
 	foreach ($attributes as $key => $value) {
-		$attribute = organism_artgroup_get_attribute($key);
-
-		$attribute = $attribute[0];
-		switch ($attribute['type_format']) {
-		case 'textarea':
-		case 'string':
-			$value = check_plain($value);
-			if (!empty($value)) {
-				$attributes_checked[$key] = $value;
-			}
-			break;
-		case 'dropdown':
-			if ($value != '0') {
-				if (array_key_exists($value, $attribute['values'])) {
-					$attributes_checked[$key] = 'db_id-->' . $value;
-				} else {
-					$errormessages[] = t('The value of ' . $attribute['name'] . ' not permitted');
-				}
-			}
-			break;
-		case 'date':
-			$value_split = explode('.', $value);
-
-			if (count($value_split) == '3'
-					&& checkdate(
-						intval($value_split[1]),
-						intval($value_split[0]),
-						intval($value_split[2]))) {
-				$attributes_checked[$key] = $value;
-			} else {
-				if ($value != "") {
-					$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a date');
-				}
-			}
-			break;
-		case 'int':
-			$value = intval($value);
-			if (is_int($value) && !empty($value)) {
-				$attributes_checked[$key] = $value;
-			} elseif ($value != "") {
-				$errormessages[] = t('The value of ' . $attribute['name'] . ' should be a number');
-			}
-			break;
-		}
-		// 		$output['attr'][] = $attribute;
-	}
-
-	/**
-	 * check the map data
-	 */
-
-	if (filter_xss($values['coordinate']) == "") {
-		$errormessages[] = t('Please mark a point on the map');
+		$attributes_checked[$key] = filter_xss($value);
 	}
 
 	$geometry['zip'] = intval(filter_xss($values['zip']));
@@ -182,85 +109,87 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	/**
 	 * Save to the DB
 	 */
-	if (empty($errormessages)) {
-		/**
-		 * save the observation
-		 */
-		$transaction = db_transaction();
-		// Yes, it's by far too much for a try element - but adding this try clause when the rest is already
-		// done leads to such smells. :( At least there is no loop in it :)
-		// Feel free to refactor it.
-		try {
-			if ($observation['id']) {
-				// do update
-				area_update_geometry($observation['area_geometry_id'], $geometry);
-				observation_save_attribute_values($attributes_checked, $observation['id']);
-				db_update('observation')->fields($observation)
-					->condition('id', $observation['id'])
-					->execute();
-				$output['update'] = true;
-			} else {
-				// $geometry_id = area_save_geometry_blablablab();
-				$observation['area_geometry_id'] = area_create_geometry($geometry);
+	/**
+	 * save the observation
+	 */
+	$transaction = db_transaction();
+	// Yes, it's by far too much for a try element - but adding this try clause when the rest is already
+	// done leads to such smells. :( At least there is no loop in it :)
+	// Feel free to refactor it.
+	try {
+		if ($observation['id'] > 0) {
+			// do update
+			area_update_geometry($observation['area_geometry_id'], $geometry);
+			observation_save_attribute_values($attributes_checked, $observation['id']);
+			db_update('observation')->fields($observation)
+				->condition('id', $observation['id'])
+				->execute();
+			$output['update'] = true;
+		} else {
+			// $geometry_id = area_save_geometry_blablablab();
+			$observation['area_geometry_id'] = area_create_geometry($geometry);
 
-				//save the observation
-				$observation_id = $observation['id'] = db_query(
-					"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
-				$observation['c_time'] = $observation['m_time'];
-				$observation['acl_id'] = new_acl('observation', $observation['users_uid']);
-				db_insert('observation')->fields($observation)
-					->execute();
-				observation_save_attribute_values($attributes_checked, $observation['id']);
-				
-				// Read access for ALL group
-				add_group_to_acl($observation['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
-			}
-
-			/**
-			 * Medias
-			 */
-
-			$image = array(
-					'item_id' => $observation['id'],
-					'author' => $observation['observer'],
-					'location' => $geometry['township'] . ' ' . $geometry['canton'],
-			);
-			gallery_implementation_save_manual('observation', $image, 'observation_id');
-
-			if (isset($values['file_description'])) {
-				gallery_implementation_file_updateComment(
-					'observation',
-					$values['file_description']);
-			}
-
-			if (isset($values['delete'])) {
-				gallery_implementation_delete($values['delete']);
-			}
-
-			if (isset($values['file_delete'])) {
-				gallery_implementation_files_delete($values['file_delete'], 'observation');
-			}
-
-			// Set the return statement
-			$output['success'] = true;
-		} catch (Exception $e) {
-			$transaction->rollback();
-			watchdog_exception('observation', $e);
-			$output['success'] = false;
-			$output['message'] = array(
-					t('Could not save the observation because of an unknown error.')
-			);
+			//save the observation
+			$observation_id = $observation['id'] = db_query(
+				"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
+			$observation['c_time'] = $observation['m_time'];
+			$observation['acl_id'] = new_acl('observation', $observation['users_uid']);
+			db_insert('observation')->fields($observation)
+				->execute();
+			observation_save_attribute_values($attributes_checked, $observation['id']);
+			
+			// Read access for ALL group
+			add_group_to_acl($observation['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
 		}
-	} else {
+
+		/**
+		 * Medias
+		 */
+		$image = array(
+				'item_id' => $observation['id'],
+				'author' => $observation['observer'],
+				'location' => $geometry['township'] . ' ' . $geometry['canton'],
+		);
+		
+		gallery_implementation_save_manual('observation', $image, 'observation_id');
+
+		if (isset($values['file_description'])) {
+			gallery_implementation_file_updateComment(
+				'observation',
+				$values['file_description']);
+		}
+
+		if (isset($values['delete'])) {
+			gallery_implementation_delete($values['delete']);
+		}
+
+		if (isset($values['file_delete'])) {
+			gallery_implementation_files_delete($values['file_delete'], 'observation');
+		}
+		// Set the return statement
+		$output['success'] = true;
+	} catch (Exception $e) {
+		$transaction->rollback();
+		watchdog_exception('observation', $e);
 		$output['success'] = false;
-		$output['message'] = $errormessages;
+		$output['message'] = array(
+				t('Could not save the observation because of an unknown error.')
+		);
 	}
 
-	//
 	if ($from_api) {
 		return $output;
 	}
-
+	
+	if($output['success']) {
+		drupal_set_message(t('successfull saved'));
+		if($edit)
+			drupal_goto('observation/'.$observation['id'].'/edit');
+	} else {
+		form_set_error('observation_form', $output['message']);
+		$observation_data['redirect'] = FALSE;
+	}
+	
 	return drupal_json_output($output);
 
 }

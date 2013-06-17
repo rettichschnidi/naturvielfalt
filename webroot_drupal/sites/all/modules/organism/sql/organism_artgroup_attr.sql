@@ -23,6 +23,14 @@ SELECT pg_catalog.setval('{organism_artgroup_attr_id_seq}', 1, false);
 
 INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (1, 1, 'Genauigkeit', 0);
 INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (2, 2, 'Kommentar', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (3, 3, 'Fundort', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (4, 4, 'Haufigkeit', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (5, 5, 'Phanologie', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (6, 6, 'Bestimmung', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (7, 7, 'Herkunft', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (8, 8, 'Vorkommen', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (9, 9, 'Beleg vorhanden', 0);
+INSERT INTO {organism_artgroup_attr} (id, organism_artgroup_attr_type_id, name, users_uid) VALUES (10, 10, 'Verifiziert durch', 0);
 
 
 --
