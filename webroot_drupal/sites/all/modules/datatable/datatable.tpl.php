@@ -291,7 +291,9 @@ jQuery(document).ready(function() {
 			return data;
 		},
 		onSuccess: function(flexigrid) {
-			<?php if (isset($options['onSuccessHandler'])) echo $options['onSuccessHandler'] . '(flexigrid);'; ?>
+			<?php if (isset($options['onSuccessHandler'])) { ?>
+				if(typeof <?php echo array_shift(explode('.', $options['onSuccessHandler']));?> !== 'undefined') <?php echo $options['onSuccessHandler'] . '(flexigrid);' ?>;
+			<?php } ?>
 			jQuery.addFlex.hideLoading(this);
 		},
 		onError: function(XMLHttpRequest, textStatus, errorThrown) {
