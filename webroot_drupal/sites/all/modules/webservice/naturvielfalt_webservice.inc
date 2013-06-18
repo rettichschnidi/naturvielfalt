@@ -40,10 +40,11 @@ function naturvielfalt_webservice_parse_import_observations() {
 	 */
 
 	$data = area_get_geocode_info(filter_xss($_POST['longitude']), filter_xss($_POST['latitude']));
-	$data['organismn_id'] = $_POST['organismn_id'];
+	$data['organism_id'] = $_POST['organism_id'];
 	$data['organism_artgroup_id'] = $_POST['organism_artgroup_id'];
 	$data['count'] = $_POST['count'];
 	$data['date'] = $_POST['date'];
+	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
 	
 	
@@ -65,31 +66,39 @@ function naturvielfalt_webservice_parse_import_observations() {
 	
 	$validationerrors = naturvielfalt_webservice_validate($data);
 	if(!empty($validationerrors)) {
-		watchdog(
-			WS_API_LOG_TYPE,
-			'Validation of arguments failed, please provide all mandatory fields in the correct format:',
-			array(),
-			WATCHDOG_ERROR);
+		header('HTTP/1.0 400 Bad Request');
+// 		watchdog(
+// 			WS_API_LOG_TYPE,
+// 			'Validation of arguments failed, please provide all mandatory fields in the correct format:',
+// 			array(),
+// 			WATCHDOG_ERROR);
+		print('ERROR: Validation errors detected. Check the log file for details <br>');
 		foreach ($validationerrors as $message) {
-			watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
+			print($message.'<br>');
+			
+// 			watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
 		}
-		print('ERROR: Validation errors detected. Check the log file for details');
+		
 	}
 	else {
+		header('HTTP/1.0 200 OK');
 		$observation_status = observation_save(false, $data, true);
 		// get the data
 		if ($observation_status['success'] == true) {
 			print('SUCCESS');
 		} else {
-			watchdog(
-			WS_API_LOG_TYPE,
-			'Something went wrong... see following error messages.',
-			array(),
-			WATCHDOG_ERROR);
+			header('HTTP/1.0 400 Bad Request');
+// 			watchdog(
+// 			WS_API_LOG_TYPE,
+// 			'Something went wrong... see following error messages.',
+// 			array(),
+// 			WATCHDOG_ERROR);
+			print('ERROR: Something went wrong.. check the log file for details <br>');
 			foreach ($observation_status['message'] as $key => $message) {
-				watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
+				print($message.'<br>');
+// 				watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
 			}
-			print('ERROR: Something went wrong.. check the log file for details');
+			
 		}
 	}
 }
@@ -104,20 +113,23 @@ function naturvielfalt_webservice_auth() {
 
 function naturvielfalt_webservice_validate($data) {
 	$validationerrors = array();
-	if(!isset($data['organismn_id'])) $validationerrors[] = t("Please pass key 'organismn_id'.");
-	else if(!observation_validate_organism($data['organism']))  $validationerrors[] = t('Please enter an existing organism.');
-	
+	if(!isset($data['organism_id'])) $validationerrors[] = t("Please pass key 'organism_id'.");
+	else if(!observation_validate_organism_id($data['organism_id']))  $validationerrors[] = t('Please enter an existing organism.');
+
 	if(!isset($data['organism_artgroup_id'])) $validationerrors[] = t("Please pass key 'organism_artgroup_id'.");
 	
 	if(!isset($data['count'])) $validationerrors[] = t("Please pass key 'count'.");
 	else if(!observation_validate_count($data['count']))  $validationerrors[] = t('The count has to be a number and bigger than zero');
 	
 	if(!isset($data['date'])) $validationerrors[] = t("Please pass key 'date'.");
-	else if(!observation_validate_date($data['data']))  $validationerrors[] = t('Please pass a valid date (dd.mm.yyyy)');
+	else if(!observation_validate_date($data['date']))  $validationerrors[] = t('Please pass a valid date (dd.mm.yyyy)');
+	
+	if(!isset($data['time'])) $validationerrors[] = t("Please pass key 'time'.");
+	else if(!observation_validate_time($data['time']))  $validationerrors[] = t('Please pass a valid time (HH:mm)');
 	
 	if(!isset($data['observer'])) $validationerrors[] = t("Please pass key 'observer'.");
 	
-	if(!isset($data['coordinate'])) $validationerrors[] = t("Please pass key'coordinate'.");
+	if(!isset($data['coordinate'])) $validationerrors[] = t("Please pass keys 'longitude' and 'latitude'.");
 	else if(!observation_validate_coordinate($data['coordinate'])) $validationerrors[] = t("Please pass a correct location.");
 	
 	return $validationerrors;
