@@ -112,6 +112,18 @@ function observation_validate_organism($input) {
 }
 
 /**
+ * Organism Id Validation
+ *
+ * @param string $input
+ * @return true if $input is the id an existing organism
+ */
+function observation_validate_organism_id($input) {
+	if(!ctype_digit($input)) return false;
+	$result = organism_get(filter_xss($input));
+	return !empty($result);
+}
+
+/**
  * Coordinate Validation
  *
  * @todo validate coordinates from webservice! (Regex)
