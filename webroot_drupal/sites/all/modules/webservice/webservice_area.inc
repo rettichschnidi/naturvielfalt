@@ -1,0 +1,132 @@
+<?php
+/**
+ * @file webservice_area.inc
+ * @author André Kälin, 2013
+ * @copyright 2012 Naturwerk, Brugg
+ */
+module_load_include('inc', 'area', 'area.create');
+module_load_include('inc', 'area', 'area.validate');
+
+define('WS_API_LOG_TYPE', 'webservice api');
+
+/**
+ * Serverside script for receiving the data from the iPhone/Android Application.
+ * It receives POST requests and stores it directly in the database. Normal drupal
+ * authentication is used.
+ *
+ * @author André Kälin, 2013
+ */
+function webservice_parse_import_areas() {
+	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
+	if (!isset($_SERVER['PHP_AUTH_USER'])) {
+		return webservice_auth();
+	}
+
+	// Authenticate the user (Drupal Authentification)
+	$uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+	if (!$uid) {
+		return webservice_auth();
+	}
+	$user = user_load($uid);
+
+	
+	//set location geocodeinfo with first point of coordinates
+	$coordinates = json_decode($_POST['coordinates'], true);
+	$data = area_get_geocode_info(filter_xss($coordinates[0][1]), filter_xss($coordinates[0][0]));
+	//remove not needed keys of geocodeinfo
+	unset($data['coordinate']);
+	unset($data['marker']);
+	
+	/**
+	 * parse not useable post vars to be compatible with the area module
+	 * @var unknown_type
+	 */
+	$data['area_id'] = $_POST['guid'];
+	$data['area_type'] = $_POST['type'];
+	$data['area-coords'] = $_POST['coordinates'];
+	$data['fieldname'] = $_POST['name'];
+	$data['date'] = $_POST['date'];
+	$data['time'] = $_POST['time'];
+	$data['set_user_uid'] = $user->uid;
+	$data['comment'] = $_POST['description'];
+	
+// 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
+// 	if (count($accArray) > 0)
+// 		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
+// 	$comArray = organism_artgroup_get_attribute_by_name(t('Comment'));
+//  	if (count($comArray) > 0)
+//  		$data['attributes'][$comArray[0]] = $_POST['comment'];
+ 	
+
+
+	
+	$validationerrors =  webservice_area_validate($data);
+	if(!empty($validationerrors)) {
+		header('HTTP/1.0 400 Bad Request');
+		print('ERROR: Validation errors detected.<br>');
+		foreach ($validationerrors as $message) {
+			print($message.'<br>');
+		}
+		
+	}
+	else {
+		$observation_status = area_create_new_area($form, $data, true);
+		// get the data
+		if ($observation_status['success'] == true) {
+			header('HTTP/1.0 200 OK');
+			$i=0;
+			//pass return values in "key=value&key2=value2" notation
+			foreach($observation_status as $key => $message) {
+				if($i > 0 && $i < sizeof($observation_status)) print('&');
+				print($key.'='.$message);
+				$i++;
+			}
+		} else {
+			header('HTTP/1.0 400 Bad Request');
+			print('ERROR: Something went wrong.. Could not persist the observation. <br>');
+			foreach ($observation_status['message'] as $key => $message) {
+				print($message.'<br>');
+			}
+		}
+	}
+}
+
+function webservice_auth() {
+	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
+	header('HTTP/1.0 401 Unauthorized');
+
+	watchdog(WS_API_LOG_TYPE, 'Authorization failed.', array(), WATCHDOG_INFO);
+	die('ERROR: Please authorize');
+}
+
+function webservice_area_validate($data) {
+	$validationerrors = array();
+	
+	if(!isset($data['area_id'])) $validationerrors[] = t("Please pass key 'guid'.");
+	else if($data['area_id'] > 0 && !area_validate_area_id($data['area_id']))  $validationerrors[] = t('Please pass a valid area id.');
+	
+	if(!isset($data['fieldname'])) $validationerrors[] = t("Please pass key 'name'.");
+	else if(!area_validate_area_name($data['fieldname']))  $validationerrors[] = t('Please pass a valid area name.');
+	
+	if(!isset($data['date'])) $validationerrors[] = t("Please pass key 'date'.");
+	else if(!area_validate_date($data['date']))  $validationerrors[] = t('Please pass a valid date (dd.mm.yyyy)');
+	
+	if(!isset($data['time'])) $validationerrors[] = t("Please pass key 'time'.");
+	else if(!area_validate_time($data['time']))  $validationerrors[] = t('Please pass a valid time (HH:mm)');
+	
+	if(!isset($data['area-coords'])) $validationerrors[] = t("Please pass key 'coordinates'");
+	else if(!area_validate_coordinates(json_decode($data['area-coords'],true))) $validationerrors[] = t("Please pass a correct location.");
+	
+	if(isset($_FILES['files'])) {
+		foreach($_FILES['files']['name'] as $fkey => $filename) {
+			if($_FILES['files']['name'][$fkey] != '') {
+				$fileextension = array_pop(explode('.', $_FILES['files']['name'][$fkey]));
+				if(!area_validate_fileextension($_FILES['files']['name'][$fkey])) {
+					$validationerrors[] = t('.@extension is an unallowed fileextension!', array('@extension' => $fileextension));
+				}
+			}
+		}
+	}
+	
+	return $validationerrors;
+}

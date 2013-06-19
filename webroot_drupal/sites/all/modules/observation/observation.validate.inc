@@ -1,7 +1,7 @@
 <?php 
 /**
  * @file observation_validate.inc
- * @author André Kälin, 2012
+ * @author André Kälin, 2013
  * @copyright 2013 Naturwerk, Brugg
  */
 
@@ -140,24 +140,8 @@ function observation_validate_coordinate ($input) {
  * @param array $input
  * @return true if valid attributes
  */
-function observation_validate_determination_method ($input) {
-	/**
-	 * Check the determation and artgroup value
-	 */
-	// prevent wrong artgroup, set it each time automatically
-	// set the last value as artgroup
-	// $artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
-	// if($observation['organism_artgroup_id'] == 0){
-	if (array_key_exists('organism_id', $observation) && $observation['organism_id'] > 0) {
-		$observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
-				$observation['organism_id'],
-				true);
-	}
-	
-	if (!isset($values['determination_method_id']))
-		$values['determination_method_id'] = 0;
-	$determination_method_id = $observation['organism_artgroup_detmethod_id'] = intval(
-			$values['determination_method_id']);
+function observation_validate_determination_method ($input, $artgroup_id) {
+	if(!isset($input) || !isset($artgroup_id)) return false;
 	if (isset($artgroup_id) && $artgroup_id > 0) {
 		$determination_methods_db = organism_artgroup_get_determation_methods($observation_id, $artgroup_id);
 		$artgroup_id_checked = false;
@@ -169,7 +153,7 @@ function observation_validate_determination_method ($input) {
 				}
 			}
 			if (!$artgroup_id_checked) {
-				$errormessages['group][determination_method_id'] = t('Artgroup with this determination method not allowed');
+				return false;
 			}
 		}
 	}
