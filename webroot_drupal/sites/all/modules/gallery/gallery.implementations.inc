@@ -104,15 +104,9 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 					}
 				}
 			} else {
-				//FIXME
-				// 			error about didn't saved...
-				// die('fehlfer');
 				$img_ids[$fkey] = 'Error! File not saved!';
 			}
 		}
-		//FIXME
-		// 			error about didn't saved...
-		// die('fehlfer');
 		$img_ids[$fkey] = 'Error! File not saved!';
 	}
 	return $img_ids;

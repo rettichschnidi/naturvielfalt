@@ -130,7 +130,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$observation['area_geometry_id'] = area_create_geometry($geometry);
 
 			//save the observation
-			$observation_id = $observation['id'] = db_query(
+			$observation['id'] = db_query(
 				"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
 			$observation['c_time'] = $observation['m_time'];
 			$observation['acl_id'] = new_acl('observation', $observation['users_uid']);
@@ -168,6 +168,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		}
 		// Set the return statement
 		$output['success'] = true;
+		$output['guid'] = $observation['id'];
 	} catch (Exception $e) {
 		$transaction->rollback();
 		watchdog_exception('observation', $e);

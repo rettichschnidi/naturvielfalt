@@ -1,6 +1,6 @@
 <?php
 /**
- * @file naturvielfalt_webservice.inc
+ * @file webservice_observation.inc
  * @author Ramon Gamma, 2012
  * @copyright 2012 Naturwerk, Brugg
  */
@@ -16,30 +16,28 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * authentication is used.
  *
  * @author Ramon Gamma, 2012
+ * @author André Kälin, 2013
  */
-function naturvielfalt_webservice_parse_import_observations() {
+function webservice_parse_import_observations() {
 	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
 
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		return naturvielfalt_webservice_auth();
+		return webservice_auth();
 	}
 
 	// Authenticate the user (Drupal Authentification)
 	$uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 	if (!$uid) {
-		return naturvielfalt_webservice_auth();
+		return webservice_auth();
 	}
 	$user = user_load($uid);
-
-	watchdog(WS_API_LOG_TYPE, 'REQUEST :' . var_export($_POST, true), array(), WATCHDOG_DEBUG);
-	watchdog(WS_API_LOG_TYPE, 'FILES :' . var_export($_FILES, true), array(), WATCHDOG_DEBUG);
 
 	/**
 	 * parse not useable post vars to be compatible with th observation module
 	 * @var unknown_type
 	 */
-
 	$data = area_get_geocode_info(filter_xss($_POST['longitude']), filter_xss($_POST['latitude']));
+	$data['observation_id'] = $_POST['guid'];
 	$data['organism_id'] = $_POST['organism_id'];
 	$data['organism_artgroup_id'] = $_POST['organism_artgroup_id'];
 	$data['count'] = $_POST['count'];
@@ -57,53 +55,39 @@ function naturvielfalt_webservice_parse_import_observations() {
  	
 	$data['meta_description'][] = $_POST['comment'];
 	$data['set_user_uid'] = $user->uid;
-
-	watchdog(
-		WS_API_LOG_TYPE,
-		'Rewrited Request :' . var_export($data, true),
-		array(),
-		WATCHDOG_DEBUG);
 	
-	$validationerrors = naturvielfalt_webservice_validate($data);
+	$validationerrors =  webservice_observation_validate($data);
 	if(!empty($validationerrors)) {
 		header('HTTP/1.0 400 Bad Request');
-// 		watchdog(
-// 			WS_API_LOG_TYPE,
-// 			'Validation of arguments failed, please provide all mandatory fields in the correct format:',
-// 			array(),
-// 			WATCHDOG_ERROR);
-		print('ERROR: Validation errors detected. Check the log file for details <br>');
+		print('ERROR: Validation errors detected.<br>');
 		foreach ($validationerrors as $message) {
 			print($message.'<br>');
-			
-// 			watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
 		}
 		
 	}
 	else {
-		header('HTTP/1.0 200 OK');
 		$observation_status = observation_save(false, $data, true);
 		// get the data
 		if ($observation_status['success'] == true) {
-			print('SUCCESS');
+			header('HTTP/1.0 200 OK');
+			$i=0;
+			//pass return values in "key=value&key2=value2" notation
+			foreach($observation_status as $key => $message) {
+				if($i > 0 && $i < sizeof($observation_status)) print('&');
+				print($key.'='.$message);
+				$i++;
+			}
 		} else {
 			header('HTTP/1.0 400 Bad Request');
-// 			watchdog(
-// 			WS_API_LOG_TYPE,
-// 			'Something went wrong... see following error messages.',
-// 			array(),
-// 			WATCHDOG_ERROR);
-			print('ERROR: Something went wrong.. check the log file for details <br>');
+			print('ERROR: Something went wrong.. Could not persist the observation. <br>');
 			foreach ($observation_status['message'] as $key => $message) {
 				print($message.'<br>');
-// 				watchdog(WS_API_LOG_TYPE, $message, array(), WATCHDOG_ERROR);
 			}
-			
 		}
 	}
 }
 
-function naturvielfalt_webservice_auth() {
+function webservice_auth() {
 	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
 	header('HTTP/1.0 401 Unauthorized');
 
@@ -111,12 +95,15 @@ function naturvielfalt_webservice_auth() {
 	die('ERROR: Please authorize');
 }
 
-function naturvielfalt_webservice_validate($data) {
+function webservice_observation_validate($data) {
 	$validationerrors = array();
+	
+	if(!isset($data['observation_id'])) $validationerrors[] = t("Please pass key 'guid'.");
+	
 	if(!isset($data['organism_id'])) $validationerrors[] = t("Please pass key 'organism_id'.");
 	else if(!observation_validate_organism_id($data['organism_id']))  $validationerrors[] = t('Please enter an existing organism.');
 
-	if(!isset($data['organism_artgroup_id'])) $validationerrors[] = t("Please pass key 'organism_artgroup_id'.");
+	if(!isset($data['organism_artgroup_id']) || $data['organism_artgroup_id'] < 1) $validationerrors[] = t("Please pass key 'organism_artgroup_id'.");
 	
 	if(!isset($data['count'])) $validationerrors[] = t("Please pass key 'count'.");
 	else if(!observation_validate_count($data['count']))  $validationerrors[] = t('The count has to be a number and bigger than zero');
@@ -131,6 +118,28 @@ function naturvielfalt_webservice_validate($data) {
 	
 	if(!isset($data['coordinate'])) $validationerrors[] = t("Please pass keys 'longitude' and 'latitude'.");
 	else if(!observation_validate_coordinate($data['coordinate'])) $validationerrors[] = t("Please pass a correct location.");
+	
+	if(isset($data['details']['detmethod']) && isset($data['organism_artgroup_id'])) {
+		if(!observation_validate_determination_method($data['details']['detmethod'], $data['organism_artgroup_id'])) {
+			$validationerrors[] = t("Determinationmethod is not allowed for this argroup.");
+		}
+	}
+// 	if(isset($data['details']['attributes']) && is_array($data['details']['attributes'])) {
+// 		if(!observation_validate_attributes($data['details']['attributes'])) {
+			
+// 		}
+// 	}
+
+	if(isset($_FILES['files'])) {
+		foreach($_FILES['files']['name'] as $fkey => $filename) {
+			if($_FILES['files']['name'][$fkey] != '') {
+				$fileextension = array_pop(explode('.', $_FILES['files']['name'][$fkey]));
+				if(!observation_validate_fileextension($_FILES['files']['name'][$fkey])) {
+					$validationerrors[] = t('.@extension is an unallowed fileextension!', array('@extension' => $fileextension));
+				}
+			}
+		}
+	}
 	
 	return $validationerrors;
 }

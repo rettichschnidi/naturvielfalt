@@ -1,0 +1,53 @@
+<?php
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function webservice_menu() {
+	$items['webservice/api/observation'] = array(
+			'title' => t('Webservice'),
+			'page callback' => 'webservice_parse_import_observations',
+			'access arguments' => array(
+					'access webservice'
+			),
+			'file' => 'webservice_observation.inc',
+	);
+	
+	$items['webservice/api/area'] = array(
+			'title' => t('Webservice'),
+			'page callback' => 'webservice_parse_import_areas',
+			'access arguments' => array(
+					'access webservice'
+			),
+			'file' => 'webservice_area.inc',
+	);
+	
+	$items['webservice/api/inventory'] = array(
+			'title' => t('Webservice'),
+			'page callback' => 'webservice_parse_import_inventories',
+			'access arguments' => array(
+					'access webservice'
+			),
+			'file' => 'webservice_inventory.inc',
+	);
+	
+	return $items;
+}
+
+/**
+ * Default permission function
+ */
+function  webservice_permission() {
+	return array(
+			'access webservice' => array(
+					'title' => t('can access the webservice'),
+			),
+	);
+}
+
+?>

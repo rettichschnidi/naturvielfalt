@@ -1,4 +1,4 @@
-name = naturvielfalt_webservice
+name = webservice
 description = Add observations from external
 package = Naturvielfalt
 core = 7.x
