@@ -94,6 +94,7 @@ function observation_validate_time ($input) {
  * @return true if $input is a positive integer
  */
 function observation_validate_count($input) {
+	if(!ctype_digit($input)) return false;
 	$count =  intval($input);
 	return $count > 0;
 }
@@ -112,7 +113,19 @@ function observation_validate_organism($input) {
 }
 
 /**
- * Organism Id Validation
+ * artgroup Id Validation
+ *
+ * @param string $input
+ * @return true if $input is the id an existing artgroup
+ */
+function observation_validate_artgroup_id($input) {
+	if(!ctype_digit($input)) return false;
+	$result = organism_artgroup_get_artgroup(filter_xss($input), true);
+	return !empty($result);
+}
+
+/**
+ * organism Id Validation
  *
  * @param string $input
  * @return true if $input is the id an existing organism
@@ -122,6 +135,33 @@ function observation_validate_organism_id($input) {
 	$result = organism_get(filter_xss($input));
 	return !empty($result);
 }
+
+/**
+ * Observation Id Validation
+ *
+ * @param string $observationid
+ * @return true if $observationid is an existing observation
+ */
+function observation_validate_observation_id($observationid) {
+	if(!ctype_digit($input)) return false;
+	if(intval($observationid) == 0) return true;
+	$result = observation_get(filter_xss($observationid));
+	return !empty($result);
+}
+
+/**
+ * Permission validation
+ *
+ * @param string $observationid
+ * @return true if the current user has WRITE permissions for the given observation id
+ */
+function observation_validate_permission($observationid) {
+	if(!ctype_digit($input)) return false;
+	if(intval($observationid) == 0) return true;
+	$result = observation_get(filter_xss($observationid));
+	return observation_write_access_by_acl_id($result['acl_id']);
+}
+
 
 /**
  * Coordinate Validation
