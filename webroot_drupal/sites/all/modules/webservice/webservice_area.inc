@@ -117,7 +117,7 @@ function webservice_area_validate($data) {
 	
 	if(!isset($data['area-coords'])) $validationerrors[] = t("Please pass key 'coordinates'");
 	else if(!area_validate_coordinates(json_decode($data['area-coords'],true))) $validationerrors[] = t("Please pass a correct location.");
-	print_r(json_decode($data['area-coords'],true));
+
 	if(isset($_FILES['files'])) {
 		foreach($_FILES['files']['name'] as $fkey => $filename) {
 			if($_FILES['files']['name'][$fkey] != '') {
