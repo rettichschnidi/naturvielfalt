@@ -136,7 +136,7 @@ function area_create_new_area($form, &$form_state, $from_api = false) {
 					'country' => $country,
 					'township' => $township,
 					'altitude' => $altitude,
-			));
+			), $from_api ? true : false);
 		assert($geometry_id);
 		$acl_id = new_acl('area', $userid);
 		$area_id = db_insert('area')->fields(
