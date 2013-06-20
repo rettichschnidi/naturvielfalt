@@ -36,13 +36,27 @@ function area_validate_time ($input) {
 /**
  * Area Id Validation
  *
- * @param string $input
- * @return true if $input is the id an existing area
+ * @param string $areaid
+ * @return true if $areaid is the id an existing area
  */
-function area_validate_area_id($input) {
-	if(!ctype_digit($input)) return false;
-	$result = area_get_full_dataset_of_specific_area(filter_xss($input));
+function area_validate_area_id($areaid) {
+	if(!ctype_digit($areaid)) return false;
+	if(intval($areaid) == 0) return true;
+	$result = area_get_full_dataset_of_specific_area(filter_xss($areaid));
 	return !empty($result);
+}
+
+/**
+ * Permission validation
+ *
+ * @param string $areaid
+ * @return true if the current user has WRITE permissions for the given area
+ */
+function area_validate_permission($areaid) {
+	if(!ctype_digit($areaid)) return false;
+	if(intval($areaid) == 0) return true;
+	$result = area_get_full_dataset_of_specific_area(filter_xss($areaid));
+	return check_permission($result['acl_id'], variable_get('ACL_WRITE'));
 }
 
 /**
