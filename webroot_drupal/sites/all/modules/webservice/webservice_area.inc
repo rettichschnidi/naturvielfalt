@@ -32,7 +32,7 @@ function webservice_parse_import_areas() {
 	
 	//set location geocodeinfo with first point of coordinates
 	$coordinates = json_decode($_POST['coordinates'], true);
-	$data = area_get_geocode_info(filter_xss($coordinates[0][1]), filter_xss($coordinates[0][0]));
+	$data = area_get_geocode_info(doubleval(filter_xss($coordinates[0][0])), doubleval(filter_xss($coordinates[0][1])));
 	//remove not needed keys of geocodeinfo
 	unset($data['coordinate']);
 	unset($data['marker']);
@@ -117,7 +117,7 @@ function webservice_area_validate($data) {
 	
 	if(!isset($data['area-coords'])) $validationerrors[] = t("Please pass key 'coordinates'");
 	else if(!area_validate_coordinates(json_decode($data['area-coords'],true))) $validationerrors[] = t("Please pass a correct location.");
-	
+	print_r(json_decode($data['area-coords'],true));
 	if(isset($_FILES['files'])) {
 		foreach($_FILES['files']['name'] as $fkey => $filename) {
 			if($_FILES['files']['name'][$fkey] != '') {
