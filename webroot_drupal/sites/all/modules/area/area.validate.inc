@@ -66,7 +66,7 @@ function area_validate_permission($areaid) {
  * @return true if $input contains only alphanumeric characters
  */
 function area_validate_area_name($input) {
-	return ctype_alnum($input);
+	return is_string($input) && !empty($input);
 }
 
 /**
