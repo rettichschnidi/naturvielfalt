@@ -305,7 +305,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Create date'),
 						'header' => true
 				),
-				date("j.m.Y", strtotime($areadata['create_time']))
+				date("d.m.Y H:i:s", strtotime($areadata['create_time']))
 		);
 	}
 
@@ -316,7 +316,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Last modification'),
 						'header' => true
 				),
-				date("j.m.Y", strtotime($areadata['modify_time']))
+				date("d.m.Y H:i:s", strtotime($areadata['modify_time']))
 		);
 	}
 
@@ -562,7 +562,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
  * 	True if area_points are already in lng/lat format, false otherwise (default)
  * @return integer
  *  New geometry id or false if a failure occurred
- * @note For an example usage, have a look at area_create_new_area()
+ * @note For an example usage, have a look at area_save()
  * @throws Exception
  */
 function area_create_geometry($data = array(),
