@@ -70,7 +70,7 @@ function webservice_parse_import_areas() {
 		
 	}
 	else {
-		$observation_status = area_create_new_area($form, $data, true);
+		$observation_status = area_save($form, $data, true);
 		// get the data
 		if ($observation_status['success'] == true) {
 			header('HTTP/1.0 200 OK');
@@ -83,7 +83,7 @@ function webservice_parse_import_areas() {
 			}
 		} else {
 			header('HTTP/1.0 400 Bad Request');
-			print('ERROR: Something went wrong.. Could not persist the observation. <br>');
+			print('ERROR: Something went wrong.. Could not persist the area. <br>');
 			foreach ($observation_status['message'] as $key => $message) {
 				print($message.'<br>');
 			}
