@@ -218,6 +218,16 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 		$options = array()) {
 	assert($areadata != NULL);
 	$rows = array();
+	if (!empty($areadata['name'])
+			&& (!isset($options['pathlength']) || $options['pathlength'])) {
+		$rows[] = array(
+				array(
+						'data' => t('Area Name'),
+						'header' => true
+				),
+				check_plain($areadata['name'])
+				);
+	}
 	if (!empty($areadata['username'])
 			&& (!isset($options['pathlength']) || $options['pathlength'])) {
 		$rows[] = array(
