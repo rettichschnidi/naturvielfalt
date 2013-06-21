@@ -143,7 +143,9 @@ jQuery(document).ready(function() {
 			
 			var ajaxurl = Drupal.settings.basePath + 'observation/delete';
 			$.getJSON(ajaxurl, data, function(json){
-				$table.flexReload();
+				if(json.count > 0) $table.flexReload();
+				
+				alert(json.message);
 				if (redirect) {
 					$.safetynet.suppressed(true);
 					window.location.href = '/observation/show';

@@ -334,6 +334,7 @@ function observation_delete() {
 	}
 	
 	$output['success'] = true;
+	$output['count'] = $deleteCount;
 	if ($deleteCount == count($observations)) {
 		$output['type'] = 'status';
 		$output['message'] = ($deleteCount == 1)
@@ -344,7 +345,7 @@ function observation_delete() {
 		$output['type'] = 'warning';
 		$output['message'] = t('Some observations could not be deleted (unauthorized access)');
 	}
-	
+	debug($output, true);
 	return drupal_json_output($output);
 
 }
