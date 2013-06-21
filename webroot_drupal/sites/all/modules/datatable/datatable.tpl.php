@@ -310,11 +310,11 @@ jQuery(document).ready(function() {
 <?php if(isset($options['gallery_enabled']) && $options['gallery_enabled']) {?>
 jQuery(window).ready(function() {
 	// move filterDiv into flexigrid
-	jQuery('#<?=$id_table;?>').closest('div.flexigrid').prepend(jQuery('#<?=$id_table;?>_filterDiv'));
+	jQuery('#<?php echo $id_table;?>').closest('div.flexigrid').prepend(jQuery('#<?php echo $id_table;?>_filterDiv'));
 	
 	// switch to the gallery view if #gallery is in the url
 	if (window.location.hash.indexOf('gallery') != -1){
-		gallery_addon.toggleGallery('<?=$id_table;?>', true);
+		gallery_addon.toggleGallery('<?php echo $id_table;?>', true);
 	}
 });
 <?php }?>
