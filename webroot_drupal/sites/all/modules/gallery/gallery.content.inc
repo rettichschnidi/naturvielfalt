@@ -38,7 +38,7 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
 	$params = _gallery_list_parameters($type, $id);
 	$images = gallery_images(
 		$mediatype,
-		$type,
+		$type, 
 		$id,
 		$params['crosslinked'],
 		true,
