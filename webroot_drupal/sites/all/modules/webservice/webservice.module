@@ -36,6 +36,14 @@ function webservice_menu() {
 			'file' => 'webservice_inventory.inc',
 	);
 	
+	$items['webservice/api'] = array(
+			'title' => t('Webservice'),
+			'page callback' => 'webservice_parse_import_observations_lightversion',
+			'access arguments' => array(
+					'access webservice'
+			),
+			'file' => 'webservice_observation.inc',
+	);
 	return $items;
 }
 
