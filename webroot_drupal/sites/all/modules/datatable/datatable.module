@@ -373,7 +373,7 @@ function datatable_get_gallery_image($observation_id, $organism_id, $display_dat
 	$manage_obs_link = '';
 	$manage_obs_url = false;
 	if(observation_write_access_by_acl_id($observation_aclId)){
-		$manage_obs_url = '/gallery/observation/$observation_id/thumb/'.$images_observation['images'][0]['id'].'gallery_large';
+		$manage_obs_url = '/gallery/observation/'.$observation_id.'/thumb/'.$images_observation['images'][0]['id'].'/gallery_large';
 		// proof = beleg ???
 		$manage_obs_link = "<a href='$manage_obs_url'>" . t('add proof image') . "</a>";
 	}
