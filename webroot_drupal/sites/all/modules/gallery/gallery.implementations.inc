@@ -84,7 +84,7 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 							0
 					),
 			);
-			$file = file_save_upload($fkey, $validators, $destination[$key], FILE_EXISTS_RENAME);
+			$file = file_save_upload($fkey, $validators, $destination[$key], FILE_EXISTS_REPLACE);
 			if ($file) {
 				$file->status |= FILE_STATUS_PERMANENT;
 				$file = file_save($file);

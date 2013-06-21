@@ -4,3 +4,4 @@ package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
 dependencies[] = observation
+dependencies[] = area

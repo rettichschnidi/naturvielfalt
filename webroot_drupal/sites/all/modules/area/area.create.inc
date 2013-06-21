@@ -30,7 +30,7 @@ function area_new_area() {
 
 /**
  * Return a form which allows the user to submit an area name.
- * The submitted results will be passed to area_create_new_area();
+ * The submitted results will be passed to area_save();
  * 
  * @param array $form
  * 	Drupal form
@@ -56,14 +56,14 @@ function area_new_areaname_form($form, &$form_state) {
 			'#type' => 'submit',
 			'#value' => t('Create'),
 			'#submit' => array(
-					'area_create_new_area'
+					'area_save'
 			)
 	);
 	return $form;
 }
 
 /**
- * Create a new area.
+ * Create a new area or update it (only from webservice).
  * 
  * @param array $form
  *  Drupal form
@@ -73,12 +73,13 @@ function area_new_areaname_form($form, &$form_state) {
  *  true if method was invoked from the webservice api
  * @todo Maybe use the ajax version?
  */
-function area_create_new_area($form, &$form_state, $from_api = false) {
+function area_save($form, &$form_state, $from_api = false) {
 	global $user;
 	if (false) {
 		$debugmessage = var_export($form_state['values'], true);
 		drupal_set_message("Creating area: <pre>$debugmessage</pre>");
 	}
+	$areaid = 0;
 	/* 
 	 * Get submitted values and escape values before submitting
 	 * them to the database.
@@ -101,6 +102,8 @@ function area_create_new_area($form, &$form_state, $from_api = false) {
 		
 		$timestamp = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
 		$createdate = date('Y-m-d H:i:s', $timestamp);
+		
+		$areaid = intval($form_state['area_id']);
 	} else {
 		$name = filter_xss(
 			!empty($form_state['values']['fieldname'])
@@ -128,27 +131,55 @@ function area_create_new_area($form, &$form_state, $from_api = false) {
 	}
 	$transaction = db_transaction();
 	try {
-		$geometry_id = area_create_geometry(
-			array('area_points' => $jsonCoordinates,
-					'type' => $areaType,
-					'zip' => $zip,
-					'canton' => $canton,
-					'country' => $country,
-					'township' => $township,
-					'altitude' => $altitude,
-			), $from_api ? true : false);
-		assert($geometry_id);
-		$acl_id = new_acl('area', $userid);
-		$area_id = db_insert('area')->fields(
-				array(
-						'name' => $name,
-						'comment' => $comment,
-						'create_time' => $createdate,
-						'modify_time' => 'NOW()',
-						'acl_id' => $acl_id,
-						'area_geometry_id' => $geometry_id
-				))
-			->execute();
+		//update area
+		if($areaid > 0) {
+			$area = area_get_full_dataset_of_specific_area($areaid);
+			$area_geometry_id = $area['area_geometry_id'];
+			$acl_id = $area['acl_id'];
+			
+			area_update_geometry($area_geometry_id, array('area_points' => $jsonCoordinates,
+						'type' => $areaType,
+						'zip' => $zip,
+						'canton' => $canton,
+						'country' => $country,
+						'township' => $township,
+						'altitude' => $altitude,
+				), $from_api ? true : false);
+			db_update('area')->fields(
+					array(
+							'name' => $name,
+							'comment' => $comment,
+							'create_time' => $createdate,
+							'modify_time' => 'NOW()',
+							'acl_id' => $acl_id,
+							'area_geometry_id' => $area_geometry_id
+					))
+				->execute();
+		}
+		//create new area
+		else {
+			$geometry_id = area_create_geometry(
+				array('area_points' => $jsonCoordinates,
+						'type' => $areaType,
+						'zip' => $zip,
+						'canton' => $canton,
+						'country' => $country,
+						'township' => $township,
+						'altitude' => $altitude,
+				), $from_api ? true : false);
+			assert($geometry_id);
+			$acl_id = new_acl('area', $userid);
+			$areaid = db_insert('area')->fields(
+					array(
+							'name' => $name,
+							'comment' => $comment,
+							'create_time' => $createdate,
+							'modify_time' => 'NOW()',
+							'acl_id' => $acl_id,
+							'area_geometry_id' => $geometry_id
+					))
+				->execute();
+		}
 		
 		/**
 		 * Store incoming medias from webservice
@@ -156,7 +187,7 @@ function area_create_new_area($form, &$form_state, $from_api = false) {
 		if($from_api) {
 			
 			$image = array(
-					'item_id' => $area_id,
+					'item_id' => $areaid,
 					'author' => $user->name,
 					'location' => $township . ' ' . $canton,
 			);
@@ -165,11 +196,8 @@ function area_create_new_area($form, &$form_state, $from_api = false) {
 		}
 		
 		$output['success'] = true;
-		$output['guid'] = $area_id;
+		$output['guid'] = $areaid;
 		
-		drupal_set_message(
-			t('Area "@areaname" got created.', array('@areaname' => $name)));
-		$form_state['redirect'] = 'area/' . $area_id . '/show';
 	} catch (Exception $e) {
 		$transaction->rollback();
 		watchdog_exception('area', $e);
@@ -184,6 +212,11 @@ function area_create_new_area($form, &$form_state, $from_api = false) {
 	
 	if ($from_api) {
 		return $output;
+	}
+	else {
+		drupal_set_message(
+		t('Area "@areaname" got created.', array('@areaname' => $name)));
+		$form_state['redirect'] = 'area/' . $areaid . '/show';
 	}
 }
 ?>
