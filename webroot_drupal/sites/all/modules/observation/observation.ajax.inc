@@ -78,10 +78,17 @@ function observation_save($observation_data = false, $custom_data = false, $from
 
 	$observation['count'] = filter_xss($values['count']);
 	
+	//nasty workaround for webservice lightversion
 	$date_parts = explode('.', filter_xss($values['date']));
 	$timesplit = array(null, null);
-	if(isset($values['time'])) $timesplit = explode(':', $values['time']);
-	$observation['date'] = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	if(isset($values['time'])) {
+		$timesplit = explode(':', $values['time']);
+		$observation['date'] = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	} else {
+		$date_parts = explode('/', filter_xss($values['date']));
+		$observation['date'] = mktime(null, null, null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	}
+	
 	
 	
 	if (!isset($values['details']['determination']))
