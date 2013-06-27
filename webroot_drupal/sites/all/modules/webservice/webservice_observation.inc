@@ -14,7 +14,9 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * Serverside script for receiving the data from the iPhone/Android Application.
  * It receives POST requests and stores it directly in the database. Normal drupal
  * authentication is used.
- *
+ * 
+ * This method is for compatibility reasons with old versions of the iphone app.
+ *  
  * @author Ramon Gamma, 2012
  */
 function webservice_parse_import_observations_lightversion() {
@@ -76,6 +78,20 @@ function webservice_parse_import_observations_lightversion() {
  * It receives POST requests and stores it directly in the database. Normal drupal
  * authentication is used.
  *
+ *  The following keys will be processed
+ *  
+ *	$_POST['guid'] => Global id of the observation
+ *	$_POST['organism_id'] => id of organism
+ *	$_POST['organism_artgroup_id'] => id of artgroup
+ *	$_POST['longitude'] => longitude of the observation
+ *	$_POST['latitude'] => latitude of the observation
+ *	$_POST['count'] => the count of observed species
+ *	$_POST['date'] => the date of creation
+ *	$_POST['time'] => the time of creation
+ *  $_POST['comment'] => Commen of the observation
+ *  $_POST['observer'] => observer of the observation
+ *  $_POST['inventoryguid'] => the global id of the invetory this observation belongs to.
+ *  
  * @author Ramon Gamma, 2012
  * @author André Kälin, 2013
  */
@@ -148,6 +164,12 @@ function webservice_parse_import_observations() {
 	}
 }
 
+/**
+ * Sends the http header with an authentification request to the client.
+ * (Opens authentification form in browser)
+ *
+ * @author André Kälin, 2013
+ */
 function webservice_auth() {
 	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
 	header('HTTP/1.0 401 Unauthorized');

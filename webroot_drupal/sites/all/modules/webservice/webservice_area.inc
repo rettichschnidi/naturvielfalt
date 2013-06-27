@@ -13,6 +13,16 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * Serverside script for receiving the data from the iPhone/Android Application.
  * It receives POST requests and stores it directly in the database. Normal drupal
  * authentication is used.
+ * 
+ *  The following keys will be processed
+ *  
+ *	$_POST['guid'] => Global id of the area
+ *	$_POST['type'] => 'polyogon', 'line' or 'marker'
+ *	$_POST['coordinates'] => json string with coordinates tuples [[longitude, latitude],[longitude, latitude]]
+ *	$_POST['name'] => the name of the area
+ *	$_POST['date'] => the date of creation
+ *	$_POST['time'] => the time of creation
+ *  $_POST['description'] => description of the area
  *
  * @author André Kälin, 2013
  */
@@ -91,6 +101,12 @@ function webservice_parse_import_areas() {
 	}
 }
 
+/**
+ * Sends the http header with an authentification request to the client.
+ * (Opens authentification form in browser)
+ *
+ * @author André Kälin, 2013
+ */
 function webservice_auth() {
 	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
 	header('HTTP/1.0 401 Unauthorized');
@@ -99,6 +115,12 @@ function webservice_auth() {
 	die('ERROR: Please authorize');
 }
 
+/**
+ * Validates incoming area data 
+ * 
+ * @param $data a key/value array
+ * @author André Kälin, 2013
+ */
 function webservice_area_validate($data) {
 	$validationerrors = array();
 	
