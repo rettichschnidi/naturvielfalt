@@ -112,6 +112,13 @@ span.datatable_gallery_icons input.gridSelect {
 	vertical-align: middle;
 }
 
+/*Bild von Organismus bei Erfassen von Observations */
+.observation_organism_reference_image {
+	position: absolute;
+	top:3%;
+	left:50%
+}
+
 /* Section innerhalb des Flexigrids */
 .batch-div {
 	background-color: #DAE5E3;
