@@ -13,6 +13,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
+	drupal_add_css($observation_path . '/css/observation.css');
+	
 	global $user;
 	$edit = false;
 
@@ -69,10 +71,10 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	if($organism) {
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism['id']);
 		if(!empty($images) && $images['count'] > 0) {
-			$img = '<img src="' . url('gallery/observation/' . $organism['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="42" width="42" />';
+			$img = '<div class="observation_organism_reference_image"><img src="' . url('gallery/observation/' . $organism['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="250" width="250" /></div>';
 		}
 		else {
-			$img = '<img src="/sites/all/modules/datatable/images/no_photo.png" class="datatable_gallery_no_image" height="42" width="42" />';
+			$img = '<div class="observation_organism_reference_image"><img src="/sites/all/modules/datatable/images/no_photo.png" /></div>';
 		}
 	}
 	else $img = '';
