@@ -115,7 +115,7 @@ span.datatable_gallery_icons input.gridSelect {
 /*Bild von Organismus bei Erfassen von Observations */
 .observation_organism_reference_image {
 	position: absolute;
-	top:3%;
+	top:2%;
 	left:50%
 }
 
