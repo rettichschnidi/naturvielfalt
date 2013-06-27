@@ -85,7 +85,11 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	//prepare image of organism
 	if($artgroup_id) {
 		if(!empty($form_state['values']['group']['organism'])) {
-			$organism_forimage =  organism_get_byname(filter_xss($form_state['values']['group']['organism']));
+			$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
+			if($artgroup['organism_artgroup_id'] != $artgroup_id) 
+				$organism_forimage = null;
+			else
+				$organism_forimage = organism_get_byname(filter_xss($form_state['values']['group']['organism']));
 		} else if(!empty($observation['observation']['organism_id'])) {
 			$organism_forimage = organism_get(filter_xss($observation['observation']['organism_id']));
 		}
