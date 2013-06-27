@@ -68,8 +68,12 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	);	
 
 	//prepare image of organism
-	$organism = !empty($form_state['values']['group']['organism']) ? organism_get_byname(filter_xss($form_state['values']['group']['organism'])) : 
-	isset($observation['observation']['organism_id']) ? organism_get($observation['observation']['organism_id']) : null;
+	if(!empty($form_state['values']['group']['organism'])) {
+		$organism =  organism_get_byname(filter_xss($form_state['values']['group']['organism']));
+	} else if(!empty($observation['observation']['organism_id'])) {
+		$organism = organism_get(filter_xss($observation['observation']['organism_id']));
+	}
+	else $organism = null;
 	if($organism) {
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism['id']);
 		if(!empty($images) && $images['count'] > 0) {
