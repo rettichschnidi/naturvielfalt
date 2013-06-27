@@ -30,7 +30,6 @@ function organism_gallery_types() {
  */
 function organism_reference_gallery_image_caption($id) {
 	
-	debug('organism_reference_gallery_image');
 	return l(
 		organism_reference_gallery_caption($id),
 		'organism/' . $id,
@@ -48,8 +47,6 @@ function organism_reference_gallery_image_caption($id) {
  * @return string
  */
 function organism_reference_gallery_manage_title($id, $mediatype) {
-	
-	debug('organism_reference_gallery_manage_title');
 	
 	return t(
 		'@mediatype of the organism !title',
@@ -69,7 +66,6 @@ function organism_reference_gallery_manage_title($id, $mediatype) {
 function organism_reference_gallery_caption($id) {
 	global $user;
 	$result = organism_data($id);
-	debug('result is: '. $result);
 	return $result['scientific_names'][0]
 			. (isset(
 				$result['classification_name_translations'][$user->language])
