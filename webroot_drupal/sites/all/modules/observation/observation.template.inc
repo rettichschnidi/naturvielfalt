@@ -67,15 +67,19 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#tree' => true,
 	);	
 	//prepare image of organism
-	$organism = !empty($form_state['values']['group']['organism']) ? organism_get_byname(filter_xss($form_state['values']['group']['organism'])) : null;
+	$organism = !empty($form_state['values']['group']['organism']) ? organism_get_byname(filter_xss($form_state['values']['group']['organism'])) : 
+	isset($observation['organism']['organism_id']) ? $observation['organism']['organism_id'] : null;
 	if($organism) {
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism['id']);
 		if(!empty($images) && $images['count'] > 0) {
-			$img = '<div class="observation_organism_reference_image"><img src="' . url('gallery/observation/' . $organism['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" />
-					<div>'.$organism['organism_lang'].'</div></div>';
+			$img = '<div class="observation_organism_reference_image">
+						<img src="' . url('gallery/observation/' . $organism['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" />
+					</div>';
 		}
 		else {
-			$img = '<div class="observation_organism_reference_image"><img src="/sites/all/modules/datatable/images/no_photo.png" /></div>';
+			$img = '<div class="observation_organism_reference_image">
+						<img src="/sites/all/modules/datatable/images/no_photo.png" />
+					</div>';
 		}
 	}
 	else $img = '';
