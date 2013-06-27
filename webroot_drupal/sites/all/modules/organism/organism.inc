@@ -20,7 +20,7 @@ function organism_get($organismid) {
 	$resultarray = array();
 	return db_query(
 		'SELECT
-			o.scientific_name name_lat,
+			o.id, o.scientific_name name_lat,
 			ol.name name_lang
 		FROM
 			{organism} o
