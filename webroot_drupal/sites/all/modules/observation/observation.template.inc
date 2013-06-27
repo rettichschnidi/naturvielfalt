@@ -64,7 +64,19 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#suffix' => '</div>',
 			'#tree' => true,
 	);	
-	$json = !isset($form_state['values']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['artgroup_id'];
+	//prepare image of organism
+	$organism = !empty($form_state['values']['group']['organism']) ? organism_get_byname(filter_xss($form_state['values']['group']['organism'])) : null;
+	if($organism) {
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism['id']);
+		if(!empty($images) && $images['count'] > 0) {
+			$img = '<img src="' . url('gallery/observation/' . $organism['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="42" width="42" />';
+		}
+		else {
+			$img = '<img src="/sites/all/modules/datatable/images/no_photo.png" class="datatable_gallery_no_image" height="42" width="42" />';
+		}
+	}
+	else $img = '';
+	$json = !isset($form_state['values']['group']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['group']['artgroup_id'];
 	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
@@ -74,12 +86,16 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#attributes' => array(
 					'placeholder' => t('Start typing to see the species...'),
 			),
+			'#ajax' => array(
+						'event' => 'change',
+						'callback' => 'observation_organism_selected',
+						'wrapper' => 'organism_replace'
+			),
 			'#tree' => true,
 			'#required' => true,
 			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
+			'#suffix' => $img,
 	);
-	
-
 	
 	$form['group']['date'] = array(
 			'#id' => 'date',
@@ -126,8 +142,18 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			),
 	);
 	
-	if(!$edit)
-		$artgroup_id = !empty($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 1;
+	if(!$edit) {
+		if(!isset($form_state['values']['group']['artgroup_id']) || $form_state['values']['group']['artgroup_id'] == 1)  {
+			if(isset($form_state['values']['group']['organism']) && observation_validate_organism($form_state['values']['group']['organism'])) {
+				$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
+				$artgroup_id = $artgroup['organism_artgroup_id'];
+			}
+			else $artgroup_id = 1;
+		}
+		else {
+			$artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 1;
+		}
+	}
 	else $artgroup_id = $observation['observation']['organism_artgroup_id'] ;
 
 	$form['group']['details'] = array(
@@ -137,7 +163,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#collapsible' => true,
 			'#collapsed' => false,
 	);
-
+	
 	if($artgroup_id > 1) {
 		$options = organism_artgroup_get_determation_methods($observation['observation']['id'], $artgroup_id);
 		if(!empty($options)) { // don't show determination method if no options
@@ -180,15 +206,15 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#disabled' => true,
 		);
 		
-		$form['artgroup_id'] = array(
+		$form['group']['artgroup_id'] = array(
 				'#id' => 'area_artgroup',
 				'#type' => 'hidden',
 				'#default_value' => $observation['observation']['organism_artgroup_id'],
+				'#tree' => true
 		);
 	}
 	else {
-		
-		$form['artgroup_id'] = array(
+		$form['group']['artgroup_id'] = array(
 				'#id' => 'artgroup_id',
 				'#title' => t('Filter on species group'),
 				'#type' => 'select',
@@ -200,6 +226,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 						'wrapper' => 'organism_replace'
 				),
 				'#weight' => -1,
+				'#tree' => true
 		);
 	}
 	
@@ -545,8 +572,23 @@ function observation_show_observation($observationdata = NULL) {
 }
 
 function observation_organism_callback($form, &$form_state) {
-	//empty organism field
+	//empty organism field and image
 	$form['group']['organism']['#value'] = '';
+	$form['group']['organism']['#suffix'] = '';
+	return $form['group'];
+}
+
+function observation_organism_selected($form, &$form_state) {
+	//set the artgroup if user selects an organism (only if no artgroup is selected yet, and user entered an existing organism)
+	if(!empty($form_state['values']['group']['artgroup_id']) && $form_state['values']['group']['artgroup_id'] == 1)  {
+		if(observation_validate_organism($form_state['values']['group']['organism'])) {
+			$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
+			//set the new artgroup accordingly in the form
+			if($artgroup['organism_artgroup_id'] != $form_state['values']['group']['artgroup_id']) {
+				$form['group']['artgroup_id']['#value'] = $artgroup['organism_artgroup_id'];
+			}
+		}
+	}
 	return $form['group'];
 }
 
@@ -602,7 +644,7 @@ function observation_form_add_js_tools($form, $form_state) {
 	
 	$attributes_tooltips = '';
 	$observation_id = isset($form_state['values']['observation_id']) ? $form_state['values']['observation_id'] : 0;
-	$artgroup_id = isset($form_state['values']['artgroup_id']) ? $form_state['values']['artgroup_id'] : 0;
+	$artgroup_id = isset($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 0;
 	if($artgroup_id) {
 		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
 		foreach ($observation_attributes as $key => $attribute) {
