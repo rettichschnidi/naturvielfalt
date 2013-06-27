@@ -88,7 +88,9 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		}
 	}
 	else $img = '';
-	$json = !isset($form_state['values']['group']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['group']['artgroup_id'];
+	if(!$edit)
+		$json = !isset($form_state['values']['group']['artgroup_id']) ? 'organism/search/json/'.'1' : 'organism/search/json/'.$form_state['values']['group']['artgroup_id'];
+	else $json = !isset($form_state['values']['group']['artgroup_id']) ? 'organism/search/json/'.$observation['observation']['organism_artgroup_id'] : 'organism/search/json/'.$form_state['values']['group']['artgroup_id'];
 	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
