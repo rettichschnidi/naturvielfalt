@@ -56,21 +56,38 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		$observation['observation']['organism_artgroup_detmethod_id'] = false;
 
 	$form_id = "observation_form";
-
 	module_load_include('inc', 'organism', 'organism.artgroup');
 	
-
+	$organism_empty = false;
 	if(!$edit) {
-		if(!isset($form_state['values']['group']['artgroup_id']) || $form_state['values']['group']['artgroup_id'] == 1)  {
-			if(isset($form_state['values']['group']['organism']) && observation_validate_organism($form_state['values']['group']['organism'])) {
-				$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
-				$artgroup_id = $artgroup['organism_artgroup_id'];
+		//determine if a ajax callback was executed by the field artgroup or organism
+		if(isset($form_state['triggering_element'])) {
+			switch($form_state['triggering_element']['#id']) {
+				case 'organism_name' :
+					//set the artgroup of the organism if not yet selected
+					if($form_state['values']['group']['artgroup_id'] == 1)  {
+						if(observation_validate_organism($form_state['values']['group']['organism'])) {
+							$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
+							$artgroup_id = $artgroup['organism_artgroup_id'];
+						}
+						else $artgroup_id = $form_state['values']['group']['artgroup_id'];
+					}
+					else {
+						$artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 1;
+					}
+					break;
+				case 'artgroup_id' :
+					//set the artgroup and empty organism field
+					$artgroup_id = $form_state['input']['group']['artgroup_id'];
+					$organism_empty = true;
+					break;
+				default :
+					$artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 1;
+					break;
 			}
-			else $artgroup_id = 1;
 		}
-		else {
-			$artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 1;
-		}
+		else $artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 1;
+		
 	}
 	else $artgroup_id = $observation['observation']['organism_artgroup_id'] ;
 	
@@ -82,7 +99,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#tree' => true,
 	);	
 	
-	//prepare image of organism
+	//prepare image of organism, only display if organism and artgroup id match
 	if($artgroup_id) {
 		if(!empty($form_state['values']['group']['organism'])) {
 			$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
@@ -124,8 +141,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			),
 			'#ajax' => array(
 						'event' => 'change',
-						'callback' => 'observation_organism_selected',
-						'wrapper' => 'organism_replace'
+						'callback' => 'observation_organism_callback',
+						'wrapper' => 'organism_replace',
 			),
 			'#tree' => true,
 			'#required' => true,
@@ -248,7 +265,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 						'wrapper' => 'organism_replace'
 				),
 				'#weight' => -1,
-				'#tree' => true
+				'#tree' => true,
+				'#value' => $artgroup_id
 		);
 	}
 	
@@ -594,27 +612,13 @@ function observation_show_observation($observationdata = NULL) {
 }
 
 function observation_organism_callback($form, &$form_state) {
-	//empty organism field and image
-	$form['group']['organism']['#value'] = '';
-	$form['group']['organism']['#suffix'] = '';
+	if($form_state['triggering_element']['#id'] == 'artgroup_id') {
+		$form['group']['organism']['#value'] = '';
+	} 
 	return $form['group'];
 }
 
-function observation_organism_selected($form, &$form_state) {
-	//set the artgroup if user selects an organism (only if no artgroup is selected yet, and user entered an existing organism)
-	if(!empty($form_state['values']['group']['artgroup_id']) && $form_state['values']['group']['artgroup_id'] == 1)  {
-		if(observation_validate_organism($form_state['values']['group']['organism'])) {
-			$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
-			//set the new artgroup accordingly in the form
-			if($artgroup['organism_artgroup_id'] != $form_state['values']['group']['artgroup_id']) {
-				$form['group']['artgroup_id']['#value'] = $artgroup['organism_artgroup_id'];
-			}
-		}
-	}
-	return $form['group'];
-}
-
-function observation_form_add_js_tools($form, $form_state) {
+function observation_form_add_js_tools($form, &$form_state) {
 	//add date and timepicker
 	drupal_add_library('system', 'ui.datepicker');
 	drupal_add_library('system', 'ui.slider');
@@ -690,34 +694,39 @@ function observation_form_add_js_tools($form, $form_state) {
 			      dateFormat: "dd.mm.yy"
     			});
 	 		});
+	 		
 			jQuery( ".timepicker" ).live("focus", function() {
 	 			$(this).timepicker({
 			 	timeFormat: "HH:mm",
 	 			showButtonPanel: false
 			 });
 	 		});
-	 		jQuery( "#artgroup_id" ).live("mouseover", function(event) {
-	 			$(this).qtip({
-			 	 content: "'.$tooltip['text']['artgroup_id'].'",
-			 '.$tooltip_options.',
-				overwrite: false,
-		 			show: {
-						event: event.type,
-						ready: true
-		 			}
-				 }, event);
-	 		});
-	 		jQuery( "#organism_name" ).live("mouseover", function(event) {
-	 			$(this).qtip({
-			 	 content: "'.$tooltip['text']['organism_name'].'",
-	 			'.$tooltip_options.',
-	 			overwrite: false,
-	 			show: {
-					event: event.type,
-					ready: true
-	 			}
-			 }, event);
-	 		});
+	 		'.
+	 		//tooltips on artgroup_id and organism_name leads to problem with ajax replace..
+// 	 		jQuery( "#artgroup_id" ).live("mouseover", function(event) {
+// 	 			$(this).qtip({
+// 			 	 content: "'.$tooltip['text']['artgroup_id'].'",
+// 			 '.$tooltip_options.',
+// 				overwrite: false,
+// 		 			show: {
+// 						event: event.type,
+// 						ready: true
+// 		 			}
+// 				 }, event);
+// 	 		});
+		
+// 	 		jQuery( "#organism_name" ).live("mouseover", function(event) {
+// 	 			$(this).qtip({
+// 			 	 content: "'.$tooltip['text']['organism_name'].'",
+// 	 			'.$tooltip_options.',
+// 	 			overwrite: false,
+// 	 			show: {
+// 					event: event.type,
+// 					ready: true
+// 	 			}
+// 			 }, event);
+// 	 		});
+'	
 	 		jQuery( "#date" ).live("mouseover", function(event) {
 	 			$(this).qtip({
 			 	 content: "'.$tooltip['text']['date'].'",
@@ -729,6 +738,7 @@ function observation_form_add_js_tools($form, $form_state) {
 		 			}
 				 }, event);
 	 		});
+	 					
 	 		jQuery( "#time" ).live("mouseover", function(event) {
 	 			$(this).qtip({
 			 	 content: "'.$tooltip['text']['time'].'",
@@ -740,6 +750,7 @@ function observation_form_add_js_tools($form, $form_state) {
 		 			}
 				 }, event);
 	 		});
+			 		
 	 		jQuery( "#count" ).live("mouseover", function(event) {
 	 			$(this).qtip({
 			 	 content: "'.$tooltip['text']['count'].'",
@@ -751,6 +762,7 @@ function observation_form_add_js_tools($form, $form_state) {
 		 			}
 				 }, event);
 	 		});
+			 		
 	 		jQuery( "#observer" ).live("mouseover", function(event) {
 	 			$(this).qtip({
 			 	 content: "'.$tooltip['text']['observer'].'",
@@ -762,6 +774,7 @@ function observation_form_add_js_tools($form, $form_state) {
 		 			}
 				 }, event);
 	 		});		
+			 		
 	 		jQuery( "#detmethod" ).live("mouseover", function(event) {
 	 			$(this).qtip({
 			 	 content: "'.$tooltip['text']['detmethod'].'",
@@ -772,7 +785,8 @@ function observation_form_add_js_tools($form, $form_state) {
 						ready: true
 		 			}
 				 }, event);
-	 		});'			
+	 		});'	
+			 				
 	 		.$attributes_tooltips.
 '});'
 , 'inline'); 
