@@ -74,6 +74,7 @@ function area_delete() {
 	}
 
 	$output['success'] = true;
+	$output['count'] = $deleteCount;
 	if ($deleteCount == count($areas)) {
 		$output['type'] = 'status';
 		$output['message'] = ($deleteCount == 1)

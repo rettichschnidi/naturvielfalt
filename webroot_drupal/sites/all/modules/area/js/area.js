@@ -108,7 +108,7 @@ jQuery(document).ready(function() {
 			var ajaxurl = Drupal.settings.basePath + 'area/delete';
 
 			$.getJSON(ajaxurl, data, function(json){
-				$table.flexReload();
+				if(json.count > 0) $table.flexReload();
 				area.showDeleteResponse(json);
 				if (redirect) {
 					$.safetynet.suppressed(true);
@@ -129,6 +129,27 @@ jQuery(document).ready(function() {
 		} else {
 			area.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
 		}
+	};
+	
+	/**
+	* Show a top message banner
+	*
+	* @param string message
+	* @param string type
+	* @param int time
+	*/
+	area.setMessage = function(message, type, time) {
+		if(area.messageTimer) window.clearTimeout(area.messageTimer);
+		area.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
+		area.message.stop().css('height', 'auto').slideDown('fast');
+		if(time) area.messageTimer = window.setTimeout(function () {
+			area.message.slideUp('fast');
+		}, time);
+	
+		// scroll to message
+		$('body,html').animate({
+		scrollTop: area.message.offset().top
+		});
 	};
 	
 	/**

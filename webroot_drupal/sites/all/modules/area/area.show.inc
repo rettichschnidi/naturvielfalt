@@ -16,6 +16,14 @@ module_load_include('inc', 'area', 'area');
 function area_show_all_areas($onlyMyAreas = false) {
 	global $user;
 	
+	$output['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>'
+	);
+	
 	if ($onlyMyAreas) {
 		$output['map'] = array(
 				'#mapid' => 'areamap',
