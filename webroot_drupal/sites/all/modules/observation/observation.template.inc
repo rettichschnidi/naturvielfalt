@@ -14,26 +14,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
-	//lightbox
-	drupal_add_css(
-	drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
-	array(
-	'group' => CSS_DEFAULT,
-	'every_page' => TRUE
-	));
-	drupal_add_js(
-	drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
-	drupal_add_js(
-	drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
-	drupal_add_css(
-	drupal_get_path('module', 'gallery') . '/css/divbox.css',
-	array(
-	'group' => CSS_DEFAULT,
-	'every_page' => TRUE
-	));
-	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/divbox.js');
-	drupal_add_js(
-	drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js');
 	
 	global $user;
 	$edit = false;
@@ -135,9 +115,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism_forimage['id']);
 			if(!empty($images) && $images['count'] > 0) {
 				$img = '<div class="observation_organism_reference_image">
-							<a href="'.url('gallery/observation/' . $organism_forimage['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_large').'">
-									<img src="' . url('gallery/observation/' . $organism_forimage['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" title="' . $images['images'][0]['title'] . '" />
-							</a>
+							<img src="' . url('gallery/observation/' . $organism_forimage['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" title="' . $images['images'][0]['title'] . '" />
 						</div>';
 			}
 			else {
