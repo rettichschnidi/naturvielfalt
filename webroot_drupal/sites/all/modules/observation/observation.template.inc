@@ -14,6 +14,26 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
 	drupal_add_css($observation_path . '/css/observation.css');
+	//lightbox
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
+	array(
+	'group' => CSS_DEFAULT,
+	'every_page' => TRUE
+	));
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js');
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/divbox.css',
+	array(
+	'group' => CSS_DEFAULT,
+	'every_page' => TRUE
+	));
+	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/divbox.js');
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/gallery.divbox.js');
 	
 	global $user;
 	$edit = false;
