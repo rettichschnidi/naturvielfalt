@@ -588,6 +588,19 @@ function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
 	return false;
 }
 
+/**
+ * Check if user has write access to this observation
+ *
+ * @param int $area_id
+ * @return boolean true if access ok, false if not
+ */
+function area_write_access_by_id($area_id = NULL) {
+	if (isset($area_id)) {
+		$areadata = area_get_full_dataset_of_specific_area($area_id);
+		return area_check_access($areadata, ACL_WRITE);
+	}
+	return false;
+}
 
 /**
  * Return an array with all required information about an area.

@@ -144,8 +144,7 @@ jQuery(document).ready(function() {
 			var ajaxurl = Drupal.settings.basePath + 'observation/delete';
 			$.getJSON(ajaxurl, data, function(json){
 				if(json.count > 0) $table.flexReload();
-				
-				alert(json.message);
+				observation.showDeleteResponse(json);
 				if (redirect) {
 					$.safetynet.suppressed(true);
 					window.location.href = '/observation/show';
@@ -154,18 +153,39 @@ jQuery(document).ready(function() {
 		}
 	}
 	
-//	/**
-//	 * Show the message returned from the deletion request
-//	 */
-//	observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
-//		if(responseText != null && responseText.success == true){
-//			observation.setMessage(responseText.message, responseText.type, 5000);
-//		} else if (responseText != null) {
-//			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
-//		} else {
-//			observation.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
-//		}
-//	};
+	/**
+	 * Show the message returned from the deletion request
+	 */
+	observation.showDeleteResponse = function(responseText, statusText, xhr, $form)  { 
+		if(responseText != null && responseText.success == true){
+			observation.setMessage(responseText.message, responseText.type, 5000);
+		} else if (responseText != null) {
+			observation.setMessage('&bull;&nbsp;' + responseText.message.join("<br>&bull;&nbsp;"), 'error', 5000);
+		} else {
+			observation.setMessage('&bull;&nbsp;' + Drupal.t('Deletion failed due to unknown error.'), 'error', 5000);
+		}
+	};
+	
+	/**
+	* Show a top message banner
+	*
+	* @param string message
+	* @param string type
+	* @param int time
+	*/
+	observation.setMessage = function(message, type, time) {
+		if(observation.messageTimer) window.clearTimeout(observation.messageTimer);
+		observation.message.children('.messages').html(message).attr('class', 'messages').addClass(type);
+		observation.message.stop().css('height', 'auto').slideDown('fast');
+		if(time) observation.messageTimer = window.setTimeout(function () {
+			observation.message.slideUp('fast');
+		}, time);
+	
+		// scroll to message
+		$('body,html').animate({
+		scrollTop: observation.message.offset().top
+		});
+	};
 	
 	/**
 	 * Update the map to show only overlays of the given data.
