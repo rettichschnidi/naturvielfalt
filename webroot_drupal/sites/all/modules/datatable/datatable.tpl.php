@@ -98,7 +98,7 @@ if (!isset($tableWidth) || $tableWidth < 0) {
 /**
  * calculate the width of the cols
  */
-if (!isset($tableHeight) || tableHeight < 0) {
+if (!isset($tableHeight) || $tableHeight < 0) {
 	$tableHeight = 310;
 }
 
