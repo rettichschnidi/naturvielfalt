@@ -1,0 +1,267 @@
+<?php 
+
+define('ACCESS_INVENTORY', 'access inventory');
+define('CREATE_INVENTORY', 'create inventory');
+define('ADD_OBSERVATION', 'add observation');
+
+module_load_include('inc', 'area');
+module_load_include('inc', 'inventory');
+module_load_include('inc', 'inventory', 'inventory.template');
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function inventory_menu() {
+	// Display an observation
+	$items['inventory/%inventory'] = array(
+				'title' => t('Show'),
+				'description' => t('Display an inventory'),
+				'page callback' => 'inventory_show',
+				'page arguments' => array(
+					1
+				),
+				'access arguments' => array(
+					1,
+					'ACL_READ'
+				),
+				'access callback' => 'inventory_check_access',
+				'file' => 'inventory.show.inc',
+				'type' => MENU_SUGGESTED_ITEM,
+				'weight' => 1
+	);
+	
+	$items['inventory/%inventory/area'] = array(
+			'title' => t('Area'),
+			'description' => t('Display area of inventory'),
+			'page callback' => 'inventory_show_area',
+			'page arguments' => array(
+					1
+			),
+			'access callback' => 'inventory_check_area_access',
+			'access arguments' => array(
+					1,
+					'ACL_READ'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'inventory.show.inc',
+			'weight' => 1
+	);
+	
+	$items['inventory/%inventory/show'] = array(
+			'title' => t('Show'),
+			'description' => t('Display an inventory'),
+			'page callback' => 'inventory_show',
+			'page arguments' => array(
+					1
+			),
+			'access callback' => 'inventory_check_access',
+			'access arguments' => array(
+					1,
+					'ACL_READ'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'inventory.show.inc',
+			'weight' => 2
+	);
+	
+	$items['inventory/%inventory/edit'] = array(
+			'title' => t('Edit'),
+			'description' => t('Edit inventory'),
+			'page callback' => 'inventory_edit',
+			'page arguments' => array(
+					1
+			),
+			'access callback' => 'inventory_check_access',
+			'access arguments' => array(
+					1,
+					'ACL_WRITE'
+			),
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'file' => 'inventory.inc',
+			'weight' => 3
+	);
+	
+	$items['inventory/area/%area/new'] = array(
+			'title' => t('Create'),
+			'description' => t('Create a new inventory'),
+			'page callback' => 'inventory_create',
+			'page arguments' => array(
+					2
+			),
+			'access callback' => 'area_check_access',
+			'access arguments' => array(
+					2,
+					'ACL_WRITE'
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'inventory.inc'
+	);
+	
+	$items['inventory/observations/%area/%inventory/json'] = array(
+			'title' => t('Inventory observations'),
+			'description' => t('Show all observations of an inventory'),
+			'page callback' => 'inventory_get_observations_json',
+			'page arguments' => array(
+					2,
+					3
+			),
+			'access callback' => 'area_check_access',
+			'access arguments' => array(
+					2,
+					'ACL_READ'
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'inventory.ajax.inc'
+	);
+	$items['inventory/area/%area/json'] = array(
+			'title' => t('Inventories'),
+			'description' => t('Returns inventories of an area in json'),
+			'page callback' => 'inventory_get_area_inventories_json',
+			'page arguments' => array(
+					2
+			),
+			'access callback' => 'area_check_access',
+			'access arguments' => array(
+					2,
+					'ACL_READ'
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'inventory.ajax.inc'
+	);
+	
+	$items['inventory/%inventory/delete'] = array(
+			'title' => t('Delete'),
+			'description' => t('Delete inventory'),
+			'page callback' => 'inventory_delete',
+			'page arguments' => array(
+					1
+			),
+			'access callback' => 'inventory_check_access',
+			'access arguments' => array(
+					1,
+					'ACL_WRITE'
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'inventory.ajax.inc'
+	);
+	return $items;
+}
+
+/**
+ * Default permission function
+ *
+ */
+function inventory_permission() {
+	return array(
+			ACCESS_INVENTORY => array(
+					'title' => t('can view inventories'),
+			),
+			CREATE_INVENTORY => array(
+					'title' => t('can create inventories'),
+			),
+			ADD_OBSERVATION => array(
+			'title' => t('can add observations to inventories'),
+			),
+			
+	);
+}
+
+/**
+ * Implements hook_load for inventory
+ *
+ */
+function inventory_load($arg) {
+	$inventorydata = array();
+	if ($arg != NULL && ((int) $arg) > 0) {
+		$inventorydata = inventory_get($arg);
+	}
+	return $inventorydata;
+}
+
+/**
+ * Check if user has write access to this inventory
+ *
+ * @param int $inventory_id
+ * @return boolean true if access ok, false if not
+ */
+function inventory_write_access_by_id($inventory_id = NULL) {
+	if (isset($inventory_id)) {
+		$inventorydata = inventory_get($inventory_id);
+		return inventory_check_access($inventorydata, 'ACL_WRITE');
+	}
+	return false;
+}
+
+/**
+ * Check if user has read access to this inventory
+ *
+ * @param int $inventory_id
+ * @return boolean true if access ok, false if not
+ */
+function inventory_read_access_by_id($inventory_id = NULL) {
+	if (isset($inventory_id)) {
+		$inventorydata = inventory_get($inventory_id);
+		return inventory_check_access($inventorydata, 'ACL_READ');
+	}
+	return false;
+}
+
+
+/**
+ * Check if user has access to this inventory.
+ *
+ * @param $inventorydata
+ * 	Array with all required inventory data
+ * @param $acl_level
+ * 	String with required ACL permission
+ * @return
+ * 	True if access granted, false if not
+ * @note All this method needs of $inventorydata is acl_id - we probably could remove some code
+ * when we make this access check more generic.
+ */
+function inventory_check_access($inventorydata = NULL, $acl_level = 'ACL_ADMIN') {
+	if ($inventorydata == NULL) {
+		return false;
+	}
+
+	$acl_number = variable_get($acl_level, -1);
+	if (isset($inventorydata['acl_id']) && $acl_number != -1) {
+		return check_permission($inventorydata['acl_id'], $acl_number);
+	}
+	return false;
+}
+
+/**
+ * Menu callback
+ * 
+ * @param array $area
+ */
+function inventory_create($area) {
+	return drupal_get_form('inventory_form', $area);
+}
+
+/**
+ * Menu callback
+ *
+ * @param array $inventory
+ */
+function inventory_edit($inventory) {
+	$area = area_get_full_dataset_of_specific_area($inventory['area_id']);
+	return drupal_get_form('inventory_form', $area, $inventory);
+}
+
+/**
+ * Check if user of an inventory also has access to the area of the inventory
+ *
+ * @param array $inventory
+ * @return boolean true if access ok, false if not
+ */
+function inventory_check_area_access($inventory = NULL) {
+	if($inventory === NULL || !isset($inventory['area_id'])) return false;
+	else return area_check_access(area_get_full_dataset_of_specific_area($inventory['area_id']), 'ACL_READ');
+}
