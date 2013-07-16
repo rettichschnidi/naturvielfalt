@@ -1,0 +1,15 @@
+#inventory-show-area-table {
+	float: left;
+	width: 440px;
+}
+
+#inventory-show-area-map {
+	float: right;
+	width: 440px;
+}
+
+.inventory-description {
+	max-width: 920px;
+	max-height: 100px;
+	overflow: auto;
+}
