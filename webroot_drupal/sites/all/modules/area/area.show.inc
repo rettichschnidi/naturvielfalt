@@ -209,7 +209,7 @@ function area_show_all_areas($onlyMyAreas = false) {
  * Show a specific area.
  *
  * @param array $areadata
- * @param array $inventory
+ * @param int $inventory_id
  * @return array Drupal form
  */
 function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {

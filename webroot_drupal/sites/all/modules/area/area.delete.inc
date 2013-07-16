@@ -50,7 +50,7 @@ function area_delete_form_submit($form, &$form_state) {
 }
 
 /**
- * Deletes an area
+ * Deletes an area, with all its files, including linked entities (inventories with their observations, habitats, etc..)
  * @param $area_id
  */
 function area_delete_by_id($area_id) {

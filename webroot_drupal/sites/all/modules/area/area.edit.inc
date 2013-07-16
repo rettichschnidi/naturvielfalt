@@ -21,10 +21,10 @@ module_load_include('inc', 'area', 'area');
 /**
  * Return a form which allows all textual data of an area to be edited.
  *
- * @param array $form
- *  Drupal form
- * @param array $form_state
- *  An associative array containing the current state of the form.
+ * @param array $areadata
+ *  area
+ * @param int $inventory_id
+ *  id of the current selected inventory or null
  * @param array $areadata
 */
 function area_edit($areadata = NULL, $inventory_id = NULL) {
@@ -48,6 +48,10 @@ function area_edit($areadata = NULL, $inventory_id = NULL) {
  *  Drupal form
  * @param array $form_state
  *  An associative array containing the current state of the form.
+ * @param array $areadata
+ * 	area
+ * @param int $inventory_id 
+ * 	id of the current selected inventory or null
  * @param array $areadata
  */
 function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = NULL) {
