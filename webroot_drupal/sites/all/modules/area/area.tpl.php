@@ -112,7 +112,8 @@ if ($reticle) {
 				coordinatestorageid: '<?php echo $coordinate_storage_id ?>',
 				geometriesfetchurl: '<?php echo $geometries_fetch_url ?>',
 				geometries_autoload: <?php echo (isset($geometries_autoload) && $geometries_autoload) ? 1 : 0 ?>,
-				infowindowcontentfetchurl: '<?php echo $infowindow_content_fetch_url ?>',
+				infowindowcontentfetchurl_area: '<?php echo $infowindow_content_fetch_url_area ?>',
+				infowindowcontentfetchurl_observation: '<?php echo $infowindow_content_fetch_url_observation ?>',
 				infowindowcreateformfetchurl: '<?php echo $infowindow_createform_fetch_url ?>',
 				geometryupdateurl: '<?php echo $geometry_update_url ?>',
 				infowindowoptions: {

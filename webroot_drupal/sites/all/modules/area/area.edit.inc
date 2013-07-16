@@ -27,11 +27,11 @@ module_load_include('inc', 'area', 'area');
  *  An associative array containing the current state of the form.
  * @param array $areadata
 */
-function area_edit($areadata = NULL) {
+function area_edit($areadata = NULL, $inventory_id = NULL) {
 	assert(!empty($areadata));
 	drupal_set_title($areadata['name']);
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
-	$output['area'] = drupal_get_form('area_edit_form', $areadata);
+	$output['area'] = drupal_get_form('area_edit_form', $areadata, $inventory_id);
 	$output['file']['upload'] = drupal_get_form(
 			'area_edit_files_form',
 			$areadata);
@@ -50,7 +50,11 @@ function area_edit($areadata = NULL) {
  *  An associative array containing the current state of the form.
  * @param array $areadata
  */
-function area_edit_form($form, &$form_state, $areadata = NULL) {
+function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = NULL) {
+	//load js for observation table/map
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/observation.js');
+	
 	/* create a fieldset for the tabular data */
 	$form['area_edit'] = array(
 			'#type' => 'fieldset',
@@ -63,7 +67,37 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 
 	/* add a table with the most imporant information, leave out empty fields */
 	$form['area_edit']['table'] = area_get_infotable_of_specific_area($areadata);
-
+	
+	/* Create a fieldset for the linked habitats */
+	$form['area_inventories'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('inventories').' & '.t('observations'),
+			'#weight' => 9,
+			'#collapsible' => true,
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					),
+					'id' => 'area-show-comment' // required for CSS
+			)
+	);
+	
+	global $base_url;
+	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
+	
+	$form['area_inventories']['add_intventory'] = array(
+			'#type' => 'markup',
+			'#markup' => '<a href="'.$base_url.'/inventory/area/'.$areadata['id'].'/new"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Inventory') . '" title="' . t('Add Inventory') . '" />'.t('Add Inventory').'</a>',
+	);
+	
+	$form['area_inventories']['inventories'] = inventory_show_area_inventories($areadata, true);
+	$form['area_inventories']['space'] = array(
+			'#type' => 'markup',
+			'#markup' => '<br><br>'
+	);
+	
+	$form['area_inventories']['observations'] = inventory_show_observations($areadata['id'], $inventory_id, false, true);
+	
 	/* add a submit button to save the changes */
 	$form['area_edit']['save'] = array(
 			'#type' => 'submit',
@@ -179,11 +213,16 @@ function area_edit_form($form, &$form_state, $areadata = NULL) {
 					'<p>Please note: Changes will be saved instantly.</p>')
 	);
 	$form['area_map']['map'] = array(
+			'#mapid' => 'observationmap',
 			'#theme' => 'area',
 			'#showall' => false,
 			'#scalecontrol' => true,
 			'#action' => 'edit',
 			'#defaultzoom' => '15',
+			'#infowindow_content_fetch_url_observation' => base_path() 
+			. 'observation/{ID}/overview/ajaxform',
+			'#infowindow_content_fetch_url_area' => base_path()
+			. 'area/{ID}/areaoverview/ajaxform',
 			'#geometry_edit_id' => (int) $areadata['id'],
 			'#geometry_update_url' => base_path() . 'area/'
 			. $areadata['id'] . '/updategeometry/json',

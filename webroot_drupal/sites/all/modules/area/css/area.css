@@ -21,7 +21,11 @@
 	float: right;
 	width: 440px;
 }
-
+.area-description {
+	max-width: 920px;
+	max-height: 100px;
+	overflow: auto;
+}
 #area-edit-comment {
 	clear: both;
 }

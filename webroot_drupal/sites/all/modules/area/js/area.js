@@ -10,15 +10,6 @@ jQuery(document).ready(function() {
 	area.message = $('#message');
 	
 	/**
-	 * Toggle the selected rows
-	 * 
-	 * @param string tableId
-	 */
-	area.toggleSelectedRows = function(event, status) {
-		alert(Drupal.t('Not implemented yet'));
-	};
-	
-	/**
 	 * Export the selected rows
 	 * 
 	 * @param string tableId
@@ -60,6 +51,19 @@ jQuery(document).ready(function() {
 				$status.text(oldStatus);
 		});
 		}
+	};
+	
+	/**
+	 * Toggle the selected rows
+	 * 
+	 * @param string tableId
+	 */
+	area.toggleSelectedRows = function(event, status) {
+		$flexiDiv = $(event.target).closest('div.flexigrid');
+		$flexiDiv.find('input.gridSelect').each(function() {
+			this.checked = status;
+			areamap.selectMultipleAreas(event, parseInt($(this).val()), !status);
+		});
 	};
 	
 	/**
@@ -117,6 +121,34 @@ jQuery(document).ready(function() {
 			});
 		}
 	};
+	
+	area.deleteInventory = function(inventoryID) {
+		var inventoryTable = $('#' + 'inventories');
+		var observationTable = $('#' + 'observations');
+		
+		var pathname = window.location.pathname;
+		pathname = pathname.split('/');
+		var really = confirm(Drupal.t('Do you really want to delete this inventory?'));
+		if (really){
+			
+			var ajaxurl = Drupal.settings.basePath + 'inventory/' + inventoryID + '/delete';
+			$.getJSON(ajaxurl, null, function(json){
+				if(json.count > 0) {
+					if(pathname.length > 4) {
+						pathname.pop();
+						pathname = pathname.join('/');
+						window.location.pathname = pathname;
+					} else {
+						inventoryTable.flexReload();
+						observationTable.flexReload();
+					}
+				}
+				area.showDeleteResponse(json);
+			});
+		}
+	};
+	
+	
 	
 	/**
 	 * Show the message returned from the deletion request
@@ -490,13 +522,34 @@ Area.prototype.selectMultipleAreas = function(event, id, deselect) {
 
 			item.inMultiSelection = true;
 			item.select();
-			
-			var position = item.getPosition();
-			bounds.extend(position);
-			// don't touch mapcontains once it changed to false
-			if (mapcontains)
+			//iterate over all points if overlay is of type polygon or polyline
+			if(this.geometriesArray[this.selectedIds[i]].type == 'polygon' 
+				|| this.geometriesArray[this.selectedIds[i]].type == 'polyline')
 			{
-				mapcontains = this.googlemap.getBounds().contains(position);
+	
+				var positions = item.getPath();
+				var position; 
+				
+				for(var k = 0; k < positions.length; k++) {
+					var tmp = positions.getAt(k);
+					position = new google.maps.LatLng(tmp.lat(), tmp.lng());
+					bounds.extend(position);
+					// don't touch mapcontains once it changed to false
+					if (mapcontains)
+					{
+						mapcontains = this.googlemap.getBounds().contains(position);
+					}
+				}
+			}
+			//overlay type marker
+			else {
+				var position = item.getPosition();
+				bounds.extend(position);
+				// don't touch mapcontains once it changed to false
+				if (mapcontains)
+				{
+					mapcontains = this.googlemap.getBounds().contains(position);
+				}
 			}
 		}
 		if (!mapcontains)
@@ -517,8 +570,19 @@ Area.prototype.showInfoWindow = function(id) {
 		console.log("Invalid id");
 		return;
 	}
-	if(this.options.infowindowcontentfetchurl) {
-		var url = this.options.infowindowcontentfetchurl.replace(/{ID}/, id);
+	var url = null;
+	switch(this.geometriesArray[id].entity) {
+		case 'area' : 
+			url = this.options.infowindowcontentfetchurl_area;
+			break;
+		case 'observation' :
+			url = this.options.infowindowcontentfetchurl_observation;
+			break;
+		default :
+			break;
+	}
+	if(url) {
+		url = url.replace(/{ID}/, id);
 		var this_ = this;
 	
 		if (this.infoWindow != null) {
@@ -672,7 +736,8 @@ Area.prototype.loadGeometriesAndOverlaysFromJson = function(json) {
  */
 Area.prototype.clearOverlays = function() {
 	for (var i in this.overlaysArray)
-		this.overlaysArray[i].setMap();
+		if(i != this.options.geometryeditid)
+			this.overlaysArray[i].setMap();
 };
 
 /**
@@ -946,10 +1011,42 @@ Area.prototype.createSearchbarCH1903 = function(enable) {
  * 	Id of the overlay to edit.
  */
 Area.prototype.showAndCenter = function(geometryId) {
-	var position = this.overlaysArray[geometryId].getPosition();
+	// calculate the bounds around them, and check if refitting map is needed
+	var mapcontains = true;
+	var bounds = new google.maps.LatLngBounds();
+	var item = this.overlaysArray[geometryId];
+	//iterate over all points if overlay is of type polygon or polyline
+	if(this.geometriesArray[geometryId].type == 'polygon' 
+		|| this.geometriesArray[geometryId].type == 'polyline')
+	{
+
+		var positions = item.getPath();
+		var position; 
+		
+		for(var k = 0; k < positions.length; k++) {
+			var tmp = positions.getAt(k);
+			position = new google.maps.LatLng(tmp.lat(), tmp.lng());
+			bounds.extend(position);
+			// don't touch mapcontains once it changed to false
+			if (mapcontains)
+			{
+				mapcontains = this.googlemap.getBounds().contains(position);
+			}
+		}
+	}
+	//overlay type marker
+	else {
+		var position = item.getPosition();
+		bounds.extend(position);
+		// don't touch mapcontains once it changed to false
+		if (mapcontains)
+		{
+			mapcontains = this.googlemap.getBounds().contains(position);
+		}
+	}
 	
-	this.googlemap.setCenter(position);
 	this.googlemap.setZoom(this.options.googlemapsoptions.zoom);
+	this.googlemap.fitBounds(bounds);
 };
 	
 
@@ -1279,3 +1376,4 @@ updateHiddenfields = function(overlay, coordinatestorageid) {
 		jQuery('#hiddenfield-geometry-coordinates').val(JSON.stringify(overlay.getJsonCoordinates()));
 	});
 };
+

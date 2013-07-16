@@ -7,3 +7,4 @@ dependencies[] = datatable
 dependencies[] = c_acl
 dependencies[] = commonstuff
 dependencies[] = habitat
+dependencies[] = inventory

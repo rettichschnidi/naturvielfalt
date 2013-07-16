@@ -16,14 +16,14 @@ function area_new_area() {
 	drupal_set_title(t('Create new area'));
 
 	$output['map'] = array(
+			'#theme' => 'area',
 			'#ch1903' => true,
 			'#search' => true,
 			'#height' =>  '550px',
 			'#action' => 'create',
 			'#infowindow_createform_fetch_url' => base_path() . 'area/getnewareanameajaxform',
 			'#geometries_fetch_url' => base_path() . 'areas/json',
-			'#infowindow_content_fetch_url' => base_path() . 'area/{ID}/areaoverview/ajaxform',
-			'#theme' => 'area'
+			'#infowindow_content_fetch_url_area' => base_path() . 'area/{ID}/areaoverview/ajaxform'
 	);
 	return drupal_render($output);
 }
