@@ -21,7 +21,6 @@ module_load_include('inc', 'datatable');
  */
 function observation_save($observation_data = false, $custom_data = false, $from_api = false) {
 	global $user;
-	module_load_include('inc', 'observation', 'observation.validate');
 	
 	$values = $_POST;
 	if($from_api) $values = $custom_data;
@@ -31,11 +30,15 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	$edit = false;
 	if (isset($values['observation_id'])) {
 		$edit = true;
-		$observation['id'] = $values['observation_id'];
+		$observation['id'] = filter_xss($values['observation_id']);
 	}
 	else $observation['id'] = 0;
 	if (isset($values['area_geometry_id'])) {
-		$observation['area_geometry_id'] = $values['area_geometry_id'];
+		$observation['area_geometry_id'] = filter_xss($values['area_geometry_id']);
+	}
+	
+	if(isset($values['inventory_id'])) {
+		$observation['inventory_id'] = filter_xss($values['inventory_id']);
 	}
 
 	/**
@@ -345,7 +348,7 @@ function observation_delete() {
 		$output['type'] = 'warning';
 		$output['message'] = t('Some observations could not be deleted (unauthorized access)');
 	}
-	debug($output, true);
+
 	return drupal_json_output($output);
 
 }
@@ -353,11 +356,13 @@ function observation_delete() {
 /**
  * Fetches all observation information and formats the rows for display.
  * Gets all observations if no $observation_id is given
+ * If $inventory_ids is passed, only observations from this inventories are returned.
  * 
  * @param string $acl_level
  * @param array(int) $observation_ids
+ * @param array $inventory_ids
  */
-function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL) {
+function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL) {
 	global $user;
 	global $language;
 	
@@ -388,8 +393,13 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'o.observer AS observer',
 		'o.date AS date',
 		'o.count AS count',
+		'o.inventory_id',
 		'o.acl_id AS acl_id',
 		'o.organism_id AS organism_id',  // used to find portrait-pictures
+		'i.name AS inventory',
+		'i.area_id',
+		'a.name AS area',
+		'GeometryType(a_g.geom) AS areatype',
 		'a_s.altitude AS altitude',
 		'a_s.township AS township',
 		'a_s.zip AS zip',
@@ -410,6 +420,9 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'o.date',
 		'o.count',
 		'o.organism_id',
+		'o.inventory_id',
+		'i.name',
+		'a.name',
 		'a_s.altitude',
 		'a_s.township',
 		'a_s.zip',
@@ -431,9 +444,12 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
 		// FIXME get more attributes than just Bemerkung
 		.' LEFT JOIN {observation_attribute} oattr ON oattr.observation_id=o.id AND oattr.organism_artgroup_attr_id=2'
+		.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
+		.' LEFT JOIN {area} a ON a.id = i.area_id'
+		.' LEFT JOIN {area_geometry} a_g ON a_g.id = a.area_geometry_id'
 	;
 	
-	if ($observation_ids != NULL) {
+	if ($observation_ids !== NULL) {
 		if (is_int($observation_ids) && $observation_ids > 0)
 			$observation_ids = array($observation_ids);
 		if (is_array($observation_ids) && !empty($observation_ids)) {
@@ -448,6 +464,23 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		}
 	}
 	
+	if($inventory_ids !== NULL) {
+		if (is_array($inventory_ids) && !empty($inventory_ids)) {
+			$sql['dbWhere'] = empty($sql['dbWhere'])
+					? '('
+					: $sql['dbWhere'] . ' AND (';
+			foreach ($inventory_ids as $id) {
+				$sql['dbWhere'] .= 'o.inventory_id=:inventory_id_' . $id . ' OR ';
+				$arguments[':inventory_id_'.$id] = $id;
+			}
+			$sql['dbWhere'] = substr($sql['dbWhere'], 0, -4) . ')';
+		} else {
+			$sql['dbWhere'] = empty($sql['dbWhere'])
+					? '('
+					: $sql['dbWhere'] . ' AND (';
+			$sql['dbWhere'] .= 'o.inventory_id = -1)';
+		}
+	}
 	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
 	$sql['id'] = 'id';
 	
@@ -501,7 +534,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$base_url . '/observation/' . $row['id'] . '/show',
 			array(
 				'html' => true
-			));;
+			));
 		// edit details
 		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
 			? l(
@@ -520,6 +553,22 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_l'] = t('No translation available');
 		// date, TODO: time
 		$row['cell']['date'] = date('d.m.Y H:i:s', $row['cell']['date']);
+		
+		// link to inventory
+		$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+			l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
+			: '';
+		
+		// link to area
+		$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+		l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
+		: '';
+		
+		// type of area (picture)
+		$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
+		'<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['areatype'] . '.png') . '" alt="'. t('type') . '" />'
+		: '';
+		
 		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
@@ -592,15 +641,29 @@ function observation_get_all_json($acl_level = 'ACL_READ') {
 }
 
 /**
+ * This method handle the request from flexigrid
+ * 
+ * @param string $acl_level 
+ * @param array $inventory_ids
+ * @return JSON
+ */
+function observation_get_observations_of_inventory_json($acl_level = 'ACL_READ', $inventory_ids) {
+	$output = observation_get_tabledata($acl_level, NULL, $inventory_ids);
+	return drupal_json_output($output);
+}
+
+/**
  * Returns the JSON data of geometries. If $observation_data is false, all geometries
  * are returned.
+ * If $inventory_ids is passed, only observations from this inventories are returned.
  * 
  * @param array $observation_data
+ * @param array $inventory_ids
  */
-function observation_get_geometry_json($observation_data = false) {
+function observation_get_geometry_json($observation_data = false, $inventory_id = NULL) {
 	if (!$observation_data && isset($_REQUEST['observation_ids']))
 		$observation_data = $_REQUEST['observation_ids'];
-	drupal_json_output(observation_get_geometries_acl_checked($observation_data));
+	drupal_json_output(observation_get_geometries_acl_checked($observation_data, $inventory_id));
 }
 
 /**

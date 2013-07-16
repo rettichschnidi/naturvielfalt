@@ -142,6 +142,39 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 		// Geometry as JSON
 		'ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json');
 	
+	//select also area geometry, if observation belongs to an inventory
+	if(isset($observation_data['observation']['inventory_id'])) {
+		$area_geometry = array(
+		'a.id AS area_id',
+		'area_s.altitude AS area_altitude',
+		'area_s.zip AS area_zip',
+		'area_s.township AS area_township',
+		'area_s.canton AS area_canton',
+		'area_s.country AS area_country',
+		// either POINT, POLYGON or LINESTRING
+		'GeometryType(area_s.geom) AS area_geometry_type',
+		// Center of the geometry - CH1903, x value
+		'ST_X(ST_Centroid(st_transform(area_s.geom, 21781))) AS area_ch1903_center_x',
+		// Center of the geometry - CH1903, y value
+		'ST_Y(ST_Centroid(st_transform(area_s.geom, 21781))) AS area_ch1903_center_y',
+		// Center of the geometry - WGS84, latitude
+		'ST_X(ST_Centroid(st_transform(area_s.geom, 4326))) AS area_wgs84_center_lat',
+		// Center of the geometry - WGS84
+		'ST_Y(ST_Centroid(st_transform(area_s.geom, 4326))) AS area_wgs84_center_lng',
+		// Coordinates of the geometry - CH1903
+		'st_astext(st_transform(area_s.geom, 21781)) AS area_ch1903_coordinates',
+		// Coordinates of the geometry - WGS84
+		'st_astext(st_transform(area_s.geom, 4326)) AS area_wgs84_coordinates',
+		// Area surface in m^2
+		'st_area(st_transform(area_s.geom, 21781)) AS area_surface_area',
+		// Pathlength (if linestring) in meters
+		'ST_Length(st_transform(area_s.geom, 21781)) AS area_pathlength',
+		// Geometry as JSON
+		'ST_AsGeoJSON(area_s.geom) AS area_wgs84_geom_json');
+		
+		//merge arrays
+		$sql['dbColumns'] = array_merge($sql['dbColumns'], $area_geometry);
+	}
 	$sql['dbTable'] = '{observation} o';
 	
 	$sql['dbJoins'] = 'JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id';
@@ -149,7 +182,20 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 	if ($observation_data) {
 		// single observation
 		if (isset($observation_data['observation'])) {
-			$sql['dbWhere'] = 'o.id=:observation_id';
+			if(isset($observation_data['observation']['inventory_id'])) {
+				$inventory = inventory_get($observation_data['observation']['inventory_id']);
+				$area = area_get_full_dataset_of_specific_area($inventory['area_id']);
+				
+				$sql['dbJoins'] .= ' JOIN {inventory} i ON i.id = o.inventory_id 
+								  JOIN {area} a ON a.id = i.area_id
+								  JOIN {area_geometry} area_s ON area_s.id=a.area_geometry_id';
+				$sql['dbWhere'] = 'a.id=:area_id';
+				$arguments[':area_id'] = $area['id'];
+			}
+			$sql['dbWhere'] = empty($sql['dbWhere'])
+			? '('
+					: $sql['dbWhere'] . ' AND (';
+			$sql['dbWhere'] .= 'o.id=:observation_id )';
 			$arguments[':observation_id'] = $observation_data['observation']['id'];
 		}
 		// array of observations
@@ -176,6 +222,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 	$results = datatable_dbRequest($sql, $arguments);
 	
 	$items = array();
+	$area_items = array();
 	foreach ($results['rows'] as $result) {
 		$item = array();
 		$item['id'] = (int) $result['cell']['id'];
@@ -187,8 +234,9 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 				: '';
 		$item['comment'] = isset($result['cell']['comment']) ? $result['cell']['comment']
 				: '';
-
+		
 		$item['type'] = '';
+		$item['entity'] = 'observation';
 		$item['area_points'] = array();
 		$json = json_decode($result['cell']['wgs84_geom_json']);
 		if ($json) {
@@ -200,7 +248,58 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 				);
 			}
 		}
+		
 		$items[] = $item;
+	}
+	
+	if(isset($observation_data['observation']['inventory_id'])) {
+		foreach ($results['rows'] as $result) {
+			$item = array();
+			$item['id'] = (int) $result['cell']['area_id'];
+			$item['altitude'] = (int) $result['cell']['area_altitude'];
+			$item['township'] = isset($result['cell']['area_township']) ? $result['cell']['area_township']
+			: '';
+			$item['canton'] = isset($result['cell']['area_canton']) ? $result['cell']['area_canton'] : '';
+			$item['country'] = isset($result['cell']['area_country']) ? $result['cell']['area_country']
+			: '';
+			$item['comment'] = isset($result['cell']['area_comment']) ? $result['cell']['area_comment']
+			: '';
+			
+			$item['type'] = '';
+			$item['entity'] = 'area';
+			$item['area_points'] = array();
+			//add area geometry to index $item['area_area_points']
+			$json = json_decode($result['cell']['area_wgs84_geom_json']);
+			if ($json) {
+				if ('Polygon' == $json->type) {
+					$item['type'] = 'polygon';
+					foreach ($json->coordinates[0] as $coordinate) {
+						$item['area_points'][] = array(
+								'lat' => $coordinate[1],
+								'lng' => $coordinate[0]
+						);
+					}
+				} else if ($json->type == 'LineString') {
+					$item['type'] = 'polyline';
+					foreach ($json->coordinates as $coordinate) {
+						$item['area_points'][] = array(
+								'lat' => $coordinate[1],
+								'lng' => $coordinate[0]
+						);
+					}
+				} else if ($json->type == 'Point') {
+					$item['type'] = 'marker';
+					$item['area_points'][] = array(
+							'lat' => $json->coordinates[1],
+							'lng' => $json->coordinates[0]
+					);
+				} else {
+					assert(false);
+				}
+			}
+			$area_items[] = $item;
+		}
+		$items = array_merge($items, $area_items);
 	}
 	return $items;
 
@@ -756,6 +855,27 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	);
 	
 	$tableHeader[] = array(
+			'name' => t('Inventory'),
+			'dbfield' => 'inventory',
+			'dbExactField' => 'i.name',
+			'width' => 90
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Area'),
+			'dbfield' => 'area',
+			'dbExactField' => 'a.name',
+			'width' => 90
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Area Type'),
+			'dbfield' => 'areatype',
+			'dbExactField' => 'a_g.geometry_type',
+			'width' => 90
+	);
+	
+	$tableHeader[] = array(
 			'name' => t('X Coordinate'),
 			'dbfield' => 'ch1903_center_x',
 			'width' => 90,
@@ -860,8 +980,8 @@ function observation_get_standard_datatable_headers($init_sort = false,
 /**
  * Return the single observation form to add a observation
  */
-function observation_new() {
-	return drupal_get_form('observation_form');
+function observation_new($inventory_id = NULL) {
+	return drupal_get_form('observation_form', false, $inventory_id);
 // 	return observation_form();
 }
 ?>

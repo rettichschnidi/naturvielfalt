@@ -78,6 +78,24 @@ function observation_menu() {
 			'weight' => 1
 	);
 	
+	// Display an observation
+	$items['observation/%observation/inventory'] = array(
+			'title' => t('Inventory'),
+			'description' => t('Display inventory of observation'),
+			'page callback' => 'observation_show_inventory',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1
+			),
+			'access callback' => 'observation_check_inventory_access',
+			'file' => 'observation.show.inc',
+			'type' => MENU_LOCAL_TASK,
+			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+			'weight' => -1
+	);
+	
 	// Edit an observation
 	$items['observation/%observation/edit'] = array(
 			'title' => t('Edit'),
@@ -353,6 +371,17 @@ function observation_read_access($observationdata = NULL) {
 			variable_get('ACL_READ'));
 	}
 	return false;
+}
+
+/**
+ * Check if user of an observation also has access to the inventory of the observation
+ *
+ * @param array $observationdata
+ * @return boolean true if access ok, false if not
+ */
+function observation_check_inventory_access($observationdata = NULL) {
+	if($observationdata === NULL || !isset($observationdata['observation']['inventory_id'])) return false;
+	else return inventory_read_access_by_id($observationdata['observation']['inventory_id']);
 }
 
 /**

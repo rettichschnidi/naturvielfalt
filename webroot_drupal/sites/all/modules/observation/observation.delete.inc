@@ -68,14 +68,29 @@ function observation_delete_form_submit($form, &$form_state) {
 }
 
 /**
- * Deletes an observation
+ * Deletes an observation with all its files
  * @param $observation_id 
  */
 function observation_delete_by_id($observation_id) {
+	
 	db_delete('observation')->condition('id', $observation_id)
 		->execute();
 	db_delete('observation_attribute')->condition('observation_id', $observation_id)
 		->execute();
+
+	//delete files of observation
+	$files = gallery_implementation_get_files('observation', $observation_id);
+	$images = gallery_images('medias', 'observation', $observation_id);
+
+	$image_ids[] = array();
+	foreach($images['medias'] as $image) {
+		$image_ids[$image['id']] = 1;
+	}
+	if(!empty($image_ids))
+		gallery_implementation_delete($image_ids);
+	
+	if(!empty($files))
+		gallery_implementation_files_delete($files, 'observation');
 }
 
 ?>
