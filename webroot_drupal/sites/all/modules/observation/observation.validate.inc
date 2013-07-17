@@ -55,6 +55,10 @@ function observation_form_validate($form, &$form_state) {
 	
 }
 
+/**
+ * Fileextension validation
+ *
+ */
 function observation_validate_fileextension($input) {
 	return gallery_get_MediaInfo_by_filename($input);
 }
@@ -156,7 +160,7 @@ function observation_validate_observation_id($observationid) {
  * @return true if the current user has WRITE permissions for the given observation id
  */
 function observation_validate_permission($observationid) {
-	if(!ctype_digit($input)) return false;
+	if(!ctype_digit($observationid)) return false;
 	if(intval($observationid) == 0) return true;
 	$result = observation_get(filter_xss($observationid));
 	return observation_write_access_by_acl_id($result['acl_id']);

@@ -78,7 +78,7 @@ function area_delete() {
 	if ($deleteCount == count($areas)) {
 		$output['type'] = 'status';
 		$output['message'] = ($deleteCount == 1)
-		? t('Areas deleted')
+		? t('Area deleted')
 		: t('Areas deleted');
 	}
 	else {

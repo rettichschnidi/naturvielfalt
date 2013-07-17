@@ -265,7 +265,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	*/
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-	
+
 	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
 	
 	

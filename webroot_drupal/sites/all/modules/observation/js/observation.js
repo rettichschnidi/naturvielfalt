@@ -283,6 +283,22 @@ jQuery(document).ready(function() {
 	};
 	
 	/**
+	 * Executed before table is populated
+	 * ! must return the data !
+	 * 
+	 * @param JSON object data
+	 */
+	observation.tablePreProcessWithoutGallery = function(data, flexigridOptions) {
+		var observation_ids = [];
+		$(data.rows).each(function(idx, obs) {
+			observation_ids[idx] = obs.id;
+		});
+		observation.syncMapWithTable(observation_ids);
+
+		return data;
+	};
+	
+	/**
 	 * Executed after table is populated
 	 * 
 	 * @param jQuery object flexigrid
@@ -508,7 +524,58 @@ jQuery(document).ready(function() {
 		});
 		return true;
 	};
+	
+	/**
+	 * Opens a dialog to create an observation
+	 * 
+	 * @param div
+	 */
+	observation.createObservationDialog = function() {
+		var area_id = document.getElementById('area_id').value;
+		var inventory_id = document.getElementById('id').value;
 
+		observation.showLoading();
+		var data = {
+			a_id: area_id,
+			i_id: inventory_id,
+		};
+		$.getJSON(Drupal.settings.basePath + 'inventory/' +inventory_id + '/addobservation/popup', data, function (data) {
+			if(data && data.form) {
+				dialog = $('<div title="' + Drupal.t('Meta data for uploads') + '" />');
+				dialog.append($(data.form));
+				dialog.dialog({
+					modal: true,
+					resizable: false,
+					closeOnEscape: false,
+					closeText: '',
+					close: function (event, ui) {
+						$(this).remove();
+					},
+					width: 700
+				});
+				var parform = dialog.find('input[name="uploadform"]').val();
+				dialog.find('input[name="title"]').val($('#'+parform).find('input[id="meta_title"]').val());
+				dialog.find('input[name="description"]').val($('#'+parform).find('input[id="meta_description"]').val());
+				dialog.find('input[name="location"]').val($('#'+parform).find('input[id="meta_location"]').val());
+				dialog.find('input[name="author"]').val($('#'+parform).find('input[id="meta_author"]').val());
+				dialog.find('#edit-actions a').click(function (e) {
+					e.preventDefault();
+					$(this).closest('.ui-dialog-content').dialog('close');
+				});
+				dialog.find('form').submit(function (e) {
+					var parform = $(this).find('input[name="uploadform"]').val();
+					$('#'+parform).find('input[id="meta_title"]').val($(this).find('input[name="title"]').val());
+					$('#'+parform).find('input[id="meta_description"]').val($(this).find('input[name="description"]').val());
+					$('#'+parform).find('input[id="meta_location"]').val($(this).find('input[name="location"]').val());
+					$('#'+parform).find('input[id="meta_author"]').val($(this).find('input[name="author"]').val());
+					$(this).closest('.ui-dialog-content').dialog('close');
+					return false;
+				});
+			}
+			observation.hideLoading();
+		});
+	};
+	
 	/**
 	 * Opens a dialog to add meta data to a fileupload
 	 * 

@@ -423,8 +423,10 @@ function area_theme() {
 							'geometries_fetch_url' => '',
 							// automatically load geometries
 							'geometries_autoload' => true,
-							// infoWindow content fetch url. {ID} will be swaped with the actual id of the requested geometry.
-							'infowindow_content_fetch_url' => '',
+							// infoWindow content fetch url for areas. {ID} will be swaped with the actual id of the requested geometry.
+							'infowindow_content_fetch_url_area' => '',
+							// infoWindow content fetch url for observation. {ID} will be swaped with the actual id of the requested geometry.
+							'infowindow_content_fetch_url_observation' => '',
 							// url to get the content for the window when a new element gets created.
 							'infowindow_createform_fetch_url' => '',
 							// set to an integer if an area_geometry should be edited (note: action needs to be 'edit')
@@ -597,7 +599,7 @@ function area_check_access($areadata = NULL, $acl_level = 'ACL_ADMIN') {
 function area_write_access_by_id($area_id = NULL) {
 	if (isset($area_id)) {
 		$areadata = area_get_full_dataset_of_specific_area($area_id);
-		return area_check_access($areadata, ACL_WRITE);
+		return area_check_access($areadata, 'ACL_WRITE');
 	}
 	return false;
 }

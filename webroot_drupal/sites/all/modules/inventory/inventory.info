@@ -4,3 +4,6 @@ package = Naturvielfalt
 core = 7.x
 version = "7.x-current"
 dependencies[] = wysiwyg
+dependencies[] = observation
+dependencies[] = datatable
+dependencies[] = c_acl

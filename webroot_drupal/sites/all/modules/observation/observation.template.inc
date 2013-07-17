@@ -9,7 +9,7 @@ module_load_include('inc', 'observation', 'observation.validate');
  * Show the form to add or edit an observation
  * @param array $observation
  */
-function observation_form($form = null, &$form_state = null, $observation = false) {
+function observation_form($form = null, &$form_state = null, $observation = false, $inventory_id = NULL) {
 	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
@@ -301,15 +301,33 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$form['div']['hiddenfields'] = area_address_hidden_form();
 
 	if(empty($observation['observation']['id'])) {
-		$form['div']['map'] = array(
-				'#theme' => 'area',
-				'#mapid' => 'observationmap',
-				'#coordinate_storage_id' => 'coordinate',
-				'#ch1903' => true,
-				'#search' => true,
-				'#height' => '250px',
-				'#action' => 'getcoordinate',
-		);
+		if(!isset($inventory_id)) {
+			$form['div']['map'] = array(
+					'#theme' => 'area',
+					'#mapid' => 'observationmap',
+					'#coordinate_storage_id' => 'coordinate',
+					'#ch1903' => true,
+					'#search' => true,
+					'#height' => '250px',
+					'#action' => 'getcoordinate',
+			);
+		}
+		else {
+			//display area of inventory on map
+			$inventory = inventory_get($inventory_id);
+			$form['div']['map'] = array(
+					'#theme' => 'area',
+					'#mapid' => 'observationmap',
+					'#coordinate_storage_id' => 'coordinate',
+					'#ch1903' => true,
+					'#search' => true,
+					'#height' => '250px',
+					'#action' => 'getcoordinate',
+					'#infowindow_content_fetch_url_area' => base_path()
+					. 'area/{ID}/areaoverview/ajaxform',
+					'#geometries_fetch_url' => base_path() . 'area/' . $inventory['area_id'] . '/json',
+			);
+		}
 	} else {
 		$form['div']['map'] = array(
 				'#theme' => 'area',
@@ -317,7 +335,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				'#coordinate_storage_id' => 'coordinate',
 				'#ch1903' => true,
 				'#search' => true,
-				'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform',
+				'#infowindow_content_fetch_url_observation' => base_path() . 'observation/{ID}/overview/ajaxform',
+				'#infowindow_content_fetch_url_area' => base_path() . 'area/{ID}/areaoverview/ajaxform',
 				'#geometries_fetch_url' => base_path() . 'observation/'
 				. $observation['observation']['id'] . '/geometry/json',
 				'#geometry_edit_id' => $observation['observation']['id'],
@@ -416,11 +435,28 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	);
 	
 	/* Hidden fields */
-	$form['observer'] = array('#type' => 'hidden', '#id' => 'observer', '#name' => 'observer', '#value' => $observation['observation']['observer']);
+	$form['observer'] = array(
+			'#type' => 'hidden',
+			'#id' => 'observer', 
+			'#name' => 'observer', 
+			'#value' => $observation['observation']['observer']
+	);
 	
 	
-	$form['observation_id'] = array('#type' => 'hidden', '#id' => 'observation_id', '#name' => 'observation_id', '#value' => $observation['observation']['id']);
+	$form['observation_id'] = array(
+			'#type' => 'hidden', 
+			'#id' => 'observation_id', 
+			'#name' => 'observation_id', 
+			'#value' => $observation['observation']['id']
+	);
 	
+	if(isset($inventory_id)) {
+		$form['inventory_id'] = array(
+			'#type' => 'hidden', 
+			'#id' => 'inventory_id', 
+			'#value' => $inventory_id
+		);
+	}
 	if(isset($observation['observation']['area_geometry_id']))
 		$form['area_geometry_id'] = array('#type' => 'hidden', '#id' => 'area_geometry_id', '#name' => 'area_geometry_id', '#value' => $observation['observation']['area_geometry_id']);
 	
@@ -537,7 +573,7 @@ function observation_show_observation($observationdata = NULL) {
 			'#scalecontrol' => true,
 			'#defaultzoom' => '15',
 			'#reticle' => false,
-			'#infowindow_content_fetch_url' => base_path() . 'observation/{ID}/overview/ajaxform',
+			'#infowindow_content_fetch_url_observation' => base_path() . 'observation/{ID}/overview/ajaxform',
 			'#geometries_fetch_url' => base_path() . 'observation/'
 			. $observationdata['observation']['id'] . '/geometry/json',
 			'#geometry_edit_id' => $observationdata['observation']['id'],

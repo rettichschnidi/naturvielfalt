@@ -142,7 +142,11 @@ function area_gallery_location_provider($id) {
 		WHERE
 			a.id = :id',
 		array(':id' => $id))->fetch();
-	return $result->township . ' ' . $result->canton . ', ' . $result->country;
+	$location = '';
+	if (isset($result->township)) $location .= $result->township;
+	if (isset($result->canton)) $location .= $result->canton;
+	if (isset($result->country)) $location .= ','.$result->country;
+	return $location;
 }
 
 /**

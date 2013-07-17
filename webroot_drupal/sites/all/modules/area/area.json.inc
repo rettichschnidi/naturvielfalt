@@ -64,19 +64,15 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			));;
 		//TODO, check if write access
 		// edit details
-// 		$row['cell']['editColumn'] = (area_write_access_by_acl_id($row['cell']['acl_id']))
-// 			? l(
-// 				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
-// 				$base_url . '/area/' . $row['id'] . '/edit',
-// 				array(
-// 					'html' => true
-// 				))
-// 			: '';
-			$row['cell']['editColumn'] = l('<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
-					$base_url . '/area/' . $row['id'] . '/edit',
-					array(
-						'html' => true
-					));
+		$row['cell']['editColumn'] = (area_write_access_by_id($row['cell']['id']))
+			? l(
+				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+				$base_url . '/area/' . $row['id'] . '/edit',
+				array(
+					'html' => true
+				))
+			: '';
+
 		//zoom in
 		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:areamap.zoomIn(event, ' . $row['id'] . ');" />';
 		
@@ -165,7 +161,12 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 					assert(false);
 				}
 			}
+			$item['entity'] = 'area';
 			$items[] = $item;
+		}
+		if (isset($_REQUEST['observation_ids'])) {
+			$observation_data = $_REQUEST['observation_ids'];
+			$items = array_merge($items, observation_get_geometries_acl_checked($observation_data));
 		}
 	}
 	// json_encode wants that keys are sequential and start with 0, otherwise it'll treat it as an object and

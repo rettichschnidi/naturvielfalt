@@ -6,6 +6,7 @@
  */
 
 module_load_include('inc', 'area', 'area');
+module_load_include('inc', 'inventory', 'inventory.show');
 
 /**
  * Show all existing areas. Ify $onlyMyAreas is true,
@@ -30,7 +31,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 				'#search' => true,
 				'#ch1903' => true,
 				'#geometries_fetch_url' => base_path() . 'areas/own/json',
-				'#infowindow_content_fetch_url' => base_path()
+				'#infowindow_content_fetch_url_area' => base_path()
 						. 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
@@ -40,7 +41,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 				'#search' => true,
 				'#ch1903' => true,
 				'#geometries_fetch_url' => base_path() . 'areas/json',
-				'#infowindow_content_fetch_url' => base_path()
+				'#infowindow_content_fetch_url_area' => base_path()
 						. 'area/{ID}/areaoverview/ajaxform',
 				'#theme' => 'area'
 		);
@@ -139,6 +140,16 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'#markup' => '<p/>'
 	);
 	
+	if(user_access(AREA_CREATE)) {
+		global $base_url;
+		$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
+		
+		$output['create'] = array(
+				'#type' => 'markup',
+				'#markup' => '<a href="'.$base_url.'/area/new"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Create a new area') . '" title="' . t('Create a new area') . '" />'.t('Create a new area').'</a>',
+		);
+	}
+	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
 		'#header'   =>  $tableHeader,
@@ -197,16 +208,29 @@ function area_show_all_areas($onlyMyAreas = false) {
 /**
  * Show a specific area.
  *
- * @param integer $area_id
+ * @param array $areadata
+ * @param int $inventory_id
  * @return array Drupal form
  */
-function area_show_specific_area($areadata = NULL) {
+function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	assert(!empty($areadata));
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	drupal_set_title($areadata['name']);
+	
+	//load js for observation table/map
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/observation.js');
 
+	$output['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>'
+	);
+	
 	/* Create a fieldset for the tabular data */
 	$output['area'] = array(
 			'#type' => 'fieldset',
@@ -217,27 +241,66 @@ function area_show_specific_area($areadata = NULL) {
 			),
 	);
 
+	/* Create a fieldset for the linked habitats */
+	$output['area_inventories'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('inventories').' & '.t('observations'),
+			'#weight' => 9,
+			'#collapsible' => true,
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					),
+					'id' => 'area-show-comment' // required for CSS
+			)
+	);
+	if(area_check_access($areadata, 'ACL_READ')) {
+		global $base_url;
+		$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
+		
+		$output['area_inventories']['add_inventory'] = array(
+				'#type' => 'markup',
+				'#markup' => '<a href="'.$base_url.'/inventory/area/'.$areadata['id'].'/new"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Inventory') . '" title="' . t('Add Inventory') . '" />'.t('Add Inventory').'</a>',
+		);
+	}
+	
+	$output['area_inventories']['inventories'] = inventory_show_area_inventories($areadata);
+	$output['area_inventories']['space'] = array(
+			'#type' => 'markup',
+			'#markup' => '<br><br>'
+	);
+	
+	$output['area_inventories']['observations'] = inventory_show_observations($areadata['id'], $inventory_id);
+	
 	/* Create a fieldset for the static google maps */
 	$output['area_map'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
 			'#weight' => 3,
 			'#attributes' => array(
-					'id' => 'area-show-map' // required for CSS
+					'id' => 'area-show-map', // required for CSS
+					'name' => 'map' //used for anchor
 			)
 	);
 	
 	$output['area_map']['map'] = array(
 			'#theme' => 'area',
+			'#mapid' => 'observationmap',
+			'#ch1903' => true,
 			'#showall' => false,
 			'#scalecontrol' => true,
 			'#action' => 'show',
 			'#reticle' => false,
 			'#geometry_edit_id' => (int) $areadata['id'],
 			'#defaultzoom' => '15',
+			'#infowindow_content_fetch_url_area' => base_path()
+			. 'area/{ID}/areaoverview/ajaxform',
+			'#infowindow_content_fetch_url_observation' => base_path() 
+			. 'observation/{ID}/overview/ajaxform',
 			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
 	);
-
+	
+	
 	/* Create a fieldset for the comment text field */
 	$output['area_description'] = array(
 			'#type' => 'fieldset',
@@ -257,11 +320,11 @@ function area_show_specific_area($areadata = NULL) {
 	/* add the comments for the area as an editable textarea */
 	$output['area_description']['comment'] = array(
 			'#type' => 'item',
-			'#markup' => "<pre>"
+			'#markup' => "<div class='area-description'>"
 					. (empty($areadata['comment']) ? t("None available")
-							: check_plain($areadata['comment'])) . "</pre>"
+							: check_plain($areadata['comment'])) . "</div>"
 	);
-
+	
 	/* Create a fieldset for the strategies text fields */
 	$output['area_concept'] = array(
 			'#type' => 'fieldset',
@@ -352,30 +415,36 @@ function area_show_specific_area($areadata = NULL) {
 	foreach ($results->fetchAll() as $habitat) {
 		$habitats[] = (array) $habitat;
 	}
-
-	$output['area_habitats']['habtiats'] = array(
-			'#theme' => 'datatable',
-			'#header' => array(
-					array(
-							'name' => t('Label'),
-							'width' => 300
-					),
-					array(
-							'name' => t('Name'),
-							'width' => 300
-					)
-			),
-			'#tableWidth' => 900,
-			'#rows' => $habitats,
-			'#weight' => 15,
-			'#id_table' => 'habitats'
-	);
-
+	if(!empty($habitats)) {
+		$output['area_habitats']['habitats'] = array(
+				'#theme' => 'datatable',
+				'#header' => array(
+						array(
+								'name' => t('Label'),
+								'width' => 300
+						),
+						array(
+								'name' => t('Name'),
+								'width' => 300
+						)
+				),
+				'#tableWidth' => 900,
+				'#rows' => $habitats,
+				'#weight' => 15,
+				'#id_table' => 'habitats'
+		);
+	} else {
+		$output['area_habitats']['habitats'] = array(
+			'#type' => 'item',
+			'#markup' => "<pre>".t("None available")."</pre>",
+			);
+	}
 	/* Build the content of the table, leave out empty fields */
 	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
 	$output['area_files'] = area_files($areadata);
 	$output['area_files']['#weight'] = 16;
+
 
 	return $output;
 }
@@ -415,11 +484,26 @@ function area_overview_form($form, &$form_state, $areadata) {
 				'#type' => 'markup',
 				'#markup' => '&nbsp;/&nbsp;'
 		);
+		
 	}
 	$form['show'] = array(
 			'#type' => 'markup',
 			'#markup' => l(t('Show'), 'area/' . $areadata['id'] . '/show')
 	);
+	
+	$form['whitespace_two'] = array(
+			'#type' => 'markup',
+			'#markup' => '&nbsp;/&nbsp;'
+	);
+	
+	if (check_permission($areadata['acl_id'], variable_get('ACL_WRITE')) && user_access(CREATE_INVENTORY)) {
+		$form['addinventory'] = array(
+				'#type' => 'markup',
+				'#markup' => l(t('Add Inventory'), 'inventory/area/' . $areadata['id'] . '/new')
+		);
+	}
+	
+	
 	return $form;
 }
 

@@ -225,7 +225,12 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 						'data' => t('Area Name'),
 						'header' => true
 				),
-				check_plain($areadata['name'])
+				l(
+						check_plain($areadata['name']), 
+						base_path() . "area/" . $areadata['id'].'/show',
+						array(
+								'external' => true
+						))
 				);
 	}
 	if (!empty($areadata['username'])

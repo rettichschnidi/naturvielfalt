@@ -1,80 +1,177 @@
 <?php
-/**
- * 
- */
 
 /**
- * form to edit basic attributes of inventory
- *
- * @param unknown_type $form
- * @param unknown_type $form_state
- * @param unknown_type $head_inventory_id
- * @param unknown_type $new
- * @return array to render
+ * Return a array with all data for a inventory
+ * @param int $inventory_id
+ * @return array
  */
-function inventory_edit_basics($form, &$form_state, $head_inventory_id, $new) {
-	if (!$new) {
-		$result = db_query(
-				'SELECT hi.name, hi.shared, hi.description
-        FROM head_inventory hi, area a
-        WHERE a.id = hi.area_id
-        AND hi.id = :id;', array(':id' => $head_inventory_id));
-
-		if (!empty($result)) {
-			foreach ($result as $record) {
-				$name = $record->name;
-				$shared = $record->shared;
-				$description = $record->description;
-			}
-		}
+function inventory_get($inventory_id) {
+	$inventory_id = db_escape_field($inventory_id);
+	if ($inventory_id > 0) {
+		$query = db_select('inventory', 'i')
+						->fields('i')
+						->condition('id', $inventory_id)
+						->execute();
+		return $query->fetchAssoc();
 	}
-
-	// creating forms
-	$form['name'] = array(
-			'#type' => 'textfield',
-			'#title' => t('Name'),
-			'#size' => 100,
-			'#maxlength' => 128,
-			'#required' => TRUE,
-			'#value' => $name,
-	);
-
-	$form['description'] = array(
-			'#type' => 'text_format',
-			'#title' => t('Description'),
-			'#value' => $description,
-			'#format' => filter_default_format(),
-			'#widget' => array(
-					'#type' => 'text_textarea',
-			),
-			'#settings' => array(
-					'#text_processing' => '0',
-			),
-	);
-
-	if ($new) {
-		$form['save'] = array(
-				'#type' => 'submit',
-				'#value' => t("Create new Inventory"),
-				'#submit' => array(
-						'inventory_save'
-				),
-		);
-	} else {
-		$form['update'] = array(
-				'#type' => 'submit',
-				'#value' => t('Save'),
-				'#submit' => array(
-						'inventory_update_basics'
-				),
-		);
-	}
-
-	// Saveing something to the form_state makes it accessible in the submit function.
-	// We do this to make sure the sgid is taken from the url which has passed security checkpoints.
-	$form_state['storage']['hi_id'] = $head_inventory_id;
-
-	return $form;
+	return false;
 }
 
-?>
+/**
+ * Return a array with all inventories of an area
+ * @param int $area_id
+ * @return array
+ */
+function inventory_get_area_inventories($area_id) {
+	$area_id = db_escape_field($area_id);
+	if($area_id > 0) {
+		$query = db_select('inventory', 'i');
+		$query->join('area', 'a', 'a.id = i.area_id');
+		$query = $query->fields('i')
+		->condition('i.area_id', $area_id)
+		->execute();
+
+		return $query->fetchAll();
+	} 
+	return false;
+}
+
+/**
+ * Return a array with all observations of an inventory
+ * @param int $inventory_id
+ * @return array
+ */
+function inventory_get_observations($inventory_id) {
+$inventory_id = db_escape_field($inventory_id);
+	if ($inventory_id > 0) {
+		$query = db_select('observation', 'o')
+						->fields('o')
+						->condition('inventory_id', $inventory_id)
+						->execute();
+		return $query->fetchAll();
+	}
+	return false;
+}
+
+/**
+ * Save an existing/new inventory
+ * Post vars are used
+ * @param array $form
+ * 				not implemented, maybe in the future
+ * @param array $custom_data
+ * 				array with the data (either from form POST or the webservice)
+ * @param boolean $from_api
+ * 				set true for handling request from the webservice api
+ */
+function inventory_save($form = false, $custom_data = false, $from_api = false) {
+	
+	global $user;
+	
+	if($from_api) $values = $custom_data;
+	else $values = $_POST;
+	
+	//prevent xss
+	!empty($values['id']) ? $inventory['id'] = filter_xss($values['id']) : $inventory['id'] = 0;
+	$inventory['name'] = filter_xss($values['name']);
+	if(isset($values['description'])) $inventory['description'] = filter_xss($values['description']);
+	$inventory['observer'] = filter_xss($values['observer']);
+	$inventory['area_id'] = filter_xss($values['area_id']);
+	
+	//set user_uid
+	$inventory['users_uid'] = isset($values['set_user_uid']) && $values['set_user_uid'] ? $values['set_user_uid']
+	: $user->uid;
+	
+	//create and modify time
+	$inventory['modify_time'] =date('Y-m-d H:i:s', time());
+	
+	$date_parts = explode('.', filter_xss($values['date']));
+	$timesplit = explode(':', filter_xss($values['time']));
+	$timestamp = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	$inventory['create_time'] = date('Y-m-d H:i:s', $timestamp);
+	/**
+	 * Save to the DB
+	 */
+	/**
+	 * save the observation
+	 */
+	$transaction = db_transaction();
+
+	try {
+		if ($inventory['id'] > 0) {
+			// do update
+			db_update('inventory')->fields($inventory)
+			->condition('id', $inventory['id'])
+			->execute();
+			$output['update'] = true;
+		} else {
+			//save the inventory
+			$inventory['id'] = db_query(
+					"SELECT nextval('{inventory}_id_seq') as nextval")->fetchField();
+			$inventory['acl_id'] = new_acl('$inventory', $inventory['users_uid']);
+			db_insert('inventory')->fields($inventory)
+			->execute();
+				
+			// Read access for ALL group
+			add_group_to_acl($inventory['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
+		}
+	
+		// Set the return statement
+		$output['success'] = true;
+		$output['guid'] = $inventory['id'];
+	} catch (Exception $e) {
+		$transaction->rollback();
+		watchdog_exception('inventory', $e);
+		$output['success'] = false;
+		$output['message'] = array(
+				t('Could not save the inventory because of an unknown error.')
+		);
+	}
+	
+	if ($from_api) {
+		return $output;
+	}
+	
+	if($output['success']) {
+		drupal_set_message(t('successfull saved'));
+		drupal_goto('inventory/'.$inventory['id'].'/edit');
+	} else {
+		form_set_error('inventory_form', $output['message']);
+		$inventory['redirect'] = FALSE;
+	}
+	
+	return drupal_json_output($output);
+
+}
+
+/**
+ * Delete an inventory by id
+ * 
+ * @param int $inventory_id
+ * 	The inventory to delete
+ */
+function inventory_delete_by_id($inventory_id) {
+	$inventory = inventory_get($inventory_id);
+	$transaction = db_transaction();
+	try {
+		//delete all observations of inventory
+		foreach(inventory_get_observations($inventory_id) as $observation) {
+			$observation = (array) $observation;
+			observation_delete_by_id($observation['id']);
+		}
+		db_delete('inventory')->condition('id', $inventory_id)
+		->execute();
+		return true;
+	} catch (Exception $e) {
+		$transaction->rollback();
+		drupal_set_message(
+		t(
+		'Could not delete @inventoryname.',
+		array('@inventoryname' => $inventory['name'])),
+		'error');
+		return false;
+	}
+}
+
+
+
+
