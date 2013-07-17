@@ -300,9 +300,10 @@ function Area(options) {
 		jQuery.getJSON(this.options.geometriesfetchurl,
 				function(data) {
 					this_.loadGeometriesAndOverlaysFromJson(data);
-					if(this_.options.geometryedit)
+					if(this_.options.geometryedit) {
 						this_.geometryEdit(this_.options.geometryeditid);
-					if(this_.options.showandcenter)
+					}
+					if(this_.options.showandcenter || this_.options.geometryeditid)
 						this_.showAndCenter(this_.options.geometryeditid);
 				}
 			);

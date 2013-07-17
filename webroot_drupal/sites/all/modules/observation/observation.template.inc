@@ -323,6 +323,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'#search' => true,
 					'#height' => '250px',
 					'#action' => 'getcoordinate',
+					'#geometry_edit_id' => $inventory['area_id'],
 					'#infowindow_content_fetch_url_area' => base_path()
 					. 'area/{ID}/areaoverview/ajaxform',
 					'#geometries_fetch_url' => base_path() . 'area/' . $inventory['area_id'] . '/json',
