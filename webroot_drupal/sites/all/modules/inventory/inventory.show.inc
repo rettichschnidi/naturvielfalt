@@ -256,7 +256,7 @@ function inventory_show($inventory) {
 		global $base_url;
 		$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	
-		$output['add_observation'] = array(
+		$output['inventory']['add_observation'] = array(
 				'#type' => 'markup',
 				'#markup' => '<a href="'.$base_url.'/observation/new/'.$inventory['id'].'"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Observation') . '" title="' . t('Add Observation') . '" />'.t('Add Observation').'</a>',
 		);
