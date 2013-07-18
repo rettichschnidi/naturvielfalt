@@ -9,6 +9,8 @@ module_load_include('inc', 'observation');
 module_load_include('inc', 'observation', 'observation.gallery');
 define('ACCESS_OBSERVATION', 'access observation');
 define('CREATE_OBSERVATION', 'create observation');
+define('UNKOWN_ARTGROUP', 1000);
+define('UNKOWN_SPECIES', -1);
 
 /**
  * Implements hook_menu()
@@ -181,7 +183,7 @@ function observation_menu() {
 			'access arguments' => array(
 					1
 			),
-			'access callback' => 'observation_write_access',
+			'access callback' => 'observation_read_access',
 			'file' => 'observation.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
@@ -381,6 +383,7 @@ function observation_read_access($observationdata = NULL) {
  */
 function observation_check_inventory_access($observationdata = NULL) {
 	if($observationdata === NULL || !isset($observationdata['observation']['inventory_id'])) return false;
+	if(!user_access(ACCESS_INVENTORY)) return false;
 	else return inventory_read_access_by_id($observationdata['observation']['inventory_id']);
 }
 
