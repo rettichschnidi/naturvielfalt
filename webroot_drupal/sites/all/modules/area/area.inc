@@ -20,7 +20,7 @@ function get_ch1903_coordinates_link($areadata) {
 	global $user;
 	
 	$language = 'de';
-	if( $user->language <> ''){
+	if( isset($user->language)){
 		$language=$user->language;
 	}
 	
@@ -47,7 +47,7 @@ function get_wgs84_coordinates_link($areadata) {
 	global $user;
 	
 	$language = 'de';
-	if( $user->language <> ''){
+	if(isset($user->language)){
  		$language=$user->language;
 	}
 	
