@@ -65,6 +65,12 @@ function observation_gallery_caption($id) {
 	$observationdata = observation_load($id);
 	if (!observation_read_access($observationdata))
 		return false;
+	if($observationdata['observation']['organism_id'] == UNKOWN_SPECIES) {
+		return t(
+		"@observation_organism",
+		array('@observation_organism' => t('Unkown species'),
+		));
+	}
 	return t(
 		"@observation_organism",
 		array('@observation_organism' => $observationdata['organism']['name_lang']
