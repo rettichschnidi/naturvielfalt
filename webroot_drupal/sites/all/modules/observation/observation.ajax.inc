@@ -47,14 +47,23 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	
 	//some form elements are nested: see observation_template.inc
 	if(!$from_api) {
-		$values['organism'] = filter_xss($values['group']['organism']);
 		$values['date'] = filter_xss($values['group']['date']);
 		$values['time'] = filter_xss($values['group']['time']);
 		$values['count'] = filter_xss($values['group']['count']);
+		$values['organism_artgroup_id'] = filter_xss($values['group']['artgroup_id']);
+		
 		if(isset($values['group']['details']))
 			$values['details'] = $values['group']['details'];
-		$result = organism_get_byname(filter_xss($values['organism']));
-		$observation['organism_id'] = $result['id'];
+		
+		//determine organism_id
+		if(isset($values['group']['unkown_check']) && !$values['group']['unkown_check']) {
+			$values['organism'] = filter_xss($values['group']['organism']);
+			$result = organism_get_byname(filter_xss($values['organism']));
+			$observation['organism_id'] = $result['id'];
+		} else {
+			//Unkown organism
+			$observation['organism_id'] = UNKOWN_SPECIES;
+		}
 	} else {
 		$observation['organism_id'] = filter_xss($values['organism_id']);
 	}
@@ -63,6 +72,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	 * Check the determation and artgroup value
 	 */
 	// prevent wrong artgroup, set it each time automatically
+	// If species is unkown, set the provided artgroup id
 	// set the last value as artgroup
 	// $artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 	// if($observation['organism_artgroup_id'] == 0){
@@ -70,6 +80,8 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		$observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
 			$observation['organism_id'],
 			true);
+	} else if ($observation['organism_id'] == UNKOWN_SPECIES) {
+		$observation['organism_artgroup_id'] = $values['organism_artgroup_id'];
 	}
 
 	/**
@@ -440,7 +452,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
 		//.' LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
 		.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
-		.' JOIN {organism} org ON org.id=o.organism_id'
+		.' LEFT JOIN {organism} org ON org.id=o.organism_id'
 		.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
 		// FIXME get more attributes than just Bemerkung
 		.' LEFT JOIN {observation_attribute} oattr ON oattr.observation_id=o.id AND oattr.organism_artgroup_attr_id=2'
@@ -549,20 +561,34 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
 				
 		// translated organism name
-		if (empty($row['cell']['organism_l']))
+		if($row['cell']['organism_id'] == UNKOWN_SPECIES)
+			$row['cell']['organism_l'] = t('Unkown species');
+		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
-		// date, TODO: time
+		
 		$row['cell']['date'] = date('d.m.Y H:i:s', $row['cell']['date']);
 		
 		// link to inventory
-		$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
-			l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
+		if(user_access(ACCESS_INVENTORY)) {
+			$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+				l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
+				: '';
+		} else {
+			$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+			$row['cell']['inventory']
 			: '';
+		}
 		
 		// link to area
-		$row['cell']['area'] = (!empty($row['cell']['area'])) ?
-		l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
-		: '';
+		if(user_access(AREA_ACCESS)) {
+			$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+			l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
+			: '';
+		} else {
+			$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+			$row['cell']['area']
+			: '';
+		}
 		
 		// type of area (picture)
 		$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
