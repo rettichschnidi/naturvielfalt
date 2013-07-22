@@ -110,9 +110,7 @@ function inventory_save($form = false, $custom_data = false, $from_api = false) 
 			$inventory['acl_id'] = new_acl('$inventory', $inventory['users_uid']);
 			db_insert('inventory')->fields($inventory)
 			->execute();
-				
-			// Read access for ALL group
-			add_group_to_acl($inventory['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
+			
 		}
 	
 		// Set the return statement
