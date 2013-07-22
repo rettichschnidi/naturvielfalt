@@ -361,7 +361,16 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 	}
 	$rows = array();
 
-	if (!empty($observationdata['organism']['name_lang'])) {
+	if($observationdata['observation']['organism_id'] == UNKOWN_SPECIES) {
+		$rows[] = array(
+				array(
+						'data' => t('Common name'),
+						'header' => true
+				),
+				t('Unkown species'),
+		);
+	}
+	else if (!empty($observationdata['organism']['name_lang'])) {
 		$rows[] = array(
 				array(
 						'data' => t('Common name'),

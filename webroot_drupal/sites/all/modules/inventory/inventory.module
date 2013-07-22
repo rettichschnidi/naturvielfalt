@@ -263,5 +263,6 @@ function inventory_edit($inventory) {
  */
 function inventory_check_area_access($inventory = NULL) {
 	if($inventory === NULL || !isset($inventory['area_id'])) return false;
+	if(!user_access(AREA_ACCESS)) return false;
 	else return area_check_access(area_get_full_dataset_of_specific_area($inventory['area_id']), 'ACL_READ');
 }

@@ -68,6 +68,16 @@ span.datatable_gallery_image_type {
 	position: absolute;
 	bottom: 15px;
 	z-index: 1;
+	cursor: pointer;
+}
+
+span.datatable_gallery_image_add {
+	background-color: #659560;
+	color: #FFFFFF;
+	position: absolute;
+	bottom: 15px;
+	right: 0px;
+	z-index: 1;
 }
 
 a.datatable_gallery_image_type{

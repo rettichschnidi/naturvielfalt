@@ -114,9 +114,8 @@ span.datatable_gallery_icons input.gridSelect {
 
 /*Bild von Organismus bei Erfassen von Observations */
 .observation_organism_reference_image {
-	position: absolute;
-	top:2%;
-	left:50%
+	float: right;
+	width: 500px;
 }
 
 /* Section innerhalb des Flexigrids */
@@ -131,4 +130,3 @@ span.datatable_gallery_icons input.gridSelect {
 .batch-div input {	
 	margin-left: 8px;
 }
-

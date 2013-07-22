@@ -268,7 +268,6 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 
 	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
 	
-	
 	/*
 	 * Paging
 	*/
@@ -373,7 +372,7 @@ function datatable_get_gallery_image($observation_id, $organism_id, $display_dat
 	$manage_obs_link = '';
 	$manage_obs_url = false;
 	if(observation_write_access_by_acl_id($observation_aclId)){
-		$manage_obs_url = '/gallery/observation/'.$observation_id.'/thumb/'.$images_observation['images'][0]['id'].'/gallery_large';
+		$manage_obs_url = "/gallery/observation/$observation_id/images/edit";
 		// proof = beleg ???
 		$manage_obs_link = "<a href='$manage_obs_url'>" . t('add proof image') . "</a>";
 	}
@@ -389,7 +388,7 @@ function datatable_get_gallery_image($observation_id, $organism_id, $display_dat
 	if(($images_observation['count'] == 0 && $state == DATATABLE_IMGSRC_BELEG)
 			|| ($images_organism['count'] == 0 && $state == DATATABLE_IMGSRC_PORTRAIT)
 			|| ($images_observation['count'] == 0 && $images_organism['count'] == 0)){
-			
+		
 		// disply an upload image link (if authorized)
 		if($state == DATATABLE_IMGSRC_BELEG
 				|| $state == DATATABLE_IMGSRC_BELEG_PORTRAIT ){
@@ -416,32 +415,109 @@ EOT;
 				&& $images_observation['count'] > 0)
 				|| $images_organism['count'] == 0) {
 			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$observation_id);
+			$img = $gallery['edit']['gallery_list']['#images']['images'][0];
+			$img_type_link = url(
+					'gallery/' . $img['item_type'] . '/' . $img['item_id']
+					. '/thumb/' . $img['id'] . '/gallery_large');
+			
 			$img_type = t('Proof image (@num_images)', array('@num_images' => $images_observation['count']));
+			$img_add = t('add proof image');
+			
 			if($manage_obs_url)
-				$img_type_link = $manage_obs_url;
+				$img_add_link = $manage_obs_url;
+			
 		} else {
 			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'organismreference',$organism_id);
-			$img_type = t('Portrait image (@num_images)', array('@num_images' => $images_organism['count']));
-			if($manage_org_url)
-				$img_type_link = $manage_org_url;
-		}
-
-		// if there was more than one image, remove the others.
-		//TODO it's pretty stupid to render the whole gallery and then remove pictures 2 to n... 
-		// 	   later gallery_list_renderer() should no longer be used here...
-		if(count($gallery['edit']['gallery_list']['#images']['images']) > 1){
 			$img = $gallery['edit']['gallery_list']['#images']['images'][0];
+			$img_type = t('Portrait image (@num_images)', array('@num_images' => $images_organism['count']));
+			
+			$img_type_link = url(
+					'gallery/' . $img['item_type'] . '/' . $img['item_id']
+					. '/thumb/' . $img['id'] . '/gallery_large');
+			
+			if($manage_org_url)
+				$img_add_link = $manage_org_url;
+			$img_add = t('add portrait image');
+		}
+		
+		$entryID = $img['item_id'];
+		
+		//prepare other images (2-n) of an observation/organism to be ready to display in a lightbox
+		$otherimages = array();
+		for($i = 0 ; $i < count($gallery['edit']['gallery_list']['#images']['images']); $i++) {
+			$tmp_img = $gallery['edit']['gallery_list']['#images']['images'][$i];
+			$img_url = url(
+					'gallery/' . $tmp_img['item_type'] . '/' . $tmp_img['item_id']
+					. '/thumb/' . $tmp_img['id'] . '/gallery_large');
+			
+			//prepare caption
+			$captionclass = "caption";
+			$caption = '';
+			if ($tmp_img['title'])
+				$caption .= '<strong>' . $tmp_img['title'] . '</strong>';
+			if ($tmp_img['description'])
+				$caption .= ' <small>' . $tmp_img['description'] . '</small>';
+			if ($caption)
+				$caption = '<span class="title">' . $caption . '</span>';
+			if ($tmp_img['location'] || $tmp_img['author'])
+				$caption .= '<span class="author">&copy; ' . $tmp_img['author']
+				. ($tmp_img['location'] ? ', ' . $tmp_img['location'] : '')
+				. '</span>';
+			
+			//call_user_func_array leads somehow to problems: duplicate links, jquery selectors for lightbox not working correctly
+// 			$types = _gallery_types();
+// 			if (array_key_exists($tmp_img['item_type'], $types)
+// 					&& array_key_exists(
+// 							'image_caption',
+// 							$types[$tmp_img['item_type']]))
+				
+// 				$caption .= ' <em>'
+// 						. call_user_func_array(
+// 								$types[$tmp_img['item_type']]['image_caption'],
+// 								array($tmp_img['item_id'])) . '</em>';
+			
+			switch($tmp_img['item_type']) {
+				case 'organismreference' :
+					$caption .= ' <em>'
+							. organism_reference_gallery_caption($tmp_img['item_id']);
+					break;
+				case 'observation' : 
+					$caption .= ' <em>'
+							. observation_gallery_caption($tmp_img['item_id']);
+					break;
+			}
+
+			$imgfooter = '<div class="'
+					. $captionclass . '">'
+							. ($caption ? '<p class="captionText">' . $caption . '</p>'
+									: '').'</div>';
+
+			$otherimages[$i] = '<a href="'.$img_url.'">'.$imgfooter.'</a>';
+		}
+		$otherimages = implode('', $otherimages);
+		
+		//remove images from an entry n-2
+		if(count($gallery['edit']['gallery_list']['#images']['images']) > 1) {
 			$gallery['edit']['gallery_list']['#images']['images'] = array(
 					$img
 			);
 		}
 		$result = drupal_render($gallery['edit']['gallery_list']);
+		
 		$result = <<<EOT
 		<div class="datatable_gallery_image_container">
 			<div style="position: relative;">
 				$result
 				<span class="datatable_gallery_image_type">
-					<a href="$img_type_link" class="datatable_gallery_image_type">$img_type</a>
+					<a onclick="gallery_lightbox.openLightBoxEntry($entryID);" class="datatable_gallery_image_type">
+						$img_type 
+						<div name="lightbox_entry_$entryID" style="display:none;">
+							$otherimages
+						</div>
+					</a>
+				</span>
+				<span class="datatable_gallery_image_add">
+					<a href="$img_add_link" class="datatable_gallery_image_type">$img_add</a>
 				</span>
 			</div>
 		</div>
