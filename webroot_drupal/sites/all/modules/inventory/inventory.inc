@@ -71,7 +71,7 @@ function inventory_save($form = false, $custom_data = false, $from_api = false) 
 	else $values = $_POST;
 	
 	//prevent xss
-	!empty($values['id']) ? $inventory['id'] = filter_xss($values['id']) : $inventory['id'] = 0;
+	$inventory['id'] = !empty($values['id']) ?  filter_xss($values['id']) : 0;
 	$inventory['name'] = filter_xss($values['name']);
 	if(isset($values['description'])) $inventory['description'] = filter_xss($values['description']);
 	$inventory['observer'] = filter_xss($values['observer']);

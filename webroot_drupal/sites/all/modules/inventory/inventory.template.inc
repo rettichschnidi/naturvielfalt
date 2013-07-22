@@ -13,6 +13,8 @@ module_load_include('inc', 'inventory', 'inventory.show');
  */
 function inventory_form($form = null, &$form_state = null, $area = NULL, $inventory = false) {
 	//load js for observation table/map
+	drupal_add_library('system', 'jquery.form');
+	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
 	
@@ -227,7 +229,59 @@ function inventory_form($form = null, &$form_state = null, $area = NULL, $invent
 			'#value' => $inventory['observer']
 	);
 	
+	if($edit) {
+		//add permission form
+		if(inventory_check_access($inventory)) {
+			$form['acl'] =  array(
+					'#type' => 'fieldset',
+					'#title' => t('Permissions'),
+					'#weight' => 4,
+					'#prefix' => '</form>',
+					'#collapsible' => true,
+					'#collapsed' => false,
+					'#tree' => true,
+					'#attributes' => array(
+							'id' => 'inventory-permission'
+							)
+			);
+			$form['acl']['content'] = inventory_acl_template($inventory);
+		}
+	}
+	
 	return $form;
+}
+
+/**
+ * ACL permission template
+ * @param array $observation
+ */
+function inventory_acl_template($inventory = NULL) {
+	$defaults = array(
+			array(
+					'type' => variable_get("ACL_READ"),
+					'name' => t('Read'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_WRITE"),
+					'name' => t('Write'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_ADMIN"),
+					'name' => t('Administration'),
+					'value' => FALSE,
+			)
+	);
+
+	$acl = array(
+			'#theme' => 'c_acl',
+			'#defaults' => $defaults,
+			'#acl_id' => $inventory['acl_id'],
+			'#add_element' => true,
+			'#tree' => true,
+	);
+	return $acl;
 }
 
 /**

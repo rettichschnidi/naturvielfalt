@@ -13,3 +13,7 @@
 	max-height: 100px;
 	overflow: auto;
 }
+
+#inventory-permission {
+	clear:both;
+}

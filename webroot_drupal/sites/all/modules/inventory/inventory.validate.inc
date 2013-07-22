@@ -24,6 +24,10 @@ function inventory_form_validate($form, &$form_state) {
 		form_set_error('time', t('Please enter a valid time (hh:mm)'));
 	}
 
+	if(!inventory_validate_area_id($form_state['values']['area_id'])) {
+		form_set_error('inventory_form', t('invalid area/permission denied'));
+	}
+	
 	if(isset($_FILES['files'])) {
 		foreach($_FILES['files']['name'] as $fkey => $filename) {
 			if($_FILES['files']['name'][$fkey] != '') {
@@ -94,6 +98,19 @@ function inventory_validate_inventory_id($inventory_id) {
 	if(intval($inventory_id) == 0) return true;
 	$result = inventory_get(filter_xss($inventory_id));
 	return !empty($result);
+}
+
+/**
+ * Area Id Validation
+ *
+ * @param string $area_id
+ * @return true if area exists, and user has permission to add an inventory
+ */
+function inventory_validate_area($area_id) {
+	module_load_include('inc', 'area', 'area.validate');
+	if(!area_validate_area_id($area_id)) return false;
+	//area must exist
+	return !(intval($area_id) == 0);
 }
 
 /**
