@@ -121,7 +121,7 @@ function webservice_parse_import_observations() {
 	$data['date'] = $_POST['date'];
 	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
-	$data['inventoryguid'] = $_POST['inventoryguid'];
+	$data['inventory_id'] = $_POST['inventory_guid'];
 	
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
@@ -186,17 +186,17 @@ function webservice_observation_validate($data) {
 	else if(!observation_validate_observation_id($data['observation_id'])) t("Please pass a valid observation id.");
 	else if(!observation_validate_permission($data['observation_id']))  t("Permission denied.");
 	
-	//Validate Organism id
-	if(!isset($data['organism_id'])) $validationerrors[] = t("Please pass key 'organism_id'.");
-	else if(!observation_validate_organism_id($data['organism_id']))  $validationerrors[] = t('Please enter an existing organism.');
-	
 	//Validate Artgroup id
 	if(!isset($data['organism_artgroup_id'])) $validationerrors[] = t("Please pass key 'organism_artgroup_id'.");
 	else if(!observation_validate_artgroup_id($data['organism_artgroup_id'])) t("Please pass an existing artgroup.");
 	
-	//Validate inventory guid
+	//Validate Organism id
+	if(!isset($data['organism_id'])) $validationerrors[] = t("Please pass key 'organism_id'.");
+	else if(!observation_validate_organism_id($data['organism_id']))  $validationerrors[] = t('Please enter an existing organism.');
+	
 	//Check if inventory guid >= 0 and exists
-	if(!isset($data['inventoryguid'])) t("Please pass key 'inventoryguid'.");
+	if(!isset($data['inventory_id'])) $validationerrors[] = t("Please pass key 'inventory_guid'.");
+	else if(!observation_validate_inventory($data['inventory_id'])) t('Invalid inventory / permission denied.');
 	
 	if(!isset($data['count'])) $validationerrors[] = t("Please pass key 'count'.");
 	else if(!observation_validate_count($data['count']))  $validationerrors[] = t('The count has to be a number and bigger than zero');

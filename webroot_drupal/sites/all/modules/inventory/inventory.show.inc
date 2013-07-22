@@ -2,7 +2,6 @@
 
 module_load_include('inc', 'inventory');
 module_load_include('inc', 'datatable');
-module_load_include('inc', 'observation', 'observation.template');
 
 /**
  * Datatable template for inventories of an area

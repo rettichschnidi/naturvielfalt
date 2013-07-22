@@ -133,6 +133,7 @@ function observation_validate_organism($input) {
 function observation_validate_artgroup_id($input) {
 	if(!ctype_digit($input)) return false;
 	if($input == 1) return false;
+	if($input == UNKOWN_ARTGROUP) return true;
 	$result = organism_artgroup_get_artgroup(filter_xss($input), true);
 	return !empty($result);
 }
@@ -163,6 +164,19 @@ function observation_validate_observation_id($observationid) {
 	return !empty($result);
 }
 
+/**
+ * Inventory Id Validation
+ *
+ * @param string $inventory_id
+ * @return true if inventory exists, and user has permission to add an observation
+ */
+function observation_validate_inventory($inventory_id) {
+	module_load_include('inc', 'inventory', 'inventory.validate');
+	if(!inventory_validate_inventory_id($inventory_id)) return false;
+	//area must exist
+	return !(intval($inventory_id) == 0);
+}
+ 
 /**
  * Permission validation
  *
