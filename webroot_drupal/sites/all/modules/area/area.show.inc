@@ -254,7 +254,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 					'id' => 'area-show-comment' // required for CSS
 			)
 	);
-	if(area_check_access($areadata, 'ACL_READ')) {
+	if(area_check_access($areadata, 'ACL_RED_WRITE') && user_access(CREATE_INVENTORY)) {
 		global $base_url;
 		$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 		
@@ -496,7 +496,7 @@ function area_overview_form($form, &$form_state, $areadata) {
 			'#markup' => '&nbsp;/&nbsp;'
 	);
 	
-	if (check_permission($areadata['acl_id'], variable_get('ACL_WRITE')) && user_access(CREATE_INVENTORY)) {
+	if (area_check_access($areadata, 'ACL_RED_WRITE') && user_access(CREATE_INVENTORY)) {
 		$form['addinventory'] = array(
 				'#type' => 'markup',
 				'#markup' => l(t('Add Inventory'), 'inventory/area/' . $areadata['id'] . '/new')

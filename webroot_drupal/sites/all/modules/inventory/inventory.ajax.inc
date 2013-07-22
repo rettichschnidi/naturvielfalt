@@ -45,7 +45,8 @@ function inventory_get_area_inventories_json($area) {
 			'<img onclick="area.deleteInventory('.$row['id'].'); event.stopPropagation();" src="' . $iconBaseUrl . 'Erase.png" alt="' . t('Delete Inventory') . '" title="' . t('delete inventory') . '" />'
 			: '';
 		
-		$row['cell']['addColumn'] = (inventory_write_access_by_id($row['cell']['id']))
+		$inventory = inventory_get($row['cell']['id']);
+		$row['cell']['addColumn'] = inventory_check_access($inventory, 'ACL_RED_WRITE') && user_access(CREATE_OBSERVATION)
 		? l(
 				'<img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Observation') . '" title="' . t('Add Observation') . '" />',
 				$base_url . '/observation/new/' . $row['id'],

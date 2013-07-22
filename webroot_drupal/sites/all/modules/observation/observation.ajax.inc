@@ -44,7 +44,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	/**
 	 * check the organism id
 	 */
-	
 	//some form elements are nested: see observation_template.inc
 	if(!$from_api) {
 		$values['date'] = filter_xss($values['group']['date']);
@@ -54,16 +53,16 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		
 		if(isset($values['group']['details']))
 			$values['details'] = $values['group']['details'];
-		
+
 		//determine organism_id
-		if(isset($values['group']['unkown_check']) && !$values['group']['unkown_check']) {
+		if(isset($values['group']['unkown_check'])) {
+			//Unkown organism
+			$observation['organism_id'] = UNKOWN_SPECIES;
+		} else {
 			$values['organism'] = filter_xss($values['group']['organism']);
 			$result = organism_get_byname(filter_xss($values['organism']));
 			$observation['organism_id'] = $result['id'];
-		} else {
-			//Unkown organism
-			$observation['organism_id'] = UNKOWN_SPECIES;
-		}
+		} 
 	} else {
 		$observation['organism_id'] = filter_xss($values['organism_id']);
 	}

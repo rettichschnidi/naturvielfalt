@@ -18,6 +18,11 @@ function area_edit_permission($areadata) {
 					'value' => FALSE,
 			),
 			array(
+					'type' => variable_get("ACL_RED_WRITE"),
+					'name' => t('Add Inventory'),
+					'value' => FALSE,
+			),
+			array(
 					'type' => variable_get("ACL_WRITE"),
 					'name' => t('Write'),
 					'value' => FALSE,

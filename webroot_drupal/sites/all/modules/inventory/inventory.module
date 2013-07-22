@@ -2,7 +2,6 @@
 
 define('ACCESS_INVENTORY', 'access inventory');
 define('CREATE_INVENTORY', 'create inventory');
-define('ADD_OBSERVATION', 'add observation');
 
 module_load_include('inc', 'area');
 module_load_include('inc', 'inventory');
@@ -96,7 +95,7 @@ function inventory_menu() {
 			'access callback' => 'area_check_access',
 			'access arguments' => array(
 					2,
-					'ACL_WRITE'
+					'ACL_RED_WRITE'
 			),
 			'type' => MENU_CALLBACK,
 			'file' => 'inventory.inc'
@@ -163,9 +162,6 @@ function inventory_permission() {
 			),
 			CREATE_INVENTORY => array(
 					'title' => t('can create inventories'),
-			),
-			ADD_OBSERVATION => array(
-			'title' => t('can add observations to inventories'),
 			),
 			
 	);

@@ -89,10 +89,12 @@ function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = N
 	global $base_url;
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	
-	$form['area_inventories']['add_intventory'] = array(
-			'#type' => 'markup',
-			'#markup' => '<a href="'.$base_url.'/inventory/area/'.$areadata['id'].'/new"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Inventory') . '" title="' . t('Add Inventory') . '" />'.t('Add Inventory').'</a>',
-	);
+	if(area_check_access($areadata, 'ACL_RED_WRITE')  && user_access(CREATE_INVENTORY)) {
+		$form['area_inventories']['add_intventory'] = array(
+				'#type' => 'markup',
+				'#markup' => '<a href="'.$base_url.'/inventory/area/'.$areadata['id'].'/new"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Inventory') . '" title="' . t('Add Inventory') . '" />'.t('Add Inventory').'</a>',
+		);
+	}
 	
 	$form['area_inventories']['inventories'] = inventory_show_area_inventories($areadata, true);
 	$form['area_inventories']['space'] = array(
