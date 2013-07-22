@@ -167,10 +167,12 @@ function inventory_form($form = null, &$form_state = null, $area = NULL, $invent
 		global $base_url;
 		$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 		
-		$form['add_observation'] = array(
-				'#type' => 'markup',
-				'#markup' => '<a href="'.$base_url.'/observation/new/'.$inventory['id'].'"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Observation') . '" title="' . t('Add Observation') . '" />'.t('Add Observation').'</a>',
-		);
+		if(inventory_check_access($inventory, 'ACL_RED_WRITE') ) {
+			$form['add_observation'] = array(
+					'#type' => 'markup',
+					'#markup' => '<a href="'.$base_url.'/observation/new/'.$inventory['id'].'"> <img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Observation') . '" title="' . t('Add Observation') . '" />'.t('Add Observation').'</a>',
+			);
+		}
 		
 		$form['observations'] = inventory_show_observations($area['id'], $inventory['id'], false);
 		
@@ -231,7 +233,7 @@ function inventory_form($form = null, &$form_state = null, $area = NULL, $invent
 	
 	if($edit) {
 		//add permission form
-		if(inventory_check_access($inventory)) {
+		if(inventory_check_access($inventory, 'ACL_ADMIN')) {
 			$form['acl'] =  array(
 					'#type' => 'fieldset',
 					'#title' => t('Permissions'),
@@ -260,6 +262,11 @@ function inventory_acl_template($inventory = NULL) {
 			array(
 					'type' => variable_get("ACL_READ"),
 					'name' => t('Read'),
+					'value' => FALSE,
+			),
+			array(
+					'type' => variable_get("ACL_RED_WRITE"),
+					'name' => t('Add Observation'),
 					'value' => FALSE,
 			),
 			array(

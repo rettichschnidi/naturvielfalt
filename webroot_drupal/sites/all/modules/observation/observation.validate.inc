@@ -43,6 +43,12 @@ function observation_form_validate($form, &$form_state) {
 			form_set_error('group][artgroup_id', t('Please select an artgroup other than "All".'));
 		}
 	}
+	
+	if(isset($form_state['values']['inventory_id'])) {
+		if(!observation_validate_inventory($form_state['values']['inventory_id'])) {
+			form_set_error('observation_form', t('Invalid inventory / permission denied'));
+		}
+	}
 	/**
 	 * check the coordinate
 	 */
@@ -174,7 +180,9 @@ function observation_validate_inventory($inventory_id) {
 	module_load_include('inc', 'inventory', 'inventory.validate');
 	if(!inventory_validate_inventory_id($inventory_id)) return false;
 	//area must exist
-	return !(intval($inventory_id) == 0);
+	if (intval($inventory_id) == 0) return false;
+	$inventory = inventory_get($inventory_id);
+	return inventory_check_access($inventory, 'ACL_RED_WRITE');
 }
  
 /**

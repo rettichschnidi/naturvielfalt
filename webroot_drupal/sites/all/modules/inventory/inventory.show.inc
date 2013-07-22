@@ -251,7 +251,7 @@ function inventory_show($inventory) {
 		);
 	}
 	
-	if(inventory_check_access($inventory, 'ACL_READ')) {
+	if(inventory_check_access($inventory, 'ACL_READ') && user_access(CREATE_OBSERVATION)) {
 		global $base_url;
 		$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	

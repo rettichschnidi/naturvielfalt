@@ -7,7 +7,6 @@
 
 define('AREA_ACCESS', 'area access');
 define('AREA_CREATE', 'area create');
-define('AREA_MODERATE', 'area moderate');
 
 define("AREA_PATH_ZIP", "C:\\Program Files\\7-Zip\\");
 define("AREA_PATH_OGR2OGR", "C:\\Program Files (x86)\\FWTools2.4.7\\bin\\");
@@ -487,9 +486,6 @@ function area_permission() {
 			AREA_CREATE => array(
 					'title' => t('Create area'),
 			),
-			AREA_MODERATE => array(
-					'title' => t('Moderate any area'),
-			)
 	);
 }
 

@@ -24,7 +24,7 @@ function inventory_form_validate($form, &$form_state) {
 		form_set_error('time', t('Please enter a valid time (hh:mm)'));
 	}
 
-	if(!inventory_validate_area_id($form_state['values']['area_id'])) {
+	if(!inventory_validate_area($form_state['values']['area_id'])) {
 		form_set_error('inventory_form', t('invalid area/permission denied'));
 	}
 	
@@ -110,7 +110,10 @@ function inventory_validate_area($area_id) {
 	module_load_include('inc', 'area', 'area.validate');
 	if(!area_validate_area_id($area_id)) return false;
 	//area must exist
-	return !(intval($area_id) == 0);
+	if (intval($area_id) == 0) return false;
+	//check permission to add an inventory
+	$area = area_get_full_dataset_of_specific_area($area_id);
+	return area_check_access($area, 'ACL_RED_WRITE');
 }
 
 /**
