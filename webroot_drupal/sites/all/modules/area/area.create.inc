@@ -155,6 +155,7 @@ function area_save($form = false, &$form_state, $from_api = false) {
 							'area_geometry_id' => $area_geometry_id
 					))
 				->execute();
+				$output['update'] = true;
 		}
 		//create new area
 		else {
