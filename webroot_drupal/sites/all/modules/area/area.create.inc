@@ -73,7 +73,7 @@ function area_new_areaname_form($form, &$form_state) {
  *  true if method was invoked from the webservice api
  * @todo Maybe use the ajax version?
  */
-function area_save($form, &$form_state, $from_api = false) {
+function area_save($form = false, &$form_state, $from_api = false) {
 	global $user;
 	if (false) {
 		$debugmessage = var_export($form_state['values'], true);

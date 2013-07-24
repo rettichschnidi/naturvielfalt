@@ -60,16 +60,6 @@ function webservice_parse_import_areas() {
 	$data['set_user_uid'] = $user->uid;
 	$data['comment'] = $_POST['description'];
 	
-// 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
-// 	if (count($accArray) > 0)
-// 		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
-// 	$comArray = organism_artgroup_get_attribute_by_name(t('Comment'));
-//  	if (count($comArray) > 0)
-//  		$data['attributes'][$comArray[0]] = $_POST['comment'];
- 	
-
-
-	
 	$validationerrors =  webservice_area_validate($data);
 	if(!empty($validationerrors)) {
 		header('HTTP/1.0 400 Bad Request');
@@ -80,7 +70,7 @@ function webservice_parse_import_areas() {
 		
 	}
 	else {
-		$observation_status = area_save($form, $data, true);
+		$observation_status = area_save(false, $data, true);
 		// get the data
 		if ($observation_status['success'] == true) {
 			header('HTTP/1.0 200 OK');
