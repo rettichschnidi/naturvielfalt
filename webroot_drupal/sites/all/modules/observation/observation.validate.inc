@@ -179,9 +179,10 @@ function observation_validate_observation_id($observationid) {
 function observation_validate_inventory($inventory_id) {
 	module_load_include('inc', 'inventory', 'inventory.validate');
 	if(!inventory_validate_inventory_id($inventory_id)) return false;
-	//area must exist
+	//inventory must exist
 	if (intval($inventory_id) == 0) return false;
 	$inventory = inventory_get($inventory_id);
+	//user must have access to the inventory
 	return inventory_check_access($inventory, 'ACL_RED_WRITE');
 }
  

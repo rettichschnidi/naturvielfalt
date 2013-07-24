@@ -196,7 +196,7 @@ function webservice_observation_validate($data) {
 	
 	//Check if inventory guid >= 0 and exists
 	if(!isset($data['inventory_id'])) $validationerrors[] = t("Please pass key 'inventory_guid'.");
-	else if(!observation_validate_inventory($data['inventory_id'])) t('Invalid inventory / permission denied.');
+	else if(intval($data['inventory_id']) != 0 && !observation_validate_inventory($data['inventory_id'])) t('Invalid inventory / permission denied.');
 	
 	if(!isset($data['count'])) $validationerrors[] = t("Please pass key 'count'.");
 	else if(!observation_validate_count($data['count']))  $validationerrors[] = t('The count has to be a number and bigger than zero');
