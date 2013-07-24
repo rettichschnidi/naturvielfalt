@@ -72,7 +72,7 @@ function webservice_parse_import_areas() {
 	else {
 		$area_status = area_save(false, $data, true);
 		// get the data
-		if ($observation_status['success'] == true) {
+		if ($area_status['success'] == true) {
 			header('HTTP/1.0 200 OK');
 			$i=0;
 			//pass return values in "key=value&key2=value2" notation
