@@ -115,7 +115,16 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	$attributes = isset($values['details']['attributes']) ? $values['details']['attributes'] : array();
 	$attributes_checked = array();
 	foreach ($attributes as $key => $value) {
-		$attributes_checked[$key] = filter_xss($value);
+		$attribute = organism_artgroup_get_attribute($key);
+		$attribute = $attribute[0];
+		if ($attribute['type_format'] == 'select') {
+			if($value != '') {
+				if (array_key_exists($value, $attribute['values']))
+					$attributes_checked[$key] = 'db_id-->' . $value;
+			}
+		} 
+		else 
+			$attributes_checked[$key] = filter_xss($value);
 	}
 
 	$geometry['zip'] = intval(filter_xss($values['zip']));
@@ -146,7 +155,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				->execute();
 			$output['update'] = true;
 		} else {
-			// $geometry_id = area_save_geometry_blablablab();
 			$observation['area_geometry_id'] = area_create_geometry($geometry);
 
 			//save the observation

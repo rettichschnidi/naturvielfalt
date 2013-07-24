@@ -663,9 +663,6 @@ function observation_get_attributes(
 		$observation_id = false,
 		$artgroup_id) {
 	global $user;
-	// TODO: make this conversion nicer (in a db)
-	$drupal_fields['textarea'] = 'textarea';
-	$drupal_fields['string'] = 'textfield';
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
@@ -673,7 +670,7 @@ function observation_get_attributes(
 	$sql_where = '';
 	
 	if ($observation_id > 0) {
-		$sql_select .= ', oa.id attribute_id, oa.value';
+		$sql_select .= ", oa.id attribute_id,  COALESCE(to_char(oa.organism_artgroup_attr_values_id, '9999'), oa.value) AS value";
 		$sql_join .= ' LEFT JOIN {observation_attribute} oa ON oa.organism_artgroup_attr_id=oaa.id AND oa.observation_id=:observation_id'.
 					 ' LEFT JOIN {organism_artgroup_attr_subscription} oaas ON oaa.id = oaas.organism_artgroup_attr_id';
 		$sql_where .= ' WHERE oaas.organism_artgroup_id =:artgroup_id OR oaas.organism_artgroup_id = 0';
@@ -691,28 +688,31 @@ function observation_get_attributes(
 	
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result) {
+		$options = array();
+		if($attributes_result->type_format == 'select') {
+		//fetch option values for select
+		$query = db_select('organism_artgroup_attr_values', 'oaav')
+				->fields('oaav', array('id', 'value'))
+				->condition('oaav.organism_artgroup_attr_id', $attributes_result->id)
+				->orderBy('id')
+				->execute();
+			$tmp = $query->fetchAll(PDO::FETCH_ASSOC);
+			foreach($tmp as $option) {
+				$options[$option['id']] = $option['value'];
+			}
+		}
 		$attributes_with_values[] = array(
 			'name' => $attributes_result->name,
 			'id' => $attributes_result->id,
 			'type_name' => $attributes_result->type_name,
 			'type_format' => $attributes_result->type_format,
-			'type_drupal' => $drupal_fields[$attributes_result->type_format],
+			'type_drupal' => $attributes_result->type_format,
 			'value' => ($observation_id > 0) ? $attributes_result->value : '',
+			'options' => ($attributes_result->type_format == 'select') ? $options : ''
 		);
 	}
-// 	if (!$as_html)
-		return $attributes_with_values;
-
-// 	$attributes_with_values_html = '';
-// 	foreach ($attributes_with_values as $tmp) {
-// 		$attributes_with_values_html .= observation_parse_html_forms(
-// 		$tmp,
-// 		$html_before_desc,
-// 		$html_after_desc,
-// 		$html_before_form,
-// 		$html_after_form);
-// 	}
-// 	return $attributes_with_values_html;
+	
+	return $attributes_with_values;
 
 }
 

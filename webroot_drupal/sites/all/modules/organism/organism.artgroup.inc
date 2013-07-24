@@ -231,7 +231,7 @@ function organism_artgroup_get_attributes($artgroup_id = false, $as_html = false
 	$attributes_with_values = array();
 	foreach ($attributes_results as $attributes_result) {
 		$values = db_query(
-			'SELECT * FROM {organism_artgroup_attr_values} WHERE organism_artgroup_attr_id=:attr_id',
+			'SELECT * FROM {organism_artgroup_attr_values} WHERE organism_artgroup_attr_id=:attr_id ORDER BY id',
 			array(':attr_id' => $attributes_result->id));
 		$tmp_val = false;
 		foreach ($values as $value) {
