@@ -242,14 +242,27 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		
 		$observation_attributes = observation_get_attributes($observation['observation']['id'], $artgroup_id);
 		foreach ($observation_attributes as $key => $attribute) {
-			$form['group']['details']['attributes'][$attribute['id']] = array(
-					'#id' => $attribute['id'],
-					'#title' => $attribute['name'],
-					'#type' => $attribute['type_drupal'],
-					'#weight' =>$attribute['id']+12,
-					'#tree' => true,
-					'#default_value' => $attribute['value'],
-			);
+			if($attribute['type_drupal'] == 'select') {
+				$form['group']['details']['attributes'][$attribute['id']] = array(
+						'#id' => $attribute['id'],
+						'#title' => $attribute['name'],
+						'#type' => $attribute['type_drupal'],
+						'#weight' =>$attribute['id']+12,
+						'#tree' => true,
+						'#default_value' => (int)$attribute['value'],
+						'#options' => $attribute['options'],
+				);
+			}
+			else {
+				$form['group']['details']['attributes'][$attribute['id']] = array(
+						'#id' => $attribute['id'],
+						'#title' => $attribute['name'],
+						'#type' => $attribute['type_drupal'],
+						'#weight' =>$attribute['id']+12,
+						'#tree' => true,
+						'#default_value' => $attribute['value'],
+				);
+			}
 		}
 	}
 
@@ -693,10 +706,15 @@ function observation_form_add_js_tools($form, &$form_state) {
 	$tooltip['text']['detmethod'] = t('Select a method for determination from the dropdown menu.');
 	$tooltip['text']['Kommentar'] = t('Provide any additional information.');
 	$tooltip['text']['Genauigkeit'] = t('Precision of place of observation.');
+	$tooltip['text']['Verifiziert durch'] = t('Verified by');
+	$tooltip['text']['Bestimmung'] = t('Surness of classification');
+	$tooltip['text']['Herkunft'] = t('Origin');
+	$tooltip['text']['Beleg vorhanden'] = t('Evidence available');
+	
 	
 	$tooltip_options = 'position: {
 					      corner: {
-					         target: "center",
+					         target: "topRight",
 					         tooltip: "bottomLeft"
 					      }
 				     },
