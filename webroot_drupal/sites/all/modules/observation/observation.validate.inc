@@ -30,15 +30,15 @@ function observation_form_validate($form, &$form_state) {
 		form_set_error('group][count', t('The count has to be a number and bigger than zero'));
 	}
 	/**
-	 * Check the organism value (only if organism is not unkown)
+	 * Check the organism value (only if organism is not unknown)
 	 */
-	if(!$form_state['values']['group']['unkown_check']) {
+	if(!$form_state['values']['group']['unknown_check']) {
 		if(!observation_validate_organism($form_state['values']['group']['organism'])) {
 			form_set_error('group][organism', t('Please enter an existing organism.'));
 		}
 	}
 	
-	if($form_state['values']['group']['unkown_check']) {
+	if($form_state['values']['group']['unknown_check']) {
 		if(!observation_validate_artgroup_id($form_state['values']['group']['artgroup_id'])) {
 			form_set_error('group][artgroup_id', t('Please select an artgroup other than "All".'));
 		}
@@ -139,7 +139,7 @@ function observation_validate_organism($input) {
 function observation_validate_artgroup_id($input) {
 	if(!ctype_digit($input)) return false;
 	if($input == 1) return false;
-	if($input == UNKOWN_ARTGROUP) return true;
+	if(intval($input) == UNKNOWN_ARTGROUP) return true;
 	$result = organism_artgroup_get_artgroup(filter_xss($input), true);
 	return !empty($result);
 }
@@ -152,7 +152,7 @@ function observation_validate_artgroup_id($input) {
  */
 function observation_validate_organism_id($input) {
 	if(!ctype_digit($input)) return false;
-	if($input == UNKOWN_SPECIES) return true;
+	if(intval($input) == UNKNOWN_SPECIES) return true;
 	$result = organism_get(filter_xss($input));
 	return !empty($result);
 }
