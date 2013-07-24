@@ -70,21 +70,21 @@ function webservice_parse_import_areas() {
 		
 	}
 	else {
-		$observation_status = area_save(false, $data, true);
+		$area_status = area_save(false, $data, true);
 		// get the data
 		if ($observation_status['success'] == true) {
 			header('HTTP/1.0 200 OK');
 			$i=0;
 			//pass return values in "key=value&key2=value2" notation
-			foreach($observation_status as $key => $message) {
-				if($i > 0 && $i < sizeof($observation_status)) print('&');
+			foreach($area_status as $key => $message) {
+				if($i > 0 && $i < sizeof($area_status)) print('&');
 				print($key.'='.$message);
 				$i++;
 			}
 		} else {
 			header('HTTP/1.0 400 Bad Request');
 			print('ERROR: Something went wrong.. Could not persist the area. <br>');
-			foreach ($observation_status['message'] as $key => $message) {
+			foreach ($area_status['message'] as $key => $message) {
 				print($message.'<br>');
 			}
 		}
