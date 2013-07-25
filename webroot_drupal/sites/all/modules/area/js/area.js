@@ -195,6 +195,91 @@ jQuery(document).ready(function() {
 	};
 	
 	/**
+	 * Executed before table is populated
+	 * ! must return the data !
+	 * 
+	 * @param JSON object data
+	 */
+	area.tablePreProcess = function(data, flexigridOptions) {
+		var area_ids = [];
+		$(data.rows).each(function(idx, area) {
+			area_ids[idx] = area.id;
+		});
+		area.syncMapWithTable(area_ids);
+		
+		return data;
+	};
+	
+	/**
+	 * Update the map to show only overlays of the given data.
+	 * 
+	 * @param array(int) area_ids
+	 */
+	area.syncMapWithTable = function(area_ids) {
+		if (areamap == undefined)
+			return false;
+		
+		areamap.clearOverlays();
+		
+		if (area_ids.length < 1)
+			return true;
+		
+		$.getJSON(
+				areamap.options.geometriesfetchurl,
+			{
+				area_ids: area_ids
+			},
+			function(data) {
+				areamap.loadGeometriesAndOverlaysFromJson(data);
+
+				var mapcontains = true;
+				var bounds = new google.maps.LatLngBounds();
+				for (var i = 0; i < area_ids.length; i++) {
+					var id = area_ids[i];
+					
+					if (!(id in areamap.overlaysArray))
+						continue;
+					
+					var item = areamap.overlaysArray[id];
+					
+					if(areamap.geometriesArray[id].type == 'polygon' 
+						|| areamap.geometriesArray[id].type == 'polyline')
+					{
+			
+						var positions = item.getPath();
+						var position; 
+						
+						for(var k = 0; k < positions.length; k++) {
+							var tmp = positions.getAt(k);
+							position = new google.maps.LatLng(tmp.lat(), tmp.lng());
+							bounds.extend(position);
+							// don't touch mapcontains once it changed to false
+							if (mapcontains)
+							{
+								mapcontains = areamap.googlemap.getBounds().contains(position);
+							}
+						}
+					}
+					//overlay type marker
+					else {
+						var position = item.getPosition();
+						bounds.extend(position);
+						// don't touch mapcontains once it changed to false
+						if (mapcontains)
+						{
+							mapcontains = areamap.googlemap.getBounds().contains(position);
+						}
+					}
+				}
+				if (!mapcontains)
+					areamap.googlemap.fitBounds(bounds);
+				
+				return true;
+			}
+		);
+	}
+	
+	/**
 	 * Display the batch div, holding the select-toggle, delete and export buttons
 	 */
 	area.displayBatchArea = function(tableId) {

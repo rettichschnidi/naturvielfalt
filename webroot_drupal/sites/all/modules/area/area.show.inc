@@ -166,6 +166,7 @@ function area_show_all_areas($onlyMyAreas = false) {
 						)
 					}",
 			'rpShowAll'             => true,
+			'preProcessHandler'     => 'area.tablePreProcess',
  			'onSuccessHandler'      => ( ($user->uid == 0) ? '' : 'area.onTableSuccess' ),	/* only show the delete and export buttons if user is logged in */
 // 			'onSuccessHandler'      => 'area.onTableSuccess',
 			// Filters to add to the filterDiv above the table. The gallery image source
