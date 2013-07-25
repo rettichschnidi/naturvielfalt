@@ -164,8 +164,8 @@ function observation_validate_organism_id($input) {
  * @return true if $observationid is an existing observation
  */
 function observation_validate_observation_id($observationid) {
-	if(!ctype_digit($input)) return false;
 	if(intval($observationid) == 0) return true;
+	if(!ctype_digit($input)) return false;
 	$result = observation_get(filter_xss($observationid));
 	return !empty($result);
 }
@@ -181,7 +181,6 @@ function observation_validate_inventory($inventory_id) {
 	if(!inventory_validate_inventory_id($inventory_id)) return false;
 	//inventory must exist
 	if (intval($inventory_id) == 0) return false;
-	return true;
 	$inventory = inventory_get($inventory_id);
 	//user must have access to the inventory
 	return inventory_check_access($inventory, 'ACL_RED_WRITE');
@@ -194,8 +193,8 @@ function observation_validate_inventory($inventory_id) {
  * @return true if the current user has WRITE permissions for the given observation id
  */
 function observation_validate_permission($observationid) {
-	if(!ctype_digit($observationid)) return false;
 	if(intval($observationid) == 0) return true;
+	if(!ctype_digit($observationid)) return false;
 	$result = observation_get(filter_xss($observationid));
 	return observation_write_access_by_acl_id($result['acl_id']);
 }

@@ -94,8 +94,8 @@ function inventory_validate_time ($input) {
  * @return true if $inventory_id is an existing inventory
  */
 function inventory_validate_inventory_id($inventory_id) {
-	if(!ctype_digit($inventory_id)) return false;
 	if(intval($inventory_id) == 0) return true;
+	if(!ctype_digit($inventory_id)) return false;
 	$result = inventory_get(filter_xss($inventory_id));
 	return !empty($result);
 }
@@ -111,7 +111,6 @@ function inventory_validate_area($area_id) {
 	if(!area_validate_area_id($area_id)) return false;
 	//area must exist
 	if (intval($area_id) == 0) return false;
-	return true;
 	//check permission to add an inventory
 	$area = area_get_full_dataset_of_specific_area($area_id);
 	return area_check_access($area, 'ACL_RED_WRITE');
@@ -124,8 +123,8 @@ function inventory_validate_area($area_id) {
  * @return true if the current user has WRITE permissions for the given inventory
  */
 function inventory_validate_permission($inventory_id) {
-	if(!ctype_digit($inventory_id)) return false;
 	if(intval($inventory_id) == 0) return true;
+	if(!ctype_digit($inventory_id)) return false;
 	return inventory_write_access_by_id(filter_xss($inventory_id));
 }
 

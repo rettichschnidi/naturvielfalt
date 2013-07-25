@@ -17,6 +17,7 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * @author André Kälin, 2013
  */
 function  webservice_parse_import_inventories() {
+	global $user;
 	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
 
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -88,9 +89,9 @@ function  webservice_validate($data) {
 	
 	if(!isset($data['id'])) $validationerrors[] = t("Please pass key 'guid'.");
 	else if(!inventory_validate_inventory_id($data['id']))  $validationerrors[] = t('Please pass a valid inventory id.');
-	else if(!inventory_validate_permission($data['id'])) t("Permission denied.");
+	else if(!inventory_validate_permission($data['id'])) $validationerrors[] = t("Permission denied.");
 	
-	if(!inventory_validate_area($data['area_id'])) $validationerrors[] = t('Please pass a valid area.');
+	if(!inventory_validate_area($data['area_id'])) $validationerrors[] = t('Please pass a valid area / permission denied');
 	
 	if(!isset($data['name'])) $validationerrors[] = t("Please pass key 'name'.");
 	else if(!inventory_validate_name($data['name']))  $validationerrors[] = t('Please pass a valid inventory name.');

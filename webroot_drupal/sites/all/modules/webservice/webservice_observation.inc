@@ -23,6 +23,7 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * @author Ramon Gamma, 2012
  */
 function webservice_parse_import_observations_lightversion() {
+	global $user;
 	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
 
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -99,6 +100,7 @@ function webservice_parse_import_observations_lightversion() {
  * @author André Kälin, 2013
  */
 function webservice_parse_import_observations() {
+	global $user;
 	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
 
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -124,7 +126,7 @@ function webservice_parse_import_observations() {
 	$data['date'] = $_POST['date'];
 	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
-	$data['inventory_id'] = $_POST['inventory_guid'];
+	$data['inventory_id'] = $_POST['inventory_id'];
 	
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
@@ -186,12 +188,12 @@ function webservice_observation_validate($data) {
 
 	//Validate Observation id and permission
 	if(!isset($data['observation_id'])) $validationerrors[] = t("Please pass key 'guid'.");
-	else if(!observation_validate_observation_id($data['observation_id'])) t("Please pass a valid observation id.");
-	else if(!observation_validate_permission($data['observation_id']))  t("Permission denied.");
+	else if(!observation_validate_observation_id($data['observation_id'])) $validationerrors[] = t("Please pass a valid observation id.");
+	else if(!observation_validate_permission($data['observation_id']))  $validationerrors[] = t("Permission denied.");
 	
 	//Validate Artgroup id
 	if(!isset($data['organism_artgroup_id'])) $validationerrors[] = t("Please pass key 'organism_artgroup_id'.");
-	else if(!observation_validate_artgroup_id($data['organism_artgroup_id'])) t("Please pass an existing artgroup.");
+	else if(!observation_validate_artgroup_id($data['organism_artgroup_id'])) $validationerrors[] = t("Please pass an existing artgroup.");
 	
 	//Validate Organism id
 	if(!isset($data['organism_id'])) $validationerrors[] = t("Please pass key 'organism_id'.");
@@ -199,7 +201,7 @@ function webservice_observation_validate($data) {
 	
 	//Check if inventory guid >= 0 and exists
 	if(!isset($data['inventory_id'])) $validationerrors[] = t("Please pass key 'inventory_guid'.");
-	else if(intval($data['inventory_id']) != 0 && !observation_validate_inventory($data['inventory_id'])) t('Invalid inventory / permission denied.');
+	else if(intval($data['inventory_id']) != 0 && !observation_validate_inventory($data['inventory_id']))  $validationerrors[] = t('Invalid inventory / permission denied.');
 	
 	if(!isset($data['count'])) $validationerrors[] = t("Please pass key 'count'.");
 	else if(!observation_validate_count($data['count']))  $validationerrors[] = t('The count has to be a number and bigger than zero');
