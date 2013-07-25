@@ -123,6 +123,8 @@ function webservice_parse_import_observations() {
 	$data['observer'] = $_POST['observer'];
 	$data['inventory_id'] = $_POST['inventory_guid'];
 	
+	debug($_POST);
+	
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
 		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
