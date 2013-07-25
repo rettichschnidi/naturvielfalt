@@ -181,6 +181,7 @@ function observation_validate_inventory($inventory_id) {
 	if(!inventory_validate_inventory_id($inventory_id)) return false;
 	//inventory must exist
 	if (intval($inventory_id) == 0) return false;
+	return true;
 	$inventory = inventory_get($inventory_id);
 	//user must have access to the inventory
 	return inventory_check_access($inventory, 'ACL_RED_WRITE');
