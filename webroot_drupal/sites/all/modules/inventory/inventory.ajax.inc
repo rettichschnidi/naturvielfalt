@@ -30,7 +30,7 @@ function inventory_get_area_inventories_json($area) {
 	
 	$sql['dbWhere'] = 'i.area_id = '.$area['id'];
 	$sql['id'] = 'id';
-	$sql['acl_level'] = $acl_level;
+	$sql['acl_level'] = 'ACL_READ';
 	$output = datatable_dbRequest($sql);
 
 	global $base_url;
