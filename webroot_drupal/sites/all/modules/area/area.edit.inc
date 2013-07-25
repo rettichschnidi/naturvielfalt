@@ -59,6 +59,14 @@ function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = N
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
 	
+	$form['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>'
+	);
+	
 	/* create a fieldset for the tabular data */
 	$form['area_edit'] = array(
 			'#type' => 'fieldset',
