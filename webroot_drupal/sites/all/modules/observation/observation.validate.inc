@@ -165,7 +165,7 @@ function observation_validate_organism_id($input) {
  */
 function observation_validate_observation_id($observationid) {
 	if(intval($observationid) == 0) return true;
-	if(!ctype_digit($input)) return false;
+	if(!ctype_digit($observationid)) return false;
 	$result = observation_get(filter_xss($observationid));
 	return !empty($result);
 }
