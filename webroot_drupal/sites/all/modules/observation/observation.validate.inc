@@ -151,8 +151,8 @@ function observation_validate_artgroup_id($input) {
  * @return true if $input is the id an existing organism
  */
 function observation_validate_organism_id($input) {
-	if(!ctype_digit($input)) return false;
 	if(intval($input) == UNKNOWN_SPECIES) return true;
+	if(!ctype_digit($input)) return false;
 	$result = organism_get(filter_xss($input));
 	return !empty($result);
 }
