@@ -27,6 +27,7 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * @author André Kälin, 2013
  */
 function webservice_parse_import_areas() {
+	global $user;
 	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		return webservice_auth();
@@ -116,7 +117,7 @@ function webservice_area_validate($data) {
 	
 	if(!isset($data['area_id'])) $validationerrors[] = t("Please pass key 'guid'.");
 	else if(!area_validate_area_id($data['area_id']))  $validationerrors[] = t('Please pass a valid area id.');
-	else if(!area_validate_permission($data['area_id'])) t("Permission denied.");
+	else if(!area_validate_permission($data['area_id'])) $validationerrors[] = t("Permission denied.");
 	
 	if(!isset($data['fieldname'])) $validationerrors[] = t("Please pass key 'name'.");
 	else if(!area_validate_area_name($data['fieldname']))  $validationerrors[] = t('Please pass a valid area name.');

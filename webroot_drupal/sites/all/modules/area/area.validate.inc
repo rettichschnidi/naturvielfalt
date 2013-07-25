@@ -40,8 +40,8 @@ function area_validate_time ($input) {
  * @return true if $areaid is the id an existing area
  */
 function area_validate_area_id($areaid) {
-	if(!ctype_digit($areaid)) return false;
 	if(intval($areaid) == 0) return true;
+	if(!ctype_digit($areaid)) return false;
 	$result = area_get_full_dataset_of_specific_area(filter_xss($areaid));
 	return !empty($result);
 }
@@ -53,8 +53,8 @@ function area_validate_area_id($areaid) {
  * @return true if the current user has WRITE permissions for the given area
  */
 function area_validate_permission($areaid) {
-	if(!ctype_digit($areaid)) return false;
 	if(intval($areaid) == 0) return true;
+	if(!ctype_digit($areaid)) return false;
 	$result = area_get_full_dataset_of_specific_area(filter_xss($areaid));
 	return check_permission($result['acl_id'], variable_get('ACL_WRITE'));
 }
