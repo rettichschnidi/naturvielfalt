@@ -8,6 +8,9 @@ module_load_include('inc', 'observation', 'observation.ajax');
 module_load_include('inc', 'observation', 'observation.validate');
 module_load_include('inc', 'organism', 'organism.artgroup');
 
+define('UNKNOWN_ARTGROUP', 1000);
+define('UNKNOWN_SPECIES', -1);
+
 define('WS_API_LOG_TYPE', 'webservice api');
 
 /**
@@ -122,8 +125,6 @@ function webservice_parse_import_observations() {
 	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
 	$data['inventory_id'] = $_POST['inventory_guid'];
-	
-	debug($_POST);
 	
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
