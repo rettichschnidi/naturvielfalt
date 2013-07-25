@@ -45,7 +45,9 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
 function area_delete_form_submit($form, &$form_state) {
 	$areadata = $form_state['area_data'];
 	area_delete_by_id($areadata['id']);
-
+	
+	drupal_set_message(t('area @areaname deleted', array('@areaname' => $areadata['name'])));
+	
 	$form_state['redirect'] = 'areas/show';
 }
 
@@ -110,7 +112,6 @@ function area_delete_by_id($area_id) {
 		$num_deleted_area = db_delete('area')->condition('id', $area_id)
 		->execute();
 		assert($num_deleted_area == 1);
-		drupal_set_message(t('area @areaname deleted', array('@areaname' => $area->name)));
 		
 	} catch (Exception $e) {
 		$transaction->rollback();
