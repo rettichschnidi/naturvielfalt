@@ -111,6 +111,7 @@ function inventory_validate_area($area_id) {
 	if(!area_validate_area_id($area_id)) return false;
 	//area must exist
 	if (intval($area_id) == 0) return false;
+	return true;
 	//check permission to add an inventory
 	$area = area_get_full_dataset_of_specific_area($area_id);
 	return area_check_access($area, 'ACL_RED_WRITE');
