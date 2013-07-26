@@ -89,6 +89,9 @@ function area_delete_by_id($area_id) {
 		if(!empty($image_ids))
 			gallery_implementation_delete($image_ids);
 		
+		//delete acl entries
+		delete_acl($area->acl_id);
+			
 		//delete gallery images of linked habitats
 		$habitats = db_select('area_habitat', 'a_h')->condition('area_id', $area_id)
 		->fields('a_h')

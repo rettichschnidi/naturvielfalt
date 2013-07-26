@@ -54,6 +54,21 @@ $inventory_id = db_escape_field($inventory_id);
 }
 
 /**
+ * Return a array with all inventories grouped by their areas
+ * @return array
+ */
+function inventory_get_inventories_grouped() {
+	$query = db_select('inventory', i)
+				->join('area', 'a', 'a.id = i.area_id');
+	$query = $query->fields('i', array('i.id, i.name, area.id, area.name'))
+					->groupBy('a.id')
+					->groupBy('a.name')
+					->execute();
+	
+	return $query->fetchAll();
+}
+
+/**
  * Save an existing/new inventory
  * Post vars are used
  * @param array $form
@@ -107,7 +122,7 @@ function inventory_save($form = false, $custom_data = false, $from_api = false) 
 			//save the inventory
 			$inventory['id'] = db_query(
 					"SELECT nextval('{inventory}_id_seq') as nextval")->fetchField();
-			$inventory['acl_id'] = new_acl('$inventory', $inventory['users_uid']);
+			$inventory['acl_id'] = new_acl('inventory', $inventory['users_uid']);
 			db_insert('inventory')->fields($inventory)
 			->execute();
 			
@@ -156,6 +171,10 @@ function inventory_delete_by_id($inventory_id) {
 			$observation = (array) $observation;
 			observation_delete_by_id($observation['id']);
 		}
+		
+		//delete acl entries
+		delete_acl($inventory['acl_id']);
+		
 		db_delete('inventory')->condition('id', $inventory_id)
 		->execute();
 		return true;
