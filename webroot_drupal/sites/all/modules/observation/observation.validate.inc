@@ -196,7 +196,7 @@ function observation_validate_permission($observationid) {
 	if(intval($observationid) == 0) return true;
 	if(!ctype_digit($observationid)) return false;
 	$result = observation_get(filter_xss($observationid));
-	return observation_write_access_by_acl_id($result['acl_id']);
+	return observation_write_access_by_acl_id($result['observation']['acl_id']);
 }
 
 
