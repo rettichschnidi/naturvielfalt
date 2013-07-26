@@ -45,7 +45,7 @@ function  webservice_parse_import_inventories() {
 	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
 	$data['set_user_uid'] = $user->uid;
-	
+	debug($data);
 	$validationerrors =  webservice_validate($data);
 	if(!empty($validationerrors)) {
 		header('HTTP/1.0 400 Bad Request');
