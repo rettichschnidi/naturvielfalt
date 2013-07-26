@@ -5,7 +5,7 @@
  * Generic gallery pages.
  */
 
-define('GALLERY_COLUMNS', 5);
+define('GALLERY_COLUMNS', 4);
 define('GALLERY_IMAGE_COUNT', 15);
 
 /**
@@ -2112,7 +2112,7 @@ function theme_gallery_list($variables) {
 
 		array_push(
 			$items,
-			'<li class="first odd">'
+			'<li class="' . join(' ', _gallery_get_class($i - 1)) . '">'
 					. '<a ' . $extras . ' href="' . $url_href . '">'
 					. '<img src="' . $url_image . '" alt="' . $image['title']
 					. '" />' . $media_label . '</a>'
