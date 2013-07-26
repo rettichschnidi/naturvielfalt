@@ -60,7 +60,7 @@ function webservice_parse_import_areas() {
 	$data['time'] = $_POST['time'];
 	$data['set_user_uid'] = $user->uid;
 	$data['comment'] = $_POST['description'];
-	
+	debug($data);
 	$validationerrors =  webservice_area_validate($data);
 	if(!empty($validationerrors)) {
 		header('HTTP/1.0 400 Bad Request');

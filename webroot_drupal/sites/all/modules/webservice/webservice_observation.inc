@@ -49,7 +49,6 @@ function webservice_parse_import_observations_lightversion() {
 	$data['count'] = $_POST['count'];
 	$data['date'] = $_POST['date'];
 	$data['observer'] = $_POST['observer'];
-
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
 		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
@@ -127,7 +126,7 @@ function webservice_parse_import_observations() {
 	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
 	$data['inventory_id'] = $_POST['inventory_id'];
-	
+	debug($data);
 	$accArray = organism_artgroup_get_attribute_by_name(t('Accuracy'));
 	if (count($accArray) > 0)
 		$data['attributes'][$accArray[0]] = $_POST['accuracy'] . 'm';
