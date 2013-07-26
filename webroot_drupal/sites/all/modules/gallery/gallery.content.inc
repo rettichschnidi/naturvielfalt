@@ -2112,7 +2112,7 @@ function theme_gallery_list($variables) {
 
 		array_push(
 			$items,
-			'<li class="' . join(' ', 'first odd') . '">'
+			'<li class="first odd">'
 					. '<a ' . $extras . ' href="' . $url_href . '">'
 					. '<img src="' . $url_image . '" alt="' . $image['title']
 					. '" />' . $media_label . '</a>'
