@@ -562,7 +562,7 @@ function __organism_get_gallery_image($organism_data){
 	$sql_suffix = "LIMIT 1;";
 	
 	// admins can see all images. users must have the right premissions
-	if(check_admin_permission($user_id)){
+	if(check_admin_permission($user->uid)){
 		$query = $sql . ' ' . $sql_suffix; 
 		$params =  array('organism_id' => $organism_id);
 	} else {
