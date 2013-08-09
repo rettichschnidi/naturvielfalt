@@ -58,8 +58,11 @@ function webservice_parse_import_observations_lightversion() {
 
 	$data['meta_description'][] = $_POST['comment'];
 	$data['set_user_uid'] = $user->uid;
-
-
+	
+	
+	debug($data);
+	debug('observation light webservice');
+	
 	$observation_status = observation_save(false, $data, true);
 	// get the data
 	if ($observation_status['success'] == true) {
@@ -136,6 +139,9 @@ function webservice_parse_import_observations() {
  	
 	$data['meta_description'][] = $_POST['comment'];
 	$data['set_user_uid'] = $user->uid;
+	
+	debug($data);
+	debug('observation webservice');
 	
 	$validationerrors =  webservice_observation_validate($data);
 	if(!empty($validationerrors)) {

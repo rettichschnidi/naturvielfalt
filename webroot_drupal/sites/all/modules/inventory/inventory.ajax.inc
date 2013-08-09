@@ -37,15 +37,17 @@ function inventory_get_area_inventories_json($area) {
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 		
 	foreach ($output['rows'] as &$row) {
+		$inventory = inventory_get($row['cell']['id']);
+		
 		// select box
 // 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '"" />';
 		
-		$row['cell']['removeColumn'] = (inventory_write_access_by_id($row['cell']['id']))
+		$row['cell']['removeColumn'] = check_admin_acl($inventory['acl_id'])
 		? 
 			'<img onclick="area.deleteInventory('.$row['id'].'); event.stopPropagation();" src="' . $iconBaseUrl . 'Erase.png" alt="' . t('Delete Inventory') . '" title="' . t('delete inventory') . '" />'
 			: '';
 		
-		$inventory = inventory_get($row['cell']['id']);
+		
 		$row['cell']['addColumn'] = inventory_check_access($inventory, 'ACL_RED_WRITE') && user_access(CREATE_OBSERVATION)
 		? l(
 				'<img src="' . $iconBaseUrl . 'Add.png" alt="' . t('Add Observation') . '" title="' . t('Add Observation') . '" />',

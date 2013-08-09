@@ -67,7 +67,8 @@ function area_delete() {
 
 	$deleteCount = 0;
 	foreach ($areas as $area_id) {
-		if (area_write_access_by_id($area_id)) {
+		$area = area_get_full_dataset_of_specific_area($area_id);
+		if (check_admin_acl($area['acl_id'])) {
 			area_delete_by_id($area_id);
 			$deleteCount++;
 		}
