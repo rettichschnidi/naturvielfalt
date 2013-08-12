@@ -72,7 +72,9 @@ function webservice_parse_import_areas() {
 		
 	}
 	else {
+		debug($data);
 		$area_status = area_save(false, $data, true);
+		debug($area_status);
 		// get the data
 		if ($area_status['success'] == true) {
 			header('HTTP/1.0 200 OK');

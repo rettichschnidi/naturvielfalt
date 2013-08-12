@@ -18,7 +18,7 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * It receives POST requests and stores it directly in the database. Normal drupal
  * authentication is used.
  * 
- * This method is for compatibility reasons with old versions of the iphone app.
+ * This method is for compatibility reasons with old versions of the iphone app (before June 2013).
  *  
  * @author Ramon Gamma, 2012
  */
