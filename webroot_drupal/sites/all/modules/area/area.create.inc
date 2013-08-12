@@ -131,6 +131,7 @@ function area_save($form = false, &$form_state, $from_api = false) {
 	}
 	$transaction = db_transaction();
 	try {
+		debug($areaid);
 		//update area
 		if($areaid > 0) {
 			$area = area_get_full_dataset_of_specific_area($areaid);
@@ -154,6 +155,7 @@ function area_save($form = false, &$form_state, $from_api = false) {
 							'acl_id' => $acl_id,
 							'area_geometry_id' => $area_geometry_id
 					))
+					->condition('id', $areaid)
 				->execute();
 				$output['update'] = true;
 		}
