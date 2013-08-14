@@ -174,20 +174,6 @@ function webservice_parse_import_observations() {
 	}
 }
 
-/**
- * Sends the http header with an authentification request to the client.
- * (Opens authentification form in browser)
- *
- * @author André Kälin, 2013
- */
-function webservice_auth() {
-	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
-	header('HTTP/1.0 401 Unauthorized');
-
-	watchdog(WS_API_LOG_TYPE, 'Authorization failed.', array(), WATCHDOG_INFO);
-	die('ERROR: Please authorize');
-}
-
 function webservice_observation_validate($data) {
 	$validationerrors = array();
 

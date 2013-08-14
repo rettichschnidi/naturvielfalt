@@ -77,14 +77,6 @@ function  webservice_parse_import_inventories() {
 		}
 }
 
-function  webservice_auth() {
-	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
-	header('HTTP/1.0 401 Unauthorized');
-
-	watchdog(WS_API_LOG_TYPE, 'Authorization failed.', array(), WATCHDOG_INFO);
-	die('ERROR: Please authorize');
-}
-
 function  webservice_validate($data) {
 	$validationerrors = array();
 	

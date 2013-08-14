@@ -9,6 +9,14 @@
  * @return array
  */
 function webservice_menu() {
+	$items['webservice/api/login'] = array(
+			'title' => t('Webservice'),
+			'page callback' => 'webservice_login',
+			'access arguments' => array(
+					'access webservice'
+			),
+	);
+	
 	$items['webservice/api/observation'] = array(
 			'title' => t('Webservice'),
 			'page callback' => 'webservice_parse_import_observations',
@@ -44,6 +52,7 @@ function webservice_menu() {
 			),
 			'file' => 'webservice_observation.inc',
 	);
+
 	return $items;
 }
 
@@ -56,6 +65,42 @@ function  webservice_permission() {
 					'title' => t('can access the webservice'),
 			),
 	);
+}
+
+/**
+ * Authenticates a user and returns status code 401 (unauthorized) or 200 (authorized) to the client.
+ *
+ * @author André Kälin, 2013
+ */
+function webservice_login() {
+	global $user;
+	if (!isset($_SERVER['PHP_AUTH_USER'])) {
+		header('WWW-Authenticate: Basic realm="Naturvielfalt"');
+		header('HTTP/1.0 401 Unauthorized');
+		die('ERROR: Please authorize');
+	}
+	// Authenticate the user (Drupal Authentification)
+	$uid = user_authenticate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+	if (!$uid) {
+		header('WWW-Authenticate: Basic realm="Naturvielfalt"');
+		header('HTTP/1.0 401 Unauthorized');
+		die('ERROR: Please authorize');
+	}
+	header('HTTP/1.0 200 OK');
+}
+
+/**
+ * Sends the http header with an authentification request to the client.
+ * (Opens authentification form in browser)
+ *
+ * @author André Kälin, 2013
+ */
+function webservice_auth() {
+	header('WWW-Authenticate: Basic realm="Naturvielfalt"');
+	header('HTTP/1.0 401 Unauthorized');
+
+	watchdog(WS_API_LOG_TYPE, 'Authorization failed.', array(), WATCHDOG_INFO);
+	die('ERROR: Please authorize');
 }
 
 ?>
