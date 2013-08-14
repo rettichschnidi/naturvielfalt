@@ -33,8 +33,8 @@ function area_menu() {
 		
 	/* Show all available areas */
 	$items['area'] = array(
-			'title' => t('All areas'),
-			'description' => t('Show'),
+			'title' => 'All areas',
+			'description' => 'Show',
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
 					'areas/show'
@@ -44,8 +44,8 @@ function area_menu() {
 
 	/* Show all available areas */
 	$items['areas/show'] = array(
-			'title' => t('All areas'),
-			'description' => t('Show'),
+			'title' => 'All areas',
+			'description' => 'Show',
 			'page callback' => 'area_show_all_areas',
 			'page arguments' => array(
 					false
@@ -59,14 +59,14 @@ function area_menu() {
 
 	/* Show all available areas */
 	$items['areas/show/all'] = array(
-			'title' => t('All areas'),
+			'title' => 'All areas',
 			'type' => MENU_DEFAULT_LOCAL_TASK,
 	);
 
 	/* Show all available areas */
 	$items['areas/show/my'] = array(
-			'title' => t('My areas'),
-			'description' => t('Show all my own areas.'),
+			'title' => 'My areas',
+			'description' => 'Show all my own areas.',
 			'page callback' => 'area_show_all_areas',
 			'page arguments' => array(
 					true
@@ -81,8 +81,8 @@ function area_menu() {
 
 	/* Get all available areas as json*/
 	$items['areas/json'] = array(
-			'title' => t('All areas json'),
-			'description' => t('Get all areas as json'),
+			'title' => 'All areas json',
+			'description' => 'Get all areas as json',
 			'page callback' => 'area_json',
 			'page arguments' => array(
 					false,
@@ -97,8 +97,8 @@ function area_menu() {
 
 	/* Get all available areas as json*/
 	$items['areas/own/json'] = array(
-			'title' => t('All areas json'),
-			'description' => t('Get all areas as json'),
+			'title' => 'All areas json',
+			'description' => 'Get all areas as json',
 			'page callback' => 'area_json',
 			'page arguments' => array(
 					false,
@@ -113,8 +113,8 @@ function area_menu() {
 
 	/* Get all available areas as json*/
 	$items['area/%area/updategeometry/json'] = array(
-			'title' => t('Update the geometry'),
-			'description' => t('Update the geometry of an area.'),
+			'title' => 'Update the geometry',
+			'description' => 'Update the geometry of an area.',
 			'page callback' => 'area_updategeometry_json',
 			'page arguments' => array(
 					1
@@ -130,8 +130,8 @@ function area_menu() {
 
 	/* Get a single area as json */
 	$items['area/%/json'] = array(
-			'title' => t('An area json'),
-			'description' => t('Get a single area as json'),
+			'title' => 'An area json',
+			'description' => 'Get a single area as json',
 			'page callback' => 'area_json',
 			'page arguments' => array(
 					1
@@ -145,8 +145,8 @@ function area_menu() {
 
 	/* Get a all habitats within an area as datatable json */
 	$items['area/%area/habitat/datatablejson'] = array(
-			'title' => t('Habitats of area'),
-			'description' => t('Get all habitats of a an area.'),
+			'title' => 'Habitats of area',
+			'description' => 'Get all habitats of a an area.',
 			'page callback' => 'area_habitat_within_area_datatable_json',
 			'page arguments' => array(
 					1
@@ -160,8 +160,8 @@ function area_menu() {
 
 	/* Get a all areas linked to a habitat as datatable json */
 	$items['area/habitat/%/datatablejson'] = array(
-			'title' => t('Habitats of area'),
-			'description' => t('Get all habitats of a an area.'),
+			'title' => 'Habitats of area',
+			'description' => 'Get all habitats of a an area.',
 			'page callback' => 'area_linked_to_habitat_datatable_json',
 			'page arguments' => array(
 					2
@@ -175,8 +175,8 @@ function area_menu() {
 
 	/* Get all available areas as datatable json*/
 	$items['areas/all/datatablejson'] = array(
-			'title' => t('All areas datatable json'),
-			'description' => t('Get all areas as datatable json'),
+			'title' => 'All areas datatable json',
+			'description' => 'Get all areas as datatable json',
 			'page callback' => 'area_datatable_json',
 			'page arguments' => array(
 					'ACL_READ'
@@ -190,8 +190,8 @@ function area_menu() {
 
 	/* Get own areas as datatable json*/
 	$items['areas/own/datatablejson'] = array(
-			'title' => t('Own areas datatable json'),
-			'description' => t('Get own areas as datatable json'),
+			'title' => 'Own areas datatable json',
+			'description' => 'Get own areas as datatable json',
 			'page callback' => 'area_datatable_json',
 			'page arguments' => array(
 					'ACL_ADMIN'
@@ -205,8 +205,8 @@ function area_menu() {
 
 	/* Create a new area */
 	$items['area/new'] = array(
-			'title' => t('Create new area'),
-			'description' => t('Create a new area'),
+			'title' => 'Create new area',
+			'description' => 'Create a new area',
 			'page callback' => 'area_new_area',
 			'access arguments' => array(
 					AREA_CREATE
@@ -217,8 +217,8 @@ function area_menu() {
 
 	/* Show a specific area */
 	$items['area/%area/show'] = array(
-			'title' => t('Show'),
-			'description' => t('Show a specific area'),
+			'title' => 'Show',
+			'description' => 'Show a specific area',
 			'page arguments' => array(
 					1
 			),
@@ -236,8 +236,8 @@ function area_menu() {
 
 	/* Edit an area */
 	$items['area/%area/edit'] = array(
-			'title' => t('Edit'),
-			'description' => t('Edit details of an existing area.'),
+			'title' => 'Edit',
+			'description' => 'Edit details of an existing area.',
 			'page callback' => 'area_edit',
 			'page arguments' => array(
 					1
@@ -255,8 +255,8 @@ function area_menu() {
 
 	/* Delete an area */
 	$items['area/%area/delete'] = array(
-			'title' => t('Delete'),
-			'description' => t('Delete an existing area.'),
+			'title' => 'Delete',
+			'description' => 'Delete an existing area.',
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
 					'area_delete_form',
@@ -275,8 +275,8 @@ function area_menu() {
 	
 	// Delete many areas
 	$items['area/delete'] = array(
-			'title' => t('AreaJSON'),
-			'description' => t('Delete many areas'),
+			'title' => 'AreaJSON',
+			'description' => 'Delete many areas',
 			'access callback' => TRUE,
 			'page callback' => 'area_delete',
 			'file' => 'area.ajax.inc',
@@ -285,8 +285,8 @@ function area_menu() {
 	
 	// Export one or many areas
 	$items['area/export'] = array(
-			'title' => t('AreaJSON'),
-			'description' => t('Export one or many areas'),
+			'title' => 'AreaJSON',
+			'description' => 'Export one or many areas',
 			'page callback' => 'area_export',
 			'access callback' => TRUE,
 			'file' => 'area.ajax.inc',
@@ -295,8 +295,8 @@ function area_menu() {
 
 	/* Edit an area */
 	$items['area/%area/permissions'] = array(
-			'title' => t('Edit permission'),
-			'description' => t('Edit the permission of this area.'),
+			'title' => 'Edit permission',
+			'description' => 'Edit the permission of this area.',
 			'page callback' => 'area_edit_permission',
 			'page arguments' => array(
 					1
@@ -314,7 +314,7 @@ function area_menu() {
 
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
 	$items['area/%area/areaoverview/ajaxform'] = array(
-			'title' => t('Area overview form'),
+			'title' => 'Area overview form',
 			'description' => t(
 				'A form to show the most important facts about an area.'),
 			'page callback' => 'area_overview_ajax_callback',
@@ -332,8 +332,8 @@ function area_menu() {
 
 	/* Present a simple textfield to insert the area name. For usage in a infoWindow, ajax. */
 	$items['area/getnewareanameajaxform'] = array(
-			'title' => t('New areaname form'),
-			'description' => t('A form to submit a new areaname.'),
+			'title' => 'New areaname form',
+			'description' => 'A form to submit a new areaname.',
 			'page callback' => 'area_get_new_areaname_form_callback',
 			'access arguments' => array(
 					AREA_CREATE
@@ -344,8 +344,8 @@ function area_menu() {
 
 	if (function_exists('gallery_list_renderer')) {
 		$items['area/%area/gallery'] = array(
-				'title' => t('Gallery'),
-				'description' => t('View the area as a gallery of organisms'),
+				'title' => 'Gallery',
+				'description' => 'View the area as a gallery of organisms',
 				'page callback' => 'area_gallery',
 				'page arguments' => array(
 						1
@@ -360,8 +360,8 @@ function area_menu() {
 		);
 
 		$items['area/%area/list'] = array(
-				'title' => t('List'),
-				'description' => t('View the area as a list of organisms'),
+				'title' => 'List',
+				'description' => 'View the area as a list of organisms',
 				'page callback' => 'area_list',
 				'page arguments' => array(
 						1
@@ -377,8 +377,8 @@ function area_menu() {
 	}
 
 	$items['area/%area/delete_file/%'] = array(
-			'title' => t('Delete file'),
-			'description' => t('Delete an existing file'),
+			'title' => 'Delete file',
+			'description' => 'Delete an existing file',
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
 					'area_delete_file',
