@@ -55,9 +55,9 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$values['details'] = $values['group']['details'];
 
 		//determine organism_id
-		if(isset($values['group']['unkown_check'])) {
+		if(isset($values['group']['unknown_check'])) {
 			//Unkown organism
-			$observation['organism_id'] = UNKOWN_SPECIES;
+			$observation['organism_id'] = UNKNOWN_SPECIES;
 		} else {
 			$values['organism'] = filter_xss($values['group']['organism']);
 			$result = organism_get_byname(filter_xss($values['organism']));
@@ -71,7 +71,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	 * Check the determation and artgroup value
 	 */
 	// prevent wrong artgroup, set it each time automatically
-	// If species is unkown, set the provided artgroup id
+	// If species is unknown, set the provided artgroup id
 	// set the last value as artgroup
 	// $artgroup_id = $observation['organism_artgroup_id'] = intval($values['artgroup']);
 	// if($observation['organism_artgroup_id'] == 0){
@@ -79,7 +79,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		$observation['organism_artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
 			$observation['organism_id'],
 			true);
-	} else if ($observation['organism_id'] == UNKOWN_SPECIES) {
+	} else if ($observation['organism_id'] == UNKNOWN_SPECIES) {
 		$observation['organism_artgroup_id'] = $values['organism_artgroup_id'];
 	}
 
@@ -568,8 +568,8 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
 				
 		// translated organism name
-		if($row['cell']['organism_id'] == UNKOWN_SPECIES)
-			$row['cell']['organism_l'] = t('Unkown species');
+		if($row['cell']['organism_id'] == UNKNOWN_SPECIES)
+			$row['cell']['organism_l'] = t('Unknown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
 		

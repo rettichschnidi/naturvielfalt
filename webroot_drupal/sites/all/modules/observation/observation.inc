@@ -58,7 +58,7 @@ function observation_get($observation_id) {
 		($result['observation']['found_as_lat'] == 1)
 				? $result['observation']['found_as_lat'] = 'true'
 				: $result['observation']['found_as_lat'] = 'false';
-
+		
 		/**
 		 * cheap hack to work with the very special weird
 		 * 'json' format from area, don't ask and don't change it!
@@ -69,7 +69,6 @@ function observation_get($observation_id) {
 		/**
 		 * hack end
 		 */
-
 		$result['organism'] = organism_get($result['observation']['organism_id']);
 		
 		$attributes = db_query('SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id',
@@ -361,13 +360,13 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 	}
 	$rows = array();
 
-	if($observationdata['observation']['organism_id'] == UNKOWN_SPECIES) {
+	if($observationdata['observation']['organism_id'] == UNKNOWN_SPECIES) {
 		$rows[] = array(
 				array(
 						'data' => t('Common name'),
 						'header' => true
 				),
-				t('Unkown species'),
+				t('Unknown species'),
 		);
 	}
 	else if (!empty($observationdata['organism']['name_lang'])) {
@@ -386,7 +385,12 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Scientific name'),
 						'header' => true
 				),
-				$observationdata['organism']['name_lat'],
+				l(
+					$observationdata['organism']['name_lat'],
+					base_path() . "organism/" . $observationdata['observation']['organism_id'],
+					array(
+					'external' => true
+				))
 		);
 	}
 
@@ -479,14 +483,16 @@ function observation_get_details_table($observationdata = NULL) {
 	// 	}
 
 	foreach ($observationdata['attributes'] as $attribute) {
-		$rows[] = array(
-				array(
-						'data' => t($attribute['attribute_name']),
-						'header' => true
-				),
-				($attribute['value_id'] == '') ? $attribute['value']
-						: t($attribute['value_id_name']),
-		);
+		if(!empty($attribute['value']) || !empty($attribute['value_id_name'])) {
+			$rows[] = array(
+					array(
+							'data' => t($attribute['attribute_name']),
+							'header' => true
+					),
+					($attribute['value_id'] == '') ? $attribute['value']
+							: t($attribute['value_id_name']),
+			);
+		}
 	}
 
 	/* add the table with the data prepared above */
