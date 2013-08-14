@@ -573,7 +573,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_l'] = t('Unkown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
-		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xx
+		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xxX
 		$row['cell']['organism_sc'] = l(
 				$row['cell']['organism_sc'],
 				$base_url . '/organism/' . $row['cell']['organism_id'],
