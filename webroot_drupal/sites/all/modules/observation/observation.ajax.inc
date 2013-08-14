@@ -415,6 +415,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'o.inventory_id',
 		'o.acl_id AS acl_id',
 		'o.organism_id AS organism_id',  // used to find portrait-pictures
+		'o.users_uid',
 		'i.name AS inventory',
 		'i.area_id',
 		'a.name AS area',
@@ -572,6 +573,21 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_l'] = t('Unknown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
+		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xxX
+		$row['cell']['organism_sc'] = l(
+				$row['cell']['organism_sc'],
+				$base_url . '/organism/' . $row['cell']['organism_id'],
+				array(
+					'html' => true
+				));
+		// Link observer soll Link sein
+		$row['cell']['observer'] = l(
+				$row['cell']['observer'],
+				$base_url . '/user/' . $row['cell']['users_uid'] ,
+				array(
+						'html' => true
+				));
+		
 		
 		$row['cell']['date'] = date('d.m.Y H:i:s', $row['cell']['date']);
 		
