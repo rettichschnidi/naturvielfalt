@@ -431,7 +431,9 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'ol.name AS organism_l',
 		'oa.name AS artgroup_n',
 		// FIXME get more attributes than just Bemerkung
-		'oattr.value AS comment'
+		'oattr.value AS comment',
+		'coalesce(imagescount, 0) AS imagescount'
+			
 	);
 	
 	$sql['dbSearchColumns'] = array(
@@ -467,6 +469,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 		.' LEFT JOIN {area} a ON a.id = i.area_id'
 		.' LEFT JOIN {area_geometry} a_g ON a_g.id = a.area_geometry_id'
+		.' LEFT JOIN (SELECT gi.item_id, COUNT(gi.id) AS imagescount FROM {gallery_image} gi GROUP BY gi.item_id) images ON images.item_id = o.id'    
 	;
 	
 	if ($observation_ids !== NULL) {
@@ -501,7 +504,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$sql['dbWhere'] .= 'o.inventory_id = -1)';
 		}
 	}
-	//$sql['dbGroupBy'] = 'h.id, h.label, h.name';
+	
 	$sql['id'] = 'id';
 	
 	/*
@@ -624,8 +627,6 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		
 		// get images
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
-		// number of images
-		$row['cell']['imagescount'] = $images['count'];
 		
 		// thumbnail
 		$row['cell']['thumbnail'] = '';
