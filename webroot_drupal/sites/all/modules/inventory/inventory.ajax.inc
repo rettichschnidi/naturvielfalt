@@ -21,7 +21,8 @@ function inventory_get_area_inventories_json($area) {
 	);
 
 	$sql['dbSearchColumns'] = array(
-			'i.name'
+			'i.name',
+			'i.observer'
 	);
 
 	$sql['dbTable'] = '{inventory} i';
@@ -76,6 +77,14 @@ function inventory_get_area_inventories_json($area) {
 		if(!isset($row['cell']['count'])) {
 			$row['cell']['count'] = 0;
 		}
+		
+		// Link observer soll Link sein
+		$row['cell']['observer'] = l(
+				$row['cell']['observer'],
+				$base_url . '/user/' . $area['userid'] ,
+				array(
+						'html' => true
+				));
 		
 	}
 
