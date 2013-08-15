@@ -72,7 +72,7 @@ function inventory_get_area_inventories_json($area) {
 				array(
 					'html' => true
 				))
-			: '';
+			: ''; 
 		
 		if(!isset($row['cell']['count'])) {
 			$row['cell']['count'] = 0;
