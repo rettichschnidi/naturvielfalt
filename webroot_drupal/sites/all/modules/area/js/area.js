@@ -407,7 +407,7 @@ function Area(options) {
 /**
  * As requested by Albert:
  * 	Automatically switch to ROADMAP/HYBRID map when below/above zoomlevel 12
- * Build bounds around switzerland, the map should only show switzerland
+ * Build bounds around europe, the map should only show europe
  */
 Area.prototype.mapTypeSwitch = function(enable) {
 	var googlemap = this.googlemap;
