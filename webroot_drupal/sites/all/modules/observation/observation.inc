@@ -965,6 +965,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'videoscount',
 			'width' => 20,
 //			'hide' => true,
+			'noSort' => true
 	);
 
 	$tableHeader[] = array(
@@ -972,6 +973,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'soundscount',
 			'width' => 20,
 //			'hide' => true,
+			'noSort' => true
 			
 	);
 
@@ -980,6 +982,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'documentscount',
 			'width' => 20,
 //			'hide' => true,
+			'noSort' => true
 	);
 
 	if ($init_sort && $init_sort2) {
