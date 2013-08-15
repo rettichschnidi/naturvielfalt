@@ -78,7 +78,7 @@ function inventory_get_area_inventories_json($area) {
 			$row['cell']['count'] = 0;
 		}
 		
-		// Link observer soll Link sein
+		// Link observer soll Link sein, ja
 		$row['cell']['observer'] = l(
 				$row['cell']['observer'],
 				$base_url . '/user/' . $area['userid'] ,
