@@ -950,8 +950,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Number of pictures'),
 			'dbfield' => 'imagescount',
-			'width' => 20,
-			'noSort' => true			// alle "Number of (pictures|videos|sounds|documents)" sind momentan nicht sortierbar, weil keine Tabellen-Felder
+			'width' => 20,			// alle "Number of (pictures|videos|sounds|documents)" sind momentan nicht sortierbar, weil keine Tabellen-Felder
 //			'hide' => true,
 	);
 
@@ -960,7 +959,6 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'videoscount',
 			'width' => 20,
 //			'hide' => true,
-			'noSort' => true
 	);
 
 	$tableHeader[] = array(
@@ -968,7 +966,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'soundscount',
 			'width' => 20,
 //			'hide' => true,
-			'noSort' => true
+			
 	);
 
 	$tableHeader[] = array(
@@ -976,7 +974,6 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'documentscount',
 			'width' => 20,
 //			'hide' => true,
-			'noSort' => true
 	);
 
 	if ($init_sort && $init_sort2) {
