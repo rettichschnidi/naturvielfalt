@@ -9,7 +9,7 @@ jQuery(document).ready(function() {
 	area = {};
 	area.message = $('#message');
 	minZoom = 4;
-	//bounds around the europea
+	//bounds around europe
 	europeanBounds = new google.maps.LatLngBounds(
 		     new google.maps.LatLng(36.173357,-5.58838), 
 		     new google.maps.LatLng(59.601095,24.891357)
