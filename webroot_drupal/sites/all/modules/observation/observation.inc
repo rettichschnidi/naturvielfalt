@@ -142,7 +142,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 		'ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json');
 	
 	//select also area geometry, if observation belongs to an inventory
-	if(isset($observation_data['observation']['inventory_id']) && isset($observation_data['observation']['inventory_id']) > 0) {
+	if(isset($observation_data['observation']['inventory_id']) && $observation_data['observation']['inventory_id'] > 0) {
 		$area_geometry = array(
 		'a.id AS area_id',
 		'area_s.altitude AS area_altitude',
