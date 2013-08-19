@@ -95,6 +95,15 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	else $artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : $observation['observation']['organism_artgroup_id'];
 	
 	$form = array();
+	
+	$form['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>'
+	);
+	
 	$form['group'] = array(
 			'#id' => 'organism_group',
 			'#prefix' => '<div id="organism_replace">',
