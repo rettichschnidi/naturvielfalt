@@ -253,7 +253,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 		$items[] = $item;
 	}
 	
-	if(isset($observation_data['observation']['inventory_id'])) {
+	if(isset($observation_data['observation']['inventory_id']) && $observation_data['observation']['inventory_id'] > 0) {
 		foreach ($results['rows'] as $result) {
 			$item = array();
 			$item['id'] = (int) $result['cell']['area_id'];
