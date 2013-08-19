@@ -277,6 +277,9 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'callback' => 'observation_organism_callback',
 					'wrapper' => 'organism_replace'
 			),
+			'#attributes' => array(
+					'id' => 'artgroup_id'
+			),
 			'#weight' => -1,
 			'#tree' => true,
 			'#value' => $artgroup_id
@@ -681,6 +684,10 @@ function observation_form_add_js_tools($form, &$form_state) {
 	drupal_add_library('system', 'ui.slider');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/timepicker.js');
+	
+	//if implementing combobx for organism search, uncomment this two lines
+// 	drupal_add_library('system', 'ui.autocomplete');
+// 	drupal_add_js($observation_path . '/js/combobox.js');
 
 	
 	drupal_add_css('/* css for timepicker */

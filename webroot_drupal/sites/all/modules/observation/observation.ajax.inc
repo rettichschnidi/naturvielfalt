@@ -664,6 +664,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 						$row['cell']['organism_sc'],
 						'organism/' . $row['cell']['organism_id'],
 						array(
+							'html' => true,
 							'attributes' => array(
 								'style' =>
 									'color: black;
