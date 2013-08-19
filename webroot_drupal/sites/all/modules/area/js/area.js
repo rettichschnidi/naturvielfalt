@@ -400,7 +400,7 @@ function Area(options) {
 			);
 	}
 	
-	this.createDrawingManagerGetcoordinate(this.options.getcoordinate || this.options.geometryedit);
+	this.createDrawingManagerGetcoordinate(this.options.getcoordinate);
 
 };
 

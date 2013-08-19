@@ -178,6 +178,8 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 	
 	$sql['dbJoins'] = 'JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id';
 	
+	$sql['dbSearchColumns'] = '';
+	
 	if ($observation_data) {
 		// single observation
 		if (isset($observation_data['observation'])) {
@@ -669,6 +671,11 @@ function observation_get_attributes(
 		$observation_id = false,
 		$artgroup_id) {
 	global $user;
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
@@ -691,20 +698,23 @@ function observation_get_attributes(
 			array(':artgroup_id' => $artgroup_id)
 		);
 	}
-	
+
 	$attributes_with_values = array();
+	if($langcode == 'de') $field = 'value';
+	else $field = 'value_'.$langcode;
+	
 	foreach ($attributes_results as $attributes_result) {
 		$options = array();
 		if($attributes_result->type_format == 'select') {
 		//fetch option values for select
 		$query = db_select('organism_artgroup_attr_values', 'oaav')
-				->fields('oaav', array('id', 'value'))
+				->fields('oaav')
 				->condition('oaav.organism_artgroup_attr_id', $attributes_result->id)
 				->orderBy('id')
 				->execute();
 			$tmp = $query->fetchAll(PDO::FETCH_ASSOC);
 			foreach($tmp as $option) {
-				$options[$option['id']] = $option['value'];
+				$options[$option['id']] = $option[$field];
 			}
 		}
 		$attributes_with_values[] = array(
