@@ -183,7 +183,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 	if ($observation_data) {
 		// single observation
 		if (isset($observation_data['observation'])) {
-			if(isset($observation_data['observation']['inventory_id'])) {
+			if(isset($observation_data['observation']['inventory_id']) && $observation_data['observation']['inventory_id'] > 0) {
 				$inventory = inventory_get($observation_data['observation']['inventory_id']);
 				$area = area_get_full_dataset_of_specific_area($inventory['area_id']);
 				
