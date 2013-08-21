@@ -737,6 +737,7 @@ class Classification {
 		);
 		$num = $this->db
 			->query($fromQuery, $typesArray, $valuesArray);
+		
 		if (count($num) == 1) {
 			return $num[0]['id'];
 		} else if (count($num) == 0) {
@@ -903,8 +904,8 @@ class Classification {
 				$valuesArray);
 		if (count($rows) == 1) {
 			// print "$organismName already existing.\n";
-			$this->scientific_names[$organismName] = $rows[0]['organism_id'];
-			$organism_id = $rows[0]['organism_id'];
+			$this->scientific_names[$organismName] = $rows[0]['id'];
+			$organism_id = $rows[0]['id'];
 		}
 		
 		// If organism not found, create it
