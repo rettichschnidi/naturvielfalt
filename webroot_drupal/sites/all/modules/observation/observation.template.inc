@@ -22,8 +22,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$url = base_path() . 'observation/save';
 	if ($observation) {
 		$url = base_path() . 'observation/' . $observation['observation']['id']. '/save';
-		if($observation['observation']['organism_id'] == UNKOWN_SPECIES) {
-			$species = t('Unkown species');
+		if($observation['observation']['organism_id'] == UNKNOWN_SPECIES) {
+			$species = t('Unknown species');
 		} else {
 			$species = $observation['organism']['name_lat'];
 			if (isset($observation['organism']['name_lang']))
@@ -95,6 +95,15 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	else $artgroup_id = !empty($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : $observation['observation']['organism_artgroup_id'];
 	
 	$form = array();
+	
+	$form['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>'
+	);
+	
 	$form['group'] = array(
 			'#id' => 'organism_group',
 			'#prefix' => '<div id="organism_replace">',
@@ -130,10 +139,10 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		else $img = '';
 	} else $img = '';
 	
-	$checked = isset($form_state['values']['group']['unkown_check']) ? $form_state['values']['group']['unkown_check'] : $observation['observation']['organism_id'] == UNKOWN_SPECIES ? 1 : 0;
+	$checked = isset($form_state['values']['group']['unknown_check']) ? $form_state['values']['group']['unknown_check'] : $observation['observation']['organism_id'] == UNKNOWN_SPECIES ? 1 : 0;
 
-	$form['group']['unkown_check'] = array(
-			'#id' => 'unkown_check',
+	$form['group']['unknown_check'] = array(
+			'#id' => 'unknown_check',
 			'#title' => t('Unkown species?'),
 			'#description' => t('Do you need help with determination?'),
 			'#type' => 'checkbox',
@@ -141,7 +150,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#tree' => true,
 			'#ajax' => array(
 						'event' => 'change',
-						'callback' => 'observation_unkown_check_callback',
+						'callback' => 'observation_unknown_check_callback',
 						'wrapper' => 'organism_replace',
 			),
 	);
@@ -234,7 +243,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'#title' => t('Determination method'),
 					'#type' => 'select',
 					'#options' => 	$options,
-					'#description' => 'Determination Method',
+					'#description' => t('Determination Method'),
 					'#default_value' => $observation['observation']['organism_artgroup_detmethod_id'],
 					'#tree' => true,
 			);
@@ -245,7 +254,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			if($attribute['type_drupal'] == 'select') {
 				$form['group']['details']['attributes'][$attribute['id']] = array(
 						'#id' => $attribute['id'],
-						'#title' => $attribute['name'],
+						'#title' => t($attribute['name']),
 						'#type' => $attribute['type_drupal'],
 						'#weight' =>$attribute['id']+12,
 						'#tree' => true,
@@ -276,6 +285,9 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'event' => 'change',
 					'callback' => 'observation_organism_callback',
 					'wrapper' => 'organism_replace'
+			),
+			'#attributes' => array(
+					'id' => 'artgroup_id'
 			),
 			'#weight' => -1,
 			'#tree' => true,
@@ -553,8 +565,8 @@ function observation_show_observation($observationdata = NULL) {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	
-	if($observationdata['observation']['organism_id'] == UNKOWN_SPECIES) {
-		$species = t('Unkown species');
+	if($observationdata['observation']['organism_id'] == UNKNOWN_SPECIES) {
+		$species = t('Unknown species');
 	} else {
 		$species = $observationdata['organism']['name_lat'];
 		if (isset($observationdata['organism']['name_lang']))
@@ -671,7 +683,7 @@ function observation_organism_callback($form, &$form_state) {
 	return $form['group'];
 }
 
-function observation_unkown_check_callback($form, &$form_state) {
+function observation_unknown_check_callback($form, &$form_state) {
 	return $form['group'];
 }
 
@@ -681,6 +693,10 @@ function observation_form_add_js_tools($form, &$form_state) {
 	drupal_add_library('system', 'ui.slider');
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/timepicker.js');
+	
+	//if implementing combobx for organism search, uncomment this two lines
+// 	drupal_add_library('system', 'ui.autocomplete');
+// 	drupal_add_js($observation_path . '/js/combobox.js');
 
 	
 	drupal_add_css('/* css for timepicker */
@@ -704,12 +720,15 @@ function observation_form_add_js_tools($form, &$form_state) {
 	$tooltip['text']['count'] = t('Number of observed specimens.');
 	$tooltip['text']['observer'] = t('Name of observer (You)');
 	$tooltip['text']['detmethod'] = t('Select a method for determination from the dropdown menu.');
-	$tooltip['text']['Kommentar'] = t('Provide any additional information.');
-	$tooltip['text']['Genauigkeit'] = t('Precision of place of observation.');
-	$tooltip['text']['Verifiziert durch'] = t('Verified by');
-	$tooltip['text']['Bestimmung'] = t('Surness of classification');
-	$tooltip['text']['Herkunft'] = t('Origin');
-	$tooltip['text']['Beleg vorhanden'] = t('Evidence available');
+	$tooltip['text']['Comment'] = t('Provide any additional information.');
+	$tooltip['text']['Accuracy'] = t('Precision of place of observation.');
+	$tooltip['text']['Verified'] = t('Verified by');
+	$tooltip['text']['Determination'] = t('Sureness of classification');
+	$tooltip['text']['Origin'] = t('Origin');
+	$tooltip['text']['Phenology'] = t('Phenology');
+	$tooltip['text']['Occurence'] = t('Occurence');
+	$tooltip['text']['Evidence available'] = t('Evidence available');
+	$tooltip['text']['Evaluationmethod'] = t('Evaluation Method');
 	
 	
 	$tooltip_options = 'position: {

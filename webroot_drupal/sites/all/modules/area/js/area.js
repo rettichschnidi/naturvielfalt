@@ -8,7 +8,13 @@ jQuery(document).ready(function() {
 	$ = jQuery;
 	area = {};
 	area.message = $('#message');
-	
+	minZoom = 4;
+	//bounds around europe
+	europeanBounds = new google.maps.LatLngBounds(
+		     new google.maps.LatLng(36.173357,-5.58838), 
+		     new google.maps.LatLng(59.601095,24.891357)
+		   );
+
 	/**
 	 * Export the selected rows
 	 * 
@@ -401,6 +407,7 @@ function Area(options) {
 /**
  * As requested by Albert:
  * 	Automatically switch to ROADMAP/HYBRID map when below/above zoomlevel 12
+ * Build bounds around europe, the map should only show europe
  */
 Area.prototype.mapTypeSwitch = function(enable) {
 	var googlemap = this.googlemap;
@@ -409,6 +416,8 @@ Area.prototype.mapTypeSwitch = function(enable) {
 			this.mapTypeSwitch(false);
 		}
 		this.mapTypeSwitchListener = google.maps.event.addListener(this.googlemap, 'zoom_changed', function() {
+			if (googlemap.getZoom() < minZoom) 
+				googlemap.setZoom(minZoom);
 			if(googlemap.getZoom() >= 12) {
 				googlemap.setMapTypeId(google.maps.MapTypeId.HYBRID);
 			}
@@ -416,6 +425,27 @@ Area.prototype.mapTypeSwitch = function(enable) {
 				googlemap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 			}
 		});
+		// Listen for the dragend event
+		   google.maps.event.addListener(this.googlemap, 'center_changed', function() {
+		     if (europeanBounds.contains(googlemap.getCenter())) return;
+
+		     // We're out of switzerlands bounds - Move the map back within the bounds
+
+		     var c = googlemap.getCenter(),
+		         x = c.lng(),
+		         y = c.lat(),
+		         maxX = europeanBounds.getNorthEast().lng(),
+		         maxY = europeanBounds.getNorthEast().lat(),
+		         minX = europeanBounds.getSouthWest().lng(),
+		         minY = europeanBounds.getSouthWest().lat();
+
+		     if (x < minX) x = minX;
+		     if (x > maxX) x = maxX;
+		     if (y < minY) y = minY;
+		     if (y > maxY) y = maxY;
+
+		     googlemap.setCenter(new google.maps.LatLng(y, x));
+		   });
 	} else {
 		google.maps.event.removeListener(this.mapTypeSwitchListener);
 		this.mapTypeSwitchListener = null;

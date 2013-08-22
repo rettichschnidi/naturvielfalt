@@ -202,6 +202,21 @@ function organism_get_schema() {
         'description' => 'No description for column value available, please fix',
         'type' => 'text',
       ),
+    	'value_en' =>
+    		array (
+    			'description' => 'No description for column value available, please fix',
+    			'type' => 'text',
+    		),
+    	'value_fr' =>
+    		array (
+    			'description' => 'No description for column value available, please fix',
+    			'type' => 'text',
+    		),
+    	'value_it' =>
+    		array (
+    			'description' => 'No description for column value available, please fix',
+    			'type' => 'text',
+    		),
     ),
     'unique keys' => 
     array (
@@ -246,6 +261,21 @@ function organism_get_schema() {
         'description' => 'No description for column cscf_id available, please fix',
         'type' => 'int',
       ),
+    	'name_en' =>
+    	array (
+    				'description' => 'No description for column name available, please fix',
+    				'type' => 'text',
+    		),
+    	'name_fr' =>
+    	array (
+    				'description' => 'No description for column name available, please fix',
+    				'type' => 'text',
+    	),
+    	'name_it' =>
+    	array (
+    				'description' => 'No description for column name available, please fix',
+    				'type' => 'text',
+    	),
     ),
     'unique keys' => 
     array (

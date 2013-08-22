@@ -45,7 +45,7 @@ function inventory_get_area_inventories_json($area) {
 		
 		$row['cell']['removeColumn'] = check_admin_acl($inventory['acl_id'])
 		? 
-			'<img onclick="area.deleteInventory('.$row['id'].'); event.stopPropagation();" src="' . $iconBaseUrl . 'Erase.png" alt="' . t('Delete Inventory') . '" title="' . t('delete inventory') . '" />'
+			'<img onclick="area.deleteInventory('.$row['id'].'); event.stopPropagation();" src="' . $iconBaseUrl . 'Erase.png" alt="' . t('delete inventory') . '" title="' . t('delete inventory') . '" />'
 			: '';
 		
 		

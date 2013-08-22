@@ -9,8 +9,8 @@ module_load_include('inc', 'observation');
 module_load_include('inc', 'observation', 'observation.gallery');
 define('ACCESS_OBSERVATION', 'access observation');
 define('CREATE_OBSERVATION', 'create observation');
-define('UNKOWN_ARTGROUP', 1000);
-define('UNKOWN_SPECIES', -1);
+define('UNKNOWN_ARTGROUP', 1000);
+define('UNKNOWN_SPECIES', -1);
 
 /**
  * Implements hook_menu()
@@ -20,8 +20,8 @@ define('UNKOWN_SPECIES', -1);
 function observation_menu() {
 	// Show all observations
 	$items['observation/show'] = array(
-			'title' => t('Observations'),
-			'description' => t('Show all observations'),
+			'title' => 'Observations',
+			'description' => 'Show all observations',
 			'page callback' => 'observation_show_all_observations',
 			'access arguments' => array(
 					ACCESS_OBSERVATION
@@ -34,8 +34,8 @@ function observation_menu() {
 
 	// Create a new observation
 	$items['observation/new'] = array(
-			'title' => t('Create'),
-			'description' => t('Create a new observation'),
+			'title' => 'Create',
+			'description' => 'Create a new observation',
 			'page callback' => 'observation_new',
 			'access arguments' => array(
 					CREATE_OBSERVATION
@@ -48,8 +48,8 @@ function observation_menu() {
 	
 	// Display an observation
 	$items['observation/%observation'] = array(
-				'title' => t('Show'),
-				'description' => t('Display an observation'),
+				'title' => 'Show',
+				'description' => 'Display an observation',
 				'page callback' => 'observation_show_observation',
 				'page arguments' => array(
 					1
@@ -65,8 +65,8 @@ function observation_menu() {
 	
 	// Display an observation
 	$items['observation/%observation/show'] = array(
-			'title' => t('Show'),
-			'description' => t('Display an observation'),
+			'title' => 'Show',
+			'description' => 'Display an observation',
 			'page callback' => 'observation_show_observation',
 			'page arguments' => array(
 					1
@@ -82,8 +82,8 @@ function observation_menu() {
 	
 	// Display an observation
 	$items['observation/%observation/inventory'] = array(
-			'title' => t('Inventory'),
-			'description' => t('Display inventory of observation'),
+			'title' => 'Inventory',
+			'description' => 'Display inventory of observation',
 			'page callback' => 'observation_show_inventory',
 			'page arguments' => array(
 					1
@@ -100,8 +100,8 @@ function observation_menu() {
 	
 	// Edit an observation
 	$items['observation/%observation/edit'] = array(
-			'title' => t('Edit'),
-			'description' => t('Edit an observation'),
+			'title' => 'Edit',
+			'description' => 'Edit an observation',
 			'page callback' => 'observation_edit',
 			'access arguments' => array(
 					1
@@ -117,8 +117,8 @@ function observation_menu() {
 
 	// Delete an observation
 	$items['observation/%observation/delete'] = array(
-			'title' => t('Delete'),
-			'description' => t('Delete an existing observation.'),
+			'title' => 'Delete',
+			'description' => 'Delete an existing observation.',
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array(
 					'observation_delete_form',
@@ -136,8 +136,8 @@ function observation_menu() {
 
 	// Delete one or many observations
 	$items['observation/delete'] = array(
-				'title' => t('ObservationsJSON'),
-				'description' => t('Delete one or many observations'),
+				'title' => 'ObservationsJSON',
+				'description' => 'Delete one or many observations',
 				'access callback' => TRUE,
 				'page callback' => 'observation_delete',
 				'file' => 'observation.ajax.inc',
@@ -146,8 +146,8 @@ function observation_menu() {
 	
 	// Save a new observation
 	$items['observation/save'] = array(
-			'title' => t('Save'),
-			'description' => t('Save a new observation'),
+			'title' => 'Save',
+			'description' => 'Save a new observation',
 			'page callback' => 'observation_save',
 			'access arguments' => array(
 					CREATE_OBSERVATION
@@ -158,8 +158,8 @@ function observation_menu() {
 	
 	// Update an observation
 	$items['observation/%observation/save'] = array(
-			'title' => t('Save'),
-			'description' => t('Save a existing observation'),
+			'title' => 'Save',
+			'description' => 'Save a existing observation',
 			'page callback' => 'observation_save',
 			'page arguments' => array(
 					1
@@ -174,8 +174,8 @@ function observation_menu() {
 	
 	// Get geometry data for editing
 	$items['observation/%observation/geometry/json'] = array(
-			'title' => t('Geometry'),
-			'description' => t('Get geometry data for editing'),
+			'title' => 'Geometry',
+			'description' => 'Get geometry data for editing',
 			'page callback' => 'observation_get_geometry_json',
 			'page arguments' => array(
 					1
@@ -190,8 +190,8 @@ function observation_menu() {
 	
 	// Get all geometry data to show
 	$items['observation/geometry/json'] = array(
-			'title' => t('Geometry'),
-			'description' => t('Get all geometry data to show'),
+			'title' => 'Geometry',
+			'description' => 'Get all geometry data to show',
 			'page callback' => 'observation_get_geometry_json',
 			'access arguments' => array(
 					ACCESS_OBSERVATION
@@ -202,8 +202,8 @@ function observation_menu() {
 	
 	// Get all readable observations
 	$items['observation/get/all'] = array(
-			'title' => t('ObservationsJSON'),
-			'description' => t('Get readable observations'),
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
 					'ACL_READ'
@@ -217,8 +217,8 @@ function observation_menu() {
 	
 	// Get all own observations
 	$items['observation/get/own'] = array(
-			'title' => t('ObservationsJSON'),
-			'description' => t('Get own observations'),
+			'title' => 'ObservationsJSON',
+			'description' => 'Get own observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
 					'own'
@@ -232,8 +232,8 @@ function observation_menu() {
 	
 	// Get all writeable observations
 	$items['observation/get/writeable'] = array(
-			'title' => t('Writeable Observations JSON'),
-			'description' => t('Get writeable observations'),
+			'title' => 'Writeable Observations JSON',
+			'description' => 'Get writeable observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
 					'ACL_WRITE'
@@ -247,7 +247,7 @@ function observation_menu() {
 
 	// Show some important information about an area. For usage in a infoWindow, ajax.
 	$items['observation/%observation/overview/ajaxform'] = array(
-			'title' => t('observation overview form'),
+			'title' => 'observation overview form',
 			'page callback' => 'observation_overview_ajax_callback',
 			'page arguments' => array(
 					1
@@ -262,8 +262,8 @@ function observation_menu() {
 	
 	// Export one or many observations
 	$items['observation/export'] = array(
-			'title' => t('ObservationsJSON'),
-			'description' => t('Export one or many observations'),
+			'title' => 'ObservationsJSON',
+			'description' => 'Export one or many observations',
 			'page callback' => 'observation_export',
 			'access callback' => TRUE,
 			'file' => 'observation.ajax.inc',

@@ -40,11 +40,11 @@ function observation_get($observation_id) {
 				$result['observation']['organism_artgroup_id'] = $artgroup;
 			}
 		}
-		$result['observation']['organism_artgroup_detmethod_name'] = organism_artgroup_get_detmethod(
+		$result['observation']['organism_artgroup_detmethod_name'] = t(organism_artgroup_get_detmethod(
 			$result['observation']['organism_artgroup_detmethod_id'],
-			true);
+			true));
 		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup(
-			$result['observation']['organism_artgroup_id'],
+			$result['observation']['organism_artgroup_id'], 
 			true);
 		$result['detmethods_vis'] = ($result['observation']['organism_artgroup_id']
 				!= '')
@@ -58,7 +58,7 @@ function observation_get($observation_id) {
 		($result['observation']['found_as_lat'] == 1)
 				? $result['observation']['found_as_lat'] = 'true'
 				: $result['observation']['found_as_lat'] = 'false';
-
+		
 		/**
 		 * cheap hack to work with the very special weird
 		 * 'json' format from area, don't ask and don't change it!
@@ -69,7 +69,6 @@ function observation_get($observation_id) {
 		/**
 		 * hack end
 		 */
-
 		$result['organism'] = organism_get($result['observation']['organism_id']);
 		
 		$attributes = db_query('SELECT * FROM {observation_attribute} oa WHERE oa.observation_id=:observation_id',
@@ -82,7 +81,7 @@ function observation_get($observation_id) {
 			: array();
 		foreach ($attributes_vis as $attribute_vis)
 			$result['attributes']['artgroup_attr_'.$attribute_vis] = array(
-				'attribute_name' => organism_artgroup_get_attribute($attribute_vis, true),
+				'attribute_name' => t(organism_artgroup_get_attribute($attribute_vis, true)),
 				'value_id' => @$attributes[$attribute_vis]->organism_artgroup_attr_values_id,
 				'value_id_name' => organism_artgroup_get_attributes_value_name(@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
 				'value' => @$attributes[$attribute_vis]->value
@@ -91,7 +90,7 @@ function observation_get($observation_id) {
 		// observation attributes
 		foreach ($attributes as $attribute) {		
 			$result['attributes']['observation_attr_'.$attribute->id] = array(
-				'attribute_name' => organism_artgroup_get_attribute($attribute->organism_artgroup_attr_id, true),
+				'attribute_name' => t(organism_artgroup_get_attribute($attribute->organism_artgroup_attr_id, true)),
 				'value_id' => $attribute->organism_artgroup_attr_values_id,
 				'value_id_name' => organism_artgroup_get_attributes_value_name($attribute->organism_artgroup_attr_values_id),
 				'value' => $attribute->value
@@ -143,7 +142,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 		'ST_AsGeoJSON(a_s.geom) AS wgs84_geom_json');
 	
 	//select also area geometry, if observation belongs to an inventory
-	if(isset($observation_data['observation']['inventory_id'])) {
+	if(isset($observation_data['observation']['inventory_id']) && $observation_data['observation']['inventory_id'] > 0) {
 		$area_geometry = array(
 		'a.id AS area_id',
 		'area_s.altitude AS area_altitude',
@@ -179,10 +178,12 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 	
 	$sql['dbJoins'] = 'JOIN {area_geometry} a_s ON a_s.id=o.area_geometry_id';
 	
+	$sql['dbSearchColumns'] = '';
+	
 	if ($observation_data) {
 		// single observation
 		if (isset($observation_data['observation'])) {
-			if(isset($observation_data['observation']['inventory_id'])) {
+			if(isset($observation_data['observation']['inventory_id']) && $observation_data['observation']['inventory_id'] > 0) {
 				$inventory = inventory_get($observation_data['observation']['inventory_id']);
 				$area = area_get_full_dataset_of_specific_area($inventory['area_id']);
 				
@@ -252,7 +253,7 @@ function observation_get_geometries_acl_checked($observation_data = false) {
 		$items[] = $item;
 	}
 	
-	if(isset($observation_data['observation']['inventory_id'])) {
+	if(isset($observation_data['observation']['inventory_id']) && $observation_data['observation']['inventory_id'] > 0) {
 		foreach ($results['rows'] as $result) {
 			$item = array();
 			$item['id'] = (int) $result['cell']['area_id'];
@@ -361,13 +362,13 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 	}
 	$rows = array();
 
-	if($observationdata['observation']['organism_id'] == UNKOWN_SPECIES) {
+	if($observationdata['observation']['organism_id'] == UNKNOWN_SPECIES) {
 		$rows[] = array(
 				array(
 						'data' => t('Common name'),
 						'header' => true
 				),
-				t('Unkown species'),
+				t('Unknown species'),
 		);
 	}
 	else if (!empty($observationdata['organism']['name_lang'])) {
@@ -386,7 +387,12 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 						'data' => t('Scientific name'),
 						'header' => true
 				),
-				$observationdata['organism']['name_lat'],
+				l(
+					$observationdata['organism']['name_lat'],
+					base_path() . "organism/" . $observationdata['observation']['organism_id'],
+					array(
+					'external' => true
+				))
 		);
 	}
 
@@ -479,14 +485,16 @@ function observation_get_details_table($observationdata = NULL) {
 	// 	}
 
 	foreach ($observationdata['attributes'] as $attribute) {
-		$rows[] = array(
-				array(
-						'data' => t($attribute['attribute_name']),
-						'header' => true
-				),
-				($attribute['value_id'] == '') ? $attribute['value']
-						: t($attribute['value_id_name']),
-		);
+		if(!empty($attribute['value']) || !empty($attribute['value_id_name'])) {
+			$rows[] = array(
+					array(
+							'data' => t($attribute['attribute_name']),
+							'header' => true
+					),
+					($attribute['value_id'] == '') ? $attribute['value']
+							: t($attribute['value_id_name']),
+			);
+		}
 	}
 
 	/* add the table with the data prepared above */
@@ -663,6 +671,11 @@ function observation_get_attributes(
 		$observation_id = false,
 		$artgroup_id) {
 	global $user;
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
@@ -685,20 +698,23 @@ function observation_get_attributes(
 			array(':artgroup_id' => $artgroup_id)
 		);
 	}
-	
+
 	$attributes_with_values = array();
+	if($langcode == 'de') $field = 'value';
+	else $field = 'value_'.$langcode;
+	
 	foreach ($attributes_results as $attributes_result) {
 		$options = array();
 		if($attributes_result->type_format == 'select') {
 		//fetch option values for select
 		$query = db_select('organism_artgroup_attr_values', 'oaav')
-				->fields('oaav', array('id', 'value'))
+				->fields('oaav')
 				->condition('oaav.organism_artgroup_attr_id', $attributes_result->id)
 				->orderBy('id')
 				->execute();
 			$tmp = $query->fetchAll(PDO::FETCH_ASSOC);
 			foreach($tmp as $option) {
-				$options[$option['id']] = $option['value'];
+				$options[$option['id']] = $option[$field];
 			}
 		}
 		$attributes_with_values[] = array(

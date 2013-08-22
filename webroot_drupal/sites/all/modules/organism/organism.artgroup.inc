@@ -161,7 +161,16 @@ function organism_artgroup_get_determation_methods($observation_id = 0, $artgrou
 		}
 	}
 
-	$determation_sql = 'SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
+	if($langcode == 'de') $field = 'name';
+	else $field = 'name_'.$langcode;
+	
+	$determation_sql = 'SELECT oad.id, oad.'.$field.' AS name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '
 			. $artgroup_filter . ' ORDER BY oad.name asc';
 	$results = db_query($determation_sql);
 	$res = array();
@@ -374,10 +383,20 @@ function organism_artgroup_get_attributes_ids($artgroup_id) {
 function organism_artgroup_get_attributes_value_name($value_id = false) {
 	if (!$value_id)
 		return;
+	
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
+	if($langcode == 'de') $field = 'value';
+	else $field = 'value_'.$langcode;
+	
 	$attr_val = db_query(
 		'SELECT * FROM {organism_artgroup_attr_values} ' . 'WHERE id=:value_id',
 		array(':value_id' => $value_id))->fetchAssoc();
-	return $attr_val['value'];
+	return $attr_val[$field];
 }
 
 /**
@@ -439,11 +458,21 @@ function organism_artgroup_get_artgroup($artgroup_id, $just_the_name = false) {
 function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false) {
 	if (!$detmethod_id || $detmethod_id == 0)
 		return '';
+	
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
+	if($langcode == 'de') $field = 'name';
+	else $field = 'name_'.$langcode;
+	
 	$detmethod = db_query(
 		'SELECT * FROM {organism_artgroup_detmethod} ' . 'WHERE id=:id',
 		array(':id' => $detmethod_id))->fetchAssoc();
 	if ($just_the_name)
-		return $detmethod['name'];
+		return $detmethod[$field];
 	return $detmethod;
 }
 

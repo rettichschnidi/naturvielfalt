@@ -15,8 +15,8 @@ module_load_include('inc', 'inventory', 'inventory.template');
 function inventory_menu() {
 	// Display an observation
 	$items['inventory/%inventory'] = array(
-				'title' => t('Show'),
-				'description' => t('Display an inventory'),
+				'title' => 'Show',
+				'description' => 'Display an inventory',
 				'page callback' => 'inventory_show',
 				'page arguments' => array(
 					1
@@ -32,8 +32,8 @@ function inventory_menu() {
 	);
 	
 	$items['inventory/%inventory/area'] = array(
-			'title' => t('Area'),
-			'description' => t('Display area of inventory'),
+			'title' => 'Area',
+			'description' => 'Display area of inventory',
 			'page callback' => 'inventory_show_area',
 			'page arguments' => array(
 					1
@@ -50,8 +50,8 @@ function inventory_menu() {
 	);
 	
 	$items['inventory/%inventory/show'] = array(
-			'title' => t('Show'),
-			'description' => t('Display an inventory'),
+			'title' => 'Show',
+			'description' => 'Display an inventory',
 			'page callback' => 'inventory_show',
 			'page arguments' => array(
 					1
@@ -68,8 +68,8 @@ function inventory_menu() {
 	);
 	
 	$items['inventory/%inventory/edit'] = array(
-			'title' => t('Edit'),
-			'description' => t('Edit inventory'),
+			'title' => 'Edit',
+			'description' => 'Edit inventory',
 			'page callback' => 'inventory_edit',
 			'page arguments' => array(
 					1
@@ -86,8 +86,8 @@ function inventory_menu() {
 	);
 	
 	$items['inventory/area/%area/new'] = array(
-			'title' => t('Create'),
-			'description' => t('Create a new inventory'),
+			'title' => 'Create',
+			'description' => 'Create a new inventory',
 			'page callback' => 'inventory_create',
 			'page arguments' => array(
 					2
@@ -102,8 +102,8 @@ function inventory_menu() {
 	);
 	
 	$items['inventory/observations/%area/%inventory/json'] = array(
-			'title' => t('Inventory observations'),
-			'description' => t('Show all observations of an inventory'),
+			'title' => 'Inventory observations',
+			'description' => 'Show all observations of an inventory',
 			'page callback' => 'inventory_get_observations_json',
 			'page arguments' => array(
 					2,
@@ -118,8 +118,8 @@ function inventory_menu() {
 			'file' => 'inventory.ajax.inc'
 	);
 	$items['inventory/area/%area/json'] = array(
-			'title' => t('Inventories'),
-			'description' => t('Returns inventories of an area in json'),
+			'title' => 'Inventories',
+			'description' => 'Returns inventories of an area in json',
 			'page callback' => 'inventory_get_area_inventories_json',
 			'page arguments' => array(
 					2
@@ -134,8 +134,8 @@ function inventory_menu() {
 	);
 	
 	$items['inventory/%inventory/delete'] = array(
-			'title' => t('Delete'),
-			'description' => t('Delete inventory'),
+			'title' => 'Delete',
+			'description' => 'Delete inventory',
 			'page callback' => 'inventory_delete',
 			'page arguments' => array(
 					1

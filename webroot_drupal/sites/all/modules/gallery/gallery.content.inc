@@ -1105,11 +1105,15 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 				'#description' => t('The title of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
+		
+		$default_description = 
+				"URL: \n</br>\nUrheber: ";
+		
 		$form[$prefix]['metadata']['description'] = array(
 				'#type' => 'textarea',
 				'#title' => t('Description'),
 				'#default_value' => isset($image['description']) ? $image['description']
-						: '',
+						: $default_description,
 				'#description' => t('The description of the ' . $label . '.'),
 				'#required' => FALSE,
 		);
