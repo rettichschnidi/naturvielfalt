@@ -17,6 +17,7 @@ function organism_show_classifiers() {
 	$kingdoms['CRSF'] = 'Plants';
 	$kingdoms['Fungus'] = 'Mushrooms';
 	$kingdoms['Swisslichens'] = 'Lichens';
+	$kingdoms['NISM'] = 'Mosses';
 
 	// description text at the beginning
 	$render_array['helptext'] = array(
