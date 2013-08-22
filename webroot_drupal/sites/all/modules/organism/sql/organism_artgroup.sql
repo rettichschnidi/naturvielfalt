@@ -2,23 +2,30 @@
 -- PostgreSQL database dump
 --
 
+-- Started on 2013-08-22 12:04:59
+
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
+SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET escape_string_warning = off;
 
 SET search_path = public, pg_catalog;
 
 --
--- Name: {organism_artgroup_id_seq}; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- TOC entry 3880 (class 0 OID 0)
+-- Dependencies: 533
+-- Name: organism_artgroup_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('{organism_artgroup_id_seq}', 28, true);
+SELECT pg_catalog.setval('{organism_artgroup_id_seq}', 29, true);
 
 
 --
--- Data for Name: {organism_artgroup}; Type: TABLE DATA; Schema: public; Owner: postgres
+-- TOC entry 3877 (class 0 OID 204661)
+-- Dependencies: 534
+-- Data for Name: organism_artgroup; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO {organism_artgroup} (id, name, parent) VALUES (1, 'Alle', NULL);
@@ -49,7 +56,11 @@ INSERT INTO {organism_artgroup} (id, name, parent) VALUES (4, 'Vögel', 1);
 INSERT INTO {organism_artgroup} (id, name, parent) VALUES (13, 'Wanzen', 1);
 INSERT INTO {organism_artgroup} (id, name, parent) VALUES (12, 'Zikaden', 1);
 INSERT INTO {organism_artgroup} (id, name, parent) VALUES (10, 'Zweiflügler', 1);
+INSERT INTO {organism_artgroup} (id, name, parent) VALUES (1000, 'Unbekannt', NULL);
+INSERT INTO {organism_artgroup} (id, name, parent) VALUES (29, 'Moose', 1);
 
+
+-- Completed on 2013-08-22 12:05:00
 
 --
 -- PostgreSQL database dump complete
