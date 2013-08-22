@@ -56,25 +56,28 @@ function  webservice_parse_import_inventories() {
 		}
 	}
 	else {
-			$inventory_status = inventory_save(false, $data, true);
-			// get the data
-			if ($inventory_status['success'] == true) {
-				header('HTTP/1.0 200 OK');
-				$i=0;
-				//pass return values in "key=value&key2=value2" notation
-				foreach($inventory_status as $key => $message) {
-					if($i > 0 && $i < sizeof($inventory_status)) print('&');
-					print($key.'='.$message);
-					$i++;
-				}
-			} else {
-				header('HTTP/1.0 400 Bad Request');
-				print('ERROR: Something went wrong.. Could not persist the inventory. <br>');
-				foreach ($inventory_status['message'] as $key => $message) {
-					print($message.'<br>');
-				}
+		//if empty string has been passed, use login name
+		if(empty($data['observer'])) $data['observer'] = $user->name;
+		
+		$inventory_status = inventory_save(false, $data, true);
+		// get the data
+		if ($inventory_status['success'] == true) {
+			header('HTTP/1.0 200 OK');
+			$i=0;
+			//pass return values in "key=value&key2=value2" notation
+			foreach($inventory_status as $key => $message) {
+				if($i > 0 && $i < sizeof($inventory_status)) print('&');
+				print($key.'='.$message);
+				$i++;
+			}
+		} else {
+			header('HTTP/1.0 400 Bad Request');
+			print('ERROR: Something went wrong.. Could not persist the inventory. <br>');
+			foreach ($inventory_status['message'] as $key => $message) {
+				print($message.'<br>');
 			}
 		}
+	}
 }
 
 function  webservice_validate($data) {
