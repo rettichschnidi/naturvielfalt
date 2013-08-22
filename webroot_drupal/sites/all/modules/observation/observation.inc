@@ -40,11 +40,11 @@ function observation_get($observation_id) {
 				$result['observation']['organism_artgroup_id'] = $artgroup;
 			}
 		}
-		$result['observation']['organism_artgroup_detmethod_name'] = organism_artgroup_get_detmethod(
+		$result['observation']['organism_artgroup_detmethod_name'] = t(organism_artgroup_get_detmethod(
 			$result['observation']['organism_artgroup_detmethod_id'],
-			true);
+			true));
 		$result['observation']['organism_artgroup_name'] = organism_artgroup_get_artgroup(
-			$result['observation']['organism_artgroup_id'],
+			$result['observation']['organism_artgroup_id'], 
 			true);
 		$result['detmethods_vis'] = ($result['observation']['organism_artgroup_id']
 				!= '')
@@ -81,7 +81,7 @@ function observation_get($observation_id) {
 			: array();
 		foreach ($attributes_vis as $attribute_vis)
 			$result['attributes']['artgroup_attr_'.$attribute_vis] = array(
-				'attribute_name' => organism_artgroup_get_attribute($attribute_vis, true),
+				'attribute_name' => t(organism_artgroup_get_attribute($attribute_vis, true)),
 				'value_id' => @$attributes[$attribute_vis]->organism_artgroup_attr_values_id,
 				'value_id_name' => organism_artgroup_get_attributes_value_name(@$attributes[$attribute_vis]->organism_artgroup_attr_values_id),
 				'value' => @$attributes[$attribute_vis]->value
@@ -90,7 +90,7 @@ function observation_get($observation_id) {
 		// observation attributes
 		foreach ($attributes as $attribute) {		
 			$result['attributes']['observation_attr_'.$attribute->id] = array(
-				'attribute_name' => organism_artgroup_get_attribute($attribute->organism_artgroup_attr_id, true),
+				'attribute_name' => t(organism_artgroup_get_attribute($attribute->organism_artgroup_attr_id, true)),
 				'value_id' => $attribute->organism_artgroup_attr_values_id,
 				'value_id_name' => organism_artgroup_get_attributes_value_name($attribute->organism_artgroup_attr_values_id),
 				'value' => $attribute->value
