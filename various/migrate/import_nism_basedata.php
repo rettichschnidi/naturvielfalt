@@ -6,6 +6,10 @@
  * Import moss base data.
  */
 
+/*
+ * activate if include path to pear is not correct
+ * ini_set('include_path', 'C:/Program Files (x86)/PHP/pear');
+ */
 require_once(dirname(__FILE__) . '/lib/bootstrap.php');
 require_once($libdir . '/Classification.php');
 require_once($configdir . '/databases.php');
