@@ -161,7 +161,16 @@ function organism_artgroup_get_determation_methods($observation_id = 0, $artgrou
 		}
 	}
 
-	$determation_sql = 'SELECT oad.id, oad.name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
+	if($langcode == 'de') $field = 'name';
+	else $field = 'name_'.$langcode;
+	
+	$determation_sql = 'SELECT oad.id, oad.'.$field.' AS name, oad.cscf_id FROM {organism_artgroup_detmethod} oad '
 			. $artgroup_filter . ' ORDER BY oad.name asc';
 	$results = db_query($determation_sql);
 	$res = array();
