@@ -1009,4 +1009,5 @@ function observation_new($inventory_id = NULL) {
 	return drupal_get_form('observation_form', false, $inventory_id);
 // 	return observation_form();
 }
+
 ?>

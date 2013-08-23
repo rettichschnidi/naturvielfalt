@@ -1,0 +1,303 @@
+# $Id$
+#
+# German translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  inventory.ajax.inc: n/a
+#  inventory.show.inc: n/a
+#  inventory.template.inc: n/a
+#  inventory.module: n/a
+#  inventory.inc: n/a
+#  inventory.validate.inc: n/a
+#  inventory.info: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2013-08-22 14:35+0200\n"
+"PO-Revision-Date: 2013-08-22 15:19+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: German <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: inventory.ajax.inc:48;48
+msgid "delete inventory"
+msgstr "Inventar löschen"
+
+#: inventory.ajax.inc:54;54 inventory.show.inc:260;260;260
+#: inventory.template.inc:173;173;173;269
+msgid "Add Observation"
+msgstr "Beobachtung hinzufügen"
+
+#: inventory.ajax.inc:62;62 inventory.module:18;53
+msgid "Show"
+msgstr "Anzeigen"
+
+#: inventory.ajax.inc:70;70 inventory.module:71
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: inventory.ajax.inc:128
+msgid "Please log in first"
+msgstr "Bitte melden Sie sich an"
+
+#: inventory.ajax.inc:135
+msgid "Please provide an inventory to delete"
+msgstr "Bitte geben Sie ein Inventar zum Löschen an"
+
+#: inventory.ajax.inc:144
+msgid "Inventory deleted"
+msgstr "Inventar gelöscht"
+
+#: inventory.inc:139
+msgid "Could not save the inventory because of an unknown error."
+msgstr ""
+"Das Inventar konnte aus einem unbekannten Grund nicht gespeichert werden."
+
+#: inventory.inc:148
+msgid "successfull saved"
+msgstr "Beobachtung erfolgreich gespeichert"
+
+#: inventory.inc:184
+msgid "Could not delete @inventoryname."
+msgstr "@inventoryname konnte nicht gelöscht werden."
+
+#: inventory.show.inc:16
+msgid "Inventories of @area"
+msgstr "Inventare im Gebiet @area"
+
+#: inventory.show.inc:53
+msgid "Observations of Inventory @inventory"
+msgstr "Beobachtungen vom Inventar @inventory"
+
+#: inventory.show.inc:54
+msgid "Observations of @area"
+msgstr "Beobachtungen im Gebiet @area"
+
+#: inventory.show.inc:84
+msgid "only proof images"
+msgstr "Nur Belegbilder"
+
+#: inventory.show.inc:87
+msgid "only portrait images"
+msgstr "Nur Portraitbilder"
+
+#: inventory.show.inc:90
+msgid "proof images, then portrait images"
+msgstr "Belegbilder, dann Portraitbilder"
+
+#: inventory.show.inc:93
+msgid "portrait images, then proof images"
+msgstr "Portraitbilder, dann Belegbilder"
+
+#: inventory.show.inc:100;198;347
+msgid "Observations"
+msgstr "Beobachtungen"
+
+#: inventory.show.inc:102
+msgid "Public"
+msgstr "Alle"
+
+#: inventory.show.inc:103
+msgid "Own"
+msgstr "Meine"
+
+#: inventory.show.inc:104
+msgid "Editables"
+msgstr "Editierbare"
+
+#: inventory.show.inc:117
+msgid "Artgroup"
+msgstr "Artengruppe"
+
+#: inventory.show.inc:141
+msgid "Internal Id"
+msgstr "Interne Id"
+
+#: inventory.show.inc:180;337
+msgid "Name"
+msgstr "Name"
+
+#: inventory.show.inc:186;249
+msgid "Description"
+msgstr "Beschreibung"
+
+#: inventory.show.inc:192
+msgid "Observer"
+msgstr "Beobachter"
+
+#: inventory.show.inc:226
+msgid "Inventory  <i>@inventoryname</i>"
+msgstr "Inventar <i>@inventoryname</i>"
+
+#: inventory.show.inc:241
+msgid "Inventory details"
+msgstr "Inventarangaben"
+
+#: inventory.show.inc:269 inventory.template.inc:123
+msgid "Area details"
+msgstr "Gebietsangaben"
+
+#: inventory.show.inc:287 inventory.template.inc:141;182
+msgid "Map"
+msgstr "Karte"
+
+#: inventory.show.inc:356 inventory.template.inc:103
+msgid "Creator"
+msgstr "Ersteller"
+
+#: inventory.show.inc:371
+msgid "Date"
+msgstr "Datum"
+
+#: inventory.show.inc:381
+msgid "Last modification"
+msgstr "Letzte Änderung"
+
+#: inventory.template.inc:28
+msgid "Create a new inventory for area <i>@areaname</i>"
+msgstr "Neues Inventar für Gebiet <i>@areaname</i> erstellen"
+
+#: inventory.template.inc:30
+msgid "Edit inventory  <i>@inventoryname</i>"
+msgstr "Inventory <i>@inventoryname</i> bearbeiten"
+
+#: inventory.template.inc:65;321
+msgid "Name of inventory"
+msgstr "Name vom Inventar"
+
+#: inventory.template.inc:74;322
+msgid "Description of inventory"
+msgstr "Beschreibung vom Inventar"
+
+#: inventory.template.inc:81
+msgid "Date of the creation"
+msgstr "Erstelldatum"
+
+#: inventory.template.inc:91
+msgid "Time of the creation"
+msgstr "Erstellzeit"
+
+#: inventory.template.inc:108
+msgid "Some text"
+msgstr "-"
+
+#: inventory.template.inc:114
+msgid "Save"
+msgstr "Speichern"
+
+#: inventory.template.inc:239
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: inventory.template.inc:264
+msgid "Read"
+msgstr "Lesen"
+
+#: inventory.template.inc:274
+msgid "Write"
+msgstr "Schreiben"
+
+#: inventory.template.inc:279
+msgid "Administration"
+msgstr "Verwaltung"
+
+#: inventory.template.inc:323
+msgid "Date of creation (dd.mm.yyyy)"
+msgstr "Erstelldatum (dd.mm.yyyy)"
+
+#: inventory.template.inc:324
+msgid "Time of creation (hh:mm)"
+msgstr "Erstellzeit "
+
+#: inventory.validate.inc:14
+msgid "Please enter a valid inventory name"
+msgstr "Bitte geben Sie einen gültigen Inventarname ein"
+
+#: inventory.validate.inc:21
+msgid "Please enter a valid date (dd.mm.yyyy)"
+msgstr "Bitte geben Sie ein gültiges Datum ein (dd.mm.yyyy)"
+
+#: inventory.validate.inc:24
+msgid "Please enter a valid time (hh:mm)"
+msgstr "Bitte geben Sie eine gültige Zeit an (hh:mm)"
+
+#: inventory.validate.inc:28
+msgid "invalid area/permission denied"
+msgstr "Ungültiges Gebiet / Keine Berechtigung"
+
+#: inventory.validate.inc:36
+msgid ".@extension is an unallowed fileextension!"
+msgstr ".@extension ist eine unerlaubte Dateiendung!"
+
+#: inventory.module:161
+msgid "can view inventories"
+msgstr "Kann Inventare betrachten"
+
+#: inventory.module:164
+msgid "can create inventories"
+msgstr "Kann Inventare erstellen"
+
+#: inventory.module:19;54
+msgid "Display an inventory"
+msgstr "Inventar anzeigen"
+
+#: inventory.module:35
+msgid "Area"
+msgstr "Gebiet"
+
+#: inventory.module:36
+msgid "Display area of inventory"
+msgstr "Gebiet vom Inventar anzeigen"
+
+#: inventory.module:72
+msgid "Edit inventory"
+msgstr "Inventar bearbeiten"
+
+#: inventory.module:89
+msgid "Create"
+msgstr "Erstellen"
+
+#: inventory.module:90
+msgid "Create a new inventory"
+msgstr "Neues Inventar bearbeiten"
+
+#: inventory.module:105
+msgid "Inventory observations"
+msgstr "Inventarbeobachtungen"
+
+#: inventory.module:106
+msgid "Show all observations of an inventory"
+msgstr "Alle Beobachtungen eines Inventars anzeigen"
+
+#: inventory.module:121
+msgid "Inventories"
+msgstr "Inventare"
+
+#: inventory.module:122
+msgid "Returns inventories of an area in json"
+msgstr "Liefert Inventare von einem Gebiet in JSON"
+
+#: inventory.module:137
+msgid "Delete"
+msgstr "Löschen"
+
+#: inventory.module:138
+msgid "Delete inventory"
+msgstr "Inventar löschen"
+
+#: inventory.info:0
+msgid "inventory"
+msgstr "Inventar"
+
+#: inventory.info:0
+msgid "Manage inventories"
+msgstr "Inventare verwalten"
+
+#: inventory.info:0
+msgid "Naturvielfalt"
+msgstr "Naturvielfalt"
