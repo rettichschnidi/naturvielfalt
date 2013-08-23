@@ -230,9 +230,6 @@ jQuery(document).ready(function() {
 					observationmap.googlemap.fitBounds(bounds);
 				
 				return true;
-			},
-			error: function (XMLHttpRequest, textStatus, errorThrown) {
-				alert('could not load geometries');
 			}
 		});
 	};

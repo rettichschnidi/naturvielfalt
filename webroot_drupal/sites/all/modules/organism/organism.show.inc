@@ -178,6 +178,13 @@ function organism_show_classification($classificationid) {
 		$classificationid);
 
 	$organismsTableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 80,
+			'noSort' => true
+	);
+	
+	$organismsTableHeader[] = array(
 			'name' => t('Common name'),
 			'dbfield' => 'ol_name',
 			'dbExactField' => 'ol_name',
@@ -214,29 +221,25 @@ function organism_show_classification($classificationid) {
 	$organismsTableHeader[] = array(
 			'name' => t('Number of pictures'),
 			'dbfield' => 'imagescount',
-			'width' => 20,
-			'noSort' => true,
+			'width' => 20
 	);
 
 	$organismsTableHeader[] = array(
 			'name' => t('Number of videos'),
 			'dbfield' => 'videoscount',
 			'width' => 20,
-			'noSort' => true,
 	);
 
 	$organismsTableHeader[] = array(
 			'name' => t('Number of sounds'),
 			'dbfield' => 'soundscount',
 			'width' => 20,
-			'noSort' => true,
 	);
 
 	$organismsTableHeader[] = array(
 			'name' => t('Number of documents'),
 			'dbfield' => 'documentscount',
-			'width' => 20,
-			'noSort' => true,
+			'width' => 20
 	);
 
 	$render_array['organisms'] = array(
