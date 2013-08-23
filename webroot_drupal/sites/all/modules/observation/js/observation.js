@@ -89,7 +89,7 @@ jQuery(document).ready(function() {
 		var gridPrefs = $table[0].p;
 		url += '&query=' + gridPrefs.query + '&qtype=' + gridPrefs.qtype;
 		url += '&sortname=' + gridPrefs.sortname + '&sortorder=' + gridPrefs.sortorder;
-		url += '&rp=729';  // max limit for sql query, select all (2^64-1) rows
+		url += '&rp=18446744073709551615';  // max limit for sql query, select all (2^64-1) rows
 		
 		// load export url in a hidden iframe to get a download prompt
 		var $status = $flexidiv.find('.pPageStat');
