@@ -192,6 +192,26 @@ function organism_artgroup_get_attribute_by_name($attribute_name) {
 }
 
 /**
+ * This function is just a markup to provide the translations for dynamic attributes.
+ * Drupal will scan code at compiletime to find t() translations.
+ * Translate here all values inside the table 'organism_artgroup_attr'
+ */
+function observation_artgroup_attr_translations() {
+	$attributes_translations = array(
+			t('Accuracy'),
+			t('Comment'),
+			t('Commonness'),
+			t('Phenology'),
+			t('Determination'),
+			t('Origin'),
+			t('Occurence'),
+			t('Evidence available'),
+			t('Verified'),
+			t('Evaluationmethod')
+	);
+}
+
+/**
  * Return all or a single artgroup as array or as html tags
  * @param int $artgroup_id
  * @param boolean $as_html
