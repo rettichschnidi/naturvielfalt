@@ -265,7 +265,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			else {
 				$form['group']['details']['attributes'][$attribute['id']] = array(
 						'#id' => $attribute['id'],
-						'#title' => $attribute['name'],
+						'#title' => t($attribute['name']),
 						'#type' => $attribute['type_drupal'],
 						'#weight' =>$attribute['id']+12,
 						'#tree' => true,
@@ -720,15 +720,18 @@ function observation_form_add_js_tools($form, &$form_state) {
 	$tooltip['text']['count'] = t('Number of observed specimens.');
 	$tooltip['text']['observer'] = t('Name of observer (You)');
 	$tooltip['text']['detmethod'] = t('Select a method for determination from the dropdown menu.');
-	$tooltip['text']['Comment'] = t('Provide any additional information.');
-	$tooltip['text']['Accuracy'] = t('Precision of place of observation.');
-	$tooltip['text']['Verified'] = t('Verified by');
-	$tooltip['text']['Determination'] = t('Sureness of classification');
-	$tooltip['text']['Origin'] = t('Origin');
-	$tooltip['text']['Phenology'] = t('Phenology');
-	$tooltip['text']['Occurence'] = t('Occurence');
-	$tooltip['text']['Evidence available'] = t('Evidence available');
-	$tooltip['text']['Evaluationmethod'] = t('Evaluation Method');
+	
+	/* Tooltip for attributes */
+	$tooltip['text']['Comment_tooltip'] = t('Provide any additional information.');
+	$tooltip['text']['Accuracy_tooltip'] = t('Precision of place of observation.');
+	$tooltip['text']['Verified_tooltip'] = t('Verified by');
+	$tooltip['text']['Determination_tooltip'] = t('Determination');
+	$tooltip['text']['Origin_tooltip'] = t('Origin');
+	$tooltip['text']['Phenology_tooltip'] = t('Phenology');
+	$tooltip['text']['Occurence_tooltip'] = t('Occurence');
+	$tooltip['text']['Commonness_tooltip'] = t('Commonness');
+	$tooltip['text']['Evidence available_tooltip'] = t('Evidence available');
+	$tooltip['text']['Evaluationmethod_tooltip'] = t('Evaluationmethod');
 	
 	
 	$tooltip_options = 'position: {
@@ -750,14 +753,14 @@ function observation_form_add_js_tools($form, &$form_state) {
 
 	
 	$attributes_tooltips = '';
-	$observation_id = isset($form_state['values']['observation_id']) ? $form_state['values']['observation_id'] : 0;
-	$artgroup_id = isset($form_state['values']['group']['artgroup_id']) ? $form_state['values']['group']['artgroup_id'] : 0;
+	$observation_id = !empty($form_state['values']['observation_id']) ? $form_state['values']['observation_id'] : 0;
+	$artgroup_id = isset($form['group']['artgroup_id']['#value']) ? $form['group']['artgroup_id']['#value'] : 0;
 	if($artgroup_id) {
 		$observation_attributes = observation_get_attributes($observation_id, $artgroup_id);
 		foreach ($observation_attributes as $key => $attribute) {
 			$attributes_tooltips.= 'jQuery("#'.$attribute['id'].'").live("mouseover", function(event) {
 	 			$(this).qtip({
-			 	 content: "'.$tooltip['text'][$attribute['name']].'",
+			 	 content: "'.$tooltip['text'][$attribute['name'].'_tooltip'].'",
 	 				'.$tooltip_options.',
 				 overwrite: false,
 		 			show: {
