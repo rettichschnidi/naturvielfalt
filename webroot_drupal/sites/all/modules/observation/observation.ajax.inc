@@ -432,7 +432,10 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'oa.name AS artgroup_n',
 		// FIXME get more attributes than just Bemerkung
 		'oattr.value AS comment',
-		'coalesce(imagescount, 0) AS imagescount'
+		'coalesce(imagescount, 0) AS imagescount',
+		'coalesce(videoscount, 0) AS videoscount',
+		'coalesce(soundscount, 0) AS soundscount',
+		'coalesce(documentscount, 0) AS documentscount'
 			
 	);
 	
@@ -459,6 +462,10 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$sql['dbTable'] = '{observation} o';
 	
+	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
+	$soundtypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_SOUND)->mimeTypes);
+	$videotypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_VIDEO)->mimeTypes);
+	
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
 		//.' LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
 		.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
@@ -469,7 +476,39 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 		.' LEFT JOIN {area} a ON a.id = i.area_id'
 		.' LEFT JOIN {area_geometry} a_g ON a_g.id = a.area_geometry_id'
-		.' LEFT JOIN (SELECT gi.item_id, COUNT(gi.id) AS imagescount FROM {gallery_image} gi WHERE gi.item_type = \'observation\' GROUP BY gi.item_id) images ON images.item_id = o.id'    
+		.' LEFT JOIN 
+				(
+				SELECT gi.item_id, COUNT(gi.id) AS imagescount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\' 
+				AND fm.filemime IN (\''.$imagetypes.'\')  
+				GROUP BY gi.item_id
+				) images ON images.item_id = o.id'    
+		.' LEFT JOIN 
+				(
+				SELECT gi.item_id, COUNT(gi.id) AS videoscount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\'
+				AND fm.filemime IN (\''.$videotypes.'\') 
+				GROUP BY gi.item_id
+				) videos ON videos.item_id = o.id'
+		.' LEFT JOIN 
+				(
+				SELECT gi.item_id, COUNT(gi.id) AS soundscount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\'
+				AND fm.filemime IN (\''.$soundtypes.'\') 
+				GROUP BY gi.item_id
+				) sounds ON sounds.item_id = o.id'
+		.' LEFT JOIN 
+				(
+				SELECT ofm.observation_id, COUNT(*) AS documentscount 
+				FROM {observation_file_managed} ofm 
+				GROUP BY ofm.observation_id
+				) documents ON documents.observation_id = o.id'
 	;
 	
 	if ($observation_ids !== NULL) {
@@ -634,15 +673,6 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			// display the thumbnail (for the table view)
 			$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
 		}
-		
-		// number of videos
-		$row['cell']['videoscount'] = gallery_videos_count('observation', $row['id']);
-		
-		// number of sounds
-		$row['cell']['soundscount'] = gallery_sounds_count('observation', $row['id']);
-		
-		// number of documents
-		$row['cell']['documentscount'] = observation_documents_count($row['id']);
 		
 		/**
 		 * create the html source for the gallery view
