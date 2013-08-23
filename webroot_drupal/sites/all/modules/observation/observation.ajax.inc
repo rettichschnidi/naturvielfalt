@@ -469,7 +469,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 		.' LEFT JOIN {area} a ON a.id = i.area_id'
 		.' LEFT JOIN {area_geometry} a_g ON a_g.id = a.area_geometry_id'
-		.' LEFT JOIN (SELECT gi.item_id, COUNT(gi.id) AS imagescount FROM {gallery_image} gi GROUP BY gi.item_id) images ON images.item_id = o.id'    
+		.' LEFT JOIN (SELECT gi.item_id, COUNT(gi.id) AS imagescount FROM {gallery_image} gi WHERE gi.item_type = \'observation\' GROUP BY gi.item_id) images ON images.item_id = o.id'    
 	;
 	
 	if ($observation_ids !== NULL) {
