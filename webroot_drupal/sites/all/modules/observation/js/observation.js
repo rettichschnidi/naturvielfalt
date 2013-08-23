@@ -201,12 +201,13 @@ jQuery(document).ready(function() {
 		if (observation_ids.length < 1)
 			return true;
 		
-		$.getJSON(
-			observationmap.options.geometriesfetchurl,
-			{
+		$.ajax({
+			type: 'POST',
+			url: observationmap.options.geometriesfetchurl,
+			data: {
 				observation_ids: observation_ids
 			},
-			function(data) {
+			success: function (data) {
 				observationmap.loadGeometriesAndOverlaysFromJson(data);
 
 				var mapcontains = true;
@@ -229,9 +230,12 @@ jQuery(document).ready(function() {
 					observationmap.googlemap.fitBounds(bounds);
 				
 				return true;
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+				alert('could not load geometries');
 			}
-		);
-	}
+		});
+	};
 	
 	/**
 	 * Display the batch div, holding the select-toggle, delete and export buttons

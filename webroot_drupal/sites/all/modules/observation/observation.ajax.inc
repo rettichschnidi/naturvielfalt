@@ -712,8 +712,8 @@ function observation_get_observations_of_inventory_json($acl_level = 'ACL_READ',
  * @param array $inventory_ids
  */
 function observation_get_geometry_json($observation_data = false, $inventory_id = NULL) {
-	if (!$observation_data && isset($_REQUEST['observation_ids']))
-		$observation_data = $_REQUEST['observation_ids'];
+	if (!$observation_data && isset($_POST['observation_ids']))
+		$observation_data = $_POST['observation_ids'];
 	drupal_json_output(observation_get_geometries_acl_checked($observation_data, $inventory_id));
 }
 
