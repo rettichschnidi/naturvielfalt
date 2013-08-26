@@ -130,13 +130,15 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 	// get images
 	$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $observationdata['observation']['id']);
 	
-	// thumbnail
-	if ($images['count'] > 0) {
+		// thumbnail
+	for($i = 0; ($i < $images['count'] && $i < 4); $i++) {
 		// display the thumbnail (for the table view)
-		$form['image'] = array(
+		$form['image_'.$i] = array(
 				'#type' => 'markup',
 				'#markup' =>
-						'<img src="' . url('gallery/observation/' . $observationdata['observation']['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />',
+						'<a href="#">
+							<img stlye="margin-right:10px;" onclick="gallery_lightbox.openLightBoxEntry('.$observationdata['observation']['id'].');" src="' . url('gallery/observation/' . $observationdata['observation']['id'] . '/thumb/' . $images['images'][$i]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][$i]['title'] . '" height="80" width="80" />
+						</a>',
 				);
 	}
 	
