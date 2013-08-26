@@ -130,9 +130,9 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 	// get images
 	$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $observationdata['observation']['id']);
 	
-		// thumbnail
+	// thumbnail
 	for($i = 0; ($i < $images['count'] && $i < 4); $i++) {
-		// display the thumbnail (for the table view)
+		// display the thumbnail
 		$form['image_'.$i] = array(
 				'#type' => 'markup',
 				'#markup' =>
