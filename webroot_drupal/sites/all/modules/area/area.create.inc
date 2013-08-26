@@ -181,6 +181,9 @@ function area_save($form = false, &$form_state, $from_api = false) {
 							'area_geometry_id' => $geometry_id
 					))
 				->execute();
+			
+			// Read access for ALL group
+			add_group_to_acl($acl_id, variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_RED_WRITE'));
 		}
 		
 		/**
