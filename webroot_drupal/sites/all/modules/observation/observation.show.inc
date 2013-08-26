@@ -127,12 +127,26 @@ function observation_show_all_observations() {
  * @return array Drupal form
  */
 function observation_map_overview_form($form, &$form_state, $observationdata) {
+	// get images
+	$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $observationdata['observation']['id']);
+	
+	// thumbnail
+	if ($images['count'] > 0) {
+		// display the thumbnail (for the table view)
+		$form['image'] = array(
+				'#type' => 'markup',
+				'#markup' =>
+						'<img src="' . url('gallery/observation/' . $observationdata['observation']['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />',
+				);
+	}
+	
 	$form['table'] = observation_get_table(
 		$observationdata,
 		true);
 	$form['table']['#attributes'] = array(
 			'id' => 'infowindow_tabular_data'
 	);
+	
 	/**
 	 * Display the "edit" button only if user has write permission to this area
 	 */
@@ -156,6 +170,7 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 				'observation/' . $observationdata['observation']['id']
 						. '/show')
 	);
+	
 	return $form;
 }
 
