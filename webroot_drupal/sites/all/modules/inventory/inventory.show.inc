@@ -163,7 +163,7 @@ function inventory_get_standard_datatable_headers($init_sort = false,
 	);
 	
 	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom.png" />',
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/List.png" />',
 			'dbfield' => 'showColumn',
 			'width' => 16,
 			'noSort' => true
