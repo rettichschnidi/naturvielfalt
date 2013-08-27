@@ -534,6 +534,11 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	return $form;
 }
 
+/**
+ * 
+ * @param unknown $form
+ * @param unknown $form_state
+ */
 function observation_add_uploadslot($form, &$form_state) {
 	return $form['media']['upload'];
 }
