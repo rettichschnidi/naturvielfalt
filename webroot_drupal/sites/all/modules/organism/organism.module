@@ -468,7 +468,7 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 		'#theme' => 'datatable',
 		'#header' => $tableHeader,
 		'#rows' => $rows,
-		'#tableWidth' => 900,
+		'#tableWidth' => 917,
 		'#tableHeight' => 150,
 		'#id_table' => 'files',
 	);
