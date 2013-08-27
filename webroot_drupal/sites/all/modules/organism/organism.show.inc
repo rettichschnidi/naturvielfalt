@@ -435,7 +435,7 @@ function organism_show_organism($organismdata) {
 			);
 			$render_array['div']['area_table'] = array(
 					'#theme' => 'datatable',
-					'#header' => observation_get_standard_datatable_headers(
+					'#header' => observation_get_organism_datatable_headers(
 						9,
 						'desc'),
 					'#title' => t('Observations'),
