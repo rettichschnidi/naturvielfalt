@@ -413,89 +413,99 @@ function organism_show_organism($organismdata) {
 				'#title' => t('Map'),
 				'#weight' => 4
 		);
-		$render_array['div']['map'] = array(
-				'#theme' => 'area',
-				'#ch1903' => true,
-				'#search' => true,
-				'#mapid' => 'observationmap',
-				'#geometries_fetch_url' => base_path()
-						. 'observation/geometry/json',
-				'#geometries_autoload' => false,
-				'#infowindow_content_fetch_url_observation' => base_path()
-						. 'observation/{ID}/overview/ajaxform',
-				'#height' => '300px'
-		);
-		$render_array['div']['space'] = array(
-				'#type' => 'markup',
-				'#markup' => '<p/>'
-		);
-		$render_array['div']['area_table'] = array(
-				'#theme' => 'datatable',
-				'#header' => observation_get_standard_datatable_headers(
-					9,
-					'desc'),
-				'#title' => t('Observations'),
-				'#id_table' => 'observations',
-				'#tableWidth' => 917,
-				'#options' => array(
-						'jsonUrl' => base_path() . "observation/get/organism/" . $organismdata['id'],
-						'rowClick' => 'rowClick',
-						'rowClickHandler' => '
-						function rowClick(celDiv, id) {
-						jQuery(celDiv).click(
-						function() {
-						observationmap.selectObservation(id);
-	}
-				)
-	}',
-						'rpShowAll' => true,
-						'preProcessHandler' => 'observation.tablePreProcess',
-						'onSuccessHandler' => (($user->uid == 0) ? ''
-								: 'observation.onTableSuccess'),
-						/* only show the delete and export buttons if user is logged in */
-						'gallery_enabled' => true,
-						'gallery_image_sources' => array(
-								'selected' => array(
-										'value' => DATATABLE_IMGSRC_BELEG,
-										'option' => t('only proof images')
-								),
-								array(
-										'value' => DATATABLE_IMGSRC_PORTRAIT,
-										'option' => t('only portrait images')
-								),
-								array(
-										'value' => DATATABLE_IMGSRC_BELEG_PORTRAIT,
-										'option' => t(
-											'proof images, then portrait images')
-								),
-								array(
-										'value' => DATATABLE_IMGSRC_PORTRAIT_BELEG,
-										'option' => t(
-											'portrait images, then proof images')
-								)
-						),
-						// Filters to add to the filterDiv above the table. The gallery image source
-						// filter has a weight of 10, the table/gallery buttons 4 and 5 respectively.
-						'custom_filter' => array(
-								'acl_filter' => array(
-										'#type' => 'select',
-										'#name' => 'acl_filter',
-										'#title' => t('Observations') . ':',
-										'#options' => array(
-												'all' => t('Public'),
-												'own' => t('Own'),
-												'writeable' => t('Editables')
-										),
-										'#attributes' => array(
-												'class' => array(
-														'acl_filter'
-												)
-										),
-										'#weight' => 8
-								)
-						)
-				)
-		);
+		
+		$result = db_query("SELECT * FROM {observation} WHERE organism_id=:organism_id", array(':organism_id' => $organismdata['id']));
+		$observationCount = $result->rowCount();
+		if($observationCount > 0) {
+			$render_array['div']['map'] = array(
+					'#theme' => 'area',
+					'#ch1903' => true,
+					'#search' => true,
+					'#mapid' => 'observationmap',
+					'#geometries_fetch_url' => base_path()
+							. 'observation/geometry/json',
+					'#geometries_autoload' => false,
+					'#infowindow_content_fetch_url_observation' => base_path()
+							. 'observation/{ID}/overview/ajaxform',
+					'#height' => '300px'
+			);
+			$render_array['div']['space'] = array(
+					'#type' => 'markup',
+					'#markup' => '<p/>'
+			);
+			$render_array['div']['area_table'] = array(
+					'#theme' => 'datatable',
+					'#header' => observation_get_standard_datatable_headers(
+						9,
+						'desc'),
+					'#title' => t('Observations'),
+					'#id_table' => 'observations',
+					'#tableWidth' => 917,
+					'#options' => array(
+							'jsonUrl' => base_path() . "observation/get/organism/" . $organismdata['id'],
+							'rowClick' => 'rowClick',
+							'rowClickHandler' => '
+							function rowClick(celDiv, id) {
+							jQuery(celDiv).click(
+							function() {
+							observationmap.selectObservation(id);
+		}
+					)
+		}',
+							'rpShowAll' => true,
+							'preProcessHandler' => 'observation.tablePreProcess',
+							'onSuccessHandler' => (($user->uid == 0) ? ''
+									: 'observation.onTableSuccess'),
+							/* only show the delete and export buttons if user is logged in */
+							'gallery_enabled' => true,
+							'gallery_image_sources' => array(
+									'selected' => array(
+											'value' => DATATABLE_IMGSRC_BELEG,
+											'option' => t('only proof images')
+									),
+									array(
+											'value' => DATATABLE_IMGSRC_PORTRAIT,
+											'option' => t('only portrait images')
+									),
+									array(
+											'value' => DATATABLE_IMGSRC_BELEG_PORTRAIT,
+											'option' => t(
+												'proof images, then portrait images')
+									),
+									array(
+											'value' => DATATABLE_IMGSRC_PORTRAIT_BELEG,
+											'option' => t(
+												'portrait images, then proof images')
+									)
+							),
+							// Filters to add to the filterDiv above the table. The gallery image source
+							// filter has a weight of 10, the table/gallery buttons 4 and 5 respectively.
+							'custom_filter' => array(
+									'acl_filter' => array(
+											'#type' => 'select',
+											'#name' => 'acl_filter',
+											'#title' => t('Observations') . ':',
+											'#options' => array(
+													'all' => t('Public'),
+													'own' => t('Own'),
+													'writeable' => t('Editables')
+											),
+											'#attributes' => array(
+													'class' => array(
+															'acl_filter'
+													)
+											),
+											'#weight' => 8
+									)
+							)
+					)
+			);
+		} else {
+			$render_array['div']['noObservationsFound'] = array(
+					'#type' => 'markup',
+					'#markup' => t('No observations found for this species')
+			);
+		}
 		$render_array['VideoGallery'] = gallery_list_renderer(
 			'videos',
 			'organismreference',
