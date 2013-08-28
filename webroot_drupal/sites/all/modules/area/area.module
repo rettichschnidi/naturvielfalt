@@ -323,57 +323,41 @@ function area_menu() {
 			'file' => 'area.ajax.inc',
 	);
 
-	if (function_exists('gallery_list_renderer')) {
-		$items['area/%area/gallery'] = array(
-				'title' => 'Gallery',
-				'description' => 'View the area as a gallery of organisms',
-				'page callback' => 'area_gallery',
-				'page arguments' => array(
-						1
-				),
-				'access arguments' => array(
-						AREA_ACCESS
-				),
-				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-				'file' => 'area.inc',
-				'weight' => 6
-		);
+	//removed gallery in area/edit
+// 	if (function_exists('gallery_list_renderer')) {
+// 		$items['area/%area/gallery'] = array(
+// 				'title' => 'Gallery',
+// 				'description' => 'View the area as a gallery of organisms',
+// 				'page callback' => 'area_gallery',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'area.inc',
+// 				'weight' => 6
+// 		);
 
-		$items['area/%area/list'] = array(
-				'title' => 'List',
-				'description' => 'View the area as a list of organisms',
-				'page callback' => 'area_list',
-				'page arguments' => array(
-						1
-				),
-				'access arguments' => array(
-						AREA_ACCESS
-				),
-				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-				'file' => 'area.inc',
-				'weight' => 7
-		);
-	}
+// 		$items['area/%area/list'] = array(
+// 				'title' => 'List',
+// 				'description' => 'View the area as a list of organisms',
+// 				'page callback' => 'area_list',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'area.inc',
+// 				'weight' => 7
+// 		);
+// 	}
 
-	$items['area/%area/delete_file/%'] = array(
-			'title' => 'Delete file',
-			'description' => 'Delete an existing file',
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'area_delete_file',
-					1,
-					3
-			),
-			'access arguments' => array(
-					1,
-					'ACL_WRITE'
-			),
-			'access callback' => 'area_check_access',
-			'file' => 'area.edit.inc',
-			'weight' => 10,
-	);
 	return $items;
 }
 
