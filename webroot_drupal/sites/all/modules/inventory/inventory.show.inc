@@ -16,7 +16,7 @@ function inventory_show_area_inventories($area, $edit = false) {
 			'#title'    => t('Inventories of @area', array('@area' => $area['name'])),
 			'#id_table' => 'inventories',
 			'#tableWidth' => 918,
-			'#tableHeight' => 130,
+			'#tableHeight' => 120,
 			'#options'  => array(
 					'jsonUrl'               => base_path() . 'inventory/area/'.$area['id'].'/json',
 					'rowClick'              => 'rowClick',
@@ -54,7 +54,7 @@ function inventory_show_observations($area_id, $inventory_id = NULL, $showtoolba
 							: t('Observations of @area', array('@area' => $area['name'])),
 			'#id_table' => 'observations',
 			'#tableWidth' => 918,
-			'#tableHeight' => 130,
+			'#tableHeight' => 160,
 			'#options'  => array(
 				'jsonUrl'               => base_path() . 'inventory/observations/'.$area_id.'/'.$inventory_id.'/json',
 				'rowClick'              => 'rowClick',
