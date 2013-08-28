@@ -1209,4 +1209,14 @@ function observation_new($inventory_id = NULL) {
 // 	return observation_form();
 }
 
+/**
+ * Return the number of observations for the given organism.
+ * 
+ * @param int $organism_id
+ */
+function get_number_of_observations_for_organism($organism_id) {
+	$result = db_query("SELECT * FROM {observation} WHERE organism_id=:organism_id", array(':organism_id' => $organism_id));
+	return $result->rowCount();
+}
+
 ?>

@@ -6,6 +6,7 @@
  */
 
 module_load_include('inc', 'organism');
+module_load_include('inc', 'observation');
 
 /**
  * Menu callback. This will be called for visits to /organism.
@@ -414,8 +415,7 @@ function organism_show_organism($organismdata) {
 				'#weight' => 4
 		);
 		
-		$result = db_query("SELECT * FROM {observation} WHERE organism_id=:organism_id", array(':organism_id' => $organismdata['id']));
-		$observationCount = $result->rowCount();
+		$observationCount = get_number_of_observations_for_organism($organismdata['id']);
 		if($observationCount > 0) {
 			$render_array['div']['map'] = array(
 					'#theme' => 'area',
