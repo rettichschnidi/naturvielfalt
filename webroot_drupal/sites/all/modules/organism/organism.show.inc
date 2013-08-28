@@ -443,7 +443,7 @@ function organism_show_organism($organismdata) {
 					'#id_table' => 'observations',
 					'#tableWidth' => 917,
 					'#options' => array(
-							'jsonUrl' => base_path() . "observation/get/organism/" . $organismdata['id'],
+							'jsonUrl' => base_path() . "observation/get/organism/" . $organismdata['id'] . "/all",
 							'rowClick' => 'rowClick',
 							'rowClickHandler' => '
 							function rowClick(celDiv, id) {

@@ -21,7 +21,7 @@ jQuery(document).ready(function() {
 	}
 	$('.acl_filter').change(function(event) {
 		var tableId = $(event.target).closest('div.flexigrid').find('div.bDiv table').first().attr('id');
-		var filter = $(this).val()
+		var filter = $(this).val();
 		observation.aclFilter(tableId, filter);
 	});
 	
