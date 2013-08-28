@@ -237,7 +237,7 @@ function observation_menu() {
 			'description' => 'Get readable observations',
 			'page callback' => 'observation_get_organism_json',
 			'page arguments' => array(
-					'own',
+					'ACL_ADMIN',
 					3
 			),
 			'access arguments' => array(
@@ -269,7 +269,7 @@ function observation_menu() {
 			'description' => 'Get own observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
-					'own'
+					'ACL_ADMIN'
 			),
 			'access arguments' => array(
 					ACCESS_OBSERVATION
