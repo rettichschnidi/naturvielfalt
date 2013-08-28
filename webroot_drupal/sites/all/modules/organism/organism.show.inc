@@ -106,10 +106,15 @@ function organism_show_classification($classificationid) {
 	
 	// hierarchy level up buttons
 	// insert html in title to not change flexigrid.js...
-	$hierarchyLevelUpButtons = '</div>'
-		.'<div class="mUp mButton" data-cid="' . $classificationObj->oc_parent_id . '"><span /></div>'
-		.'<div class="mTop mButton" data-cid="' . $classificationObj->oc_prime_father_id . '"><span />';
-	
+	if($classificationid == $classificationObj->oc_prime_father_id) {
+		$hierarchyLevelUpButtons = '</div>'
+				.'<div class="mUp mButton" data-cid="navigateToMenu"><span /></div>'
+				.'<div class="mTop mButton" data-cid="navigateToMenu"><span />';
+	} else {
+		$hierarchyLevelUpButtons = '</div>'
+				.'<div class="mUp mButton" data-cid="' . $classificationObj->oc_parent_id . '"><span /></div>'
+				.'<div class="mTop mButton" data-cid="' . $classificationObj->oc_prime_father_id . '"><span />';
+	}
 	// Set the table header
 	$classificationTableHeader[] = array(
 			'name' => t('Internal id'),
