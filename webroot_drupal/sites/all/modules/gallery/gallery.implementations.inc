@@ -32,12 +32,6 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 	$categories = array();
 	$destination = array();
 
-	// check the directory, create it if not exists
-	$key = $module_name . ':' . $entry_array['item_id'];
-	$destination[$key] = 'public://naturvielfalt/gallery/' . $module_name . '/'
-			. $entry_array['item_id'];
-	file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
-
 	$img_ids = array();
 
 	// save each files
@@ -84,6 +78,17 @@ function gallery_implementation_save_manual($module_name, $entry_array,
 							0
 					),
 			);
+			
+			// check the directory, create it if not exists
+			$key = $module_name . ':' . $entry_array['item_id'];
+			$add_to_gallery = in_array($mediaInfo->mediaType, array(GALLERY_MEDIATYPE_IMAGE, GALLERY_MEDIATYPE_SOUND, GALLERY_MEDIATYPE_VIDEO));
+			
+			$destination[$key] = ($add_to_gallery) ?
+			'public://naturvielfalt/gallery/' . $module_name . '/'. $entry_array['item_id']
+			: 'public://naturvielfalt/' . $module_name . '/'. $entry_array['item_id'];
+			
+			file_prepare_directory($destination[$key], FILE_CREATE_DIRECTORY);
+			
 			$file = file_save_upload($fkey, $validators, $destination[$key], FILE_EXISTS_RENAME);
 			if ($file) {
 				$file->status |= FILE_STATUS_PERMANENT;

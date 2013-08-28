@@ -4,7 +4,7 @@
  * @author André Kälin, 2013
  * @copyright 2012 Naturwerk, Brugg
  */
-module_load_include('inc', 'area', 'area.create');
+module_load_include('inc', 'area', 'area.ajax');
 module_load_include('inc', 'area', 'area.validate');
 
 define('WS_API_LOG_TYPE', 'webservice api');
