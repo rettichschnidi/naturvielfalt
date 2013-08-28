@@ -1050,6 +1050,13 @@ function area_get_standard_datatable_headers($init_sort = false,
 	);
 	
 	$tableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 80,
+			'noSort' => true
+	);
+	
+	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
 			'dbExactField' => 'a.name',
@@ -1082,6 +1089,12 @@ function area_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'country',
 			'dbExactField' => 'a_s.country',
 			'width' => 180
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Date'),
+			'dbfield' => 'date',
+			'width' => 120
 	);
 	
 	$tableHeader[] = array(

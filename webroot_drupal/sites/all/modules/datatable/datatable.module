@@ -551,4 +551,162 @@ EOT;
 		</div>
 EOT;
 }
+
+/**
+ * returns the html-source (<img> tag and it's caption) for displaying an area image in the datatable-gallery addon
+ * there are four different display states:
+ *
+ * @param int $area_id the id of this area or NULL if not existent
+ * @param array $display_data an array containing two sub-array with the keys "icons" and "data"
+ * 		  example: array(
+ * 						'icons' => array('<a href="">editicon...</a>', ...),
+ * 						'data' => array('Flora', 'Solidago Gigantea', 'Goldrute...')
+ * 				   )
+ * 		  the icons and data row are displayed below the image
+ * @param array $images an array of area images for this area. if you have already search for $images, pass them in to prevent multiple selects
+ */
+function datatable_get_gallery_area_image($area_id, $display_data, $images = NULL){
+	
+	// get the number of images for this area
+	$area_images = ($images == NULL) ? array( 'count' => 0) : $images;
+	if($images == NULL && $area_id != NULL){
+		$area_images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'area', $area_id);
+	}
+	
+	// has the user the right to upload pictures?
+	$manage_area_link = '';
+	$manage_area_url = false;
+	if(area_write_access_by_id($area_id)){
+		$manage_area_url = "/gallery/area/$area_id/images/edit";
+		$manage_area_link = "<a href='$manage_area_url'>" . t('add area image') . "</a>";
+	}
+
+
+	// if there are no images, we display an empty div and some links
+	if($area_images['count'] == 0) {
+		$result = <<<EOT
+		<div class="datatable_gallery_no_image">
+			<div class="datatable_gallery_no_image_info">
+				<center>
+				<img src="/sites/all/modules/datatable/images/no_photo.png" class="datatable_gallery_no_image"/><br/>
+				$manage_area_link
+				</center>
+			</div>
+		</div>
+EOT;
+	} else {
+		// render a gallery
+		$gallery = array();
+		$imgpe_link = '#';
+		$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'area',$area_id);
+		$img = $gallery['edit']['gallery_list']['#images']['images'][0];
+		$img_type_link = url(
+				'gallery/' . $img['item_type'] . '/' . $img['item_id']
+				. '/thumb/' . $img['id'] . '/gallery_large');
+			
+		$img_type = t('Area image (@num_images)', array('@num_images' => $area_images['count']));
+		$img_add = t('add area image');
+			
+		$img_add_link = $manage_area_url;
+
+		$entryID = $img['item_id'];
+
+		//prepare other images (2-n) of an area to be ready to display in a lightbox
+		$otherimages = array();
+		for($i = 0 ; $i < count($gallery['edit']['gallery_list']['#images']['images']); $i++) {
+			$tmp_img = $gallery['edit']['gallery_list']['#images']['images'][$i];
+			$img_url = url(
+					'gallery/' . $tmp_img['item_type'] . '/' . $tmp_img['item_id']
+					. '/thumb/' . $tmp_img['id'] . '/gallery_large');
+				
+			//prepare caption
+			$captionclass = "caption";
+			$caption = '';
+			if ($tmp_img['title'])
+				$caption .= '<strong>' . $tmp_img['title'] . '</strong>';
+			if ($tmp_img['description'])
+				$caption .= ' <small>' . $tmp_img['description'] . '</small>';
+			if ($caption)
+				$caption = '<span class="title">' . $caption . '</span>';
+			if ($tmp_img['location'] || $tmp_img['author'])
+				$caption .= '<span class="author">&copy; ' . $tmp_img['author']
+				. ($tmp_img['location'] ? ', ' . $tmp_img['location'] : '')
+				. '</span>';
+				
+			//call_user_func_array leads somehow to problems: duplicate links, jquery selectors for lightbox not working correctly
+			// 			$types = _gallery_types();
+			// 			if (array_key_exists($tmp_img['item_type'], $types)
+			// 					&& array_key_exists(
+			// 							'image_caption',
+			// 							$types[$tmp_img['item_type']]))
+
+				// 				$caption .= ' <em>'
+				// 						. call_user_func_array(
+				// 								$types[$tmp_img['item_type']]['image_caption'],
+				// 								array($tmp_img['item_id'])) . '</em>';
+
+			$imgfooter = '<div class="'
+					. $captionclass . '">'
+							. ($caption ? '<p class="captionText">' . $caption . '</p>'
+									: '').'</div>';
+
+			$otherimages[$i] = '<a href="'.$img_url.'">'.$imgfooter.'</a>';
+		}
+		$otherimages = implode('', $otherimages);
+
+		//remove images from an entry n-2
+		if(count($gallery['edit']['gallery_list']['#images']['images']) > 1) {
+			$gallery['edit']['gallery_list']['#images']['images'] = array(
+					$img
+			);
+		}
+		$result = drupal_render($gallery['edit']['gallery_list']);
+
+		$result = <<<EOT
+		<div class="datatable_gallery_image_container">
+			<div style="position: relative;">
+				$result
+				<span class="datatable_gallery_image_type">
+					<a onclick="gallery_lightbox.openLightBoxEntry($entryID);" class="datatable_gallery_image_type">
+						$img_type
+						<div name="lightbox_entry_$entryID" style="display:none;">
+							$otherimages
+						</div>
+					</a>
+				</span>
+				<span class="datatable_gallery_image_add">
+					<a href="$img_add_link" class="datatable_gallery_image_type">$img_add</a>
+				</span>
+			</div>
+		</div>
+EOT;
+	}
+
+	// now add the edit-icons and the data 
+	// to the result
+	$first_data_row = '';
+	$icons = '';
+	$remaining_data = '';
+
+	if(array_key_exists('data', $display_data) && count($display_data['data']) > 0){
+		$first_data_row = $display_data['data'][0];
+		for($i=1;$i<count($display_data['data']);$i++)
+			$remaining_data .= '<br />' . $display_data['data'][$i];
+	}
+
+	if(array_key_exists('icons', $display_data) && is_array($display_data['icons'])){
+		$icons = implode('&nbsp;', $display_data['icons']);
+	}
+
+	return <<<EOT
+		$result
+		<div class="datatable_gallery_info">
+		$first_data_row
+		<span class="datatable_gallery_icons">
+		$icons
+		</span>
+		$remaining_data
+		</div>
+EOT;
+}
 ?>

@@ -14,7 +14,7 @@ module_load_include('inc', 'inventory', 'inventory.show');
  *
  * @return render array
  */
-function area_show_all_areas($onlyMyAreas = false) {
+function area_show_all_areas() {
 	global $user;
 	
 	$output['message'] = array(
@@ -24,28 +24,16 @@ function area_show_all_areas($onlyMyAreas = false) {
 				<div class="messages status"></div>
 			</div>'
 	);
-	
-	if ($onlyMyAreas) {
-		$output['map'] = array(
-				'#mapid' => 'areamap',
-				'#search' => true,
-				'#ch1903' => true,
-				'#geometries_fetch_url' => base_path() . 'areas/own/json',
-				'#infowindow_content_fetch_url_area' => base_path()
-						. 'area/{ID}/areaoverview/ajaxform',
-				'#theme' => 'area'
-		);
-	} else {
-		$output['map'] = array(
-				'#mapid' => 'areamap',
-				'#search' => true,
-				'#ch1903' => true,
-				'#geometries_fetch_url' => base_path() . 'areas/json',
-				'#infowindow_content_fetch_url_area' => base_path()
-						. 'area/{ID}/areaoverview/ajaxform',
-				'#theme' => 'area'
-		);
-	}
+
+	$output['map'] = array(
+			'#mapid' => 'areamap',
+			'#search' => true,
+			'#ch1903' => true,
+			'#geometries_fetch_url' => base_path() . 'areas/json',
+			'#infowindow_content_fetch_url_area' => base_path()
+					. 'area/{ID}/areaoverview/ajaxform',
+			'#theme' => 'area'
+	);
 
 	$output['space'] = array(
 			'#type' => 'markup',
@@ -64,12 +52,12 @@ function area_show_all_areas($onlyMyAreas = false) {
 	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
-		'#header'   =>  area_get_standard_datatable_headers($init_sort = false,
-		$init_sort2 = false),
+		'#header'   =>  area_get_standard_datatable_headers(11,
+		'DESC'),
 		'#title'    => t('Areas'),
 		'#id_table' => 'areas',
 		'#options'  => array(
-					'jsonUrl' => base_path() . ($onlyMyAreas ? "areas/own/datatablejson": "areas/all/datatablejson"),
+					'jsonUrl' => base_path() . "areas/get/all",
 					'rowClick'              => 'rowClick',
 					'rowClickHandler' 		=> "function rowClick(celDiv, id) {
 						jQuery(celDiv).click(
@@ -81,37 +69,24 @@ function area_show_all_areas($onlyMyAreas = false) {
 			'rpShowAll'             => true,
 			'preProcessHandler'     => 'area.tablePreProcess',
  			'onSuccessHandler'      => ( ($user->uid == 0) ? '' : 'area.onTableSuccess' ),	/* only show the delete and export buttons if user is logged in */
-// 			'onSuccessHandler'      => 'area.onTableSuccess',
+			'gallery_enabled'       => true,
+			'gallery_image_sources' => false,
 			// Filters to add to the filterDiv above the table. The gallery image source
 			// filter has a weight of 10, the table/gallery buttons 4 and 5 respectively.
-// 			'custom_filter' => array(
-// 				'acl_filter' => array(
-// 					'#type' => 'select',
-// 					'#name' => 'acl_filter',
-// 					'#title' => t('Areas') . ':',
-// 					'#options' => array(
-// 						'all'       => t('Public'),
-// 						'own'       => t('Own'),
-// 						'writeable' => t('Editables')),
-// 					'#attributes' => array(
-// 						'class' => array('acl_filter')),
-// 					'#weight' => 8
-// 				),
-				// Artgroup filter is made as markup because of white spaces in the options.
-				// Drupal_render converts &nbsp; into &amp;nbsp; and because indenting
-				// options with &nbsp; is the most reliable way, it's done with #markup.
-// 				'artgroup' => array(
-// 					'#type'   => 'markup',
-// 					'#markup' => '
-// 						<div class="form-item form-type-select form-item-artgroup-filter">
-// 							<label>' . t('Artgroup') . ':</label>
-// 							<select name="artgroup_filter" class="artgroup_filter form-select">
-// 								' . organism_artgroup_get_all_as_option() . '
-// 							</select>
-// 						</div>',
-// 					'#weight' => 9
-// 				)
-// 			)
+			'custom_filter' => array(
+				'acl_filter' => array(
+					'#type' => 'select',
+					'#name' => 'acl_filter',
+					'#title' => t('Areas') . ':',
+					'#options' => array(
+						'all'       => t('Public'),
+						'own'       => t('Own'),
+						'writeable' => t('Editables')),
+					'#attributes' => array(
+						'class' => array('acl_filter')),
+					'#weight' => 8
+				),
+			)
 		)
 	);
 					
