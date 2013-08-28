@@ -314,6 +314,7 @@ jQuery(document).ready(function() {
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
 		}
 	};
+	
 });
 
 /**
