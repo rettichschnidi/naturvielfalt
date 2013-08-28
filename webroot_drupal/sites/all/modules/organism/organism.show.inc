@@ -6,6 +6,7 @@
  */
 
 module_load_include('inc', 'organism');
+module_load_include('inc', 'observation');
 
 /**
  * Menu callback. This will be called for visits to /organism.
@@ -290,8 +291,6 @@ function organism_show_classification($classificationid) {
  */
 function organism_show_organism($organismdata) {
 	$observation_path = drupal_get_path('module', 'observation');
-	drupal_add_css($observation_path . '/css/observation.css');
-	drupal_add_js($observation_path . '/js/observation.js');
 	
 	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
 	drupal_add_js('jQuery(document).ready(function () { jQuery("#files a").attr("target", "_blank"); });', 'inline');
@@ -414,9 +413,11 @@ function organism_show_organism($organismdata) {
 				'#weight' => 4
 		);
 		
-		$result = db_query("SELECT * FROM {observation} WHERE organism_id=:organism_id", array(':organism_id' => $organismdata['id']));
-		$observationCount = $result->rowCount();
+		$observationCount = get_number_of_observations_for_organism($organismdata['id']);
 		if($observationCount > 0) {
+			drupal_add_css($observation_path . '/css/observation.css');
+			drupal_add_js($observation_path . '/js/observation.js');
+			
 			$render_array['div']['map'] = array(
 					'#theme' => 'area',
 					'#ch1903' => true,
