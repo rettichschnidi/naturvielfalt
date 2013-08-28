@@ -47,94 +47,6 @@ function area_show_all_areas($onlyMyAreas = false) {
 		);
 	}
 
-	$tableHeader[] = array(
-			'name' => t('Internal Id'),
-			'idField' => true,
-			'dbfield' => 'id',
-			'hide' => true,
-			'width' => 30
-	);
-
-	global $base_url;
-	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
-	
-	$tableHeader[] = array(
-			'name' => '<input class="gridSelect" type="checkbox" disabled />',
-			'dbfield' => 'selectColumn',
-			'width' => 20,
-			'noSort' => true,
-	);
-	
-	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom.png" />',
-			'dbfield' => 'showColumn',
-			'width' => 16,
-			'noSort' => true,
-	);
-	
-	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/Modify.png" />',
-			'dbfield' => 'editColumn',
-			'width' => 16,
-			'noSort' => true,
-	);
-	
-	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
-			'dbfield' => 'zoominColumn',
-			'width' => 16,
-			'noSort' => true,
-	);
-	
-	$tableHeader[] = array(
-			'name' => t('Name'),
-			'dbfield' => 'name',
-			'dbExactField' => 'a.name',
-			'width' => 310,
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Altitude [m]'),
-			'dbfield' => 'altitude',
-			'dbExactField' => 'a_s.altitude',
-			'width' => 60
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Township'),
-			'dbfield' => 'township',
-			'dbExactField' => 'a_s.township',
-			'width' => 150
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Canton'),
-			'dbfield' => 'canton',
-			'dbExactField' => 'a_s.canton',
-			'width' => 40
-	);
-
-	$tableHeader[] = array(
-			'name' => t('Country'),
-			'dbfield' => 'country',
-			'dbExactField' => 'a_s.country',
-			'width' => 180
-	);
-
-	$tableHeader[] = array(
-			'name' => t('User'),
-			'dbfield' => 'username',
-			'dbExactField' => 'u.name',
-			'width' => 120
-	);
-	
-	$tableHeader[] = array(
-			'name' => t('Type'),
-			'dbfield' => 'geometry_type',
-			'dbExactField' => 'a_s.geom',
-			'width' => 120
-	);
-
 	$output['space'] = array(
 			'#type' => 'markup',
 			'#markup' => '<p/>'
@@ -152,7 +64,8 @@ function area_show_all_areas($onlyMyAreas = false) {
 	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
-		'#header'   =>  $tableHeader,
+		'#header'   =>  area_get_standard_datatable_headers($init_sort = false,
+		$init_sort2 = false),
 		'#title'    => t('Areas'),
 		'#id_table' => 'areas',
 		'#options'  => array(

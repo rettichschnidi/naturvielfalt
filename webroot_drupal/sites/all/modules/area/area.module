@@ -293,25 +293,6 @@ function area_menu() {
 			'type' => MENU_CALLBACK
 	);
 
-	/* Edit an area */
-	$items['area/%area/permissions'] = array(
-			'title' => 'Edit permission',
-			'description' => 'Edit the permission of this area.',
-			'page callback' => 'area_edit_permission',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					1,
-					'ACL_ADMIN'
-			),
-			'access callback' => 'area_check_access',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.admin.inc',
-			'weight' => 4
-	);
-
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
 	$items['area/%area/areaoverview/ajaxform'] = array(
 			'title' => 'Area overview form',
