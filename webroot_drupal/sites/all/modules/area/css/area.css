@@ -29,3 +29,7 @@
 #area-edit-comment {
 	clear: both;
 }
+
+span.datatable_gallery_icons input.gridSelect {
+	vertical-align: middle;
+}
