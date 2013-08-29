@@ -109,7 +109,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	drupal_add_css(drupal_get_path('module', 'area') . '/css/area.css');
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
-	drupal_set_title($areadata['name']);
+	drupal_set_title(t('area').' '.$areadata['name']);
 	
 	//load js for observation table/map
 	$observation_path = drupal_get_path('module', 'observation');
@@ -127,24 +127,77 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	$output['area'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Area details'),
-			'#weight' => 1,
 			'#attributes' => array(
 					'id' => 'area-show-details' // required for CSS
 			),
+			'#weight' => 1
 	);
+	
+	/* Build the content of the table, leave out empty fields */
+	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
+	/* Create a fieldset for the static google maps */
+	$output['area_map'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Map'),
+			'#attributes' => array(
+					'id' => 'area-show-map', // required for CSS
+					'name' => 'map' //used for anchor
+			)
+	);
+	
+	$output['area_map']['map'] = array(
+			'#theme' => 'area',
+			'#mapid' => 'observationmap',
+			'#ch1903' => true,
+			'#showall' => false,
+			'#scalecontrol' => true,
+			'#action' => 'show',
+			'#reticle' => false,
+			'#geometry_edit_id' => (int) $areadata['id'],
+			'#defaultzoom' => '15',
+			'#infowindow_content_fetch_url_area' => base_path()
+			. 'area/{ID}/areaoverview/ajaxform',
+			'#infowindow_content_fetch_url_observation' => base_path()
+			. 'observation/{ID}/overview/ajaxform',
+			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
+	);
+	
+	/* Create a fieldset for the comment text field */
+	$output['area_description'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Description'),
+			'#collapsible' => true,
+			'#collapsed' => false,
+			'#attributes' => array(
+					'id' => 'area-show-comment',
+					'class' => array(
+							'collapsible'
+					),
+			),
+			'#weight' => 2
+	);
+	
+	/* add the comments for the area as an editable textarea */
+	$output['area_description']['comment'] = array(
+			'#type' => 'item',
+			'#markup' => "<div class='area-description'>"
+			. (empty($areadata['comment']) ? t("None available")
+					: check_plain($areadata['comment'])) . "</div>"
+	);
+	
 	/* Create a fieldset for the linked habitats */
 	$output['area_inventories'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('inventories').' & '.t('observations'),
-			'#weight' => 9,
 			'#collapsible' => true,
 			'#attributes' => array(
 					'class' => array(
 							'collapsible'
 					),
 					'id' => 'area-show-comment' // required for CSS
-			)
+			),
+			'#weight' => 3
 	);
 	if(area_check_access($areadata, 'ACL_RED_WRITE') && user_access(CREATE_INVENTORY)) {
 		global $base_url;
@@ -164,64 +217,10 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	
 	$output['area_inventories']['observations'] = inventory_show_observations($areadata['id'], $inventory_id);
 	
-	/* Create a fieldset for the static google maps */
-	$output['area_map'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Map'),
-			'#weight' => 3,
-			'#attributes' => array(
-					'id' => 'area-show-map', // required for CSS
-					'name' => 'map' //used for anchor
-			)
-	);
-	
-	$output['area_map']['map'] = array(
-			'#theme' => 'area',
-			'#mapid' => 'observationmap',
-			'#ch1903' => true,
-			'#showall' => false,
-			'#scalecontrol' => true,
-			'#action' => 'show',
-			'#reticle' => false,
-			'#geometry_edit_id' => (int) $areadata['id'],
-			'#defaultzoom' => '15',
-			'#infowindow_content_fetch_url_area' => base_path()
-			. 'area/{ID}/areaoverview/ajaxform',
-			'#infowindow_content_fetch_url_observation' => base_path() 
-			. 'observation/{ID}/overview/ajaxform',
-			'#geometries_fetch_url' => base_path() . 'area/' . $areadata['id'] . '/json',
-	);
-	
-	
-	/* Create a fieldset for the comment text field */
-	$output['area_description'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Description'),
-			'#weight' => 10,
-			'#collapsible' => true,
-			'#collapsed' => false,
-			'#attributes' => array(
-					'id' => 'area-show-comment',
-					'class' => array(
-							'collapsible',
-							'collapsed'
-					),
-			)
-	);
-
-	/* add the comments for the area as an editable textarea */
-	$output['area_description']['comment'] = array(
-			'#type' => 'item',
-			'#markup' => "<div class='area-description'>"
-					. (empty($areadata['comment']) ? t("None available")
-							: check_plain($areadata['comment'])) . "</div>"
-	);
-	
 	/* Create a fieldset for the strategies text fields */
 	$output['area_concept'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Area concept'),
-			'#weight' => 11,
 			'#collapsible' => true,
 			'#collapsed' => false,
 			'#attributes' => array(
@@ -229,7 +228,8 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 							'collapsible',
 							'collapsed'
 					),
-			)
+			),
+			'#weight' => 4
 	);
 
 	/* add the protectiont target textarea */
@@ -268,14 +268,14 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	$output['area_habitats'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Linked habitats'),
-			'#weight' => 12,
 			'#collapsible' => true,
 			'#attributes' => array(
 					'class' => array(
 							'collapsible',
 							'collapsed'
 					),
-			)
+			),
+			'#weight' => 5
 	);
 
 	if (function_exists('gallery_list_renderer')) {
@@ -283,12 +283,10 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 			'videos',
 			'area',
 			$areadata['id']);
-		$output['area_videos']['#weight'] = 14;
 		$output['area_images'] = gallery_list_renderer(
 			'images',
 			'area',
 			$areadata['id']);
-		$output['area_images']['#weight'] = 13;
 	}
 
 	/* add the linked habitats */
@@ -322,7 +320,6 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 				),
 				'#tableWidth' => 900,
 				'#rows' => $habitats,
-				'#weight' => 15,
 				'#id_table' => 'habitats'
 		);
 	} else {
@@ -331,12 +328,8 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 			'#markup' => "<pre>".t("None available")."</pre>",
 			);
 	}
-	/* Build the content of the table, leave out empty fields */
-	$output['area']['table'] = area_get_infotable_of_specific_area($areadata);
 
 	$output['area_files'] = area_files($areadata);
-	$output['area_files']['#weight'] = 16;
-
 
 	return $output;
 }
