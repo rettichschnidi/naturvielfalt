@@ -103,6 +103,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		$location .= !empty($row['cell']['township']) ? ', '.$row['cell']['canton'] : $row['cell']['canton'];
 		$location .= !empty($row['cell']['canton']) ? ', '.$row['cell']['country'] : $row['cell']['country'];
 		
+		$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'area') . '/images/';
+		
 		/**
 		 * create the html source for the gallery view
 		 */
@@ -110,6 +112,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 				$row['id'],
 				array(
 						'icons' => array(
+								'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:areamap.selectGeometry(' . $row['id'] . ');window.scrollTo(0,0);">',
 								$row['cell']['zoominColumn'],
 								$row['cell']['showColumn'],
 								$row['cell']['editColumn'],
