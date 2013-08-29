@@ -10,10 +10,7 @@ module_load_include('inc', 'observation', 'observation.validate');
  * @param array $observation
  */
 function observation_form($form = null, &$form_state = null, $observation = false, $inventory_id = NULL) {
-	drupal_add_library('system', 'ui.dialog');
-	$observation_path = drupal_get_path('module', 'observation');
-	drupal_add_js($observation_path . '/js/observation.js');
-	drupal_add_css($observation_path . '/css/observation.css');
+	
 	global $user;
 	$edit = false;
 
@@ -111,32 +108,54 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	);	
 	
 	//prepare image of organism, only display if organism and artgroup id match
+	$pictures = '<img src="/sites/all/modules/datatable/images/no_photo.png" />';
+	
 	if($artgroup_id) {
 		if(!empty($form_state['values']['group']['organism'])) {
 			$artgroup = organism_artgroup_byname($form_state['values']['group']['organism']);
 			if($artgroup['organism_artgroup_id'] != $artgroup_id) 
-				$organism_forimage = null;
-			else
-				$organism_forimage = organism_get_byname(filter_xss($form_state['values']['group']['organism']));
-		} else if(!empty($observation['observation']['organism_id'])) {
-			$organism_forimage = organism_get(filter_xss($observation['observation']['organism_id']));
-		}
-		else $organism_forimage = null;
-		if($organism_forimage) {
-			$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism_forimage['id']);
-			if(!empty($images) && $images['count'] > 0) {
-				$img = '
-							<img src="' . url('gallery/observation/' . $organism_forimage['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_presentation') . '" alt="' . $images['images'][0]['title'] . '" title="' . $images['images'][0]['title'] . '" />
-						';
-			}
+				$organism_id = null;
 			else {
-				$img = '
-							<img src="/sites/all/modules/datatable/images/no_photo.png" />
-						';
+				$organism_forimage = organism_get_byname(filter_xss($form_state['values']['group']['organism']));
+				$organism_id = $organism_forimage['id'];
+			}
+			} else if(!empty($observation['observation']['organism_id'])) {
+			$organism_id = $observation['observation']['organism_id'];
+		}
+		else $organism_id = null;
+		if(isset($organism_id)) {
+			$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $organism_id);
+			if(!empty($images) && $images['count'] > 0) {
+				$pictures = '';
+				$img = $images['images'][0];
+					//prepare caption
+					$captionclass = "caption";
+					$caption = '';
+					if ($img['title'])
+						$caption .= '<strong>' . $img['title'] . '</strong>';
+					if ($caption)
+						$caption = '<span class="title">' . $caption . '</span>';
+					if ($img['location'] || $img['author'])
+						$caption .= '<span class="author">&copy; ' . $img['author']
+						. ($img['location'] ? ', ' . $img['location'] : '')
+						. '</span>';
+
+					$caption .= ' <em>'
+							. organism_reference_gallery_caption($img['item_id']) .' </em>';
+					
+					$imgfooter = '<div class="'
+								. $captionclass . '">'
+										. ($caption ? '<p class="captionText">' . $caption . '</p>'
+												: '').'</div>';
+															
+					$url_large = url('gallery/organism/' . $organism_id . '/thumb/' . $img['id'] . '/gallery_large');;
+					$url_preview = url('gallery/organism/' . $organism_id . '/thumb/' . $img['id'] . '/gallery_presentation');
+						
+					//only display first image
+					$pictures = '<a href="'.$url_large.'"'.' rel="organism_lightbox"><img src="' .$url_preview . '" alt="' . $img['title'] . '" title="' . $img['title'] . '" />'.$imgfooter.'</a>';
 			}
 		}
-		else $img = '';
-	} else $img = '';
+	}
 	
 	$checked = isset($form_state['values']['group']['unknown_check']) ? $form_state['values']['group']['unknown_check'] : $observation['observation']['organism_id'] == UNKNOWN_SPECIES ? 1 : 0;
 
@@ -156,9 +175,12 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	
 	$json = 'organism/search/json/'.$artgroup_id;
 	
-	if(!empty($img)) {
+	if(!empty($pictures)) {
 		$form['group']['organism_image'] = array(
-			'#markup' => '<div class="observation_organism_reference_image">'.$img.'</div>',	
+			'#markup' => '
+				<div class="observation_organism_reference_image">'
+					.$pictures.'
+				</div>',	
 		);
 	}
 	$form['group']['organism'] = array(
@@ -711,13 +733,16 @@ function observation_form_add_js_tools($form, &$form_state) {
 	//add date and timepicker
 	drupal_add_library('system', 'ui.datepicker');
 	drupal_add_library('system', 'ui.slider');
+	drupal_add_library('system', 'ui.dialog');
+	
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/timepicker.js');
+	drupal_add_js($observation_path . '/js/observation.js');
+	drupal_add_css($observation_path . '/css/observation.css');
 	
 	//if implementing combobx for organism search, uncomment this two lines
 // 	drupal_add_library('system', 'ui.autocomplete');
 // 	drupal_add_js($observation_path . '/js/combobox.js');
-
 	
 	drupal_add_css('/* css for timepicker */
 					.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
@@ -816,7 +841,19 @@ function observation_form_add_js_tools($form, &$form_state) {
 		}
 	}
 	
+	//add javascript (datepicker, timepicker, qtips, lightbox)
+	//live methode used for ajax rebind of events
 	 drupal_add_js('jQuery(document).ready(function(){
+ 		
+	 		jQuery("a[rel=\"organism_lightbox\"]").live("mouseover", function() {
+	 			var galleryLightboxSettings = {
+					captionSelector : ".caption",
+					captionAttr : false,
+					captionHTML : true,
+				};	
+	 			$(this).lightBox(galleryLightboxSettings);
+	 		});
+
 	 		jQuery( ".datepicker" ).live("focus", function() {
 	 				$(this).datepicker({
 			      dateFormat: "dd.mm.yy"
