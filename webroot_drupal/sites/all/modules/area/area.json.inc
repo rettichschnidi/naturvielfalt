@@ -21,6 +21,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'a.acl_id AS acl_id',
 			'a.name',
 			'a.comment',
+			'a.create_time AS date',
 			'a_s.altitude',
 			'a_s.township',
 			'a_s.canton',
@@ -80,12 +81,48 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		// type of area (picture)
 		$row['cell']['geometry_type'] = '<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['geometry_type'] . '.png') . '" alt="'. t('type') . '" />';
 		
+		$row['cell']['date'] = date("d.m.Y H:i:s", strtotime($row['cell']['date']));
+		
 		$row['cell']['username'] = l(
 					check_plain($row['cell']['username']),
 					base_path() . "user/" . $row['cell']['uid'],
 					array(
 							'external' => true
 					));
+		
+		// get images
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'area', $row['id']);
+		
+		// thumbnail
+		$row['cell']['thumbnail'] = '';
+		if ($images['count'] > 0) {
+			// display the thumbnail (for the table view)
+			$row['cell']['thumbnail'] = '<img onclick="event.stopPropagation(); gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/area/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
+		}
+		$location = $row['cell']['township'];
+		$location .= !empty($row['cell']['township']) ? ', '.$row['cell']['canton'] : $row['cell']['canton'];
+		$location .= !empty($row['cell']['canton']) ? ', '.$row['cell']['country'] : $row['cell']['country'];
+		
+		/**
+		 * create the html source for the gallery view
+		 */
+		$row['cell']['gallery_image'] = datatable_get_gallery_area_image(
+				$row['id'],
+				array(
+						'icons' => array(
+								$row['cell']['zoominColumn'],
+								$row['cell']['showColumn'],
+								$row['cell']['editColumn'],
+								$row['cell']['selectColumn']
+						),
+						'data' => array(
+								$row['cell']['name'],
+								$row['cell']['geometry_type'],
+								$location
+								
+						)
+				),
+				$images);
 	}
 
 	return drupal_json_output($output);
