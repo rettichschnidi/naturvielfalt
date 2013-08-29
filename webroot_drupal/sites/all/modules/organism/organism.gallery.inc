@@ -66,7 +66,7 @@ function organism_reference_gallery_manage_title($id, $mediatype) {
 function organism_reference_gallery_caption($id) {
 	global $user;
 	$result = organism_load($id);
-	return $result['scientific_names'][0]
+	return isset($result['scientific_names'][0]) ? $result['scientific_names'][0] : ''
 			. (isset(
 				$result['classification_name_translations'][$user->language])
 					? ' <small>['
