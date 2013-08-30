@@ -368,7 +368,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 
 	/*
 	* SQL queries
-	* Get data to display
+	* Get data to display 2
 	*/	
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
