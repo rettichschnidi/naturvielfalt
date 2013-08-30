@@ -1632,16 +1632,49 @@
 					g.doSearch();
 				});
 				// Split into separate selectors because of bug in jQuery 1.3.2
-				$('input[name=q]', g.sDiv).keydown(function(e) {
+
+				
+				$('input[name=q0]', g.sDiv).keydown(function(e) {
 					if (e.keyCode == 13) {
 						g.doSearch();
 					}
 				});
-				$('select[name=qtype]', g.sDiv).keydown(function(e) {
+				$('select[name=qtype0]', g.sDiv).keydown(function(e) {
 					if (e.keyCode == 13) {
 						g.doSearch();
 					}
 				});
+				$('input[name=q1]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				$('select[name=qtype1]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				$('input[name=q2]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				$('select[name=qtype2]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				$('input[name=q3]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				$('select[name=qtype3]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				
 				$('input[value=Clear]', g.sDiv).click(function() {
 					$('input[name=q]', g.sDiv).val('');
 					p.query[0] = '';
