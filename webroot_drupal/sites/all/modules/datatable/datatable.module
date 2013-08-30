@@ -7,7 +7,7 @@
  */
 
 /**
- * these constants define the different image-sources
+ * these constants define the different image-sourcesde
  * for the datatable_gallery addon.
  */
 define('DATATABLE_IMGSRC_BELEG', 1);
@@ -194,40 +194,147 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	}
 
 	$sTable = $Table . " " . $sJoins . " ";
+//  move values of JSON Object
+	$query = $_REQUEST['query'];
+	$qtype = $_REQUEST['qtype'];
+//  Bestimmen wie viele Werte vom JSON übergeben wurden	
+	$i1 = 0;	
+	while (current($query)!==false) {
+		$v_query[$i1] = current($query);
+        $i1++;
+		next($query);
+	}
 	
-	if (isset($_REQUEST['qtype']) && !empty($_REQUEST['qtype'])) {
-		$qtype = pg_escape_string($_REQUEST['qtype']);
+    $i2 = 0;
+	while (current($qtype)!==false) {
+		$v_qtype[$i2] = current($qtype);
+		$i2++;
+		next($qtype);
 	}
-	if (isset($_REQUEST['query']) && !empty($_REQUEST['query'])) {
-		if (!is_string($_REQUEST['query']))
-			return "Error! Query not a string";
-		$query = pg_escape_string($_REQUEST['query']);
+	array_multisort($v_qtype, $v_query);
+	
+//  Equality check, both table must have the same index
+	if (count($query) == count($qtype))
+	{	
+	 
+	  ($where == "") ? $sWhere = "" : $sWhere = $where . "";
+
+//    occurence field qtype 
+      $OC_qtype_alle = 0;	  
+//    Iteration trough the search array qtype
+	  for ($i3 = 0; $i3 < $i2; $i3++) 
+	  {
+//      Old Code for SQL	  	
+	  	if (isset($v_query[$i3]) && $v_query[$i3] != "" && isset($v_qtype[$i3]) && $v_qtype[$i3] != "")
+	  	{
+//          Iteration over all table if "*" if not goto else
+            if (($v_qtype[$i3] == "*")&&($v_query[$i3] ==""))
+            {
+//           do nothing, there is no value  
+             $goon = "go";           	
+            }	
+	  		elseif ($v_qtype[$i3] == "*") 
+	  		{
+//              OC_qtype_alle is needed to set the brackets()	  			
+	  	 	    $OC_qtype_alle++;
+//              Check if value "Alle" more than once in array is
+	  			$occurrences = array_count_values($v_qtype);
+	  			$OC_times = $occurrences["$v_qtype[$i3]"];
+//              bild up of the WHERE clause, 
+	  			if (($OC_times > 1)&&($OC_qtype_alle == 1))
+	  			{
+	  			  ($sWhere == "") ? $sWhere = "WHERE ((" : $sWhere .= " OR (";
+	  			}else{
+	  			  ($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " OR (";
+	  			}	  			
+	  			
+	  			for ($i = 0; $i < count($searchColumns); $i++) 
+	  			{
+	  				/**
+	  				 * yes, this is a terrible hack, but I do not know how another solution to make sure
+	  				 * that all(?!) types can be used with LIKE
+	  				 */
+	  				$sWhere .= "CAST(" . $searchColumns[$i]
+	  				. " AS TEXT) ILIKE CAST('%$v_query[$i3]%' AS TEXT) OR ";
+	  			}
+	  			$sWhere = substr_replace($sWhere, "", -3);
+//              Check if we are at then end ob the last "*" iteration 
+                if (($OC_qtype_alle == $OC_times)&&($OC_qtype_alle > 1))
+                {
+                  $sWhere .= '))';
+                }else{	  			
+	  			  $sWhere .= ')';
+	  		    }  
+	  		}else{
+//	  		$sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
+//	  		. "%' AS TEXT)";
+	  		  if (preg_match("/WHERE/i", $sWhere)) {
+//               Bestimmen wieviel mal ein Begriff vorkommt 	  		  	
+	  		  	 $occurrences = array_count_values($v_qtype);
+	  	 	  	 $OC_times = $occurrences["$v_qtype[$i3]"];
+//               Kommt ein Wert mehr als einmal in der Array vor, muss mit OR verknüpft werden
+                 $AND_or_OR; 	  	 	  	 
+	  	 	  	 if ($OC_times > 1) {
+	  	 	  	 	$AND_or_OR = "OR";
+	  	 	  	 }else{
+	  	 	  	 	$AND_or_OR = "AND";
+	  	 	  	 }
+	  	 	  	 
+                 $sWhere = $sWhere . $AND_or_OR." CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
+                 . "%' AS TEXT)";
+              } else {
+                 $sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
+                 . "%' AS TEXT)";      
+              }	
+
+	  		}		
+	  	}	
+	  }
+//  query muss escaped werden wegen sql injection	  
+	$query = pg_escape_string($_REQUEST['query']);  
 	}
+			
+// 	if (isset($_REQUEST['qtype']) && !empty($_REQUEST['qtype'])) {
+// 		$qtype = pg_escape_string($_REQUEST['qtype']);
+// 	}
+// 	if (isset($_REQUEST['query']) && !empty($_REQUEST['query'])) {
+// 		if (!is_string($_REQUEST['query']))
+// 			return "Error! Query not a string";
+// 		$query = pg_escape_string($_REQUEST['query']);
+// 	}
+	
 	/*
 	 * Filtering
 	 * NOTE this does not match the built-in DataTables filtering which does it
 	 * word by word on any field. It's possible to do here, but concerned about efficiency
 	 * on very large tables, and MySQL's regex functionality is very limited
-	 */
-	($where == "") ? $sWhere = "" : $sWhere = $where . "";
-	if (isset($query) && $query != "" && isset($qtype) && $qtype != "") {
-		if ($qtype == "*") {
-			($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
-			for ($i = 0; $i < count($searchColumns); $i++) {
-				/**
-				 * yes, this is a terrible hack, but I do not know how another solution to make sure
-				 * that all(?!) types can be used with LIKE
-				 */
-				$sWhere .= "CAST(" . $searchColumns[$i]
-						. " AS TEXT) ILIKE CAST('%$query%' AS TEXT) OR ";
-			}
-			$sWhere = substr_replace($sWhere, "", -3);
-			$sWhere .= ')';
-		} else
-			$sWhere = "WHERE CAST(" . (string) $qtype . " AS TEXT) ILIKE CAST('%" . (string) $query
-					. "%' AS TEXT)";
-	}
-	
+	 */ 
+//--------------------------------alt Anfang	
+// 	($where == "") ? $sWhere = "" : $sWhere = $where . "";
+//	if (isset($query) && $query != "" && isset($qtype) && $qtype != "") {
+// 		if ($qtype == "*") {
+// 			($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
+// 			for ($i = 0; $i < count($searchColumns); $i++) {
+// 				/**
+// 				 * yes, this is a terrible hack, but I do not know how another solution to make sure
+// 				 * that all(?!) types can be used with LIKE
+// 				 */
+// 				$sWhere .= "CAST(" . $searchColumns[$i]
+// 						. " AS TEXT) ILIKE CAST('%$query%' AS TEXT) OR ";
+// 			}
+// 			$sWhere = substr_replace($sWhere, "", -3);
+// 			$sWhere .= ')';
+// 		} else
+// 			$sWhere = "WHERE CAST(" . (string) $qtype . " AS TEXT) ILIKE CAST('%" . (string) $query
+// 					. "%' AS TEXT)";
+// 	}
+//---------------------------alt Ende
+/// -------------------------new Anfagn 	
+///	($where == "") ? $sWhere = "" : $sWhere = $where . "";
+///	
+///	($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " AND (";
+///     $sWhere = "observer LIKE 'bla'";
+/// ---------------------------new ende	
 	/*
 	 * Ordering
 	 */
@@ -262,12 +369,11 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	/*
 	* SQL queries
 	* Get data to display
-	*/
+	*/	
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-
 	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
-	
+//	debug("fullQuery: ".$fullQuery); 
 	/*
 	 * Paging
 	*/
