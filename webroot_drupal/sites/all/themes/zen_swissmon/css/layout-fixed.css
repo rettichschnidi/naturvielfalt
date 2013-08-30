@@ -109,9 +109,9 @@ body {
 }
 
 .two-sidebars #content {
-  width: 880px;
+  width: 740px;
   margin-left: 227px; /* LTR */ /* The width of .region-sidebar-first */
-  margin-right: -973px; /* LTR */ /* Negative value of #content's width + left margin. */
+  margin-right: -967px; /* LTR */ /* Negative value of #content's width + left margin. */
 }
 
 #content .section {
