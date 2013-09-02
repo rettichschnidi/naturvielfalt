@@ -4,6 +4,7 @@
  *********************************/
 
 module_load_include('inc', 'observation');
+module_load_include('inc', 'observation', 'observation.block');
 
 // Load gallery integration
 module_load_include('inc', 'observation', 'observation.gallery');
