@@ -376,12 +376,14 @@ function observation_delete() {
  * Fetches all observation information and formats the rows for display.
  * Gets all observations if no $observation_id is given
  * If $inventory_ids is passed, only observations from this inventories are returned.
+ * If $organism_ids is passed, only observations from this organisms are returned.
  * 
  * @param string $acl_level
  * @param array(int) $observation_ids
  * @param array $inventory_ids
+ * @param array(int) $organism_ids
  */
-function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL) {
+function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL, $organism_ids = NULL) {
 	global $user;
 	global $language;
 	
@@ -544,6 +546,21 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		}
 	}
 	
+	if ($organism_ids !== NULL) {
+		if (is_int($organism_ids) && $organism_ids > 0)
+			$organism_ids = array($organism_ids);
+		if (is_array($organism_ids) && !empty($organism_ids)) {
+			$sql['dbWhere'] = empty($sql['dbWhere'])
+			? '('
+					: $sql['dbWhere'] . ' AND (';
+			foreach ($organism_ids as $organism_id) {
+				$sql['dbWhere'] .= 'o.organism_id=:organism_id_' . $organism_id . ' OR ';
+				$arguments[':organism_id_'.$organism_id] = $organism_id;
+			}
+			$sql['dbWhere'] = substr($sql['dbWhere'], 0, -4) . ')';
+		}
+	}
+	
 	$sql['id'] = 'id';
 	
 	/*
@@ -592,7 +609,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
 		// show details
 		$row['cell']['showColumn'] = l(
-			'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+			'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 			$base_url . '/observation/' . $row['id'] . '/show',
 			array(
 				'html' => true
@@ -718,6 +735,19 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
  */
 function observation_get_all_json($acl_level = 'ACL_READ') {
 	$output = observation_get_tabledata($acl_level);
+	return drupal_json_output($output);
+}
+
+/**
+ * This method handle the request from flexigrid with specific organism ids
+ * @return JSON
+ */
+function observation_get_organism_json($acl_level = 'ACL_READ', $organism_ids = NULL) {
+	if (is_string($organism_ids)) {
+		$organism_ids = intval($organism_ids);
+	}
+	
+	$output = observation_get_tabledata($acl_level, NULL, NULL, $organism_ids);
 	return drupal_json_output($output);
 }
 

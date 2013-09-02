@@ -215,13 +215,61 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	
+	// Get all readable observations of given organism
+	$items['observation/get/organism/%/all'] = array(
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
+			'page callback' => 'observation_get_organism_json',
+			'page arguments' => array(
+					'ACL_READ',
+					3
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
+	// Get all own observations of given organism
+	$items['observation/get/organism/%/own'] = array(
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
+			'page callback' => 'observation_get_organism_json',
+			'page arguments' => array(
+					'ACL_ADMIN',
+					3
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
+	// Get all writeable observations of given organism
+	$items['observation/get/organism/%/writeable'] = array(
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
+			'page callback' => 'observation_get_organism_json',
+			'page arguments' => array(
+					'ACL_WRITE',
+					3
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
 	// Get all own observations
 	$items['observation/get/own'] = array(
 			'title' => 'ObservationsJSON',
 			'description' => 'Get own observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
-					'own'
+					'ACL_ADMIN'
 			),
 			'access arguments' => array(
 					ACCESS_OBSERVATION

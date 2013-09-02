@@ -533,7 +533,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
 		$sql_args[':geom'] = 'POINT(' . reset($points) . ')';
 		break;
 	default:
-		watchdog_exception(
+		watchdog(
 			'area',
 			t(
 				'«@areatype» is not a valid area type.',
@@ -1006,4 +1006,114 @@ function getCorrectValues($jsondata, $myArr) {
 		}
 	}
 	return $output;
+}
+
+function area_get_standard_datatable_headers($init_sort = false,
+		$init_sort2 = false) {
+	$tableHeader[] = array(
+			'name' => t('Internal Id'),
+			'idField' => true,
+			'dbfield' => 'id',
+			'hide' => true,
+			'width' => 30
+	);
+	
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
+	
+	$tableHeader[] = array(
+			'name' => '<input class="gridSelect" type="checkbox" disabled />',
+			'dbfield' => 'selectColumn',
+			'width' => 20,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/List.png" />',
+			'dbfield' => 'showColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Modify.png" />',
+			'dbfield' => 'editColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
+			'dbfield' => 'zoominColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 80,
+			'noSort' => true
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Name'),
+			'dbfield' => 'name',
+			'dbExactField' => 'a.name',
+			'width' => 310,
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Altitude [m]'),
+			'dbfield' => 'altitude',
+			'dbExactField' => 'a_s.altitude',
+			'width' => 60
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+			'dbExactField' => 'a_s.township',
+			'width' => 150
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Canton'),
+			'dbfield' => 'canton',
+			'dbExactField' => 'a_s.canton',
+			'width' => 40
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Country'),
+			'dbfield' => 'country',
+			'dbExactField' => 'a_s.country',
+			'width' => 180
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Date'),
+			'dbfield' => 'date',
+			'width' => 120
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('User'),
+			'dbfield' => 'username',
+			'dbExactField' => 'u.name',
+			'width' => 120
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Type'),
+			'dbfield' => 'geometry_type',
+			'dbExactField' => 'a_s.geom',
+			'width' => 120
+	);
+	
+	if ($init_sort && $init_sort2) {
+		$tableHeader[$init_sort--]['initSort'] = true;
+		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
+	}
+	return $tableHeader;
 }

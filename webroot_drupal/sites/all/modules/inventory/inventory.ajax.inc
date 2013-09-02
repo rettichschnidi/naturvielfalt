@@ -59,7 +59,7 @@ function inventory_get_area_inventories_json($area) {
 				: '';
 		
 		$row['cell']['showColumn'] = l(
-				'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+				'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 				$base_url . '/inventory/' . $row['id'] . '/show',
 				array(
 						'html' => true
