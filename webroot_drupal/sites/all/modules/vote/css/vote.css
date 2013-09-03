@@ -2,3 +2,29 @@
 	float: left;
 	width: 300px;
 }
+
+.nextImages {
+	width: 190px;
+	height: 150px;
+	position: relative;
+	cursor: pointer;
+}
+
+.navigationImages {
+	cursor: pointer;
+}
+
+#loadNextImages {
+	width: 50px;
+	height: 150px;
+}
+
+#mainImageContainer {
+	width: 400px;
+	height: 300px;
+}
+
+#mainImage {
+	width: 400px;
+	height: 300px;
+}

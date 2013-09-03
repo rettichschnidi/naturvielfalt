@@ -2,6 +2,7 @@
 function vote_show_overview($observation_id = NULL) {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
+	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
 	
 	$render_array['welcome'] = array(
@@ -46,8 +47,42 @@ function vote_show_overview($observation_id = NULL) {
 			'#value' => $artgroup_id
 	);
 	
+	$render_array['imageslider'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Next images'),
+			'#weight' => 4
+	);
+	$render_array['imageslider']['images'] = array(
+			'#type' => 'markup',
+			'#markup' => '<div id="nextImagesContainer">
+				<img id="loadPreviousImages" class="navigationImages" src="' . drupal_get_path('module', 'vote') . '/img/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
+				<img id="previousImage01" class="nextImages" style="width: 0px;" />
+				<img id="previousImage02" class="nextImages" style="width: 0px;" />
+				<img id="previousImage03" class="nextImages" style="width: 0px;" />
+				<img id="previousImage04" class="nextImages" style="width: 0px;" />
+				<img id="image01" class="nextImages" alt="Image 01" onclick="moveImages(1, true);" />
+				<img id="image02" class="nextImages" alt="Image 02" onclick="moveImages(2, true);" />
+				<img id="image03" class="nextImages" alt="Image 03" onclick="moveImages(3, true);" />
+				<img id="image04" class="nextImages" alt="Image 04" onclick="moveImages(4, true);" />
+				<img id="futureImage01" class="nextImages" style="width: 0px;" />
+				<img id="futureImage02" class="nextImages" style="width: 0px;" />
+				<img id="futureImage03" class="nextImages" style="width: 0px;" />
+				<img id="futureImage04" class="nextImages" style="width: 0px;" />
+				<img id="loadNextImages" class="navigationImages" src="' . drupal_get_path('module', 'vote') . '/img/next.png" alt="Next" onclick="moveImages(4, false);" />
+			</div>'
+	);
 	
-	
+	$render_array['mainimage'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Current image'),
+			'#weight' => 5
+	);
+	$render_array['mainimage']['images'] = array(
+			'#type' => 'markup',
+			'#markup' => '<div id="mainImageContainer">
+				<img id="mainImage" alt="Main image" />
+			</div>'
+	);
 	
 // 	$render_array['own_proposal']['organism'] = array(
 // 			'#id' => 'organism_name',
