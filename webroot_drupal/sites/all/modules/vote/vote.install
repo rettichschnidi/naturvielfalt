@@ -1,0 +1,15 @@
+<?php
+require_once dirname(__FILE__) . '/vote.drupalschema.inc';
+/**
+ * @file vote.install
+ * @author Emin Khateeb, 2013
+ * @author Florian Gyger, 2013
+ * @copyright 2011-2013 Naturwerk, Brugg
+ */
+
+/**
+ * Implement hook_schema()
+ */
+function vote_schema() {
+	return vote_get_schema();
+}
