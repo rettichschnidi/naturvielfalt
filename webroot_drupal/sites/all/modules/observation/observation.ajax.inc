@@ -62,7 +62,8 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$values['organism'] = filter_xss($values['group']['organism']);
 			$result = organism_get_byname(filter_xss($values['organism']));
 			$observation['organism_id'] = $result['id'];
-		} 
+		}
+		$observation['area_geometry_id'] = $values['area_geometry_id']; 
 	} else {
 		$observation['organism_id'] = filter_xss($values['organism_id']);
 	}

@@ -1,0 +1,10 @@
+name = vote
+description = Confirm the organism of an observation by voting
+package = Naturvielfalt
+core = 7.x
+version = "7.x-current"
+#dependencies[] = habitat
+dependencies[] = locale
+dependencies[] = datatable
+dependencies[] = commonstuff
+dependencies[] = gallery
