@@ -159,7 +159,7 @@ function webservice_parse_import_observations() {
 		if(empty($data['observer'])) $data['observer'] = $user->name;
 		if($data['observation_id'] > 0) { //update observation, provide existing area_geometry_id to update
 			$observation = observation_get($data['observation_id']);
-			$data['area_geometry_id'] = $observation['area_geometry_id'];
+			$data['area_geometry_id'] = $observation['observation']['area_geometry_id'];
 		}
 		$observation_status = observation_save(false, $data, true);
 		// get the data
