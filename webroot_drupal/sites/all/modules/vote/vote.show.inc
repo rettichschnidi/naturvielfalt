@@ -73,6 +73,7 @@ function vote_show_overview($observation_id = NULL) {
 	);
 	
 	$render_array['mainimage'] = array(
+			'#id' => 'mainImageFieldset',
 			'#type' => 'fieldset',
 			'#title' => t('Current image'),
 			'#weight' => 5
@@ -82,6 +83,29 @@ function vote_show_overview($observation_id = NULL) {
 			'#markup' => '<div id="mainImageContainer">
 				<img id="mainImage" alt="Main image" />
 			</div>'
+	);
+	
+	$render_array['maps'] = array(
+			'#id' => 'googleMapsFieldset',
+			'#type' => 'fieldset',
+			'#title' => t('Map'),
+			'#weight' => 6
+	);
+	
+	$render_array['maps']['map'] = array(
+			'#theme'                        => 'area',
+			'#ch1903'                       => true,
+			'#search'                       => true,
+			'#mapid'                        => 'observationmap',
+			'#geometries_fetch_url'         => base_path() . 'observation/geometry/json',
+			'#geometries_autoload'          => false,
+			'#infowindow_content_fetch_url_observation' => base_path() . 'observation/{ID}/overview/ajaxform',
+			'#height'                       => '300px'
+	);
+	
+	$render_array['clear'] = array(
+			'#type'   => 'markup',
+			'#markup' => '<div style="clear: both;"></div>'
 	);
 	
 // 	$render_array['own_proposal']['organism'] = array(

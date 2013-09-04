@@ -54,12 +54,12 @@ function initializeCache() {
 */
 function loadImagesFromCache() {
 	for (var i = 0; i < nextImages.length; i ++) {
-		var cleanIndex = checkIndex(previousImages, imageIndex - nextImages.length + i); // imageIndex - nextImages.length - i - 1
+		var cleanIndex = checkIndex(imageSourceCache, imageIndex - nextImages.length + i); // imageIndex - nextImages.length - i - 1
 		previousImages[i].attr('src', imageSourceCache[cleanIndex].imagePath);
 
 		nextImages[i].attr('src', imageSourceCache[imageIndex + i].imagePath);
-
-		var cleanIndex = checkIndex(futureImages, imageIndex + nextImages.length + i);
+		
+		cleanIndex = checkIndex(imageSourceCache, imageIndex + nextImages.length + i);
 		futureImages[i].attr('src', imageSourceCache[cleanIndex].imagePath);
 		
 		previousImages[i].css({ width: 0, opacity: 0 });
@@ -122,10 +122,15 @@ function animateMainImage(replaceMainImage) {
 							Switch the main image source with the selected image source
 						*/
 						mainImage.attr("src", nextImages[stepsToMove - 1].attr("src"));
+						// Calculate the new height of the image
+						mainImage.css({ width: 400 });
+						var autoHeight = mainImage.attr('height');
 						// Show the main image and animate it to the normal size
 						mainImage.css({ width: 190, height: "auto" });
 						mainImage.css({ opacity: 1 });
+						
 						mainImage.animate({ width: 400 });
+						$("#mainImageFieldset").animate({ height: autoHeight + 20 });
 						// Reset position of the selected image
 						nextImages[stepsToMove - 1].removeAttr("style");
 						// check if the amount of steps is possible to do
@@ -160,7 +165,6 @@ function animateNextImages(replaceMainImage) {
 
 	var positive = stepsToMove >= 0;
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
-	
 		if (positive) {
 			if (i < futureImages.length) {
 				futureImages[i].animate({ width: 190, opacity: 1 }, 500);
@@ -188,5 +192,5 @@ function animateNextImages(replaceMainImage) {
 	Checks if the index is below zero or above the array length and returns a valid index
 */
 function checkIndex(array, index) {
-	return index < 0 ? 0 : index > array.length ? array.length : index;
+	return index < 0 ? 0 : index >= array.length ? array.length - 1 : index;
 }

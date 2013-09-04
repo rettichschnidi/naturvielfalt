@@ -26,5 +26,15 @@
 
 #mainImage {
 	width: 400px;
-	height: 300px;
+	max-height: 600px;
+}
+
+#mainImageFieldset {
+	width: 400px;
+	float: left;
+}
+
+#googleMapsFieldset {
+	width: 400px;
+	float: right;
 }
