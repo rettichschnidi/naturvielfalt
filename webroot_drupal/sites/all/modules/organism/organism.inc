@@ -13,6 +13,12 @@
  * @return array
  */
 function organism_get($organismid) {
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
 	global $user;
 	$organismid = intval(filter_xss($organismid));
 	if ($organismid < 1 || $organismid > 1000000)
@@ -28,7 +34,7 @@ function organism_get($organismid) {
 		WHERE
 			o.id = :oid',
 		array(':oid' => $organismid,
-				'lang_code' => 'de',
+				'lang_code' => $langcode,
 // 				':lang_code' => $user->language
 		))->fetchAssoc();
 }
@@ -49,16 +55,22 @@ function organism_get_byname($organism) {
 
 	// TODO take language of the user (if exists)
 // 	$language = $user->language;
-	$language = 'de';
+	//$language = 'de';
+	
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
 	
 	$result = db_query(
-			'SELECT o.id
+			'SELECT DISTINCT o.id
 			 FROM {organism} o, {organism_lang} ol 
-			 WHERE o.id = ol.organism_id AND ol.languages_language = :lang_code AND ol.name = :o_name;',
-			array( ':lang_code' => $language,
+			 WHERE (o.id = ol.organism_id AND ol.languages_language = :lang_code AND ol.name = :o_name) OR (o.scientific_name = :o_name);',
+			array( ':lang_code' => $langcode,
 					':o_name' => $organism,
 			))->fetchAssoc();
-	
+	//debug($result);
 	return $result;
 }
 
@@ -67,14 +79,19 @@ function organism_artgroup_byname($organism) {
 
 	// TODO take language of the user (if exists)
 	// 	$language = $user->language;
-	$language = 'de';
+	//$language = 'de';
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
 
 	$result = db_query(
 			'SELECT oas.organism_artgroup_id, ol.organism_id 
 			 FROM {organism_artgroup_subscription} oas, {organism_lang} ol
 			 WHERE oas.organism_id = ol.organism_id 
 			AND ol.languages_language = :lang_code AND ol.name ILIKE :o_name;',
-			array( ':lang_code' => $language,
+			array( ':lang_code' => $langcode,
 					':o_name' => $organism,
 			))->fetchAssoc();
 

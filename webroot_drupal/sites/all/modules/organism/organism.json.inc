@@ -704,8 +704,11 @@ function organism_search_organism_json($artgroup, $string) {
 	
 	module_load_include('inc', 'organism', 'organism.artgroup');
 	
-	$langcode = (isset($user->language) && $user->language != '')
-	? $user->language : 'de';
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
 	
 	$term = $string;
 	$term = strtolower($term);
@@ -756,8 +759,11 @@ function organism_search_organism_json($artgroup, $string) {
 	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
 	
 		foreach ($result as $row) {
-			$matches[$row->ol_name] = strval($row->ol_name).'<br><em>'.strval($row->scientific_name).'</em>';
-			
+			if($row->ol_name != "") {
+				$matches[$row->ol_name] = $row->ol_name.'<br><em>'.$row->scientific_name.'</em>';
+			} else {
+					$matches[$row->scientific_name] = $row->scientific_name.'<br><em>'.t('No translation available').'</em>';
+			}
 		}
 	
 	drupal_json_output($matches);
