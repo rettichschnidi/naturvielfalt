@@ -1,6 +1,7 @@
 $ = jQuery;
 
 var mainImage;
+var currentMainImageIndex;
 var previousImages = new Array();
 var nextImages = new Array();
 var futureImages = new Array();
@@ -57,9 +58,9 @@ function initializeCache() {
 					imageId: result[i].imageId,
 					imageThumbPath: result[i].imageThumbPath,
 					imagePath: result[i].imagePath,
-					imagesCount: result[i].imagesCount
+					images: result[i].images,
+					imagesCount: result[i].images.images.length
 				};
-				$('#mainImageContainer').append("<a class=\"lightbox\" href=\"" + imageSourceCache[i].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[i].imagePath + "\" alt=\"Image\" /></a>");
 			}
 			// load the first image sources from the cache
 			mainImage.attr('src', imageSourceCache[imageIndex].imagePath);
@@ -67,8 +68,9 @@ function initializeCache() {
 			// write the current number of images to the diashow link
 			$('#numberOfImages').html(imageSourceCache[imageIndex].imagesCount);
 			
-			// change the ID of the current image onclick handler
-			$('#mainImageLink').attr("href", imageSourceCache[imageIndex].imagePath);
+			currentMainImageIndex = imageIndex;
+			prepareSlideShow();
+			
 			openLightBox();
 			
 			var autoHeight = mainImage.attr('height');
@@ -121,7 +123,22 @@ function nextImage() {
 	Checks if currently there are animations in progress and returns true if so.
 */
 function finishedAllAnimations() {
-	return $(".nextImages:animated, #mainImage:animated").length == 0;
+	return $(".nextImages:animated, #mainImage:animated, #mainImageFieldset:animated, #mainImageContainer:animated").length == 0;
+}
+
+/**
+ * Prepares the images for the lightbox pop-up slideshow.
+ */
+function prepareSlideShow() {
+	// change the ID of the current image onclick handler
+	$('#mainImageLink').attr("href", imageSourceCache[currentMainImageIndex].imagePath);
+	
+	// load slideshow images for current main image
+	$('#slideshowImages').html('');
+	for (var j = 1; j < imageSourceCache[currentMainImageIndex].imagesCount; j ++) {
+		var currentPath = '/gallery/observation/' + imageSourceCache[currentMainImageIndex].imageId + '/thumb/' + imageSourceCache[currentMainImageIndex].images.images[j].id + '/fullsize';
+		$('#slideshowImages').append("<a class=\"lightbox\" href=\"" + currentPath + "\" style=\"display: none;\"><img src=\"" + currentPath + "\" alt=\"Image\" /></a>");
+	}
 }
 
 /**
@@ -142,6 +159,8 @@ function moveImages(steps, replaceMainImage) {
 	Animates the main image replacement.
 */
 function animateMainImage(replaceMainImage) {
+	currentMainImageIndex = imageIndex + stepsToMove - 1;
+	
 	if (replaceMainImage) {
 		// Fade main image out
 		$("#mainImageContainer").animate({
@@ -159,13 +178,11 @@ function animateMainImage(replaceMainImage) {
 							Animation complete of selected image movement
 							Switch the main image source with the selected image source
 						*/
-						mainImage.attr("src", imageSourceCache[imageIndex + stepsToMove - 1].imagePath);
+						mainImage.attr("src", imageSourceCache[currentMainImageIndex].imagePath);
+						prepareSlideShow();
 						
 						// write the current number of images to the diashow link
-						$('#numberOfImages').html(imageSourceCache[imageIndex + stepsToMove - 1].imagesCount);
-						
-						// TODO: change the ID of the current image onclick handler
-						$('#mainImageLink').attr("href", imageSourceCache[imageIndex + stepsToMove - 1].imagePath);
+						$('#numberOfImages').html(imageSourceCache[currentMainImageIndex].imagesCount);
 						openLightBox();
 						
 						// Calculate the new height of the image
@@ -180,14 +197,14 @@ function animateMainImage(replaceMainImage) {
 						// Reset position of the selected image
 						nextImages[stepsToMove - 1].removeAttr("style");
 						// check if the amount of steps is possible to do
-						animateNextImages(replaceMainImage)
+						animateNextImages(replaceMainImage);
 					}
 				);
 			}
 		);
 	} else {
 		// check if the amount of steps is possible to do
-		animateNextImages(replaceMainImage)
+		animateNextImages(replaceMainImage);
 	}
 }
 

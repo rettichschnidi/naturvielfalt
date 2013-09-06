@@ -211,13 +211,14 @@ function fetch_observation_data() {
 		
 		// thumbnail
 		$row['cell']['thumbnail'] = '';
-		if ($images['count'] > 0) {
+		if ($images['count'] > 0) {			
 			// display the thumbnail (for the table view)
 			$imageArray[$i]["imageId"] = $row['id'];
 			$imageArray[$i]["imageThumbPath"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
 			$imageArray[$i]["imagePath"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/fullsize');
 			//$imageArray[$i]["imagesCount"] = print_r($row, true);
 			$imageArray[$i]["imagesCount"] = $row['cell']['imagescount'];
+			$imageArray[$i]["images"] = $images;
 			// $row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
 		}
 	
