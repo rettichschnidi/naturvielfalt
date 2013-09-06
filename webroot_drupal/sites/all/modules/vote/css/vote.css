@@ -38,3 +38,16 @@
 	width: 400px;
 	float: right;
 }
+
+span.mainImageType {
+	background-color: #659560;
+	color: #FFFFFF;
+	position: absolute;
+	bottom: 4px;
+	z-index: 1;
+	cursor: pointer;
+}
+
+a.mainImageType{
+	color: #FFFFFF !important;
+}

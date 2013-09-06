@@ -14,11 +14,6 @@ var imageIndex = 0;
 $(document).ready(function () {
 	initializeImages();
 	initializeCache();
-	
-	// load the first image sources from the cache
-	mainImage.attr('src', imageSourceCache[0].imagePath);
-	imageIndex = 1;
-	loadImagesFromCache();
 });
 
 /**
@@ -40,13 +35,56 @@ function initializeImages() {
 	futureImages[3] = $('#futureImage04');
 }
 
+function openLightBox() {
+	var galleryLightboxSettings = {
+		captionSelector : ".caption",
+		captionAttr : false,
+		captionHTML : true,
+	};
+	$('a.lightbox').lightBox(); // Select all links with lightbox class
+	//gallery_lightbox.openLightBoxEntry(imageSourceCache[imageIndex].imageId);
+}
+
 /**
 	Loads the image paths into the cache.
 */
 function initializeCache() {
-	for (var i = 0; i < 14; i++) {
+	$.ajax({
+		url: "vote/getdata/json",
+		success: function(result){
+			for (var i = 0; i < result.length; i++) {
+				imageSourceCache[i] = {
+					imageId: result[i].imageId,
+					imageThumbPath: result[i].imageThumbPath,
+					imagePath: result[i].imagePath,
+					imagesCount: result[i].imagesCount
+				};
+				$('#mainImageContainer').append("<a class=\"lightbox\" href=\"" + imageSourceCache[i].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[i].imagePath + "\" alt=\"Image\" /></a>");
+			}
+			// load the first image sources from the cache
+			mainImage.attr('src', imageSourceCache[imageIndex].imagePath);
+			
+			// write the current number of images to the diashow link
+			$('#numberOfImages').html(imageSourceCache[imageIndex].imagesCount);
+			
+			// change the ID of the current image onclick handler
+			$('#mainImageLink').attr("href", imageSourceCache[imageIndex].imagePath);
+			openLightBox();
+			
+			var autoHeight = mainImage.attr('height');
+			$("#mainImageFieldset").animate({ height: autoHeight + 20 });
+			
+			imageIndex = 1;
+			loadImagesFromCache();
+		},
+		error: function(result){
+			alert("error");
+		}
+	});
+	
+	/*for (var i = 0; i < 14; i++) {
 		imageSourceCache[i] = { imagePath: '/sites/all/modules/vote/img/test/image' + (i + 1) + '.jpg' };
-	}
+	}*/
 }
 
 /**
@@ -55,12 +93,12 @@ function initializeCache() {
 function loadImagesFromCache() {
 	for (var i = 0; i < nextImages.length; i ++) {
 		var cleanIndex = checkIndex(imageSourceCache, imageIndex - nextImages.length + i); // imageIndex - nextImages.length - i - 1
-		previousImages[i].attr('src', imageSourceCache[cleanIndex].imagePath);
+		previousImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 
-		nextImages[i].attr('src', imageSourceCache[imageIndex + i].imagePath);
+		nextImages[i].attr('src', imageSourceCache[imageIndex + i].imageThumbPath);
 		
 		cleanIndex = checkIndex(imageSourceCache, imageIndex + nextImages.length + i);
-		futureImages[i].attr('src', imageSourceCache[cleanIndex].imagePath);
+		futureImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 		
 		previousImages[i].css({ width: 0, opacity: 0 });
 		
@@ -106,7 +144,7 @@ function moveImages(steps, replaceMainImage) {
 function animateMainImage(replaceMainImage) {
 	if (replaceMainImage) {
 		// Fade main image out
-		mainImage.animate({
+		$("#mainImageContainer").animate({
 				opacity: 0
 			}, 500, function() {
 				/**
@@ -121,13 +159,21 @@ function animateMainImage(replaceMainImage) {
 							Animation complete of selected image movement
 							Switch the main image source with the selected image source
 						*/
-						mainImage.attr("src", nextImages[stepsToMove - 1].attr("src"));
+						mainImage.attr("src", imageSourceCache[imageIndex + stepsToMove - 1].imagePath);
+						
+						// write the current number of images to the diashow link
+						$('#numberOfImages').html(imageSourceCache[imageIndex + stepsToMove - 1].imagesCount);
+						
+						// TODO: change the ID of the current image onclick handler
+						$('#mainImageLink').attr("href", imageSourceCache[imageIndex + stepsToMove - 1].imagePath);
+						openLightBox();
+						
 						// Calculate the new height of the image
 						mainImage.css({ width: 400 });
 						var autoHeight = mainImage.attr('height');
 						// Show the main image and animate it to the normal size
 						mainImage.css({ width: 190, height: "auto" });
-						mainImage.css({ opacity: 1 });
+						$("#mainImageContainer").css({ opacity: 1 });
 						
 						mainImage.animate({ width: 400 });
 						$("#mainImageFieldset").animate({ height: autoHeight + 20 });
@@ -149,7 +195,8 @@ function animateMainImage(replaceMainImage) {
 	Animates the next images.
 */
 function animateNextImages(replaceMainImage) {
-
+	var tempStepsToMove = stepsToMove;
+	
 	// if we step below the beginning of the image cache, reduce the steps to move so we exactly hit the beginning
 	if (imageIndex + stepsToMove < 0) {
 		stepsToMove = -imageIndex;

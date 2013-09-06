@@ -5,6 +5,26 @@ function vote_show_overview($observation_id = NULL) {
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
 	
+	//start
+	drupal_add_css(
+		drupal_get_path('module', 'gallery') . '/css/gallery.css',
+		array(
+		'group' => CSS_DEFAULT,
+		'every_page' => TRUE
+	));
+	drupal_add_css(
+		drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
+		array(
+		'group' => CSS_DEFAULT,
+		'every_page' => TRUE
+	));
+	drupal_add_js(
+		drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js',
+		array(
+		'weight' => 100
+	));
+	//end
+	
 	$render_array['welcome'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Welcome'),
@@ -60,10 +80,10 @@ function vote_show_overview($observation_id = NULL) {
 				<img id="previousImage02" class="nextImages" style="width: 0px;" />
 				<img id="previousImage03" class="nextImages" style="width: 0px;" />
 				<img id="previousImage04" class="nextImages" style="width: 0px;" />
-				<img id="image01" class="nextImages" alt="Image 01" onclick="moveImages(1, true);" />
-				<img id="image02" class="nextImages" alt="Image 02" onclick="moveImages(2, true);" />
-				<img id="image03" class="nextImages" alt="Image 03" onclick="moveImages(3, true);" />
-				<img id="image04" class="nextImages" alt="Image 04" onclick="moveImages(4, true);" />
+				<img id="image01" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="nextImages" alt="Image 01" onclick="moveImages(1, true);" />
+				<img id="image02" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="nextImages" alt="Image 02" onclick="moveImages(2, true);" />
+				<img id="image03" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="nextImages" alt="Image 03" onclick="moveImages(3, true);" />
+				<img id="image04" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="nextImages" alt="Image 04" onclick="moveImages(4, true);" />
 				<img id="futureImage01" class="nextImages" style="width: 0px;" />
 				<img id="futureImage02" class="nextImages" style="width: 0px;" />
 				<img id="futureImage03" class="nextImages" style="width: 0px;" />
@@ -78,11 +98,26 @@ function vote_show_overview($observation_id = NULL) {
 			'#title' => t('Current image'),
 			'#weight' => 5
 	);
+	
+	$proofImageText = t('Proof image');
+	
+	$result = <<<EOT
+	<div class="datatable_gallery_image_container">
+		<div style="position: relative;">
+			<span class="mainImageType">
+				<a id="openImages" class="datatable_gallery_image_type">
+					$proofImageText (<span id="numberOfImages"></span>)
+				</a>
+			</span>
+		</div>
+	</div>
+EOT;
+	
 	$render_array['mainimage']['images'] = array(
 			'#type' => 'markup',
 			'#markup' => '<div id="mainImageContainer">
-				<img id="mainImage" alt="Main image" />
-			</div>'
+				<a class="lightbox" id="mainImageLink" href="' . drupal_get_path('module', 'vote') . '/img/loading.gif"><img src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" /></a>'
+			. $result . '</div>'
 	);
 	
 	$render_array['maps'] = array(
