@@ -15,6 +15,8 @@ module_load_include('inc', 'area', 'area');
  * @todo Include the user's nickname
 */
 function area_datatable_json($acl_level = 'ACL_READ') {
+	global $user;
+	
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
@@ -48,8 +50,24 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id';
 	$sql['id'] = 'id';
-	$sql['acl_level'] = $acl_level;
-	$output = datatable_dbRequest($sql);
+	
+	$arguments = array();
+	/*
+	 * Only show accessible areas.
+	* If own areas are requested, reset ACL level to readable areas.
+	*/
+	if ($acl_level === 'own') {
+		$sql['dbWhere'] = empty($sql['dbWhere'])
+		? ''
+				: $sql['dbWhere'] . ' AND ';
+		$sql['dbWhere'] .= 'u.uid=:uid';
+		$arguments[':uid'] = $user->uid;
+		$sql['acl_level'] = 'ACL_READ';
+	}
+	else
+		$sql['acl_level'] = $acl_level;
+	
+	$output = datatable_dbRequest($sql, $arguments);
 
 	global $base_url;
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';

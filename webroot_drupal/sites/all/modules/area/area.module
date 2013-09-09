@@ -156,7 +156,7 @@ function area_menu() {
 			'description' => 'Get own areas as datatable json',
 			'page callback' => 'area_datatable_json',
 			'page arguments' => array(
-					'ACL_ADMIN'
+					'own'
 			),
 			'access arguments' => array(
 					AREA_ACCESS
