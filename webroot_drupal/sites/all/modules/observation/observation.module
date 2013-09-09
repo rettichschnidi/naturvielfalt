@@ -269,7 +269,7 @@ function observation_menu() {
 			'description' => 'Get own observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
-					'ACL_ADMIN'
+					'own'
 			),
 			'access arguments' => array(
 					ACCESS_OBSERVATION
