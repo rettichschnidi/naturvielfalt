@@ -36,15 +36,6 @@ function initializeImages() {
 	futureImages[3] = $('#futureImage04');
 }
 
-function initLightBox() {
-	var galleryLightboxSettings = {
-		captionSelector : ".caption",
-		captionAttr : false,
-		captionHTML : true,
-	};
-	$('a.lightbox').lightBox(); // Select all links with lightbox class
-}
-
 /**
 	Loads the image paths into the cache.
 */
@@ -82,10 +73,15 @@ function initializeCache() {
 			alert("error");
 		}
 	});
-	
-	/*for (var i = 0; i < 14; i++) {
-		imageSourceCache[i] = { imagePath: '/sites/all/modules/vote/img/test/image' + (i + 1) + '.jpg' };
-	}*/
+}
+
+function initLightBox() {
+	var galleryLightboxSettings = {
+		captionSelector : ".caption",
+		captionAttr : false,
+		captionHTML : true,
+	};
+	$('a.lightbox').lightBox(); // Select all links with lightbox class
 }
 
 /**
@@ -95,16 +91,17 @@ function loadImagesFromCache() {
 	for (var i = 0; i < nextImages.length; i ++) {
 		
 		// load previous thumbnail and fullsize images into cache
-		var cleanIndex = checkIndex(imageSourceCache, imageIndex - nextImages.length + i);
+		var cleanIndex = checkIndex(imageIndex - nextImages.length + i);
 		previousImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
 
 		// load next thumbnail and fullsize images into cache
-		nextImages[i].attr('src', imageSourceCache[imageIndex + i].imageThumbPath);
-		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[imageIndex + i].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[imageIndex + i].imagePath + "\" alt=\"Image\" /></a>");
+		cleanIndex = checkIndex(imageIndex + i);
+		nextImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
+		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
 		
 		// load future thumbnail and fullsize images into cache
-		cleanIndex = checkIndex(imageSourceCache, imageIndex + nextImages.length + i);
+		cleanIndex = checkIndex(imageIndex + nextImages.length + i);
 		futureImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
 		
@@ -165,7 +162,7 @@ function moveImages(steps, replaceMainImage) {
 	Animates the main image replacement.
 */
 function animateMainImage(replaceMainImage) {
-	currentMainImageIndex = imageIndex + stepsToMove - 1;
+	currentMainImageIndex = checkIndex(imageIndex + stepsToMove - 1);
 	
 	if (replaceMainImage) {
 		// Fade main image out
@@ -223,18 +220,23 @@ function animateNextImages(replaceMainImage) {
 	var tempStepsToMove = stepsToMove;
 	
 	// if we step below the beginning of the image cache, reduce the steps to move so we exactly hit the beginning
-	if (imageIndex + stepsToMove < 0) {
+	/*if (imageIndex + stepsToMove < 0) {
 		stepsToMove = -imageIndex;
-	}
-	
+	}*/
+
 	// if we step over the end of the image cache, reduce the steps to move so we exactly hit the ending
-	if (imageIndex + stepsToMove + nextImages.length >= imageSourceCache.length) {
+	/*if (imageIndex + stepsToMove + nextImages.length >= imageSourceCache.length) {
 		stepsToMove = imageSourceCache.length - nextImages.length - imageIndex;
-	}
+	}*/
 	
 	// set the new image index to reload the images
-	imageIndex += stepsToMove;
-
+	imageIndex = checkIndex(stepsToMove + imageIndex);
+	
+	/*if(imageIndex < 0) {
+		imageIndex -= imageSourceCache.length;
+		console.log(imageIndex);
+	}*/
+	
 	var positive = stepsToMove >= 0;
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
 		if (positive) {
@@ -248,7 +250,10 @@ function animateNextImages(replaceMainImage) {
 			}
 		} else {
 			if (i < previousImages.length) {
-				var cleanIndex = checkIndex(previousImages, nextImages.length - i - 1);
+				var cleanIndex = nextImages.length - i - 1;
+				if (cleanIndex < 0) {
+					cleanIndex = 0;
+				}
 				previousImages[cleanIndex].animate({ width: 190, opacity: 1 }, 500);
 			}
 			if (i < nextImages.length) {
@@ -261,8 +266,14 @@ function animateNextImages(replaceMainImage) {
 }
 
 /**
-	Checks if the index is below zero or above the array length and returns a valid index
+	Checks if the index is below zero or above the array length and returns a valid index (regarding the image loop)
 */
-function checkIndex(array, index) {
-	return index < 0 ? 0 : index >= array.length ? array.length - 1 : index;
+function checkIndex(index) {
+	if (index < 0) {
+		return imageSourceCache.length + index;
+	} else if (index >= imageSourceCache.length) {
+		return index % imageSourceCache.length;
+	} else {
+		return index;
+	}
 }
