@@ -13,13 +13,13 @@
  * @return array
  */
 function organism_get($organismid) {
+	global $user;
 	global $language;
 	
 	$langcode = (isset($user->language) && !empty($user->language))
 	? $user->language
 	: $language->language;
-	
-	global $user;
+
 	$organismid = intval(filter_xss($organismid));
 	if ($organismid < 1 || $organismid > 1000000)
 		return false;
