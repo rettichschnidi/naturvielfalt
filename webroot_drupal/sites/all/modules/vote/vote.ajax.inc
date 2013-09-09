@@ -32,8 +32,10 @@ function fetch_observation_data() {
 		'a_s.zip AS zip',
 		'a_s.canton AS canton',
 		'a_s.country AS country',
-		'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x',  // Center of the geometry - CH1903, x value
-		'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y',  // Center of the geometry - CH1903, y value
+		'ST_X(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_x', // Center of the geometry - CH1903, x value
+		'ST_Y(ST_Centroid(st_transform(a_s.geom, 21781))) AS ch1903_center_y', // Center of the geometry - CH1903, y value
+		'ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat', // Center of the geometry - WGS84, latitude
+		'ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng', // Center of the geometry - WGS84, longitude
 		'org.scientific_name AS organism_sc',
 		'ol.name AS organism_l',
 		'oa.name AS artgroup_n',
@@ -219,6 +221,8 @@ function fetch_observation_data() {
 			//$imageArray[$i]["imagesCount"] = print_r($row, true);
 			$imageArray[$i]["imagesCount"] = $row['cell']['imagescount'];
 			$imageArray[$i]["images"] = $images;
+			$imageArray[$i]["wgs84_center_lat"] = $row['cell']['wgs84_center_lat'];
+			$imageArray[$i]["wgs84_center_lng"] = $row['cell']['wgs84_center_lng'];
 			// $row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
 		}
 	

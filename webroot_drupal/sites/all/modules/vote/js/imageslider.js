@@ -8,6 +8,7 @@ var futureImages = new Array();
 var imageSourceCache = new Array();
 var stepsToMove;
 var imageIndex = 0;
+var marker;
 
 /**
 	Executed after page was loaded.
@@ -44,12 +45,15 @@ function initializeCache() {
 		url: "vote/getdata/json",
 		success: function(result){
 			for (var i = 0; i < result.length; i++) {
+				//console.log(result[i].imagesCount);
 				imageSourceCache[i] = {
 					imageId: result[i].imageId,
 					imageThumbPath: result[i].imageThumbPath,
 					imagePath: result[i].imagePath,
 					images: result[i].images,
-					imagesCount: result[i].images.images.length
+					imagesCount: result[i].images.images.length,
+					wgs84_center_lat: result[i].wgs84_center_lat,
+					wgs84_center_lng: result[i].wgs84_center_lng
 				};
 			}
 			// load the first image sources from the cache
@@ -113,6 +117,16 @@ function loadImagesFromCache() {
 		
 		nextImages[i].css({ width: 190, opacity: 1 });
 	}
+	
+	// add marker to map and set initial zoom level
+	if (marker == null) {
+		marker = new google.maps.Marker();
+		marker.setMap(observationmap.googlemap);
+	}
+	var myLatlng = new google.maps.LatLng(imageSourceCache[currentMainImageIndex].wgs84_center_lng, imageSourceCache[currentMainImageIndex].wgs84_center_lat);
+	marker.setPosition(myLatlng);
+	observationmap.googlemap.setCenter(myLatlng);
+	observationmap.googlemap.setZoom(18);
 }
 
 /**
@@ -162,9 +176,9 @@ function moveImages(steps, replaceMainImage) {
 	Animates the main image replacement.
 */
 function animateMainImage(replaceMainImage) {
-	currentMainImageIndex = checkIndex(imageIndex + stepsToMove - 1);
-	
 	if (replaceMainImage) {
+		currentMainImageIndex = checkIndex(imageIndex + stepsToMove - 1);
+		
 		// Fade main image out
 		$("#mainImageContainer").animate({
 				opacity: 0
@@ -219,23 +233,8 @@ function animateMainImage(replaceMainImage) {
 function animateNextImages(replaceMainImage) {
 	var tempStepsToMove = stepsToMove;
 	
-	// if we step below the beginning of the image cache, reduce the steps to move so we exactly hit the beginning
-	/*if (imageIndex + stepsToMove < 0) {
-		stepsToMove = -imageIndex;
-	}*/
-
-	// if we step over the end of the image cache, reduce the steps to move so we exactly hit the ending
-	/*if (imageIndex + stepsToMove + nextImages.length >= imageSourceCache.length) {
-		stepsToMove = imageSourceCache.length - nextImages.length - imageIndex;
-	}*/
-	
 	// set the new image index to reload the images
 	imageIndex = checkIndex(stepsToMove + imageIndex);
-	
-	/*if(imageIndex < 0) {
-		imageIndex -= imageSourceCache.length;
-		console.log(imageIndex);
-	}*/
 	
 	var positive = stepsToMove >= 0;
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
