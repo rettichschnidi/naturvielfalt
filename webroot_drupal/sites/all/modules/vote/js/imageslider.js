@@ -93,17 +93,17 @@ function loadImagesFromCache() {
 		// load previous thumbnail and fullsize images into cache
 		var cleanIndex = checkIndex(imageIndex - nextImages.length + i);
 		previousImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
-
+		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
+		
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
 		nextImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
+		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + nextImages.length + i);
 		futureImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
+		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		previousImages[i].css({ width: 0, opacity: 0 });
 		
