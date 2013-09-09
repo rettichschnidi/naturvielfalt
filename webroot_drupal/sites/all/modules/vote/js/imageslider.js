@@ -36,14 +36,13 @@ function initializeImages() {
 	futureImages[3] = $('#futureImage04');
 }
 
-function openLightBox() {
+function initLightBox() {
 	var galleryLightboxSettings = {
 		captionSelector : ".caption",
 		captionAttr : false,
 		captionHTML : true,
 	};
 	$('a.lightbox').lightBox(); // Select all links with lightbox class
-	//gallery_lightbox.openLightBoxEntry(imageSourceCache[imageIndex].imageId);
 }
 
 /**
@@ -61,6 +60,7 @@ function initializeCache() {
 					images: result[i].images,
 					imagesCount: result[i].images.images.length
 				};
+				// $('#mainImageContainer').append("<a href=\"" + imageSourceCache[i].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[i].imagePath + "\" alt=\"Image\" /></a>");
 			}
 			// load the first image sources from the cache
 			mainImage.attr('src', imageSourceCache[imageIndex].imagePath);
@@ -71,7 +71,7 @@ function initializeCache() {
 			currentMainImageIndex = imageIndex;
 			prepareSlideShow();
 			
-			openLightBox();
+			initLightBox();
 			
 			var autoHeight = mainImage.attr('height');
 			$("#mainImageFieldset").animate({ height: autoHeight + 20 });
@@ -94,13 +94,20 @@ function initializeCache() {
 */
 function loadImagesFromCache() {
 	for (var i = 0; i < nextImages.length; i ++) {
-		var cleanIndex = checkIndex(imageSourceCache, imageIndex - nextImages.length + i); // imageIndex - nextImages.length - i - 1
-		previousImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-
-		nextImages[i].attr('src', imageSourceCache[imageIndex + i].imageThumbPath);
 		
+		// load previous thumbnail and fullsize images into cache
+		var cleanIndex = checkIndex(imageSourceCache, imageIndex - nextImages.length + i);
+		previousImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
+		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
+
+		// load next thumbnail and fullsize images into cache
+		nextImages[i].attr('src', imageSourceCache[imageIndex + i].imageThumbPath);
+		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[imageIndex + i].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[imageIndex + i].imagePath + "\" alt=\"Image\" /></a>");
+		
+		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageSourceCache, imageIndex + nextImages.length + i);
 		futureImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
+		$('#mainImageContainer').append("<a href=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" alt=\"Image\" /></a>");
 		
 		previousImages[i].css({ width: 0, opacity: 0 });
 		
@@ -148,7 +155,7 @@ function prepareSlideShow() {
 function moveImages(steps, replaceMainImage) {
 	if (!finishedAllAnimations()) {
 		return;
-	}	
+	}
 
 	stepsToMove = steps;
 	
@@ -179,11 +186,13 @@ function animateMainImage(replaceMainImage) {
 							Switch the main image source with the selected image source
 						*/
 						mainImage.attr("src", imageSourceCache[currentMainImageIndex].imagePath);
-						prepareSlideShow();
 						
 						// write the current number of images to the diashow link
 						$('#numberOfImages').html(imageSourceCache[currentMainImageIndex].imagesCount);
-						openLightBox();
+						
+						prepareSlideShow();
+						
+						initLightBox();
 						
 						// Calculate the new height of the image
 						mainImage.css({ width: 400 });

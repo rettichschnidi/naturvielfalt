@@ -117,7 +117,7 @@ EOT;
 			'#type' => 'markup',
 			'#markup' => '<div id="mainImageContainer">
 				<a class="lightbox" id="mainImageLink" href="' . drupal_get_path('module', 'vote') . '/img/loading.gif"><img src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" /></a>'
-			. $result . '</div><div id="slideshowImages" />'
+			. $result . '</div><div id="slideshowImages"></div>'
 	);
 	
 	$render_array['maps'] = array(
