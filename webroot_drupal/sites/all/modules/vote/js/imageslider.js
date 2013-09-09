@@ -60,7 +60,6 @@ function initializeCache() {
 					images: result[i].images,
 					imagesCount: result[i].images.images.length
 				};
-				// $('#mainImageContainer').append("<a href=\"" + imageSourceCache[i].imagePath + "\" style=\"display: none;\"><img src=\"" + imageSourceCache[i].imagePath + "\" alt=\"Image\" /></a>");
 			}
 			// load the first image sources from the cache
 			mainImage.attr('src', imageSourceCache[imageIndex].imagePath);
