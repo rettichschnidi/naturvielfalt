@@ -155,8 +155,13 @@ EOT;
 	
 	$render_array['metaInfo']["table"] = array(
 			'#type'   => 'markup',
-			'#markup' => '<div id="detailTable"></div>',
-			'#weight' => 7
+			'#markup' => '<div id="detailTable"></div>'
+	);
+	
+	$render_array['voteShizzle'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Suggestions from other users'),
+			'#weight' => 9
 	);
 	
 // 	$render_array['own_proposal']['organism'] = array(
