@@ -205,13 +205,13 @@ function animateMainImage(replaceMainImage) {
 						initLightBox();
 						
 						// Calculate the new height of the image
-						mainImage.css({ width: 400 });
+						mainImage.css({ width: 440 });
 						var autoHeight = mainImage.attr('height');
 						// Show the main image and animate it to the normal size
 						mainImage.css({ width: 190, height: "auto" });
 						$("#mainImageContainer").css({ opacity: 1 });
 						
-						mainImage.animate({ width: 400 });
+						mainImage.animate({ width: 440 });
 						$("#mainImageFieldset").animate({ height: autoHeight + 20 });
 						// Reset position of the selected image
 						nextImages[stepsToMove - 1].removeAttr("style");

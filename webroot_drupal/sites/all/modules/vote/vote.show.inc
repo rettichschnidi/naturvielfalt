@@ -105,7 +105,7 @@ function vote_show_overview($observation_id = NULL) {
 	<div class="datatable_gallery_image_container">
 		<div style="position: relative;">
 			<span class="mainImageType">
-				<a id="openImages" class="datatable_gallery_image_type">
+				<a id="openImages" class="datatable_gallery_image_type" onclick="$('#mainImage').trigger('click');">
 					$proofImageText (<span id="numberOfImages"></span>)
 				</a>
 			</span>

@@ -25,17 +25,17 @@
 }
 
 #mainImage {
-	width: 400px;
+	width: 440px;
 	max-height: 600px;
 }
 
 #mainImageFieldset {
-	width: 400px;
+	width: 440px;
 	float: left;
 }
 
 #googleMapsFieldset {
-	width: 400px;
+	width: 440px;
 	float: right;
 }
 
