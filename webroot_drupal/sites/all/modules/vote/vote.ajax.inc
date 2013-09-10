@@ -6,6 +6,7 @@
  * @copyright 2013 Naturwerk, Brugg
  */
 
+module_load_include('inc', 'common');
 module_load_include('inc', 'observation');
 module_load_include('inc', 'gallery', 'gallery.implementations');
 module_load_include('inc', 'organism', 'organism.artgroup');
@@ -221,6 +222,7 @@ function fetch_observation_data() {
 			//$imageArray[$i]["imagesCount"] = print_r($row, true);
 			$imageArray[$i]["imagesCount"] = $row['cell']['imagescount'];
 			$imageArray[$i]["images"] = $images;
+			$imageArray[$i]["table"] = observation_get_table(observation_get($row['cell']['id']));
 			$imageArray[$i]["wgs84_center_lat"] = $row['cell']['wgs84_center_lat'];
 			$imageArray[$i]["wgs84_center_lng"] = $row['cell']['wgs84_center_lng'];
 			// $row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';

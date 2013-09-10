@@ -140,7 +140,23 @@ EOT;
 	
 	$render_array['clear'] = array(
 			'#type'   => 'markup',
-			'#markup' => '<div style="clear: both;"></div>'
+			'#markup' => '<div style="clear: both;"></div>',
+			'#weight' => 7
+	);
+	
+	drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
+	
+	$render_array['metaInfo'] = array(
+			'#id' => 'observation-show-details',
+			'#type' => 'fieldset',
+			'#title' => t('Observation'),
+			'#weight' => 8
+	);
+	
+	$render_array['metaInfo']["table"] = array(
+			'#type'   => 'markup',
+			'#markup' => '<div id="detailTable"></div>',
+			'#weight' => 7
 	);
 	
 // 	$render_array['own_proposal']['organism'] = array(

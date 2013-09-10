@@ -53,7 +53,8 @@ function initializeCache() {
 					images: result[i].images,
 					imagesCount: result[i].images.images.length,
 					wgs84_center_lat: result[i].wgs84_center_lat,
-					wgs84_center_lng: result[i].wgs84_center_lng
+					wgs84_center_lng: result[i].wgs84_center_lng,
+					table: result[i].table
 				};
 			}
 			// load the first image sources from the cache
@@ -127,6 +128,24 @@ function loadImagesFromCache() {
 	marker.setPosition(myLatlng);
 	observationmap.googlemap.setCenter(myLatlng);
 	observationmap.googlemap.setZoom(18);
+	
+	// load detail information
+	var info = imageSourceCache[currentMainImageIndex].table['#rows'];
+	console.log(info);
+	
+	var element = $('#detailTable');
+	
+	element.html('');
+	element.append('<table><tbody>');
+	console.log(info.length);
+	for (var i = 0; i < info.length; i ++) {
+		if (i % 2 == 0) {
+			element.append('<tr class="odd"><th>' + info[i][0].data + '</th><td>' + info[i][1] + '</td></tr>');
+		} else {
+			element.append('<tr class="even"><th>' + info[i][0].data + '</th><td>' + info[i][1] + '</td></tr>');
+		}
+	}
+	element.append('</tbody></table>');
 }
 
 /**
