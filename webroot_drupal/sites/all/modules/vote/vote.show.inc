@@ -158,10 +158,21 @@ EOT;
 			'#markup' => '<div id="detailTable"></div>'
 	);
 	
-	$render_array['voteShizzle'] = array(
+	$render_array['voteSuggestions'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Suggestions from other users'),
 			'#weight' => 9
+	);
+	
+	$render_array['voteSuggestions']["voteSuggestionsSelector"] = array(
+			'#type' => 'markup',
+			'#markup' => '<div id="voteSuggestionsSelector">
+				<select size="5" style="width: 100%">
+					<option>Katz</option>
+					<option>Hund</option>
+					<option>Fuchs</option>
+				</select>
+			</div>'
 	);
 	
 // 	$render_array['own_proposal']['organism'] = array(

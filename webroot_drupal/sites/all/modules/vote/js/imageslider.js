@@ -57,6 +57,7 @@ function initializeCache() {
 					table: result[i].table
 				};
 			}
+			
 			// load the first image sources from the cache
 			mainImage.attr('src', imageSourceCache[imageIndex].imagePath);
 			
@@ -127,17 +128,14 @@ function loadImagesFromCache() {
 	var myLatlng = new google.maps.LatLng(imageSourceCache[currentMainImageIndex].wgs84_center_lng, imageSourceCache[currentMainImageIndex].wgs84_center_lat);
 	marker.setPosition(myLatlng);
 	observationmap.googlemap.setCenter(myLatlng);
-	observationmap.googlemap.setZoom(18);
+	observationmap.googlemap.setZoom(16);
 	
 	// load detail information
 	var info = imageSourceCache[currentMainImageIndex].table['#rows'];
-	console.log(info);
-	
 	var element = $('#detailTable');
 	
 	element.html('');
 	element.append('<table><tbody>');
-	console.log(info.length);
 	for (var i = 0; i < info.length; i ++) {
 		if (i % 2 == 0) {
 			element.append('<tr class="odd"><th>' + info[i][0].data + '</th><td>' + info[i][1] + '</td></tr>');
