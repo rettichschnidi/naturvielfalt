@@ -185,10 +185,11 @@ EOT;
 	$render_array['rightDiv']['voteSuggestions']["voteSuggestion"] = array(
 			'#type' => 'markup',
 			'#markup' => '<div>
-				<select id="voteSuggestionsSelector" size="5" style="width: 100%; display: none; margin-bottom: 10px;"></select>
-			
-				<div id="chartdiv" style="width: 100%; height: 200px; display: none;"></div>
+			<div id="chartdiv" style="width: 100%; height: 200px; display: none; margin-bottom: 10px;"></div>
 				
+				<select id="voteSuggestionsSelector" size="5" style="width: 100%; display: none; margin-bottom: 10px;"></select>
+				<input id="suggestSubmitButton" type="button" value="'.t("Submit suggestion").'" style="width: 100%; display: none;" />
+			
 				<div id="noVotesMessage" style="display: none;">'.t("No suggestions yet. Be the first to suggest!").'</div>
 			</div>'
 	);

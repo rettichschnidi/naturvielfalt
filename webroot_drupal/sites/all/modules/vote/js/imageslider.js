@@ -168,6 +168,7 @@ function displayVotes() {
 			data.push({label: suggestions[i].translated_name, data: suggestions[i].votes});
 		}
 		$('#voteSuggestionsSelector').fadeIn();
+		$('#suggestSubmitButton').fadeIn();
 		$('#chartdiv').fadeIn();
 		// pie
 		$.plot('#chartdiv', data, {
@@ -192,6 +193,7 @@ function displayVotes() {
 	} else {
 		$('#voteSuggestionsSelector').fadeOut();
 		$('#chartdiv').fadeOut();
+		$('#suggestSubmitButton').fadeOut();
 		$('#noVotesMessage').fadeIn();
 	}
 }
