@@ -80,10 +80,57 @@ function fetch_observation_data() {
 			$imageArray[$i]["table"] = observation_get_table(observation_get($row['cell']['id']));
 			$imageArray[$i]["wgs84_center_lat"] = $row['cell']['wgs84_center_lat'];
 			$imageArray[$i]["wgs84_center_lng"] = $row['cell']['wgs84_center_lng'];
+			$imageArray[$i]["suggestionsFromOtherUsers"] = getSuggestions($row['id']);
 		}
 	
 		$i++;
 	}
 	
 	return drupal_json_output($imageArray);
+}
+
+function getSuggestions($observationId) {
+	$sql['dbColumns'] = array(
+			'o.id AS organism_id',
+			'o.scientific_name AS scientific_name',
+			'ol.name AS translated_name',
+			'COUNT(1) AS votes'
+	);
+	
+	$sql['dbTable'] = 'vote v';
+	
+	$sql['dbJoins'] = 'LEFT JOIN organism o
+				ON (v.organism_id = o.id)
+			LEFT JOIN organism_lang ol
+				ON (v.organism_id = ol.organism_id)';
+
+	$sql['id'] = 'o.id';
+
+	/*
+	 * Only show accessible observations.
+	*/
+	$sql['acl_level'] = $acl_level;
+
+	$sql['dbWhere'] = "v.observation_id = ". $observationId ." AND ol.languages_language = 'de'";
+
+	$sql['dbDefaultOrder'] = 'COUNT(1) desc';
+	
+	$sql['dbGroupBy'] = "v.observation_id,
+        o.id,
+        o.scientific_name,
+        ol.name";
+	
+	$arguments = array();
+	$output = datatable_dbRequest($sql, $arguments);
+	$returnArray;
+	$i = 0;
+	foreach ($output['rows'] as &$row) {
+		$returnArray[$i]["id"] = $row['cell']['organism_id'];
+		$returnArray[$i]["label"] = $row['cell']['translated_name']." - ".$row['cell']['scientific_name']." (".$row['cell']['votes']." ".t("votes").")";
+		$returnArray[$i]["votes"] = $row['cell']['votes'];
+		$returnArray[$i]["scientific_name"] = $row['cell']['scientific_name'];
+		$returnArray[$i]["translated_name"] = $row['cell']['translated_name'];
+		$i++;
+	}
+	return $returnArray;
 }

@@ -23,6 +23,16 @@ function vote_show_overview($observation_id = NULL) {
 		array(
 		'weight' => 100
 	));
+	drupal_add_js(
+		drupal_get_path('module', 'vote') . '/js/jquery.flot.js',
+		array(
+		'weight' => 101
+	));
+	drupal_add_js(
+		drupal_get_path('module', 'vote') . '/js/jquery.flot.pie.js',
+		array(
+		'weight' => 102
+	));
 	//end
 	
 	$render_array['welcome'] = array(
@@ -164,14 +174,14 @@ EOT;
 			'#weight' => 9
 	);
 	
-	$render_array['voteSuggestions']["voteSuggestionsSelector"] = array(
+	$render_array['voteSuggestions']["voteSuggestion"] = array(
 			'#type' => 'markup',
-			'#markup' => '<div id="voteSuggestionsSelector">
-				<select size="5" style="width: 100%">
-					<option>Katz</option>
-					<option>Hund</option>
-					<option>Fuchs</option>
-				</select>
+			'#markup' => '<div id="voteSuggestions">
+				<select size="5" style="width: 100%; display: none; margin-bottom: 10px;" id="voteSuggestionsSelector"></select>
+			
+				<div id="chartdiv" style="width: 100%; height: 200px; display: none;"></div>
+				
+				<div id="noVotesMessage" style="display: none;">'.t("No suggestions yet. Be the first to suggest!").'</div>
 			</div>'
 	);
 	

@@ -9,6 +9,7 @@ var imageSourceCache = new Array();
 var stepsToMove;
 var imageIndex = 0;
 var marker;
+var pie;
 
 /**
 	Executed after page was loaded.
@@ -54,7 +55,8 @@ function initializeCache() {
 					imagesCount: result[i].images.images.length,
 					wgs84_center_lat: result[i].wgs84_center_lat,
 					wgs84_center_lng: result[i].wgs84_center_lng,
-					table: result[i].table
+					table: result[i].table,
+					suggestionsFromOtherUsers: result[i].suggestionsFromOtherUsers
 				};
 			}
 			
@@ -144,6 +146,50 @@ function loadImagesFromCache() {
 		}
 	}
 	element.append('</tbody></table>');
+	
+	// load suggestions from other users
+	var element = $('#voteSuggestionsSelector');
+	element.html('');
+	$('#chartdiv').html('');
+	var suggestions = imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers;
+	var data = [];
+	if(suggestions != null) {
+		$('#noVotesMessage').fadeOut();
+		for (var i = 0; i < suggestions.length; i ++) {
+			element.append('<option value="' + suggestions[i].id  + '">' + suggestions[i].label  + '</option>');
+			data.push({label: suggestions[i].translated_name, data: suggestions[i].votes});
+		}
+		$('#voteSuggestionsSelector').fadeIn();
+		$('#chartdiv').fadeIn();
+		// pie
+		$.plot('#chartdiv', data, {
+		    series: {
+		        pie: {
+		            show: true,
+		            radius: 1,
+		            label: {
+		                show: true,
+		                radius: 3/5,
+		                formatter: labelFormatter,
+		                background: {
+		                    opacity: 0.5
+		                }
+		            }
+		        }
+		    },
+		    legend: {
+		        show: false
+		    }
+		});
+	} else {
+		$('#voteSuggestionsSelector').fadeOut();
+		$('#chartdiv').fadeOut();
+		$('#noVotesMessage').fadeIn();
+	}
+}
+
+function labelFormatter(label, series) {
+	return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
 }
 
 /**
@@ -260,9 +306,13 @@ function animateNextImages(replaceMainImage) {
 				futureImages[i].animate({ width: 190, opacity: 1 }, 500);
 			}
 			if (i < nextImages.length) {
-				nextImages[i].animate({ width: 0, opacity: 0 }, 500, function() {
-					loadImagesFromCache();
-				});
+				if(i >= Math.abs(stepsToMove) - 1){
+					nextImages[i].animate({ width: 0, opacity: 0 }, 500, function() {
+						loadImagesFromCache();
+					});
+				} else {
+					nextImages[i].animate({ width: 0, opacity: 0 }, 500);
+				}
 			}
 		} else {
 			if (i < previousImages.length) {
@@ -273,9 +323,13 @@ function animateNextImages(replaceMainImage) {
 				previousImages[cleanIndex].animate({ width: 190, opacity: 1 }, 500);
 			}
 			if (i < nextImages.length) {
-				nextImages[nextImages.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
-					loadImagesFromCache();
-				});
+				if(i >= Math.abs(stepsToMove) - 1){
+					nextImages[nextImages.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
+						loadImagesFromCache();
+					});
+				} else {
+					nextImages[nextImages.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
+				}
 			}
 		}
 	}
