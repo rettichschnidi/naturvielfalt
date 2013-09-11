@@ -123,6 +123,13 @@ function loadImagesFromCache() {
 	}
 	
 	// add marker to map and set initial zoom level
+	initializeGoogleMap();
+	
+	// load suggestions from other users
+	displayVotes();
+}
+
+function initializeGoogleMap() {
 	if (marker == null) {
 		marker = new google.maps.Marker();
 		marker.setMap(observationmap.googlemap);
@@ -146,8 +153,9 @@ function loadImagesFromCache() {
 		}
 	}
 	element.append('</tbody></table>');
-	
-	// load suggestions from other users
+}
+
+function displayVotes() {
 	var element = $('#voteSuggestionsSelector');
 	element.html('');
 	$('#chartdiv').html('');

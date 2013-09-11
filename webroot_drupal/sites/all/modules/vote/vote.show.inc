@@ -102,7 +102,18 @@ function vote_show_overview($observation_id = NULL) {
 			</div>'
 	);
 	
-	$render_array['mainimage'] = array(
+	$render_array['leftDiv'] = array(
+			'#type' => 'form',
+			"#id" => "leftDiv",
+			'#weight' => 10
+	);
+	$render_array['rightDiv'] = array(
+			'#type' => 'form',
+			"#id" => "rightDiv",
+			'#weight' => 11
+	);
+	
+	$render_array['leftDiv']['mainimage'] = array(
 			'#id' => 'mainImageFieldset',
 			'#type' => 'fieldset',
 			'#title' => t('Current image'),
@@ -123,21 +134,21 @@ function vote_show_overview($observation_id = NULL) {
 	</div>
 EOT;
 	
-	$render_array['mainimage']['images'] = array(
+	$render_array['leftDiv']['mainimage']['images'] = array(
 			'#type' => 'markup',
 			'#markup' => '<div id="mainImageContainer">
 				<a class="lightbox" id="mainImageLink" href="' . drupal_get_path('module', 'vote') . '/img/loading.gif"><img src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" /></a>'
 			. $result . '</div><div id="slideshowImages"></div>'
 	);
 	
-	$render_array['maps'] = array(
+	$render_array['rightDiv']['maps'] = array(
 			'#id' => 'googleMapsFieldset',
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
 			'#weight' => 6
 	);
 	
-	$render_array['maps']['map'] = array(
+	$render_array['rightDiv']['maps']['map'] = array(
 			'#theme'                        => 'area',
 			'#ch1903'                       => true,
 			'#search'                       => true,
@@ -148,36 +159,33 @@ EOT;
 			'#height'                       => '300px'
 	);
 	
-	$render_array['clear'] = array(
-			'#type'   => 'markup',
-			'#markup' => '<div style="clear: both;"></div>',
-			'#weight' => 7
-	);
 	
-	drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
 	
-	$render_array['metaInfo'] = array(
-			'#id' => 'observation-show-details',
+	//drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
+	
+	$render_array['leftDiv']['metaInfo'] = array(
+			'#id' => 'metaInfo',
 			'#type' => 'fieldset',
 			'#title' => t('Observation'),
 			'#weight' => 8
 	);
 	
-	$render_array['metaInfo']["table"] = array(
+	$render_array['leftDiv']['metaInfo']["table"] = array(
 			'#type'   => 'markup',
 			'#markup' => '<div id="detailTable"></div>'
 	);
 	
-	$render_array['voteSuggestions'] = array(
+	$render_array['rightDiv']['voteSuggestions'] = array(
+			'#id' => 'voteSuggestions',
 			'#type' => 'fieldset',
 			'#title' => t('Suggestions from other users'),
 			'#weight' => 9
 	);
 	
-	$render_array['voteSuggestions']["voteSuggestion"] = array(
+	$render_array['rightDiv']['voteSuggestions']["voteSuggestion"] = array(
 			'#type' => 'markup',
-			'#markup' => '<div id="voteSuggestions">
-				<select size="5" style="width: 100%; display: none; margin-bottom: 10px;" id="voteSuggestionsSelector"></select>
+			'#markup' => '<div>
+				<select id="voteSuggestionsSelector" size="5" style="width: 100%; display: none; margin-bottom: 10px;"></select>
 			
 				<div id="chartdiv" style="width: 100%; height: 200px; display: none;"></div>
 				

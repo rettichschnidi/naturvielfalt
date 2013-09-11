@@ -31,12 +31,10 @@
 
 #mainImageFieldset {
 	width: 440px;
-	float: left;
 }
 
 #googleMapsFieldset {
 	width: 440px;
-	float: right;
 }
 
 span.mainImageType {
@@ -50,4 +48,20 @@ span.mainImageType {
 
 a.mainImageType{
 	color: #FFFFFF !important;
+}
+
+#voteSuggestions {
+	width: 440px;
+}
+
+#metaInfo {
+	width: 440px;
+}
+
+#leftDiv {
+	float: left;
+}
+
+#rightDiv {
+	float: right;
 }
