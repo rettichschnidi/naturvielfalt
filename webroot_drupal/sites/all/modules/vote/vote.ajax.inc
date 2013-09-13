@@ -63,6 +63,10 @@ function fetch_observation_data() {
 	$arguments = array();
 	$output = datatable_dbRequest($sql, $arguments);
 	
+	$labels = array();
+	$labels['verifications'] = t('verifications');
+	$labels['agree'] = t('Agree');
+	
 	$i = 0;
 	foreach ($output['rows'] as &$row) {
 	
@@ -81,6 +85,7 @@ function fetch_observation_data() {
 			$imageArray[$i]["wgs84_center_lat"] = $row['cell']['wgs84_center_lat'];
 			$imageArray[$i]["wgs84_center_lng"] = $row['cell']['wgs84_center_lng'];
 			$imageArray[$i]["suggestionsFromOtherUsers"] = getSuggestions($row['id']);
+			$imageArray[$i]["labels"] = $labels;
 		}
 	
 		$i++;
@@ -122,12 +127,18 @@ function getSuggestions($observationId) {
 	
 	$arguments = array();
 	$output = datatable_dbRequest($sql, $arguments);
+	
+	$totalVotes = 0;
+	foreach ($output['rows'] as &$row) {
+		$totalVotes += $row['cell']['votes'];
+	}
+	
 	$returnArray;
 	$i = 0;
 	foreach ($output['rows'] as &$row) {
 		$returnArray[$i]["id"] = $row['cell']['organism_id'];
-		$returnArray[$i]["label"] = $row['cell']['translated_name']." - ".$row['cell']['scientific_name']." (".$row['cell']['votes']." ".t("votes").")";
 		$returnArray[$i]["votes"] = $row['cell']['votes'];
+		$returnArray[$i]["votes_percent"] = round($row['cell']['votes'] / $totalVotes * 100, 0);
 		$returnArray[$i]["scientific_name"] = $row['cell']['scientific_name'];
 		$returnArray[$i]["translated_name"] = $row['cell']['translated_name'];
 		$i++;

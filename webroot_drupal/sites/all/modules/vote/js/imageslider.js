@@ -9,7 +9,6 @@ var imageSourceCache = new Array();
 var stepsToMove;
 var imageIndex = 0;
 var marker;
-var pie;
 
 /**
 	Executed after page was loaded.
@@ -56,7 +55,8 @@ function initializeCache() {
 					wgs84_center_lat: result[i].wgs84_center_lat,
 					wgs84_center_lng: result[i].wgs84_center_lng,
 					table: result[i].table,
-					suggestionsFromOtherUsers: result[i].suggestionsFromOtherUsers
+					suggestionsFromOtherUsers: result[i].suggestionsFromOtherUsers,
+					labels: result[i].labels
 				};
 			}
 			
@@ -126,7 +126,7 @@ function loadImagesFromCache() {
 	initializeGoogleMap();
 	
 	// load suggestions from other users
-	displayVotes();
+	initializeVerifications();
 }
 
 function initializeGoogleMap() {
@@ -155,47 +155,26 @@ function initializeGoogleMap() {
 	element.append('</tbody></table>');
 }
 
-function displayVotes() {
-	var element = $('#voteSuggestionsSelector');
-	element.html('');
-	$('#chartdiv').html('');
+function initializeVerifications() {
+	var container = $('#selectBoxContainer');
+	container.html('');
 	var suggestions = imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers;
-	var data = [];
-	if(suggestions != null) {
-		$('#noVotesMessage').fadeOut();
+	if (suggestions != null) {
 		for (var i = 0; i < suggestions.length; i ++) {
-			element.append('<option value="' + suggestions[i].id  + '">' + suggestions[i].label  + '</option>');
-			data.push({label: suggestions[i].translated_name, data: suggestions[i].votes});
+			container.append(	'<div class="entry">'
+							  + '<div class="progressBar" style="width: ' + suggestions[i].votes_percent + '%;">'
+							  + '<span id="translatedDescription">' + suggestions[i].translated_name + '</span>'
+							  + '<span id="latinDescription"><i>' + suggestions[i].scientific_name + '</i></span>'
+							  + '<span id="votes">' + suggestions[i].votes + ' ' + imageSourceCache[currentMainImageIndex].labels.verifications + '</span>'
+							  + '</div>'
+							  + '<div class="suggestButton">' + imageSourceCache[currentMainImageIndex].labels.agree + '</div>'
+							  + '</div>');
 		}
-		$('#voteSuggestionsSelector').fadeIn();
-		$('#suggestSubmitButton').fadeIn();
-		$('#chartdiv').fadeIn();
-		// pie
-		$.plot('#chartdiv', data, {
-		    series: {
-		        pie: {
-		            show: true,
-		            radius: 1,
-		            label: {
-		                show: true,
-		                radius: 3/5,
-		                formatter: labelFormatter,
-		                background: {
-		                    opacity: 0.5
-		                }
-		            }
-		        }
-		    },
-		    legend: {
-		        show: false
-		    }
-		});
+		container.show();
 	} else {
-		$('#voteSuggestionsSelector').fadeOut();
-		$('#chartdiv').fadeOut();
-		$('#suggestSubmitButton').fadeOut();
-		$('#noVotesMessage').fadeIn();
+		container.hide();
 	}
+	initializeSelectBox();
 }
 
 function labelFormatter(label, series) {

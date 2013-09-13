@@ -4,6 +4,7 @@ function vote_show_overview($observation_id = NULL) {
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
+	drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
 	
 	//start
 	drupal_add_css(
@@ -24,12 +25,12 @@ function vote_show_overview($observation_id = NULL) {
 		'weight' => 100
 	));
 	drupal_add_js(
-		drupal_get_path('module', 'vote') . '/js/jquery.flot.js',
+		drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js',
 		array(
 		'weight' => 101
 	));
 	drupal_add_js(
-		drupal_get_path('module', 'vote') . '/js/jquery.flot.pie.js',
+		drupal_get_path('module', 'vote') . '/js/selectbox.js',
 		array(
 		'weight' => 102
 	));
@@ -175,23 +176,10 @@ EOT;
 			'#markup' => '<div id="detailTable"></div>'
 	);
 	
-	$render_array['rightDiv']['voteSuggestions'] = array(
-			'#id' => 'voteSuggestions',
-			'#type' => 'fieldset',
-			'#title' => t('Suggestions from other users'),
-			'#weight' => 9
-	);
-	
-	$render_array['rightDiv']['voteSuggestions']["voteSuggestion"] = array(
+	$render_array['verifications'] = array(
 			'#type' => 'markup',
-			'#markup' => '<div>
-			<div id="chartdiv" style="width: 100%; height: 200px; display: none; margin-bottom: 10px;"></div>
-				
-				<select id="voteSuggestionsSelector" size="5" style="width: 100%; display: none; margin-bottom: 10px;"></select>
-				<input id="suggestSubmitButton" type="button" value="'.t("Submit suggestion").'" style="width: 100%; display: none;" />
-			
-				<div id="noVotesMessage" style="display: none;">'.t("No suggestions yet. Be the first to suggest!").'</div>
-			</div>'
+			'#markup' => '<div id="selectBoxContainer"></div>',
+			'#weight' => 12
 	);
 	
 // 	$render_array['own_proposal']['organism'] = array(
