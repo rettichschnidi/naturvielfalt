@@ -242,16 +242,16 @@ EOT;
 			'#default_value' => date('H:i', $timestamp),
 	);
 	
-	$render_array['commentDiv'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Comment'),
-			'#weight' => 15
-	);
-	
-	$render_array['commentDiv']['comment'] = array(
+	$render_array['ownVerification']['comment'] = array(
 			'#title' => t('Comment your choice'),
 			'#type' => 'textarea',
 			'#description' => t('Add a note to explain your choice so others can learn from you.')
+	);
+	
+	$render_array['ownVerification']['submitButton'] = array(
+			'#id' => 'submitVerification',
+			'#type' => 'button',
+			'#value' => t('Submit verification')
 	);
 	
 	return $render_array;

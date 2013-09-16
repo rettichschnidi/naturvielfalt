@@ -76,6 +76,12 @@ function initializeCache() {
 			
 			imageIndex = 1;
 			loadImagesFromCache();
+			
+			// add marker to map and set initial zoom level
+			initializeGoogleMap();
+			
+			// load suggestions from other users
+			initializeVerifications();
 		},
 		error: function(result){
 			alert("error");
@@ -121,12 +127,6 @@ function loadImagesFromCache() {
 		
 		nextImages[i].css({ width: 190, opacity: 1 });
 	}
-	
-	// add marker to map and set initial zoom level
-	initializeGoogleMap();
-	
-	// load suggestions from other users
-	initializeVerifications();
 }
 
 function initializeGoogleMap() {
@@ -274,6 +274,12 @@ function animateMainImage(replaceMainImage) {
 						nextImages[stepsToMove - 1].removeAttr("style");
 						// check if the amount of steps is possible to do
 						animateNextImages(replaceMainImage);
+						
+						// add marker to map and set initial zoom level
+						initializeGoogleMap();
+						
+						// load suggestions from other users
+						initializeVerifications();
 					}
 				);
 			}
