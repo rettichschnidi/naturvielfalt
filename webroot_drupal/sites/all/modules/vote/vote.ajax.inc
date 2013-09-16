@@ -66,6 +66,7 @@ function fetch_observation_data() {
 	$labels = array();
 	$labels['verifications'] = t('verifications');
 	$labels['agree'] = t('Agree');
+	$labels['noVerifications'] = t('No verifications found for this observation.');
 	
 	$i = 0;
 	foreach ($output['rows'] as &$row) {

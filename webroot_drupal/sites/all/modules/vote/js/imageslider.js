@@ -170,9 +170,8 @@ function initializeVerifications() {
 							  + '<div class="suggestButton">' + imageSourceCache[currentMainImageIndex].labels.agree + '</div>'
 							  + '</div>');
 		}
-		container.show();
 	} else {
-		container.hide();
+		container.append('<span>' + imageSourceCache[currentMainImageIndex].labels.noVerifications + '</span>');
 	}
 	initializeSelectBox();
 }

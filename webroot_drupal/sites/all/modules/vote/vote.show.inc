@@ -164,22 +164,46 @@ EOT;
 	
 	//drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
 	
-	$render_array['leftDiv']['metaInfo'] = array(
+	$render_array['rightDiv']['metaInfo'] = array(
 			'#id' => 'metaInfo',
 			'#type' => 'fieldset',
 			'#title' => t('Observation'),
 			'#weight' => 8
 	);
 	
-	$render_array['leftDiv']['metaInfo']["table"] = array(
+	$render_array['rightDiv']['metaInfo']["table"] = array(
 			'#type'   => 'markup',
 			'#markup' => '<div id="detailTable"></div>'
 	);
 	
-	$render_array['verifications'] = array(
-			'#type' => 'markup',
-			'#markup' => '<div id="selectBoxContainer"></div>',
+	$render_array['clearBoth'] = array(
+			'#type'   => 'markup',
+			'#markup' => '<div style="clear:both;"></div>',
 			'#weight' => 12
+	);
+	
+	$render_array['verificationBox'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Verifications'),
+			'#weight' => 13
+	);
+	
+	$render_array['verificationBox']['chart'] = array(
+			'#type' => 'markup',
+			'#markup' => '<div id="selectBoxContainer"></div>'
+	);
+	
+	$render_array['commentDiv'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Comment'),
+			'#weight' => 14
+	);
+	
+	$render_array['commentDiv']['comment'] = array(
+			'#title' => t('Comment your choice'),
+			'#type' => 'textarea',
+			'#description' => t ('The comment will be unpublished if it contains any of the phrases above. Use a case-sensitive, comma-separated list of phrases. Example: funny, bungee jumping, "Company, Inc."'),
+			'#default_value' => isset( $context['keywords']) ? drupal_implode_tags($context['keywords']) : '',
 	);
 	
 // 	$render_array['own_proposal']['organism'] = array(
