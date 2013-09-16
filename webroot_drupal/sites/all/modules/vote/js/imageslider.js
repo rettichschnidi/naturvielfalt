@@ -157,9 +157,12 @@ function initializeGoogleMap() {
 
 function initializeVerifications() {
 	var container = $('#selectBoxContainer');
+	var noVerificationsMessage = $('#noVerificationsMessage');
 	container.html('');
 	var suggestions = imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers;
 	if (suggestions != null) {
+		noVerificationsMessage.hide();
+		container.show();
 		for (var i = 0; i < suggestions.length; i ++) {
 			container.append(	'<div class="entry">'
 							  + '<div class="progressBar" style="width: ' + suggestions[i].votes_percent + '%;">'
@@ -171,7 +174,10 @@ function initializeVerifications() {
 							  + '</div>');
 		}
 	} else {
-		container.append('<span>' + imageSourceCache[currentMainImageIndex].labels.noVerifications + '</span>');
+		container.hide();
+
+		noVerificationsMessage.html(imageSourceCache[currentMainImageIndex].labels.noVerifications);
+		noVerificationsMessage.show();
 	}
 	initializeSelectBox();
 }

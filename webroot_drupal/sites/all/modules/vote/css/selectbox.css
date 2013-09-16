@@ -76,3 +76,7 @@
 	text-decoration: underline;
 	color: #000000;
 }
+
+#noVerificationsMessage {
+	display: none;
+}

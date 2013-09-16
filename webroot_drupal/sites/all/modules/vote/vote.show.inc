@@ -190,42 +190,69 @@ EOT;
 	
 	$render_array['verificationBox']['chart'] = array(
 			'#type' => 'markup',
-			'#markup' => '<div id="selectBoxContainer"></div>'
+			'#markup' => '<div id="selectBoxContainer"></div><div id="noVerificationsMessage" style="display: none;"></div>'
+	);
+	
+	$json = 'organism/search/json/'.$artgroup_id;
+	$timestamp = time();
+	
+	$render_array['ownVerification'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Own verification'),
+			'#weight' => 14
+	);
+	
+	$render_array['ownVerification']['organism'] = array(
+			'#id' => 'organism_name',
+			'#title' => t('Search for species'),
+			'#type' => 'textfield',
+			'#autocomplete_path' => $json,
+			'#description' => t('Maximum 30 search results will be showed.'),
+			'#attributes' => array(
+					'placeholder' => t('Start typing to see the species...'),
+			),
+			'#ajax' => array(
+					'event' => 'change',
+					'callback' => 'observation_organism_callback',
+					'wrapper' => 'organism_replace',
+			),
+			'#tree' => true,
+			'#required' => true,
+			'#disabled' => false,
+			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
+	);
+	
+	$render_array['ownVerification']['date'] = array(
+			'#id' => 'date',
+			'#title' => t('Date of the verification'),
+			'#type' => 'textfield',
+			'#attributes' => array('class' => array('datepicker')),
+			'#required' => true,
+			'#tree' => true,
+			'#default_value' => date('d.m.Y', $timestamp),
+	);
+	
+	$render_array['ownVerification']['time'] = array(
+			'#id' => 'time',
+			'#title' => t('Time of the verification'),
+			'#attributes' => array('class' => array('timepicker')),
+			'#type' => 'textfield',
+			'#required' => true,
+			'#tree' => true,
+			'#default_value' => date('H:i', $timestamp),
 	);
 	
 	$render_array['commentDiv'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Comment'),
-			'#weight' => 14
+			'#weight' => 15
 	);
 	
 	$render_array['commentDiv']['comment'] = array(
 			'#title' => t('Comment your choice'),
 			'#type' => 'textarea',
-			'#description' => t ('The comment will be unpublished if it contains any of the phrases above. Use a case-sensitive, comma-separated list of phrases. Example: funny, bungee jumping, "Company, Inc."'),
-			'#default_value' => isset( $context['keywords']) ? drupal_implode_tags($context['keywords']) : '',
+			'#description' => t('Add a note to explain your choice so others can learn from you.')
 	);
-	
-// 	$render_array['own_proposal']['organism'] = array(
-// 			'#id' => 'organism_name',
-// 			'#title' => t('Search for species'),
-// 			'#type' => 'textfield',
-// 			'#autocomplete_path' => $json,
-// 			'#description' => t('Maximum 30 search results will be showed.'),
-// 			'#attributes' => array(
-// 					'placeholder' => t('Start typing to see the species...'),
-// 			),
-// 			'#ajax' => array(
-// 					'event' => 'change',
-// 					'callback' => 'observation_organism_callback',
-// 					'wrapper' => 'organism_replace',
-// 			),
-// 			'#weight' => 4,
-// 			'#tree' => true,
-// 			'#required' => $checked ? false : true,
-// 			'#disabled' => $checked ? true : false,
-// 			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
-// 	);
 	
 	return $render_array;
 }
