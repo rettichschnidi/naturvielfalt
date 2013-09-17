@@ -39,11 +39,6 @@ function fetch_observation_data() {
 	$sql['id'] = 'id';
 	
 	/*
-	 * Only show accessible observations.
-	 */
-	$sql['acl_level'] = $acl_level;
-	
-	/*
 	 * Only show observations of a specific artgroup.
 	 * artgroup id 1 means all artgroups.
 	 */

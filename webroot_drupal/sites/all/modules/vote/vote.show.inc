@@ -58,24 +58,24 @@ function vote_show_overview($observation_id = NULL) {
 					)
 			)
 	);
-	$artgroup_id = 0;
-	$render_array['artgroup']['artgroup_id'] = array(
-			'#id' => 'artgroup_id',
+	$artgroup_filter_id = 0;
+	$render_array['artgroup']['artgroup_filter_id'] = array(
+			'#id' => 'artgroup_filter_id',
 			'#title' => t('Filter on species group'),
 			'#type' => 'select',
 			'#options' => organism_artgroup_get_all_as_array(),
-			'#default_value' => $artgroup_id,
-			'#ajax' => array(
-					'event' => 'change',
-					'callback' => 'observation_organism_callback',
-					'wrapper' => 'organism_replace'
-			),
-			'#attributes' => array(
-					'id' => 'artgroup_id'
+			'#default_value' => $artgroup_filter_id,
+// 			'#ajax' => array(
+// 					'event' => 'change',
+// 					'callback' => 'observation_organism_callback',
+// 					'wrapper' => 'organism_replace'
+// 			),
+ 			'#attributes' => array(
+					'id' => 'artgroup_filter_id'
 			),
 			'#weight' => 3,
 			'#tree' => true,
-			'#value' => $artgroup_id
+			'#value' => $artgroup_filter_id
 	);
 	
 	$render_array['imageslider'] = array(
@@ -160,8 +160,6 @@ EOT;
 			'#height'                       => '300px'
 	);
 	
-	
-	
 	//drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
 	
 	$render_array['rightDiv']['metaInfo'] = array(
@@ -193,16 +191,55 @@ EOT;
 			'#markup' => '<div id="selectBoxContainer"></div><div id="noVerificationsMessage" style="display: none;"></div>'
 	);
 	
-	$json = 'organism/search/json/'.$artgroup_id;
-	$timestamp = time();
-	
 	$render_array['ownVerification'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Own verification'),
 			'#weight' => 14
 	);
 	
-	$render_array['ownVerification']['organism'] = array(
+	$render_array['ownVerification']['form'] = drupal_get_form('own_verification_form');
+	
+	return $render_array;
+}
+
+function own_verification_form($form, &$form_state) {
+	$artgroup_id = 1;
+	
+	if (isset($form_state['triggering_element'])) {
+		if ($form_state['triggering_element']['#id'] == 'artgroup_id') {
+			$artgroup_id = $form_state['input']['group']['artgroup_id'];
+		}
+	}
+	
+	$json = 'organism/search/json/' . $artgroup_id;
+	$timestamp = time();
+	
+	$form['group'] = array(
+			'#id' => 'organism_group',
+			'#prefix' => '<div id="organism_replace">',
+			'#suffix' => '</div>',
+			'#tree' => true,
+	);
+	
+	$form['group']['artgroup_id'] = array(
+			'#id' => 'artgroup_id',
+			'#title' => t('Filter on species group'),
+			'#type' => 'select',
+			'#options' => organism_artgroup_get_all_as_array(),
+			'#default_value' => $artgroup_id,
+			'#ajax' => array(
+					'event' => 'change',
+					'callback' => 'vote_organism_callback',
+					'wrapper' => 'organism_replace'
+			),
+			'#attributes' => array(
+					'id' => 'artgroup_id'
+			),
+			'#tree' => true,
+			'#value' => $artgroup_id
+	);
+	
+	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
 			'#type' => 'textfield',
@@ -211,18 +248,13 @@ EOT;
 			'#attributes' => array(
 					'placeholder' => t('Start typing to see the species...'),
 			),
-			'#ajax' => array(
-					'event' => 'change',
-					'callback' => 'observation_organism_callback',
-					'wrapper' => 'organism_replace',
-			),
 			'#tree' => true,
 			'#required' => true,
 			'#disabled' => false,
-			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
+			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : ''
 	);
 	
-	$render_array['ownVerification']['date'] = array(
+	$form['group']['date'] = array(
 			'#id' => 'date',
 			'#title' => t('Date of the verification'),
 			'#type' => 'textfield',
@@ -232,7 +264,7 @@ EOT;
 			'#default_value' => date('d.m.Y', $timestamp),
 	);
 	
-	$render_array['ownVerification']['time'] = array(
+	$form['group']['time'] = array(
 			'#id' => 'time',
 			'#title' => t('Time of the verification'),
 			'#attributes' => array('class' => array('timepicker')),
@@ -242,17 +274,66 @@ EOT;
 			'#default_value' => date('H:i', $timestamp),
 	);
 	
-	$render_array['ownVerification']['comment'] = array(
+	$form['#after_build'] = array('own_verification_form_add_js_tools');
+	
+	$form['group']['comment'] = array(
 			'#title' => t('Comment your choice'),
 			'#type' => 'textarea',
 			'#description' => t('Add a note to explain your choice so others can learn from you.')
 	);
 	
-	$render_array['ownVerification']['submitButton'] = array(
-			'#id' => 'submitVerification',
-			'#type' => 'button',
-			'#value' => t('Submit verification')
+	$form['group']['submitButton'] = array(
+			'#type' => 'submit',
+			'#value' => t('Submit verification'),
+			'#submit' => array(
+					'vote_save'
+			)
 	);
 	
-	return $render_array;
+	return $form;
+}
+
+function vote_organism_callback($form, &$form_state) {
+	if ($form_state['triggering_element']['#id'] == 'artgroup_id') {
+		$form['group']['organism']['#value'] = "";
+	}
+	return $form['group'];
+}
+
+function own_verification_form_add_js_tools($form, &$form_state) {
+	//add date and timepicker
+	drupal_add_library('system', 'ui.datepicker');
+	drupal_add_library('system', 'ui.slider');
+	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_js($observation_path . '/js/timepicker.js');
+	
+	drupal_add_css('/* css for timepicker */
+					.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+					.ui-timepicker-div dl { text-align: left; }
+					.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+					.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+					.ui-timepicker-div td { font-size: 90%; }
+					.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+		
+					.ui-timepicker-rtl{ direction: rtl; }
+					.ui-timepicker-rtl dl { text-align: right; }
+					.ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; })', 'inline');
+
+	drupal_add_js('jQuery(document).ready(function(){
+	 		jQuery( ".datepicker" ).live("focus", function() {
+	 				$(this).datepicker({
+			      dateFormat: "dd.mm.yy"
+    			});
+	 		});
+
+			jQuery( ".timepicker" ).live("focus", function() {
+	 			$(this).timepicker({
+			 	timeFormat: "HH:mm",
+	 			showButtonPanel: false
+			 });
+	 		});
+			});
+	 		', 'inline');
+
+	return $form;
 }
