@@ -37,6 +37,10 @@ function initializeImages() {
 	futureImages[3] = $('#futureImage04');
 }
 
+function getCurrentObservationId() {
+	return imageSourceCache[currentMainImageIndex].imageId;
+}
+
 /**
 	Loads the image paths into the cache.
 */

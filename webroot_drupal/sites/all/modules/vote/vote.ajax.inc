@@ -141,3 +141,29 @@ function getSuggestions($observationId) {
 	}
 	return $returnArray;
 }
+
+function vote_save() {
+	$values = $_POST;
+	
+	global $user;
+	$date = $values['date'];
+	$time = $values['time'];
+
+	$verification['user_id'] = $user->uid;
+	$verification['observation_id'] = $values['observation_id'];
+	$result = organism_get_byname($values['organism_name']);
+	$verification['organism_id'] = $result['id'];
+	// $verification['comment'] = $values['comment'];
+	
+	//nasty workaround for webservice lightversion
+	$date_parts = explode('.', filter_xss($date));
+	$timesplit = array(null, null);
+	if(isset($time)) {
+		$timesplit = explode(':', $values['time']);
+		$verification['vote_timestamp'] = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	} else {
+		$verification['vote_timestamp'] = mktime(null, null, null, $date_parts[1], $date_parts[0], $date_parts[2]);
+	}
+
+	db_insert('vote')->fields($verification)->execute();
+}

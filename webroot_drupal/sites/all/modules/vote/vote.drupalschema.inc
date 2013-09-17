@@ -34,7 +34,7 @@ function vote_get_schema() {
 									'description' => 'Date and time, when the vote was entered',
 									'type' => 'datetime',
 									'not null' => 'TRUE',
-									'pgsql_type' => 'timestamp'
+									'pgsql_type' => 'int'
 							)
 					),
 					'primary key' => array(

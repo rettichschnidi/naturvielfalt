@@ -3,6 +3,7 @@ function vote_show_overview($observation_id = NULL) {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
+	drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
 	
@@ -65,11 +66,6 @@ function vote_show_overview($observation_id = NULL) {
 			'#type' => 'select',
 			'#options' => organism_artgroup_get_all_as_array(),
 			'#default_value' => $artgroup_filter_id,
-// 			'#ajax' => array(
-// 					'event' => 'change',
-// 					'callback' => 'observation_organism_callback',
-// 					'wrapper' => 'organism_replace'
-// 			),
  			'#attributes' => array(
 					'id' => 'artgroup_filter_id'
 			),
@@ -277,17 +273,15 @@ function own_verification_form($form, &$form_state) {
 	$form['#after_build'] = array('own_verification_form_add_js_tools');
 	
 	$form['group']['comment'] = array(
+			'#id' => 'comment',
 			'#title' => t('Comment your choice'),
 			'#type' => 'textarea',
 			'#description' => t('Add a note to explain your choice so others can learn from you.')
 	);
 	
-	$form['group']['submitButton'] = array(
-			'#type' => 'submit',
-			'#value' => t('Submit verification'),
-			'#submit' => array(
-					'vote_save'
-			)
+	$form['group']['submitVerification'] = array(
+			'#type'   => 'markup',
+			'#markup' => '<input id="submitVerification" type="button" value="'.t('Submit verification').'" />'
 	);
 	
 	return $form;

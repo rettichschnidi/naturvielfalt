@@ -52,6 +52,16 @@ function vote_menu() {
 			'file' => 'vote.ajax.inc',
 			'type' => MENU_CALLBACK,
 	);
+	
+	$items['vote/save'] = array(
+			'title' => 'Save verification',
+			'description' => 'Saves the given verification',
+			'page callback' => 'vote_save',
+			'access arguments' => array(
+					VOTE_WRITE
+			),
+			'file' => 'vote.ajax.inc',
+	);
 
 	return $items;
 }
