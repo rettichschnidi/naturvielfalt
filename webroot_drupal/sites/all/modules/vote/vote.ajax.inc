@@ -15,7 +15,6 @@ module_load_include('inc', 'datatable');
 
 function fetch_observation_data() {
 	global $user;
-	global $langcode;
 	
 	$sql['dbColumns'] = array(
 		'o.id AS id',
@@ -34,6 +33,8 @@ function fetch_observation_data() {
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
 	
+	// TODO: fix this using merged language-recognition
+	if (empty($langcode)) { $langcode = 'de'; }
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
 		.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
 		.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
@@ -95,8 +96,6 @@ function fetch_observation_data() {
 }
 
 function getSuggestions($observationId) {
-	global $langcode;
-	
 	$sql['dbColumns'] = array(
 			'o.id AS organism_id',
 			'o.scientific_name AS scientific_name',
@@ -118,6 +117,8 @@ function getSuggestions($observationId) {
 	*/
 	$sql['acl_level'] = $acl_level;
 
+	// TODO: fix this using merged language-recognition
+	if (empty($langcode)) { $langcode = 'de'; }
 	$sql['dbWhere'] = "v.observation_id = ". $observationId ." AND ol.languages_language = '" . db_escape_field($langcode) . "'";
 
 	$sql['dbDefaultOrder'] = 'COUNT(1) desc';
