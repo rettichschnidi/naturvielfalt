@@ -2,3 +2,62 @@
 	float: left;
 	width: 300px;
 }
+
+.nextImages {
+	width: 190px;
+	height: 150px;
+	position: relative;
+	cursor: pointer;
+}
+
+.navigationImages {
+	cursor: pointer;
+}
+
+#loadNextImages {
+	width: 50px;
+	height: 150px;
+}
+
+#mainImageContainer {
+	width: 400px;
+	height: 300px;
+}
+
+#mainImage {
+	width: 440px;
+	max-height: 600px;
+}
+
+#mainImageFieldset {
+	width: 440px;
+}
+
+#googleMapsFieldset {
+	width: 440px;
+}
+
+span.mainImageType {
+	background-color: #659560;
+	color: #FFFFFF;
+	position: absolute;
+	bottom: 4px;
+	z-index: 1;
+	cursor: pointer;
+}
+
+a.mainImageType{
+	color: #FFFFFF !important;
+}
+
+#metaInfo {
+	width: 440px;
+}
+
+#leftDiv {
+	float: left;
+}
+
+#rightDiv {
+	float: right;
+}

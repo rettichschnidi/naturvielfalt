@@ -41,6 +41,27 @@ function vote_menu() {
 			),
 			'file' => 'vote.show.inc',
 	);
+	
+	$items['vote/getdata/json'] = array(
+			'title' => 'Images',
+			'description' => 'Get all image data to show',
+			'page callback' => 'fetch_observation_data',
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
+	$items['vote/save'] = array(
+			'title' => 'Save verification',
+			'description' => 'Saves the given verification',
+			'page callback' => 'vote_save',
+			'access arguments' => array(
+					VOTE_WRITE
+			),
+			'file' => 'vote.ajax.inc',
+	);
 
 	return $items;
 }

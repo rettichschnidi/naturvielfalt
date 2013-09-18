@@ -34,11 +34,33 @@ function vote_get_schema() {
 									'description' => 'Date and time, when the vote was entered',
 									'type' => 'datetime',
 									'not null' => 'TRUE',
-									'pgsql_type' => 'timestamp'
+									'pgsql_type' => 'int'
 							)
 					),
 					'primary key' => array(
 							0 => 'vote_id'
+					)
+			),
+			'vote_comment' => array(
+					'fields' => array(
+							'id' => array(
+									'description' => 'ID of this entry',
+									'type' => 'serial',
+									'not null' => 'TRUE'
+							),
+							'vote_entry' => array(
+									'description' => 'ID of the vote',
+									'type' => 'int',
+									'not null' => 'TRUE'
+							),
+							'comment_id' => array(
+									'description' => 'ID of the comment',
+									'type' => 'int',
+									'not null' => 'TRUE'
+							)
+					),
+					'primary key' => array(
+							0 => 'id'
 					)
 			)
 	);
