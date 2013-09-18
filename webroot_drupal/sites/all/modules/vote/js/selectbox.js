@@ -23,18 +23,6 @@ function initializeSelectBox() {
 		$(this).css({ "background-color": "hsv(0, 0, " + colorValue + ")" });
 	});
 	
-	/*var previousHue = 0;
-	var goPositive = true;
-	$(".progressBar").each(function() {
-		var nextHue = previousHue;
-		var distance = 30;
-		nextHue += goPositive ? distance : -distance;
-		if (nextHue > 255) { nextHue = 255; goPositive = false; }
-		if (nextHue < 0) { nextHue = 0; goPositive = true; }
-		$(this).css({ "background-color": "hsv(" + nextHue + ", 30, 100)" });
-		previousHue = nextHue;		
-	});*/
-	
 	// set a random color to the bars
 	$(".progressBar").each(function() {
 		$(this).css({ "background-color": "hsv(" + getNextRandomHue() + ", 30, 100)" });	
@@ -73,6 +61,6 @@ function getNextRandomHue() {
  * Returns a random integer between min and max
  * Using Math.round() will give you a non-uniform distribution!
  */
-function getRandomInt (min, max) {
+function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }

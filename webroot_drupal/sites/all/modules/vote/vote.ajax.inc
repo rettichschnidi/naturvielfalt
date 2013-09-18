@@ -14,6 +14,9 @@ module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
 function fetch_observation_data() {
+	global $user;
+	global $langcode;
+	
 	$sql['dbColumns'] = array(
 		'o.id AS id',
 		'o.organism_artgroup_id AS artgroup_id',
@@ -23,7 +26,8 @@ function fetch_observation_data() {
 		'i.name AS inventory',
 		'ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat', // Center of the geometry - WGS84, latitude
 		'ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng', // Center of the geometry - WGS84, longitude
-		'(SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id) AS votes'
+		'(SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id) AS votes',
+		'(SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id AND v.user_id = '.$user->uid.') AS current_user_votes'
 	);
 	
 	$sql['dbTable'] = '{observation} o';
@@ -50,7 +54,7 @@ function fetch_observation_data() {
 		$arguments[':oaid'] = $_REQUEST['oaid'];
 	}
 	
-	$sql['dbDefaultOrder'] = '(SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id), o.date DESC';
+	$sql['dbDefaultOrder'] = 'current_user_votes, votes, o.date DESC';
 	
 	/*
 	 * fetch the observation data
@@ -65,7 +69,7 @@ function fetch_observation_data() {
 	
 	$i = 0;
 	foreach ($output['rows'] as &$row) {
-	
+		
 		// get images
 		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
 		
@@ -91,6 +95,8 @@ function fetch_observation_data() {
 }
 
 function getSuggestions($observationId) {
+	global $langcode;
+	
 	$sql['dbColumns'] = array(
 			'o.id AS organism_id',
 			'o.scientific_name AS scientific_name',
@@ -112,7 +118,7 @@ function getSuggestions($observationId) {
 	*/
 	$sql['acl_level'] = $acl_level;
 
-	$sql['dbWhere'] = "v.observation_id = ". $observationId ." AND ol.languages_language = 'de'";
+	$sql['dbWhere'] = "v.observation_id = ". $observationId ." AND ol.languages_language = '" . db_escape_field($langcode) . "'";
 
 	$sql['dbDefaultOrder'] = 'COUNT(1) desc';
 	
@@ -149,21 +155,41 @@ function vote_save() {
 	$date = $values['date'];
 	$time = $values['time'];
 
-	$verification['user_id'] = $user->uid;
-	$verification['observation_id'] = $values['observation_id'];
+	$verification['user_id'] = filter_xss($user->uid);
+	$verification['observation_id'] = filter_xss($values['observation_id']);
 	$result = organism_get_byname($values['organism_name']);
-	$verification['organism_id'] = $result['id'];
-	// $verification['comment'] = $values['comment'];
+	$verification['organism_id'] = filter_xss($result['id']);
+	// $verification['comment'] = filter_xss($values['comment']);
 	
 	//nasty workaround for webservice lightversion
 	$date_parts = explode('.', filter_xss($date));
 	$timesplit = array(null, null);
 	if(isset($time)) {
-		$timesplit = explode(':', $values['time']);
+		$timesplit = explode(':', filter_xss($time));
 		$verification['vote_timestamp'] = mktime($timesplit[0], $timesplit[1], null, $date_parts[1], $date_parts[0], $date_parts[2]);
 	} else {
 		$verification['vote_timestamp'] = mktime(null, null, null, $date_parts[1], $date_parts[0], $date_parts[2]);
 	}
-
-	db_insert('vote')->fields($verification)->execute();
+	
+	// check if the current user already voted for this observation and replace it with the new one, if yes
+	$result = db_select('vote', 'v')
+		->fields('v')
+		->condition('observation_id', $verification['observation_id'], '=')
+		->condition('user_id', $verification['user_id'], '=')
+		->execute();
+	$already_voted = $result->rowCount() > 0;
+	
+	if ($already_voted) {
+		db_update('vote')
+		->fields(array(
+		    'organism_id' => $verification['organism_id'],
+		    'vote_timestamp' => $verification['vote_timestamp'],
+		    // 'comment' => $verification['comment']
+		))
+		->condition('observation_id', $verification['observation_id'], '=')
+		->condition('user_id', $verification['user_id'], '=')
+		->execute();
+	} else {
+		db_insert('vote')->fields($verification)->execute();
+	}
 }
