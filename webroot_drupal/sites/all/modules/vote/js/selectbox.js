@@ -10,6 +10,11 @@ function initializeSelectBox() {
 		$(this).find(".suggestButton").stop(true, false).animate({ opacity: 0, right: -120 }, 200);
 	});
 	
+	//	add event to accept buttons
+	$(".suggestButton").click(function() {
+		$(this).find(".suggestButton").stop(true, false).animate({ opacity: 1, right: 0 }, 200);
+	});
+	
 	// define comment box animation on mouse click
 	$(".entry").toggle(function() {
 		$(this).stop(true).animate({ height: $(this).find(".entryCommentsContainer").outerHeight() + $(this).height() }, 500);

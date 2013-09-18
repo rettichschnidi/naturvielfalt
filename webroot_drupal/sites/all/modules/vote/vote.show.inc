@@ -158,14 +158,14 @@ EOT;
 	
 	//drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
 	
-	$render_array['rightDiv']['metaInfo'] = array(
+	$render_array['leftDiv']['metaInfo'] = array(
 			'#id' => 'metaInfo',
 			'#type' => 'fieldset',
 			'#title' => t('Observation'),
 			'#weight' => 8
 	);
 	
-	$render_array['rightDiv']['metaInfo']["table"] = array(
+	$render_array['leftDiv']['metaInfo']["table"] = array(
 			'#type'   => 'markup',
 			'#markup' => '<div id="detailTable"></div>'
 	);
