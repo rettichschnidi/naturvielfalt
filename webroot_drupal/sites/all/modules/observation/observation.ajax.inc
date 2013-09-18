@@ -62,9 +62,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$values['organism'] = filter_xss($values['group']['organism']);
 			$result = organism_get_byname(filter_xss($values['organism']));
 			$observation['organism_id'] = $result['id'];
-		} 
+		}
 	} else {
 		$observation['organism_id'] = filter_xss($values['organism_id']);
+		$observation['area_geometry_id'] = $values['area_geometry_id'];
 	}
 	
 	/**
@@ -213,7 +214,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	if($output['success']) {
 		drupal_set_message(t('successfull saved'));
 		if($edit)
-			drupal_goto('observation/'.$observation['id'].'/edit');
+			drupal_goto('observation/new');//drupal_goto('observation/'.$observation['id'].'/edit');
 	} else {
 		form_set_error('observation_form', $output['message']);
 		$observation_data['redirect'] = FALSE;
@@ -609,7 +610,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
 		// show details
 		$row['cell']['showColumn'] = l(
-			'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+			'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 			$base_url . '/observation/' . $row['id'] . '/show',
 			array(
 				'html' => true
@@ -632,6 +633,14 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_l'] = t('Unknown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
+		else
+			$row['cell']['organism_l'] = l(
+					$row['cell']['organism_l'],
+					$base_url . '/organism/' . $row['cell']['organism_id'],
+					array(
+						'html' => true
+					));
+		
 		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xxX
 		$row['cell']['organism_sc'] = l(
 				$row['cell']['organism_sc'],
@@ -784,5 +793,67 @@ function observation_get_geometry_json($observation_data = false, $inventory_id 
 function observation_overview_ajax_callback($observation_data = false) {
 	module_load_include('inc', 'observation', 'observation.show');
 	print drupal_render(drupal_get_form('observation_map_overview_form', $observation_data));
+}
+
+/**
+ * get newest observations (used for block 'new observations')
+ * @param int $offset
+ * @param int $limit
+ */
+function observation_get_new_observations($offset= 0, $limit = 10) {
+	global $user;
+	global $language;
+	
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
+	$imagetypes = _gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes;
+	
+	$query = db_select('observation', 'o');
+	$query->leftJoin('area_geometry', 'a_s', 'o.area_geometry_id = a_s.id');
+	$query->leftJoin('organism', 'org', 'o.organism_id = org.id');
+	$query->leftJoin('organism_lang', 'ol', 'o.organism_id = ol.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\'');
+	$query->leftJoin('organism_artgroup', 'oa', 'o.organism_artgroup_id = oa.id');
+	
+	$subselect = db_select('gallery_image', 'gi');
+	$subselect->leftJoin('file_managed', 'fm', 'gi.file_managed_fid = fm.fid');
+	$subselect->addExpression('COUNT(gi.id)', 'imagescount');
+	$subselect->fields('gi', array('item_id'));
+	$subselect->condition('gi.item_type', 'observation')
+		->condition('fm.filemime', $imagetypes, 'IN')
+		->groupBy('gi.item_id');
+	$query->addJoin('LEFT', $subselect, 'images', 'images.item_id = o.id');
+
+	$query->leftJoin('acl_sgroup', 'ag', 'ag.acl_id = o.acl_id');
+	$query->leftJoin('sgroup', 'g', 'g.id = ag.sgroup_id');
+	$query->leftJoin('acl_users', 'au', 'au.users_id = 0');
+// WHERE ( (ag.sgroup_id = 1 AND ag.level >= 20) OR (au.acl_id = g.acl_id AND ag.level >= 20) OR (au.acl_id = o.acl_id AND au.level >= 20) )  ORDER BY date desc, id desc LIMIT 15 OFFSET 0'
+			
+	$query->fields('o', array('id', 'date', 'organism_id', 'organism_artgroup_id', 'observer'))
+		  ->fields('oa', array('name'))
+		  ->fields('org', array('scientific_name'))
+		  ->fields('ol', array('name'))
+		  ->fields('a_s', array( 'township', 'canton', 'country'));
+			   $and = db_and()
+				   ->condition('ag.sgroup_id', 1)
+				   ->condition('ag.level', 20, '>=');
+			   $and1 = db_and()
+				   ->where('au.acl_id = g.acl_id')
+				   ->condition('ag.level', 20, '>=');
+			   $and2 = db_and()
+				  ->where('au.acl_id = o.acl_id')
+				  ->condition('au.level', 20, '>=');
+			   $or = db_or();
+		   		$or->condition($and);
+		   		$or->condition($and1);
+		   		$or->condition($and2);
+	   $query->condition('imagescount', 0, '>')->condition($or)
+		   ->orderBy('date', 'DESC')
+		   ->orderBy('o.id', 'DESC')
+		   ->range($offset, $offset+$limit);
+	  $result = $query->execute();		
+	
+	return $result->fetchAll();
 }
 

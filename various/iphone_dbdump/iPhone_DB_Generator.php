@@ -8,6 +8,12 @@ $table_osy = $drupalprefix . 'organism_synonym';
 $table_ol = $drupalprefix . 'organism_lang';
 $table_oa = $drupalprefix . 'organism_artgroup';
 $table_oas = $drupalprefix . 'organism_artgroup_subscription';
+$table_oa_attr = $drupalprefix . 'organism_artgroup_attr';
+$table_oa_attr_values = $drupalprefix . 'organism_artgroup_attr_values';
+$table_oa_attr_type = $drupalprefix . 'organism_artgroup_attr_type';
+$table_oa_attr_subscription = $drupalprefix . 'organism_artgroup_attr_subscription';
+$table_oa_detmethod = $drupalprefix . 'organism_artgroup_detmethod';
+$table_oa_detmethod_subscription = $drupalprefix . 'organism_artgroup_detmethod_subscription';
 
 $web_db = pg_connect(
 	'host=' . $config['naturvielfalt_dev']['host'] . ' port='
@@ -23,33 +29,15 @@ $sql_create_iphone_db_structur = '
 	-- Artgroup id
 		classification_id integer PRIMARY KEY,
 	-- something classified? :P (NOT NULL removed, standart set to 1)
-		class_level integer,
+		class_level integer DEFAULT 1,
 	-- parent artgroup id
-		parent integer NOT NULL,
+		parent integer DEFAULT 1,
 		name_de character varying(60),
 		name_fr character varying(50),
 		name_it character varying(50),
 		name_en character varying(50),
 		classification_type_id integer,
 		"position" integer
-	);
-
-	DROP TABLE IF EXISTS observation;
-	CREATE TABLE observation (
-		ID INTEGER PRIMARY KEY AUTOINCREMENT,
-		ORGANISM_ID INTEGER,
-		ORGANISMGROUP_ID INTEGER,
-		ORGANISM_NAME TEXT,
-		ORGANISM_NAME_LAT TEXT,
-		ORGANISM_FAMILY TEXT,
-		AUTHOR TEXT,
-		DATE TEXT,
-		AMOUNT INTEGER,
-		LOCATION_LAT REAL,
-		LOCATION_LON REAL,
-		ACCURACY INTEGER,
-		COMMENT TEXT,
-		IMAGE BLOB
 	);
 
 	DROP TABLE IF EXISTS organism;
@@ -87,8 +75,75 @@ $sql_create_iphone_db_structur = '
 	CREATE INDEX idx_classification_idx1 ON classification(parent);
 	CREATE INDEX idx_classification_idx2 ON classification(class_level);
 	CREATE INDEX idx_classification_taxon_idx1 ON classification_taxon(classification_id);
-	CREATE INDEX idx_classification_taxon_idx2 ON classification_taxon(taxon_id);';
+	CREATE INDEX idx_classification_taxon_idx2 ON classification_taxon(taxon_id);
 
+	DROP TABLE IF EXISTS organism_artgroup_attr;
+
+	CREATE TABLE organism_artgroup_attr
+	(
+		id serial NOT NULL, 
+		organism_artgroup_attr_type_id integer NOT NULL, 
+		name text, 
+		users_uid integer DEFAULT 0, 
+		CONSTRAINT organism_artgroup_attr_id_key PRIMARY KEY (id)
+	);
+		
+	DROP TABLE IF EXISTS organism_artgroup_attr_subscription;
+
+	CREATE TABLE organism_artgroup_attr_subscription
+	(
+		id serial NOT NULL,
+		organism_artgroup_id integer NOT NULL, 
+		organism_artgroup_attr_id integer NOT NULL, 
+		CONSTRAINT organism_artgroup_attr_subscription_id_key PRIMARY KEY (id)
+	);
+	DROP TABLE IF EXISTS organism_artgroup_attr_type;
+
+	CREATE TABLE organism_artgroup_attr_type
+	(
+	  id serial NOT NULL, 
+	  name text, 
+	  format text, 
+	  CONSTRAINT organism_artgroup_attr_type_id_key PRIMARY KEY (id)
+	);
+		
+	DROP TABLE IF EXISTS organism_artgroup_attr_values;
+
+	CREATE TABLE organism_artgroup_attr_values
+	(
+	  id serial NOT NULL, 
+	  organism_artgroup_attr_id integer NOT NULL,
+	  value text, 
+	  value_en text, 
+	  value_fr text, 
+	  value_it text, 
+	  CONSTRAINT organism_artgroup_attr_values_id_key PRIMARY KEY (id)
+	);
+	
+	DROP TABLE IF EXISTS organism_artgroup_detmethod;
+
+	CREATE TABLE organism_artgroup_detmethod
+	(
+	  id serial NOT NULL, 
+	  name text, 
+	  cscf_id integer, 
+	  name_en text, 
+	  name_fr text, 
+	  name_it text, 
+	  CONSTRAINT organism_artgroup_detmethod_id_key PRIMARY KEY (id)
+	);
+		
+	DROP TABLE IF EXISTS organism_artgroup_detmethod_subscription;
+
+	CREATE TABLE organism_artgroup_detmethod_subscription
+	(
+	  id serial NOT NULL, 
+	  organism_artgroup_id integer NOT NULL, 
+	  organism_artgroup_detmethod_id integer NOT NULL, 
+	  CONSTRAINT organism_artgroup_detmethod_subscription_id_key PRIMARY KEY (id),
+	  CONSTRAINT organism_artgroup_detmethod_subscription_organism_artgroup_id_a UNIQUE (organism_artgroup_id, organism_artgroup_detmethod_id)
+	);';
+		
 $query_all_organism = "
 	-- Alle Organismen, der richtige wissenschaftliche Namen und die Uebersetzung selektieren
 	SELECT
@@ -138,6 +193,36 @@ $query_organism_artgroup_subscription = "
 		oas.organism_artgroup_id classification_id
 	FROM $table_oas oas";
 
+$query_organism_artgroup_attr = "
+SELECT
+*
+FROM $table_oa_attr";
+
+$query_organism_artgroup_attr_values = "
+SELECT
+*
+FROM $table_oa_attr_values";
+
+$query_organism_artgroup_attr_type = "
+SELECT
+*
+FROM $table_oa_attr_type";
+
+$query_organism_artgroup_attr_subscription = "
+SELECT
+*
+FROM $table_oa_attr_subscription";
+
+$query_organism_artgroup_detmethod = "
+SELECT
+*
+FROM $table_oa_detmethod";
+
+$query_organism_artgroup_detmethod_subscription = "
+SELECT
+*
+FROM $table_oa_detmethod_subscription";
+
 echo "get all organism\n";
 $results_all_organism = pg_fetch_all(pg_query($web_db, $query_all_organism));
 echo "get all artgroups\n";
@@ -145,6 +230,21 @@ $results_all_artgroups = pg_fetch_all(pg_query($web_db, $query_all_artgroups));
 echo "get all subscriptions\n";
 $results_organism_artgroup_subscription = pg_fetch_all(
 	pg_query($web_db, $query_organism_artgroup_subscription));
+
+echo "get all artgroup attributes\n";
+$results_organism_artgroup_attr = pg_fetch_all(
+		pg_query($web_db, $query_organism_artgroup_attr));
+$results_organism_artgroup_attr_values = pg_fetch_all(
+		pg_query($web_db, $query_organism_artgroup_attr_values));
+$results_organism_artgroup_attr_type = pg_fetch_all(
+		pg_query($web_db, $query_organism_artgroup_attr_type));
+$results_organism_artgroup_attr_subscription = pg_fetch_all(
+		pg_query($web_db, $query_organism_artgroup_attr_subscription));
+$results_organism_artgroup_detmethod = pg_fetch_all(
+		pg_query($web_db, $query_organism_artgroup_detmethod));
+$results_organism_artgroup_detmethod_subscription = pg_fetch_all(
+		pg_query($web_db, $query_organism_artgroup_detmethod_subscription));
+
 
 echo "build artgroups sql inserts\n";
 $sql_all_artgroups = '
@@ -183,8 +283,84 @@ INSERT INTO classification_taxon (taxon_id, classification_id) values ('"
 			. pg_escape_string($subs['classification_id']) . "');";
 }
 
+echo "build all attributes sql inserts\n";
+$sql_orgamism_artgroup_attr = '
+
+';
+foreach ($results_organism_artgroup_attr as $attr) {
+	$sql_orgamism_artgroup_attr .= "
+	INSERT INTO organism_artgroup_attr (id, organism_artgroup_attr_type_id, name, users_uid) values ('"
+			. pg_escape_string($attr['id']) . "','"
+			. pg_escape_string($attr['organism_artgroup_attr_type_id']) . "','"
+			. pg_escape_string($attr['name']) . "','"
+			. pg_escape_string($attr['users_uid']) . "');";
+}
+
+$sql_orgamism_artgroup_attr_values = '
+
+';
+foreach ($results_organism_artgroup_attr_values as $attr_value) {
+	$sql_orgamism_artgroup_attr_values .= "
+	INSERT INTO organism_artgroup_attr_values (id, organism_artgroup_attr_id, value, value_en, value_fr, value_it) values ('"
+			. pg_escape_string($attr_value['id']) . "','"
+			. pg_escape_string($attr_value['organism_artgroup_attr_id']) . "','"
+			. pg_escape_string($attr_value['value']) . "','"
+			. pg_escape_string($attr_value['value_en']) . "','"
+			. pg_escape_string($attr_value['value_fr']) . "','"	
+			. pg_escape_string($attr_value['value_it']) . "');";
+}
+
+$sql_orgamism_artgroup_attr_type = '
+
+';
+foreach ($results_organism_artgroup_attr_type as $attr_type) {
+	$sql_orgamism_artgroup_attr_type .= "
+	INSERT INTO organism_artgroup_attr_type (id, name, format) values ('"
+			. pg_escape_string($attr_type['id']) . "','"
+			. pg_escape_string($attr_type['name']) . "','"
+			. pg_escape_string($attr_type['format']) . "');";
+}
+
+$sql_orgamism_artgroup_attr_subscription = '
+
+';
+foreach ($results_organism_artgroup_attr_subscription as $attr_subscription) {
+	$sql_orgamism_artgroup_attr_subscription .= "
+	INSERT INTO organism_artgroup_attr_subscription (id, organism_artgroup_id, organism_artgroup_attr_id) values ('"
+			. pg_escape_string($attr_subscription['id']) . "','"
+			. pg_escape_string($attr_subscription['organism_artgroup_id']) . "','"
+			. pg_escape_string($attr_subscription['organism_artgroup_attr_id']) . "');";
+}
+
+$sql_orgamism_artgroup_detmethod = '
+
+';
+foreach ($results_organism_artgroup_detmethod as $detmethod) {
+	$sql_orgamism_artgroup_detmethod .= "
+	INSERT INTO organism_artgroup_detmethod (id, name, cscf_id, name_en, name_fr, name_it) values ('"
+			. pg_escape_string($detmethod['id']) . "','"
+			. pg_escape_string($detmethod['name']) . "','"
+			. pg_escape_string($detmethod['cscf_id']) . "','"
+			. pg_escape_string($detmethod['name_en']) . "','"
+			. pg_escape_string($detmethod['name_fr']) . "','"
+			. pg_escape_string($detmethod['name_it']) . "');";
+}
+
+$sql_orgamism_artgroup_detmethod_subscription = '
+
+';
+foreach ($results_organism_artgroup_detmethod_subscription as $detmethod_subscription) {
+	$sql_orgamism_artgroup_detmethod_subscription .= "
+	INSERT INTO organism_artgroup_detmethod_subscription (id, organism_artgroup_id, organism_artgroup_detmethod_id) values ('"
+			. pg_escape_string($detmethod_subscription['id']) . "','"
+			. pg_escape_string($detmethod_subscription['organism_artgroup_id']) . "','"
+			. pg_escape_string($detmethod_subscription['organism_artgroup_detmethod_id']) . "');";
+}
+
 echo "save all to the file '$file'\n";
-$save = $sql_create_iphone_db_structur . $sql_all_artgroups . $sql_all_organism;
+$save = $sql_create_iphone_db_structur . $sql_all_artgroups . $sql_all_organism 
+. $sql_orgamism_artgroup_attr . $sql_orgamism_artgroup_attr_values . $sql_orgamism_artgroup_attr_type . $sql_orgamism_artgroup_attr_subscription
+. $sql_orgamism_artgroup_detmethod . $sql_orgamism_artgroup_detmethod_subscription;
 
 if (file_exists($file)) {
 	unlink($file);

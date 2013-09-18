@@ -226,8 +226,13 @@ jQuery(document).ready(function() {
 					if (mapcontains)
 						mapcontains = observationmap.googlemap.getBounds().contains(position);
 				}
-				if (!mapcontains)
+				if (!mapcontains) {
 					observationmap.googlemap.fitBounds(bounds);
+				}
+				if(observationmap.googlemap.getZoom() < 6) {
+					observationmap.googlemap.fitBounds(bounds);
+					observationmap.googlemap.setZoom(6);
+				}
 				
 				return true;
 			}

@@ -17,6 +17,10 @@ function area_validate_date ($input) {
 	}
 }
 
+/**
+ * Fileextension validation
+ *
+ */
 function area_validate_fileextension($input) {
 	return gallery_get_MediaInfo_by_filename($input);
 }

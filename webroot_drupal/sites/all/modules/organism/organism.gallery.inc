@@ -66,13 +66,20 @@ function organism_reference_gallery_manage_title($id, $mediatype) {
 function organism_reference_gallery_caption($id) {
 	global $user;
 	$result = organism_load($id);
-	return $result['scientific_names'][0]
-			. (isset(
-				$result['classification_name_translations'][$user->language])
-					? ' <small>['
-							. reset(
-								$result['classification_name_translations'][$user->language])
-							. ']</small>' : '');
+	
+	$returnValue = "";
+	if(isset($result["scientific_name"])) {
+		$returnValue .= $result["scientific_name"];
+	} else {
+		$returnValue .= "";
+	}
+	if(isset($result['classification_name_translations'][$user->language])) {
+		$returnValue .= ' <small>['.reset($result['classification_name_translations'][$user->language]).']</small>';
+	} else {
+		$returnValue .= "";
+	}
+	
+	return $returnValue;
 }
 
 /**

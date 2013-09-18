@@ -16,6 +16,23 @@ jQuery(document).ready(function() {
 		   );
 
 	/**
+	 * Filter the area list by access right
+	 */
+	area.aclFilter = function(tableId, filter) {
+		var url = $('#' + tableId)[0].p.url;
+		// replace string after last slash and preserve query string
+		url = url.replace(/(.+\/)[^?]+(.*)/, '$1' + filter + '$2');
+		$('#' + tableId).flexOptions({
+			url: url
+		}).flexReload();
+	}
+	$('.acl_filter').change(function(event) {
+		var tableId = $(event.target).closest('div.flexigrid').find('div.bDiv table').first().attr('id');
+		var filter = $(this).val();
+		area.aclFilter(tableId, filter);
+	});
+	
+	/**
 	 * Export the selected rows
 	 * 
 	 * @param string tableId
@@ -213,6 +230,9 @@ jQuery(document).ready(function() {
 		});
 		area.syncMapWithTable(area_ids);
 		
+		// FIXME table id 'areas' should not be hard-coded
+		data = gallery_addon.preProcess('areas', 'gallery_image', data, flexigridOptions);
+		
 		return data;
 	};
 	
@@ -314,6 +334,7 @@ jQuery(document).ready(function() {
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
 		}
 	};
+	
 });
 
 /**

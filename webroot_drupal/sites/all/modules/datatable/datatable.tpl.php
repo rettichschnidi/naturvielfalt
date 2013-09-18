@@ -86,6 +86,30 @@ if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 		array(
 			'weight' => 100
 		));
+} else {
+	//include libraries for lightbox
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/gallery.css',
+	array(
+	'group' => CSS_DEFAULT,
+	'every_page' => TRUE
+	));
+	drupal_add_css(
+	drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
+	array(
+	'group' => CSS_DEFAULT,
+	'every_page' => TRUE
+	));
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js',
+	array(
+	'weight' => 100
+	));
+	drupal_add_js(
+	drupal_get_path('module', 'gallery') . '/js/gallery.lightbox.js',
+	array(
+	'weight' => 110
+	));
 }
 
 /**
@@ -201,28 +225,25 @@ if(isset($options['gallery_enabled']) && $options['gallery_enabled']){
 	);
 
 	$gallery_image_sources_options = array();
-	if(isset($options['gallery_image_sources'])) {
+	if(isset($options['gallery_image_sources']) && $options['gallery_image_sources']) {
 		foreach($options['gallery_image_sources'] as $gallery_image_source_option)
 			$gallery_image_sources_options[$gallery_image_source_option['value']] = $gallery_image_source_option['option'];
 		if (array_key_exists('selected', $options['gallery_image_sources']))
 			$gallery_image_sources_selected_option = $options['gallery_image_sources']['selected']['value'];
+	
+		$table['filterDiv']['image_source_select'] = array(
+				'#type'       => 'select',
+				'#name'       => 'image_source',
+				'#title'      => t('Images') . ':',
+				'#options'    => $gallery_image_sources_options,
+				'#value'      => $gallery_image_sources_selected_option,
+				'#attributes' => array(
+						'id'    => $id_table . '_gallery_image_source',
+						'class' => array(
+								'datatable_gallery_imgsource')),
+				'#weight'     => 10
+		);
 	}
-	else {
-		$gallery_image_sources_options[0] = '-';
-		$gallery_image_sources_selected_option = 0;
-	}
-	$table['filterDiv']['image_source_select'] = array(
-			'#type'       => 'select',
-			'#name'       => 'image_source',
-			'#title'      => t('Images') . ':',
-			'#options'    => $gallery_image_sources_options,
-			'#value'      => $gallery_image_sources_selected_option,
-			'#attributes' => array(
-					'id'    => $id_table . '_gallery_image_source',
-					'class' => array(
-							'datatable_gallery_imgsource')),
-			'#weight'     => 10
-	);
 }
 
 if (isset($options['custom_filter'])) {

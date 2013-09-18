@@ -15,12 +15,15 @@ module_load_include('inc', 'area', 'area');
  * @todo Include the user's nickname
 */
 function area_datatable_json($acl_level = 'ACL_READ') {
+	global $user;
+	
 	/* Set the db fields to select */
 	$sql['dbColumns'] = array(
 			'a.id AS id',
 			'a.acl_id AS acl_id',
 			'a.name',
 			'a.comment',
+			'a.create_time AS date',
 			'a_s.altitude',
 			'a_s.township',
 			'a_s.canton',
@@ -47,8 +50,24 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			JOIN {acl} cacl ON cacl.id = a.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id';
 	$sql['id'] = 'id';
-	$sql['acl_level'] = $acl_level;
-	$output = datatable_dbRequest($sql);
+	
+	$arguments = array();
+	/*
+	 * Only show accessible areas.
+	* If own areas are requested, reset ACL level to readable areas.
+	*/
+	if ($acl_level === 'own') {
+		$sql['dbWhere'] = empty($sql['dbWhere'])
+		? ''
+				: $sql['dbWhere'] . ' AND ';
+		$sql['dbWhere'] .= 'u.uid=:uid';
+		$arguments[':uid'] = $user->uid;
+		$sql['acl_level'] = 'ACL_READ';
+	}
+	else
+		$sql['acl_level'] = $acl_level;
+	
+	$output = datatable_dbRequest($sql, $arguments);
 
 	global $base_url;
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
@@ -58,7 +77,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:areamap.selectMultipleAreas(event, ' . $row['id'] . ', !this.checked);" />';
 		// show details
 		$row['cell']['showColumn'] = l(
-			'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+			'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 			$base_url . '/area/' . $row['id'] . '/show',
 			array(
 				'html' => true
@@ -80,12 +99,51 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		// type of area (picture)
 		$row['cell']['geometry_type'] = '<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['geometry_type'] . '.png') . '" alt="'. t('type') . '" />';
 		
+		$row['cell']['date'] = date("d.m.Y H:i:s", strtotime($row['cell']['date']));
+		
 		$row['cell']['username'] = l(
 					check_plain($row['cell']['username']),
 					base_path() . "user/" . $row['cell']['uid'],
 					array(
 							'external' => true
 					));
+		
+		// get images
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'area', $row['id']);
+		
+		// thumbnail
+		$row['cell']['thumbnail'] = '';
+		if ($images['count'] > 0) {
+			// display the thumbnail (for the table view)
+			$row['cell']['thumbnail'] = '<img onclick="event.stopPropagation(); gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/area/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
+		}
+		$location = $row['cell']['township'];
+		$location .= !empty($row['cell']['township']) ? ', '.$row['cell']['canton'] : $row['cell']['canton'];
+		$location .= !empty($row['cell']['canton']) ? ', '.$row['cell']['country'] : $row['cell']['country'];
+		
+		$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'area') . '/images/';
+		
+		/**
+		 * create the html source for the gallery view
+		 */
+		$row['cell']['gallery_image'] = datatable_get_gallery_area_image(
+				$row['id'],
+				array(
+						'icons' => array(
+								'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:areamap.selectGeometry(' . $row['id'] . ');window.scrollTo(0,0);">',
+								$row['cell']['zoominColumn'],
+								$row['cell']['showColumn'],
+								$row['cell']['editColumn'],
+								$row['cell']['selectColumn']
+						),
+						'data' => array(
+								$row['cell']['name'],
+								$row['cell']['geometry_type'],
+								$location
+								
+						)
+				),
+				$images);
 	}
 
 	return drupal_json_output($output);

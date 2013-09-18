@@ -4,6 +4,7 @@
  *********************************/
 
 module_load_include('inc', 'observation');
+module_load_include('inc', 'observation', 'observation.block');
 
 // Load gallery integration
 module_load_include('inc', 'observation', 'observation.gallery');
@@ -269,7 +270,7 @@ function observation_menu() {
 			'description' => 'Get own observations',
 			'page callback' => 'observation_get_all_json',
 			'page arguments' => array(
-					'ACL_ADMIN'
+					'own'
 			),
 			'access arguments' => array(
 					ACCESS_OBSERVATION
