@@ -188,6 +188,7 @@ EOT;
 	);
 	
 	$render_array['ownVerification'] = array(
+			'#id' => 'ownVerification',
 			'#type' => 'fieldset',
 			'#title' => t('Own verification'),
 			'#weight' => 14

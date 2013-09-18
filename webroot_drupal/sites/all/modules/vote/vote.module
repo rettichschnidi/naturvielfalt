@@ -61,6 +61,7 @@ function vote_menu() {
 					VOTE_WRITE
 			),
 			'file' => 'vote.ajax.inc',
+			'type' => MENU_CALLBACK
 	);
 
 	return $items;

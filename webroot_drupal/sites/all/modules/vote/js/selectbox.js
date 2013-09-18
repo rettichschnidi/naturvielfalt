@@ -12,7 +12,8 @@ function initializeSelectBox() {
 	
 	//	add event to accept buttons
 	$(".suggestButton").click(function() {
-		$(this).find(".suggestButton").stop(true, false).animate({ opacity: 1, right: 0 }, 200);
+		$('#organism_name').val($(this).parent().find(".translatedDescription").html());
+		$('html, body').animate({ scrollTop: $("#ownVerification").offset().top });
 	});
 	
 	// define comment box animation on mouse click

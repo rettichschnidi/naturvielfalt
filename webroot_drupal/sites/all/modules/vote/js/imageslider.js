@@ -170,9 +170,9 @@ function initializeVerifications() {
 		for (var i = 0; i < suggestions.length; i ++) {
 			container.append(	'<div class="entry">'
 							  + '<div class="progressBar" style="width: ' + suggestions[i].votes_percent + '%;">'
-							  + '<span id="translatedDescription">' + suggestions[i].translated_name + '</span>'
-							  + '<span id="latinDescription"><i>' + suggestions[i].scientific_name + '</i></span>'
-							  + '<span id="votes">' + suggestions[i].votes + ' ' + imageSourceCache[currentMainImageIndex].labels.verifications + '</span>'
+							  + '<span class="translatedDescription">' + suggestions[i].translated_name + '</span>'
+							  + '<span class="latinDescription"><i>' + suggestions[i].scientific_name + '</i></span>'
+							  + '<span class="votes">' + suggestions[i].votes + ' ' + imageSourceCache[currentMainImageIndex].labels.verifications + '</span>'
 							  + '</div>'
 							  + '<div class="suggestButton">' + imageSourceCache[currentMainImageIndex].labels.agree + '</div>'
 							  + '</div>');

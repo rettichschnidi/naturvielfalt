@@ -63,6 +63,7 @@ function organism_get_byname($organism) {
 	? $user->language
 	: $language->language;
 	
+	// FIXME: if an organism is picked from vote this doesn't work
 	$result = db_query(
 			'SELECT DISTINCT o.id
 			 FROM {organism} o, {organism_lang} ol 

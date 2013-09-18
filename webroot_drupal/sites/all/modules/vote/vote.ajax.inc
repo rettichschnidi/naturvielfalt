@@ -33,8 +33,12 @@ function fetch_observation_data() {
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
 	
-	// TODO: fix this using merged language-recognition
-	if (empty($langcode)) { $langcode = 'de'; }
+	global $user;
+	global $language;
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
+	
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
 		.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
 		.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
@@ -117,8 +121,11 @@ function getSuggestions($observationId) {
 	*/
 	$sql['acl_level'] = $acl_level;
 
-	// TODO: fix this using merged language-recognition
-	if (empty($langcode)) { $langcode = 'de'; }
+	global $user;
+	global $language;
+	$langcode = (isset($user->language) && !empty($user->language))
+	? $user->language
+	: $language->language;
 	$sql['dbWhere'] = "v.observation_id = ". $observationId ." AND ol.languages_language = '" . db_escape_field($langcode) . "'";
 
 	$sql['dbDefaultOrder'] = 'COUNT(1) desc';
@@ -159,6 +166,7 @@ function vote_save() {
 	$verification['user_id'] = filter_xss($user->uid);
 	$verification['observation_id'] = filter_xss($values['observation_id']);
 	$result = organism_get_byname($values['organism_name']);
+	
 	$verification['organism_id'] = filter_xss($result['id']);
 	// $verification['comment'] = filter_xss($values['comment']);
 	
