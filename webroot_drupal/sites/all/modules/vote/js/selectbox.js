@@ -1,6 +1,8 @@
 $ = jQuery;
 
-
+/**
+ * Initialize the select box.
+ */
 function initializeSelectBox() {
 
 	// define suggest button animation on mouse hover
@@ -24,8 +26,8 @@ function initializeSelectBox() {
 	});
 	
 	// set the background color of the entries
-	$(".entry").each(function(index) {
-		var colorValue = index % 2 == 0 ? 85 : 90;
+	$(".entry").each(function(indexTest) {
+		var colorValue = indexTest % 2 == 0 ? 85 : 90;
 		$(this).css({ "background-color": "hsv(0, 0, " + colorValue + ")" });
 	});
 	
@@ -36,10 +38,13 @@ function initializeSelectBox() {
 }
 
 var previousHues = [];
-var index = 0;
+var indexTest = 0;
 
+/**
+ * Returns a random hue that differs from the previous one.
+ * @returns a random hue
+ */
 function getNextRandomHue() {
-	var nextHue;
 	var tolerance = 20;
 	var distance = 5;
 	
@@ -56,16 +61,15 @@ function getNextRandomHue() {
 			}
 		}
 		if (takeThisColor) {
-			previousHues[index] = nextHue;
-			index ++;
+			previousHues[indexTest] = nextHue;
+			indexTest ++;
 			return nextHue;
 		}
 	}
 }
 
 /**
- * Returns a random integer between min and max
- * Using Math.round() will give you a non-uniform distribution!
+ * Returns a random integer between min and max.
  */
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

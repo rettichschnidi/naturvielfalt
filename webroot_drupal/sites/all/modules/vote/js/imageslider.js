@@ -1,5 +1,8 @@
 $ = jQuery;
 
+/*
+ * Global variables which all functions use 
+ */
 var mainImage;
 var currentMainImageIndex;
 var previousImages = new Array();
@@ -11,16 +14,8 @@ var imageIndex = 0;
 var marker;
 
 /**
-	Executed after page was loaded.
-*/
-$(document).ready(function () {
-	initializeImages();
-	initializeCache();
-});
-
-/**
-	Adds the object references to the different arrays and variables.
-*/
+ * Adds the object references to the different arrays and variables.
+ */
 function initializeImages() {
 	mainImage = $('#mainImage');
 	previousImages[0] = $('#previousImage01');
@@ -37,19 +32,14 @@ function initializeImages() {
 	futureImages[3] = $('#futureImage04');
 }
 
-function getCurrentObservationId() {
-	return imageSourceCache[currentMainImageIndex].imageId;
-}
-
 /**
-	Loads the image paths into the cache.
-*/
+ * Loads the image paths into the cache.
+ */
 function initializeCache() {
 	$.ajax({
 		url: "vote/getdata/json",
 		success: function(result){
 			for (var i = 0; i < result.length; i++) {
-				//console.log(result[i].imagesCount);
 				imageSourceCache[i] = {
 					imageId: result[i].imageId,
 					imageThumbPath: result[i].imageThumbPath,
@@ -85,7 +75,7 @@ function initializeCache() {
 			initializeGoogleMap();
 			
 			// load suggestions from other users
-			initializeVerifications();
+			initializeVotesFromOtherUsers();
 		},
 		error: function(result){
 			alert("error");
@@ -93,18 +83,33 @@ function initializeCache() {
 	});
 }
 
+/**
+ * Initializes the light box.
+ */
 function initLightBox() {
+	
+	// TODO: add description etc. to the images in the light box
 	var galleryLightboxSettings = {
 		captionSelector : ".caption",
 		captionAttr : false,
 		captionHTML : true,
 	};
+	
 	$('a.lightbox').lightBox(); // Select all links with lightbox class
 }
 
 /**
-	Loads the images from the cache using the imageIndex variable as index.
-*/
+ * Returns the current observation id.
+ * 
+ * @returns the current observation id
+ */
+function getCurrentObservationId() {
+	return imageSourceCache[currentMainImageIndex].imageId;
+}
+
+/**
+ * Loads the images from the cache using the imageIndex variable as index.
+ */
 function loadImagesFromCache() {
 	for (var i = 0; i < nextImages.length; i ++) {
 		
@@ -133,6 +138,9 @@ function loadImagesFromCache() {
 	}
 }
 
+/**
+ * Initializes google map and adds a marker of the observation location.
+ */
 function initializeGoogleMap() {
 	if (marker == null) {
 		marker = new google.maps.Marker();
@@ -157,37 +165,6 @@ function initializeGoogleMap() {
 		}
 	}
 	element.append('</tbody></table>');
-}
-
-function initializeVerifications() {
-	var container = $('#selectBoxContainer');
-	var noVerificationsMessage = $('#noVerificationsMessage');
-	container.html('');
-	var suggestions = imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers;
-	if (suggestions != null) {
-		noVerificationsMessage.hide();
-		container.show();
-		for (var i = 0; i < suggestions.length; i ++) {
-			container.append(	'<div class="entry">'
-							  + '<div class="progressBar" style="width: ' + suggestions[i].votes_percent + '%;">'
-							  + '<span class="translatedDescription">' + suggestions[i].translated_name + '</span>'
-							  + '<span class="latinDescription"><i>' + suggestions[i].scientific_name + '</i></span>'
-							  + '<span class="votes">' + suggestions[i].votes + ' ' + imageSourceCache[currentMainImageIndex].labels.verifications + '</span>'
-							  + '</div>'
-							  + '<div class="suggestButton">' + imageSourceCache[currentMainImageIndex].labels.agree + '</div>'
-							  + '</div>');
-		}
-	} else {
-		container.hide();
-
-		noVerificationsMessage.html(imageSourceCache[currentMainImageIndex].labels.noVerifications);
-		noVerificationsMessage.show();
-	}
-	initializeSelectBox();
-}
-
-function labelFormatter(label, series) {
-	return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
 }
 
 /**
@@ -220,9 +197,12 @@ function prepareSlideShow() {
 }
 
 /**
-	Move the image index using the given number of steps (e.g. -4 moves four images back, 3 moves three images forward).
-	If the boolan replaceMainImage is set to true, the main image will be replaced with the destination image.
-*/
+ * Move the image index using the given number of steps (e.g. -4 moves four images back, 3 moves three images forward).
+ * If the boolan replaceMainImage is set to true, the main image will be replaced with the destination image.
+ * 
+ * @param steps number of steps to move
+ * @param replaceMainImage if the main image should be replaced or not
+ */
 function moveImages(steps, replaceMainImage) {
 	if (!finishedAllAnimations()) {
 		return;
@@ -234,8 +214,10 @@ function moveImages(steps, replaceMainImage) {
 }
 
 /**
-	Animates the main image replacement.
-*/
+ * Animates the main image replacement.
+ * 
+ * @param replaceMainImage if the main image should be replaced or not
+ */
 function animateMainImage(replaceMainImage) {
 	if (replaceMainImage) {
 		currentMainImageIndex = checkIndex(imageIndex + stepsToMove - 1);
@@ -244,7 +226,7 @@ function animateMainImage(replaceMainImage) {
 		$("#mainImageContainer").animate({
 				opacity: 0
 			}, 500, function() {
-				/**
+				/*
 					Animation complete of main image fade out
 					Move the selected image to the main image position
 				*/
@@ -252,7 +234,7 @@ function animateMainImage(replaceMainImage) {
 						left: "-=" + (nextImages[stepsToMove - 1].position().left - mainImage.position().left),
 						top: "-=" + (nextImages[stepsToMove - 1].position().top - mainImage.position().top)
 					}, 500, function() {
-						/**
+						/*
 							Animation complete of selected image movement
 							Switch the main image source with the selected image source
 						*/
@@ -283,7 +265,7 @@ function animateMainImage(replaceMainImage) {
 						initializeGoogleMap();
 						
 						// load suggestions from other users
-						initializeVerifications();
+						initializeVotesFromOtherUsers();
 					}
 				);
 			}
@@ -295,14 +277,16 @@ function animateMainImage(replaceMainImage) {
 }
 
 /**
-	Animates the next images.
-*/
+ * Animates the next images.
+ * 
+ * @param replaceMainImage if the main image should be replaced or not
+ */
 function animateNextImages(replaceMainImage) {
-	var tempStepsToMove = stepsToMove;
 	
 	// set the new image index to reload the images
 	imageIndex = checkIndex(stepsToMove + imageIndex);
 	
+	//check if the next images are positive or negative. if positive the future images will be loaded, if negative the previousimages will be loaded
 	var positive = stepsToMove >= 0;
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
 		if (positive) {
@@ -340,8 +324,10 @@ function animateNextImages(replaceMainImage) {
 }
 
 /**
-	Checks if the index is below zero or above the array length and returns a valid index (regarding the image loop)
-*/
+ * Checks if the index is below zero or above the array length and returns a valid index (regarding the image loop)
+ * 
+ * @param index the index to check if it's valid
+ */
 function checkIndex(index) {
 	if (index < 0) {
 		return imageSourceCache.length + index;

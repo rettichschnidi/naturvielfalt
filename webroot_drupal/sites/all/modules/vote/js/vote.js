@@ -1,6 +1,18 @@
 $ = jQuery;
 
-$(document).ready(function() {
+/**
+Executed after page was loaded.
+*/
+$(document).ready(function () {
+	initializeImages();
+	initializeCache();
+	initializeSubmitVerificationButton();
+});
+
+/**
+ * Initializes the submit verification button.
+ */
+function initializeSubmitVerificationButton() {
 	$('#submitVerification').click(function() {
 		$.ajax({
 			type: "POST",
@@ -29,4 +41,34 @@ $(document).ready(function() {
 			}
 		});
 	});
-});
+}
+
+/**
+ * Loads the votes from other users for the current observation.
+ */
+function initializeVotesFromOtherUsers() {
+	var container = $('#selectBoxContainer');
+	var noVerificationsMessage = $('#noVerificationsMessage');
+	container.html('');
+	var suggestions = imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers;
+	if (suggestions != null) {
+		noVerificationsMessage.hide();
+		container.show();
+		for (var i = 0; i < suggestions.length; i ++) {
+			container.append(	'<div class="entry">'
+							  + '<div class="progressBar" style="width: ' + suggestions[i].votes_percent + '%;">'
+							  + '<span class="translatedDescription">' + suggestions[i].translated_name + '</span>'
+							  + '<span class="latinDescription"><i>' + suggestions[i].scientific_name + '</i></span>'
+							  + '<span class="votes">' + suggestions[i].votes + ' ' + imageSourceCache[currentMainImageIndex].labels.verifications + '</span>'
+							  + '</div>'
+							  + '<div class="suggestButton">' + imageSourceCache[currentMainImageIndex].labels.agree + '</div>'
+							  + '</div>');
+		}
+	} else {
+		container.hide();
+
+		noVerificationsMessage.html(imageSourceCache[currentMainImageIndex].labels.noVerifications);
+		noVerificationsMessage.show();
+	}
+	initializeSelectBox();
+}

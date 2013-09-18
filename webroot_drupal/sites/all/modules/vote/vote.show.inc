@@ -4,38 +4,15 @@ function vote_show_overview($observation_id = NULL) {
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
+	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
+	drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
+	drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
+	
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
-	
-	//start
-	drupal_add_css(
-		drupal_get_path('module', 'gallery') . '/css/gallery.css',
-		array(
-		'group' => CSS_DEFAULT,
-		'every_page' => TRUE
-	));
-	drupal_add_css(
-		drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
-		array(
-		'group' => CSS_DEFAULT,
-		'every_page' => TRUE
-	));
-	drupal_add_js(
-		drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js',
-		array(
-		'weight' => 100
-	));
-	drupal_add_js(
-		drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js',
-		array(
-		'weight' => 101
-	));
-	drupal_add_js(
-		drupal_get_path('module', 'vote') . '/js/selectbox.js',
-		array(
-		'weight' => 102
-	));
-	//end
+	drupal_add_css(drupal_get_path('module', 'vote') . '/css/imageslider.css');
+	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css.css');
+	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css');
 	
 	$render_array['welcome'] = array(
 			'#type' => 'fieldset',
