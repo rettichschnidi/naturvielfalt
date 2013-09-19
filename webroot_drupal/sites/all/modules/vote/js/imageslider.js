@@ -48,24 +48,23 @@ function initializeCache() {
 			for (var i = 0; i < result.length; i++) {
 				imageSourceCache[i] = {
 					observation_id: result[i].observation_id,
-					imageThumbPath: result[i].imageThumbPath,
-					imagePath: result[i].imagePath,
-					images: result[i].images,
-					imagesCount: result[i].images.images.length,
-					wgs84_center_lat: result[i].wgs84_center_lat,
-					wgs84_center_lng: result[i].wgs84_center_lng,
-					table: result[i].table,
-					suggestionsFromOtherUsers: result[i].suggestionsFromOtherUsers,
-					currentUserId: result[i].currentUserId,
-					labels: result[i].labels
+					thumbnail_image_path: result[i].thumbnail_image_path,
+					fullsize_image_path: result[i].fullsize_image_path,
+					observation_images: result[i].observation_images,
+					google_map_marker_lat: result[i].google_map_marker_lat,
+					google_map_marker_lng: result[i].google_map_marker_lng,
+					detail_information: result[i].detail_information,
+					current_verifications: result[i].current_verifications,
+					users_who_voted: result[i].users_who_voted,
+					translated_labels: result[i].translated_labels
 				};
 			}
 			
 			// load the first image sources from the cache
-			mainImageHolder.attr('src', imageSourceCache[imageIndex].imagePath);
+			mainImageHolder.attr('src', imageSourceCache[imageIndex].fullsize_image_path);
 			
 			// write the current number of images to the diashow link
-			$('#numberOfImages').html(imageSourceCache[imageIndex].imagesCount);
+			$('#numberOfImages').html(imageSourceCache[imageIndex].observation_images.images.length);
 			
 			currentMainImageIndex = imageIndex;
 			prepareSlideShow();
@@ -106,15 +105,6 @@ function initLightBox() {
 }
 
 /**
- * Returns the current observation id.
- * 
- * @returns the current observation id
- */
-function getCurrentObservationId() {
-	return imageSourceCache[currentMainImageIndex].observation_id;
-}
-
-/**
  * Loads the images from the cache using the imageIndex variable as index.
  */
 function loadImagesFromCache() {
@@ -122,18 +112,18 @@ function loadImagesFromCache() {
 		
 		// load previous thumbnail and fullsize images into cache
 		var cleanIndex = checkIndex(imageIndex - currentImageHolders.length + i);
-		previousImageHolders[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
+		previousImageHolders[i].attr('src', imageSourceCache[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
-		currentImageHolders[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
+		currentImageHolders[i].attr('src', imageSourceCache[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + currentImageHolders.length + i);
-		futureImageHolders[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
-		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
+		futureImageHolders[i].attr('src', imageSourceCache[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
@@ -153,13 +143,19 @@ function initializeGoogleMap() {
 		marker = new google.maps.Marker();
 		marker.setMap(observationmap.googlemap);
 	}
-	var myLatlng = new google.maps.LatLng(imageSourceCache[currentMainImageIndex].wgs84_center_lng, imageSourceCache[currentMainImageIndex].wgs84_center_lat);
+	var myLatlng = new google.maps.LatLng(imageSourceCache[currentMainImageIndex].google_map_marker_lng, imageSourceCache[currentMainImageIndex].google_map_marker_lat);
 	marker.setPosition(myLatlng);
 	observationmap.googlemap.setCenter(myLatlng);
 	observationmap.googlemap.setZoom(16);
 	
-	// load detail information
-	var info = imageSourceCache[currentMainImageIndex].table['#rows'];
+	initializeDetailTable();
+}
+
+/**
+ * Load detail information and draw the table.
+ */
+function initializeDetailTable() {
+	var info = imageSourceCache[currentMainImageIndex].detail_information['#rows'];
 	var element = $('#detailTable');
 	
 	element.html('');
@@ -193,12 +189,12 @@ function finishedAllAnimations() {
  */
 function prepareSlideShow() {
 	// change the ID of the current image onclick handler
-	$('#mainImageLink').attr("href", imageSourceCache[currentMainImageIndex].imagePath);
+	$('#mainImageLink').attr("href", imageSourceCache[currentMainImageIndex].fullsize_image_path);
 	
 	// load slideshow images for current main image
 	$('#slideshowImages').html('');
-	for (var j = 1; j < imageSourceCache[currentMainImageIndex].imagesCount; j ++) {
-		var currentPath = '/gallery/observation/' + imageSourceCache[currentMainImageIndex].observation_id + '/thumb/' + imageSourceCache[currentMainImageIndex].images.images[j].id + '/fullsize';
+	for (var j = 1; j < imageSourceCache[currentMainImageIndex].observation_images.images.length; j ++) {
+		var currentPath = '/gallery/observation/' + imageSourceCache[currentMainImageIndex].observation_id + '/thumb/' + imageSourceCache[currentMainImageIndex].observation_images.images[j].id + '/fullsize';
 		$('#slideshowImages').append("<a class=\"lightbox\" href=\"" + currentPath + "\" style=\"display: none;\"><img src=\"" + currentPath + "\" alt=\"Image\" /></a>");
 	}
 }
@@ -245,10 +241,10 @@ function animateMainImage(replaceMainImage) {
 							Animation complete of selected image movement
 							Switch the main image source with the selected image source
 						*/
-						mainImageHolder.attr("src", imageSourceCache[currentMainImageIndex].imagePath);
+						mainImageHolder.attr("src", imageSourceCache[currentMainImageIndex].fullsize_image_path);
 						
 						// write the current number of images to the diashow link
-						$('#numberOfImages').html(imageSourceCache[currentMainImageIndex].imagesCount);
+						$('#numberOfImages').html(imageSourceCache[currentMainImageIndex].observation_images.images.length);
 						
 						prepareSlideShow();
 						

@@ -83,15 +83,15 @@ function fetch_observation_data() {
 		if ($images['count'] > 0) {			
 			// display the thumbnail (for the table view)
 			$imageArray[$i]["observation_id"] = $row['id'];
-			$imageArray[$i]["imageThumbPath"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
-			$imageArray[$i]["imagePath"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/fullsize');
-			$imageArray[$i]["images"] = $images;
-			$imageArray[$i]["table"] = observation_get_table(observation_get($row['cell']['id']));
-			$imageArray[$i]["wgs84_center_lat"] = $row['cell']['wgs84_center_lat'];
-			$imageArray[$i]["wgs84_center_lng"] = $row['cell']['wgs84_center_lng'];
-			$imageArray[$i]["suggestionsFromOtherUsers"] = getSuggestions($row['id']);
-			$imageArray[$i]["labels"] = $labels;
-			$imageArray[$i]["currentUserId"] = $user->uid;
+			$imageArray[$i]["thumbnail_image_path"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
+			$imageArray[$i]["fullsize_image_path"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/fullsize');
+			$imageArray[$i]["observation_images"] = $images;
+			$imageArray[$i]["detail_information"] = observation_get_table(observation_get($row['cell']['id']));
+			$imageArray[$i]["google_map_marker_lat"] = $row['cell']['wgs84_center_lat'];
+			$imageArray[$i]["google_map_marker_lng"] = $row['cell']['wgs84_center_lng'];
+			$imageArray[$i]["current_verifications"] = getSuggestions($row['id']);
+			$imageArray[$i]["users_who_voted"] = $user->uid;
+			$imageArray[$i]["translated_labels"] = $labels;
 		}
 	
 		$i++;
