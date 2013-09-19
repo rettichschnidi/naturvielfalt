@@ -91,6 +91,7 @@ function fetch_observation_data() {
 			$imageArray[$i]["wgs84_center_lng"] = $row['cell']['wgs84_center_lng'];
 			$imageArray[$i]["suggestionsFromOtherUsers"] = getSuggestions($row['id']);
 			$imageArray[$i]["labels"] = $labels;
+			$imageArray[$i]["currentUserId"] = $user->uid;
 		}
 	
 		$i++;
@@ -116,11 +117,6 @@ function getSuggestions($observationId) {
 
 	$sql['id'] = 'o.id';
 
-	/*
-	 * Only show accessible observations.
-	*/
-	$sql['acl_level'] = $acl_level;
-
 	global $user;
 	global $language;
 	$langcode = (isset($user->language) && !empty($user->language))
@@ -138,19 +134,26 @@ function getSuggestions($observationId) {
 	$arguments = array();
 	$output = datatable_dbRequest($sql, $arguments);
 	
-	$totalVotes = 0;
-	foreach ($output['rows'] as &$row) {
-		$totalVotes += $row['cell']['votes'];
-	}
-	
 	$returnArray;
 	$i = 0;
 	foreach ($output['rows'] as &$row) {
 		$returnArray[$i]["id"] = $row['cell']['organism_id'];
 		$returnArray[$i]["votes"] = $row['cell']['votes'];
-		$returnArray[$i]["votes_percent"] = round($row['cell']['votes'] / $totalVotes * 100, 0);
 		$returnArray[$i]["scientific_name"] = $row['cell']['scientific_name'];
 		$returnArray[$i]["translated_name"] = $row['cell']['translated_name'];
+		
+		// also look for the users that voted for this organism
+		$result = db_select('vote', 'v')
+			->fields('v', array('user_id'))
+			->condition('v.observation_id', $observationId, '=')
+			->condition('v.organism_id', $row['cell']['organism_id'], '=');
+		
+		$teer = array();
+		foreach ($result->execute() as $row) {
+			$teer[] = $row->user_id;
+		}
+		
+		$returnArray[$i]["user_ids"] = $teer;
 		$i++;
 	}
 	return $returnArray;

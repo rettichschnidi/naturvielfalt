@@ -50,6 +50,7 @@ function initializeCache() {
 					wgs84_center_lng: result[i].wgs84_center_lng,
 					table: result[i].table,
 					suggestionsFromOtherUsers: result[i].suggestionsFromOtherUsers,
+					currentUserId: result[i].currentUserId,
 					labels: result[i].labels
 				};
 			}
