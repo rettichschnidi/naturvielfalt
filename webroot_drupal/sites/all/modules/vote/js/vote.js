@@ -28,7 +28,6 @@ function initializeSubmitVerificationButton() {
 				//imageIndex -= 1;
 				
 				// TODO: scientific name hidden field
-				var suggestions = imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers;
 				var myVote = {
 						translated_name: $('#organism_name').val(),
 						scientific_name: $('#organism_name').val(),
@@ -36,48 +35,40 @@ function initializeSubmitVerificationButton() {
 						user_ids: [imageSourceCache[currentMainImageIndex].currentUserId]
 				};
 				
-				console.log(suggestions);
-				
-				if (suggestions == null) {
-					suggestions = new Array();
+				// don't load imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers into a variable because it will create an instance of the variable and it would not work with the real array
+				if (imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers == null) {
+					imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers = new Array();
 				} else {
-					for (var i = 0; i < suggestions.length; i++) {
-						console.log(suggestions[i].user_ids);
-						for(var a = 0; a < suggestions[i].user_ids.length; a++) {
-							
-							if (imageSourceCache[currentMainImageIndex].currentUserId == suggestions[i].user_ids[a]) {
-								
-								if (suggestions[i].votes > 1) {
-									suggestions[i].votes--;
-									suggestions[i].user_ids[a] = null;
+					for (var i = 0; i < imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers.length; i++) {
+						for(var a = 0; a < imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].user_ids.length; a++) {
+							if (imageSourceCache[currentMainImageIndex].currentUserId == imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].user_ids[a]) {
+								if (imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].votes > 1) {
+									imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].votes--;
+									imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].user_ids[a] = null;
 								} else {
-									suggestions.splice(i, 1);
+									imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers.splice(i, 1);
 								}
 								break;
-								
 							}
-							
 						}
-						
 					}
 				}
 				
 				var done = false;
 				
-				for (var i = 0; i < suggestions.length; i++) {
-					if (suggestions[i].translated_name == myVote.translated_name) {
-						suggestions[i].votes++;
-						suggestions[i].user_ids = [imageSourceCache[currentMainImageIndex].currentUserId];
+				for (var i = 0; i < imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers.length; i++) {
+					if (imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].translated_name == myVote.translated_name) {
+						imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].votes++;
+						imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers[i].user_ids = [imageSourceCache[currentMainImageIndex].currentUserId];
 						done = true;
 						break;
 					}
 				}
 			
 				if (!done) {
-					suggestions.push(myVote);
+					imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers.push(myVote);
 				}
-				console.log(suggestions);
-				initializeVotesFromOtherUsers();
+				//initializeVotesFromOtherUsers();
 				
 				nextImage();
 			},
@@ -124,7 +115,6 @@ function initializeVotesFromOtherUsers() {
 		}
 	} else {
 		container.hide();
-
 		noVerificationsMessage.html(imageSourceCache[currentMainImageIndex].labels.noVerifications);
 		noVerificationsMessage.show();
 	}
