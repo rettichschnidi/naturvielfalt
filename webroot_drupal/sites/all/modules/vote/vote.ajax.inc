@@ -82,7 +82,7 @@ function fetch_observation_data() {
 		$row['cell']['thumbnail'] = '';
 		if ($images['count'] > 0) {			
 			// display the thumbnail (for the table view)
-			$imageArray[$i]["imageId"] = $row['id'];
+			$imageArray[$i]["observation_id"] = $row['id'];
 			$imageArray[$i]["imageThumbPath"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
 			$imageArray[$i]["imagePath"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/fullsize');
 			$imageArray[$i]["images"] = $images;

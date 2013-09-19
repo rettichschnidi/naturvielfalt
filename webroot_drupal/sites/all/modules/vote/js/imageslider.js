@@ -1,35 +1,41 @@
 $ = jQuery;
 
-/*
- * Global variables which all functions use 
- */
-var mainImage;
+var mainImageHolder;
+var previousImageHolders = new Array();
+var currentImageHolders = new Array();
+var futureImageHolders = new Array();
+
 var currentMainImageIndex;
-var previousImages = new Array();
-var nextImages = new Array();
-var futureImages = new Array();
 var imageSourceCache = new Array();
 var stepsToMove;
 var imageIndex = 0;
 var marker;
 
 /**
+ * Initializes the image slider.
+ */
+function initializeImageSlider() {
+	initializeImages();
+	initializeCache();
+}
+
+/**
  * Adds the object references to the different arrays and variables.
  */
 function initializeImages() {
-	mainImage = $('#mainImage');
-	previousImages[0] = $('#previousImage01');
-	previousImages[1] = $('#previousImage02');
-	previousImages[2] = $('#previousImage03');
-	previousImages[3] = $('#previousImage04');
-	nextImages[0] = $('#image01');
-	nextImages[1] = $('#image02');
-	nextImages[2] = $('#image03');
-	nextImages[3] = $('#image04');
-	futureImages[0] = $('#futureImage01');
-	futureImages[1] = $('#futureImage02');
-	futureImages[2] = $('#futureImage03');
-	futureImages[3] = $('#futureImage04');
+	mainImageHolder = $('#mainImage');
+	previousImageHolders[0] = $('#previousImage01');
+	previousImageHolders[1] = $('#previousImage02');
+	previousImageHolders[2] = $('#previousImage03');
+	previousImageHolders[3] = $('#previousImage04');
+	currentImageHolders[0] = $('#currentImage01');
+	currentImageHolders[1] = $('#currentImage02');
+	currentImageHolders[2] = $('#currentImage03');
+	currentImageHolders[3] = $('#currentImage04');
+	futureImageHolders[0] = $('#futureImage01');
+	futureImageHolders[1] = $('#futureImage02');
+	futureImageHolders[2] = $('#futureImage03');
+	futureImageHolders[3] = $('#futureImage04');
 }
 
 /**
@@ -41,7 +47,7 @@ function initializeCache() {
 		success: function(result){
 			for (var i = 0; i < result.length; i++) {
 				imageSourceCache[i] = {
-					imageId: result[i].imageId,
+					observation_id: result[i].observation_id,
 					imageThumbPath: result[i].imageThumbPath,
 					imagePath: result[i].imagePath,
 					images: result[i].images,
@@ -56,7 +62,7 @@ function initializeCache() {
 			}
 			
 			// load the first image sources from the cache
-			mainImage.attr('src', imageSourceCache[imageIndex].imagePath);
+			mainImageHolder.attr('src', imageSourceCache[imageIndex].imagePath);
 			
 			// write the current number of images to the diashow link
 			$('#numberOfImages').html(imageSourceCache[imageIndex].imagesCount);
@@ -66,7 +72,7 @@ function initializeCache() {
 			
 			initLightBox();
 			
-			var autoHeight = mainImage.attr('height');
+			var autoHeight = mainImageHolder.attr('height');
 			$("#mainImageFieldset").animate({ height: autoHeight + 20 });
 			
 			imageIndex = 1;
@@ -105,37 +111,37 @@ function initLightBox() {
  * @returns the current observation id
  */
 function getCurrentObservationId() {
-	return imageSourceCache[currentMainImageIndex].imageId;
+	return imageSourceCache[currentMainImageIndex].observation_id;
 }
 
 /**
  * Loads the images from the cache using the imageIndex variable as index.
  */
 function loadImagesFromCache() {
-	for (var i = 0; i < nextImages.length; i ++) {
+	for (var i = 0; i < currentImageHolders.length; i ++) {
 		
 		// load previous thumbnail and fullsize images into cache
-		var cleanIndex = checkIndex(imageIndex - nextImages.length + i);
-		previousImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
+		var cleanIndex = checkIndex(imageIndex - currentImageHolders.length + i);
+		previousImageHolders[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
-		nextImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
+		currentImageHolders[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load future thumbnail and fullsize images into cache
-		cleanIndex = checkIndex(imageIndex + nextImages.length + i);
-		futureImages[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
+		cleanIndex = checkIndex(imageIndex + currentImageHolders.length + i);
+		futureImageHolders[i].attr('src', imageSourceCache[cleanIndex].imageThumbPath);
 		$('#mainImageContainer').append("<img src=\"" + imageSourceCache[cleanIndex].imagePath + "\" style=\"display:none;\" alt=\"Image\" />");
 		
-		previousImages[i].css({ width: 0, opacity: 0 });
+		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
-		if (i < futureImages.length) {
-			futureImages[i].css({ width: 0, opacity: 0 });
+		if (i < futureImageHolders.length) {
+			futureImageHolders[i].css({ width: 0, opacity: 0 });
 		}
 		
-		nextImages[i].css({ width: 190, opacity: 1 });
+		currentImageHolders[i].css({ width: 190, opacity: 1 });
 	}
 }
 
@@ -192,7 +198,7 @@ function prepareSlideShow() {
 	// load slideshow images for current main image
 	$('#slideshowImages').html('');
 	for (var j = 1; j < imageSourceCache[currentMainImageIndex].imagesCount; j ++) {
-		var currentPath = '/gallery/observation/' + imageSourceCache[currentMainImageIndex].imageId + '/thumb/' + imageSourceCache[currentMainImageIndex].images.images[j].id + '/fullsize';
+		var currentPath = '/gallery/observation/' + imageSourceCache[currentMainImageIndex].observation_id + '/thumb/' + imageSourceCache[currentMainImageIndex].images.images[j].id + '/fullsize';
 		$('#slideshowImages').append("<a class=\"lightbox\" href=\"" + currentPath + "\" style=\"display: none;\"><img src=\"" + currentPath + "\" alt=\"Image\" /></a>");
 	}
 }
@@ -231,15 +237,15 @@ function animateMainImage(replaceMainImage) {
 					Animation complete of main image fade out
 					Move the selected image to the main image position
 				*/
-				nextImages[stepsToMove - 1].animate({
-						left: "-=" + (nextImages[stepsToMove - 1].position().left - mainImage.position().left),
-						top: "-=" + (nextImages[stepsToMove - 1].position().top - mainImage.position().top)
+				currentImageHolders[stepsToMove - 1].animate({
+						left: "-=" + (currentImageHolders[stepsToMove - 1].position().left - mainImageHolder.position().left),
+						top: "-=" + (currentImageHolders[stepsToMove - 1].position().top - mainImageHolder.position().top)
 					}, 500, function() {
 						/*
 							Animation complete of selected image movement
 							Switch the main image source with the selected image source
 						*/
-						mainImage.attr("src", imageSourceCache[currentMainImageIndex].imagePath);
+						mainImageHolder.attr("src", imageSourceCache[currentMainImageIndex].imagePath);
 						
 						// write the current number of images to the diashow link
 						$('#numberOfImages').html(imageSourceCache[currentMainImageIndex].imagesCount);
@@ -249,18 +255,18 @@ function animateMainImage(replaceMainImage) {
 						initLightBox();
 						
 						// Calculate the new height of the image
-						mainImage.css({ width: 440 });
-						var autoHeight = mainImage.attr('height');
+						mainImageHolder.css({ width: 440 });
+						var autoHeight = mainImageHolder.attr('height');
 						// Show the main image and animate it to the normal size
-						mainImage.css({ width: 190, height: "auto" });
+						mainImageHolder.css({ width: 190, height: "auto" });
 						$("#mainImageContainer").css({ opacity: 1 });
 						
-						mainImage.animate({ width: 440 });
+						mainImageHolder.animate({ width: 440 });
 						$("#mainImageFieldset").animate({ height: autoHeight + 20 });
 						// Reset position of the selected image
-						nextImages[stepsToMove - 1].removeAttr("style");
+						currentImageHolders[stepsToMove - 1].removeAttr("style");
 						// check if the amount of steps is possible to do
-						animateNextImages(replaceMainImage);
+						animateCurrentImages(replaceMainImage);
 						
 						// add marker to map and set initial zoom level
 						initializeGoogleMap();
@@ -273,7 +279,7 @@ function animateMainImage(replaceMainImage) {
 		);
 	} else {
 		// check if the amount of steps is possible to do
-		animateNextImages(replaceMainImage);
+		animateCurrentImages(replaceMainImage);
 	}
 }
 
@@ -282,42 +288,42 @@ function animateMainImage(replaceMainImage) {
  * 
  * @param replaceMainImage if the main image should be replaced or not
  */
-function animateNextImages(replaceMainImage) {
+function animateCurrentImages(replaceMainImage) {
 	
 	// set the new image index to reload the images
 	imageIndex = checkIndex(stepsToMove + imageIndex);
 	
-	//check if the next images are positive or negative. if positive the future images will be loaded, if negative the previousimages will be loaded
+	//check if the next images are positive or negative. if positive the future images will be loaded, if negative the previousImageHolders will be loaded
 	var positive = stepsToMove >= 0;
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
 		if (positive) {
-			if (i < futureImages.length) {
-				futureImages[i].animate({ width: 190, opacity: 1 }, 500);
+			if (i < futureImageHolders.length) {
+				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 500);
 			}
-			if (i < nextImages.length) {
+			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
-					nextImages[i].animate({ width: 0, opacity: 0 }, 500, function() {
+					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
 					});
 				} else {
-					nextImages[i].animate({ width: 0, opacity: 0 }, 500);
+					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500);
 				}
 			}
 		} else {
-			if (i < previousImages.length) {
-				var cleanIndex = nextImages.length - i - 1;
+			if (i < previousImageHolders.length) {
+				var cleanIndex = currentImageHolders.length - i - 1;
 				if (cleanIndex < 0) {
 					cleanIndex = 0;
 				}
-				previousImages[cleanIndex].animate({ width: 190, opacity: 1 }, 500);
+				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 500);
 			}
-			if (i < nextImages.length) {
+			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
-					nextImages[nextImages.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
+					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
 					});
 				} else {
-					nextImages[nextImages.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
+					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
 				}
 			}
 		}

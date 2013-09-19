@@ -1,11 +1,10 @@
 $ = jQuery;
 
 /**
-Executed after page was loaded.
-*/
-$(document).ready(function () {
-	initializeImages();
-	initializeCache();
+ * Executed after page was loaded.
+ */
+$(document).ready(function() {
+	initializeImageSlider();
 	initializeSubmitVerificationButton();
 });
 
@@ -18,14 +17,9 @@ function initializeSubmitVerificationButton() {
 			type: "POST",
 			url: "vote/save",
 			success: function(result){
-				$('html, body').animate({ scrollTop: 0 });
 				
-				/**
-				 * Use this, if the item, which has been voted for, should be removed from the array
-				 */
-				//imageSourceCache.splice(currentMainImageIndex, 1);
-				// Set imageIndex-1 because the next image would be 1 step too far away (flogys description would be: i'm a getter and setter faggy)
-				//imageIndex -= 1;
+				//scroll to the top of the page to display the next observation
+				$('html, body').animate({ scrollTop: 0 });
 				
 				// TODO: scientific name hidden field
 				var myVote = {
@@ -68,7 +62,6 @@ function initializeSubmitVerificationButton() {
 				if (!done) {
 					imageSourceCache[currentMainImageIndex].suggestionsFromOtherUsers.push(myVote);
 				}
-				//initializeVotesFromOtherUsers();
 				
 				nextImage();
 			},
