@@ -56,7 +56,8 @@ function initializeCache() {
 					detail_information: result[i].detail_information,
 					current_verifications: result[i].current_verifications,
 					users_who_voted: result[i].users_who_voted,
-					translated_labels: result[i].translated_labels
+					translated_labels: result[i].translated_labels,
+					
 				};
 			}
 			
@@ -84,7 +85,7 @@ function initializeCache() {
 			initializeVotesFromOtherUsers();
 		},
 		error: function(result){
-			alert("error");
+			alert("Could not fetch the needed information from the server.");
 		}
 	});
 }
@@ -101,7 +102,7 @@ function initLightBox() {
 		captionHTML : true,
 	};
 	
-	$('a.lightbox').lightBox(); // Select all links with lightbox class
+	$('a.lightbox').lightBox();
 }
 
 /**

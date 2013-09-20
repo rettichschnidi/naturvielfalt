@@ -133,8 +133,6 @@ EOT;
 			'#height'                       => '300px'
 	);
 	
-	//drupal_add_css(drupal_get_path('module', 'observation') . '/css/observation.css');
-	
 	$render_array['leftDiv']['metaInfo'] = array(
 			'#id' => 'metaInfo',
 			'#type' => 'fieldset',

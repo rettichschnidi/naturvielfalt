@@ -90,7 +90,7 @@ function fetch_observation_data() {
 			$imageArray[$i]["google_map_marker_lat"] = $row['cell']['wgs84_center_lat'];
 			$imageArray[$i]["google_map_marker_lng"] = $row['cell']['wgs84_center_lng'];
 			$imageArray[$i]["current_verifications"] = getSuggestions($row['id']);
-			$imageArray[$i]["users_who_voted"] = $user->uid;
+			$imageArray[$i]["current_user"] = $user->uid;
 			$imageArray[$i]["translated_labels"] = $labels;
 		}
 	
@@ -145,15 +145,19 @@ function getSuggestions($observationId) {
 		// also look for the users that voted for this organism
 		$result = db_select('vote', 'v')
 			->fields('v', array('user_id'))
+			->fields('v', array('vote_comment'))
 			->condition('v.observation_id', $observationId, '=')
 			->condition('v.organism_id', $row['cell']['organism_id'], '=');
 		
 		$teer = array();
+		$a = 0;
 		foreach ($result->execute() as $row) {
-			$teer[] = $row->user_id;
+			$teer[$a]["user_id"] = $row->user_id;
+			$teer[$a]["vote_comment"] = $row->vote_comment;
+			$a++;
 		}
 		
-		$returnArray[$i]["user_ids"] = $teer;
+		$returnArray[$i]["user_verifications"] = $teer;
 		$i++;
 	}
 	return $returnArray;
@@ -168,6 +172,7 @@ function vote_save() {
 
 	$verification['user_id'] = filter_xss($user->uid);
 	$verification['observation_id'] = filter_xss($values['observation_id']);
+	$verification['vote_comment'] = filter_xss($values['vote_comment']);
 	$result = organism_get_byname($values['organism_name']);
 	
 	$verification['organism_id'] = filter_xss($result['id']);
@@ -196,7 +201,7 @@ function vote_save() {
 		->fields(array(
 		    'organism_id' => $verification['organism_id'],
 		    'vote_timestamp' => $verification['vote_timestamp'],
-		    // 'comment' => $verification['comment']
+		    'vote_comment' => $verification['vote_comment']
 		))
 		->condition('observation_id', $verification['observation_id'], '=')
 		->condition('user_id', $verification['user_id'], '=')

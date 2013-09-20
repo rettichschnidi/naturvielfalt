@@ -26,6 +26,10 @@
 	margin: 0px;
 }
 
+.entryCommentsContainer .header {
+	margin-bottom: 5px;
+}
+
 .entryComments {
 	border-bottom: dotted 1px #CCCCCC;
 	padding: 5px;
