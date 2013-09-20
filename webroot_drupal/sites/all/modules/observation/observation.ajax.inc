@@ -212,8 +212,12 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	
 	if($output['success']) {
 		drupal_set_message(t('successfull saved'));
+		/*
 		if($edit)
-			drupal_goto('observation/new');//drupal_goto('observation/'.$observation['id'].'/edit');
+			drupal_goto('observation/'.$observation['id'].'/edit');
+		else 
+			drupal_goto('observation/new');
+		 */
 	} else {
 		form_set_error('observation_form', $output['message']);
 		$observation_data['redirect'] = FALSE;
