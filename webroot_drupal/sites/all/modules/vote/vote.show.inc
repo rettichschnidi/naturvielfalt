@@ -1,5 +1,50 @@
 <?php
-function vote_show_overview($observation_id = NULL) {
+
+module_load_include('inc', 'observation');
+
+function vote_show_observation($observation_ids = NULL) {
+	$vote_observations_filter = array();
+
+	if ($observation_ids != null) {
+		$vote_observations_filter = explode(',', $observation_ids);
+	}
+	
+	$_SESSION["vote_observations_filter"] = $vote_observations_filter;
+	
+	return vote_show_overview();
+}
+
+function vote_show_organism($organism_id = NULL) {
+	$vote_observations_filter = array();
+	
+	if ($organism_id != null) {
+		$result = observation_get_by_organism($organism_id);
+		foreach ($result as $row) {
+			$vote_observations_filter[] = $row->id;
+		}
+	}
+	
+	$_SESSION["vote_observations_filter"] = $vote_observations_filter;
+	
+	return vote_show_overview();
+}
+
+function vote_show_artgroup($artgroup_id = NULL) {
+	$vote_observations_filter = array();
+	
+	if ($artgroup_id != null) {
+		$result = observation_get_by_artgroup($artgroup_id);
+		foreach ($result as $row) {
+			$vote_observations_filter[] = $row->id;
+		}
+	}
+	
+	$_SESSION["vote_observations_filter"] = $vote_observations_filter;
+	
+	return vote_show_overview();
+}
+
+function vote_show_overview() {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
@@ -36,6 +81,8 @@ function vote_show_overview($observation_id = NULL) {
 					)
 			)
 	);
+	
+	// TODO: set to previous value if available
 	$artgroup_filter_id = 0;
 	$render_array['artgroup']['artgroup_filter_id'] = array(
 			'#id' => 'artgroup_filter_id',
@@ -48,7 +95,8 @@ function vote_show_overview($observation_id = NULL) {
 			),
 			'#weight' => 3,
 			'#tree' => true,
-			'#value' => $artgroup_filter_id
+			'#value' => $artgroup_filter_id,
+			'#attributes' => array('onchange' => "document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
 	);
 	
 	$render_array['imageslider'] = array(
@@ -59,20 +107,20 @@ function vote_show_overview($observation_id = NULL) {
 	$render_array['imageslider']['images'] = array(
 			'#type' => 'markup',
 			'#markup' => '<div id="imagesContainer">
-				<img id="loadPreviousImages" class="imageSliderNavigation" src="' . drupal_get_path('module', 'vote') . '/img/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
+				<img id="loadPreviousImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'vote') . '/img/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
 				<img id="previousImage01" class="imageSliderImage" style="width: 0px;" />
 				<img id="previousImage02" class="imageSliderImage" style="width: 0px;" />
 				<img id="previousImage03" class="imageSliderImage" style="width: 0px;" />
 				<img id="previousImage04" class="imageSliderImage" style="width: 0px;" />
-				<img id="currentImage01" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 01" onclick="moveImages(1, true);" />
-				<img id="currentImage02" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 02" onclick="moveImages(2, true);" />
-				<img id="currentImage03" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 03" onclick="moveImages(3, true);" />
-				<img id="currentImage04" src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 04" onclick="moveImages(4, true);" />
+				<img id="currentImage01" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 01" onclick="moveImages(1, true);" />
+				<img id="currentImage02" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 02" onclick="moveImages(2, true);" />
+				<img id="currentImage03" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 03" onclick="moveImages(3, true);" />
+				<img id="currentImage04" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 04" onclick="moveImages(4, true);" />
 				<img id="futureImage01" class="imageSliderImage" style="width: 0px;" />
 				<img id="futureImage02" class="imageSliderImage" style="width: 0px;" />
 				<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
 				<img id="futureImage04" class="imageSliderImage" style="width: 0px;" />
-				<img id="loadNextImages" class="imageSliderNavigation" src="' . drupal_get_path('module', 'vote') . '/img/next.png" alt="Next" onclick="moveImages(4, false);" />
+				<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'vote') . '/img/next.png" alt="Next" onclick="moveImages(4, false);" />
 			</div>'
 	);
 	
@@ -111,7 +159,7 @@ EOT;
 	$render_array['leftDiv']['mainimage']['images'] = array(
 			'#type' => 'markup',
 			'#markup' => '<div id="mainImageContainer">
-				<a class="lightbox" id="mainImageLink" href="' . drupal_get_path('module', 'vote') . '/img/loading.gif"><img src="' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" /></a>'
+				<a class="lightbox" id="mainImageLink" href="/' . drupal_get_path('module', 'vote') . '/img/loading.gif"><img src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" /></a>'
 			. $result . '</div><div id="slideshowImages"></div>'
 	);
 	

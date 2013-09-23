@@ -42,7 +42,7 @@ function initializeImages() {
  */
 function initializeCache() {
 	$.ajax({
-		url: "vote/getdata/json",
+		url: "/vote/getdata/json",
 		success: function(result){
 			
 			// cache all fetched database data
@@ -72,6 +72,7 @@ function initializeCache() {
 			initializeVotesFromOtherUsers();
 		},
 		error: function(result){
+			// TODO: do not use alerts
 			alert("Could not fetch the needed information from the server.");
 		}
 	});

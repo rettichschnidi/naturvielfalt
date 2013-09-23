@@ -39,9 +39,8 @@ function initializeSubmitVerificationButton() {
 	$('#submitVerification').click(function() {
 		$.ajax({
 			type: "POST",
-			url: "vote/save",
+			url: "/vote/save",
 			success: function(result){
-				console.log();
 				// scroll to the top of the page to display the next observation
 				$('html, body').animate({ scrollTop: 0 });
 				

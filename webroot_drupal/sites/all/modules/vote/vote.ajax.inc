@@ -29,71 +29,50 @@ function getObservations() {
 	global $user;
 	global $language;
 	
-	$sql['dbColumns'] = array(
-			'o.id AS id',
-			'o.organism_artgroup_id AS artgroup_id',
-			'o.date AS date',
-			'o.inventory_id',
-			'o.organism_id AS organism_id',  // used to find portrait-pictures
-			'i.name AS inventory',
-			'ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat', // Center of the geometry - WGS84, latitude
-			'ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng', // Center of the geometry - WGS84, longitude
-			'(SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id) AS votes',
-			'(SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id AND v.user_id = '.$user->uid.') AS current_user_votes'
-	);
+	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
+
+	$whereClause = '';
+	if ($_SESSION["vote_observations_filter"] != null) {
+		$whereClause = ' WHERE o.id IN (' . join(', ', $_SESSION["vote_observations_filter"]) . ')';
+	}
 	
-	$sql['dbTable'] = '{observation} o';
-	
-	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
-	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
-	
-	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
+	$sql =   'SELECT o.id AS id,'
+			.' o.organism_artgroup_id AS artgroup_id,'
+			.' o.date AS date,'
+			.' o.inventory_id,'
+			.' o.organism_id AS organism_id,'
+			.' i.name AS inventory,'
+			.' ST_X(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lat,'
+			.' ST_Y(ST_Centroid(st_transform(a_s.geom, 4326))) AS wgs84_center_lng,'
+			.' (SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id) AS votes,'
+			.' (SELECT COUNT(1) FROM {vote} v WHERE v.observation_id = o.id AND v.user_id = '.$user->uid.') AS current_user_votes'
+			.' FROM {observation} o'
+			.' INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
 			.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
 			.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
-			.' LEFT JOIN {inventory} i ON i.id = o.inventory_id';
+			.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
+			. $whereClause
+			.' ORDER BY current_user_votes, votes, date DESC';
 	
-	$sql['id'] = 'id';
-
-	/*
-	 * Only show observations of a specific artgroup.
-	* artgroup id 1 means all artgroups.
-	*/
-	if (isset($_REQUEST['oaid']) && is_numeric($_REQUEST['oaid']) && $_REQUEST['oaid'] > 1) {
-		$sql['dbWhere'] = empty($sql['dbWhere'])
-		? ''
-				: $sql['dbWhere'] . ' AND ';
-		$sql['dbWhere'] .= 'o.organism_artgroup_id=:oaid';
-		$arguments[':oaid'] = $_REQUEST['oaid'];
-	}
-
-	$sql['dbDefaultOrder'] = 'current_user_votes, votes, o.date DESC';
-
-	/*
-	 * fetch the observation data
-	*/
-	$arguments = array();
-	$output = datatable_dbRequest($sql, $arguments);
+	$output = db_query($sql)->fetchAll();
 	
 	$i = 0;
-	foreach ($output['rows'] as &$row) {
+	foreach ($output as &$row) {
 	
 		// get images
-		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row->id);
 	
 		// thumbnail
-		$row['cell']['thumbnail'] = '';
+		$row->thumbnail = '';
 		if ($images['count'] > 0) {
 			// display the thumbnail (for the table view)
-			$observationsArray[$i]["observation_id"] = $row['id'];
-			$observationsArray[$i]["thumbnail_image_path"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
-			$observationsArray[$i]["fullsize_image_path"] = url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/fullsize');
+			$observationsArray[$i]["observation_id"] = $row->id;
+			$observationsArray[$i]["thumbnail_image_path"] = url('gallery/observation/' . $row->id . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
+			$observationsArray[$i]["fullsize_image_path"] = url('gallery/observation/' . $row->id . '/thumb/' . $images['images'][0]['id'] . '/fullsize');
 			$observationsArray[$i]["observation_images"] = $images;
-			$observationsArray[$i]["detail_information"] = observation_get_table(observation_get($row['cell']['id']));
-			$observationsArray[$i]["google_map_marker_lat"] = $row['cell']['wgs84_center_lat'];
-			$observationsArray[$i]["google_map_marker_lng"] = $row['cell']['wgs84_center_lng'];
+			$observationsArray[$i]["detail_information"] = observation_get_table(observation_get($row->id));
+			$observationsArray[$i]["google_map_marker_lat"] = $row->wgs84_center_lat;
+			$observationsArray[$i]["google_map_marker_lng"] = $row->wgs84_center_lng;
 		}
 	
 		$i++;
