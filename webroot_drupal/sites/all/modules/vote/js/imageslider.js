@@ -44,7 +44,6 @@ function initializeCache() {
 	$.ajax({
 		url: "/vote/getdata/json",
 		success: function(result){
-			
 			// cache all fetched database data
 			cacheAllData(result);
 			
@@ -97,10 +96,17 @@ function initLightBox() {
  * Loads the images from the cache using the imageIndex variable as index.
  */
 function loadImagesFromCache() {
-	for (var i = 0; i < currentImageHolders.length; i ++) {
-		
+	// FIXME: when not enough images are available this should be handled
+	var numberToCount;
+	if(observations.length < currentImageHolders.length) {
+		numberToCount = observations.length - 1;
+	} else {
+		numberToCount = currentImageHolders.length;
+	}
+	
+	for (var i = 0; i < numberToCount; i ++) {
 		// load previous thumbnail and fullsize images into cache
-		var cleanIndex = checkIndex(imageIndex - currentImageHolders.length + i);
+		var cleanIndex = checkIndex(imageIndex - numberToCount + i);
 		previousImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
 		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
@@ -110,7 +116,7 @@ function loadImagesFromCache() {
 		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load future thumbnail and fullsize images into cache
-		cleanIndex = checkIndex(imageIndex + currentImageHolders.length + i);
+		cleanIndex = checkIndex(imageIndex + numberToCount + i);
 		futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
 		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		

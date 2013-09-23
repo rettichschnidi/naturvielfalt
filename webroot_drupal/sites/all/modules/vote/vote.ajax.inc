@@ -32,6 +32,7 @@ function getObservations() {
 	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
 
 	$whereClause = '';
+	
 	if ($_SESSION["vote_observations_filter"] != null) {
 		$whereClause = ' WHERE o.id IN (' . join(', ', $_SESSION["vote_observations_filter"]) . ')';
 	}

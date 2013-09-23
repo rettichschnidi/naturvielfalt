@@ -31,9 +31,13 @@ function vote_show_organism($organism_id = NULL) {
 
 function vote_show_artgroup($artgroup_id = NULL) {
 	$vote_observations_filter = array();
+	$showErrorMessage = "";
 	
 	if ($artgroup_id != null) {
 		$result = observation_get_by_artgroup($artgroup_id);
+		if(count($result) <= 0 && $artgroup_id != 1) {
+			$showErrorMessage = t("No observations available in this artgroup. Please choose another one.");
+		}
 		foreach ($result as $row) {
 			$vote_observations_filter[] = $row->id;
 		}
@@ -41,10 +45,10 @@ function vote_show_artgroup($artgroup_id = NULL) {
 	
 	$_SESSION["vote_observations_filter"] = $vote_observations_filter;
 	
-	return vote_show_overview($artgroup_id);
+	return vote_show_overview($artgroup_id, $showErrorMessage);
 }
 
-function vote_show_overview($artgroup_id = 0) {
+function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
@@ -69,18 +73,32 @@ function vote_show_overview($artgroup_id = 0) {
 		'#markup' => t('On this page experts can identify species and vote for the correct one. This helps keeping a good identification quality and can help unexperienced users.')
 	);
 	
-	$render_array['artgroup'] = array(
-		'#id' => 'artgroup',
-		'#type' => 'fieldset',
-		'#title' => t('Artgroup Settings'),
-		'#weight' => 2,
-		'#attributes' => array(
-			'class' => array(
-				'collapsible',
-				'collapsed'
-			)
-		)
-	);
+	if($showErrorMessage != null) {
+		$render_array['artgroup'] = array(
+				'#id' => 'artgroup',
+				'#type' => 'fieldset',
+				'#title' => t('Artgroup Settings'),
+				'#weight' => 2,
+				'#attributes' => array(
+						'class' => array(
+								'collapsible'
+						)
+				)
+		);
+	} else {
+		$render_array['artgroup'] = array(
+				'#id' => 'artgroup',
+				'#type' => 'fieldset',
+				'#title' => t('Artgroup Settings'),
+				'#weight' => 2,
+				'#attributes' => array(
+						'class' => array(
+								'collapsible',
+								'collapsed'
+						)
+				)
+		);
+	}
 	
 	$artgroup_filter_id = $artgroup_id;
 	$render_array['artgroup']['artgroup_filter_id'] = array(
@@ -97,6 +115,13 @@ function vote_show_overview($artgroup_id = 0) {
 		'#value' => $artgroup_filter_id,
 		'#attributes' => array('onchange' => "document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
 	);
+	
+	if($showErrorMessage != null) {
+		$render_array['artgroup']['error'] = array(
+			'#type' => 'markup',
+			'#markup' => $showErrorMessage
+		);
+	}
 	
 	$render_array['imageslider'] = array(
 		'#type' => 'fieldset',
