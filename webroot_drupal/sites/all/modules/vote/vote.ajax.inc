@@ -16,15 +16,9 @@ module_load_include('inc', 'datatable');
 function fetch_observation_data() {
 	global $user;
 	
-	$labels = array();
-	$labels['verifications'] = t('verifications');
-	$labels['agree'] = t('Agree');
-	$labels['noVerifications'] = t('No verifications found for this observation.');
-	
 	$mainArray = array();
 	$mainArray['general']['current_user_id'] = $user->uid;
 	$mainArray['general']['current_user_name'] = $user->name;
-	$mainArray['general']['translated_labels'] = $labels;
 	$mainArray['observations'] = getObservations();
 	$mainArray['verifications'] = getVerifications();
 	

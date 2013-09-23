@@ -168,9 +168,9 @@ function initializeVotesFromOtherUsers() {
 							  + '<div class="progressBar" style="width: ' + votesPercent + '%;">'
 							  + '<span class="translatedDescription">' + verificationsPerOrganism[i].verifications[0].translated_name + '</span>'
 							  + '<span class="latinDescription"><i>' + verificationsPerOrganism[i].verifications[0].scientific_name + '</i></span>'
-							  + '<span class="votes">' + votesForCurrentOrganism + ' ' + generalInformation.translated_labels.verifications + '</span>'
+							  + '<span class="votes">' + votesForCurrentOrganism + ' ' + Drupal.t('verifications') + '</span>'
 							  + '</div>'
-							  + '<div class="suggestButton">' + generalInformation.translated_labels.agree + '</div>'
+							  + '<div class="suggestButton">' + Drupal.t('Agree') + '</div>'
 							  + '<div class="entryCommentsContainer">';
 			
 			for (var a = 0; a < verificationsPerOrganism[i].verifications.length; a++) {
@@ -188,7 +188,7 @@ function initializeVotesFromOtherUsers() {
 		
 		// hide container and display information message
 		container.hide();
-		noVerificationsMessage.html(generalInformation.translated_labels.noVerifications);
+		noVerificationsMessage.html(Drupal.t('No verifications found for this observation.'));
 		noVerificationsMessage.show();
 	}
 	
