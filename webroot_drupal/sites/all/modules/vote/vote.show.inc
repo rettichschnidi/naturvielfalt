@@ -41,10 +41,10 @@ function vote_show_artgroup($artgroup_id = NULL) {
 	
 	$_SESSION["vote_observations_filter"] = $vote_observations_filter;
 	
-	return vote_show_overview();
+	return vote_show_overview($artgroup_id);
 }
 
-function vote_show_overview() {
+function vote_show_overview($artgroup_id = 0) {
 	drupal_add_js('misc/form.js');
 	drupal_add_js('misc/collapse.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
@@ -82,8 +82,7 @@ function vote_show_overview() {
 			)
 	);
 	
-	// TODO: set to previous value if available
-	$artgroup_filter_id = 0;
+	$artgroup_filter_id = $artgroup_id;
 	$render_array['artgroup']['artgroup_filter_id'] = array(
 			'#id' => 'artgroup_filter_id',
 			'#title' => t('Filter on species group'),
