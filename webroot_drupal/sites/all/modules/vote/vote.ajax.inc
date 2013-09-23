@@ -166,9 +166,9 @@ function vote_save() {
 	$verification['user_id'] = filter_xss($user->uid);
 	$verification['observation_id'] = filter_xss($values['observation_id']);
 	$verification['vote_comment'] = filter_xss($values['vote_comment']);
-	$result = organism_get_byname($values['organism_name']);
+	$organismId = organism_get_byname($values['organism_name']);
 	
-	$verification['organism_id'] = filter_xss($result['id']);
+	$verification['organism_id'] = filter_xss($organismId['id']);
 	// $verification['comment'] = filter_xss($values['comment']);
 	
 	//nasty workaround for webservice lightversion
@@ -202,4 +202,8 @@ function vote_save() {
 	} else {
 		db_insert('vote')->fields($verification)->execute();
 	}
+	
+	$organismToSave = organism_get($organismId['id']);
+	
+	return drupal_json_output($organismToSave);
 }

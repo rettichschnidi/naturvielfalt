@@ -762,7 +762,7 @@ function organism_search_organism_json($artgroup, $string) {
 			if($row->ol_name != "") {
 				$matches[$row->ol_name] = $row->ol_name.'<br><em>'.$row->scientific_name.'</em>';
 			} else {
-					$matches[$row->scientific_name] = $row->scientific_name.'<br><em>'.t('No translation available').'</em>';
+				$matches[$row->scientific_name] = $row->scientific_name.'<br><em>'.t('No translation available').'</em>';
 			}
 		}
 	

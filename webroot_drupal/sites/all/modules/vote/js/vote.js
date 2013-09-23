@@ -41,17 +41,21 @@ function initializeSubmitVerificationButton() {
 			type: "POST",
 			url: "vote/save",
 			success: function(result){
+				console.log();
 				// scroll to the top of the page to display the next observation
 				$('html, body').animate({ scrollTop: 0 });
 				
 				var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
-				// TODO: make a hidden field for the organism id and the scientific name
+				
+				if (result.name_lang == null) {
+					result.name_lang = Drupal.t("No translation available");
+				}
 				var myVote = {
 					comment: $('#comment').val(),
 					observation_id: observations[currentMainImageIndex].observation_id.toString(),
-					organism_id: "0",
-					scientific_name: $('#organism_name').val(),
-					translated_name: $('#organism_name').val(),
+					organism_id: result.id,
+					scientific_name: result.name_lat,
+					translated_name: result.name_lang,
 					user_id: generalInformation.current_user_id.toString(),
 					user_name: generalInformation.current_user_name,
 					vote_timestamp: Math.round((new Date()).getTime() / 1000).toString() 
