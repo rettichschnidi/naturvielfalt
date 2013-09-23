@@ -78,6 +78,8 @@ function getObservations() {
 		$i++;
 	}
 	
+	unset($_SESSION["vote_observations_filter"]);
+	
 	return $observationsArray;
 }
 
