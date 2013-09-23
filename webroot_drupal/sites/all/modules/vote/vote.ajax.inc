@@ -23,6 +23,7 @@ function fetch_observation_data() {
 	
 	$mainArray = array();
 	$mainArray['general']['current_user_id'] = $user->uid;
+	$mainArray['general']['current_user_name'] = $user->name;
 	$mainArray['general']['translated_labels'] = $labels;
 	$mainArray['observations'] = getObservations();
 	$mainArray['verifications'] = getVerifications();
