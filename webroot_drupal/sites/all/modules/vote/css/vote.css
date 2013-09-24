@@ -35,3 +35,8 @@ a.mainImageType{
 #rightDiv {
 	float: right;
 }
+
+.errorMessage {
+	color: red;
+	font-weight: bold;
+}

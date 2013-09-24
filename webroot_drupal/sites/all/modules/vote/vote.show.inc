@@ -35,8 +35,8 @@ function vote_show_artgroup($artgroup_id = NULL) {
 	
 	if ($artgroup_id != null) {
 		$result = observation_get_by_artgroup($artgroup_id);
-		if(count($result) <= 0 && $artgroup_id != 1) {
-			$showErrorMessage = t("No observations available in this artgroup. Please choose another one.");
+		if (count($result) <= 0 && $artgroup_id != 1) {
+			$showErrorMessage = t("No observations available in this artgroup. All observations are displayed. Please choose another one.");
 		}
 		foreach ($result as $row) {
 			$vote_observations_filter[] = $row->id;
@@ -104,7 +104,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 	if($showErrorMessage != null) {
 		$render_array['artgroup']['error'] = array(
 			'#type' => 'markup',
-			'#markup' => $showErrorMessage
+			'#markup' => '<span class="errorMessage">' . $showErrorMessage . '</span>'
 		);
 	}
 	
