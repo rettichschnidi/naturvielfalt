@@ -167,7 +167,8 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	 *  Check for permission if acl_id is in the columns array
 	 */
 	global $user;
-	if (!check_admin_permission($user->uid)) {
+	// TODO: Fix performance if not administrator
+	/*if (!check_admin_permission($user->uid)) {
 		foreach ($aColumns as $dbColumn) {
 			$matches = array();
 			if (preg_match('/(\w+\.acl_id)/i', $dbColumn, $matches)) {
@@ -191,7 +192,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 				break;
 			}
 		}
-	}
+	}*/
 
 	$sTable = $Table . " " . $sJoins . " ";
 //  move values of JSON Object
@@ -335,7 +336,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
 	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
-	debug("fullQuery: ".$fullQuery); 
+	//debug("fullQuery: ".$fullQuery); 
 	/*
 	 * Paging
 	*/
