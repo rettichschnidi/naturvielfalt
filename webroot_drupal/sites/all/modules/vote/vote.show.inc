@@ -73,32 +73,17 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 		'#markup' => t('On this page experts can identify species and vote for the correct one. This helps keeping a good identification quality and can help unexperienced users.')
 	);
 	
-	if($showErrorMessage != null) {
-		$render_array['artgroup'] = array(
-				'#id' => 'artgroup',
-				'#type' => 'fieldset',
-				'#title' => t('Artgroup Settings'),
-				'#weight' => 2,
-				'#attributes' => array(
-						'class' => array(
-								'collapsible'
-						)
-				)
-		);
-	} else {
-		$render_array['artgroup'] = array(
-				'#id' => 'artgroup',
-				'#type' => 'fieldset',
-				'#title' => t('Artgroup Settings'),
-				'#weight' => 2,
-				'#attributes' => array(
-						'class' => array(
-								'collapsible',
-								'collapsed'
-						)
-				)
-		);
-	}
+	$render_array['artgroup'] = array(
+			'#id' => 'artgroup',
+			'#type' => 'fieldset',
+			'#title' => t('Artgroup Settings'),
+			'#weight' => 2,
+			'#attributes' => array(
+					'class' => array(
+							'collapsible'
+					)
+			)
+	);
 	
 	$artgroup_filter_id = $artgroup_id;
 	$render_array['artgroup']['artgroup_filter_id'] = array(
