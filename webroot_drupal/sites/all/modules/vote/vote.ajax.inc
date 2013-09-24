@@ -75,9 +75,8 @@ function getObservations() {
 			$observationsArray[$i]["comment_information"] = observation_get_details_table(observation_get($row->id));
 			$observationsArray[$i]["google_map_marker_lat"] = $row->wgs84_center_lat;
 			$observationsArray[$i]["google_map_marker_lng"] = $row->wgs84_center_lng;
+			$i++;
 		}
-	
-		$i++;
 	}
 	
 	unset($_SESSION["vote_observations_filter"]);

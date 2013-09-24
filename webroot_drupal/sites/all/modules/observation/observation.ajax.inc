@@ -168,7 +168,7 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 			
 			// create a verification entry in case the observer defined an organism
-			if ($observation['organism_id'] != UNKNOWN_SPECIES) {
+			if ($observation['organism_id'] != UNKNOWN_SPECIES && isset($values['file_description'])) {
 				$vote["user_id"] = $observation['users_uid'];
 				$vote["observation_id"] = $observation['id'];
 				$vote["organism_id"] = $observation['organism_id'];
