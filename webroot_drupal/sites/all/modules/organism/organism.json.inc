@@ -475,10 +475,30 @@ function organism_show_classification_organismjson($classificationid) {
 		array('organism_id',
 				'scientific_name',
 				'ol_name',
-				'coalesce(imagescount, 0) AS imagescount',
-				'coalesce(videoscount, 0) AS videoscount',
-				'coalesce(soundscount, 0) AS soundscount',
-				'coalesce(documentscount, 0) AS documentscount'
+				'(SELECT COUNT(1)
+				FROM {gallery_image} gi
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
+				WHERE gi.item_type = \'organismreference\'
+					AND fm.filemime IN (\''.$imagetypes.'\')
+					AND gi.item_id = organism_id) AS imagescount',
+					
+				'(SELECT COUNT(1)
+				FROM {gallery_image} gi
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
+				WHERE gi.item_type = \'organismreference\'
+					AND fm.filemime IN (\''.$videotypes.'\')
+					AND gi.item_id = organism_id) AS videoscount',
+					
+				'(SELECT COUNT(1)
+				FROM {gallery_image} gi
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
+				WHERE gi.item_type = \'organismreference\'
+					AND fm.filemime IN (\''.$soundtypes.'\')
+					AND gi.item_id = organism_id) AS soundscount',
+					
+				'(SELECT COUNT(1)
+				FROM {organism_file_managed} ofm 
+				WHERE ofm.organism_id = organism_id) AS documentscount'
 		),
 		$levelnamearray);
 	$sql['dbColumns'] = $dbcolumns;
@@ -491,40 +511,6 @@ function organism_show_classification_organismjson($classificationid) {
 	
 	/* DB table to use */
 	$sql['dbTable'] = "final_classification_table";
-	$sql['dbJoins'] = '
-		LEFT JOIN
-		(
-		SELECT gi.item_id, COUNT(*) AS imagescount
-		FROM {gallery_image} gi
-		LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
-			WHERE gi.item_type = \'organismreference\'
-				AND fm.filemime IN (\''.$imagetypes.'\')
-			GROUP BY gi.item_id
-		) images ON images.item_id = organism_id
-		LEFT JOIN
-		(
-		SELECT gi.item_id, COUNT(*) AS videoscount
-		FROM {gallery_image} gi
-		LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
-			WHERE gi.item_type = \'organismreference\'
-				AND fm.filemime IN (\''.$videotypes.'\')
-			GROUP BY gi.item_id
-		) videos ON videos.item_id = organism_id
-		LEFT JOIN
-		(
-		SELECT gi.item_id, COUNT(*) AS soundscount
-		FROM {gallery_image} gi
-		LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
-			WHERE gi.item_type = \'organismreference\'
-				AND fm.filemime IN (\''.$soundtypes.'\')
-			GROUP BY gi.item_id
-		) sounds ON sounds.item_id = organism_id
-		LEFT JOIN
-		(
-		SELECT ofm.organism_id AS ofm_oid, COUNT(*) AS documentscount
-		FROM {organism_file_managed} ofm
-		GROUP BY ofm_oid
-		) documents ON ofm_oid = organism_id';
 	
 	/* Group */
 	$sql['id'] = 'organism_id';
