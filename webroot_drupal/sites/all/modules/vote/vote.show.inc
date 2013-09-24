@@ -316,8 +316,6 @@ function own_verification_form($form, &$form_state) {
 			'#default_value' => date('H:i', $timestamp),
 	);
 	
-	$form['#after_build'] = array('own_verification_form_add_js_tools');
-	
 	$form['group']['comment'] = array(
 			'#id' => 'comment',
 			'#title' => t('Comment your choice'),
@@ -329,6 +327,8 @@ function own_verification_form($form, &$form_state) {
 			'#type'   => 'markup',
 			'#markup' => '<input id="submitVerification" type="button" value="'.t('Submit verification').'" />'
 	);
+	
+	$form['#after_build'] = array('own_verification_form_add_js_tools');
 	
 	return $form;
 }
@@ -365,6 +365,10 @@ function own_verification_form_add_js_tools($form, &$form_state) {
 			      dateFormat: "dd.mm.yy"
     			});
 	 		});
+			
+			jQuery("#submitVerification").live("click", function() {
+				submitVerification();
+			});
 
 			jQuery( ".timepicker" ).live("focus", function() {
 	 			$(this).timepicker({

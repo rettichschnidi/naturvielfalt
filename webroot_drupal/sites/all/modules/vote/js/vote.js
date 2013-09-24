@@ -32,60 +32,64 @@ function cacheAllData(result) {
 	}
 }
 
+function submitVerification() {
+	$.ajax({
+		type: "POST",
+		url: "/vote/save",
+		success: function(result){
+			// scroll to the top of the page to display the next observation
+			$('html, body').animate({ scrollTop: 0 });
+			
+			var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
+			
+			if (result.name_lang == null) {
+				result.name_lang = Drupal.t("No translation available");
+			}
+			var myVote = {
+				comment: $('#comment').val(),
+				observation_id: observations[currentMainImageIndex].observation_id.toString(),
+				organism_id: result.id,
+				scientific_name: result.name_lat,
+				translated_name: result.name_lang,
+				user_id: generalInformation.current_user_id.toString(),
+				user_name: generalInformation.current_user_name,
+				vote_timestamp: Math.round((new Date()).getTime() / 1000).toString() 
+			};
+			
+			if(currentVerifications == null) {
+				currentVerifications = [myVote];
+			} else {
+				for(var i = 0; i < currentVerifications.length; i++) {
+					if(currentVerifications[i].user_id == generalInformation.current_user_id) {
+						currentVerifications.splice(i, 1);
+					}
+				}
+				currentVerifications.push(myVote);
+			}
+			
+			setVerificationsForObservation(observations[currentMainImageIndex].observation_id, currentVerifications);
+			
+			nextImage();
+		},
+		error: function(result) {
+			alert('fail');
+		},
+		data: {
+			observation_id: observations[currentMainImageIndex].observation_id,
+			organism_name: $('#organism_name').val(),
+			date: $('#date').val(),
+			time: $('#time').val(),
+			vote_comment: $('#comment').val()
+		}
+	});
+}
+
 /**
  * Initializes the submit verification button.
  */
 function initializeSubmitVerificationButton() {
 	$('#submitVerification').click(function() {
-		$.ajax({
-			type: "POST",
-			url: "/vote/save",
-			success: function(result){
-				// scroll to the top of the page to display the next observation
-				$('html, body').animate({ scrollTop: 0 });
-				
-				var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
-				
-				if (result.name_lang == null) {
-					result.name_lang = Drupal.t("No translation available");
-				}
-				var myVote = {
-					comment: $('#comment').val(),
-					observation_id: observations[currentMainImageIndex].observation_id.toString(),
-					organism_id: result.id,
-					scientific_name: result.name_lat,
-					translated_name: result.name_lang,
-					user_id: generalInformation.current_user_id.toString(),
-					user_name: generalInformation.current_user_name,
-					vote_timestamp: Math.round((new Date()).getTime() / 1000).toString() 
-				};
-				
-				if(currentVerifications == null) {
-					currentVerifications = [myVote];
-				} else {
-					for(var i = 0; i < currentVerifications.length; i++) {
-						if(currentVerifications[i].user_id == generalInformation.current_user_id) {
-							currentVerifications.splice(i, 1);
-						}
-					}
-					currentVerifications.push(myVote);
-				}
-				
-				setVerificationsForObservation(observations[currentMainImageIndex].observation_id, currentVerifications);
-				
-				nextImage();
-			},
-			error: function(result) {
-				alert('fail');
-			},
-			data: {
-				observation_id: observations[currentMainImageIndex].observation_id,
-				organism_name: $('#organism_name').val(),
-				date: $('#date').val(),
-				time: $('#time').val(),
-				vote_comment: $('#comment').val()
-			}
-		});
+		submitVerification();
 	});
 }
 
