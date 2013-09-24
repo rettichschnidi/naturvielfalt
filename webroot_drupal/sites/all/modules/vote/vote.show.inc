@@ -190,6 +190,19 @@ EOT;
 		'#height'                       => '300px'
 	);
 	
+	$render_array['rightDiv']['observation_attributes'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Details'),
+			'#weight' => 10,
+			'#collapsible' => true,
+			'#collapsed' => false
+	);
+	
+	$render_array['rightDiv']['observation_attributes']['table'] = array(
+		'#type'   => 'markup',
+		'#markup' => '<div id="commentTable"></div>'
+	);
+	
 	$render_array['leftDiv']['metaInfo'] = array(
 		'#id' => 'metaInfo',
 		'#type' => 'fieldset',

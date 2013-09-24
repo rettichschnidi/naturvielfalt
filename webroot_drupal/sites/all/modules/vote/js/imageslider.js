@@ -150,8 +150,25 @@ function initializeGoogleMap() {
  * Load detail information and draw the table.
  */
 function initializeDetailTable() {
+	
+	// initialize detail table
 	var info = observations[currentMainImageIndex].detail_information['#rows'];
 	var element = $('#detailTable');
+	
+	element.html('');
+	element.append('<table><tbody>');
+	for (var i = 0; i < info.length; i ++) {
+		if (i % 2 == 0) {
+			element.append('<tr class="odd"><th>' + info[i][0].data + '</th><td>' + info[i][1] + '</td></tr>');
+		} else {
+			element.append('<tr class="even"><th>' + info[i][0].data + '</th><td>' + info[i][1] + '</td></tr>');
+		}
+	}
+	element.append('</tbody></table>');
+	
+	// initialize comment table
+	info = observations[currentMainImageIndex].comment_information['#rows'];
+	element = $('#commentTable');
 	
 	element.html('');
 	element.append('<table><tbody>');
