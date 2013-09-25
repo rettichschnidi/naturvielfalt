@@ -273,11 +273,16 @@ jQuery(document).ready(function() {
 			$checkbox = $('<input type="checkbox" />');
 			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
 			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
-			$btnVerificationSelected = $('<input type="button" class="btnVerificationSelected" value="' + Drupal.t('Verify all') + '" />');
-			$batchDiv = $('<div class="batch-div" />')
-				.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnVerificationSelected)
+			if(voteModuleExits) $btnVerificationSelected = $('<input type="button" class="btnVerificationSelected" value="' + Drupal.t('Verify all') + '" />');
+			if(voteModuleExits) {
+				$batchDiv = $('<div class="batch-div" />')
+					.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnVerificationSelected)
+					.insertBefore($flexiDiv.find('.sDiv'));
+			} else {
+				$batchDiv = $('<div class="batch-div" />')
+				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
 				.insertBefore($flexiDiv.find('.sDiv'));
-			
+			}
 			$checkbox.click(function(event) {
 				observation.toggleSelectedRows(event, this.checked);
 			});
@@ -287,14 +292,16 @@ jQuery(document).ready(function() {
 			$btnExportSelected.click(function() {
 				observation.exportSelectedRows(tableId);
 			});
-			$btnVerificationSelected.click(function() {
-				observation.verificationSelectedRows(tableId);
-			});
+			if(voteModuleExits) {
+				$btnVerificationSelected.click(function() {
+					observation.verificationSelectedRows(tableId);
+				});
+			}
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
-			$flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
+			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
 		}
 	};
 	
@@ -427,12 +434,12 @@ jQuery(document).ready(function() {
 		if ($flexiDiv.find('input.gridSelect:checked').length == 0) {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
-			$flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
+			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').removeAttr('disabled');
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export selected'));
-			$flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify selected'));
+			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify selected'));
 		}
 		
 		// check if there exists an overlay with the given id

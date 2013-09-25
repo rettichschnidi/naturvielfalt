@@ -6,4 +6,3 @@ version = "7.x-current"
 dependencies[] = wysiwyg
 dependencies[] = commonstuff
 dependencies[] = gallery
-dependencies[] = vote

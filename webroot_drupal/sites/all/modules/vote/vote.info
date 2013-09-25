@@ -8,5 +8,5 @@ dependencies[] = locale
 dependencies[] = datatable
 dependencies[] = commonstuff
 dependencies[] = gallery
-dependencies[] = comment
 dependencies[] = observation
+dependencies[] = organism

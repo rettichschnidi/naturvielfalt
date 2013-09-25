@@ -75,7 +75,8 @@ function vote_menu() {
 			'access arguments' => array(
 					VOTE_ACCESS
 			),
-			'file' => 'vote.ajax.inc'
+			'file' => 'vote.ajax.inc',
+			'type' => MENU_LOCAL_TASK
 	);
 	
 	$items['vote/save'] = array(
@@ -85,7 +86,8 @@ function vote_menu() {
 			'access arguments' => array(
 					VOTE_WRITE
 			),
-			'file' => 'vote.ajax.inc'
+			'file' => 'vote.ajax.inc',
+			'type' => MENU_CALLBACK,
 	);
 
 	return $items;
