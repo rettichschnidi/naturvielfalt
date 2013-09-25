@@ -216,7 +216,7 @@ function prepareSlideShow() {
 	// load slideshow images for current main image
 	$('#slideshowImages').html('');
 	for (var j = 1; j < observations[currentMainImageIndex].observation_images.images.length; j ++) {
-		var currentPath = '/gallery/observation/' + observations[currentMainImageIndex].observation_id + '/thumb/' + observations[currentMainImageIndex].observation_images.images[j].id + '/fullsize';
+		var currentPath = '/gallery/observation/' + observations[currentMainImageIndex].observation_id + '/image/' + observations[currentMainImageIndex].observation_images.images[j].id;
 		$('#slideshowImages').append("<a class=\"lightbox\" href=\"" + currentPath + "\" style=\"display: none;\"><img src=\"" + currentPath + "\" alt=\"Image\" /><div class=\"caption\"><p class=\"captionText\"><span class=\"author\">&copy; " + observations[currentMainImageIndex].observation_images.images[0].author + ", " + observations[currentMainImageIndex].observation_images.images[0].location + "</span> <em>" + observations[currentMainImageIndex].detail_information["#rows"][0][1] + "</em></p></div></a>");
 	}
 }
