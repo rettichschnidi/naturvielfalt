@@ -107,6 +107,7 @@ function getVerifications() {
 				ON (v.user_id = u.uid)';
 
 	global $language;
+	global $user;
 	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
 	$sql['dbWhere'] = "ol.languages_language = '" . db_escape_field($langcode) . "'";
 	
