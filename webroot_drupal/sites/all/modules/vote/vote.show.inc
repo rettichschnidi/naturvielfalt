@@ -50,7 +50,7 @@ function vote_show_artgroup($artgroup_id = NULL) {
 		$result = observation_get_by_artgroup($artgroup_id);
 		if (count($result) <= 0 && $artgroup_id != 1) {
 			drupal_add_js('jQuery(document).ready(function(){
-				observation.setMessage(Drupal.t("No observations available in this artgroup. All observations are displayed. Please choose another one."), "error", 5000);
+				observation.setMessage(Drupal.t("No observations available in this artgroup. All observations are displayed. Please choose another one."), "warning", 0);
 			});', 'inline');
 		}
 		foreach ($result as $row) {
