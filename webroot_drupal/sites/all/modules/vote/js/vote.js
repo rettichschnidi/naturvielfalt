@@ -72,7 +72,7 @@ function submitVerification() {
 			nextImage();
 		},
 		error: function(result) {
-			alert('fail');
+			observation.setMessage(Drupal.t('Could not save the verification. Please try again.'), 'error', 5000);
 		},
 		data: {
 			observation_id: observations[currentMainImageIndex].observation_id,

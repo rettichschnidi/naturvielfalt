@@ -71,8 +71,7 @@ function initializeCache() {
 			initializeVotesFromOtherUsers();
 		},
 		error: function(result){
-			// TODO: do not use alerts
-			alert("Could not fetch the needed information from the server.");
+			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
 		}
 	});
 }

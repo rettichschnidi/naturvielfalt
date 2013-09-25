@@ -208,9 +208,7 @@ jQuery(document).ready(function() {
 		}, time);
 	
 		// scroll to message
-		$('body,html').animate({
-		scrollTop: observation.message.offset().top
-		});
+		$('html, body').animate({ scrollTop: 0 });
 	};
 	
 	/**

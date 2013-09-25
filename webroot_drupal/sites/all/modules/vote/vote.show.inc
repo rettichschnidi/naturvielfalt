@@ -56,6 +56,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
 	drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
+	drupal_add_js(drupal_get_path('module', 'observation') . '/js/observation.js');
 	
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
@@ -63,10 +64,18 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css.css');
 	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css');
 	
+	$render_array['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>',
+			'#weight' => 1	);
+	
 	$render_array['welcome'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Welcome'),
-		'#weight' => 1
+		'#weight' => 2
 	);
 	$render_array['welcome']['description'] = array(
 		'#type' => 'markup',
@@ -77,7 +86,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 			'#id' => 'artgroup',
 			'#type' => 'fieldset',
 			'#title' => t('Artgroup Settings'),
-			'#weight' => 2,
+			'#weight' => 3,
 			'#attributes' => array(
 					'class' => array(
 							'collapsible'
@@ -95,7 +104,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
  		'#attributes' => array(
 			'id' => 'artgroup_filter_id'
 		),
-		'#weight' => 3,
+		'#weight' => 4,
 		'#tree' => true,
 		'#value' => $artgroup_filter_id,
 		'#attributes' => array('onchange' => "document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
@@ -111,7 +120,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 	$render_array['imageslider'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Next images'),
-		'#weight' => 4
+		'#weight' => 5
 	);
 	$render_array['imageslider']['images'] = array(
 		'#type' => 'markup',
@@ -148,7 +157,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 		'#id' => 'mainImageFieldset',
 		'#type' => 'fieldset',
 		'#title' => t('Current image'),
-		'#weight' => 5
+		'#weight' => 6
 	);
 	
 	$proofImageText = t('Proof image');
@@ -176,7 +185,7 @@ EOT;
 		'#id' => 'googleMapsFieldset',
 		'#type' => 'fieldset',
 		'#title' => t('Map'),
-		'#weight' => 6
+		'#weight' => 7
 	);
 	
 	$render_array['rightDiv']['maps']['map'] = array(
