@@ -26,8 +26,8 @@ function vote_enable() {
 	$sql = 'SELECT		o.id AS observation_id,
 						o.organism_id AS organism_id,
 						o.users_uid AS user_id
-			FROM		observation o
-			WHERE		(SELECT COUNT(1) FROM vote v WHERE o.id = v.observation_id AND o.users_uid = v.user_id) = 0
+			FROM		{observation} o
+			WHERE		(SELECT COUNT(1) FROM {vote} v WHERE o.id = v.observation_id AND o.users_uid = v.user_id) = 0
 						AND o.organism_id != -1';
 	$observations = db_query($sql)->fetchAll();
 	
@@ -53,7 +53,7 @@ function vote_disable() {
  * Remove all votes where no related observations exist.
  */
 function remove_zombie_votes() {
-	$sql = 'DELETE FROM	vote v
-			WHERE		(SELECT COUNT(1) FROM observation o WHERE v.observation_id = o.id) = 0';
+	$sql = 'DELETE FROM	{vote} v
+			WHERE		(SELECT COUNT(1) FROM {observation} o WHERE v.observation_id = o.id) = 0';
 	db_query($sql)->execute();
 }
