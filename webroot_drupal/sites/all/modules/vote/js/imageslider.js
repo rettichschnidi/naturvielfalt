@@ -124,6 +124,19 @@ function loadImagesFromCache() {
 		
 		currentImageHolders[i].css({ width: 190, opacity: 1 });
 	}
+	
+	// hide next/previous button if there are not enough images to switch
+	if (observations.length <= currentImageHolders.length) {
+		$('.imageSliderNavigation').hide();
+		for (var i = observations.length - 1; i < currentImageHolders.length; i ++) {
+			currentImageHolders[i].hide();
+		}
+	} else {
+		$('.imageSliderNavigation').show();
+		for (var i = observations.length - 1; i < currentImageHolders.length; i ++) {
+			currentImageHolders[i].show();
+		}
+	}
 }
 
 /**
