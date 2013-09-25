@@ -43,7 +43,7 @@ function initializeImages() {
 function initializeCache() {
 	$.ajax({
 		url: "/vote/getdata/json",
-		success: function(result){
+		success: function(result) {
 			// cache all fetched database data
 			cacheAllData(result);
 			
@@ -70,7 +70,7 @@ function initializeCache() {
 			// load suggestions from other users
 			initializeVotesFromOtherUsers();
 		},
-		error: function(result){
+		error: function(result) {
 			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
 		}
 	});

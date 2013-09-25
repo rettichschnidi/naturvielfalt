@@ -1,6 +1,20 @@
 <?php
-
 module_load_include('inc', 'observation');
+
+drupal_add_js('misc/form.js');
+drupal_add_js('misc/collapse.js');
+drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
+drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
+drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
+drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
+drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
+drupal_add_js(drupal_get_path('module', 'observation') . '/js/observation.js');
+
+drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
+drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
+drupal_add_css(drupal_get_path('module', 'vote') . '/css/imageslider.css');
+drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css');
+drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css');
 
 function vote_show_observation($observation_ids = NULL) {
 	$vote_observations_filter = array();
@@ -31,12 +45,13 @@ function vote_show_organism($organism_id = NULL) {
 
 function vote_show_artgroup($artgroup_id = NULL) {
 	$vote_observations_filter = array();
-	$showErrorMessage = "";
 	
 	if ($artgroup_id != null) {
 		$result = observation_get_by_artgroup($artgroup_id);
 		if (count($result) <= 0 && $artgroup_id != 1) {
-			$showErrorMessage = t("No observations available in this artgroup. All observations are displayed. Please choose another one.");
+			drupal_add_js('jQuery(document).ready(function(){
+				observation.setMessage(Drupal.t("No observations available in this artgroup. All observations are displayed. Please choose another one."), "error", 5000);
+			});', 'inline');
 		}
 		foreach ($result as $row) {
 			$vote_observations_filter[] = $row->id;
@@ -45,25 +60,10 @@ function vote_show_artgroup($artgroup_id = NULL) {
 	
 	$_SESSION["vote_observations_filter"] = $vote_observations_filter;
 	
-	return vote_show_overview($artgroup_id, $showErrorMessage);
+	return vote_show_overview($artgroup_id);
 }
 
-function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
-	drupal_add_js('misc/form.js');
-	drupal_add_js('misc/collapse.js');
-	drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
-	drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
-	drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
-	drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
-	drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
-	drupal_add_js(drupal_get_path('module', 'observation') . '/js/observation.js');
-	
-	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
-	drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
-	drupal_add_css(drupal_get_path('module', 'vote') . '/css/imageslider.css');
-	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css');
-	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css');
-	
+function vote_show_overview($artgroup_id = 0) {
 	$render_array['message'] = array(
 			'#type'   => 'markup',
 			'#markup' => '
@@ -109,13 +109,6 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 		'#value' => $artgroup_filter_id,
 		'#attributes' => array('onchange' => "document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
 	);
-	
-	if($showErrorMessage != null) {
-		$render_array['artgroup']['error'] = array(
-			'#type' => 'markup',
-			'#markup' => '<span class="errorMessage">' . $showErrorMessage . '</span>'
-		);
-	}
 	
 	$render_array['imageslider'] = array(
 		'#type' => 'fieldset',
