@@ -80,15 +80,13 @@ function initializeCache() {
  * Initializes the light box.
  */
 function initLightBox() {
-	
-	// TODO: add description etc. to the images in the light box
 	var galleryLightboxSettings = {
 		captionSelector : ".caption",
 		captionAttr : false,
 		captionHTML : true,
 	};
 	
-	$('a.lightbox').lightBox();
+	$('a.lightbox').lightBox(galleryLightboxSettings);
 }
 
 /**
@@ -200,12 +198,13 @@ function finishedAllAnimations() {
 function prepareSlideShow() {
 	// change the ID of the current image onclick handler
 	$('#mainImageLink').attr("href", observations[currentMainImageIndex].fullsize_image_path);
+	$('.caption').html('<p class="captionText"><span class="author">&copy; ' + observations[currentMainImageIndex].observation_images.images[0].author + ', ' + observations[currentMainImageIndex].observation_images.images[0].location + '</span> <em>' + observations[currentMainImageIndex].detail_information["#rows"][0][1] + '</em></p>');
 	
 	// load slideshow images for current main image
 	$('#slideshowImages').html('');
 	for (var j = 1; j < observations[currentMainImageIndex].observation_images.images.length; j ++) {
 		var currentPath = '/gallery/observation/' + observations[currentMainImageIndex].observation_id + '/thumb/' + observations[currentMainImageIndex].observation_images.images[j].id + '/fullsize';
-		$('#slideshowImages').append("<a class=\"lightbox\" href=\"" + currentPath + "\" style=\"display: none;\"><img src=\"" + currentPath + "\" alt=\"Image\" /></a>");
+		$('#slideshowImages').append("<a class=\"lightbox\" href=\"" + currentPath + "\" style=\"display: none;\"><img src=\"" + currentPath + "\" alt=\"Image\" /><div class=\"caption\"><p class=\"captionText\"><span class=\"author\">&copy; " + observations[currentMainImageIndex].observation_images.images[0].author + ", " + observations[currentMainImageIndex].observation_images.images[0].location + "</span> <em>" + observations[currentMainImageIndex].detail_information["#rows"][0][1] + "</em></p></div></a>");
 	}
 }
 

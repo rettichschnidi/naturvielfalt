@@ -61,7 +61,7 @@ function vote_show_overview($artgroup_id = 0, $showErrorMessage = null) {
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/vote.css');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/selectbox.css');
 	drupal_add_css(drupal_get_path('module', 'vote') . '/css/imageslider.css');
-	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css.css');
+	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css');
 	drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css');
 	
 	$render_array['message'] = array(
@@ -177,7 +177,10 @@ EOT;
 	$render_array['leftDiv']['mainimage']['images'] = array(
 		'#type' => 'markup',
 		'#markup' => '<div id="mainImageContainer">
-			<a class="lightbox" id="mainImageLink" href="/' . drupal_get_path('module', 'vote') . '/img/loading.gif"><img src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" /></a>'
+			<a class="lightbox" id="mainImageLink" href="/' . drupal_get_path('module', 'vote') . '/img/loading.gif">
+			<img src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" id="mainImage" alt="Main image" />
+			<div class="caption"></div>
+			</a>'
 		. $result . '</div><div id="slideshowImages"></div>'
 	);
 	
