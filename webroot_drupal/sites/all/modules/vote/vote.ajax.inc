@@ -53,7 +53,8 @@ function getObservations() {
 			.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
 			.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 			. $whereClause
-			.' ORDER BY current_user_votes, votes, date DESC';
+			.' ORDER BY current_user_votes, votes, date DESC'
+			.' LIMIT 10';
 	
 	$output = db_query($sql)->fetchAll();
 	
@@ -85,51 +86,41 @@ function getObservations() {
 }
 
 function getVerifications() {
-	$sql['dbColumns'] = array(
-			'v.vote_id AS vote_id',
-			'v.observation_id AS observation_id',
-			'o.id AS organism_id',
-			'o.scientific_name AS scientific_name',
-			'ol.name AS translated_name',
-			'v.vote_timestamp AS vote_timestamp',
-			'v.vote_comment AS comment',
-			'v.user_id AS user_id',
-			'u.name AS user_name'
-	);
-	
-	$sql['dbTable'] = '{vote} v';
-	
-	$sql['dbJoins'] = 'LEFT JOIN {organism} o
-				ON (v.organism_id = o.id)
-			LEFT JOIN {organism_lang} ol
-				ON (v.organism_id = ol.organism_id)
-			LEFT JOIN {users} u
-				ON (v.user_id = u.uid)';
-
 	global $language;
 	global $user;
+	
 	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
-	$sql['dbWhere'] = "ol.languages_language = '" . db_escape_field($langcode) . "'";
 	
-	$sql['id'] = 'vote_id';
+	$sql =	'SELECT v.vote_id AS vote_id,'
+			.' v.observation_id AS observation_id,'
+			.' o.id AS organism_id,'
+			.' o.scientific_name AS scientific_name,'
+			.' ol.name AS translated_name,'
+			.' v.vote_timestamp AS vote_timestamp,'
+			.' v.vote_comment AS comment,'
+			.' v.user_id AS user_id,'
+			.' u.name AS user_name'
+			.' FROM {vote} v'
+			.' LEFT JOIN {organism} o ON (v.organism_id = o.id)'
+			.' LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id AND ol.languages_language = \'' . db_escape_field($langcode) . '\''
+			.' LEFT JOIN {users} u ON (v.user_id = u.uid)'
+			.' LIMIT 10';
 	
-	$arguments = array();
-	$output = datatable_dbRequest($sql, $arguments);
+	$output = db_query($sql)->fetchAll();
 	
-	$returnArray;
 	$i = 0;
-	foreach ($output['rows'] as &$row) {
-		$returnArray[$i]['observation_id'] = $row['cell']['observation_id'];
-		$returnArray[$i]['organism_id'] = $row['cell']['organism_id'];
-		$returnArray[$i]['scientific_name'] = $row['cell']['scientific_name'];
-		$returnArray[$i]['translated_name'] = $row['cell']['translated_name'];
-		$returnArray[$i]['vote_timestamp'] = $row['cell']['vote_timestamp'];
-		$returnArray[$i]['comment'] = $row['cell']['comment'];
-		$returnArray[$i]['user_id'] = $row['cell']['user_id'];
-		$returnArray[$i]['user_name'] = $row['cell']['user_name'];
-		
+	foreach ($output as &$row) {
+		$returnArray[$i]['observation_id'] = $row->observation_id;
+		$returnArray[$i]['organism_id'] = $row->organism_id;
+		$returnArray[$i]['scientific_name'] = $row->scientific_name;
+		$returnArray[$i]['translated_name'] = $row->translated_name;
+		$returnArray[$i]['vote_timestamp'] = $row->vote_timestamp;
+		$returnArray[$i]['comment'] = $row->comment;
+		$returnArray[$i]['user_id'] = $row->user_id;
+		$returnArray[$i]['user_name'] = $row->user_name;
 		$i++;
 	}
+	
 	return $returnArray;
 }
 
