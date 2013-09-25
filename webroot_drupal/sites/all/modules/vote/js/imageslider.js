@@ -95,7 +95,6 @@ function initLightBox() {
  * Loads the images from the cache using the imageIndex variable as index.
  */
 function loadImagesFromCache() {
-	// FIXME: when not enough images are available this should be handled
 	var numberToCount;
 	if(observations.length < currentImageHolders.length) {
 		numberToCount = observations.length - 1;
