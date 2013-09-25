@@ -97,13 +97,13 @@ function getVerifications() {
 			'u.name AS user_name'
 	);
 	
-	$sql['dbTable'] = 'vote v';
+	$sql['dbTable'] = '{vote} v';
 	
-	$sql['dbJoins'] = 'LEFT JOIN organism o
+	$sql['dbJoins'] = 'LEFT JOIN {organism} o
 				ON (v.organism_id = o.id)
-			LEFT JOIN organism_lang ol
+			LEFT JOIN {organism_lang} ol
 				ON (v.organism_id = ol.organism_id)
-			LEFT JOIN users u
+			LEFT JOIN {users} u
 				ON (v.user_id = u.uid)';
 
 	global $language;
