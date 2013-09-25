@@ -29,12 +29,38 @@ function vote_menu() {
 			'file' => 'vote.show.inc',
 	);
 	
-	$items['vote/%'] = array(
+	$items['vote/observation/%'] = array(
 			'title' => 'Who knows it?',
 			'description' => 'Voting page for experts',
-			'page callback' => 'vote_show_overview',
+			'page callback' => 'vote_show_observation',
 			'page arguments' => array(
-					1
+					2
+			),
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.show.inc',
+	);
+	
+	$items['vote/organism/%'] = array(
+			'title' => 'Who knows it?',
+			'description' => 'Voting page for experts',
+			'page callback' => 'vote_show_organism',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.show.inc',
+	);
+	
+	$items['vote/artgroup/%'] = array(
+			'title' => 'Who knows it?',
+			'description' => 'Voting page for experts',
+			'page callback' => 'vote_show_artgroup',
+			'page arguments' => array(
+					2
 			),
 			'access arguments' => array(
 					VOTE_ACCESS
@@ -50,7 +76,7 @@ function vote_menu() {
 					VOTE_ACCESS
 			),
 			'file' => 'vote.ajax.inc',
-			'type' => MENU_CALLBACK,
+			'type' => MENU_LOCAL_TASK
 	);
 	
 	$items['vote/save'] = array(
@@ -61,6 +87,7 @@ function vote_menu() {
 					VOTE_WRITE
 			),
 			'file' => 'vote.ajax.inc',
+			'type' => MENU_CALLBACK,
 	);
 
 	return $items;

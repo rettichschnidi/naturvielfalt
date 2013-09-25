@@ -13,6 +13,14 @@ define('CREATE_OBSERVATION', 'create observation');
 define('UNKNOWN_ARTGROUP', 1000);
 define('UNKNOWN_SPECIES', -1);
 
+function observation_init() {
+	if (module_exists("vote")) {
+		drupal_add_js('var voteModuleExits = true;', 'inline');
+	} else {
+		drupal_add_js('var voteModuleExits = false;', 'inline');
+	}
+}
+
 /**
  * Implements hook_menu()
  *
