@@ -14,21 +14,18 @@ module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
 function fetch_observation_data() {
-	$values = $_POST;
-	$offset = $values["offset"];
-	$limit = $values["limit"];
 	global $user;
 	
 	$mainArray = array();
 	$mainArray['general']['current_user_id'] = $user->uid;
 	$mainArray['general']['current_user_name'] = $user->name;
-	$mainArray['observations'] = getObservations($limit, $offset);
-	$mainArray['verifications'] = getVerifications($limit, $offset);
+	$mainArray['observations'] = getObservations();
+	$mainArray['verifications'] = getVerifications();
 	
 	return drupal_json_output($mainArray);
 }
 
-function getObservations($limit = 30, $offset = 0) {
+function getObservations() {
 	global $user;
 	global $language;
 	
@@ -57,7 +54,7 @@ function getObservations($limit = 30, $offset = 0) {
 			.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 			. $whereClause
 			.' ORDER BY current_user_votes, votes, date DESC'
-			.' LIMIT ' . $limit . ' OFFSET ' . ($offset * $limit);
+			.' LIMIT 10';
 	
 	$output = db_query($sql)->fetchAll();
 	
@@ -88,7 +85,7 @@ function getObservations($limit = 30, $offset = 0) {
 	return $observationsArray;
 }
 
-function getVerifications($limit = 30, $offset = 0) {
+function getVerifications() {
 	global $language;
 	global $user;
 	
@@ -107,7 +104,7 @@ function getVerifications($limit = 30, $offset = 0) {
 			.' LEFT JOIN {organism} o ON (v.organism_id = o.id)'
 			.' LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id AND ol.languages_language = \'' . db_escape_field($langcode) . '\''
 			.' LEFT JOIN {users} u ON (v.user_id = u.uid)'
-			.' LIMIT ' . $limit . ' OFFSET ' . ($offset * $limit);
+			.' LIMIT 10';
 	
 	$output = db_query($sql)->fetchAll();
 	
