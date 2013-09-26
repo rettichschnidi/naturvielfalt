@@ -19,15 +19,15 @@ function cacheAllData(result) {
 	
 	// cache observation information
 	if(result.observations != null) {
-		for (var i = 0; i < result.observations.length; i++) {
-			observations[i] = result.observations[i];
+		for (var i = 0; i < result.observations.length; i ++) {
+			observations.push(result.observations[i]);
 		}
 	}
 	
 	// cache verification information
 	if(result.verifications != null) {
 		for (var i = 0; i < result.verifications.length; i ++) {
-			verifications[i] = result.verifications[i];
+			verifications.push(result.verifications[i]);
 		}
 	}
 }
