@@ -9,8 +9,6 @@ var currentMainImageIndex;
 var stepsToMove;
 var imageIndex = 0;
 var marker;
-var offset = 0;
-var limit = 30;
 
 /**
  * Initializes the image slider.
@@ -44,14 +42,10 @@ function initializeImages() {
  */
 function initializeCache() {
 	$.ajax({
-		type: "POST",
 		url: "/vote/getdata/json",
 		success: function(result) {
 			// cache all fetched database data
 			cacheAllData(result);
-			
-			console.log("offset: " + offset);
-			offset++;
 			
 			// load the first image sources from the cache
 			mainImageHolder.attr('src', observations[imageIndex].fullsize_image_path);
@@ -78,10 +72,6 @@ function initializeCache() {
 		},
 		error: function(result) {
 			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
-		},
-		data: {
-			offset: offset,
-			limit: limit
 		}
 	});
 }
@@ -242,7 +232,7 @@ function moveImages(steps, replaceMainImage) {
 	if (!finishedAllAnimations()) {
 		return;
 	}
-	
+
 	stepsToMove = steps;
 	
 	animateMainImage(replaceMainImage);
@@ -355,34 +345,6 @@ function animateCurrentImages(replaceMainImage) {
 				}
 			}
 		}
-	}
-	console.log("--------------------------------------------------------------");
-	console.log("imageIndex: " + imageIndex);
-	console.log("limit: " + limit);
-	console.log("offset: " + offset);
-	console.log("currentImageHolders.length: " + currentImageHolders.length);
-	console.log("if (imageIndex > (limit * offset) - (currentImageHolders.length * 2))");
-	console.log(imageIndex + " > " + ((limit * offset) - (currentImageHolders.length * 2)));
-	console.log("--------------------------------------------------------------");
-	if (imageIndex > (limit * offset) - (currentImageHolders.length * 2)) {
-		$.ajax({
-			type: "POST",
-			url: "/vote/getdata/json",
-			success: function(result) {
-				// cache all fetched database data
-				cacheAllData(result);
-				
-				console.log("offset: " + offset);
-				offset++;
-			},
-			error: function(result) {
-				observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
-			},
-			data: {
-				offset: offset,
-				limit: limit
-			}
-		});
 	}
 }
 
