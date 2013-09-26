@@ -356,7 +356,14 @@ function animateCurrentImages(replaceMainImage) {
 			}
 		}
 	}
-	
+	console.log("--------------------------------------------------------------");
+	console.log("imageIndex: " + imageIndex);
+	console.log("limit: " + limit);
+	console.log("offset: " + offset);
+	console.log("currentImageHolders.length: " + currentImageHolders.length);
+	console.log("if (imageIndex > (limit * offset) - (currentImageHolders.length * 2))");
+	console.log(imageIndex + " > " + ((limit * offset) - (currentImageHolders.length * 2)));
+	console.log("--------------------------------------------------------------");
 	if (imageIndex > (limit * offset) - (currentImageHolders.length * 2)) {
 		$.ajax({
 			type: "POST",
