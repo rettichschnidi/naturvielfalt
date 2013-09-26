@@ -196,6 +196,7 @@ EOT;
 	);
 	
 	$render_array['rightDiv']['observation_attributes'] = array(
+			'#id' => 'observation_attributes',
 			'#type' => 'fieldset',
 			'#title' => t('Details'),
 			'#weight' => 10,
