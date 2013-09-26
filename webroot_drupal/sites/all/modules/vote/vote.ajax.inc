@@ -53,8 +53,7 @@ function getObservations() {
 			.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
 			.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 			. $whereClause
-			.' ORDER BY current_user_votes, votes, date DESC'
-			.' LIMIT 10';
+			.' ORDER BY current_user_votes, votes, date DESC';
 	
 	$output = db_query($sql)->fetchAll();
 	
@@ -103,8 +102,7 @@ function getVerifications() {
 			.' FROM {vote} v'
 			.' LEFT JOIN {organism} o ON (v.organism_id = o.id)'
 			.' LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id AND ol.languages_language = \'' . db_escape_field($langcode) . '\''
-			.' LEFT JOIN {users} u ON (v.user_id = u.uid)'
-			.' LIMIT 10';
+			.' LEFT JOIN {users} u ON (v.user_id = u.uid)';
 	
 	$output = db_query($sql)->fetchAll();
 	
