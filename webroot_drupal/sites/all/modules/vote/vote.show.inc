@@ -7,6 +7,7 @@ drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
 drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
+drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.waitforimages.min.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
 drupal_add_js(drupal_get_path('module', 'observation') . '/js/observation.js');
 

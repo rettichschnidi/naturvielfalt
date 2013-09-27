@@ -10,6 +10,8 @@ var stepsToMove;
 var imageIndex = 0;
 var marker;
 
+var navigationDisabled = true;
+
 /**
  * Initializes the image slider.
  */
@@ -69,6 +71,10 @@ function initializeCache() {
 			
 			// load suggestions from other users
 			initializeVotesFromOtherUsers();
+			
+			$('#imagesContainer').waitForImages(function() {
+				navigationDisabled = false;
+			});
 		},
 		error: function(result) {
 			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
@@ -104,17 +110,14 @@ function loadImagesFromCache() {
 		// load previous thumbnail and fullsize images into cache
 		var cleanIndex = checkIndex(imageIndex - numberToCount + i);
 		previousImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
 		currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + numberToCount + i);
 		futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
@@ -199,13 +202,6 @@ function nextImage() {
 }
 
 /**
-	Checks if currently there are animations in progress and returns true if so.
-*/
-function finishedAllAnimations() {
-	return $(".nextImages:animated, #mainImage:animated, #mainImageFieldset:animated, #mainImageContainer:animated").length == 0;
-}
-
-/**
  * Prepares the images for the lightbox pop-up slideshow.
  */
 function prepareSlideShow() {
@@ -229,11 +225,13 @@ function prepareSlideShow() {
  * @param replaceMainImage if the main image should be replaced or not
  */
 function moveImages(steps, replaceMainImage) {
-	if (!finishedAllAnimations()) {
+	if (navigationDisabled) {
 		return;
 	}
 
 	stepsToMove = steps;
+	
+	navigationDisabled = true;
 	
 	animateMainImage(replaceMainImage);
 }
@@ -316,15 +314,20 @@ function animateCurrentImages(replaceMainImage) {
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
 		if (positive) {
 			if (i < futureImageHolders.length) {
-				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 500);
+				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 500, function() {
+					navigationDisabled = false;
+				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
 					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
+						navigationDisabled = false;
 					});
 				} else {
-					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500);
+					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
+						navigationDisabled = false;
+					});
 				}
 			}
 		} else {
@@ -333,15 +336,19 @@ function animateCurrentImages(replaceMainImage) {
 				if (cleanIndex < 0) {
 					cleanIndex = 0;
 				}
-				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 500);
+				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 500, function() {
+					navigationDisabled = false;
+				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
 					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
+						navigationDisabled = false;
 					});
 				} else {
 					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
+					navigationDisabled = false;
 				}
 			}
 		}

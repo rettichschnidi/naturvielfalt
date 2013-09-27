@@ -8,6 +8,8 @@ var verifications = new Array();
  * Executed after page was loaded.
  */
 $(document).ready(function() {
+	navigationDisabled = true;
+	
 	initializeImageSlider();
 	initializeSubmitVerificationButton();
 });
