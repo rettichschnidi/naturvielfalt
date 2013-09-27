@@ -20,9 +20,9 @@ function initializeSelectBox() {
 	
 	// define comment box animation on mouse click
 	$(".entry").toggle(function() {
-		$(this).stop(true).animate({ height: $(this).find(".entryCommentsContainer").outerHeight() + $(this).height() }, 500);
+		$(this).stop(true, true).animate({ height: $(this).find(".entryCommentsContainer").outerHeight() + $(this).height() }, 500);
 	}, function(){
-		$(this).stop(true).animate({ height: $(this).height() - $(this).find(".entryCommentsContainer").outerHeight() }, 500);
+		$(this).stop(true, true).animate({ height: $(this).height() - $(this).find(".entryCommentsContainer").outerHeight() }, 500);
 	});
 	
 	// set the background color of the entries
