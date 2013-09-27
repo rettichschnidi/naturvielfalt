@@ -445,7 +445,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 				),
 				l(
 						check_plain($observationdata['observation']['observer']),
-						base_path() . "user/" . $observationdata['observation']['users_uid'],
+						base_path() . "user/" . $observationdata['observation']['users_uid'] . "/contact",
 						array(
 								'external' => true
 						))
