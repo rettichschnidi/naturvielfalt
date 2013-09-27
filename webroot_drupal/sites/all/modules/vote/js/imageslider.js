@@ -16,7 +16,6 @@ var marker;
 function initializeImageSlider() {
 	initializeImages();
 	initializeCache();
-	initializeLoadingGifs();
 }
 
 /**
@@ -36,19 +35,6 @@ function initializeImages() {
 	futureImageHolders[1] = $('#futureImage02');
 	futureImageHolders[2] = $('#futureImage03');
 	futureImageHolders[3] = $('#futureImage04');
-}
-
-function initializeLoadingGifs() {
-	for(var i = 0; i < currentImageHolders.length; i++) {
-		$("body").append("<img src='/sites/all/modules/vote/img/loading.gif' id='loadingGif" + (i + 1) + "' style='position: absolute; z-index: 100; background-color: #FFF; display: none;' />");
-		// make it better
-		$("#loadingGif" + i).css({
-			left: currentImageHolders[i].offset().left + 16,
-			top: currentImageHolders[i].offset().top,
-			width: currentImageHolders[i].width(),
-			height: currentImageHolders[i].height()
-		});
-	}
 }
 
 /**
@@ -118,15 +104,17 @@ function loadImagesFromCache() {
 		// load previous thumbnail and fullsize images into cache
 		var cleanIndex = checkIndex(imageIndex - numberToCount + i);
 		previousImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
 		currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		$("#loadingGif" + i).css("display", "block");
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + numberToCount + i);
 		futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
@@ -244,11 +232,7 @@ function moveImages(steps, replaceMainImage) {
 	if (!finishedAllAnimations()) {
 		return;
 	}
-	
-	$('#artgroup_id').val(0);
-	$('#organism_name').val("");
-	$('#comment').val("");
-	
+
 	stepsToMove = steps;
 	
 	animateMainImage(replaceMainImage);
