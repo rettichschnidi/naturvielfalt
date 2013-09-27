@@ -110,14 +110,17 @@ function loadImagesFromCache() {
 		// load previous thumbnail and fullsize images into cache
 		var cleanIndex = checkIndex(imageIndex - numberToCount + i);
 		previousImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
+
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
 		currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
+
 		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + numberToCount + i);
 		futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 		
 		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
