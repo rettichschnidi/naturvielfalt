@@ -7,6 +7,7 @@ drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
 drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
+drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.waitforimages.min.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
 drupal_add_js(drupal_get_path('module', 'observation') . '/js/observation.js');
 
@@ -123,10 +124,10 @@ function vote_show_overview($artgroup_id = 0) {
 			<img id="previousImage02" class="imageSliderImage" style="width: 0px;" />
 			<img id="previousImage03" class="imageSliderImage" style="width: 0px;" />
 			<img id="previousImage04" class="imageSliderImage" style="width: 0px;" />
-			<img id="currentImage01" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 01" onclick="moveImages(1, true);" onload="$(\'#loadingGif1\').css(\'display\', \'none\');" />
-			<img id="currentImage02" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 02" onclick="moveImages(2, true);" onload="$(\'#loadingGif2\').css(\'display\', \'none\');" />
-			<img id="currentImage03" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 03" onclick="moveImages(3, true);" onload="$(\'#loadingGif3\').css(\'display\', \'none\');" />
-			<img id="currentImage04" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 04" onclick="moveImages(4, true);" onload="$(\'#loadingGif4\').css(\'display\', \'none\');" />
+			<img id="currentImage01" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 01" onclick="moveImages(1, true);" />
+			<img id="currentImage02" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 02" onclick="moveImages(2, true);" />
+			<img id="currentImage03" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 03" onclick="moveImages(3, true);" />
+			<img id="currentImage04" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 04" onclick="moveImages(4, true);" />
 			<img id="futureImage01" class="imageSliderImage" style="width: 0px;" />
 			<img id="futureImage02" class="imageSliderImage" style="width: 0px;" />
 			<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
