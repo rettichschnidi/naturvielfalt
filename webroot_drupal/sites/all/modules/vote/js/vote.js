@@ -33,55 +33,59 @@ function cacheAllData(result) {
 }
 
 function submitVerification() {
-	$.ajax({
-		type: "POST",
-		url: "/vote/save",
-		success: function(result){
-			// scroll to the top of the page to display the next observation
-			$('html, body').animate({ scrollTop: 0 });
-			
-			var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
-			
-			if (result.name_lang == null) {
-				result.name_lang = Drupal.t("No translation available");
-			}
-			var myVote = {
-				comment: $('#comment').val(),
-				observation_id: observations[currentMainImageIndex].observation_id.toString(),
-				organism_id: result.id,
-				scientific_name: result.name_lat,
-				translated_name: result.name_lang,
-				user_id: generalInformation.current_user_id.toString(),
-				user_name: generalInformation.current_user_name,
-				vote_timestamp: Math.round((new Date()).getTime() / 1000).toString() 
-			};
-			
-			if(currentVerifications == null) {
-				currentVerifications = [myVote];
-			} else {
-				for(var i = 0; i < currentVerifications.length; i++) {
-					if(currentVerifications[i].user_id == generalInformation.current_user_id) {
-						currentVerifications.splice(i, 1);
-					}
+	if($('#organism_name').val() == "") {
+		observation.setMessage(Drupal.t('Please choose an organism for the verification.'), 'warning', 5000);
+	} else {
+		$.ajax({
+			type: "POST",
+			url: "/vote/save",
+			success: function(result){
+				// scroll to the top of the page to display the next observation
+				$('html, body').animate({ scrollTop: 0 });
+				
+				var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
+				
+				if (result.name_lang == null) {
+					result.name_lang = Drupal.t("No translation available");
 				}
-				currentVerifications.push(myVote);
+				var myVote = {
+					comment: $('#comment').val(),
+					observation_id: observations[currentMainImageIndex].observation_id.toString(),
+					organism_id: result.id,
+					scientific_name: result.name_lat,
+					translated_name: result.name_lang,
+					user_id: generalInformation.current_user_id.toString(),
+					user_name: generalInformation.current_user_name,
+					vote_timestamp: Math.round((new Date()).getTime() / 1000).toString() 
+				};
+				
+				if(currentVerifications == null) {
+					currentVerifications = [myVote];
+				} else {
+					for(var i = 0; i < currentVerifications.length; i++) {
+						if(currentVerifications[i].user_id == generalInformation.current_user_id) {
+							currentVerifications.splice(i, 1);
+						}
+					}
+					currentVerifications.push(myVote);
+				}
+				
+				setVerificationsForObservation(observations[currentMainImageIndex].observation_id, currentVerifications);
+				
+				nextImage();
+			},
+			error: function(result) {
+				observation.setMessage(Drupal.t('Could not save the verification. Please try again.'), 'error', 5000);
+			},
+			data: {
+				observation_id: observations[currentMainImageIndex].observation_id,
+				organism_name: $('#organism_name').val(),
+				date: $('#date').val(),
+				time: $('#time').val(),
+				vote_comment: $('#comment').val()
 			}
-			
-			setVerificationsForObservation(observations[currentMainImageIndex].observation_id, currentVerifications);
-			
-			nextImage();
-		},
-		error: function(result) {
-			observation.setMessage(Drupal.t('Could not save the verification. Please try again.'), 'error', 5000);
-		},
-		data: {
-			observation_id: observations[currentMainImageIndex].observation_id,
-			organism_name: $('#organism_name').val(),
-			date: $('#date').val(),
-			time: $('#time').val(),
-			vote_comment: $('#comment').val()
-		}
-	});
+		});
+	}
 }
 
 /**
@@ -178,7 +182,7 @@ function initializeVotesFromOtherUsers() {
 			
 			for (var a = 0; a < verificationsPerOrganism[i].verifications.length; a++) {
 				htmlString +=	'<div class="entryComments">'
-									  + '<p class="header"><b>' + verificationsPerOrganism[i].verifications[a].user_name + '</b> am ' + new Date(verificationsPerOrganism[i].verifications[a].vote_timestamp * 1000).format("d.m.Y H:i") + '';
+									  + '<p class="header"><b><a href="javascript:void();" onclick="document.location = \'/user/' + verificationsPerOrganism[i].verifications[a].user_id + '\'">' + verificationsPerOrganism[i].verifications[a].user_name + '</a></b> am ' + new Date(verificationsPerOrganism[i].verifications[a].vote_timestamp * 1000).format("d.m.Y H:i") + '';
 				if(verificationsPerOrganism[i].verifications[a].comment != "" && verificationsPerOrganism[i].verifications[a].comment != null) {
 					htmlString +=		':</p><p>' + verificationsPerOrganism[i].verifications[a].comment + '</p>';
 				} else {
