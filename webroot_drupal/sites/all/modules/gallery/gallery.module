@@ -1120,8 +1120,6 @@ function gallery_image_save($image) {
  */
 function gallery_image_delete($image) {
 	$file = (object) $image;
-	if (!file_delete($file, true))
-		return false;
 	$transaction = db_transaction();
 	try {
 		db_delete('gallery_image')->condition('id', $image['id'])
@@ -1134,6 +1132,8 @@ function gallery_image_delete($image) {
 			->execute();
 		db_delete('file_managed')->condition('fid', $image['file_managed_fid'])
 			->execute();
+		if (!file_delete($file, true))
+			throw new Exception('Could not delete image');
 	} catch (Exception $e) {
 		$transaction->rollback();
 		drupal_set_message($e->getMessage(), 'error');
