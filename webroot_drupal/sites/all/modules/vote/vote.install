@@ -1,0 +1,59 @@
+<?php
+require_once dirname(__FILE__) . '/vote.drupalschema.inc';
+/**
+ * @file vote.install
+ * @author Emin Khateeb, 2013
+ * @author Florian Gyger, 2013
+ * @copyright 2011-2013 Naturwerk, Brugg
+ */
+
+/**
+ * Implement hook_schema()
+ */
+function vote_schema() {
+	return vote_get_schema();
+}
+
+/**
+ * Create initial verification entries for all newly created observation.
+ */
+function vote_enable() {
+	
+	// remove all votes where the related observation was deleted
+	remove_zombie_votes();
+	
+	// add initial verifications for newly created observations
+	$sql = 'SELECT		o.id AS observation_id,
+						o.organism_id AS organism_id,
+						o.users_uid AS user_id
+			FROM		{observation} o
+			WHERE		(SELECT COUNT(1) FROM {vote} v WHERE o.id = v.observation_id AND o.users_uid = v.user_id) = 0
+						AND o.organism_id != -1';
+	$observations = db_query($sql)->fetchAll();
+	
+	foreach ($observations as &$row) {
+		db_insert('vote')
+			->fields(array(
+				'user_id' => $row->user_id,
+				'observation_id' => $row->observation_id,
+				'organism_id' => $row->organism_id,
+				'vote_timestamp' => time()
+			))->execute();
+	}
+}
+
+/**
+ * Clean up votes.
+ */
+function vote_disable() {
+	remove_zombie_votes();
+}
+
+/**
+ * Remove all votes where no related observations exist.
+ */
+function remove_zombie_votes() {
+	$sql = 'DELETE FROM	{vote} v
+			WHERE		(SELECT COUNT(1) FROM {observation} o WHERE v.observation_id = o.id) = 0';
+	db_query($sql)->execute();
+}

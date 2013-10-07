@@ -20,6 +20,36 @@ function observation_edit($observationdata = NULL) {
 }
 
 /**
+ * Return all observations that match the given organism ID.
+ * 
+ * @param string $organism_id
+ * @return array
+ */
+function observation_get_by_organism($organism_id = NULL) {
+	$sql = 'SELECT * FROM {observation} o
+				WHERE o.organism_id=:organism_id';
+	$result = db_query(
+			$sql,
+			array('organism_id' => $organism_id))->fetchAll();
+	return $result;
+}
+
+/**
+ * Return all observations that match the given artgroup ID.
+ *
+ * @param string $artgoup_id
+ * @return array
+ */
+function observation_get_by_artgroup($artgoup_id = NULL) {
+	$sql = 'SELECT * FROM {observation} o
+				WHERE o.organism_artgroup_id=:artgoup_id';
+	$result = db_query(
+			$sql,
+			array('artgoup_id' => $artgoup_id))->fetchAll();
+	return $result;
+}
+
+/**
  * Return a array with all data for a observation
  * @param int $observation_id
  * @return array
@@ -415,7 +445,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 				),
 				l(
 						check_plain($observationdata['observation']['observer']),
-						base_path() . "user/" . $observationdata['observation']['users_uid'],
+						base_path() . "user/" . $observationdata['observation']['users_uid'] . "/contact",
 						array(
 								'external' => true
 						))

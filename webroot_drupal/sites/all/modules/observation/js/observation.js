@@ -57,7 +57,7 @@ jQuery(document).ready(function() {
 			this.checked = status;
 			observationmap.selectMultipleObservation(event, parseInt($(this).val()), !status);
 		});
-	}
+	};
 	
 	/**
 	 * Export the selected table rows.
@@ -98,7 +98,33 @@ jQuery(document).ready(function() {
 		$('<iframe />').attr('src', url).hide().appendTo('body').load(function() {
 			$status.text(oldStatus);
 		});
-	}
+	};
+	
+	/**
+	 * Verify the selected table rows.
+	 * If none are selected, all rows will be verified.
+	 * 
+	 * @param string tableId
+	 */
+	observation.verificationSelectedRows = function(tableId) {
+		var destination = '/vote/observation/';
+		var table = $('#' + tableId);
+		if (table.length < 1)
+			return false;
+		
+		table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				var observation_id = $(this).val();
+				destination += observation_id + ',';
+			}
+		});
+		
+		if (destination.indexOf(',', destination.length - 1 != -1)) {
+			destination = destination.substring(0, destination.length - 1);
+		}
+		
+		window.location.href = destination;
+	};
 	
 	/**
 	 * Delete the selected rows
@@ -134,7 +160,7 @@ jQuery(document).ready(function() {
 			return false;
 		}
 		transportData = '{' + transportData.substring(0,transportData.length-1) + '}';
-			
+		
 		var really = confirm(Drupal.t('Do you really want to delete the selected records?'));
 		if (really){
 			var data = {
@@ -151,7 +177,7 @@ jQuery(document).ready(function() {
 				}
 			});
 		}
-	}
+	};
 	
 	/**
 	 * Show the message returned from the deletion request
@@ -182,9 +208,7 @@ jQuery(document).ready(function() {
 		}, time);
 	
 		// scroll to message
-		$('body,html').animate({
-		scrollTop: observation.message.offset().top
-		});
+		$('html, body').animate({ scrollTop: 0 });
 	};
 	
 	/**
@@ -226,8 +250,13 @@ jQuery(document).ready(function() {
 					if (mapcontains)
 						mapcontains = observationmap.googlemap.getBounds().contains(position);
 				}
-				if (!mapcontains)
+				if (!mapcontains) {
 					observationmap.googlemap.fitBounds(bounds);
+				}
+				if(observationmap.googlemap.getZoom() < 6) {
+					observationmap.googlemap.fitBounds(bounds);
+					observationmap.googlemap.setZoom(6);
+				}
 				
 				return true;
 			}
@@ -244,10 +273,16 @@ jQuery(document).ready(function() {
 			$checkbox = $('<input type="checkbox" />');
 			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
 			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
-			$batchDiv = $('<div class="batch-div" />')
+			if(voteModuleExits) $btnVerificationSelected = $('<input type="button" class="btnVerificationSelected" value="' + Drupal.t('Verify all') + '" />');
+			if(voteModuleExits) {
+				$batchDiv = $('<div class="batch-div" />')
+					.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnVerificationSelected)
+					.insertBefore($flexiDiv.find('.sDiv'));
+			} else {
+				$batchDiv = $('<div class="batch-div" />')
 				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
 				.insertBefore($flexiDiv.find('.sDiv'));
-			
+			}
 			$checkbox.click(function(event) {
 				observation.toggleSelectedRows(event, this.checked);
 			});
@@ -257,10 +292,16 @@ jQuery(document).ready(function() {
 			$btnExportSelected.click(function() {
 				observation.exportSelectedRows(tableId);
 			});
+			if(voteModuleExits) {
+				$btnVerificationSelected.click(function() {
+					observation.verificationSelectedRows(tableId);
+				});
+			}
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
 		}
 	};
 	
@@ -393,10 +434,12 @@ jQuery(document).ready(function() {
 		if ($flexiDiv.find('input.gridSelect:checked').length == 0) {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').removeAttr('disabled');
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export selected'));
+			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify selected'));
 		}
 		
 		// check if there exists an overlay with the given id

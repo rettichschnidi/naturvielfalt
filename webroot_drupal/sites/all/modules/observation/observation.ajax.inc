@@ -62,9 +62,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$values['organism'] = filter_xss($values['group']['organism']);
 			$result = organism_get_byname(filter_xss($values['organism']));
 			$observation['organism_id'] = $result['id'];
-		} 
+		}
 	} else {
 		$observation['organism_id'] = filter_xss($values['organism_id']);
+		$observation['area_geometry_id'] = $values['area_geometry_id'];
 	}
 	
 	/**
@@ -166,6 +167,18 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				->execute();
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 			
+			// create a verification entry in case the observer defined an organism
+			if (module_exists('vote')) {
+				if ($observation['organism_id'] != UNKNOWN_SPECIES && isset($values['file_description'])) {
+					$vote["user_id"] = $observation['users_uid'];
+					$vote["observation_id"] = $observation['id'];
+					$vote["organism_id"] = $observation['organism_id'];
+					$vote["vote_timestamp"] = time();
+					db_insert('vote')->fields($vote)
+						->execute();
+				}
+			}
+			
 			// Read access for ALL group
 			add_group_to_acl($observation['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
 		}
@@ -212,8 +225,12 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	
 	if($output['success']) {
 		drupal_set_message(t('successfull saved'));
+		/*
 		if($edit)
 			drupal_goto('observation/'.$observation['id'].'/edit');
+		else 
+			drupal_goto('observation/new');
+		 */
 	} else {
 		form_set_error('observation_form', $output['message']);
 		$observation_data['redirect'] = FALSE;
@@ -632,6 +649,14 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['organism_l'] = t('Unknown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
+		else
+			$row['cell']['organism_l'] = l(
+					$row['cell']['organism_l'],
+					$base_url . '/organism/' . $row['cell']['organism_id'],
+					array(
+						'html' => true
+					));
+		
 		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xxX
 		$row['cell']['organism_sc'] = l(
 				$row['cell']['organism_sc'],

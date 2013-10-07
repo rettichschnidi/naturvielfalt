@@ -1,0 +1,82 @@
+#selectBoxContainer {
+	background-color: #EEEEEE;
+	width: 919px;
+	height: 200px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.entry {
+	width: 100%;
+	height: 40px;
+	position: relative;
+	overflow: hidden;
+}
+
+.entryCommentsContainer {
+	background-color: #EEEEEE;
+	width: 899px;
+	position: relative;
+	top: 40px;
+	left: 10px;
+	height: auto;
+}
+
+.entryCommentsContainer p {
+	margin: 0px;
+}
+
+.entryCommentsContainer .header {
+	margin-bottom: 5px;
+}
+
+.entryComments {
+	border-bottom: dotted 1px #CCCCCC;
+	padding: 5px;
+}
+
+.entry .progressBar {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+}
+
+.entry .progressBar .translatedDescription {
+	position: absolute;
+	left: 10px;
+	top: 4px;
+	white-space:nowrap;
+}
+
+.entry .progressBar .latinDescription {
+	position: absolute;
+	left: 10px;
+	top: 20px;
+	white-space:nowrap;
+}
+
+.entry .progressBar .votes {
+	position: absolute;
+	left: 500px;
+	top: 12px;
+	white-space: nowrap;
+}
+
+.entry .suggestButton {
+	position: absolute;
+	top: 0px;
+	right: -120px;
+	bottom: 0px;
+	width: 100px;
+	padding: 10px;
+	opacity: 0;
+	background-color: #EEEEEE;
+	cursor: pointer;
+	text-decoration: underline;
+	color: #000000;
+}
+
+#noVerificationsMessage {
+	display: none;
+}

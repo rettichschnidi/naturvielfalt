@@ -183,6 +183,17 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 				</div>',	
 		);
 	}
+	
+	if(isset($form_state['values']['group']['organism'])) {
+		$defaultValue = $form_state['values']['group']['organism'];
+	} else {
+		if($observation['organism']['name_lang'] != "") {
+			$defaultValue = $observation['organism']['name_lang'];
+		} else {
+			$defaultValue = $observation['organism']['name_lat'];
+		}
+	}
+	
 	$form['group']['organism'] = array(
 			'#id' => 'organism_name',
 			'#title' => t('Search for species'),
@@ -200,8 +211,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#tree' => true,
 			'#required' => $checked ? false : true,
 			'#disabled' => $checked ? true : false,
-			'#default_value' => isset($form_state['values']['group']['organism']) ? $form_state['values']['group']['organism'] : $observation['organism']['name_lang'],
-	);
+			'#default_value' => $defaultValue
+		);
 
 	$form['group']['date'] = array(
 			'#id' => 'date',
