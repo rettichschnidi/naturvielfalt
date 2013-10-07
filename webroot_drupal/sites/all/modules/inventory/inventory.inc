@@ -175,11 +175,12 @@ function inventory_delete_by_id($inventory_id) {
 			observation_delete_by_id($observation['id']);
 		}
 		
-		//delete acl entries
-		delete_acl($inventory['acl_id']);
-		
 		db_delete('inventory')->condition('id', $inventory_id)
 		->execute();
+		
+		//delete acl entries
+		delete_acl($inventory['acl_id']);
+
 		return true;
 	} catch (Exception $e) {
 		$transaction->rollback();

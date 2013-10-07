@@ -74,11 +74,11 @@ function observation_delete_form_submit($form, &$form_state) {
 function observation_delete_by_id($observation_id) {
 	$observation = observation_get($observation_id);
 	
-	//delete acl entries
-	delete_acl($observation['observation']['acl_id']);
-	
 	db_delete('observation')->condition('id', $observation_id)
 	->execute();
+	
+	//delete acl entries
+	delete_acl($observation['observation']['acl_id']);
 	
 	db_delete('area_geometry')->condition('id', $observation['observation']['area_geometry_id'])
 		->execute();
