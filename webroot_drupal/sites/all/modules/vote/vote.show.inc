@@ -7,7 +7,8 @@ drupal_add_js(drupal_get_path('module', 'vote') . '/js/imageslider.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/vote.js');
 drupal_add_js(drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.xcolor.min.js');
-drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.waitforimages.min.js');
+//not working with jquery 1.4.. (.on) include once jquery version is greater
+// drupal_add_js(drupal_get_path('module', 'vote') . '/js/jquery.waitforimages.min.js');
 drupal_add_js(drupal_get_path('module', 'vote') . '/js/selectbox.js');
 drupal_add_js(drupal_get_path('module', 'observation') . '/js/observation.js');
 
