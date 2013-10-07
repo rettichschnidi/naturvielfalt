@@ -24,11 +24,11 @@ function fetch_observation_data() {
 	
 	$mainArray['observations'] = getObservations();
 	$afterobs = microtime(true);
-	debug("time after getObservations: " + $afterobs-$before);
+	debug("time after getObservations: " + $afterobs-$start);
 	$start = microtime(true);
 	$mainArray['verifications'] = getVerifications();
 	$afterverification = microtime(true);
-	debug("time after getVerifications: " + $afterverification-$before);
+	debug("time after getVerifications: " + $afterverification-$start);
 	
 	return drupal_json_output($mainArray);
 }
