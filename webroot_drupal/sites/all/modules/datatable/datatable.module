@@ -187,7 +187,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 			$where .= ' OR (au.acl_id = g.acl_id'
 				.' AND ag.level >= ' . $minLevel . ')';
 			// level of user, table also needed for user group
-			$sJoins	.= ' LEFT JOIN {acl_users} au ON au.users_id = ' . $user->uid;
+			$sJoins	.= ' LEFT JOIN {acl_users} au ON (au.acl_id = '.$obs_acl_id.' OR au.acl_id = g.acl_id) AND au.users_id = ' . $user->uid;
 			$where .= ' OR (au.acl_id = ' . $obs_acl_id
 				.' AND au.level >= ' . $minLevel . ') )';
 			
