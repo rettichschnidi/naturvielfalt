@@ -19,8 +19,16 @@ function fetch_observation_data() {
 	$mainArray = array();
 	$mainArray['general']['current_user_id'] = $user->uid;
 	$mainArray['general']['current_user_name'] = $user->name;
+	
+	$start = microtime(true);
+	
 	$mainArray['observations'] = getObservations();
+	$afterobs = microtime(true);
+	debug("time after getObservations: " + $afterobs-$before);
+	$start = microtime(true);
 	$mainArray['verifications'] = getVerifications();
+	$afterverification = microtime(true);
+	debug("time after getVerifications: " + $afterverification-$before);
 	
 	return drupal_json_output($mainArray);
 }
