@@ -72,9 +72,10 @@ function initializeCache() {
 			// load suggestions from other users
 			initializeVotesFromOtherUsers();
 			
-			$('#imagesContainer').waitForImages(function() {
-				navigationDisabled = false;
-			});
+			//not working with jquery 1.4
+//			$('#imagesContainer').waitForImages(function() {
+//				navigationDisabled = false;
+//			});
 		},
 		error: function(result) {
 			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
