@@ -108,7 +108,7 @@ function vote_show_overview($artgroup_id = 0) {
 		'#weight' => 4,
 		'#tree' => true,
 		'#value' => $artgroup_filter_id,
-		'#attributes' => array('onchange' => "document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
+		'#attributes' => array('onchange' => "if(document.getElementById('artgroup_filter_id').value == 1) document.location='/vote'; else document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
 	);
 	
 	$render_array['imageslider'] = array(
