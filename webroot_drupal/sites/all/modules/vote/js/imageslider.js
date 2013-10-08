@@ -60,7 +60,7 @@ function initializeCache() {
 			
 			initLightBox();
 			
-			var autoHeight = mainImageHolder.attr('height');
+			var autoHeight = mainImageHolder.height();
 			$("#mainImageFieldset").animate({ height: autoHeight + 20 });
 			
 			imageIndex = 1;
@@ -275,7 +275,7 @@ function animateMainImage(replaceMainImage) {
 						
 						// Calculate the new height of the image
 						mainImageHolder.css({ width: 440 });
-						var autoHeight = mainImageHolder.attr('height');
+						var autoHeight = mainImageHolder.height();
 						// Show the main image and animate it to the normal size
 						mainImageHolder.css({ width: 190, height: "auto" });
 						$("#mainImageContainer").css({ opacity: 1 });
