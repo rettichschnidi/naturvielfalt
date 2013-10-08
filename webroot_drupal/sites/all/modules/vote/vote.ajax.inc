@@ -20,15 +20,8 @@ function fetch_observation_data() {
 	$mainArray['general']['current_user_id'] = $user->uid;
 	$mainArray['general']['current_user_name'] = $user->name;
 	
-	$start = microtime(true);
-	
 	$mainArray['observations'] = getObservations();
-	$afterobs = microtime(true);
-	debug("time after getObservations: " + $afterobs-$start);
-	$start = microtime(true);
 	$mainArray['verifications'] = getVerifications();
-	$afterverification = microtime(true);
-	debug("time after getVerifications: " + $afterverification-$start);
 	
 	return drupal_json_output($mainArray);
 }
@@ -36,7 +29,7 @@ function fetch_observation_data() {
 function getObservations() {
 	global $user;
 	global $language;
-	$start = microtime(true);
+	
 	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
 
 	$whereClause = '';
@@ -65,9 +58,6 @@ function getObservations() {
 	
 	$output = db_query($sql)->fetchAll();
 	
-	$afterdb = microtime(true);
-	debug("time after db select: " + $afterdb-$start);
-	$start = microtime(true);
 	$i = 0;
 	foreach ($output as &$row) {
 	
@@ -89,8 +79,7 @@ function getObservations() {
 			$i++;
 		}
 	}
-	$afterloop = microtime(true);
-	debug("time afterloop: " + $afterloop-$start);
+	
 	unset($_SESSION["vote_observations_filter"]);
 	
 	return $observationsArray;
@@ -118,20 +107,20 @@ function getVerifications() {
 	
 	$output = db_query($sql)->fetchAll();
 	
-// 	$i = 0;
-// 	foreach ($output as &$row) {
-// 		$returnArray[$i]['observation_id'] = $row->observation_id;
-// 		$returnArray[$i]['organism_id'] = $row->organism_id;
-// 		$returnArray[$i]['scientific_name'] = $row->scientific_name;
-// 		$returnArray[$i]['translated_name'] = $row->translated_name;
-// 		$returnArray[$i]['vote_timestamp'] = $row->vote_timestamp;
-// 		$returnArray[$i]['comment'] = $row->comment;
-// 		$returnArray[$i]['user_id'] = $row->user_id;
-// 		$returnArray[$i]['user_name'] = $row->user_name;
-// 		$i++;
-// 	}
+	$i = 0;
+	foreach ($output as &$row) {
+		$returnArray[$i]['observation_id'] = $row->observation_id;
+		$returnArray[$i]['organism_id'] = $row->organism_id;
+		$returnArray[$i]['scientific_name'] = $row->scientific_name;
+		$returnArray[$i]['translated_name'] = $row->translated_name;
+		$returnArray[$i]['vote_timestamp'] = $row->vote_timestamp;
+		$returnArray[$i]['comment'] = $row->comment;
+		$returnArray[$i]['user_id'] = $row->user_id;
+		$returnArray[$i]['user_name'] = $row->user_name;
+		$i++;
+	}
 	
-	return (array)$output;
+	return $returnArray;
 }
 
 function vote_save() {
