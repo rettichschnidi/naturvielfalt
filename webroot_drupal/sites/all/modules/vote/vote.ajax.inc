@@ -71,7 +71,7 @@ function getObservations($page) {
 	else $whereClause = 'AND imagescount > 0';
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
-	$pagesize = ($page == 1) ? $pagesize = PAGESIZE + 1 : PAGESIZE; //ugly hack, because vote always displays one observation
+
 	$sql =   'SELECT o.id AS id,'
 			.' o.organism_artgroup_id AS artgroup_id,'
 			.' o.date AS date,'
@@ -98,7 +98,7 @@ function getObservations($page) {
 			) images ON images.item_id = o.id'    		
 			. $whereClause
 			.' ORDER BY current_user_votes, votes, date DESC'
-			.' OFFSET '.($page-1)*$pagesize.' LIMIT '.PAGESIZE;
+			.' OFFSET '.($page-1)*PAGESIZE.' LIMIT '.PAGESIZE;
 	
 	$output = db_query($sql)->fetchAll();
 	
