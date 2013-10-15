@@ -92,27 +92,6 @@ function fetchNextPage(steps) {
 			// cache all fetched database data
 			cacheAllData(result);
 			
-			// load the first image sources from the cache
-			mainImageHolder.attr('src', observations[imageIndex].fullsize_image_path);
-			
-			// write the current number of images to the diashow link
-			$('#numberOfImages').html(observations[imageIndex].observation_images.images.length);
-
-			prepareSlideShow();
-			
-			initLightBox();
-			
-			var autoHeight = mainImageHolder.height();
-			$("#mainImageFieldset").animate({ height: autoHeight + 20 });
-			
-			loadImagesFromCache();
-			
-			// add marker to map and set initial zoom level
-			initializeGoogleMap();
-			
-			// load suggestions from other users
-			initializeVotesFromOtherUsers();
-			
 			$('#imagesContainer').waitForImages(function() {
 				navigationDisabled = false;
 				moveImages(steps, false);
