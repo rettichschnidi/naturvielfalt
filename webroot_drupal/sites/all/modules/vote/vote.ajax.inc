@@ -13,7 +13,7 @@ module_load_include('inc', 'organism', 'organism.artgroup');
 module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
-define('PAGESIZE', 25);
+define('PAGESIZE', 24);
 
 function fetch_observation_data($page) {
 	global $user;
@@ -71,7 +71,7 @@ function getObservations($page) {
 	else $whereClause = 'AND imagescount > 0';
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
-	$pagesize = ($page == 1) ? $pagesize = PAGESIZE -1 : PAGESIZE; //ugly hack, because vote always displays one observation
+	$pagesize = ($page == 1) ? $pagesize = PAGESIZE + 1 : PAGESIZE; //ugly hack, because vote always displays one observation
 	$sql =   'SELECT o.id AS id,'
 			.' o.organism_artgroup_id AS artgroup_id,'
 			.' o.date AS date,'

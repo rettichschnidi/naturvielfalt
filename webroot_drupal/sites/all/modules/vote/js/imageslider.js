@@ -10,7 +10,7 @@ var stepsToMove;
 var imageIndex = 0;
 var marker;
 var page = 1;
-var pageSize = 25;
+var pageSize = 24;
 
 var navigationDisabled = true;
 
@@ -256,6 +256,7 @@ function moveImages(steps, replaceMainImage) {
 		return;
 	}
 	
+	//if imageIndex is greater then pagesize, and more images are available on server, fetch next page
 	if(imageIndex + steps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
 		fetchNextPage(steps, replaceMainImage);
