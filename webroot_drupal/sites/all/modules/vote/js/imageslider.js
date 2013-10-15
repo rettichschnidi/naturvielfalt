@@ -84,7 +84,7 @@ function initializeCache() {
 	});
 }
 
-function fetchNextPage(steps) {
+function fetchNextPage(steps, replaceMainImage) {
 	page++;
 	$.ajax({
 		url: "/vote/getdata/json/" + page,
@@ -94,7 +94,7 @@ function fetchNextPage(steps) {
 			loadImagesFromCache();
 			$('#imagesContainer').waitForImages(function() {
 				navigationDisabled = false;
-				moveImages(steps, false);
+				moveImages(steps, replaceMainImage);
 			});
 		},
 		error: function(result) {
@@ -258,7 +258,7 @@ function moveImages(steps, replaceMainImage) {
 	
 	if(imageIndex + steps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
-		fetchNextPage(steps);
+		fetchNextPage(steps, replaceMainImage);
 		return;
 	}
 	stepsToMove = steps;
