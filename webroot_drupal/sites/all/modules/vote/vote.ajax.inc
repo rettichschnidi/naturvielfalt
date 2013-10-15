@@ -13,7 +13,7 @@ module_load_include('inc', 'organism', 'organism.artgroup');
 module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
-define('PAGESIZE', 25);
+define('PAGESIZE', 5);
 
 function fetch_observation_data($page) {
 	global $user;
@@ -24,8 +24,9 @@ function fetch_observation_data($page) {
 	$mainArray['general']['total'] = getTotalObservationsCount();
 	
 	$mainArray['observations'] = getObservations($page);
-	//we fetch all verifications on each page.. observations are much heavier
-	$mainArray['verifications'] = getVerifications();
+	//we fetch all verifications on the first page.. observations are much heavier
+	if($page == 1)
+		$mainArray['verifications'] = getVerifications();
 	
 	return drupal_json_output($mainArray);
 }
