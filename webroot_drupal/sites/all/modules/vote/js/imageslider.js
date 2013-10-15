@@ -348,15 +348,18 @@ function animateCurrentImages(replaceMainImage) {
 		if (positive) {
 			if (i < futureImageHolders.length) {
 				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 500, function() {
+					navigationDisabled = false;
 				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
 					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
+						navigationDisabled = false;
 					});
 				} else {
 					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
+						navigationDisabled = false;
 					});
 				}
 			}
@@ -367,22 +370,22 @@ function animateCurrentImages(replaceMainImage) {
 					cleanIndex = 0;
 				}
 				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 500, function() {
+					navigationDisabled = false;
 				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
 					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
+						navigationDisabled = false;
 					});
 				} else {
 					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
+					navigationDisabled = false;
 				}
 			}
 		}
 	}
-	$('#imagesContainer').waitForImages(function() {
-		navigationDisabled = false;
-	});
 }
 
 /**
