@@ -9,6 +9,8 @@ var currentMainImageIndex;
 var stepsToMove;
 var imageIndex = 0;
 var marker;
+var page = 1;
+var pageSize = 25;
 
 var navigationDisabled = true;
 
@@ -44,7 +46,7 @@ function initializeImages() {
  */
 function initializeCache() {
 	$.ajax({
-		url: "/vote/getdata/json",
+		url: "/vote/getdata/json/" + page,
 		success: function(result) {
 			// cache all fetched database data
 			cacheAllData(result);
@@ -74,6 +76,46 @@ function initializeCache() {
 			
 			$('#imagesContainer').waitForImages(function() {
 				navigationDisabled = false;
+			});
+		},
+		error: function(result) {
+			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
+		}
+	});
+}
+
+function fetchNextPage(steps) {
+	page++;
+	$.ajax({
+		url: "/vote/getdata/json/" + page,
+		success: function(result) {
+			// cache all fetched database data
+			cacheAllData(result);
+			
+			// load the first image sources from the cache
+			mainImageHolder.attr('src', observations[imageIndex].fullsize_image_path);
+			
+			// write the current number of images to the diashow link
+			$('#numberOfImages').html(observations[imageIndex].observation_images.images.length);
+
+			prepareSlideShow();
+			
+			initLightBox();
+			
+			var autoHeight = mainImageHolder.height();
+			$("#mainImageFieldset").animate({ height: autoHeight + 20 });
+			
+			loadImagesFromCache();
+			
+			// add marker to map and set initial zoom level
+			initializeGoogleMap();
+			
+			// load suggestions from other users
+			initializeVotesFromOtherUsers();
+			
+			$('#imagesContainer').waitForImages(function() {
+				navigationDisabled = false;
+				moveImages(steps, false);
 			});
 		},
 		error: function(result) {
@@ -143,6 +185,9 @@ function loadImagesFromCache() {
 			currentImageHolders[i].show();
 		}
 	}
+	$('#imagesContainer').waitForImages(function() {
+		navigationDisabled = false;
+	});
 }
 
 /**
@@ -231,7 +276,12 @@ function moveImages(steps, replaceMainImage) {
 	if (navigationDisabled) {
 		return;
 	}
-
+	
+	if(imageIndex + steps >= pageSize && page*pageSize < parseInt(generalInformation['total'])) {
+		navigationDisabled = true;
+		fetchNextPage(steps);
+		return;
+	}
 	stepsToMove = steps;
 	
 	navigationDisabled = true;

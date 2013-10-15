@@ -13,20 +13,49 @@ module_load_include('inc', 'organism', 'organism.artgroup');
 module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
-function fetch_observation_data() {
+define('PAGESIZE', 25);
+
+function fetch_observation_data($page) {
 	global $user;
 	
 	$mainArray = array();
 	$mainArray['general']['current_user_id'] = $user->uid;
 	$mainArray['general']['current_user_name'] = $user->name;
+	$mainArray['general']['total'] = getTotalObservationsCount();
 	
-	$mainArray['observations'] = getObservations();
+	$mainArray['observations'] = getObservations($page);
+	//we fetch all verifications on each page.. observations are much heavier
 	$mainArray['verifications'] = getVerifications();
 	
 	return drupal_json_output($mainArray);
 }
 
-function getObservations() {
+function getTotalObservationsCount() {
+	if ($_SESSION["vote_observations_filter"] != null) {
+		$whereClause = ' WHERE o.id IN (' . join(', ', $_SESSION["vote_observations_filter"]) . ')';
+	}
+	
+	if(empty($whereClause)) $whereClause = ' WHERE imagescount > 0';
+	else $whereClause .= ' AND imagescount > 0';
+	
+	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
+	
+	$sql = 'SELECT COUNT(1) AS total FROM {observation} o'
+			.' LEFT JOIN 
+			(
+				SELECT gi.item_id, COUNT(gi.id) AS imagescount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\' 
+				AND fm.filemime IN (\''.$imagetypes.'\')  
+				GROUP BY gi.item_id
+			) images ON images.item_id = o.id'
+		    .$whereClause;
+	 debug($sql);
+	 return db_query($sql)->fetchField();
+}
+
+function getObservations($page) {
 	global $user;
 	global $language;
 	
@@ -37,6 +66,11 @@ function getObservations() {
 	if ($_SESSION["vote_observations_filter"] != null) {
 		$whereClause = ' WHERE o.id IN (' . join(', ', $_SESSION["vote_observations_filter"]) . ')';
 	}
+	
+	if(empty($whereClause)) $whereClause = ' WHERE imagescount > 0';
+	else $whereClause = 'AND imagescount > 0';
+	
+	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
 	
 	$sql =   'SELECT o.id AS id,'
 			.' o.organism_artgroup_id AS artgroup_id,'
@@ -53,9 +87,20 @@ function getObservations() {
 			.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
 			.' LEFT JOIN {organism_artgroup} oa ON oa.id = o.organism_artgroup_id'
 			.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
+			.' LEFT JOIN 
+			(
+				SELECT gi.item_id, COUNT(gi.id) AS imagescount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\' 
+				AND fm.filemime IN (\''.$imagetypes.'\')  
+				GROUP BY gi.item_id
+			) images ON images.item_id = o.id'    		
 			. $whereClause
-			.' ORDER BY current_user_votes, votes, date DESC';
+			.' ORDER BY current_user_votes, votes, date DESC'
+			.' OFFSET '.($page-1)*PAGESIZE.' LIMIT '.PAGESIZE;
 	
+	debug($sql);
 	$output = db_query($sql)->fetchAll();
 	
 	$i = 0;
@@ -66,18 +111,16 @@ function getObservations() {
 	
 		// thumbnail
 		$row->thumbnail = '';
-		if ($images['count'] > 0) {
-			// display the thumbnail (for the table view)
-			$observationsArray[$i]["observation_id"] = $row->id;
-			$observationsArray[$i]["thumbnail_image_path"] = url('gallery/observation/' . $row->id . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
-			$observationsArray[$i]["fullsize_image_path"] = url('gallery/observation/' . $row->id . '/image/' . $images['images'][0]['id']);
-			$observationsArray[$i]["observation_images"] = $images;
-			$observationsArray[$i]["detail_information"] = observation_get_table(observation_get($row->id));
-			$observationsArray[$i]["comment_information"] = observation_get_details_table(observation_get($row->id));
-			$observationsArray[$i]["google_map_marker_lat"] = $row->wgs84_center_lat;
-			$observationsArray[$i]["google_map_marker_lng"] = $row->wgs84_center_lng;
-			$i++;
-		}
+		// display the thumbnail (for the table view)
+		$observationsArray[$i]["observation_id"] = $row->id;
+		$observationsArray[$i]["thumbnail_image_path"] = url('gallery/observation/' . $row->id . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail');
+		$observationsArray[$i]["fullsize_image_path"] = url('gallery/observation/' . $row->id . '/image/' . $images['images'][0]['id']);
+		$observationsArray[$i]["observation_images"] = $images;
+		$observationsArray[$i]["detail_information"] = observation_get_table(observation_get($row->id));
+		$observationsArray[$i]["comment_information"] = observation_get_details_table(observation_get($row->id));
+		$observationsArray[$i]["google_map_marker_lat"] = $row->wgs84_center_lat;
+		$observationsArray[$i]["google_map_marker_lng"] = $row->wgs84_center_lng;
+		$i++;
 	}
 	
 	unset($_SESSION["vote_observations_filter"]);

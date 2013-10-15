@@ -1,6 +1,6 @@
 $ = jQuery;
 
-var generalInformation;
+var generalInformation = new Array();
 var observations = new Array();
 var verifications = new Array();
 
@@ -18,11 +18,7 @@ function cacheAllData(result) {
 	generalInformation = result.general;
 	
 	// cache observation information
-	if(result.observations != null) {
-		for (var i = 0; i < result.observations.length; i++) {
-			observations[i] = result.observations[i];
-		}
-	}
+	jQuery.merge(observations, result.observations);
 	
 	// cache verification information
 	if(result.verifications != null) {
