@@ -277,7 +277,7 @@ function moveImages(steps, replaceMainImage) {
 		return;
 	}
 	
-	if(imageIndex + steps >= pageSize && page*pageSize < parseInt(generalInformation['total'])) {
+	if(imageIndex + steps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
 		fetchNextPage(steps);
 		return;
