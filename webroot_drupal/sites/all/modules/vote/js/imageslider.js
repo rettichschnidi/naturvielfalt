@@ -10,7 +10,7 @@ var stepsToMove;
 var imageIndex = 0;
 var marker;
 var page = 1;
-var pageSize = 25;
+var pageSize = 5;
 
 var navigationDisabled = true;
 
@@ -91,7 +91,6 @@ function fetchNextPage(steps) {
 		success: function(result) {
 			// cache all fetched database data
 			cacheAllData(result);
-			
 			$('#imagesContainer').waitForImages(function() {
 				navigationDisabled = false;
 				moveImages(steps, false);
