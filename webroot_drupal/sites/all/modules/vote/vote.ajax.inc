@@ -68,7 +68,7 @@ function getObservations($page) {
 	}
 	
 	if(empty($whereClause)) $whereClause = ' WHERE imagescount > 0';
-	else $whereClause = 'AND imagescount > 0';
+	else $whereClause = ' AND imagescount > 0';
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
 
