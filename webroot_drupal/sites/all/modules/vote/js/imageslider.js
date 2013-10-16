@@ -137,7 +137,7 @@ function loadImagesFromCache() {
 		var tmpIndex = imageIndex + i;
 		cleanIndex = checkIndex(tmpIndex);
 		if(tmpIndex > observations.length && tmpIndex < generalInformation['total']) {
-			
+			currentImageHolders[i].attr('src', '');
 		} else { //display image (restarting at the beginning, if no more images can be fetched from the server
 			currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
 			$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
@@ -147,7 +147,7 @@ function loadImagesFromCache() {
 		var tmpIndex = imageIndex + numberToCount + i;
 		cleanIndex = checkIndex(tmpIndex);
 		if(tmpIndex > observations.length && tmpIndex < generalInformation['total']) {
-			
+			futureImageHolders[i].attr('src', '');
 		} else {
 			futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
 			$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
