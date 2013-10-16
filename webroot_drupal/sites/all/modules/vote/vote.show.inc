@@ -133,6 +133,7 @@ function vote_show_overview($artgroup_id = 0) {
 			<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
 			<img id="futureImage04" class="imageSliderImage" style="width: 0px;" />
 			<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'vote') . '/img/next.png" alt="Next" onclick="moveImages(4, false);" />
+			<img id="showLoadingImage" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" />
 		</div>'
 	);
 	
