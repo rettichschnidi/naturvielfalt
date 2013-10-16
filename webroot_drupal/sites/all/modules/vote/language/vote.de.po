@@ -1,0 +1,187 @@
+# $Id$
+#
+# German translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  vote.show.inc: n/a
+#  js/imageslider.js: n/a
+#  vote.module: n/a
+#  vote.info: n/a
+#  js/vote.js: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2013-10-16 13:35+0200\n"
+"PO-Revision-Date: 2013-10-16 13:53+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: German <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: vote.show.inc:78
+msgid "Welcome"
+msgstr "Willkommen"
+
+#: vote.show.inc:83
+msgid ""
+"On this page experts can identify species and vote for the correct one. This "
+"helps keeping a good identification quality and can help unexperienced users."
+msgstr ""
+"Helfen Sie mit bei der Bestimmung von Arten oder stimmen Sie der "
+"Identifikation eines Benutzers zu. Dies fördert eine gute Qualität der "
+"Artenerkennung und hilft unerfahreren Benutzern."
+
+#: vote.show.inc:89
+msgid "Artgroup Settings"
+msgstr "Artgruppe Einstellungen"
+
+#: vote.show.inc:101;282
+msgid "Filter on species group"
+msgstr "Artengruppe filtern"
+
+#: vote.show.inc:122 js/imageslider.js:0
+msgid "Observations"
+msgstr "Beobachtungen"
+
+#: vote.show.inc:160 js/imageslider.js:0;0
+msgid "Current Observation"
+msgstr "Aktuelle Beobachtung"
+
+#: vote.show.inc:164
+msgid "Proof image"
+msgstr "Beleg Bild"
+
+#: vote.show.inc:191
+msgid "Map"
+msgstr "Karte"
+
+#: vote.show.inc:209
+msgid "Details"
+msgstr "Angaben"
+
+#: vote.show.inc:223 js/imageslider.js:0
+msgid "Observation"
+msgstr "Beobachtung"
+
+#: vote.show.inc:240
+msgid "Verifications"
+msgstr "Verifizierungen"
+
+#: vote.show.inc:252
+msgid "Own verification"
+msgstr "Eigene Verifizierung"
+
+#: vote.show.inc:300
+msgid "Search for species"
+msgstr "Art suchen"
+
+#: vote.show.inc:303
+msgid "Maximum 30 search results will be showed."
+msgstr "Es werden maximal 30 Suchresultate angezeigt"
+
+#: vote.show.inc:305
+msgid "Start typing to see the species..."
+msgstr "Geben Sie etwas ein.."
+
+#: vote.show.inc:315
+msgid "Date of the verification"
+msgstr "Datum der Verifizierung"
+
+#: vote.show.inc:325
+msgid "Time of the verification"
+msgstr "Zeit der Verifizierung"
+
+#: vote.show.inc:335
+msgid "Comment your choice"
+msgstr "Ihr Kommentar"
+
+#: vote.show.inc:337
+msgid "Add a note to explain your choice so others can learn from you."
+msgstr ""
+"Erklären Sie Ihre Wahl, sodass andere Benutzer von Ihnen lernen können."
+
+#: vote.show.inc:342
+msgid "Submit verification"
+msgstr "Verifizierung senden"
+
+#: vote.module:104
+msgid "Vote for an organism."
+msgstr "Für einen Organismus voten"
+
+#: vote.module:107
+msgid "View vote page."
+msgstr "Verifizierungs Seite ansehen"
+
+#: vote.module:22;33;46;59
+msgid "Who knows it?"
+msgstr "Wer weiss es?"
+
+#: vote.module:27;34;47;60
+msgid "Voting page for experts"
+msgstr "Verifizierung Seite für Experten"
+
+#: vote.module:72
+msgid "Images"
+msgstr "Bilder"
+
+#: vote.module:73
+msgid "Get all image data to show"
+msgstr "Alle Bilder Daten holen"
+
+#: vote.module:83
+msgid "Save verification"
+msgstr "Verifizierung speichern"
+
+#: vote.module:84
+msgid "Saves the given verification"
+msgstr "Speichert die Verifizierung"
+
+#: vote.info:0
+msgid "vote"
+msgstr "Verifizierung"
+
+#: vote.info:0
+msgid "Confirm the organism of an observation by voting"
+msgstr "Bestätigen Sie die Artenbestimmung einer Beobachtung"
+
+#: vote.info:0
+msgid "Naturvielfalt"
+msgstr "Naturvielfalt"
+
+#: js/imageslider.js:0;0
+msgid ""
+"Could not fetch the needed information from the server. Please try again by "
+"reloading the page."
+msgstr ""
+"Die benötigten Informationen konnten nicht geladen werden. Bitte laden Sie "
+"die Seite neu."
+
+#: js/vote.js:0
+msgid "Please choose an organism for the verification."
+msgstr "Wählen Sie eine Art für die Verifizierung"
+
+#: js/vote.js:0
+msgid "No translation available"
+msgstr "Keine Übersetzung vorhanden"
+
+#: js/vote.js:0
+msgid "Could not save the verification. Please try again."
+msgstr ""
+"Die Verifizierung konnte nicht gespeichert werden. Bitte versuchen Sie es "
+"erneut."
+
+#: js/vote.js:0
+msgid "verifications"
+msgstr "Verifizierungen"
+
+#: js/vote.js:0
+msgid "Agree"
+msgstr "Bestätigen"
+
+#: js/vote.js:0
+msgid "No verifications found for this observation."
+msgstr "Es sind noch keine Verifizierungen vorhanden für diese Beobachtung."
