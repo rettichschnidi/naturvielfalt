@@ -134,24 +134,16 @@ function loadImagesFromCache() {
 		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 
 		// load next thumbnail and fullsize images into cache
-		var tmpIndex = imageIndex + i;
-		cleanIndex = checkIndex(tmpIndex);
-		if(tmpIndex > observations.length && tmpIndex < generalInformation['total']) {
-			currentImageHolders[i].attr('src', '');
-		} else { //display image (restarting at the beginning, if no more images can be fetched from the server
-			currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-			$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
-		}
+		cleanIndex = checkIndex(imageIndex + i);
+		//display image (restarting at the beginning, if no more images can be fetched from the server
+		currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 
 		// load future thumbnail and fullsize images into cache
-		var tmpIndex = imageIndex + numberToCount + i;
-		cleanIndex = checkIndex(tmpIndex);
-		if(tmpIndex > observations.length && tmpIndex < generalInformation['total']) {
-			futureImageHolders[i].attr('src', '');
-		} else {
-			futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-			$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
-		}
+		cleanIndex = checkIndex(imageIndex + numberToCount + i);
+		futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
+		
 		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
 		if (i < futureImageHolders.length) {
@@ -265,8 +257,10 @@ function moveImages(steps, replaceMainImage) {
 		return;
 	}
 	
-	//if imageIndex is greater then pagesize, and more images are available on server, fetch next page
-	if(imageIndex + steps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
+	//if imageIndex + step is greater then pagesize, and more images are available on server, fetch next page first to load the images
+	//if we are replacing the main image, the images skip additional 4 images, so we have to check, if we need to fetch more images.
+	tmpsteps = (replaceMainImage) ? imageIndex + steps + 4 : imageIndex + steps;
+	if(tmpsteps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
 		fetchNextImages(steps, replaceMainImage);
 		return;
