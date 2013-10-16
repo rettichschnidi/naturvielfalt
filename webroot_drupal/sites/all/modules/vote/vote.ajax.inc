@@ -32,12 +32,36 @@ function fetch_observation_data($page) {
 }
 
 function getTotalObservationsCount() {
+	global $user;
 	if ($_SESSION["vote_observations_filter"] != null) {
 		$whereClause = ' WHERE o.id IN (' . join(', ', $_SESSION["vote_observations_filter"]) . ')';
 	}
 	
 	if(empty($whereClause)) $whereClause = ' WHERE imagescount > 0';
 	else $whereClause .= ' AND imagescount > 0';
+	
+	/*
+	 *  Check for permission if acl_id is in the columns array
+	*/
+	$joins = '';
+	if (!check_admin_permission($user->uid)) {
+		$minLevel = variable_get('ACL_READ');
+	
+		$joins = ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = o.acl_id'
+				.' LEFT JOIN {sgroup} g ON g.id = ag.sgroup_id'
+				.' LEFT JOIN {acl_users} au ON (au.acl_id = o.acl_id OR au.acl_id = g.acl_id) AND au.users_id = ' . $user->uid;
+	
+		$whereClause .= empty($whereClause) ? ' WHERE' : ' AND';
+		// level of ALL group
+		$whereClause .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')
+		.' AND ag.level >= ' . $minLevel . ')';
+		// level of user group
+		$whereClause .= ' OR (au.acl_id = g.acl_id'
+				.' AND ag.level >= ' . $minLevel . ')';
+		$whereClause .= ' OR (au.acl_id = o.acl_id'
+				.' AND au.level >= ' . $minLevel . ') )';
+	
+	}
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
 	
@@ -51,7 +75,9 @@ function getTotalObservationsCount() {
 				AND fm.filemime IN (\''.$imagetypes.'\')  
 				GROUP BY gi.item_id
 			) images ON images.item_id = o.id'
+			.$joins
 		    .$whereClause;
+	debug($sql);
 	 return db_query($sql)->fetchField();
 }
 
@@ -72,6 +98,30 @@ function getObservations($page) {
 	
 	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
 
+
+	/*
+	 *  Check for permission if acl_id is in the columns array
+	*/
+	$joins = '';
+	if (!check_admin_permission($user->uid)) {
+		$minLevel = variable_get('ACL_READ');
+		
+		$joins = ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = o.acl_id'
+				.' LEFT JOIN {sgroup} g ON g.id = ag.sgroup_id'
+				.' LEFT JOIN {acl_users} au ON (au.acl_id = o.acl_id OR au.acl_id = g.acl_id) AND au.users_id = ' . $user->uid;
+		
+		$whereClause .= empty($whereClause) ? ' WHERE' : ' AND';
+		// level of ALL group
+		$whereClause .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')
+		.' AND ag.level >= ' . $minLevel . ')';
+		// level of user group
+		$whereClause .= ' OR (au.acl_id = g.acl_id'
+				.' AND ag.level >= ' . $minLevel . ')';
+		$whereClause .= ' OR (au.acl_id = o.acl_id'
+		.' AND au.level >= ' . $minLevel . ') )';
+				
+	}
+	
 	$sql =   'SELECT o.id AS id,'
 			.' o.organism_artgroup_id AS artgroup_id,'
 			.' o.date AS date,'
@@ -95,7 +145,8 @@ function getObservations($page) {
 				WHERE gi.item_type = \'observation\' 
 				AND fm.filemime IN (\''.$imagetypes.'\')  
 				GROUP BY gi.item_id
-			) images ON images.item_id = o.id'    		
+			) images ON images.item_id = o.id'    	
+			. $joins
 			. $whereClause
 			.' ORDER BY current_user_votes, votes, date DESC'
 			.' OFFSET '.($page-1)*PAGESIZE.' LIMIT '.PAGESIZE;
