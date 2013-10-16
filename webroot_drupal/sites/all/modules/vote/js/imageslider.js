@@ -85,6 +85,7 @@ function initializeCache() {
 }
 
 function fetchNextImages(steps, replaceMainImage) {
+	showLoadingImage(true);
 	page++;
 	$.ajax({
 		url: "/vote/getdata/json/" + page,
@@ -94,10 +95,13 @@ function fetchNextImages(steps, replaceMainImage) {
 			loadImagesFromCache();
 			$('#imagesContainer').waitForImages(function() {
 				navigationDisabled = false;
-				moveImages(steps, replaceMainImage);
+				showLoadingImage(false, function() {
+					moveImages(steps, replaceMainImage);
+				});
 			});
 		},
 		error: function(result) {
+			showLoadingImage(false);
 			observation.setMessage(Drupal.t('Could not fetch the needed information from the server. Please try again by reloading the page.'), 'error', 5000);
 		}
 	});
@@ -399,5 +403,25 @@ function checkIndex(index) {
 		return index % observations.length;
 	} else {
 		return index;
+	}
+}
+
+function showLoadingImage(display, completeCallback) {; 
+	if(display) {
+		$('#showLoadingImage').show();
+		for(var i = 0; i < currentImageHolders.length; i++) {
+			if(completeCallback)
+				currentImageHolders[i].fadeTo("slow", 0.5, completeCallback); 
+			else 
+				currentImageHolders[i].fadeTo("slow", 0.5); 
+		}
+	} else {
+		 $('#showLoadingImage').hide();
+		 for(var i = 0; i < currentImageHolders.length; i++) {
+			 if(completeCallback)
+				currentImageHolders[i].fadeTo("slow", 1, completeCallback); 
+			 else 
+				 currentImageHolders[i].fadeTo("slow", 1); 
+		}	
 	}
 }
