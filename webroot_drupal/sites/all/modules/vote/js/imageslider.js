@@ -92,7 +92,7 @@ function fetchNextImages(steps, replaceMainImage) {
 		success: function(result) {
 			// cache all fetched database data
 			cacheAllData(result);
-			loadImagesFromCache();
+			loadImagesFromCache(true);
 			$('#imagesContainer').waitForImages(function() {
 				navigationDisabled = false;
 				showLoadingImage(false, function() {
@@ -122,8 +122,9 @@ function initLightBox() {
 
 /**
  * Loads the images from the cache using the imageIndex variable as index.
+ * changeOpacityOfCurrentImages is used to if the opacity of images should be changed by showLoadingImages()
  */
-function loadImagesFromCache() {
+function loadImagesFromCache(changeOpacityOfCurrentImages) {
 	var numberToCount;
 	if(observations.length < currentImageHolders.length) {
 		numberToCount = observations.length - 1;
@@ -154,7 +155,9 @@ function loadImagesFromCache() {
 			futureImageHolders[i].css({ width: 0, opacity: 0 });
 		}
 		
-		currentImageHolders[i].css({ width: 190, opacity: 1 });
+		if(changeOpacityOfCurrentImages)
+			currentImageHolders[i].css({ width: 190, opacity: 0.5 });
+		else currentImageHolders[i].css({ width: 190, opacity: 1 });
 	}
 	
 	// hide next/previous button if there are not enough images to switch
