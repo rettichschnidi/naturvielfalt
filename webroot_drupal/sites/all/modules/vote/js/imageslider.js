@@ -134,8 +134,9 @@ function loadImagesFromCache() {
 		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
 
 		// load next thumbnail and fullsize images into cache
-		cleanIndex = checkIndex(imageIndex + i);
-		if(imageIndex + i > observations.length && imageIndex + i < generalInformation['total']) {
+		var tmpIndex = imageIndex + i;
+		cleanIndex = checkIndex(tmpIndex);
+		if(tmpIndex > observations.length && tmpIndex < generalInformation['total']) {
 			
 		} else { //display image (restarting at the beginning, if no more images can be fetched from the server
 			currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
@@ -143,10 +144,14 @@ function loadImagesFromCache() {
 		}
 
 		// load future thumbnail and fullsize images into cache
-		cleanIndex = checkIndex(imageIndex + numberToCount + i);
-		futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
-		
+		var tmpIndex = imageIndex + numberToCount + i;
+		cleanIndex = checkIndex(tmpIndex);
+		if(tmpIndex > observations.length && tmpIndex < generalInformation['total']) {
+			
+		} else {
+			futureImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+			$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
+		}
 		previousImageHolders[i].css({ width: 0, opacity: 0 });
 		
 		if (i < futureImageHolders.length) {
