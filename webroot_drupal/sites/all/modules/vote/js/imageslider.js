@@ -84,7 +84,7 @@ function initializeCache() {
 	});
 }
 
-function fetchNextPage(steps, replaceMainImage) {
+function fetchNextImages(steps, replaceMainImage) {
 	page++;
 	$.ajax({
 		url: "/vote/getdata/json/" + page,
@@ -135,8 +135,12 @@ function loadImagesFromCache() {
 
 		// load next thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + i);
-		currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
-		$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
+		if(imageIndex + i > observations.length && imageIndex + i < generalInformation['total']) {
+			
+		} else { //display image (restarting at the beginning, if no more images can be fetched from the server
+			currentImageHolders[i].attr('src', observations[cleanIndex].thumbnail_image_path);
+			$('#mainImageContainer').append("<img src=\"" + observations[cleanIndex].fullsize_image_path + "\" style=\"display:none;\" alt=\"Image\" />");
+		}
 
 		// load future thumbnail and fullsize images into cache
 		cleanIndex = checkIndex(imageIndex + numberToCount + i);
@@ -259,7 +263,7 @@ function moveImages(steps, replaceMainImage) {
 	//if imageIndex is greater then pagesize, and more images are available on server, fetch next page
 	if(imageIndex + steps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
-		fetchNextPage(steps, replaceMainImage);
+		fetchNextImages(steps, replaceMainImage);
 		return;
 	}
 	stepsToMove = steps;
@@ -348,15 +352,18 @@ function animateCurrentImages(replaceMainImage) {
 		if (positive) {
 			if (i < futureImageHolders.length) {
 				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 500, function() {
+					navigationDisabled = false;
 				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
 					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
+						navigationDisabled = false;
 					});
 				} else {
 					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
+						navigationDisabled = false;
 					});
 				}
 			}
@@ -367,22 +374,22 @@ function animateCurrentImages(replaceMainImage) {
 					cleanIndex = 0;
 				}
 				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 500, function() {
+					navigationDisabled = false;
 				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
 					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
 						loadImagesFromCache();
+						navigationDisabled = false;
 					});
 				} else {
 					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
+					navigationDisabled = false;
 				}
 			}
 		}
 	}
-	$('#imagesContainer').waitForImages(function() {
-		navigationDisabled = false;
-	});
 }
 
 /**
