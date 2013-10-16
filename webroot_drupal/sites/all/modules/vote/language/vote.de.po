@@ -12,8 +12,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2013-10-16 13:35+0200\n"
-"PO-Revision-Date: 2013-10-16 13:53+0100\n"
+"POT-Creation-Date: 2013-10-16 15:20+0200\n"
+"PO-Revision-Date: 2013-10-16 15:22+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Artgroup Settings"
 msgstr "Artgruppe Einstellungen"
 
-#: vote.show.inc:101;282
+#: vote.show.inc:101;289
 msgid "Filter on species group"
 msgstr "Artengruppe filtern"
 
@@ -75,36 +75,46 @@ msgstr "Verifizierungen"
 msgid "Own verification"
 msgstr "Eigene Verifizierung"
 
-#: vote.show.inc:300
+#: vote.show.inc:261
+msgid ""
+"To help with the determination of species, you have to be <a href=\"@loginurl"
+"\">logged in</a>. <br><a href=\"@registerurl\">Register now</a> if you do "
+"not have an account yet."
+msgstr ""
+"Um bei der Artenbestimmung zu helfen, müssen Sie sich zuerst <a href="
+"\"@loginurl\">einloggen</a>. <br><a href=\"@registerurl\">Registrieren Sie "
+"sich jetzt</a> wenn Sie noch keinen Account haben und legen Sie gleich los."
+
+#: vote.show.inc:307
 msgid "Search for species"
 msgstr "Art suchen"
 
-#: vote.show.inc:303
+#: vote.show.inc:310
 msgid "Maximum 30 search results will be showed."
 msgstr "Es werden maximal 30 Suchresultate angezeigt"
 
-#: vote.show.inc:305
+#: vote.show.inc:312
 msgid "Start typing to see the species..."
 msgstr "Geben Sie etwas ein.."
 
-#: vote.show.inc:315
+#: vote.show.inc:322
 msgid "Date of the verification"
 msgstr "Datum der Verifizierung"
 
-#: vote.show.inc:325
+#: vote.show.inc:332
 msgid "Time of the verification"
 msgstr "Zeit der Verifizierung"
 
-#: vote.show.inc:335
+#: vote.show.inc:342
 msgid "Comment your choice"
 msgstr "Ihr Kommentar"
 
-#: vote.show.inc:337
+#: vote.show.inc:344
 msgid "Add a note to explain your choice so others can learn from you."
 msgstr ""
 "Erklären Sie Ihre Wahl, sodass andere Benutzer von Ihnen lernen können."
 
-#: vote.show.inc:342
+#: vote.show.inc:349
 msgid "Submit verification"
 msgstr "Verifizierung senden"
 
