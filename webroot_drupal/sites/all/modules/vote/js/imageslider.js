@@ -257,7 +257,7 @@ function moveImages(steps, replaceMainImage) {
 		return;
 	}
 	
-	//if imageIndex + step + 4  is greater then pagesize, and more images are available on server, fetch next page first to load the images
+	//if imageIndex + step + 4 future images  is greater then pagesize, and more images are available on server, fetch next page first to load the images
 	tmpsteps = imageIndex + steps + 4;
 	if(tmpsteps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
@@ -349,18 +349,18 @@ function animateCurrentImages(replaceMainImage) {
 	for (var i = 0; i < Math.abs(stepsToMove); i ++) {
 		if (positive) {
 			if (i < futureImageHolders.length) {
-				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 500, function() {
+				futureImageHolders[i].animate({ width: 190, opacity: 1 }, 1500, function() {
 					navigationDisabled = false;
 				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
-					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
+					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 1500, function() {
 						loadImagesFromCache();
 						navigationDisabled = false;
 					});
 				} else {
-					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 500, function() {
+					currentImageHolders[i].animate({ width: 0, opacity: 0 }, 1500, function() {
 						navigationDisabled = false;
 					});
 				}
@@ -371,18 +371,18 @@ function animateCurrentImages(replaceMainImage) {
 				if (cleanIndex < 0) {
 					cleanIndex = 0;
 				}
-				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 500, function() {
+				previousImageHolders[cleanIndex].animate({ width: 190, opacity: 1 }, 1500, function() {
 					navigationDisabled = false;
 				});
 			}
 			if (i < currentImageHolders.length) {
 				if(i >= Math.abs(stepsToMove) - 1){
-					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500, function() {
+					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 1500, function() {
 						loadImagesFromCache();
 						navigationDisabled = false;
 					});
 				} else {
-					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 500);
+					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 1500);
 					navigationDisabled = false;
 				}
 			}
