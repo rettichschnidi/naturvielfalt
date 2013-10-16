@@ -401,8 +401,9 @@ function animateCurrentImages(replaceMainImage) {
 						navigationDisabled = false;
 					});
 				} else {
-					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 1500);
-					navigationDisabled = false;
+					currentImageHolders[currentImageHolders.length - i - 1].animate({ width: 0, opacity: 0 }, 1500, function() {
+						navigationDisabled = false;
+					});
 				}
 			}
 		}
