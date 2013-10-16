@@ -30,7 +30,7 @@ function cacheAllData(result) {
 
 function submitVerification() {
 	if($('#organism_name').val() == "") {
-		observation.setMessage(Drupal.t('Please choose an organism for the verification.'), 'warning', 5000);
+		observation.setMessage(Drupal.t('Please choose an organism for the verification.'), 'error', 5000);
 	} else {
 		$.ajax({
 			type: "POST",
@@ -38,7 +38,7 @@ function submitVerification() {
 			success: function(result){
 				// scroll to the top of the page to display the next observation
 				$('html, body').animate({ scrollTop: 0 });
-				
+				observation.setMessage(Drupal.t('Verification saved.'), 'status', 5000);
 				var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
 				
 				if (result.name_lang == null) {
