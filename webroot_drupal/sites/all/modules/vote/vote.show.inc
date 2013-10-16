@@ -111,9 +111,15 @@ function vote_show_overview($artgroup_id = 0) {
 		'#attributes' => array('onchange' => "if(document.getElementById('artgroup_filter_id').value == 1) document.location='/vote'; else document.location='/vote/artgroup/' + document.getElementById('artgroup_filter_id').value;"),
 	);
 	
+	$render_array['artgroup']['total'] = array(
+		'#type' => 'markup',
+		'#markup' => '<span id="totalObservations"></span>',
+		'#weight' => 5
+	);
+	
 	$render_array['imageslider'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Next images'),
+		'#title' => t('Observations'),
 		'#weight' => 5
 	);
 	$render_array['imageslider']['images'] = array(
@@ -151,7 +157,7 @@ function vote_show_overview($artgroup_id = 0) {
 	$render_array['leftDiv']['mainimage'] = array(
 		'#id' => 'mainImageFieldset',
 		'#type' => 'fieldset',
-		'#title' => t('Current image'),
+		'#title' => t('Current Observation'),
 		'#weight' => 6
 	);
 	

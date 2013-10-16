@@ -51,6 +51,14 @@ function initializeCache() {
 			// cache all fetched database data
 			cacheAllData(result);
 			
+			//display total number of observations
+			if(generalInformation['total'] == 1) {
+				$('#totalObservations').html(generalInformation['total'] + ' ' + Drupal.t('Observation'));
+			} else {
+				$('#totalObservations').html(generalInformation['total'] + ' ' + Drupal.t('Observations'));
+			}
+	
+			
 			// load the first image sources from the cache
 			mainImageHolder.attr('src', observations[imageIndex].fullsize_image_path);
 			
@@ -58,6 +66,10 @@ function initializeCache() {
 			$('#numberOfImages').html(observations[imageIndex].observation_images.images.length);
 			
 			currentMainImageIndex = imageIndex;
+			var observationNumber = imageIndex + 1;
+			//display current observatio number of total
+			$('#mainImageFieldset .fieldset-legend').html(Drupal.t('Current Observation') + ': '  + observationNumber + '/' + generalInformation['total']);
+			
 			prepareSlideShow();
 			
 			initLightBox();
