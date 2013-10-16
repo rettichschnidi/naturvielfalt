@@ -165,9 +165,6 @@ function loadImagesFromCache() {
 			currentImageHolders[i].show();
 		}
 	}
-	$('#imagesContainer').waitForImages(function() {
-		navigationDisabled = false;
-	});
 }
 
 /**
