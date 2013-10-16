@@ -294,7 +294,10 @@ function moveImages(steps, replaceMainImage) {
  */
 function animateMainImage(replaceMainImage) {
 	if (replaceMainImage) {
+		//display current observatio number of total
 		currentMainImageIndex = checkIndex(imageIndex + stepsToMove - 1);
+		var observationNumber = currentMainImageIndex + 1;
+		$('#mainImageFieldset .fieldset-legend').html(Drupal.t('Current Observation') + ': '  + observationNumber + '/' + generalInformation['total']);
 		
 		// Fade main image out
 		$("#mainImageContainer").animate({
