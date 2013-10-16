@@ -8,7 +8,7 @@ function initializeSelectBox() {
 	// define suggest button animation on mouse hover
 	$(".entry").hover(function() {
 		$(this).find(".suggestButton").stop(true, false).animate({ opacity: 1, right: 0 }, 200);
-		(this).stop(true, true).animate({ height: $(this).find(".entryCommentsContainer").outerHeight() + $(this).height() }, 500);
+		$(this).stop(true, true).animate({ height: $(this).find(".entryCommentsContainer").outerHeight() + $(this).height() }, 500);
 	}, function() {
 		$(this).find(".suggestButton").stop(true, false).animate({ opacity: 0, right: -120 }, 200);
 		$(this).stop(true, true).animate({ height: $(this).height() - $(this).find(".entryCommentsContainer").outerHeight() }, 500);
