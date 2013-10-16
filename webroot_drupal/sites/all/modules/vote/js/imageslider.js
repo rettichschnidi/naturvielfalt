@@ -257,9 +257,8 @@ function moveImages(steps, replaceMainImage) {
 		return;
 	}
 	
-	//if imageIndex + step is greater then pagesize, and more images are available on server, fetch next page first to load the images
-	//if we are replacing the main image, the images skip additional 4 images, so we have to check, if we need to fetch more images.
-	tmpsteps = (replaceMainImage) ? imageIndex + steps + 4 : imageIndex-1 + steps;
+	//if imageIndex + step + 4  is greater then pagesize, and more images are available on server, fetch next page first to load the images
+	tmpsteps = imageIndex + steps + 4;
 	if(tmpsteps >= page*pageSize && page*pageSize < parseInt(generalInformation['total'])) {
 		navigationDisabled = true;
 		fetchNextImages(steps, replaceMainImage);
