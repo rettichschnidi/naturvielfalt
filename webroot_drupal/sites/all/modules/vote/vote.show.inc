@@ -247,13 +247,20 @@ EOT;
 	);
 	
 	$render_array['ownVerification'] = array(
-		'#id' => 'ownVerification',
-		'#type' => 'fieldset',
-		'#title' => t('Own verification'),
-		'#weight' => 14
+			'#id' => 'ownVerification',
+			'#type' => 'fieldset',
+			'#title' => t('Own verification'),
+			'#weight' => 14
 	);
 	
-	$render_array['ownVerification']['form'] = drupal_get_form('own_verification_form');
+	if(user_access(VOTE_WRITE)) {
+		$render_array['ownVerification']['form'] = drupal_get_form('own_verification_form');
+	} else {
+		$render_array['ownVerification']['form'] = array(
+			'#type' => 'markup',
+			'#markup' => '<b>'.t('To help with the determination of species, you have to be <a href="@loginurl">logged in</a>. <br><a href="@registerurl">Register now</a> if you do not have an account yet.', array('@loginurl' => url('user'), '@registerurl' => url('user/register'))).'</b>'
+		);
+	}
 	
 	return $render_array;
 }
