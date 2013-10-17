@@ -757,7 +757,7 @@ function organism_search_organism_json($artgroup, $string) {
 				LIMIT :limit;';
 	
 	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
-	
+	$matches = array();
 		foreach ($result as $row) {
 			if($row->ol_name != "") {
 				$matches[$row->ol_name] = $row->ol_name.'<br><em>'.$row->scientific_name.'</em>';
