@@ -24,9 +24,7 @@ function fetch_observation_data($page) {
 	$mainArray['general']['total'] = getTotalObservationsCount();
 	
 	$mainArray['observations'] = getObservations($page);
-	//we fetch all verifications on the first page.. observations are much heavier
-	if($page == 1)
-		$mainArray['verifications'] = getVerifications();
+	$mainArray['verifications'] = getVerifications();
 	
 	return drupal_json_output($mainArray);
 }
@@ -203,6 +201,7 @@ function getVerifications() {
 	$i = 0;
 	foreach ($output as &$row) {
 		$returnArray[$i]['observation_id'] = $row->observation_id;
+		$returnArray[$i]['artgroup_id'] = organism_artgroup_get_organsim_in_artgroup($row->organism_id,true);
 		$returnArray[$i]['organism_id'] = $row->organism_id;
 		$returnArray[$i]['scientific_name'] = $row->scientific_name;
 		$returnArray[$i]['translated_name'] = $row->translated_name;
@@ -218,7 +217,6 @@ function getVerifications() {
 
 function vote_save() {
 	$values = $_POST;
-	
 	global $user;
 	$date = $values['date'];
 	$time = $values['time'];
@@ -241,29 +239,42 @@ function vote_save() {
 		$verification['vote_timestamp'] = mktime(null, null, null, $date_parts[1], $date_parts[0], $date_parts[2]);
 	}
 	
-	// check if the current user already voted for this observation and replace it with the new one, if yes
+	// check if the current user already voted for this observation and replace it with the new one, if yes only update his vote
 	$result = db_select('vote', 'v')
 		->fields('v')
 		->condition('observation_id', $verification['observation_id'], '=')
 		->condition('user_id', $verification['user_id'], '=')
 		->execute();
 	$already_voted = $result->rowCount() > 0;
+	$output = array();
 	
-	if ($already_voted) {
-		db_update('vote')
-		->fields(array(
-		    'organism_id' => $verification['organism_id'],
-		    'vote_timestamp' => $verification['vote_timestamp'],
-		    'vote_comment' => $verification['vote_comment']
-		))
-		->condition('observation_id', $verification['observation_id'], '=')
-		->condition('user_id', $verification['user_id'], '=')
-		->execute();
-	} else {
-		db_insert('vote')->fields($verification)->execute();
+	$transaction = db_transaction();
+	try {
+		if ($already_voted) {
+			db_update('vote')
+			->fields(array(
+			    'organism_id' => $verification['organism_id'],
+			    'vote_timestamp' => $verification['vote_timestamp'],
+			    'vote_comment' => $verification['vote_comment']
+			))
+			->condition('observation_id', $verification['observation_id'], '=')
+			->condition('user_id', $verification['user_id'], '=')
+			->execute();
+		} else {
+			db_insert('vote')->fields($verification)->execute();
+		}
+		$output['success'] = true;
+		$output['alreadyVoted'] = $already_voted;
+	} catch (Exception $e) {
+		$transaction->rollback();
+		$output['success'] = false;
 	}
 	
-	$organismToSave = organism_get($organismId['id']);
-	
-	return drupal_json_output($organismToSave);
+	if($output['success']) {
+		$output['organism'] = organism_get($organismId['id']);
+		$output['organism']['artgroup_id'] = organism_artgroup_get_organsim_in_artgroup(
+			$organismId['id'],
+			true);
+	}
+	return drupal_json_output($output);
 }

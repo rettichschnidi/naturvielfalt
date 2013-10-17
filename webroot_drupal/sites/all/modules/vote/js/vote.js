@@ -38,18 +38,28 @@ function submitVerification() {
 			success: function(result){
 				// scroll to the top of the page to display the next observation
 				$('html, body').animate({ scrollTop: 0 });
-				observation.setMessage(Drupal.t('Verification saved.'), 'status', 5000);
+				if(result.success)
+					if(result.alreadyVoted)
+						observation.setMessage(Drupal.t('You have already verified this observation. Your verification has been changed accordingly.'), 'status', 5000);
+					else 
+						observation.setMessage(Drupal.t('Verification saved.'), 'status', 5000);
+				else {
+					observation.setMessage(Drupal.t('Could not save the verification. Please try again.'), 'error', 5000);
+					return;
+				}
+				
 				var currentVerifications = getVerificationsForObservation(observations[currentMainImageIndex].observation_id);
 				
-				if (result.name_lang == null) {
-					result.name_lang = Drupal.t("No translation available");
+				if (result.organism.name_lang == null) {
+					result.organism.name_lang = Drupal.t("No translation available");
 				}
 				var myVote = {
 					comment: $('#comment').val(),
 					observation_id: observations[currentMainImageIndex].observation_id.toString(),
-					organism_id: result.id,
-					scientific_name: result.name_lat,
-					translated_name: result.name_lang,
+					organism_id: result.organism.organism_id,
+					artgroup_id: result.organism.artgroup_id,
+					scientific_name: result.organism.name_lat,
+					translated_name: result.organism.name_lang,
 					user_id: generalInformation.current_user_id.toString(),
 					user_name: generalInformation.current_user_name,
 					vote_timestamp: Math.round((new Date()).getTime() / 1000).toString() 
@@ -167,8 +177,12 @@ function initializeVotesFromOtherUsers() {
 			var votesForCurrentOrganism = verificationsPerOrganism[i].verifications.length;
 			var votesPercent = Math.round(votesForCurrentOrganism / totalVotes * 100, 0);
 			
+			if (verificationsPerOrganism[i].verifications[0].translated_name == null) {
+				verificationsPerOrganism[i].verifications[0].translated_name = Drupal.t("No translation available");
+			}
 			htmlString +=		'<div class="entry">'
 							  + '<div class="progressBar" style="width: ' + votesPercent + '%;">'
+							  + '<input type="hidden" id="hiddenArtgroupId" value="' + verificationsPerOrganism[i].verifications[0].artgroup_id + '">'
 							  + '<span class="translatedDescription">' + verificationsPerOrganism[i].verifications[0].translated_name + '</span>'
 							  + '<span class="latinDescription"><i>' + verificationsPerOrganism[i].verifications[0].scientific_name + '</i></span>'
 							  + '<span class="votes">' + votesForCurrentOrganism + ' ' + Drupal.t('verifications') + '</span>'

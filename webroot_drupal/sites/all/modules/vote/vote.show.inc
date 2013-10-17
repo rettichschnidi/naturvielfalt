@@ -284,11 +284,14 @@ function own_verification_form($form, &$form_state) {
 			'#tree' => true,
 	);
 	
+	$options = organism_artgroup_get_all_as_array();
+	unset($options[UNKNOWN_ARTGROUP]); //remove unkown artgroup, because you cant vote it
+	
 	$form['group']['artgroup_id'] = array(
 			'#id' => 'artgroup_id',
 			'#title' => t('Filter on species group'),
 			'#type' => 'select',
-			'#options' => organism_artgroup_get_all_as_array(),
+			'#options' => $options,
 			'#default_value' => $artgroup_id,
 			'#ajax' => array(
 					'event' => 'change',
@@ -387,7 +390,7 @@ function own_verification_form_add_js_tools($form, &$form_state) {
     			});
 	 		});
 			
-			jQuery("#submitVerification").live("click", function() {
+			jQuery("#submitVerification").off().on("click", function() {
 				submitVerification();
 			});
 
