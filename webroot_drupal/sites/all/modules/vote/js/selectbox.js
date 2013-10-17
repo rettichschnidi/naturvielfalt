@@ -16,11 +16,15 @@ function initializeSelectBox() {
 	
 	//	add event to accept buttons
 	$(".suggestButton").click(function() {
-		$('#organism_name').val($(this).parent().find(".translatedDescription").html());
+		$('#artgroup_id').val($(this).parent().find("#hiddenArtgroupId").val());
+		var organism_name = $(this).parent().find(".translatedDescription").html();
+		if(organism_name == Drupal.t("No translation available")) //if no translation is available, use latin name
+			organism_name = $(this).parent().find(".latinDescription").text();
+		$('#organism_name').val(organism_name);
 		$('html, body').animate({ scrollTop: $("#ownVerification").offset().top });
 	});
 	
-//	// define comment box animation on mouse click
+//	// integrated in .hover()
 //	$(".entry").toggle(function() {
 //		$(this).stop(true, true).animate({ height: $(this).find(".entryCommentsContainer").outerHeight() + $(this).height() }, 500);
 //	}, function(){
