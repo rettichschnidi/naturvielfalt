@@ -7,13 +7,14 @@
 #  js/imageslider.js: n/a
 #  vote.module: n/a
 #  vote.info: n/a
+#  js/selectbox.js: n/a
 #  js/vote.js: n/a
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2013-10-16 15:20+0200\n"
-"PO-Revision-Date: 2013-10-16 15:22+0100\n"
+"POT-Creation-Date: 2013-10-17 12:50+0200\n"
+"PO-Revision-Date: 2013-10-17 12:52+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +40,7 @@ msgstr ""
 msgid "Artgroup Settings"
 msgstr "Artgruppe Einstellungen"
 
-#: vote.show.inc:101;289
+#: vote.show.inc:101;292
 msgid "Filter on species group"
 msgstr "Artengruppe filtern"
 
@@ -85,36 +86,36 @@ msgstr ""
 "\"@loginurl\">einloggen</a>. <br><a href=\"@registerurl\">Registrieren Sie "
 "sich jetzt</a> wenn Sie noch keinen Account haben und legen Sie gleich los."
 
-#: vote.show.inc:307
+#: vote.show.inc:310
 msgid "Search for species"
 msgstr "Art suchen"
 
-#: vote.show.inc:310
+#: vote.show.inc:313
 msgid "Maximum 30 search results will be showed."
 msgstr "Es werden maximal 30 Suchresultate angezeigt"
 
-#: vote.show.inc:312
+#: vote.show.inc:315
 msgid "Start typing to see the species..."
 msgstr "Geben Sie etwas ein.."
 
-#: vote.show.inc:322
+#: vote.show.inc:325
 msgid "Date of the verification"
 msgstr "Datum der Verifizierung"
 
-#: vote.show.inc:332
+#: vote.show.inc:335
 msgid "Time of the verification"
 msgstr "Zeit der Verifizierung"
 
-#: vote.show.inc:342
+#: vote.show.inc:345
 msgid "Comment your choice"
 msgstr "Ihr Kommentar"
 
-#: vote.show.inc:344
+#: vote.show.inc:347
 msgid "Add a note to explain your choice so others can learn from you."
 msgstr ""
 "Erklären Sie Ihre Wahl, sodass andere Benutzer von Ihnen lernen können."
 
-#: vote.show.inc:349
+#: vote.show.inc:352
 msgid "Submit verification"
 msgstr "Verifizierung senden"
 
@@ -170,15 +171,27 @@ msgstr ""
 "Die benötigten Informationen konnten nicht geladen werden. Bitte laden Sie "
 "die Seite neu."
 
+#: js/selectbox.js:0 js/vote.js:0;0
+msgid "No translation available"
+msgstr "Keine Übersetzung vorhanden"
+
 #: js/vote.js:0
 msgid "Please choose an organism for the verification."
 msgstr "Wählen Sie eine Art für die Verifizierung"
 
 #: js/vote.js:0
-msgid "No translation available"
-msgstr "Keine Übersetzung vorhanden"
+msgid ""
+"You have already verified this observation. Your verification has been "
+"changed accordingly."
+msgstr ""
+"Sie haben diese Beobachtunge bereits verifiziert. Ihre bisherigen Angaben "
+"wurden entsprechend angepasst."
 
 #: js/vote.js:0
+msgid "Verification saved."
+msgstr "Verifizierung erfolgreich gespeichert."
+
+#: js/vote.js:0;0
 msgid "Could not save the verification. Please try again."
 msgstr ""
 "Die Verifizierung konnte nicht gespeichert werden. Bitte versuchen Sie es "
