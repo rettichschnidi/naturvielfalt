@@ -24,7 +24,7 @@ function fetch_observation_data($page) {
 	$mainArray['general']['total'] = getTotalObservationsCount();
 	
 	$mainArray['observations'] = getObservations($page);
-	$mainArray['verifications'] = getVerifications();
+	$mainArray['verifications'] = getVerifications($mainArray['observations']);
 	
 	return drupal_json_output($mainArray);
 }
@@ -176,11 +176,17 @@ function getObservations($page) {
 	return $observationsArray;
 }
 
-function getVerifications() {
+function getVerifications($observations) {
 	global $language;
 	global $user;
 	
 	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
+	
+	$whereClause = ' WHERE (';
+	 foreach($observations as $observation) {
+	 		$whereClause .= 'v.observation_id = '.$observation['observation_id'].' OR ';
+	}
+	$whereClause = substr($whereClause, 0, -4) . ')';
 	
 	$sql =	'SELECT v.vote_id AS vote_id,'
 			.' v.observation_id AS observation_id,'
@@ -194,7 +200,8 @@ function getVerifications() {
 			.' FROM {vote} v'
 			.' LEFT JOIN {organism} o ON (v.organism_id = o.id)'
 			.' LEFT JOIN {organism_lang} ol ON ol.organism_id = o.id AND ol.languages_language = \'' . db_escape_field($langcode) . '\''
-			.' LEFT JOIN {users} u ON (v.user_id = u.uid)';
+			.' LEFT JOIN {users} u ON (v.user_id = u.uid)'
+			.$whereClause;
 	
 	$output = db_query($sql)->fetchAll();
 	
