@@ -3,6 +3,7 @@ var wrapper;
 var page = 1;
 var pagesize = 4;
 var total = 9007199254740992; //max int
+var entriesInfos;
 
 jQuery(document).ready(function() {
 	$ = jQuery;
@@ -10,7 +11,7 @@ jQuery(document).ready(function() {
 	wrapper = $('.new_observations_wrapper');
 	if(fetchPage(page)) {
 		page++;
-		initialize();
+		initializeScrolling();
 	};
 	
 });
@@ -25,6 +26,7 @@ function fetchPage(page) {
 			showLoading(false,function() {
 				total = result.total;
 				wrapper.append(result.content);
+				entriesInfos = getEntriesInfos();
 				initLightBox();
 			});
 		},
@@ -38,10 +40,21 @@ function fetchPage(page) {
 	return true;
 }
 
+function getEntriesInfos() {
+	var totalHeight = 0;
+	var averageHeight = 0;
+	var count = 0;
+	$('.observation_entry').each(function(index, element) {
+		totalHeight += $(this).height();
+		count ++;
+	});
+	averageHeight = totalHeight/count;
+	return { count : count, totalHeight : totalHeight, averageHeight : averageHeight};
+}
 /**
  * Initialize the select box.
  */
-function initialize() {
+function initializeScrolling() {
 	var offset = 0; // current scrolling "amount"
 	var scrollStep = 15;
 	var elementSize = 235;
@@ -57,7 +70,7 @@ function initialize() {
 	    	if(scrollUp && wrapperPostion.top + offset >= 0) {
 				offset = 0;
 			}
-		    if (container.height() + offset > ((page-1)*pagesize * elementSize)) {
+	    	if (wrapper.height() + offset > ((page-1)*pagesize * entriesInfos.averageHeight)) {
 		    	offset = 0;
 		    }
 	        if (offset != 0) {
@@ -89,7 +102,8 @@ function initialize() {
 			offset = 0;
 			return;
 		}
-	    if (container.height() + offset > ((page-1)*pagesize * elementSize)) {
+		entriesInfos = getEntriesInfos();
+	    if (wrapper.height() + offset > ((page-1)*pagesize * entriesInfos.averageHeight)) {
 	    	if(fetchPage(page)) {
 	    		page++;
 	    	} else {
