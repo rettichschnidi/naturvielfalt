@@ -13,7 +13,7 @@ module_load_include('inc', 'organism', 'organism.artgroup');
 module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
-define('PAGESIZE', 24);
+define('VOTE_VOTE_PAGESIZE', 24);
 
 function fetch_observation_data($page) {
 	global $user;
@@ -147,7 +147,7 @@ function getObservations($page) {
 			. $joins
 			. $whereClause
 			.' ORDER BY current_user_votes, votes, date DESC'
-			.' OFFSET '.($page-1)*PAGESIZE.' LIMIT '.PAGESIZE;
+			.' OFFSET '.($page-1)*VOTE_PAGESIZE.' LIMIT '.VOTE_PAGESIZE;
 	
 	$output = db_query($sql)->fetchAll();
 	

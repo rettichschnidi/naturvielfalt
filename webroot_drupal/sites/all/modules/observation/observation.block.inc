@@ -1,6 +1,6 @@
 <?php
 
-define('PAGESIZE', 4);
+define('OBSERVATION_BLOCK_OBSERVATION_BLOCK_PAGESIZE', 4);
 /**
  * hook_block_info:
  * declares blocks provided by the observation module
@@ -64,7 +64,7 @@ function observation_block_new_observations_content_ajax() {
 	if(!isset($_POST['page']) || !ctype_digit($_POST['page']) || $_POST['page'] < 1)
 		return '';
 	
-	$observations = observation_get_new_observations(($page-1) * PAGESIZE, PAGESIZE);
+	$observations = observation_get_new_observations(($page-1) * OBSERVATION_BLOCK_PAGESIZE, OBSERVATION_BLOCK_PAGESIZE);
 	$content = array();
 	foreach($observations as $observation) {
 		$observation = (array)$observation;

@@ -124,7 +124,7 @@ function fetchNextImages(steps, replaceMainImage) {
  */
 function initLightBox() {
 	var galleryLightboxSettings = {
-		captionSelector : ".block_newest_observation_img_caption",
+		captionSelector : ".caption",
 		captionAttr : false,
 		captionHTML : true,
 	};
