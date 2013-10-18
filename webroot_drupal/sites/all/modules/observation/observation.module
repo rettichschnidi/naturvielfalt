@@ -327,6 +327,17 @@ function observation_menu() {
 			'type' => MENU_CALLBACK
 	);
 	
+	$items['observation/block/newobservations'] = array(
+			'title' => 'New observations ajax callback (block)',
+			'description' => 'Callback to receive the contents of the new observations block (ajax)',
+			'page callback' => 'observation_block_new_observations_content_ajax',
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.block.inc',
+			'type' => MENU_CALLBACK
+	);
+	
 	return $items;
 }
 
