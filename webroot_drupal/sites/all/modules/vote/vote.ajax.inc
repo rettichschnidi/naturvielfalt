@@ -13,7 +13,7 @@ module_load_include('inc', 'organism', 'organism.artgroup');
 module_load_include('inc', 'observation', 'observation.delete');
 module_load_include('inc', 'datatable');
 
-define('VOTE_VOTE_PAGESIZE', 24);
+define('VOTE_PAGESIZE', 24);
 
 function fetch_observation_data($page) {
 	global $user;
