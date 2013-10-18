@@ -886,14 +886,14 @@ function observation_get_new_observations_count() {
 
 	$imagetypes = _gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes;
 
-	$query = db_select('observation', 'o');
-	$query->leftJoin('area_geometry', 'a_s', 'o.area_geometry_id = a_s.id');
-	$query->leftJoin('organism', 'org', 'o.organism_id = org.id');
-	$query->leftJoin('organism_lang', 'ol', 'o.organism_id = ol.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\'');
-	$query->leftJoin('organism_artgroup', 'oa', 'o.organism_artgroup_id = oa.id');
+	$query = db_select('{observation}', 'o');
+	$query->leftJoin('{area_geometry}', 'a_s', 'o.area_geometry_id = a_s.id');
+	$query->leftJoin('{organism}', 'org', 'o.organism_id = org.id');
+	$query->leftJoin('{organism_lang}', 'ol', 'o.organism_id = ol.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\'');
+	$query->leftJoin('{organism_artgroup}', 'oa', 'o.organism_artgroup_id = oa.id');
 
-	$subselect = db_select('gallery_image', 'gi');
-	$subselect->leftJoin('file_managed', 'fm', 'gi.file_managed_fid = fm.fid');
+	$subselect = db_select('{gallery_image}', 'gi');
+	$subselect->leftJoin('{file_managed}', 'fm', 'gi.file_managed_fid = fm.fid');
 	$subselect->addExpression('COUNT(gi.id)', 'imagescount');
 	$subselect->fields('gi', array('item_id'));
 	$subselect->condition('gi.item_type', 'observation')
@@ -901,9 +901,9 @@ function observation_get_new_observations_count() {
 	->groupBy('gi.item_id');
 	$query->addJoin('LEFT', $subselect, 'images', 'images.item_id = o.id');
 
-	$query->leftJoin('acl_sgroup', 'ag', 'ag.acl_id = o.acl_id');
-	$query->leftJoin('sgroup', 'g', 'g.id = ag.sgroup_id');
-	$query->leftJoin('acl_users', 'au', 'au.users_id = 0');
+	$query->leftJoin('{acl_sgroup}', 'ag', 'ag.acl_id = o.acl_id');
+	$query->leftJoin('{sgroup}', 'g', 'g.id = ag.sgroup_id');
+	$query->leftJoin('{acl_users}', 'au', 'au.users_id = 0');
 		
 	$query->fields('o', array('id', 'date', 'organism_id', 'organism_artgroup_id', 'observer'))
 	->fields('oa', array('name'))

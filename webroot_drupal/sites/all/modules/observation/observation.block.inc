@@ -1,6 +1,6 @@
 <?php
 
-define('OBSERVATION_BLOCK_OBSERVATION_BLOCK_PAGESIZE', 4);
+define('OBSERVATION_BLOCK_PAGESIZE', 4);
 /**
  * hook_block_info:
  * declares blocks provided by the observation module
