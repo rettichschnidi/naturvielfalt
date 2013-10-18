@@ -20,7 +20,7 @@ function fetchPage(page) {
 	showLoading(true);
 	$.ajax({
 		type: "POST",
-		url: "observation/block/newobservations",
+		url: "http://naturvielfalt.ch/observation/block/newobservations",
 		success: function(result){
 			showLoading(false,function() {
 				total = result.total;
