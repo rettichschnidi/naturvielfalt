@@ -138,6 +138,22 @@ span.datatable_gallery_icons input.gridSelect {
 }
 
 /* Block new Observations */
+
+.new_observations_wrapper {
+	height:960px;
+    margin:0 auto;
+    position:relative;
+}
 .new_observations_container {
-	
+	height:auto;
+    float:left;
+    overflow:hidden;
+}
+
+#block_newest_observation_img {
+	max-height:165px;
+}
+
+.block_newest_observation_img_caption {
+	display:none;
 }
