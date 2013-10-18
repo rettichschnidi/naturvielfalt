@@ -220,7 +220,7 @@ body {
 }
 
 .region-sidebar-second .section {
-  margin: 0 0 0 10px; /* LTR */
+  margin: 0 0 0 0; /* LTR */
   padding: 0;
 }
 
