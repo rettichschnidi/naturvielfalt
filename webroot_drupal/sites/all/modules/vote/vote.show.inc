@@ -67,6 +67,11 @@ function vote_show_artgroup($artgroup_id = NULL) {
 	return vote_show_overview($artgroup_id);
 }
 
+function vote_show() {
+	unset($_SESSION["vote_observations_filter"]);
+	return vote_show_overview();
+}
+
 function vote_show_overview($artgroup_id = 0) {
 	$render_array['message'] = array(
 			'#type'   => 'markup',
