@@ -404,20 +404,20 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$arguments = array();
 	
-// 	// if the search is for a date, convert it to timestamp to find the results in the db
-// 	if (isset($_REQUEST['query'])) {
-// 		$date_split = explode('.', $_REQUEST['query']);
-// 		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
-// 			// cast to string because datatable_dbRequest checks for query to be a string
-// 			$_REQUEST['query'] = (string) mktime(
-// 			null,
-// 			null,
-// 			null,
-// 			$date_split[1],
-// 			$date_split[0],
-// 			$date_split[2]);
-// 		}
-// 	}
+	// if the search is for a date, convert it to timestamp to find the results in the db
+	if (isset($_REQUEST['query'])) {
+		$date_split = explode('.', $_REQUEST['query']);
+		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
+			// cast to string because datatable_dbRequest checks for query to be a string
+			$_REQUEST['query'] = (string) mktime(
+			null,
+			null,
+			null,
+			$date_split[1],
+			$date_split[0],
+			$date_split[2]);
+		}
+	}
 	
 	$langcode = (isset($user->language) && !empty($user->language))
 		? $user->language
@@ -734,7 +734,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			
 		}		
 		
-		//now make changes to fields, that also need adjustments in export (csv)
+		//now make changes to fields, that need adjustments in export (csv) and normal view
 		
 		// translated organism name
 		if($row['cell']['organism_id'] == UNKNOWN_SPECIES)
@@ -755,6 +755,11 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
+		
+		//if we are exporting and comment is not null, remove commas from comment, since we are exporting to csv
+		if($export && !empty($row['cell']['comment'])) {
+			$row['cell']['comment'] = str_replace(',', '', $row['cell']['comment']);
+		}
 	}
 			
 	return $output;
