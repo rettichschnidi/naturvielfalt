@@ -20,7 +20,7 @@ define('VOTE_WRITE', 'vote for an organism');
 function vote_menu() {
 	$items['vote'] = array(
 			'title' => 'Who knows it?',
-			'page callback' => 'vote_show_overview',
+			'page callback' => 'vote_show',
 			'access arguments' => array(
 					VOTE_ACCESS
 			),
