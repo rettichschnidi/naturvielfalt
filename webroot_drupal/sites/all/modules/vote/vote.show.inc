@@ -18,6 +18,7 @@ drupal_add_css(drupal_get_path('module', 'gallery') . '/css/gallery.css');
 drupal_add_css(drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css');
 
 function vote_show_observation($observation_ids = NULL) {
+	unset($_SESSION["vote_observations_filter"]);
 	$vote_observations_filter = array();
 
 	if ($observation_ids != null) {
@@ -30,6 +31,7 @@ function vote_show_observation($observation_ids = NULL) {
 }
 
 function vote_show_organism($organism_id = NULL) {
+	unset($_SESSION["vote_observations_filter"]);
 	$vote_observations_filter = array();
 	
 	if ($organism_id != null) {
@@ -45,6 +47,7 @@ function vote_show_organism($organism_id = NULL) {
 }
 
 function vote_show_artgroup($artgroup_id = NULL) {
+	unset($_SESSION["vote_observations_filter"]);
 	$vote_observations_filter = array();
 	
 	if ($artgroup_id != null) {
