@@ -29,12 +29,17 @@ function observation_block_info() {
  * @return array $blocks
  */
 function observation_block_view($delta = '') {
+	//<img id="loadingImage" src="/' . drupal_get_path('module', 'observation') . '/img/loading.gif" />
 	switch($delta) {
 		case 'new_observations' :
 			$block['subject'] = t('New observations');
 			$block['content'] = array(
 			'#type' => 'markup',
-			'#markup' => '<div class="new_observations_container"><div class="new_observations_wrapper"></div></div>',
+			'#markup' => '<div class="new_observations_container">
+								<div class="new_observations_wrapper">
+									
+								</div>
+						  </div>',
 			'#attached' => array(
 					'css' => array(
 							drupal_get_path('module', 'observation') . '/css/observation.css',
@@ -60,7 +65,6 @@ function observation_block_view($delta = '') {
  */
 function observation_block_new_observations_content_ajax() {
 	$page = $_POST['page'];
-	$limit = $_POST['limit'];
 	if(!isset($_POST['page']) || !ctype_digit($_POST['page']) || $_POST['page'] < 1)
 		return '';
 	
@@ -95,7 +99,7 @@ function observation_block_new_observations_content_ajax() {
 					. $captionclass . '">'
 							. ($caption ? '<p class="captionText">' . $caption . '</p>'
 									: '').'</div>';
-			$img =  '<a class="lightbox" href="'.$url_large.'"><img id="observation_img" class="observation_img'.$observation['id'].'" src="'. $url_preview . '" title="' . $tmp_Img['title'] . '" alt="' . $tmp_Img['title'] . '" />'.$imgfooter.'</a>';
+			$img =  '<a class="lightbox" href="'.$url_large.'"><img id="observation_img" class="observation_img'.$observation['id'].'" src="'. $url_preview . '" title="' . $tmp_img['title'] . '" alt="' . $tmp_img['title'] . '" />'.$imgfooter.'</a>';
 		} 
 		if($observation['organism_id'] == UNKNOWN_SPECIES) {
 			$observation['ol_name'] = t('Unknown species');

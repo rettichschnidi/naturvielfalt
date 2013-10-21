@@ -3,22 +3,22 @@ var wrapper;
 var page = 1;
 var pagesize = 4;
 var total = 9007199254740992; //max int
-var entriesInfos;
+var isFetchingResults = false;
 
 jQuery(document).ready(function() {
 	$ = jQuery;
 	container = $('.new_observations_container');
 	wrapper = $('.new_observations_wrapper');
 	if(fetchPage(page)) {
-		page++;
 		initializeScrolling();
 	};
 	
 });
 
-function fetchPage(page) {
-	if((page+1) * pagesize >= total) return false; //no more observations to fetch
+function fetchPage(currentPage) {
+	if(isFetchingResults || (currentPage > 1 && (currentPage) * pagesize >= total)) return false; //no more observations to fetch
 	showLoading(true);
+	isFetchingResults = true;
 	$.ajax({
 		type: "POST",
 		url: Drupal.settings.basePath + "observation/block/newobservations",
@@ -26,38 +26,28 @@ function fetchPage(page) {
 			showLoading(false,function() {
 				total = result.total;
 				wrapper.append(result.content);
-				entriesInfos = getEntriesInfos();
 				initLightBox();
+				page++;
+				isFetchingResults = false;
 			});
 		},
 		error: function(result) {
+			isFetchingResults = false;
 			showLoading(false);
 		},
 		data: {
-			page: page
+			page: currentPage
 		}
 	});
 	return true;
 }
 
-function getEntriesInfos() {
-	var totalHeight = 0;
-	var averageHeight = 0;
-	var count = 0;
-	$('.observation_entry').each(function(index, element) {
-		totalHeight += $(this).height();
-		count ++;
-	});
-	averageHeight = totalHeight/count;
-	return { count : count, totalHeight : totalHeight, averageHeight : averageHeight};
-}
 /**
  * Initialize the select box.
  */
 function initializeScrolling() {
 	var offset = 0; // current scrolling "amount"
 	var scrollStep = 15;
-	var elementSize = 235;
 	var scrollUp = false;
 	var scrolling = false;
 	
@@ -67,10 +57,11 @@ function initializeScrolling() {
 	    }, 100, 'linear',function() {
 	    	scrolling = false;
 	    	var wrapperPostion = wrapper.position();
+	    	var wrapperOffset = wrapper.offset(); 
 	    	if(scrollUp && wrapperPostion.top + offset >= 0) {
 				offset = 0;
 			}
-	    	if (wrapper.height() + offset > ((page-1)*pagesize * entriesInfos.averageHeight)) {
+	    	if (!scrollUp && (wrapperOffset.top + wrapper.prop('scrollHeight') <= container.height())) {
 		    	offset = 0;
 		    }
 	        if (offset != 0) {
@@ -80,8 +71,9 @@ function initializeScrolling() {
 	}
 	
 	wrapper.mouseover(function(event) {
-		if(scrolling) return;
+		if(scrolling || isFetchingResults) return;
 		var containerOffset = container.offset(); 
+		var wrapperOffset = wrapper.offset(); 
     	var wrapperPostion = wrapper.position();
 	    var relY = event.pageY - containerOffset.top;
 		var containerMiddleY = container.height()/2.5;
@@ -102,11 +94,8 @@ function initializeScrolling() {
 			offset = 0;
 			return;
 		}
-		entriesInfos = getEntriesInfos();
-	    if (wrapper.height() + offset > ((page-1)*pagesize * entriesInfos.averageHeight)) {
-	    	if(fetchPage(page)) {
-	    		page++;
-	    	} else {
+	    if (!scrollUp && (wrapperOffset.top + wrapper.prop('scrollHeight') <= containerOffset.top + container.height())) {
+	    	if(!fetchPage(page)) { 
 	    		offset = 0;
 	    		return;
 	    	}
@@ -117,6 +106,7 @@ function initializeScrolling() {
 	wrapper.mouseout(function(event) {
 		offset = 0;
 		wrapper.stop(true, false);
+		scrolling = false;
 	});
 }
 

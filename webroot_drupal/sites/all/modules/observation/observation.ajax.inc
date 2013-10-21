@@ -816,7 +816,7 @@ function observation_overview_ajax_callback($observation_data = false) {
  * @param int $offset
  * @param int $limit
  */
-function observation_get_new_observations($offset= 0, $limit = 5) {
+function observation_get_new_observations($offset= 0, $limit = 4) {
 	global $user;
 	global $language;
 	
@@ -867,9 +867,8 @@ function observation_get_new_observations($offset= 0, $limit = 5) {
 	   $query->condition('imagescount', 0, '>')->condition($or)
 		   ->orderBy('date', 'DESC')
 		   ->orderBy('o.id', 'DESC')
-		   ->range($offset, $offset+$limit);
+		   ->range($offset, $limit);
 	  $result = $query->execute();		
-	
 	return $result->fetchAll();
 }
 
