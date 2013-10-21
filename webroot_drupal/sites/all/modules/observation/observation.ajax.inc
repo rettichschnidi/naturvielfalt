@@ -324,11 +324,14 @@ function observation_export() {
 	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids, NULL, NULL, true);
 	foreach ($observationdata['rows'] as $observationrow) {
 		$csv_output = '';
-		foreach ($dbFields as $dbField) {
+		foreach ($dbFields as $dbField) {;
 			$feld = mb_convert_encoding($observationrow['cell'][$dbField], 'pass', 'HTML-ENTITIES');
+			$feld = str_replace("\r\n", " ", $feld); // replace new line
+			$feld = str_replace(',', "", $feld); // replace commas
 			$feld = str_replace('"', "''", $feld); // replace double quotes with two single quotes to make it look the same and still be csv compatible
 			//$feld = str_replace(";", "", $feld); // if exported with IE then Excel doesn't like semikolons
 			$csv_output .= '"' . $feld . '",';
+			
 		}
 		$ausgabe .= substr($csv_output, 0, -1) . "\n";
 	}
@@ -404,20 +407,20 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$arguments = array();
 	
-	// if the search is for a date, convert it to timestamp to find the results in the db
-	if (isset($_REQUEST['query'])) {
-		$date_split = explode('.', $_REQUEST['query']);
-		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
-			// cast to string because datatable_dbRequest checks for query to be a string
-			$_REQUEST['query'] = (string) mktime(
-			null,
-			null,
-			null,
-			$date_split[1],
-			$date_split[0],
-			$date_split[2]);
-		}
-	}
+// 	// if the search is for a date, convert it to timestamp to find the results in the db
+// 	if (isset($_REQUEST['query'])) {
+// 		$date_split = explode('.', $_REQUEST['query']);
+// 		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
+// 			// cast to string because datatable_dbRequest checks for query to be a string
+// 			$_REQUEST['query'] = (string) mktime(
+// 			null,
+// 			null,
+// 			null,
+// 			$date_split[1],
+// 			$date_split[0],
+// 			$date_split[2]);
+// 		}
+// 	}
 	
 	$langcode = (isset($user->language) && !empty($user->language))
 		? $user->language
@@ -755,11 +758,6 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
-		
-		//if we are exporting and comment is not null, remove commas from comment, since we are exporting to csv
-		if($export && !empty($row['cell']['comment'])) {
-			$row['cell']['comment'] = str_replace(',', '', $row['cell']['comment']);
-		}
 	}
 			
 	return $output;
