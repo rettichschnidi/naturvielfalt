@@ -248,7 +248,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 function observation_export() {
 	// check if user is logged in
 	global $user;
-//	if (!isset($user)) {
 	if ($user->uid == 0) {
 		$output['success'] = false;
 		$output['type'] = 'error';
@@ -257,7 +256,7 @@ function observation_export() {
 	}
 	
 	// set header information
-	header('Content-type: text/plain');
+	header('Content-type: text/x-csv');
 	header('Content-Disposition: attachment; filename="observations.csv"');
 	
 	// source information in first row
@@ -322,8 +321,7 @@ function observation_export() {
 			$observation_ids = filter_xss($_REQUEST['oid']);
 		}
 	}
-	
-	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids);
+	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids, NULL, NULL, true);
 	foreach ($observationdata['rows'] as $observationrow) {
 		$csv_output = '';
 		foreach ($dbFields as $dbField) {
@@ -400,26 +398,26 @@ function observation_delete() {
  * @param array $inventory_ids
  * @param array(int) $organism_ids
  */
-function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL, $organism_ids = NULL) {
+function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL, $organism_ids = NULL, $export = false) {
 	global $user;
 	global $language;
 	
 	$arguments = array();
 	
-	// if the search is for a date, convert it to timestamp to find the results in the db
-	if (isset($_REQUEST['query'])) {
-		$date_split = explode('.', $_REQUEST['query']);
-		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
-			// cast to string because datatable_dbRequest checks for query to be a string
-			$_REQUEST['query'] = (string) mktime(
-			null,
-			null,
-			null,
-			$date_split[1],
-			$date_split[0],
-			$date_split[2]);
-		}
-	}
+// 	// if the search is for a date, convert it to timestamp to find the results in the db
+// 	if (isset($_REQUEST['query'])) {
+// 		$date_split = explode('.', $_REQUEST['query']);
+// 		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
+// 			// cast to string because datatable_dbRequest checks for query to be a string
+// 			$_REQUEST['query'] = (string) mktime(
+// 			null,
+// 			null,
+// 			null,
+// 			$date_split[1],
+// 			$date_split[0],
+// 			$date_split[2]);
+// 		}
+// 	}
 	
 	$langcode = (isset($user->language) && !empty($user->language))
 		? $user->language
@@ -621,35 +619,129 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	
-	foreach ($output['rows'] as &$row) {	 	
-		// select box
-		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
-		// show details
-		$row['cell']['showColumn'] = l(
-			'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
-			$base_url . '/observation/' . $row['id'] . '/show',
-			array(
-				'html' => true
-			));
-		// edit details
-		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
-			? l(
-				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
-				$base_url . '/observation/' . $row['id'] . '/edit',
+	foreach ($output['rows'] as &$row) {
+		//visual changes (display as links etc.)
+		if(!$export) {
+			// select box
+			$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
+			// show details
+			$row['cell']['showColumn'] = l(
+				'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+				$base_url . '/observation/' . $row['id'] . '/show',
 				array(
 					'html' => true
-				))
-			: '';
+				));
+			// edit details
+			$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
+				? l(
+					'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+					$base_url . '/observation/' . $row['id'] . '/edit',
+					array(
+						'html' => true
+					))
+				: '';
 		
-		// zoom in
-		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
-				
+		
+			// zoom in
+			$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
+		
+			if($row['cell']['organism_id'] != UNKNOWN_SPECIES) {
+				$row['cell']['organism_sc'] = l(
+						$row['cell']['organism_sc'],
+						$base_url . '/organism/' . $row['cell']['organism_id'],
+						array(
+								'html' => true
+						));
+			}
+			// Link observer soll Link sein
+			$row['cell']['observer'] = l(
+					$row['cell']['observer'],
+					$base_url . '/user/' . $row['cell']['users_uid'] ,
+					array(
+							'html' => true
+					));
+			
+			// link to inventory
+			if(user_access(ACCESS_INVENTORY)) {
+				$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+				l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
+				: '';
+			} else {
+				$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+				$row['cell']['inventory']
+				: '';
+			}
+			
+			// link to area
+			if(user_access(AREA_ACCESS)) {
+				$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+				l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
+				: '';
+			} else {
+				$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+				$row['cell']['area']
+				: '';
+			}
+			
+			// type of area (picture)
+			$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
+			'<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['areatype'] . '.png') . '" alt="'. t('type') . '" />'
+					: '';
+			
+			// get images
+			$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
+			
+			// thumbnail
+			$row['cell']['thumbnail'] = '';
+			if ($images['count'] > 0) {
+				// display the thumbnail (for the table view)
+				$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
+			}
+			
+			/**
+			 * create the html source for the gallery view
+			 */
+			$row['cell']['gallery_image'] = datatable_get_gallery_image(
+					$row['id'],
+					$row['cell']['organism_id'],
+					array(
+							'icons' => array(
+									'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');window.scrollTo(0,0);">',
+									$row['cell']['zoominColumn'],
+									$row['cell']['showColumn'],
+									$row['cell']['editColumn'],
+									$row['cell']['selectColumn']
+							),
+							'data' => array(
+									$row['cell']['artgroup_n'],
+									l(
+											$row['cell']['organism_sc'],
+											'organism/' . $row['cell']['organism_id'],
+											array(
+													'html' => true,
+													'attributes' => array(
+															'style' =>
+															'color: black;
+									text-decoration: underline;
+									font-style: italic;')
+											)),
+									$row['cell']['organism_l']
+							)
+					),
+					$row['cell']['acl_id'],
+					DATATABLE_IMGSRC_BELEG,
+					$images);
+			
+		}		
+		
+		//now make changes to fields, that also need adjustments in export (csv)
+		
 		// translated organism name
 		if($row['cell']['organism_id'] == UNKNOWN_SPECIES)
 			$row['cell']['organism_l'] = t('Unknown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
-		else
+		else if(!$export)
 			$row['cell']['organism_l'] = l(
 					$row['cell']['organism_l'],
 					$base_url . '/organism/' . $row['cell']['organism_id'],
@@ -657,98 +749,12 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 						'html' => true
 					));
 		
-		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xxX
-		$row['cell']['organism_sc'] = l(
-				$row['cell']['organism_sc'],
-				$base_url . '/organism/' . $row['cell']['organism_id'],
-				array(
-					'html' => true
-				));
-		// Link observer soll Link sein
-		$row['cell']['observer'] = l(
-				$row['cell']['observer'],
-				$base_url . '/user/' . $row['cell']['users_uid'] ,
-				array(
-						'html' => true
-				));
-		
 		
 		$row['cell']['date'] = date('d.m.Y H:i:s', $row['cell']['date']);
-		
-		// link to inventory
-		if(user_access(ACCESS_INVENTORY)) {
-			$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
-				l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
-				: '';
-		} else {
-			$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
-			$row['cell']['inventory']
-			: '';
-		}
-		
-		// link to area
-		if(user_access(AREA_ACCESS)) {
-			$row['cell']['area'] = (!empty($row['cell']['area'])) ?
-			l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
-			: '';
-		} else {
-			$row['cell']['area'] = (!empty($row['cell']['area'])) ?
-			$row['cell']['area']
-			: '';
-		}
-		
-		// type of area (picture)
-		$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
-		'<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['areatype'] . '.png') . '" alt="'. t('type') . '" />'
-		: '';
 		
 		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
-		
-		// get images
-		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
-		
-		// thumbnail
-		$row['cell']['thumbnail'] = '';
-		if ($images['count'] > 0) {
-			// display the thumbnail (for the table view)
-			$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
-		}
-		
-		/**
-		 * create the html source for the gallery view
-		 */
-		$row['cell']['gallery_image'] = datatable_get_gallery_image(
-			$row['id'],
-			$row['cell']['organism_id'],
-			array(
-				'icons' => array(
-					'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');window.scrollTo(0,0);">',
-					$row['cell']['zoominColumn'],
-					$row['cell']['showColumn'],
-					$row['cell']['editColumn'],
-					$row['cell']['selectColumn']
-				),
-				'data' => array(
-					$row['cell']['artgroup_n'],
-					l(
-						$row['cell']['organism_sc'],
-						'organism/' . $row['cell']['organism_id'],
-						array(
-							'html' => true,
-							'attributes' => array(
-								'style' =>
-									'color: black;
-									text-decoration: underline;
-									font-style: italic;')
-						)),
-					$row['cell']['organism_l']
-				)
-			),
-			$row['cell']['acl_id'],
-			DATATABLE_IMGSRC_BELEG,
-			$images);
 	}
 			
 	return $output;
