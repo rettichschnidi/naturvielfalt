@@ -196,11 +196,11 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 
 	$sTable = $Table . " " . $sJoins . " ";
 //  move values of JSON Object
-	$query = $_REQUEST['query'];
-	$qtype = $_REQUEST['qtype'];
-	if(!isset($query) || !isset($qtype)) {
+	if(!isset($_REQUEST['query']) || !isset($_REQUEST['qtype'])) {
 		$sWhere = $where;
 	} else {
+		$query = $_REQUEST['query'];
+		$qtype = $_REQUEST['qtype'];
 	//  Bestimmen wie viele Werte vom JSON übergeben wurden	
 		$i1 = 0;	
 		while (current($query)!==false) {

@@ -83,11 +83,17 @@ jQuery(document).ready(function() {
 			if (this.checked)
 				url += 'oid[]=' + $(this).val() + '&';
 		});
-		url = url.substring(0, url.length-1);
 		
 		// pass search, order and limit parameters
 		var gridPrefs = $table[0].p;
-		url += '&query=' + gridPrefs.query + '&qtype=' + gridPrefs.qtype;
+		for(var i = 0; i < gridPrefs.query.length; i++) {
+			url += 'query[]=' + gridPrefs.query[i] + '&';
+		}
+		for(var i = 0; i < gridPrefs.qtype.length; i++) {
+			url += 'qtype[]=' + gridPrefs.qtype[i] + '&';
+		}
+		url = url.substring(0, url.length-1);
+		
 		url += '&sortname=' + gridPrefs.sortname + '&sortorder=' + gridPrefs.sortorder;
 		url += '&rp=18446744073709551615';  // max limit for sql query, select all (2^64-1) rows
 		
