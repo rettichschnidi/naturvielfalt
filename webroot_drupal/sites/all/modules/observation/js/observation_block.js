@@ -109,11 +109,13 @@ function cacheAllData(result) {
 		//we need to save the height of the new content.. add it to dom, get display height and remove it again.
 		tmpDiv = $('<div style="height:auto">' + result.content[j] + '</div>');
 		container.append(tmpDiv.hide());
-		observations[i] = {
-				content: result.content[j++],
-				height: tmpDiv.height()
-		};
-		tmpDiv.remove();
+		tmpDiv.waitForImages(function() {
+			observations[i] = {
+					content: result.content[j++],
+					height: tmpDiv.height()
+			};
+			tmpDiv.remove();
+		});
 	}
 	tmpDiv = null;
 }
