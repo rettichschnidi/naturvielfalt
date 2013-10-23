@@ -1,7 +1,7 @@
 var container;
 var wrapper;
 var page = 1;
-var pageSize = 25;
+var pageSize = 12;
 var total = 9007199254740992; //max int
 var isFetchingResults = false;
 
