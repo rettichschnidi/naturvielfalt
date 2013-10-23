@@ -1,0 +1,37 @@
+/* Block new Observations */
+.new_observations_container {
+	height:100%;
+    float:left;
+    overflow:hidden;
+}
+
+#block_newest_observation_img {
+	max-height:165px;
+}
+
+.block_newest_observation_img_caption {
+	display:none;
+}
+#loadingImage {
+	
+}
+
+.imageSliderNavigation {
+	cursor: pointer;
+}
+
+.imageSliderImage {
+	width: 190px;
+	height: 150px;
+	position: relative;
+	cursor: pointer;
+}
+
+#showLoadingImage {
+	display:none;
+	width: 190px;
+	height: 150px;
+	position:relative;
+	z-index: 1;
+	display:none;
+}
