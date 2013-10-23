@@ -1,6 +1,6 @@
 <?php
 
-define('OBSERVATION_BLOCK_PAGESIZE', 4);
+define('OBSERVATION_BLOCK_PAGESIZE', 25);
 /**
  * hook_block_info:
  * declares blocks provided by the observation module
@@ -35,20 +35,58 @@ function observation_block_view($delta = '') {
 			$block['subject'] = t('New observations');
 			$block['content'] = array(
 			'#type' => 'markup',
-			'#markup' => '<div class="new_observations_container">
-								<div class="new_observations_wrapper">
-									
+			'#markup' => '
+							<div class="new_observations_container">
+								<img id="loadPreviousImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
+								<div id="previousEntry01">
+									<img id="previousImage01" class="imageSliderImage" style="width: 0px;" />
 								</div>
-						  </div>',
+								<div id="previousEntry02">
+									<img id="previousImage02" class="imageSliderImage" style="width: 0px;" />
+								</div>
+								<div id="previousEntry03">
+									<img id="previousImage03" class="imageSliderImage" style="width: 0px;" />
+								</div>
+								<div id="previousEntry04">
+									<img id="previousImage04" class="imageSliderImage" style="width: 0px;" />
+								</div>
+								<div id="currentEntry01">
+									<img id="currentImage01" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 01" />
+								</div>
+								<div id="currentEntry02">
+									<img id="currentImage02" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 02" />
+								</div>
+								<div id="currentEntry03">
+									<img id="currentImage03" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 03" />
+								</div>
+								<div id="currentEntry04">
+									<img id="currentImage04" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 04" />
+								</div>
+								<div id="futureEntry01">
+									<img id="futureImage01" class="imageSliderImage" style="width: 0px;" />
+								</div>
+								<div id="futureEntry02">
+									<img id="futureImage02" class="imageSliderImage" style="width: 0px;" />
+								</div>
+								<div id="futureEntry03">
+									<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
+								</div>
+								<div id="futureEntry04">
+									<img id="futureImage04" class="imageSliderImage" style="width: 0px;" />
+								</div>
+						<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/next.png" alt="Next" onclick="moveImages(4, false);" />
+						</div>
+						<img id="showLoadingImage" src="/' . drupal_get_path('module', 'observation') . '/img/block/loading.gif" />',
 			'#attached' => array(
 					'css' => array(
-							drupal_get_path('module', 'observation') . '/css/observation.css',
+							drupal_get_path('module', 'observation') . '/css/observation_block.css',
 							drupal_get_path('module', 'gallery') . '/css/gallery.css',
 							drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css'
 							
 					),
 					'js' => array(
 							drupal_get_path('module', 'observation') . '/js/observation_block.js',
+							drupal_get_path('module', 'observation') . '/js/jquery.waitforimages.min.js',
 							drupal_get_path('module', 'gallery') . '/js/jquery.lightbox.js'
 					)
 			)
@@ -64,9 +102,10 @@ function observation_block_view($delta = '') {
  * 
  */
 function observation_block_new_observations_content_ajax() {
-	$page = $_POST['page'];
 	if(!isset($_POST['page']) || !ctype_digit($_POST['page']) || $_POST['page'] < 1)
 		return '';
+	
+	$page = $_POST['page'];
 	
 	$observations = observation_get_new_observations(($page-1) * OBSERVATION_BLOCK_PAGESIZE, OBSERVATION_BLOCK_PAGESIZE);
 	$content = array();
@@ -109,19 +148,19 @@ function observation_block_new_observations_content_ajax() {
 		}
 		$scientific_name = isset($observation['scientific_name']) ? $observation['scientific_name'].'</br>' : '';
 	
-		$content[$observation['id']] = array(
+		$entry = array(
 				'#type' => 'markup',
 				'#markup' => 
-						'<div class="observation_entry">'.
-							$img .'</br>'.
-							l($observation['ol_name'], 'observation/'.$observation['id'].'/show').'</br>'.
-							'<i>'.$scientific_name.'</i>'.
-							$observation['observer'].'</br>'.
-							$observation['township'].', '.$observation['canton'].'</br>'.
-						'</div>'
+						$img .'</br>'.
+						l($observation['ol_name'], 'observation/'.$observation['id'].'/show').'</br>'.
+						'<i>'.$scientific_name.'</i>'.
+						$observation['observer'].'</br>'.
+						$observation['township'].', '.$observation['canton'].'</br>'
 		);
+		$content[] = drupal_render($entry);
 	}
+	$output['page'] = $page;
 	$output['total'] = observation_get_new_observations_count();
-	$output['content'] = drupal_render($content);
+	$output['content'] = $content;
 	return drupal_json_output($output);
 }
