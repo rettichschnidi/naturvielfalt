@@ -82,9 +82,11 @@ function initializeImages() {
 
 function initializeHover() {
 	container.hover(function() {
-		stopTimer();
+		if(!navigationDisabled)
+			stopTimer();
 	}, function() {
-		initializeTimer();
+		if(!navigationDisabled)
+			initializeTimer();
 	});
 }
 
