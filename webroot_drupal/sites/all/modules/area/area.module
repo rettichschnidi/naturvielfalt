@@ -33,7 +33,7 @@ function area_menu() {
 		
 	/* Show all available areas */
 	$items['area'] = array(
-			'title' => 'All areas',
+			'title' => 'Areas',
 			'description' => 'Show',
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
@@ -44,7 +44,7 @@ function area_menu() {
 
 	/* Show all available areas */
 	$items['areas/show'] = array(
-			'title' => 'All areas',
+			'title' => 'Areas',
 			'description' => 'Show',
 			'page callback' => 'area_show_all_areas',
 			'page arguments' => array(
@@ -182,7 +182,7 @@ function area_menu() {
 
 	/* Create a new area */
 	$items['area/new'] = array(
-			'title' => 'Create new area',
+			'title' => 'Create',
 			'description' => 'Create a new area',
 			'page callback' => 'area_new_area',
 			'access arguments' => array(
