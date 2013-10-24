@@ -3,6 +3,7 @@
 	height:100%;
     float:left;
     overflow:hidden;
+    max-width:235px;
 }
 
 #block_newest_observation_img {
