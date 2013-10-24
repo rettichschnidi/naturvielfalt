@@ -43,7 +43,7 @@ function organism_theme() {
  */
 function organism_menu() {
 	$items['organism'] = array(
-			'title' => t('Classifiers'),
+			'title' => 'Classifiers',
 			'page callback' => 'organism_show_classifiers',
 			'access arguments' => array(
 					ORGANISMS_ACCESS

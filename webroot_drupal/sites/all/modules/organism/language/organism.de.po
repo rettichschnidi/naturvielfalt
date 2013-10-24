@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: 2013-08-27 14:21+0200\n"
-"PO-Revision-Date: 2013-08-27 14:21+0100\n"
+"PO-Revision-Date: 2013-10-24 11:50+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -268,7 +268,7 @@ msgstr[1] "@count Arten"
 
 #: organism.module:46
 msgid "Classifiers"
-msgstr "Klassifizierer"
+msgstr "Arten (Systematik)"
 
 #: organism.module:51
 msgid "List of classifiers"
