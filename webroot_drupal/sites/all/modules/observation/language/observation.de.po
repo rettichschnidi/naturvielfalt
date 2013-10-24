@@ -6,6 +6,7 @@
 #  observation.ajax.inc: n/a
 #  observation.show.inc: n/a
 #  observation.module: n/a
+#  observation.block.inc: n/a
 #  observation.gallery.inc: n/a
 #  observation.inc: n/a
 #  observation.template.inc: n/a
@@ -14,100 +15,113 @@
 #  observation.validate.inc: n/a
 #  observation.info: n/a
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2013-08-23 09:17+0200\n"
-"PO-Revision-Date: 2013-08-23 09:17+0200\n"
+"POT-Creation-Date: 2013-10-24 09:33+0200\n"
+"PO-Revision-Date: 2013-10-24 09:39+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.7\n"
 
-#: observation.ajax.inc:205
+#: observation.ajax.inc:218
 msgid "Could not save the observation because of an unknown error."
-msgstr ""
-"Die Observation konnte aus einem unbekannten Grund nicht gespeichert "
-"werden."
+msgstr "Beobachtung konnte nicht gespeichert werden"
 
-#: observation.ajax.inc:214
+#: observation.ajax.inc:227
 msgid "successfull saved"
 msgstr "Beobachtung erfolgreich gespeichert"
 
-#: observation.ajax.inc:238;336
+#: observation.ajax.inc:254;354
 msgid "Please log in first"
 msgstr "Bitte melden Sie sich an"
 
-#: observation.ajax.inc:247
-msgid "This export originates from Naturvielfalt, a platform initiated by Naturwerk Brugg www.naturwerk.info"
+#: observation.ajax.inc:263
+msgid ""
+"This export originates from Naturvielfalt, a platform initiated by Naturwerk "
+"Brugg www.naturwerk.info"
 msgstr ""
-"Dieser Export stammt von Naturvielfalt, eine Plattform die vom "
-"Naturwerk Brugg www.naturwerk.info ins Leben gerufen wurde"
+"Dieser Export stammt von Naturvielfalt, eine Plattform die vom Naturwerk "
+"Brugg www.naturwerk.info ins Leben gerufen wurde"
 
-#: observation.ajax.inc:343
+#: observation.ajax.inc:361
 msgid "Parameter 'observations' missing"
 msgstr "Parameter 'observations' fehlt"
 
-#: observation.ajax.inc:363
+#: observation.ajax.inc:381
 msgid "Observation deleted"
-msgstr "Beabachtung entfernt"
+msgstr "Beobachtung entfernt"
 
-#: observation.ajax.inc:364
+#: observation.ajax.inc:382
 msgid "Observations deleted"
 msgstr "Beobachtungen entfernt"
 
-#: observation.ajax.inc:368
+#: observation.ajax.inc:386
 msgid "Some observations could not be deleted (unauthorized access)"
 msgstr ""
-"Es konnten nicht alle Beobachtungen entfernt werden (keine "
-"Berechtigung)"
+"Es konnten nicht alle Beobachtungen entfernt werden (keine Berechtigung)"
 
-#: observation.ajax.inc:553
+#: observation.ajax.inc:629
 msgid "Select"
 msgstr "Auswählen"
 
-#: observation.ajax.inc:556;556 observation.show.inc:155 observation.module:51;68
+#: observation.ajax.inc:632;632 observation.show.inc:171
+#: observation.module:60;77
 msgid "Show"
-msgstr "Anzeigen"
+msgstr "Detailansicht"
 
-#: observation.ajax.inc:564;564 observation.show.inc:143 observation.module:103
+#: observation.ajax.inc:640;640 observation.show.inc:159
+#: observation.module:112
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: observation.ajax.inc:572;572
+#: observation.ajax.inc:649;649
 msgid "zoomin"
 msgstr "Zoomen"
 
-#: observation.ajax.inc:576 observation.gallery.inc:71 observation.inc:371 observation.template.inc:26;569
-msgid "Unknown species"
-msgstr "Unbekannte Art"
-
-#: observation.ajax.inc:578
-msgid "No translation available"
-msgstr "Keine Übersetzung vorhanden"
-
-#: observation.ajax.inc:621
+#: observation.ajax.inc:691
 msgid "type"
 msgstr "Typ"
 
-#: observation.ajax.inc:655
+#: observation.ajax.inc:712
 msgid "Position"
 msgstr "Position"
+
+#: observation.ajax.inc:744 observation.block.inc:135
+#: observation.gallery.inc:71 observation.inc:401
+#: observation.template.inc:22;622
+msgid "Unknown species"
+msgstr "Unbekannte Art"
+
+#: observation.ajax.inc:746 observation.block.inc:138
+msgid "No translation available"
+msgstr "Keine Übersetzung vorhanden"
+
+#: observation.block.inc:13
+msgid "New Observations"
+msgstr "Neue Beobachtungen"
+
+#: observation.block.inc:35
+msgid "New observations"
+msgstr "Neue Beobachtungen"
 
 #: observation.delete.inc:18
 msgid "Delete Observation @observation_organism from @observation_date."
 msgstr "Beobachtung @observation_organism vom @observation_date löschen."
 
 #: observation.delete.inc:25
-msgid "Are you sure that you want to delete this observation «@observation_organism»?"
+msgid ""
+"Are you sure that you want to delete this observation "
+"«@observation_organism»?"
 msgstr ""
-"Sind Sie sicher, dass Sie die Beobachtung «@observation_organism» "
-"löschen wollen? "
+"Sind Sie sicher, dass Sie die Beobachtung «@observation_organism» löschen "
+"wollen? "
 
-#: observation.delete.inc:38 observation.module:120 js/observation.js:0
+#: observation.delete.inc:38 observation.module:129 js/observation.js:0
 msgid "Delete"
 msgstr "Löschen"
 
@@ -123,127 +137,128 @@ msgstr "@observation_organism"
 msgid "Add and edit generic @mediatype of this observation."
 msgstr "@mediatype dieser Beobachtung hinzufügen und bearbeiten."
 
-#: observation.gallery.inc:104 observation.show.inc:51;88 observation.module:23
+#: observation.gallery.inc:104 observation.show.inc:51;88
+#: observation.module:32
 msgid "Observations"
 msgstr "Beobachtungen"
 
-#: observation.inc:368;377;855
+#: observation.inc:398;407;885;1090
 msgid "Common name"
 msgstr "Name"
 
-#: observation.inc:387;862
+#: observation.inc:417;892;1096
 msgid "Scientific name"
 msgstr "Wissenschaftlicher Name"
 
-#: observation.inc:403;869 observation.show.inc:104
+#: observation.inc:433;899;1102 observation.show.inc:104
 msgid "Artgroup"
 msgstr "Artengruppe"
 
-#: observation.inc:413;950 observation.template.inc:221
+#: observation.inc:443;980;1182 observation.template.inc:253
 msgid "Observer"
 msgstr "Beobachter"
 
-#: observation.inc:428;877
+#: observation.inc:458;907;1109
 msgid "Date"
 msgstr "Datum"
 
-#: observation.inc:438
+#: observation.inc:468
 msgid "Last modification"
 msgstr "Letzte Änderung"
 
-#: observation.inc:448
+#: observation.inc:478
 msgid "Count"
 msgstr "Anzahl"
 
-#: observation.inc:477 observation.template.inc:243
+#: observation.inc:507 observation.template.inc:275
 msgid "Determination method"
 msgstr "Bestimmungsmethode"
 
-#: observation.inc:481;768
+#: observation.inc:511;798
 msgid "Not defined"
 msgstr "Nicht definiert"
 
-#: observation.inc:522;926
+#: observation.inc:552;956;1158
 msgid "Township"
 msgstr "Ortschaft"
 
-#: observation.inc:531
+#: observation.inc:561
 msgid "ZIP"
 msgstr "PLZ"
 
-#: observation.inc:540;934
+#: observation.inc:570;964;1166
 msgid "Canton"
 msgstr "Kanton"
 
-#: observation.inc:549;942
+#: observation.inc:579;972;1174
 msgid "Country"
 msgstr "Land"
 
-#: observation.inc:558
+#: observation.inc:588
 msgid "Altitude [m.a.s.l.]"
 msgstr "Höhenlage [m.a.s.l.] "
 
-#: observation.inc:570
+#: observation.inc:600
 msgid "Coordinates"
 msgstr "Koordinaten"
 
-#: observation.inc:809
+#: observation.inc:839;1044
 msgid "Internal Id"
 msgstr "Interne Id"
 
-#: observation.inc:848
+#: observation.inc:878;1083
 msgid "Picture"
 msgstr "Bild"
 
-#: observation.inc:883 observation.module:85
+#: observation.inc:913;1115 observation.module:94
 msgid "Inventory"
 msgstr "Inventar"
 
-#: observation.inc:890
+#: observation.inc:920;1122
 msgid "Area"
 msgstr "Gebiet"
 
-#: observation.inc:897
+#: observation.inc:927;1129
 msgid "Area Type"
 msgstr "Gebietsart"
 
-#: observation.inc:904
+#: observation.inc:934;1136
 msgid "X Coordinate"
 msgstr "X-Koordinate"
 
-#: observation.inc:911
+#: observation.inc:941;1143
 msgid "Y Coordinate"
 msgstr "Y-Koordinate"
 
-#: observation.inc:918
+#: observation.inc:948;1150
 msgid "Altitude [m]"
 msgstr "Höhenlage [m] "
 
-#: observation.inc:959
+#: observation.inc:989;1191
 msgid "Comment"
-msgstr "Kommentar"
+msgstr "Bemerkung"
 
-#: observation.inc:967
+#: observation.inc:997;1199
 msgid "Number of pictures"
 msgstr "Anzahl Bilder"
 
-#: observation.inc:974
+#: observation.inc:1004;1206
 msgid "Number of videos"
 msgstr "Anzahl Videos"
 
-#: observation.inc:982
+#: observation.inc:1011;1213
 msgid "Number of sounds"
 msgstr "Anzahl Sounds"
 
-#: observation.inc:991
+#: observation.inc:1019;1221
 msgid "Number of documents"
 msgstr "Anzahl Dokumente"
 
-#: observation.show.inc:17 observation.module:24
+#: observation.show.inc:17 observation.module:33
 msgid "Show all observations"
 msgstr "Alle Beobachtungen anzeigen"
 
-#: observation.show.inc:29 observation.template.inc:307;592
+#: observation.show.inc:29 observation.template.inc:339;645
 msgid "Map"
 msgstr "Karte"
 
@@ -275,191 +290,192 @@ msgstr "Meine"
 msgid "Editables"
 msgstr "Editierbare"
 
-#: observation.template.inc:21
+#: observation.template.inc:17
 msgid "Capture a new observation"
 msgstr "Beobachtung erfassen"
 
-#: observation.template.inc:32
+#: observation.template.inc:28
 msgid "Edit observation of <i>@species</i>"
 msgstr "Beobachtung von <i>@species</i> bearbeiten"
 
-#: observation.template.inc:146
+#: observation.template.inc:164
 msgid "Unkown species?"
 msgstr "Unbekannte Art?"
 
-#: observation.template.inc:147
+#: observation.template.inc:165
 msgid "Do you need help with determination?"
 msgstr "Brauchen Sie Hilfe bei der Bestimmung?"
 
-#: observation.template.inc:167
+#: observation.template.inc:199
 msgid "Search for species"
 msgstr "Art suchen"
 
-#: observation.template.inc:170
+#: observation.template.inc:202
 msgid "Maximum 30 search results will be showed."
 msgstr "Es werden maximal 30 Suchresultate angezeigt"
 
-#: observation.template.inc:172
+#: observation.template.inc:204
 msgid "Start typing to see the species..."
 msgstr "Geben Sie etwas ein.."
 
-#: observation.template.inc:187
+#: observation.template.inc:219
 msgid "Date of the observation"
 msgstr "Beobachtungsdatum"
 
-#: observation.template.inc:197
+#: observation.template.inc:229
 msgid "Time of the observation"
 msgstr "Zeitpunkt der Beobachtung"
 
-#: observation.template.inc:209
+#: observation.template.inc:241
 msgid "Count of found individuals"
 msgstr "Anzahl Individuen"
 
-#: observation.template.inc:214;226
+#: observation.template.inc:246;258
 msgid "Some text"
 msgstr "-"
 
-#: observation.template.inc:232;659
+#: observation.template.inc:264;712
 msgid "Details"
-msgstr "Details"
+msgstr "Angaben"
 
-#: observation.template.inc:246
+#: observation.template.inc:278
 msgid "Determination Method"
 msgstr "Bestimmungsmethode"
 
-#: observation.template.inc:280
+#: observation.template.inc:312
 msgid "Filter on species group"
 msgstr "Artengruppe filtern"
 
-#: observation.template.inc:299;455 observation.module:149;161
+#: observation.template.inc:331;502 observation.module:158;170
 msgid "Save"
 msgstr "Speichern"
 
-#: observation.template.inc:385
+#: observation.template.inc:417
 msgid "Manage existing media for this observation"
 msgstr "Bestehende Medien dieser Beobachtung bearbeiten"
 
-#: observation.template.inc:401
+#: observation.template.inc:433
 msgid "Add media for this observation"
 msgstr "Medien der Beobachtung hinzufügen"
 
-#: observation.template.inc:413
-msgid "Number of files to upload?"
-msgstr "Anzahl Dateien zum hochladen?"
+#: observation.template.inc:455
+msgid "Number of files to add?"
+msgstr "Wieviele Dateien möchten Sie hinzufügen?"
 
-#: observation.template.inc:428
+#: observation.template.inc:456
 msgid "Allowed files endings are: "
 msgstr "Folgende Dateiendungen sind erlaubt:"
 
-#: observation.template.inc:444;445
+#: observation.template.inc:491;492
 msgid "Click here to add details to this file"
 msgstr "Klicken Sie hier, um der Datei Angaben hinzuzufügen"
 
-#: observation.template.inc:447
+#: observation.template.inc:494
 msgid "Choose a file"
 msgstr "Datei auswählen"
 
-#: observation.template.inc:491
-msgid "Recently recorded and saved observations (click on a row, to edit an entry)"
+#: observation.template.inc:539
+msgid ""
+"Recently recorded and saved observations (click on a row, to edit an entry)"
 msgstr ""
 "Zuletzt erfasste und gespeicherte Beobachtungen(Klicken Sie auf einen "
 "Datensatz, um diesen zu bearbeiten)"
 
-#: observation.template.inc:509
+#: observation.template.inc:557
 msgid "Permissions"
 msgstr "Berechtigungen"
 
-#: observation.template.inc:533
+#: observation.template.inc:586
 msgid "Read"
 msgstr "Lesen"
 
-#: observation.template.inc:538
+#: observation.template.inc:591
 msgid "Write"
 msgstr "Schreiben"
 
-#: observation.template.inc:543
+#: observation.template.inc:596
 msgid "Administration"
 msgstr "Verwaltung"
 
-#: observation.template.inc:575
+#: observation.template.inc:628
 msgid "Show observation of <i>@species</i>"
 msgstr "Beobachtung von <i>@species</i> anzeigen"
 
-#: observation.template.inc:580
+#: observation.template.inc:633
 msgid "Observation"
 msgstr "Beobachtung"
 
-#: observation.template.inc:639
+#: observation.template.inc:692
 msgid "Position data"
 msgstr "Positionsdaten"
 
-#: observation.template.inc:716
+#: observation.template.inc:772
 msgid "Select a specimen group from the dropdown menu to constrain the search."
 msgstr "Wählen Sie eine Art aus dem Dropdown aus, um die Suche zu filtern."
 
-#: observation.template.inc:717
+#: observation.template.inc:773
 msgid "Search for the specimen by inputing at least 2 chars."
 msgstr "Geben Sie mindestens zwei Buchstaben ein, um die Suche zu starten."
 
-#: observation.template.inc:718
+#: observation.template.inc:774
 msgid "Date of observation (dd.mm.yyyy)"
 msgstr "Datum der Beobachtung (dd.mm.yyyy)"
 
-#: observation.template.inc:719
+#: observation.template.inc:775
 msgid "Time of observation (hh:mm)"
 msgstr "Zeitpunkt der Beobachtung (hh:mm)"
 
-#: observation.template.inc:720
+#: observation.template.inc:776
 msgid "Number of observed specimens."
 msgstr "Anzahl der beobachteten Organismen."
 
-#: observation.template.inc:721
+#: observation.template.inc:777
 msgid "Name of observer (You)"
 msgstr "Name des Beobachters"
 
-#: observation.template.inc:722
+#: observation.template.inc:778
 msgid "Select a method for determination from the dropdown menu."
 msgstr "Wählen Sie eine Bestimmungsmethode aus dem Dropdown Menu aus."
 
-#: observation.template.inc:725
-msgid "Provide any additional information."
-msgstr "Geben Sie zusätzliche Informationen an."
-
-#: observation.template.inc:726
+#: observation.template.inc:807
 msgid "Precision of place of observation."
 msgstr "Genaugkeit der Beobachtung"
 
-#: observation.template.inc:727
-msgid "Verified by"
-msgstr "Verifiziert durch"
+#: observation.template.inc:810
+msgid "Provide any additional information."
+msgstr "Geben Sie zusätzliche Informationen an."
 
-#: observation.template.inc:728
-msgid "Determination"
-msgstr "Bestimmung"
-
-#: observation.template.inc:729
-msgid "Origin"
-msgstr "Herkunft"
-
-#: observation.template.inc:730
-msgid "Phenology"
-msgstr "Phänologie"
-
-#: observation.template.inc:731
-msgid "Occurence"
-msgstr "Vorkommen"
-
-#: observation.template.inc:732
+#: observation.template.inc:813
 msgid "Commonness"
 msgstr "Häufigkeit"
 
-#: observation.template.inc:733
+#: observation.template.inc:816
+msgid "Phenology"
+msgstr "Phänologie"
+
+#: observation.template.inc:819
+msgid "Determination"
+msgstr "Bestimmung"
+
+#: observation.template.inc:822
+msgid "Origin"
+msgstr "Herkunft"
+
+#: observation.template.inc:825
+msgid "Occurence"
+msgstr "Vorkommen"
+
+#: observation.template.inc:828
 msgid "Evidence available"
 msgstr "Beleg vorhanden"
 
-#: observation.template.inc:734
-msgid "Evaluation Method"
-msgstr "Erhebungsmethode"
+#: observation.template.inc:831
+msgid "Verified by"
+msgstr "Verifiziert durch"
+
+#: observation.template.inc:834
+msgid "Evaluationmethod"
+msgstr "Evaluationsmethode"
 
 #: observation.validate.inc:21
 msgid "Please enter a valid date (dd.mm.yyyy)"
@@ -471,7 +487,7 @@ msgstr "Bitte geben Sie eine gültige Zeit an (hh:mm)"
 
 #: observation.validate.inc:30
 msgid "The count has to be a number and bigger than zero"
-msgstr "Die Anzahl Organismen muss eine Zahl und grösser 0 sein"
+msgstr "Die Anzahl muss grösser als Null sein"
 
 #: observation.validate.inc:37
 msgid "Please enter an existing organism."
@@ -493,89 +509,97 @@ msgstr "Bitte markieren Sie einen Punkt auf der Karte"
 msgid ".@extension is an unallowed fileextension!"
 msgstr ".@extension ist eine unerlaubte Dateiendung!"
 
-#: observation.module:283
+#: observation.module:351
 msgid "can view observations"
 msgstr "Kann Beobachtungen sehen"
 
-#: observation.module:286
+#: observation.module:354
 msgid "can create observations"
 msgstr "Kann Beobachtungen erstellen"
 
-#: observation.module:37
+#: observation.module:46
 msgid "Create"
 msgstr "Erstellen"
 
-#: observation.module:38
+#: observation.module:47
 msgid "Create a new observation"
 msgstr "Neue Beobachtung erstellen"
 
-#: observation.module:52;69
+#: observation.module:61;78
 msgid "Display an observation"
 msgstr "Beobachtung anzeigen"
 
-#: observation.module:86
+#: observation.module:95
 msgid "Display inventory of observation"
 msgstr "Inventar der Beobachtung anzeigen"
 
-#: observation.module:104
+#: observation.module:113
 msgid "Edit an observation"
 msgstr "Beobachtung bearbeiten"
 
-#: observation.module:121
+#: observation.module:130
 msgid "Delete an existing observation."
 msgstr "Bestehende Beobachtung löschen"
 
-#: observation.module:139;205;220;265
+#: observation.module:148;214;229;245;261;277;322
 msgid "ObservationsJSON"
 msgstr "ObservationsJSON"
 
-#: observation.module:140
+#: observation.module:149
 msgid "Delete one or many observations"
 msgstr "Eine oder mehrere Beobachtung(en) löschen"
 
-#: observation.module:150
+#: observation.module:159
 msgid "Save a new observation"
 msgstr "Neue Beobachtung speichern"
 
-#: observation.module:162
+#: observation.module:171
 msgid "Save a existing observation"
 msgstr "Bestehende Beobachtung speichern"
 
-#: observation.module:177;193
+#: observation.module:186;202
 msgid "Geometry"
 msgstr "Geometrie"
 
-#: observation.module:178
+#: observation.module:187
 msgid "Get geometry data for editing"
 msgstr "Geometriedaten"
 
-#: observation.module:194
+#: observation.module:203
 msgid "Get all geometry data to show"
 msgstr "Alle Geometriedaten holen"
 
-#: observation.module:206
+#: observation.module:215;230;246;262
 msgid "Get readable observations"
 msgstr "Alle lesbaren Beobachtungen holen"
 
-#: observation.module:221
+#: observation.module:278
 msgid "Get own observations"
 msgstr "Eigene Observation anzeigen"
 
-#: observation.module:235
+#: observation.module:292
 msgid "Writeable Observations JSON"
 msgstr "Writeable Observations JSON"
 
-#: observation.module:236
+#: observation.module:293
 msgid "Get writeable observations"
 msgstr "Alle schreibbaren Beobachtungen holen"
 
-#: observation.module:250
+#: observation.module:307
 msgid "observation overview form"
 msgstr "Überblick Beobachtungen"
 
-#: observation.module:266
+#: observation.module:323
 msgid "Export one or many observations"
 msgstr "Eine oder mehrere Beobachtunge(en) exportieren"
+
+#: observation.module:331
+msgid "New observations ajax callback (block)"
+msgstr "Neue Beobachtungen ajax callback"
+
+#: observation.module:332
+msgid "Callback to receive the contents of the new observations block (ajax)"
+msgstr "Callback"
 
 #: observation.info:0
 msgid "observation"
@@ -605,9 +629,17 @@ msgstr "Daten konnten nicht gelöscht werden"
 msgid "Export all"
 msgstr "Alle exportieren"
 
+#: js/observation.js:0;0;0
+msgid "Verify all"
+msgstr "Alle verifizieren"
+
 #: js/observation.js:0
 msgid "Export selected"
 msgstr "Ausgewählte exportieren"
+
+#: js/observation.js:0
+msgid "Verify selected"
+msgstr "ausgewählte verifizieren"
 
 #: js/observation.js:0;0
 msgid "Meta data for uploads"
@@ -616,4 +648,3 @@ msgstr "Metadaten für den Upload"
 #: js/observation.js:0
 msgid "Please select a file"
 msgstr "Bitte Datei auswählen"
-

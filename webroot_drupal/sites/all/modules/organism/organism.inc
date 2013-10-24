@@ -16,9 +16,7 @@ function organism_get($organismid) {
 	global $user;
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 
 	$organismid = intval(filter_xss($organismid));
 	if ($organismid < 1 || $organismid > 1000000)
@@ -35,33 +33,14 @@ function organism_get($organismid) {
 			o.id = :oid',
 		array(':oid' => $organismid,
 				'lang_code' => $langcode,
-// 				':lang_code' => $user->language
 		))->fetchAssoc();
 }
 
 function organism_get_byname($organism) {
 	global $user;
-	
-// 	$result = db_query('SELECT o.id, o.scientific_name name_lat, ol.name name_lang
-// 			 FROM {organism} o, {organism_lang} ol 
-// 			 WHERE o.id = ol.organism_id AND ol.languages_language = :lang_code AND ol.name = :o_name;',
-// 			array(		':o_name' =>   $organism,
-// 						':lang_code' => 'de',
-// 			));
-	
-// 	foreach ($result as $record) {
-// 		return $record;
-// 	}
-
-	// TODO take language of the user (if exists)
-// 	$language = $user->language;
-	//$language = 'de';
-	
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	// FIXME: if an organism is picked from vote this doesn't work
 	$result = db_query(
@@ -77,15 +56,9 @@ function organism_get_byname($organism) {
 
 function organism_artgroup_byname($organism) {
 	global $user;
-
-	// TODO take language of the user (if exists)
-	// 	$language = $user->language;
-	//$language = 'de';
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 
 	$result = db_query(
 			'SELECT oas.organism_artgroup_id, ol.organism_id 
@@ -196,7 +169,7 @@ function organism_get_available_attributes($classificationid) {
 function organism_check_if_wikipedia_article_exists($organismdata) {
 	global $user;
 	global $language;
-	$langcode = isset($user->language) && !empty($user->language) ? $user->language : $language->language;
+	$langcode = $language->language;
 	$organism_name = $organismdata['scientific_name'];
 	// Reduce to first two words, as this delivers the best results.
 	if (preg_match('/([a-zA-Z0-9]+\ [a-zA-Z0-9]+).*/', $organism_name, $matches)) {

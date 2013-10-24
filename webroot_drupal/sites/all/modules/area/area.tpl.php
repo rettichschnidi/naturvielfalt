@@ -49,8 +49,7 @@ if ($action == 'create' || $action == 'getcoordinate' || $action == 'edit') {
 
 $area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 		? 'https://' : 'http://';
-$googlelanguage = isset($user->language) && !empty($user->language)
-		? $user->language : $language->language;
+$googlelanguage = $language->language;
 commonstuff_add_js_url(
 	$area_protocol
 			. "maps.google.com/maps/api/js?sensor=false&libraries=$libraries&region=CH&language=$googlelanguage\n");

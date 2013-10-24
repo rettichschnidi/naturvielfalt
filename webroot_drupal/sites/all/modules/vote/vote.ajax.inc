@@ -83,7 +83,7 @@ function getObservations($page) {
 	global $user;
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
+	$langcode = $language->language;
 
 	$whereClause = '';
 
@@ -178,7 +178,7 @@ function getVerifications($observations) {
 	global $language;
 	global $user;
 	
-	$langcode = (isset($user->language) && !empty($user->language)) ? $user->language : $language->language;
+	$langcode = $language->language;
 	
 	$whereClause = ' WHERE (';
 	 foreach($observations as $observation) {

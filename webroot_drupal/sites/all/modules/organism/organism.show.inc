@@ -301,8 +301,7 @@ function organism_show_organism($organismdata) {
 	drupal_add_js('jQuery(document).ready(function () { jQuery("#files a").attr("target", "_blank"); });', 'inline');
 	global $user;
 	global $language;
-	$current_language = isset($user->language) && !empty($user->language)
-			? $user->language : $language->language;
+	$current_language = $language->language;
 
 	if (empty($organismdata)) {
 		drupal_set_title(t('No such species available'));
@@ -543,7 +542,7 @@ function organism_get_organism_title($organismdata) {
 	global $user;
 	global $language;
 	// Make sure we get a language
-	$langcode = isset($user->language) ? $user->language : $language->language;
+	$langcode = $language->language;
 
 	$logo_wikipedia_url = base_path()
 			. drupal_get_path('module', 'commonstuff')

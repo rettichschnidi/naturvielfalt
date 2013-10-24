@@ -703,9 +703,7 @@ function observation_get_attributes(
 	global $user;
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
