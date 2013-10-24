@@ -159,16 +159,16 @@ function fetchPage(steps) {
 		type: "POST",
 		url: Drupal.settings.basePath + "observation/block/newobservations",
 		success: function(result){
-			showLoading(false,function() {
 				cacheAllData(result);
 				loadImagesFromCache();
 				container.waitForImages(function() {
-					navigationDisabled = false;
-					page++;
-					moveImages(steps);
-					isFetchingResults = false;
+					showLoading(false,function() {
+						navigationDisabled = false;
+						page++;
+						moveImages(steps);
+						isFetchingResults = false;
+					});
 				});
-			});
 		},
 		error: function(result) {
 			isFetchingResults = false;
