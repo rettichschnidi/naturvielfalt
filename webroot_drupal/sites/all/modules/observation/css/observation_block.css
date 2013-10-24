@@ -18,6 +18,7 @@
 
 .imageSliderNavigation {
 	cursor: pointer;
+	width: 100%;
 }
 
 .imageSliderImage {
