@@ -15,6 +15,7 @@ function webservice_menu() {
 			'access arguments' => array(
 					'access webservice'
 			),
+			'type' => MENU_CALLBACK
 	);
 	
 	$items['webservice/api/observation'] = array(
@@ -24,6 +25,7 @@ function webservice_menu() {
 					'access webservice'
 			),
 			'file' => 'webservice_observation.inc',
+			'type' => MENU_CALLBACK
 	);
 	
 	$items['webservice/api/area'] = array(
@@ -33,6 +35,7 @@ function webservice_menu() {
 					'access webservice'
 			),
 			'file' => 'webservice_area.inc',
+			'type' => MENU_CALLBACK
 	);
 	
 	$items['webservice/api/inventory'] = array(
@@ -42,6 +45,7 @@ function webservice_menu() {
 					'access webservice'
 			),
 			'file' => 'webservice_inventory.inc',
+			'type' => MENU_CALLBACK
 	);
 	
 	$items['webservice/api'] = array(
@@ -51,6 +55,7 @@ function webservice_menu() {
 					'access webservice'
 			),
 			'file' => 'webservice_observation.inc',
+			'type' => MENU_CALLBACK
 	);
 
 	return $items;
