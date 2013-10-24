@@ -22,8 +22,6 @@ jQuery(document).ready(function() {
 	container = $('.new_observations_container');
 	initializeImages();
 	initializeCache();
-	initializeHover();
-	initializeTimer();
 });
 
 /**
@@ -125,6 +123,9 @@ function initializeCache() {
 					navigationDisabled = false;
 					page++;
 					isFetchingResults = false;
+					//initialize timer and hover over container
+					initializeHover();
+					initializeTimer();
 				});
 			});
 			
