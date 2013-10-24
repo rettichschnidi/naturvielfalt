@@ -8,7 +8,7 @@ jQuery(document).ready(function() {
 	$ = jQuery;
 	area = {};
 	area.message = $('#message');
-	minZoom = 4;
+	minZoom = 2;
 	//bounds around europe
 	//no longer wanted by albert
 //	europeanBounds = new google.maps.LatLngBounds(
