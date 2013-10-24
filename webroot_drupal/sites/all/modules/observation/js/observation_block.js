@@ -187,8 +187,8 @@ function moveImages(steps) {
 		return;
 	}
 	
-	//if imageIndex + step + 4 future images  is greater then pagesize, and more images are available on server, fetch next page first to load the images
-	tmpsteps = imageIndex + steps + 4;
+	//if imageIndex + step + 3 future images  is greater then pagesize, and more images are available on server, fetch next page first to load the images
+	tmpsteps = imageIndex + steps + 3;
 	if(tmpsteps >= (page-1)*pageSize && (page-1)*pageSize < parseInt(total)) {
 		navigationDisabled = true;
 		fetchPage(steps);
@@ -349,7 +349,7 @@ function initLightBox() {
 
 function showLoading(display, completeCallback) {
 	if(display) {
-		$('#showLoadingImage').css({ top: - container.height()/2});
+		$('#showLoadingImage').css({ top: container.position().top + container.height()/2 - $('#showLoadingImage').height()/2, left: container.position().left + container.width()/2 - $('#showLoadingImage').width()/2});
 		$('#showLoadingImage').show();
 		if(completeCallback)
 			container.fadeTo("slow", 0.5, completeCallback); 
