@@ -86,7 +86,7 @@ function stopTimer() {
 		clearInterval(timerId);
 }
 
-function cacheAllData(result) {
+function cacheAllData(result, callback) {
 	
 	// cache general information
 	total = result.total;
@@ -108,6 +108,7 @@ function cacheAllData(result) {
 			};
 			tmpDiv.remove();
 		}
+		if(callback) callback();
 	});
 }
 
@@ -117,14 +118,16 @@ function initializeCache() {
 		type: "POST",
 		url: Drupal.settings.basePath + "observation/block/newobservations",
 		success: function(result){
-			cacheAllData(result);
-			imageIndex = 0;
-			loadImagesFromCache();
-			container.waitForImages(function() {
-				navigationDisabled = false;
-				page++;
-				isFetchingResults = false;
+			cacheAllData(result, function() {
+				loadImagesFromCache();
+				imageIndex = 0;
+				container.waitForImages(function() {
+					navigationDisabled = false;
+					page++;
+					isFetchingResults = false;
+				});
 			});
+			
 		},
 		error: function(result) {
 			isFetchingResults = false;
@@ -145,23 +148,24 @@ function fetchPage(steps) {
 		type: "POST",
 		url: Drupal.settings.basePath + "observation/block/newobservations",
 		success: function(result){
-				cacheAllData(result);
-				loadImagesFromCache();
-				container.waitForImages(function() {
-					showLoading(false,function() {
-						navigationDisabled = false;
-						page++;
-						moveImages(steps);
-						isFetchingResults = false;
-						//start timer again
-						initializeTimer();
+				cacheAllData(result, function() {
+					loadImagesFromCache();
+					container.waitForImages(function() {
+						showLoading(false,function() {
+							navigationDisabled = false;
+							page++;
+							moveImages(steps);
+							isFetchingResults = false;
+							//start timer again
+							initializeTimer();
+						});
 					});
 				});
 		},
 		error: function(result) {
 			isFetchingResults = false;
 			showLoading(false);
-			startTimer();
+			initializeTimer();
 		},
 		data: {
 			page: page
