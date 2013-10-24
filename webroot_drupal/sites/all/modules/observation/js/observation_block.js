@@ -117,8 +117,8 @@ function initializeCache() {
 		url: Drupal.settings.basePath + "observation/block/newobservations",
 		success: function(result){
 			cacheAllData(result, function() {
-				loadImagesFromCache();
 				imageIndex = 0;
+				loadImagesFromCache();
 				container.waitForImages(function() {
 					navigationDisabled = false;
 					page++;
