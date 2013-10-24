@@ -152,6 +152,8 @@ function initializeCache() {
 	
 }
 function fetchPage(steps) {
+	//stop Timer, and start it again when results are ready
+	stopTimer();
 	if(isFetchingResults || (page-1) * pageSize >= parseInt(total)) return false; //no more observations to fetch
 	showLoading(true);
 	isFetchingResults = true;
@@ -167,12 +169,15 @@ function fetchPage(steps) {
 						page++;
 						moveImages(steps);
 						isFetchingResults = false;
+						//start timer again
+						startTimer();
 					});
 				});
 		},
 		error: function(result) {
 			isFetchingResults = false;
 			showLoading(false);
+			startTimer();
 		},
 		data: {
 			page: page
