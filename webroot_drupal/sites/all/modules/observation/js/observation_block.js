@@ -112,26 +112,22 @@ function cacheAllData(result) {
 }
 
 function initializeCache() {
-	showLoading(true);
 	isFetchingResults = true;
 	$.ajax({
 		type: "POST",
 		url: Drupal.settings.basePath + "observation/block/newobservations",
 		success: function(result){
-			showLoading(false,function() {
-				cacheAllData(result);
-				imageIndex = 0;
-				loadImagesFromCache();
-				container.waitForImages(function() {
-					navigationDisabled = false;
-					page++;
-					isFetchingResults = false;
-				});
+			cacheAllData(result);
+			imageIndex = 0;
+			loadImagesFromCache();
+			container.waitForImages(function() {
+				navigationDisabled = false;
+				page++;
+				isFetchingResults = false;
 			});
 		},
 		error: function(result) {
 			isFetchingResults = false;
-			showLoading(false);
 		},
 		data: {
 			page: page
