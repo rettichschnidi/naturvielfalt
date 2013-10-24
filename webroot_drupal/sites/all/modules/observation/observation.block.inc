@@ -37,7 +37,7 @@ function observation_block_view($delta = '') {
 			'#type' => 'markup',
 			'#markup' => '
 							<div class="new_observations_container">
-								<img id="loadPreviousImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
+								<img id="loadPreviousImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/previous.png" alt="Previous" onclick="moveImages(-3, false);" />
 								<div id="previousEntry01">
 									<img id="previousImage01" class="imageSliderImage" style="width: 0px;" />
 								</div>
@@ -46,9 +46,6 @@ function observation_block_view($delta = '') {
 								</div>
 								<div id="previousEntry03">
 									<img id="previousImage03" class="imageSliderImage" style="width: 0px;" />
-								</div>
-								<div id="previousEntry04">
-									<img id="previousImage04" class="imageSliderImage" style="width: 0px;" />
 								</div>
 								<div id="currentEntry01">
 									<img id="currentImage01" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 01" />
@@ -59,9 +56,6 @@ function observation_block_view($delta = '') {
 								<div id="currentEntry03">
 									<img id="currentImage03" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 03" />
 								</div>
-								<div id="currentEntry04">
-									<img id="currentImage04" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" class="imageSliderImage" alt="Image 04" />
-								</div>
 								<div id="futureEntry01">
 									<img id="futureImage01" class="imageSliderImage" style="width: 0px;" />
 								</div>
@@ -71,10 +65,7 @@ function observation_block_view($delta = '') {
 								<div id="futureEntry03">
 									<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
 								</div>
-								<div id="futureEntry04">
-									<img id="futureImage04" class="imageSliderImage" style="width: 0px;" />
-								</div>
-						<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/next.png" alt="Next" onclick="moveImages(4, false);" />
+						<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/next.png" alt="Next" onclick="moveImages(3, false);" />
 						</div>
 						<img id="showLoadingImage" src="/' . drupal_get_path('module', 'observation') . '/img/block/loading.gif" />',
 			'#attached' => array(

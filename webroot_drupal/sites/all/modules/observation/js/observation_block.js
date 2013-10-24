@@ -42,10 +42,6 @@ function initializeImages() {
 			content: $('#previousEntry03'),
 			observationIndex : 0
 	};
-	previousEntryHolders[3] =  {
-			content: $('#previousEntry04'),
-			observationIndex : 0
-	};
 	currentEntryHolders[0] = {
 			content: $('#currentEntry01'),
 			observationIndex : 0
@@ -56,10 +52,6 @@ function initializeImages() {
 	};
 	currentEntryHolders[2] = {
 			content: $('#currentEntry03'),
-			observationIndex : 0
-	};
-	currentEntryHolders[3] = {
-			content: $('#currentEntry04'),
 			observationIndex : 0
 	};
 	futureEntryHolders[0] = {
@@ -74,10 +66,6 @@ function initializeImages() {
 			content: $('#futureEntry03'),
 			observationIndex : 0
 	};
-	futureEntryHolders[3] = {
-			content: $('#futureEntry04'),
-			observationIndex : 0
-	};
 }
 
 function initializeHover() {
@@ -90,7 +78,7 @@ function initializeHover() {
 
 function initializeTimer() {
 	if(timerId) stopTimer(timerId);
-	timerId = setInterval(function() {moveImages(4); }, 8000);
+	timerId = setInterval(function() {moveImages(3); }, 4000);
 }
 
 function stopTimer() {
