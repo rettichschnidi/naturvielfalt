@@ -170,7 +170,7 @@ function fetchPage(steps) {
 						moveImages(steps);
 						isFetchingResults = false;
 						//start timer again
-						startTimer();
+						initializeTimer();
 					});
 				});
 		},
