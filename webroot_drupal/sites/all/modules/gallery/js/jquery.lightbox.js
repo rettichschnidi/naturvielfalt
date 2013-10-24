@@ -99,7 +99,6 @@
 				// Call the function to create the markup structure; style some elements; assign events in some elements.
 				_set_interface();
 			}
-			if(settings.openedCallback) settings.openedCallback();
 			// Unset total images in imageArray
 			settings.imageArray.length = 0;
 			// Unset image active information
@@ -375,6 +374,7 @@
 					});
 			}
 			_preload_neighbor_images();
+			if(settings.openedCallback) settings.openedCallback();
 		};
 
 		function __goto(event) {
