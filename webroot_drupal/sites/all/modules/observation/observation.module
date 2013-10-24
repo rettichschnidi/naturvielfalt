@@ -38,6 +38,7 @@ function observation_menu() {
 			'type' => MENU_NORMAL_ITEM | MENU_DEFAULT_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'observation.show.inc',
+			'expanded' => true,
 			'weight' => 1,
 	);
 

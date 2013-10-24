@@ -54,6 +54,7 @@ function area_menu() {
 					AREA_ACCESS
 			),
 			'type' => MENU_NORMAL_ITEM,
+			'expanded' => true,
 			'file' => 'area.show.inc',
 	);
 
