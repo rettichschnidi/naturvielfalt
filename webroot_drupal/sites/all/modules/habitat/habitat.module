@@ -22,7 +22,7 @@ module_load_include('inc', 'habitat', 'habitat.gallery');
  */
 function habitat_menu() {
 	$items['habitat'] = array(
-			'title' => t('Habitats'),
+			'title' => 'Habitats',
 			'description' => t('Show all habitats'),
 			'page callback' => 'habitat_show_all',
 			'access arguments' => array(
