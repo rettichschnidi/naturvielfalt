@@ -63,7 +63,10 @@
 			slideSpeed : 300,
 			playTimeout : 0,
 			initialHeight : 250,
-			initialWidth : 250
+			initialWidth : 250,
+			//pass callbacks for entering and leaving a lightbox
+			openedCallback: false, 
+			finishCallback: false
 		}, settings);
 		// Caching the jQuery object with all elements matched
 		var jQueryMatchedObj = this;
@@ -87,7 +90,6 @@
 		 * @param object jQueryMatchedObj The jQuery object with all elements matched
 		 */
 		function _start(objClicked, jQueryMatchedObj) {
-
 			var initialize = !$('#jquery-lightbox').size();
 			if(initialize) {
 				// Hime some elements to avoid conflict with overlay in IE. These elements appear above the overlay.
@@ -97,7 +99,7 @@
 				// Call the function to create the markup structure; style some elements; assign events in some elements.
 				_set_interface();
 			}
-
+			if(settings.openedCallback) settings.openedCallback();
 			// Unset total images in imageArray
 			settings.imageArray.length = 0;
 			// Unset image active information
@@ -582,6 +584,7 @@
 			$('embed, object, select').css({
 				'visibility' : 'visible'
 			});
+			if(settings.finishCallback) settings.finishCallback();
 		}
 
 		/**
