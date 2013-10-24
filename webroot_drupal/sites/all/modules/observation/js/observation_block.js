@@ -106,16 +106,21 @@ function cacheAllData(result) {
 	// cache observation information
 	var j = 0;
 	for(var i = (result.page-1) * pageSize; j < result.content.length; i++) {
-		//we need to save the height of the new content.. add it to dom, get display height and remove it again.
-		tmpDiv = $('<div style="height:auto">' + result.content[j] + '</div>');
+		//we need to save the height of the new content.. add it to dom, wait for loading all images, get display height and remove it again.
+		tmpDiv = $('<div class="tmpDiv' + i + '"style="height:auto">' + result.content[j++] + '</div>');
 		container.append(tmpDiv.hide());
-		observations[i] = {
-				content: result.content[j++],
-				height: tmpDiv.height()
-		};
-		tmpDiv.remove();
 	}
-	tmpDiv = null;
+	container.waitForImages(function() {
+		k = 0;
+		for(var i = (result.page-1) * pageSize; k < result.content.length; i++) {
+			tmpDiv = $('.tmpDiv' + i);
+			observations[i] = {
+					content: result.content[k++],
+					height: tmpDiv.height()
+			};
+			tmpDiv.remove();
+		}
+	});
 }
 
 function initializeCache() {
