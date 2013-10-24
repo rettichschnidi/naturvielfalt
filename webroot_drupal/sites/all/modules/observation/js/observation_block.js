@@ -107,7 +107,7 @@ function cacheAllData(result) {
 	var j = 0;
 	for(var i = (result.page-1) * pageSize; j < result.content.length; i++) {
 		//we need to save the height of the new content.. add it to dom, wait for loading all images, get display height and remove it again.
-		tmpDiv = $('<div class="tmpDiv' + i + '"style="height:auto">' + result.content[j++] + '</div>');
+		tmpDiv = $('<div class="tmpDiv' + i + '"style="height:auto">' + result.content[j++] + '</div>').hide();
 		container.append(tmpDiv.hide());
 	}
 	container.waitForImages(function() {
