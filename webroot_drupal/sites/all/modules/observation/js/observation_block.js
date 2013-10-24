@@ -342,6 +342,12 @@ function initLightBox() {
 		captionSelector : ".block_newest_observation_img_caption",
 		captionAttr : false,
 		captionHTML : true,
+		openedCallback : function() {
+			stopTimer();
+		},
+		finishCallback : function() {
+			initializeTimer();
+		}
 	};
 	
 	$('a.lightbox').lightBox(galleryLightboxSettings);
