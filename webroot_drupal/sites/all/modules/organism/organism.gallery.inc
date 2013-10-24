@@ -64,7 +64,7 @@ function organism_reference_gallery_manage_title($id, $mediatype) {
  * @return string
  */
 function organism_reference_gallery_caption($id) {
-	global $user;
+	global $language;
 	$result = organism_load($id);
 	
 	$returnValue = "";
@@ -73,8 +73,8 @@ function organism_reference_gallery_caption($id) {
 	} else {
 		$returnValue .= "";
 	}
-	if(isset($result['classification_name_translations'][$user->language])) {
-		$returnValue .= ' <small>['.reset($result['classification_name_translations'][$user->language]).']</small>';
+	if(isset($result['classification_name_translations'][$language->language])) {
+		$returnValue .= ' <small>['.reset($result['classification_name_translations'][$language->language]).']</small>';
 	} else {
 		$returnValue .= "";
 	}

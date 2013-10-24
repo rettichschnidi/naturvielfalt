@@ -163,9 +163,7 @@ function organism_artgroup_get_determation_methods($observation_id = 0, $artgrou
 
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	if($langcode == 'de') $field = 'name';
 	else $field = 'name_'.$langcode;
@@ -406,9 +404,7 @@ function organism_artgroup_get_attributes_value_name($value_id = false) {
 	
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	if($langcode == 'de') $field = 'value';
 	else $field = 'value_'.$langcode;
@@ -481,9 +477,7 @@ function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false) 
 	
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	if($langcode == 'de') $field = 'name';
 	else $field = 'name_'.$langcode;

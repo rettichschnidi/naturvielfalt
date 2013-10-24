@@ -407,24 +407,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$arguments = array();
 	
-// 	// if the search is for a date, convert it to timestamp to find the results in the db
-// 	if (isset($_REQUEST['query'])) {
-// 		$date_split = explode('.', $_REQUEST['query']);
-// 		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
-// 			// cast to string because datatable_dbRequest checks for query to be a string
-// 			$_REQUEST['query'] = (string) mktime(
-// 			null,
-// 			null,
-// 			null,
-// 			$date_split[1],
-// 			$date_split[0],
-// 			$date_split[2]);
-// 		}
-// 	}
-	
-	$langcode = (isset($user->language) && !empty($user->language))
-		? $user->language
-		: $language->language;
+	$langcode = $language->language;
 	
 	$sql['dbColumns'] = array(
 		'o.id AS id',
@@ -829,9 +812,7 @@ function observation_get_new_observations($offset= 0, $limit = 4) {
 	global $user;
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	$imagetypes = _gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes;
 	
@@ -887,9 +868,7 @@ function observation_get_new_observations_count() {
 	global $user;
 	global $language;
 
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 
 	$imagetypes = _gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes;
 

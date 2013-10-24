@@ -531,8 +531,7 @@ function organism_show_classification_organismjson($classificationid) {
 
 	$prearguments = array(
 			':classificationid' => $classificationid,
-			':language' => isset($user->language) ? $user->language
-					: $language->language
+			':language' => $language->language
 	);
 
 	$arguments = array();
@@ -706,9 +705,7 @@ function organism_search_organism_json($artgroup, $string) {
 	
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	$term = $string;
 	$term = strtolower($term);
