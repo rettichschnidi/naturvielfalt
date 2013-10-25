@@ -330,6 +330,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	}
 
 	$output['area_files'] = area_files($areadata);
+	$output['area_files']['#weight'] = 6;
 
 	return $output;
 }
