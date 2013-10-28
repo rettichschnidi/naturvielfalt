@@ -196,11 +196,14 @@ jQuery(document).ready(function() {
 				
 				//saveButton
 				saveButton = $('<input class="form-submit" type="button" value="' + Drupal.t('Save') + '" />');
+				
+				//saveButton onclick
 				saveButton.off().on('click', function() {
 					var really = confirm(Drupal.t('All selected observations will be assigned to this area/inventory. Continue?'));
 					if(really) {
 						var inventoryId = inventorySelect.val();
 						observation.showLoading();
+						//make ajax call to save the observations to the inventory
 						$.ajax({
 							type: "POST",
 							url: Drupal.settings.basePath + "observation/addtoinventory/" + inventoryId,
@@ -232,7 +235,7 @@ jQuery(document).ready(function() {
 					}
 				});
 				
-				//dialog
+				//open dialog with selects
 				dialog.append(areaTitle, areaSelect, inventoryTitle, inventorySelect, '</br></br>', saveButton);
 				dialog.dialog({
 					modal: true,
@@ -242,6 +245,7 @@ jQuery(document).ready(function() {
 					close: function (event, ui) {
 						$(this).remove();
 					},
+					width: 'auto'
 				});
 			},
 			error: function(result) {
