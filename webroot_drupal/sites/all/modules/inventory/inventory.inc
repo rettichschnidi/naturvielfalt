@@ -186,25 +186,25 @@ function inventory_get_writeable_invetories_with_areas($json = false) {
 	global $user;
 	$minLevelArea = variable_get('ACL_READ');
 	$minLevelInventory = variable_get('ACL_RED_WRITE'); 
-	$sql =   'SELECT DISTINCT i.id as inventory_id, area.id as area_id, i.name as inventoryname, area.name as areaname, area.acl_id as area_acl_id, i.acl_id as inventory_acl_id
+	$sql =   'SELECT DISTINCT i.id as inventory_id, a.id as area_id, i.name as inventoryname, a.name as areaname, a.acl_id as area_acl_id, i.acl_id as inventory_acl_id
 			FROM {inventory} i
-			LEFT JOIN {area} ON i.area_id = area.id';
+			LEFT JOIN {area} a ON i.area_id = a.id';
 	if (!check_admin_permission($user->uid)) {
-		$sql .= ' LEFT JOIN {acl_sgroup} ag_a ON ag_a.acl_id = area.acl_id 
+		$sql .= ' LEFT JOIN {acl_sgroup} ag_a ON ag_a.acl_id = a.acl_id 
 			LEFT JOIN {sgroup} g_a ON g_a.id = ag_a.sgroup_id
-			LEFT JOIN {acl_users} au_a ON (au_a.acl_id = area.acl_id OR au_a.acl_id = g_a.acl_id) AND au_a.users_id = ' . $user->uid.'
+			LEFT JOIN {acl_users} au_a ON (au_a.acl_id = a.acl_id OR au_a.acl_id = g_a.acl_id) AND au_a.users_id = ' . $user->uid.'
 			LEFT JOIN {acl_sgroup} ag_i ON ag_i.acl_id = i.acl_id 
 			LEFT JOIN {sgroup} g_i ON g_i.id = ag_i.sgroup_id
 			LEFT JOIN {acl_users} au_i ON (au_i.acl_id = i.acl_id OR au_i.acl_id = g_i.acl_id) AND au_i.users_id = ' . $user->uid.'
 			WHERE ( (ag_a.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID').'
 				AND ag_a.level >= ' . $minLevelArea . ') OR (au_a.acl_id = g_a.acl_id AND ag_a.level >= ' . $minLevelArea . ')
-				OR (au_a.acl_id = area.acl_id AND au_a.level >= ' . $minLevelArea . ') ) AND
+				OR (au_a.acl_id = a.acl_id AND au_a.level >= ' . $minLevelArea . ') ) AND
 			( (ag_i.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID').'
 				AND ag_i.level >= ' . $minLevelInventory . ') OR (au_i.acl_id = g_i.acl_id AND ag_i.level >= ' . $minLevelInventory . ')
 				OR (au_i.acl_id = i.acl_id AND au_i.level >= ' . $minLevelInventory . ') )';
 	}
 
-	$sql .= ' ORDER BY area.name, i.name';
+	$sql .= ' ORDER BY a.name, i.name';
 	$entries = db_query($sql)->fetchAll();
 	
 	$areas = array();
