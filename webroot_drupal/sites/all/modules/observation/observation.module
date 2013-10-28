@@ -339,6 +339,24 @@ function observation_menu() {
 			'type' => MENU_CALLBACK
 	);
 	
+	$items['observation/addtoinventorydata'] = array(
+			'title' => 'receive the possible inventories and areas to add an observation to',
+			'page callback' => 'observation_add_to_inventory_data',
+			'access callback' => TRUE,
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc'
+	);
+	
+	$items['observation/addtoinventory/%inventory'] = array(
+			'title' => 'add multiple observations to an inventory',
+			'page callback' => 'observation_add_to_inventory',
+			'page arguments' => array(
+						2
+					),
+			'access callback' => TRUE,
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc'
+	);
 	return $items;
 }
 

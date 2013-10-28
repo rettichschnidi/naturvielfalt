@@ -54,21 +54,6 @@ $inventory_id = db_escape_field($inventory_id);
 }
 
 /**
- * Return a array with all inventories grouped by their areas
- * @return array
- */
-function inventory_get_inventories_grouped() {
-	$query = db_select('inventory', i)
-				->join('area', 'a', 'a.id = i.area_id');
-	$query = $query->fields('i', array('i.id, i.name, area.id, area.name'))
-					->groupBy('a.id')
-					->groupBy('a.name')
-					->execute();
-	
-	return $query->fetchAll();
-}
-
-/**
  * Save an existing/new inventory
  * Post vars are used
  * @param array $form
@@ -191,6 +176,55 @@ function inventory_delete_by_id($inventory_id) {
 		'error');
 		return false;
 	}
+}
+
+/**
+ * Returns all writeable inventories (adding observations) together with its area
+ * Only returns inventories of readable areas
+ */
+function inventory_get_writeable_invetories_with_areas($json = false) {
+	global $user;
+	$minLevelArea = variable_get('ACL_READ');
+	$minLevelInventory = variable_get('ACL_RED_WRITE'); 
+	$sql =   'SELECT DISTINCT i.id as inventory_id, area.id as area_id, i.name as inventoryname, area.name as areaname, area.acl_id as area_acl_id, i.acl_id as inventory_acl_id
+			FROM {inventory} i
+			LEFT JOIN {area} ON i.area_id = area.id';
+	if (!check_admin_permission($user->uid)) {
+		$sql .= ' LEFT JOIN {acl_sgroup} ag_a ON ag_a.acl_id = area.acl_id 
+			LEFT JOIN {sgroup} g_a ON g_a.id = ag_a.sgroup_id
+			LEFT JOIN {acl_users} au_a ON (au_a.acl_id = area.acl_id OR au_a.acl_id = g_a.acl_id) AND au_a.users_id = ' . $user->uid.'
+			LEFT JOIN {acl_sgroup} ag_i ON ag_i.acl_id = i.acl_id 
+			LEFT JOIN {sgroup} g_i ON g_i.id = ag_i.sgroup_id
+			LEFT JOIN {acl_users} au_i ON (au_i.acl_id = i.acl_id OR au_i.acl_id = g_i.acl_id) AND au_i.users_id = ' . $user->uid.'
+			WHERE ( (ag_a.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID').'
+				AND ag_a.level >= ' . $minLevelArea . ') OR (au_a.acl_id = g_a.acl_id AND ag_a.level >= ' . $minLevelArea . ')
+				OR (au_a.acl_id = area.acl_id AND au_a.level >= ' . $minLevelArea . ') ) AND
+			( (ag_i.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID').'
+				AND ag_i.level >= ' . $minLevelInventory . ') OR (au_i.acl_id = g_i.acl_id AND ag_i.level >= ' . $minLevelInventory . ')
+				OR (au_i.acl_id = i.acl_id AND au_i.level >= ' . $minLevelInventory . ') )';
+	}
+
+	$sql .= ' ORDER BY area.name, i.name';
+	$entries = db_query($sql)->fetchAll();
+	
+	$areas = array();
+	$areasOption = array();
+	for($i = 0; $i < count((array)$entries); $i++) {
+		$entry = (array)$entries[$i];
+		if(!key_exists($entry['area_id'], $areas)) {
+			//if area is not yet in areas array, move it there together with the inventory entry
+			$areas[$entry['area_id']] = array('name' => $entry['areaname'], 'inventories' => array($entry['inventory_id'] => $entry['inventoryname']));
+			$areasOptions[$entry['area_id']] = $entry['areaname'];
+		} else {
+			//add the inventory of the entry to the area
+			$areas[$entry['area_id']]['inventories'][$entry['inventory_id']] = $entry['inventoryname'];
+		}
+	}
+	$output = array('areas' => $areas, 'areas_as_options' => $areasOptions);
+	if($json) return drupal_json_output($output);
+	return $output;
+	
+	
 }
 
 
