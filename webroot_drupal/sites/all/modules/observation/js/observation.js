@@ -133,6 +133,128 @@ jQuery(document).ready(function() {
 	};
 	
 	/**
+	 * Adds selected observations to an inventory. Overrides observations which already belong to an inventory.
+	 * If none are selected, all rows will be verified.
+	 * 
+	 * @param string tableId
+	 */
+	observation.addSelectedRowsToInventory = function(tableId) {
+		var table = $('#' + tableId);
+		if (table.length < 1)
+			return false;
+		var observations = [];
+		table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				observations.push($(this).val());
+			}
+		});
+		observation.showLoading();
+		$.ajax({
+			type: "POST",
+			url: Drupal.settings.basePath + "observation/addtoinventorydata",
+			success: function(result){
+				var areas = result.areas;
+				var areasAsOptions = result.areas_as_options;
+				var inventories = null;
+				
+				observation.hideLoading();
+				dialog = $('<div id="add-to-inventory-wrapper" title="' + Drupal.t('Add to Area/Inventory') + '" />');
+				
+				//area title and select
+				areaTitle = $('<label>' + Drupal.t('Area') + '</label>');
+				areaSelect = $('<select id="area-select" class="form-select" \>');
+				var i = 0;
+				$.each(areasAsOptions, function(key, value) {
+					if(i++ == 0) {
+						inventories = areas[key].inventories;
+					}
+					areaSelect.append($("<option></option>")
+				     .attr("value", key).text(value));
+				});
+				
+				//inventory title and select
+				inventoryTitle = $('<label>' + Drupal.t('Inventory') + '</label>');
+				inventorySelect = $('<select id="inventory-select" class="form-select"\>');
+				if(inventories) {
+					$.each(inventories, function(key, value) {
+						inventorySelect.append($("<option></option>")
+					     .attr("value", key).text(value));
+					});
+				}
+				
+				//on change to switch the inventories of the newly selected inventory
+				areaSelect.off().on('change', function() {
+					inventories = areas[$(this).val()].inventories;
+					if(inventories) {
+						inventorySelect.empty();
+						$.each(inventories, function(key, value) {
+							inventorySelect.append($("<option></option>")
+						     .attr("value", key).text(value));
+						});
+					}
+				});
+				
+				//saveButton
+				saveButton = $('<input class="form-submit" type="button" value="' + Drupal.t('Save') + '" />');
+				saveButton.off().on('click', function() {
+					var really = confirm(Drupal.t('All selected observations will be assigned to this area/inventory. Continue?'));
+					if(really) {
+						var inventoryId = inventorySelect.val();
+						observation.showLoading();
+						$.ajax({
+							type: "POST",
+							url: Drupal.settings.basePath + "observation/addtoinventory/" + inventoryId,
+							success: function(result){
+								observation.hideLoading();
+								//remove dialog, show response, and reload table
+								dialog.remove();
+								var translations = {};
+								translations['@successfull'] = result.successfull;
+								translations['@total'] = result.total;
+								if(result.success) {
+									observation.setMessage(Drupal.t('@successfull of @total observations were added to the new area/inventory.', translations), 'status', 5000);
+									table.flexReload();
+								}	
+								else {
+									observation.setMessage(Drupal.t('@successfull of @total observations were added to the new area/inventory.', translations), 'warning', 5000);
+								} 
+								
+							},
+							error: function(result) {
+								observation.hideLoading();
+								dialog.remove();
+								observation.setMessage(Drupal.t('Could not add observations to the area/inventory.'), 'error', 5000);
+							},
+							data: {
+								observations: observations
+							}
+						});
+					}
+				});
+				
+				//dialog
+				dialog.append(areaTitle, areaSelect, inventoryTitle, inventorySelect, '</br></br>', saveButton);
+				dialog.dialog({
+					modal: true,
+					resizable: false,
+					closeOnEscape: false,
+					closeText: '',
+					close: function (event, ui) {
+						$(this).remove();
+					},
+				});
+			},
+			error: function(result) {
+				observation.hideLoading();
+			},
+			data: {
+				observations: observations
+			}
+		});
+		
+	};
+	
+	/**
 	 * Delete the selected rows
 	 * 
 	 * @param string tableId
@@ -279,14 +401,15 @@ jQuery(document).ready(function() {
 			$checkbox = $('<input type="checkbox" />');
 			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
 			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
+			$btnAddToInventory = $('<input type="button" class="btnAddToInventory" disabled="true" value="' + Drupal.t('Add to Area/Inventory') + '" />');
 			if(voteModuleExits) $btnVerificationSelected = $('<input type="button" class="btnVerificationSelected" value="' + Drupal.t('Verify all') + '" />');
 			if(voteModuleExits) {
 				$batchDiv = $('<div class="batch-div" />')
-					.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnVerificationSelected)
+					.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnAddToInventory, $btnVerificationSelected)
 					.insertBefore($flexiDiv.find('.sDiv'));
 			} else {
 				$batchDiv = $('<div class="batch-div" />')
-				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
+				.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnAddToInventory)
 				.insertBefore($flexiDiv.find('.sDiv'));
 			}
 			$checkbox.click(function(event) {
@@ -298,6 +421,9 @@ jQuery(document).ready(function() {
 			$btnExportSelected.click(function() {
 				observation.exportSelectedRows(tableId);
 			});
+			$btnAddToInventory.click(function() {
+				observation.addSelectedRowsToInventory(tableId);
+			});
 			if(voteModuleExits) {
 				$btnVerificationSelected.click(function() {
 					observation.verificationSelectedRows(tableId);
@@ -306,6 +432,7 @@ jQuery(document).ready(function() {
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
+			$flexiDiv.find('.btnAddToInventory').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
 			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
 		}
@@ -439,11 +566,13 @@ jQuery(document).ready(function() {
 		// update batch area buttons
 		if ($flexiDiv.find('input.gridSelect:checked').length == 0) {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
+			$flexiDiv.find('.btnAddToInventory').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
 			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify all'));
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').removeAttr('disabled');
+			$flexiDiv.find('.btnAddToInventory').removeAttr('disabled');
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export selected'));
 			if(voteModuleExits) $flexiDiv.find('.btnVerificationSelected').val(Drupal.t('Verify selected'));
 		}

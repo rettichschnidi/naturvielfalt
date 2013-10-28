@@ -102,6 +102,13 @@ function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = N
 			'#markup' => t(
 					'<p>Please note: Changes will be saved instantly.</p>')
 	);
+	
+	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
+	$form['area_map']['zoom'] = array(
+			'#type' => 'markup',
+			'#markup' => '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" />'
+	);
+	
 	$form['area_map']['map'] = array(
 			'#mapid' => 'observationmap',
 			'#theme' => 'area',

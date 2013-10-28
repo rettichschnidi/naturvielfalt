@@ -51,6 +51,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		$values['count'] = filter_xss($values['group']['count']);
 		$values['organism_artgroup_id'] = filter_xss($values['group']['artgroup_id']);
 		
+		if(isset($values['div']['inventories']['inventory_id'])) {
+			$observation['inventory_id'] = filter_xss($values['div']['inventories']['inventory_id']);
+		}
+		
 		if(isset($values['group']['details']))
 			$values['details'] = $values['group']['details'];
 
@@ -916,4 +920,46 @@ function observation_get_new_observations_count() {
 
 	return $result->fetchField();
 }
+
+/**
+ * Returns the inventories and areas, which a user can add an observation to.
+ * 
+ */
+function observation_add_to_inventory_data() {
+	return inventory_get_writeable_invetories_with_areas(true);
+}
+
+/**
+ * Returns the inventories and areas, which a user can add an observation to.
+ *
+ */
+function observation_add_to_inventory($inventory = null) {
+	$output['success'] = false;
+	$output['successfull'] = 0;
+	
+	if($inventory && isset($_POST['observations']) && is_array($_POST['observations'])) {
+		$observations = $_POST['observations'];
+		$output['total'] = count($observations);
+	} else return drupal_json_output($output);
+	
+	if(!inventory_check_access($inventory, 'ACL_RED_WRITE'))
+		return drupal_json_output($output);
+	
+	try {
+		foreach($observations as $observation) {
+			if(observation_write_access_by_id($observation)) {
+				db_update('observation')->fields(array('inventory_id' => $inventory['id']))
+						->condition('id', $observation)
+						->execute();
+				$output['successfull']++;
+			}
+		}
+		$output['success'] = true;
+	} catch(Exception $e) {
+		$output['success'] = false;
+	}
+	
+	return drupal_json_output($output);
+}
+
 

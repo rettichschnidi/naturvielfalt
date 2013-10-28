@@ -146,6 +146,12 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 			)
 	);
 	
+	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
+	$output['area_map']['zoom'] = array(
+		'#type' => 'markup',
+		'#markup' => '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" />'	
+	);
+	
 	$output['area_map']['map'] = array(
 			'#theme' => 'area',
 			'#mapid' => 'observationmap',
@@ -330,6 +336,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	}
 
 	$output['area_files'] = area_files($areadata);
+	$output['area_files']['#weight'] = 6;
 
 	return $output;
 }

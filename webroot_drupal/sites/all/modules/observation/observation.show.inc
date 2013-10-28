@@ -11,6 +11,7 @@ function observation_show_all_observations() {
 	global $user;
 
 	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_library('system', 'ui.dialog');
 	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js($observation_path . '/js/observation.js');
 	

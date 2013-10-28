@@ -8,6 +8,7 @@ module_load_include('inc', 'observation', 'observation.validate');
 /**
  * Show the form to add or edit an observation
  * @param array $observation
+ * @param int $inventory_id the inventory id, we want to add the observation to
  */
 function observation_form($form = null, &$form_state = null, $observation = false, $inventory_id = NULL) {
 	
@@ -54,6 +55,25 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		$observation['observation']['observer'] = $user->name;
 	if (!isset($observation['observation']['organism_artgroup_detmethod_id']))
 		$observation['observation']['organism_artgroup_detmethod_id'] = false;
+
+	if(!empty($form_state['values']['div']['inventories']['inventory_id'])) {
+		//override inventory_id, user has selected a new one
+		$inventory_id = $form_state['values']['div']['inventories']['inventory_id'];
+	} else if(isset($observation['observation']['inventory_id'])) {
+		$inventory_id = $observation['observation']['inventory_id'];
+	}
+	if(isset($inventory_id)) {
+		$inventory = inventory_get($inventory_id);
+	} else {
+		$inventory = null;
+	}
+	
+	$area_id = 0;
+	if(isset($form_state['values']['div']['inventories']['area']) ) {
+		$area_id = $form_state['values']['div']['inventories']['area'];
+	} else if(isset($inventory['area_id'])) {
+		$area_id = $inventory['area_id'];
+	}
 
 	$form_id = "observation_form";
 	module_load_include('inc', 'organism', 'organism.artgroup');
@@ -337,7 +357,12 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$form['div'] = array(
 			'#type' => 'fieldset',
 			'#title' => t('Map'),
+			'#tree' => true,
 	);
+	
+	if($edit || $inventory) {
+		$form['div'] += observation_change_inventory_form($area_id, $inventory_id);
+	}
 	
 	/**
 	 * Area map include
@@ -357,7 +382,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 	$form['div']['hiddenfields'] = area_address_hidden_form();
 
 	if(empty($observation['observation']['id'])) {
-		if(!isset($inventory_id)) {
+		if(!$area_id) {
 			$form['div']['map'] = array(
 					'#theme' => 'area',
 					'#mapid' => 'observationmap',
@@ -370,7 +395,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 		}
 		else {
 			//display area of inventory on map
-			$inventory = inventory_get($inventory_id);
 			$form['div']['map'] = array(
 					'#theme' => 'area',
 					'#mapid' => 'observationmap',
@@ -379,10 +403,10 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 					'#search' => true,
 					'#height' => '250px',
 					'#action' => 'getcoordinate',
-					'#geometry_edit_id' => $inventory['area_id'],
+					'#geometry_edit_id' => $area_id,
 					'#infowindow_content_fetch_url_area' => base_path()
 					. 'area/{ID}/areaoverview/ajaxform',
-					'#geometries_fetch_url' => base_path() . 'area/' . $inventory['area_id'] . '/json',
+					'#geometries_fetch_url' => base_path() . 'area/' . $area_id . '/json',
 			);
 		}
 	} else {
@@ -523,13 +547,6 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#value' => $observation['observation']['id']
 	);
 	
-	if(isset($inventory_id)) {
-		$form['inventory_id'] = array(
-			'#type' => 'hidden', 
-			'#id' => 'inventory_id', 
-			'#value' => $inventory_id
-		);
-	}
 	if(isset($observation['observation']['area_geometry_id']))
 		$form['area_geometry_id'] = array('#type' => 'hidden', '#id' => 'area_geometry_id', '#name' => 'area_geometry_id', '#value' => $observation['observation']['area_geometry_id']);
 	
@@ -969,3 +986,69 @@ function observation_form_add_js_tools($form, &$form_state) {
 	
 	return $form;
 }
+
+/**
+ * returns a form, to change the
+ * @param unknown $area_id
+ * @param unknown $inventory_id
+ * @param string  $callback, the callback method used by the drupal ajax api
+ */
+function observation_change_inventory_form($area_id = 0, $inventory_id = 0) {
+	$entries = inventory_get_writeable_invetories_with_areas();
+
+	$areaoptions = array(0 => '');
+	$areaoptions += $entries['areas_as_options'];
+	
+	$form = array();
+	$form['inventories'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Area'). ' & '.  t('Inventory'),
+			'#tree' => true,
+			'#prefix' => '<div id="area_replace">',
+			'#suffix' => '</div>',
+			'#collapsible' => true,
+	);
+	
+	$form['inventories']['area'] = array(
+			'#type' => 'select',
+			'#title' => t('Area'),
+			'#options' => $areaoptions,
+			'#tree' => true,
+			'#default_value' => ($area_id) ? $area_id : 0,
+			'#ajax' => array(
+					'event' => 'change',
+					'callback' => 'observation_change_inventory_callback',
+					'wrapper' => 'area_replace'
+			),
+	);
+	$inventoryoptions = array(0 => '');
+	if ($area_id)
+		$inventoryoptions += $entries['areas'][$area_id]['inventories'];
+	else $inventoryoptions = array();
+	
+	$form['inventories']['inventory_id'] = array(
+			'#type' => 'select',
+			'#title' => t('Inventory'),
+			'#options' => $inventoryoptions,
+			'#tree' => true,
+			'#default_value' => $inventory_id,
+			'#disabled' => (!$area_id) ? true : false
+	);
+	
+	return $form;
+}
+
+/**
+ * validates the change_inventory_form (hook_validate)
+ */
+function observation_change_inventory_form_validate($form, &$form_state) {
+	if($form_state['values']['inventories']['area'] > 0 && $form_state['values']['inventories']['inventory_id'] == 0) {
+		form_set_error('inventories][inventory_id', t('Please select an inventory of the area.'));
+	}
+}
+
+//used to change inventory/observation of a single observation (new/edit)
+function observation_change_inventory_callback($form, &$form_state) {
+	return $form['div']['inventories'];
+}
+

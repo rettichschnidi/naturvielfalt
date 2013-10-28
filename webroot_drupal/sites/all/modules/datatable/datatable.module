@@ -169,12 +169,10 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	global $user;
 	if (!check_admin_permission($user->uid)) {
 		$dbColumnsString = implode($aColumns, ", ");
-		debug($dbColumnsString);
 		
 		$matches = array();
 		if (preg_match('/(\w+\.acl_id)/i', $dbColumnsString, $matches)) {
 			$obs_acl_id = $matches[1];
-			debug($obs_acl_id);
 			$minLevel = variable_get($sql['acl_level']);
 			
 			$where .= empty($where) ? 'WHERE' : ' AND';
