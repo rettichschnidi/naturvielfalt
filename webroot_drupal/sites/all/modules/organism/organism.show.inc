@@ -312,6 +312,14 @@ function organism_show_organism($organismdata) {
 	
 	$render_array = array();
 	
+	$render_array['message'] = array(
+			'#type'   => 'markup',
+			'#markup' => '
+			<div id="message" style="display: none; height: auto;">
+				<div class="messages status"></div>
+			</div>'
+	);
+	
 	$render_array['attributes'] = array(
 				'#type' => 'fieldset',
 				'#title' => t('Attributes'),
@@ -421,6 +429,7 @@ function organism_show_organism($organismdata) {
 		if($observationCount > 0) {
 			drupal_add_css($observation_path . '/css/observation.css');
 			drupal_add_js($observation_path . '/js/observation.js');
+			drupal_add_library('system', 'ui.dialog');
 			
 			$render_array['div']['map'] = array(
 					'#theme' => 'area',

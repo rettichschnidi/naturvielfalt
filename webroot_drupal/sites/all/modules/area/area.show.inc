@@ -114,6 +114,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	//load js for observation table/map
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
+	drupal_add_library('system', 'ui.dialog');
 
 	$output['message'] = array(
 			'#type'   => 'markup',
