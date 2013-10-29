@@ -192,7 +192,7 @@ function initializeVotesFromOtherUsers() {
 			
 			for (var a = 0; a < verificationsPerOrganism[i].verifications.length; a++) {
 				htmlString +=	'<div class="entryComments">'
-									  + '<p class="header"><b><a href="javascript:void();" onclick="document.location = \'/user/' + verificationsPerOrganism[i].verifications[a].user_id + '\'">' + verificationsPerOrganism[i].verifications[a].user_name + '</a></b> am ' + new Date(verificationsPerOrganism[i].verifications[a].vote_timestamp * 1000).format("d.m.Y H:i") + '';
+									  + '<p class="header"><b><a onclick="document.location = \'/user/' + verificationsPerOrganism[i].verifications[a].user_id + '/contact\'">' + verificationsPerOrganism[i].verifications[a].user_name + '</a></b> am ' + new Date(verificationsPerOrganism[i].verifications[a].vote_timestamp * 1000).format("d.m.Y H:i") + '';
 				if(verificationsPerOrganism[i].verifications[a].comment != "" && verificationsPerOrganism[i].verifications[a].comment != null) {
 					htmlString +=		':</p><p>' + verificationsPerOrganism[i].verifications[a].comment + '</p>';
 				} else {

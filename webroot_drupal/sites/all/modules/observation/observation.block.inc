@@ -144,8 +144,18 @@ function observation_block_new_observations_content_ajax() {
 				'#markup' => 
 						$img .'</br>'.
 						l($observation['ol_name'], 'observation/'.$observation['id'].'/show').'</br>'.
-						'<i>'.$scientific_name.'</i>'.
-						$observation['observer'].'</br>'.
+						l(
+							'<i>'.$scientific_name.'</i>',
+							$base_url . '/organism/' . $observation['organism_id'],
+							array(
+							'html' => true
+						)).
+						l(
+							$observation['observer'],
+							$base_url . '/user/' . $observation['users_uid'] . '/contact',
+							array(
+							'html' => true
+						)).'</br>'.
 						$observation['township'].', '.$observation['canton'].'</br>'
 		);
 		$content[] = drupal_render($entry);

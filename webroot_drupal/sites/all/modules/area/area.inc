@@ -234,7 +234,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 				),
 				l(
 					check_plain($areadata['username']),
-					base_path() . "user/" . $areadata['userid'],
+					base_path() . "user/" . $areadata['userid'] . '/contact',
 					array(
 							'external' => true
 					))

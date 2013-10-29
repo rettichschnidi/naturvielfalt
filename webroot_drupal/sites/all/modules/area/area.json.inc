@@ -103,7 +103,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		
 		$row['cell']['username'] = l(
 					check_plain($row['cell']['username']),
-					base_path() . "user/" . $row['cell']['uid'],
+					base_path() . "user/" . $row['cell']['uid'] . '/contact',
 					array(
 							'external' => true
 					));

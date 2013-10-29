@@ -50,7 +50,7 @@ function sgroup_show($sgroup_id) {
 					// this user is owner of the group
 					$name .= " (" . t('Owner') . ")";
 				}
-				$name = l($name, 'user/' . $acl_user->uid);
+				$name = l($name, 'user/' . $acl_user->uid . '/contact');
 				if ($acl_user->uid == $user->uid) {
 					// active user is member
 					$user_is_member = TRUE;
