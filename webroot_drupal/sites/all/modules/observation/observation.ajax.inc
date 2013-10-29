@@ -646,7 +646,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			// Link observer soll Link sein
 			$row['cell']['observer'] = l(
 					$row['cell']['observer'],
-					$base_url . '/user/' . $row['cell']['users_uid'] ,
+					$base_url . '/user/' . $row['cell']['users_uid'] . '/contact',
 					array(
 							'html' => true
 					));

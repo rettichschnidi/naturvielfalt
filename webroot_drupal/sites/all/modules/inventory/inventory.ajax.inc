@@ -81,7 +81,7 @@ function inventory_get_area_inventories_json($area) {
 		// Link observer soll Link sein
 		$row['cell']['observer'] = l(
 				$row['cell']['observer'],
-				$base_url . '/user/' . $area['userid'] ,
+				$base_url . '/user/' . $area['userid'] . '/contact' ,
 				array(
 						'html' => true
 				));

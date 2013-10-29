@@ -358,7 +358,7 @@ function inventory_get_table($inventory = NULL) {
 				),
 				l(
 						check_plain($inventory['observer']),
-						base_path() . "user/" . $inventory['users_uid'],
+						base_path() . "user/" . $inventory['users_uid'] . '/contact',
 						array(
 								'external' => true
 						))
