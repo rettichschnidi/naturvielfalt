@@ -839,7 +839,7 @@ function observation_get_new_observations($offset= 0, $limit = 4) {
 	$query->leftJoin('{sgroup}', 'g', 'g.id = ag.sgroup_id');
 	$query->leftJoin('{acl_users}', 'au', '(au.acl_id = o.acl_id OR g.acl_id = o.acl_id) AND au.users_id = 0');  
 			
-	$query->fields('o', array('id', 'date', 'organism_id', 'organism_artgroup_id', 'observer'))
+	$query->fields('o', array('id', 'date', 'organism_id', 'organism_artgroup_id', 'observer', 'users_uid'))
 		  ->fields('oa', array('name'))
 		  ->fields('org', array('scientific_name'))
 		  ->fields('ol', array('name'))
