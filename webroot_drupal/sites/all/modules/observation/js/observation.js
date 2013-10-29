@@ -249,6 +249,7 @@ jQuery(document).ready(function() {
 				});
 			},
 			error: function(result) {
+				observation.setMessage(Drupal.t('Could not fetch area/inventory data.'), 'error', 5000);
 				observation.hideLoading();
 			},
 			data: {

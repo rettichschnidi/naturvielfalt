@@ -44,6 +44,17 @@ function area_delete_form($form, &$form_state, $areadata = NULL) {
  */
 function area_delete_form_submit($form, &$form_state) {
 	$areadata = $form_state['area_data'];
+	
+	$inventories = inventory_get_area_inventories($areadata['id']);
+	if(count($inventories)) {
+		drupal_set_message(
+		t(
+		'Can not delete area @areaname while it still contains inventories. Please remove its inventories first.',
+		array('@areaname' => $areadata['name'])),
+		'error');
+		return;
+	}
+	
 	area_delete_by_id($areadata['id']);
 	
 	drupal_set_message(t('area @areaname deleted', array('@areaname' => $areadata['name'])));
@@ -52,7 +63,8 @@ function area_delete_form_submit($form, &$form_state) {
 }
 
 /**
- * Deletes an area, with all its files, including linked entities (inventories with their observations, habitats, etc..)
+ * Deletes an area, with all its files, including linked entities.
+ * An Area can not be deleted, while it still contains inventories. Those need to be deleted manually first.
  * @param $area_id
  */
 function area_delete_by_id($area_id) {
@@ -68,11 +80,6 @@ function area_delete_by_id($area_id) {
 				$area->area_geometry_id)
 				->execute();
 		assert($num_deleted_surfaces == 1);
-		
-		//delete inventories
-		foreach(inventory_get_area_inventories($area_id) as $inventory) {
-			inventory_delete_by_id($inventory->id);
-		}
 		
 		//delete files of area
 		$files = gallery_implementation_get_files('area', $area_id);

@@ -146,19 +146,24 @@ function inventory_save($form = false, $custom_data = false, $from_api = false) 
 
 /**
  * Delete an inventory by id
+ * An Inventory can only be deleted, once it does not contain any observation. Those need to be deleted first.
  * 
  * @param int $inventory_id
  * 	The inventory to delete
  */
 function inventory_delete_by_id($inventory_id) {
 	$inventory = inventory_get($inventory_id);
+	$observations = inventory_get_observations($inventory_id);
+	if(count($observations)) {
+		drupal_set_message(
+		t(
+		'Can not delete inventory @inventoryname while it still contains observations. Please remove its observations first.',
+		array('@inventoryname' => $inventory['name'])),
+		'error');
+		return;
+	}
 	$transaction = db_transaction();
 	try {
-		//delete all observations of inventory
-		foreach(inventory_get_observations($inventory_id) as $observation) {
-			$observation = (array) $observation;
-			observation_delete_by_id($observation['id']);
-		}
 		
 		db_delete('inventory')->condition('id', $inventory_id)
 		->execute();

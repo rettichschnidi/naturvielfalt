@@ -167,7 +167,7 @@ jQuery(document).ready(function() {
 						observationTable.flexReload();
 					}
 				}
-				area.showDeleteResponse(json);
+				area.setMessage(json.message, json.type, 5000);
 			});
 		}
 	};

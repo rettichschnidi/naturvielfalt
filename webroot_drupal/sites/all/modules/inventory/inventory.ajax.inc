@@ -135,7 +135,16 @@ function inventory_delete($inventory) {
 		$output['message'] = t('Please provide an inventory to delete');
 		return drupal_json_output($output);
 	}
-
+	
+	$observations = inventory_get_observations($inventory['id']);
+	if(count($observations)) {
+		$output['success'] = false;
+		$output['type'] = 'error';
+		$output['message'] = t('Can not delete inventory @inventoryname while it still contains observations. Please remove its observations first.',
+				array('@inventoryname' => $inventory['name']));
+		return drupal_json_output($output);
+	}
+	
 	$success = inventory_delete_by_id($inventory['id']);
 
 	$output['success'] = $success;
