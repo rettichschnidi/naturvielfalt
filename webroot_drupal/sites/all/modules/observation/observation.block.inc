@@ -139,6 +139,8 @@ function observation_block_new_observations_content_ajax() {
 		}
 		$scientific_name = isset($observation['scientific_name']) ? $observation['scientific_name'].'</br>' : '';
 	
+		global $base_url;
+		
 		$entry = array(
 				'#type' => 'markup',
 				'#markup' => 
