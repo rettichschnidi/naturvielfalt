@@ -236,8 +236,11 @@ function area_delete() {
 	foreach ($areas as $area_id) {
 		$area = area_get_full_dataset_of_specific_area($area_id);
 		if (check_admin_acl($area['acl_id'])) {
-			area_delete_by_id($area_id);
-			$deleteCount++;
+			$inventories = inventory_get_area_inventories($area['id']);
+			if(!count($inventories)) {
+				area_delete_by_id($area_id);
+				$deleteCount++;
+			}
 		}
 	}
 
@@ -251,7 +254,7 @@ function area_delete() {
 	}
 	else {
 		$output['type'] = 'warning';
-		$output['message'] = t('Some areas could not be deleted (unauthorized access)');
+		$output['message'] = t('Some areas could not be deleted (no permission, or the area may still contain inventories.)');
 	}
 
 	return drupal_json_output($output);
