@@ -171,18 +171,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				->execute();
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 			
-			// create a verification entry in case the observer defined an organism
-			if (module_exists('vote')) {
-				if ($observation['organism_id'] != UNKNOWN_SPECIES && isset($values['file_description'])) {
-					$vote["user_id"] = $observation['users_uid'];
-					$vote["observation_id"] = $observation['id'];
-					$vote["organism_id"] = $observation['organism_id'];
-					$vote["vote_timestamp"] = time();
-					db_insert('vote')->fields($vote)
-						->execute();
-				}
-			}
-			
 			// Read access for ALL group
 			add_group_to_acl($observation['acl_id'], variable_get('ACL_GROUP_ALL_ID'), variable_get('ACL_READ'));
 		}
@@ -196,7 +184,21 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				'location' => $geometry['township'] . ' ' . $geometry['canton'],
 		);
 		
-		gallery_implementation_save_manual('observation', $image, 'observation_id');
+		$imagecreated = gallery_implementation_save_manual('observation', $image, 'observation_id');
+		
+		if(!isset($output['update']) && $imagecreated) {
+			// create a verification entry in case the observer defined an organism
+			if (module_exists('vote')) {
+				if ($observation['organism_id'] != UNKNOWN_SPECIES) {
+					$vote["user_id"] = $observation['users_uid'];
+					$vote["observation_id"] = $observation['id'];
+					$vote["organism_id"] = $observation['organism_id'];
+					$vote["vote_timestamp"] = time();
+					db_insert('vote')->fields($vote)
+					->execute();
+				}
+			}
+		}
 
 		if (isset($values['file_description'])) {
 			gallery_implementation_file_updateComment(
