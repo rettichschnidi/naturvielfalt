@@ -742,6 +742,14 @@
 					'query' : p.query,
 					'qtype' : p.qtype,
 				};
+				
+				//add passed params (e.g. imagesource)
+				if (p.params.length) {
+                    for (var pi = 0; pi < p.params.length; pi++) {
+                    	var tmp = p.params[pi];
+                        param[tmp.name] = tmp.value;
+                    }
+				}
 
 				$.ajax({
 					type : p.method,
