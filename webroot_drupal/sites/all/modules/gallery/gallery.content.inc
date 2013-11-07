@@ -655,13 +655,14 @@ function gallery_images_edit($type, $id, $mediatype) {
 					),
 			),
 	);
+	
 	$page['edit']['edit'] = drupal_get_form(
 		'gallery_images_form',
 		$mediatype,
 		$type,
 		$id,
 		false,
-		'gallery/' . $type . '/' . $id . '/' . $mediatype . '');
+		'gallery/' . $type . '/' . $id . '/' . $mediatype . '/edit');
 
 	$title = t('Manage @mediatype', array('@mediatype' => t($mediatype)));
 	drupal_set_title($title, PASS_THROUGH);
@@ -898,6 +899,11 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		$new_open_identification = false, $i = 1) {
 	global $user;
+	
+	//keep track if we only want to edit an image
+	
+	$form_state['image_editing'] = $image ? true : false;
+	
 	drupal_add_css(
 		drupal_get_path('module', 'gallery') . '/css/jquery.lightbox.css',
 		array(
@@ -1361,7 +1367,13 @@ function _gallery_image_form_categories($mediatype, $type, $id, $image) {
  */
 function _gallery_images_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
-
+	//check if we are only editing one image. it is possible to pass no image, and just edit meta data of the image
+	if(isset($form_state['image_editing']) && $form_state['image_editing']) {
+		if(empty($_FILES['files']['name'][$name])) {
+			return;
+		}
+	}
+	
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
 	$fileSize = $_FILES['files']['size'][$name];
@@ -1391,6 +1403,13 @@ function _gallery_images_form_upload_validate($element, &$form_state, $form) {
  */
 function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
+	
+	//check if we are only editing one image. it is possible to pass no image, and just edit meta data of the image
+	if(isset($form_state['image_editing']) && $form_state['image_editing']) {
+		if(empty($_FILES['files']['name'][$name])) {
+			return;
+		}
+	}
 
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
@@ -1421,6 +1440,13 @@ function _gallery_sounds_form_upload_validate($element, &$form_state, $form) {
  */
 function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
+	
+	//check if we are only editing one image. it is possible to pass no image, and just edit meta data of the image
+	if(isset($form_state['image_editing']) && $form_state['image_editing']) {
+		if(empty($_FILES['files']['name'][$name])) {
+			return;
+		}
+	}
 
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
@@ -1448,6 +1474,13 @@ function _gallery_videos_form_upload_validate($element, &$form_state, $form) {
 }
 function _gallery_medias_form_upload_validate($element, &$form_state, $form) {
 	$name = substr($element['#name'], 6, strlen($element['#name']) - 7);
+	
+	//check if we are only editing one image. it is possible to pass no image, and just edit meta data of the image
+	if(isset($form_state['image_editing']) && $form_state['image_editing']) {
+		if(empty($_FILES['files']['name'][$name])) {
+			return;
+		}
+	}
 
 	$fileName = $_FILES['files']['name'][$name];
 	$fileMimeType = $_FILES['files']['type'][$name];
@@ -1662,7 +1695,7 @@ function gallery_images_form_upload_submit($form, &$form_state) {
 				'error');
 		$image = gallery_image_save($image);
 		drupal_set_message(
-			t('Image %file saved', array('%file' => $file->filename)));
+			t('Image %image saved', array('%image' => $image['title'])));
 
 		if ($type == "open_identification") {
 			open_identification_link_media_with_open_identification($id, $image);
