@@ -225,7 +225,7 @@ function inventory_get_writeable_invetories_with_areas($json = false) {
 			$areas[$entry['area_id']]['inventories'][$entry['inventory_id']] = $entry['inventoryname'];
 		}
 	}
-	$output = array('areas' => $areas, 'areas_as_options' => $areasOptions);
+	$output = array('count' => count($areas), 'areas' => $areas, 'areas_as_options' => $areasOptions);
 	if($json) return drupal_json_output($output);
 	return $output;
 	
