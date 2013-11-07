@@ -642,6 +642,7 @@ function gallery_images_edit($type, $id, $mediatype) {
 				array('@mediatype' => t($mediatype))),
 			'#weight' => 2,
 			'#collapsible' => true,
+			'#collapsed' => FALSE,
 			'#attached' => array(
 					'js' => array(
 							'misc/form.js',
@@ -651,7 +652,6 @@ function gallery_images_edit($type, $id, $mediatype) {
 			'#attributes' => array(
 					'class' => array(
 							'collapsible'
-									. (isset($_GET['saved']) ? '' : ' collapsed')
 					),
 			),
 	);
