@@ -249,7 +249,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 								$row['cell']['selectColumn']
 						),
 						'data' => array(
-								$row['cell']['name'],
+								$row['cell']['area_name'],
 								$row['cell']['geometry_type'],
 								$location
 								
