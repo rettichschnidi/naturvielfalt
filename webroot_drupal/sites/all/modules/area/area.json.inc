@@ -101,6 +101,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		';
 
 	//Custom Count Query passed to the datatable module
+	//Also used the with statement, to query with the same fields.. so the datatabele module doesnt struggle
 	$sql['dbCustomCountQuery'] = 'WITH parents AS(
 			SELECT
 			'.$columnsParent.'
