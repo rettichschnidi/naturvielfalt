@@ -6,6 +6,7 @@
  */
 
 module_load_include('inc', 'area', 'area');
+module_load_include('inc', 'area', 'area.ajax');
 
 /**
  * Return a form which asks the user if he really wants to delete the area.
@@ -46,10 +47,19 @@ function area_delete_form_submit($form, &$form_state) {
 	$areadata = $form_state['area_data'];
 	
 	$inventories = inventory_get_area_inventories($areadata['id']);
+	$children = area_get_children($areadata, false);
 	if(count($inventories)) {
 		drupal_set_message(
 		t(
 		'Can not delete area @areaname while it still contains inventories. Please remove its inventories first.',
+		array('@areaname' => $areadata['name'])),
+		'error');
+		return;
+	}
+	if(count($children)) {
+		drupal_set_message(
+		t(
+		'Can not delete area @areaname while it still contains sub areas. Please remove its sub areas first.',
 		array('@areaname' => $areadata['name'])),
 		'error');
 		return;

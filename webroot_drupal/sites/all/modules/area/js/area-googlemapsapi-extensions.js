@@ -10,7 +10,8 @@
 colors = {
 	'blue': '6F98FF',
 	'green': '34BA46',
-	'red': 'FE7569'
+	'red': 'FE7569',
+	'black' : '000000'
 };
 
 /**
@@ -168,13 +169,20 @@ google.maps.Polyline.prototype.getBounds = google.maps.Marker.prototype.getBound
 
 google.maps.Polygon.prototype.select = function() {
 	var color = colors.blue; 
+	var strokeColor = colors.blue;
 	if(this.inMultiSelection)
 	{
 		color = colors.green;
+		if(!this.child)
+			strokeColor = colors.green;
+	} else {
+		if(this.child) {
+			strokeColor = colors.black;
+		}
 	}
-	
+
 	this.setOptions({
-		strokeColor : '#' + color,
+		strokeColor : '#' + strokeColor,
 		strokeWeight : 1,
 		strokeOpacity : 0.75,
 		fillColor : '#' + color,
@@ -183,10 +191,14 @@ google.maps.Polygon.prototype.select = function() {
 };
 
 google.maps.Polygon.prototype.deselect = function() {
+	var strokeColor = colors.red;
+	if(this.child) {
+		strokeColor = colors.black;
+	}
 	if(!this.inMultiSelection)
 	{
 		this.setOptions({
-			strokeColor : '#' + colors.red,
+			strokeColor : '#' + strokeColor,
 			strokeWeight : 1,
 			strokeOpacity : 0.75,
 			fillColor : '#' + colors.red,

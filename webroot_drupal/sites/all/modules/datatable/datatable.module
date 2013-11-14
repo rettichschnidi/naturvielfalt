@@ -57,13 +57,11 @@ function datatable_theme() {
  * 		 Totalrecordcount of the give sql statement
  */
 function datatable_dbRecordCount($sql, $arguments = array()) {
-	
 	$sql = "SELECT COUNT(*) FROM (".$sql.") AS SUB";
 	
 	/* Data set length after filtering */
 	$fullResult = db_query($sql, $arguments);
 	$fullRecordsCount = $fullResult->fetchField(0);
-	
 	return intval($fullRecordsCount);
 	
 }
@@ -90,6 +88,10 @@ function datatable_dbRecordCount($sql, $arguments = array()) {
  * 			'dbJoins' 			optional; the joins String (including all JOIN statements)
  * 			'dbGroupBy' 		optional; the GROUP BY string
  * 			'dbWhere' 			optional; the WHERE statement string
+ * 			'dbOrder'			optional: Pass an order of the results, which should be applied first to the query, helps to keep an order (example parent->children)
+ * 			'noLimit'			optional: True, if no limit/offset should be applied to the query
+ * 			'dbCustomQueryBody'	optional: If you want to execute a complex query (WITH, UNION, etc.), you can pass a custom query body here. Datatable will add dbWhere (including search), dbGroupBy, dbOrder and LIMIT/OFFSET at the end of the query.
+ * 			'dbCustomCountQuery'optional: Pass this, if you want a custom count query to be executed. Datatable will add dbWhere and dbGroupBy to this query and run it through datatable_dbRecordCount.
  * 			'id' 				optional: id column, default 'id'
  * 			'acl_level'			optional: Required acl level. For valid values, have a look at the c_acl module (file c_acl.base.inc)
  *			'dbDefaultOrder'	optional: When no sorting given via AJAX, use this one
@@ -103,6 +105,10 @@ function datatable_dbRecordCount($sql, $arguments = array()) {
  * 			$sql['dbJoins'] = '';
  * 			$sql['dbGroupBy'] = '';
  * 			$sql['dbWhere'] = '';
+ * 			$sql['dbOrder'] = '';
+ * 			$sql['noLimit'] = '';
+ * 			$sql['dbCustomQueryBody'] = '';
+ * 			$sql['dbCustomCountQuery'] = '';
  * 			$sql['id] = 'id';
  * 			$sql['acl_level'] = 'ACL_READ';
  * 			$sql['dbDefaultOrder'] = NULL;
@@ -125,7 +131,7 @@ function datatable_dbRecordCount($sql, $arguments = array()) {
 function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()) {
 
 	/* Set the db fields to select */
-	if (!$sql['dbColumns'] || !$sql['dbTable'])
+	if (!isset($sql['dbCustomQueryBody']) && (!$sql['dbColumns'] || !$sql['dbTable']))
 		return "Error! No dbColumns or dbTable";
 	assert(isset($sql['dbSearchColumns']));
 	$aColumns = $sql['dbColumns'];
@@ -320,6 +326,9 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$sortorder = pg_escape_string($sortorder);
 	}
 	$sOrder = 'ORDER BY ';
+	if(isset($sql['dbOrder']) && !empty($sql['dbOrder'])) {
+		$sOrder .= $sql['dbOrder'] . ', ';
+	}
 	if (isset($sortname)) {
 		$sOrder .= $sortname. ' ' . $sortorder . ', ';
 	} else if (isset($sql['dbDefaultOrder']) && !empty($sql['dbDefaultOrder'])) {
@@ -332,9 +341,29 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	* Get data to display 2
 	*/	
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
-	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
-	//debug("fullQuery: ".$fullQuery); 
+	if(isset($sql['dbCustomQueryBody'])) {
+		//use the custom query
+		$fullQuery = $sql['dbCustomQueryBody']. $sWhere. $sGroupBy. $sOrder;
+	} else {
+		//wrap in select
+		$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
+	}
+	try {
+		if(isset($sql['dbCustomCountQuery'])) {
+			if(isset($sql['dbCustomCountWhere'])) {
+				$countWhere = $sWhere;
+				$countWhere .= empty($countWhere) ? 'WHERE ' : 'AND ';
+				$countWhere .= $sql['dbCustomCountWhere'];
+			}
+			$numberOfAccessibleRows = datatable_dbRecordCount($sql['dbCustomCountQuery'].$countWhere.$sGroupBy, $arguments);
+		} else {
+			$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
+		}
+	} catch(Exception $e) {
+		watchdog_exception('datatable', $e);
+		watchdog('datatable', $fullQuery);
+		return "Error! Query could not be executed. Please see the log file for more information.";
+	}
 	/*
 	 * Paging
 	*/
@@ -360,14 +389,23 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$pagesize = 100;
 	}
 	
-	/*
-	 * Add limit and offset to improve performance of query runtime
-	 */
-	$fullQuery .= " LIMIT $pagesize OFFSET $offset";
+	if(!isset($sql['noLimit'])) {
+		/*
+		 * Add limit and offset to improve performance of query runtime
+		 */
+		$fullQuery .= " LIMIT $pagesize OFFSET $offset";
+	}
 		
 	/* Data set length after filtering */
-	$fullResult = db_query($fullQuery, $arguments);
-	$fullRecords = $fullResult->fetchAll();
+	try {
+		$fullResult = db_query($fullQuery, $arguments);
+		$fullRecords = $fullResult->fetchAll();
+		debug($fullQuery);
+	} catch(Exception $e) {
+		watchdog_exception('datatable', $e);
+		watchdog('datatable', $fullQuery);
+		return "Error! Query could not be executed. Please see the log file for more information.";
+	}
 
 	
 	$output = array(
