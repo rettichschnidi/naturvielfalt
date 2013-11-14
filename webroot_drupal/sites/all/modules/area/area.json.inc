@@ -20,6 +20,57 @@ module_load_include('inc', 'area', 'area.ajax');
 function area_datatable_json($acl_level = 'ACL_READ') {
 	
 	global $user;
+	
+	/* Only pass dbColumns, to fullfill the datatable API (used for sortorder, and acl checks), since we are passing the query via $sql['dbCustomQueryBody'] */
+	$sql['dbColumns'] = array(
+			'area_id',
+			'area_acl_id',
+			'area_name',
+			'comment',
+			'date',
+			'parent_id',
+			'children',
+			'altitude',
+			'township',
+			'canton',
+			'country',
+			'zip',
+			'geometry_type',
+			'username',
+			'uid'
+	);
+	
+	$sql['dbSearchColumns'] = array(
+			'area_name',
+			'comment',
+			'altitude',
+			'township',
+			'canton',
+			'country',
+			'geometry_type',
+			'zip',
+			'username'
+	);
+	
+	$sql['dbOrder'] = 'COALESCE(parent_id, area_id) DESC, parent_id IS NOT NULL';
+	$sql['id'] = 'area_id';
+	
+	$arguments = array();
+	/*
+	 * Only show accessible areas.
+	* If own areas are requested, reset ACL level to readable areas.
+	*/
+	if ($acl_level === 'own') {
+		$sql['dbWhere'] = empty($sql['dbWhere'])
+		? ''
+				: $sql['dbWhere'] . ' AND ';
+		$sql['dbWhere'] .= 'uid=:uid';
+		$arguments[':uid'] = $user->uid;
+		$sql['acl_level'] = 'ACL_READ';
+	}
+	else
+		$sql['acl_level'] = $acl_level;
+	
 	$columnsParent = "parent.id AS area_id,
 			parent.acl_id AS area_acl_id,
 			parent.name AS area_name,
@@ -49,43 +100,26 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			GeometryType(a_s.geom) AS geometry_type,
 			u.name AS username,
 			u.uid";
-	/*
-	 * Paging
-	*/
-	if (isset($_POST['page'])) {
-		$pageNumber = (int) $_POST['page'];
-		if ($pageNumber < 1)
-			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
-	}
-	else
-		$pageNumber = 1;
-	
-	if (isset($_REQUEST['rp'])) {
-	$pagesize = (int) $_REQUEST['rp'];
-			if ($pagesize < 1)
-				return "Error! Pagesize < 1";
-	}
 
-	if (isset($pageNumber) && isset($pagesize)) {
-	$offset = ($pageNumber - 1) * $pagesize;
-	}
-	else {
-	$offset = 0;
-	$pagesize = 100;
-	}
+	$sqlSuffix = datatable_get_SQLSuffix($sql);
+	$where = $sqlSuffix['WHERE'];
+	$joins = $sqlSuffix['JOINS'];
+	$order = $sqlSuffix['ORDER'];
+	$limit = $sqlSuffix['LIMIT'];
+	$offset = $sqlSuffix['OFFSET'];
 					
 	/*
 	 * First select only parents with the current page limit and offset. And union the results with all children of those areas
 	 */
+	
+	$childrenWhere = empty($where) ? ' WHERE parent_id IS NULL' : $where.' AND parent_id IS NULL';
 	$sql['dbCustomQueryBody'] = 'WITH parents AS(
 			SELECT
 			'.$columnsParent.'
 			FROM {area} parent
 			JOIN {area}_geometry a_s ON parent.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = parent.acl_id
-			JOIN {users} u ON u.uid = cacl.users_id
-			WHERE parent.parent_id IS NULL
-			LIMIT '.$pagesize.' OFFSET '.$offset.' 
+			JOIN {users} u ON u.uid = cacl.users_id	
 			) 
 		SELECT * FROM (
 			(SELECT
@@ -96,9 +130,12 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			JOIN {users} u ON u.uid = cacl.users_id 
 			WHERE children.parent_id IN (SELECT area_id FROM parents) )
 			UNION ALL
-			(SELECT * FROM parents)
+			(SELECT * FROM parents
+			'.$joins.'
+			'.$childrenWhere.'
+			LIMIT '.$limit.' OFFSET '.$offset.' )
 		) AS a		
-		';
+		'.$where.$order;
 
 	//Custom Count Query passed to the datatable module
 	//Also used the with statement, to query with the same fields.. so the datatabele module doesnt struggle
@@ -113,56 +150,6 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			SELECT * FROM parents ';
 	
 	$sql['dbCustomCountWhere'] = 'parent_id IS NULL';
-	
-	$sql['dbSearchColumns'] = array(
-			'area_name',
-			'comment',
-			'altitude',
-			'township',
-			'canton',
-			'country',
-			'geometry_type',
-			'zip',
-			'username'
-	);
-
-	$sql['dbOrder'] = 'COALESCE(parent_id, area_id) DESC, parent_id IS NOT NULL';
-	$sql['id'] = 'area_id';
-	
-	$arguments = array();
-	/*
-	 * Only show accessible areas.
-	* If own areas are requested, reset ACL level to readable areas.
-	*/
-	if ($acl_level === 'own') {
-		$sql['dbWhere'] = empty($sql['dbWhere'])
-		? ''
-				: $sql['dbWhere'] . ' AND ';
-		$sql['dbWhere'] .= 'uid=:uid';
-		$arguments[':uid'] = $user->uid;
-		$sql['acl_level'] = 'ACL_READ';
-	}
-	else
-		$sql['acl_level'] = $acl_level;
-	
-	/* Only pass dbColumns, to fullfill the datatable API (used for sortorder, and acl checks), since we are passing the query via $sql['dbCustomQueryBody'] */
-	$sql['dbColumns'] = array(
-			'area_id',
-			'area_acl_id',
-			'area_name',
-			'comment',
-			'date',
-			'parent_id',
-			'children',
-			'altitude',
-			'township',
-			'canton',
-			'country',
-			'zip',
-			'geometry_type',
-			'username',
-			'uid'
-	);
 	
 	$sql['noLimit'] = true; //do not append the LIMIT/OFFSET clause, since we limit the query in the $sql['dbCustomQueryBody'] to limit the parents
 	$output = datatable_dbRequest($sql, $arguments);
