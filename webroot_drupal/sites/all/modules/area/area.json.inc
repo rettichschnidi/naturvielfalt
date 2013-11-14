@@ -196,7 +196,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			));
 		//TODO, check if write access
 		// edit details
-		$row['cell']['editColumn'] = (area_write_access_by_id($row['cell']['id']))
+		$row['cell']['editColumn'] = (area_write_access_by_id($row['id']))
 			? l(
 				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
 				$base_url . '/area/' . $row['id'] . '/edit',
