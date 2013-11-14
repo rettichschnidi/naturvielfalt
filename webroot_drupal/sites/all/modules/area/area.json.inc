@@ -91,7 +91,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			(SELECT
 			'.$columnsChildren.'
 			FROM {area} children
-			JOIN {area}_geometry a_s ON children.area_geometry_id = a_s.id
+			JOIN {area_geometry} a_s ON children.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = children.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id 
 			WHERE children.parent_id IN (SELECT area_id FROM parents) )
@@ -105,7 +105,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			SELECT
 			'.$columnsParent.'
 			FROM {area} parent
-			JOIN {area}_geometry a_s ON parent.area_geometry_id = a_s.id
+			JOIN {area_geometry} a_s ON parent.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = parent.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id
 			) 
