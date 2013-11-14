@@ -177,7 +177,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		$dbColumnsString = implode($aColumns, ", ");
 		
 		$matches = array();
-		if (preg_match('/(\w+\.acl_id)/i', $dbColumnsString, $matches)) {
+		if (preg_match('/(\w*\.?acl_id)/i', $dbColumnsString, $matches)) {
 			$obs_acl_id = $matches[1];
 			$minLevel = variable_get($sql['acl_level']);
 			
@@ -343,7 +343,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
 	if(isset($sql['dbCustomQueryBody'])) {
 		//use the custom query
-		$fullQuery = $sql['dbCustomQueryBody']. $sWhere. $sGroupBy. $sOrder;
+		$fullQuery = $sql['dbCustomQueryBody'].$sJoins. $sWhere. $sGroupBy. $sOrder;
 	} else {
 		//wrap in select
 		$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
@@ -355,7 +355,7 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 				$countWhere .= empty($countWhere) ? 'WHERE ' : 'AND ';
 				$countWhere .= $sql['dbCustomCountWhere'];
 			}
-			$numberOfAccessibleRows = datatable_dbRecordCount($sql['dbCustomCountQuery'].$countWhere.$sGroupBy, $arguments);
+			$numberOfAccessibleRows = datatable_dbRecordCount($sql['dbCustomCountQuery'].$sJoins.$countWhere.$sGroupBy, $arguments);
 		} else {
 			$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
 		}
