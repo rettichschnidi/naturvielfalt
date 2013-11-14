@@ -420,9 +420,9 @@ function area_get_children($area = NULL, $json = true) {
 	 *  Check for permissions
 	*/
 	$joins = '';
-	$whereClause = true;
+	$whereClause = '';
 	if (!check_admin_permission($user->uid)) {
-		$whereClause = '';
+		$whereClause = ' AND ';
 		$minLevel = variable_get('ACL_READ');
 	
 		$joins = ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = a.acl_id'
