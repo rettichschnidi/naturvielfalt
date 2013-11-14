@@ -411,16 +411,47 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
  * @param string $area
  */
 function area_get_children($area = NULL, $json = true) {
+	global $user;
+	
 	$children = array();
 	if(!$area) return $children;
 	
-	$query = 'SELECT id 
+	/*
+	 *  Check for permissions
+	*/
+	$joins = '';
+	$whereClause = true;
+	if (!check_admin_permission($user->uid)) {
+		$whereClause = '';
+		$minLevel = variable_get('ACL_READ');
+	
+		$joins = ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = a.acl_id'
+				.' LEFT JOIN {sgroup} g ON g.id = ag.sgroup_id'
+				.' LEFT JOIN {acl_users} au ON (au.acl_id = a.acl_id OR au.acl_id = g.acl_id) AND au.users_id = ' . $user->uid;
+
+		// level of ALL group
+		$whereClause .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')
+		.' AND ag.level >= ' . $minLevel . ')';
+		// level of user group
+		$whereClause .= ' OR (au.acl_id = g.acl_id'
+				.' AND ag.level >= ' . $minLevel . ')';
+		$whereClause .= ' OR (au.acl_id = a.acl_id'
+				.' AND au.level >= ' . $minLevel . ') )';
+	
+	}
+	
+	$query = 'SELECT a.id AS id 
 	 FROM {area} a
-	 WHERE parent_id = '.$area['id'];
+	 '.$joins.'
+	 WHERE parent_id = '.$area['id'].'
+	 AND '.$whereClause;
 	
 	$children = db_query($query)->fetchAll();
 	
-	return $json ? drupal_json_output((array)$children) : (array)$children;
+	$output['count'] = count($children);
+	$output['children'] = (array) $children;
+	
+	return $json ? drupal_json_output($output) : $output;
 	
 }
 ?>

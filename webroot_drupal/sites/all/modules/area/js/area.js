@@ -255,8 +255,8 @@ jQuery(document).ready(function() {
  		$.ajax({
 			type: 'GET',
 			url: Drupal.settings.basePath + 'area/' + area_id + '/getchildren',
-			success: function (data) {
-				jQuery.each(data,function(index, element) {
+			success: function (result) {
+				jQuery.each(result.children,function(index, element) {
 					table.toogleRowVisibility(element.id, !showChildren);
 				});
 				//save new status of hierarchy (open or closed)

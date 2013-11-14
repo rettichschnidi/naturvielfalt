@@ -582,7 +582,7 @@ function area_edit_permission($areadata) {
 			),
 			array(
 					'type' => variable_get("ACL_RED_WRITE"),
-					'name' => t('Add Inventory'),
+					'name' => t('Add Inventory/Subarea'),
 					'value' => FALSE,
 			),
 			array(

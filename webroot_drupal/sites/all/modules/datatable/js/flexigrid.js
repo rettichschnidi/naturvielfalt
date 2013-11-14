@@ -534,6 +534,9 @@
 											}
 										}
 										$(tbody).append(tr);
+										if(row.cell.hide !== undefined && row.cell.hide) {
+											$(tr).hide();
+										}
 										tr = null;
 									});
 				} else if (p.dataType == 'xml') {
@@ -1916,5 +1919,13 @@
 			if (this.grid)
 				this.grid.recalcLayout();
 		});
+	}; // end recalcLayout
+	$.fn.toogleRowVisibility = function(rowid, visible) {
+		var row = $('#row'+rowid);
+		if(row) {
+			if(!visible) 
+				row.hide();
+			else row.show();
+		}
 	}; // end recalcLayout
 })(jQuery);

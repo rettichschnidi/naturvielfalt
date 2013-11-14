@@ -1035,7 +1035,7 @@ function area_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
-			'dbfield' => 'id',
+			'dbfield' => 'area_id',
 			'hide' => true,
 			'width' => 30
 	);
@@ -1077,8 +1077,8 @@ function area_get_standard_datatable_headers($init_sort = false,
 	
 	$tableHeader[] = array(
 			'name' => t('Name'),
-			'dbfield' => 'name',
-			'dbExactField' => 'name',
+			'dbfield' => 'area_name',
+			'dbExactField' => 'area_name',
 			'width' => 310,
 	);
 	

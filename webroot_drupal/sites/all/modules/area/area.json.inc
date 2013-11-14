@@ -18,16 +18,14 @@ module_load_include('inc', 'area', 'area.ajax');
  * 	Required ACL level (e.g. ACL_READ, ACL_WRITE, ACL_ADMIN, etc)
 */
 function area_datatable_json($acl_level = 'ACL_READ') {
+	
 	global $user;
-	$columnsParent = "parent.id AS id,
-			parent.acl_id AS acl_id,
-			parent.name,
+	$columnsParent = "parent.id AS area_id,
+			parent.acl_id AS area_acl_id,
+			parent.name AS area_name,
 			parent.comment,
 			parent.create_time AS date,
 			parent.parent_id,
-			(SELECT COUNT(1)
-				FROM {area} children
-				WHERE children.parent_id = parent.id) AS children,
 			a_s.altitude,
 			a_s.township,
 			a_s.canton,
@@ -37,15 +35,12 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			u.name AS username,
 			u.uid";
 	
-	$columnsChildren = "children.id AS id,
-			children.acl_id AS acl_id,
-			children.name,
+	$columnsChildren = "children.id AS area_id,
+			children.acl_id AS area_acl_id,
+			children.name AS area_name,
 			children.comment,
 			children.create_time AS date,
 			children.parent_id,
-			(SELECT COUNT(1)
-				FROM {area} children
-				WHERE children.parent_id = children.id) AS children,
 			a_s.altitude,
 			a_s.township,
 			a_s.canton,
@@ -99,7 +94,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			JOIN {area}_geometry a_s ON children.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = children.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id 
-			WHERE children.parent_id IN (SELECT id FROM parents) )
+			WHERE children.parent_id IN (SELECT area_id FROM parents) )
 			UNION ALL
 			(SELECT * FROM parents)
 		) AS a		
@@ -119,7 +114,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$sql['dbCustomCountWhere'] = 'parent_id IS NULL';
 	
 	$sql['dbSearchColumns'] = array(
-			'name',
+			'area_name',
 			'comment',
 			'altitude',
 			'township',
@@ -130,8 +125,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'username'
 	);
 
-	$sql['dbOrder'] = 'COALESCE(parent_id, id) DESC, parent_id IS NOT NULL';
-	$sql['id'] = 'id';
+	$sql['dbOrder'] = 'COALESCE(parent_id, area_id) DESC, parent_id IS NOT NULL';
+	$sql['id'] = 'area_id';
 	
 	$arguments = array();
 	/*
@@ -149,11 +144,11 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	else
 		$sql['acl_level'] = $acl_level;
 	
-	/* Only pass dbColumns, to fullfill the datatable API (used for sortorder), since we are passing the query via $sql['dbCustomQueryBody'] */
+	/* Only pass dbColumns, to fullfill the datatable API (used for sortorder, and acl checks), since we are passing the query via $sql['dbCustomQueryBody'] */
 	$sql['dbColumns'] = array(
-			'id',
-			'acl_id',
-			'name',
+			'area_id',
+			'area_acl_id',
+			'area_name',
 			'comment',
 			'date',
 			'parent_id',
@@ -176,7 +171,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		
 	foreach ($output['rows'] as &$row) {
 		// hierarchy
-		if(!empty($row['cell']['children'])) {
+		$children = area_get_children(area_load($row['id']), false);
+		if(isset($children['count']) && $children['count']) {
 			$row['cell']['hierarchyColumn'] = '
 					<input id="showChildren'.$row['id'].'" type="hidden" value="0"/>
 					<img id="toogleChildren' .$row['id'].'" src="' . $iconBaseUrl . 'Forward.png" alt="' . t('Hierarchy') . '" title="' . t('Hierarchy') . '" onclick="area.toogleChildren(\'areas\', '.$row['id']. ');" />';
