@@ -444,7 +444,7 @@ function area_get_children($area = NULL, $json = true) {
 	 FROM {area} a
 	 '.$joins.'
 	 WHERE parent_id = '.$area['id'].'
-	 AND '.$whereClause;
+	 '.$whereClause;
 	
 	$children = db_query($query)->fetchAll();
 	
