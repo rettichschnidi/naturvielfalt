@@ -26,6 +26,7 @@ function area_save($form = false, &$form_state, $from_api = false) {
 		drupal_set_message("Creating area: <pre>$debugmessage</pre>");
 	}
 	$areaid = 0;
+	
 	/*
 	 * Get submitted values and escape values before submitting
 	* them to the database.
@@ -41,7 +42,8 @@ function area_save($form = false, &$form_state, $from_api = false) {
 		? filter_xss($form_state['altitude']) : 0;
 		$jsonCoordinates = filter_xss($form_state['area-coords']);
 		$comment = isset($form_state['comment']) ? filter_xss($form_state['comment']) : '';
-
+		//put NULL value in db, if no parent_id or 0 has been passed
+		$parent_id = (isset($form_state['parent_area']) && (int) $form_state['parent_area'] > 0) ? filter_xss($form_state['parent_area']) : NULL;
 		$date_parts = explode('.', filter_xss($form_state['date']));
 		$timesplit = array(null, null);
 		if(isset($form_state['time'])) $timesplit = explode(':', filter_xss($form_state['time']));
@@ -51,6 +53,9 @@ function area_save($form = false, &$form_state, $from_api = false) {
 
 		$areaid = intval($form_state['area_id']);
 	} else {
+		//put NULL value in db, if no parent_id or 0 has been passed
+		$parent_id = (isset($form_state['values']['parent_area']) && (int) $form_state['values']['parent_area'] > 0) ? filter_xss($form_state['values']['parent_area']) : NULL;
+
 		$name = filter_xss(
 				!empty($form_state['values']['fieldname'])
 				? $form_state['values']['fieldname'] : date("r"));
@@ -102,7 +107,8 @@ function area_save($form = false, &$form_state, $from_api = false) {
 			'create_time' => $createdate,
 			'modify_time' => 'NOW()',
 			'acl_id' => $acl_id,
-			'area_geometry_id' => $area_geometry_id
+			'area_geometry_id' => $area_geometry_id,
+			'parent_id' => $parent_id
 			))
 			->condition('id', $areaid)
 			->execute();
@@ -128,7 +134,8 @@ function area_save($form = false, &$form_state, $from_api = false) {
 							'create_time' => $createdate,
 							'modify_time' => 'NOW()',
 							'acl_id' => $acl_id,
-							'area_geometry_id' => $geometry_id
+							'area_geometry_id' => $geometry_id,
+							'parent_id' => $parent_id
 					))
 					->execute();
 				
@@ -179,8 +186,12 @@ function area_save($form = false, &$form_state, $from_api = false) {
  * Renders a form which allows the user to submit an area name.
  * For usage with ajax.
  */
-function area_get_new_areaname_form_callback() {
-	print drupal_render(drupal_get_form('area_new_areaname_form'));
+function area_get_new_areaname_form_callback($area_id = NULL) {
+	$area_data = NULL;
+	if($area_id) {
+		$area_data = area_load($area_id);
+	}
+	print drupal_render(drupal_get_form('area_new_areaname_form', $area_data));
 }
 
 /**
@@ -237,7 +248,8 @@ function area_delete() {
 		$area = area_get_full_dataset_of_specific_area($area_id);
 		if (check_admin_acl($area['acl_id'])) {
 			$inventories = inventory_get_area_inventories($area['id']);
-			if(!count($inventories)) {
+			$children = area_get_children($areadata, false);
+			if(!count($inventories) && !count($children)) {
 				area_delete_by_id($area_id);
 				$deleteCount++;
 			}
@@ -254,7 +266,7 @@ function area_delete() {
 	}
 	else {
 		$output['type'] = 'warning';
-		$output['message'] = t('Some areas could not be deleted (no permission, or the area may still contain inventories.)');
+		$output['message'] = t('Some areas could not be deleted (no permission, or the area may still contain inventories or subareas.)');
 	}
 
 	return drupal_json_output($output);
@@ -391,5 +403,24 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
 		shell_exec($cmd);
 		//echo($cmd.'<br>');
 	}
+}
+
+/**
+ * Returns the ids of all child areas of the given area, or an empty array
+ * 
+ * @param string $area
+ */
+function area_get_children($area = NULL, $json = true) {
+	$children = array();
+	if(!$area) return $children;
+	
+	$query = 'SELECT id 
+	 FROM {area} a
+	 WHERE parent_id = '.$area['id'];
+	
+	$children = db_query($query)->fetchAll();
+	
+	return $json ? drupal_json_output((array)$children) : (array)$children;
+	
 }
 ?>

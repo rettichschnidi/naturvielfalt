@@ -59,6 +59,8 @@ function area_edit($areadata = NULL, $inventory_id = NULL) {
  */
 function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = NULL) {
 	
+	global $base_url;
+	
 	$form['message'] = array(
 			'#type'   => 'markup',
 			'#markup' => '
@@ -106,8 +108,17 @@ function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = N
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	$form['area_map']['zoom'] = array(
 			'#type' => 'markup',
-			'#markup' => '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" />'
+			'#markup' => '<img style="cursor:pointer;" src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" /> '.t('zoomin') 
 	);
+	
+	//if area is a child, user is not allowed to add a child
+	if(empty($areadata['parent_id'])) {
+		$form['area_map']['create_sub_area'] = array(
+			  '#type' => 'markup',
+			  '#prefix' => '</br>',
+			  '#markup' => '<img style="cursor:pointer;" onclick="window.location.href=\''.$base_url . '/area/new/'.$areadata['id'].'\'" src="'.$iconBaseUrl.'Site map.png" style="cursor:pointer;" alt="' .t('Create a sub area') . '" title="' . t('Create a sub area') . '"/> '.  t('Create a sub area')
+		);
+	}
 	
 	$form['area_map']['map'] = array(
 			'#mapid' => 'observationmap',
@@ -175,7 +186,6 @@ function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = N
 			)
 	);
 	
-	global $base_url;
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	
 	if(area_check_access($areadata, 'ACL_RED_WRITE')  && user_access(CREATE_INVENTORY)) {

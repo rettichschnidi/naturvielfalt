@@ -238,6 +238,34 @@ jQuery(document).ready(function() {
 	};
 	
 	/**
+	 * toogles (show/hide) the children rows of an area
+	 * 
+	 * @param tableid
+	 * @param area_id the parent area of the childrenrows to display/hide.
+	 */
+	area.toogleChildren = function(tableid, area_id) {
+		var table = $('#' + tableid);
+		if(!table.length) return;
+		//check wether hierarchy is open or closed
+		var showChildren = parseInt($('#showChildren' + area_id).val());
+		//define the image, depending on the current status (open or closed)
+		var imageName = showChildren ? 'Forward.png' : 'Down.png';
+		$('#toogleChildren' + area_id)
+	    .attr('src', Drupal.settings.basePath + 'sites/all/themes/zen_swissmon/images/icons/enabled/' + imageName);
+ 		$.ajax({
+			type: 'GET',
+			url: Drupal.settings.basePath + 'area/' + area_id + '/getchildren',
+			success: function (data) {
+				jQuery.each(data,function(index, element) {
+					table.toogleRowVisibility(element.id, !showChildren);
+				});
+				//save new status of hierarchy (open or closed)
+				$('#showChildren' + area_id).val(!showChildren ? 1 : 0);
+			}
+		});
+	};
+	
+	/**
 	 * Update the map to show only overlays of the given data.
 	 * 
 	 * @param array(int) area_ids
@@ -251,12 +279,13 @@ jQuery(document).ready(function() {
 		if (area_ids.length < 1)
 			return true;
 		
-		$.getJSON(
-				areamap.options.geometriesfetchurl,
-			{
+		$.ajax({
+			type: 'POST',
+			url: areamap.options.geometriesfetchurl,
+			data: {
 				area_ids: area_ids
 			},
-			function(data) {
+			success: function (data) {
 				areamap.loadGeometriesAndOverlaysFromJson(data);
 
 				var mapcontains = true;
@@ -303,7 +332,7 @@ jQuery(document).ready(function() {
 				
 				return true;
 			}
-		);
+		});
 	}
 	
 	/**
@@ -775,7 +804,8 @@ Area.prototype.showInfoWindowToCreateNewGeometry = function(overlayElement, html
 Area.prototype.createOverlayElementFromJson = function(currentjsonoverlay) {
 	var newoverlay;
 	if (currentjsonoverlay.type == 'polygon') {
-		newoverlay = new google.maps.Polygon( { inMultiSelection: false} );
+		var isChild = (currentjsonoverlay.child === undefined) ? false : currentjsonoverlay.child;
+		newoverlay = new google.maps.Polygon( { inMultiSelection: false, child : isChild} );
 		newoverlay.setOptions({
 			zIndex : 0,
 		});		
@@ -803,7 +833,11 @@ Area.prototype.addWindowsListenerToGeometry = function(id) {
 	}
 	currentoverlay.listeners.click.push(
 		google.maps.event.addListener(currentoverlay, 'click', function() {
-			jQuery('#row' + id).addClass('trSelected');
+			var row = $('#row' + id);
+			//if row is not yet visible, display now
+			if(!row.is(":visible")) row.show();
+			
+			row.addClass('trSelected');
 			this_.showInfoWindow(id);
 			currentoverlay.select();
 			this_.deselectOtherGeometries(currentoverlay);

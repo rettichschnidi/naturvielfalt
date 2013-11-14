@@ -107,6 +107,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
 		'SELECT
 				-- area values
 				a.id,
+				a.parent_id,
 				a.area_geometry_id,
 				a.acl_id,
 				a.name,
@@ -212,6 +213,24 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 	$rows = array();
 	if (!empty($areadata['name'])
 			&& (!isset($options['pathlength']) || $options['pathlength'])) {
+		
+		if(!empty($areadata['parent_id'])) {
+			$parent_area = area_get_full_dataset_of_specific_area($areadata['parent_id']);
+			if(!empty($parent_area)) {
+				$rows[] = array(
+						array(
+								'data' => t('Parent Area'),
+								'header' => true
+						),
+						l(
+								check_plain($parent_area['name']),
+								base_path() . "area/" . $parent_area['id'].'/show',
+								array(
+										'external' => true
+								))
+				);
+			}
+		}
 		$rows[] = array(
 				array(
 						'data' => t('Area Name'),
@@ -1002,6 +1021,17 @@ function getCorrectValues($jsondata, $myArr) {
 
 function area_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
+	
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Forward.png" />',
+			'dbfield' => 'hierarchyColumn',
+			'width' => 20,
+			'noSort' => true,
+	);
+	
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
@@ -1009,9 +1039,6 @@ function area_get_standard_datatable_headers($init_sort = false,
 			'hide' => true,
 			'width' => 30
 	);
-	
-	global $base_url;
-	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
 	
 	$tableHeader[] = array(
 			'name' => '<input class="gridSelect" type="checkbox" disabled />',
@@ -1051,35 +1078,35 @@ function area_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
-			'dbExactField' => 'a.name',
+			'dbExactField' => 'name',
 			'width' => 310,
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
-			'dbExactField' => 'a_s.altitude',
+			'dbExactField' => 'altitude',
 			'width' => 60
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
-			'dbExactField' => 'a_s.township',
+			'dbExactField' => 'township',
 			'width' => 150
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
-			'dbExactField' => 'a_s.canton',
+			'dbExactField' => 'canton',
 			'width' => 40
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
-			'dbExactField' => 'a_s.country',
+			'dbExactField' => 'country',
 			'width' => 180
 	);
 	
@@ -1092,14 +1119,14 @@ function area_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('User'),
 			'dbfield' => 'username',
-			'dbExactField' => 'u.name',
+			'dbExactField' => 'username',
 			'width' => 120
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Type'),
 			'dbfield' => 'geometry_type',
-			'dbExactField' => 'a_s.geom',
+			'dbExactField' => 'geometry_type',
 			'width' => 120
 	);
 	
