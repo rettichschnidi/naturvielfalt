@@ -133,7 +133,7 @@ function vote_show_overview($artgroup_id = 0) {
 	$render_array['imageslider']['images'] = array(
 		'#type' => 'markup',
 		'#markup' => '<div id="imagesContainer">
-			<img id="loadPreviousImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'vote') . '/img/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
+			<img id="loadPreviousImages" class="imageSliderNavigation left" src="/' . drupal_get_path('module', 'vote') . '/img/previous.png" alt="Previous" onclick="moveImages(-4, false);" />
 			<img id="previousImage01" class="imageSliderImage" style="width: 0px;" />
 			<img id="previousImage02" class="imageSliderImage" style="width: 0px;" />
 			<img id="previousImage03" class="imageSliderImage" style="width: 0px;" />
@@ -146,7 +146,7 @@ function vote_show_overview($artgroup_id = 0) {
 			<img id="futureImage02" class="imageSliderImage" style="width: 0px;" />
 			<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
 			<img id="futureImage04" class="imageSliderImage" style="width: 0px;" />
-			<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'vote') . '/img/next.png" alt="Next" onclick="moveImages(4, false);" />
+			<img id="loadNextImages" class="imageSliderNavigation right" src="/' . drupal_get_path('module', 'vote') . '/img/next.png" alt="Next" onclick="moveImages(4, false);" />
 			<img id="showLoadingImage" src="/' . drupal_get_path('module', 'vote') . '/img/loading.gif" />
 		</div>'
 	);
