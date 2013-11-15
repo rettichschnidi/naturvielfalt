@@ -1335,7 +1335,7 @@
 													var ndw = parseInt($(g.nDiv)
 															.width());
 													$(g.nDiv).css({
-														top : g.bDiv.offsetTop
+														top : g.nBtn.offsetTop+ $(g.nBtn).height() //vorher falsche Höhe
 													});
 													if ((nl + ndw) > $(g.gDiv)
 															.width()) {
