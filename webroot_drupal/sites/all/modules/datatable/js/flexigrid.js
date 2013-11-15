@@ -124,7 +124,7 @@
 					var cdpos = parseInt($('div', this).width());
 					if (cdleft == 0)
 						cdleft -= Math.floor(p.cgwidth / 2);
-					cdpos = cdpos + cdleft + cdpad;
+					cdpos = cdpos + cdleft -1 + cdpad; //wegen border -1 aus angrenzendem div
 					if (isNaN(cdpos)) {
 						cdpos = 0;
 					}
