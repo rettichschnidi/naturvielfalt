@@ -37,7 +37,7 @@ function observation_block_view($delta = '') {
 			'#type' => 'markup',
 			'#markup' => '
 							<div class="new_observations_container">
-								<img id="loadPreviousImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/previous.png" alt="Previous" onclick="moveImages(-3, false);" />
+								<img id="loadPreviousImages" class="imageSliderNavigation top" src="/' . drupal_get_path('module', 'observation') . '/img/block/up.png" alt="Previous" onclick="moveImages(-3, false);" />
 								<div id="previousEntry01">
 									<img id="previousImage01" class="imageSliderImage" style="width: 0px;" />
 								</div>
@@ -65,7 +65,7 @@ function observation_block_view($delta = '') {
 								<div id="futureEntry03">
 									<img id="futureImage03" class="imageSliderImage" style="width: 0px;" />
 								</div>
-						<img id="loadNextImages" class="imageSliderNavigation" src="/' . drupal_get_path('module', 'observation') . '/img/block/next.png" alt="Next" onclick="moveImages(3, false);" />
+						<img id="loadNextImages" class="imageSliderNavigation bottom" src="/' . drupal_get_path('module', 'observation') . '/img/block/down.png" alt="Next" onclick="moveImages(3, false);" />
 						</div>
 						<img id="showLoadingImage" src="/' . drupal_get_path('module', 'observation') . '/img/block/loading.gif" />',
 			'#attached' => array(
@@ -145,7 +145,7 @@ function observation_block_new_observations_content_ajax() {
 				'#type' => 'markup',
 				'#markup' => 
 						$img .'</br>'.
-						l($observation['ol_name'], 'observation/'.$observation['id'].'/show').'</br>'.
+						l($observation['ol_name'], $base_url . '/observation/'.$observation['id'].'/show').'</br>'.
 						l(
 							'<i>'.$scientific_name.'</i>',
 							$base_url . '/organism/' . $observation['organism_id'],
