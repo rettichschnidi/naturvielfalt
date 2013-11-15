@@ -154,12 +154,28 @@ jQuery(document).ready(function() {
 			url: Drupal.settings.basePath + "observation/addtoinventorydata",
 			success: function(result){
 				var areas = result.areas;
+				var count = result.count;
 				var areasAsOptions = result.areas_as_options;
 				var inventories = null;
 				
 				observation.hideLoading();
 				dialog = $('<div id="add-to-inventory-wrapper" title="' + Drupal.t('Add to Area/Inventory') + '" />');
 				
+				//if no areas exists to add an observation to, display a message.
+				if(!count) {
+					dialog.append(Drupal.t('There are no inventories/areas available, </br> on which you are allowed to add observations.'));
+					dialog.dialog({
+						modal: true,
+						resizable: false,
+						closeOnEscape: false,
+						closeText: '',
+						close: function (event, ui) {
+							$(this).remove();
+						},
+						width: 'auto'
+					});
+					return;
+				}
 				//area title and select
 				areaTitle = $('<label>' + Drupal.t('Area') + '</label>');
 				areaSelect = $('<select id="area-select" class="form-select" \>');

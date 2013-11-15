@@ -57,15 +57,245 @@ function datatable_theme() {
  * 		 Totalrecordcount of the give sql statement
  */
 function datatable_dbRecordCount($sql, $arguments = array()) {
-	
 	$sql = "SELECT COUNT(*) FROM (".$sql.") AS SUB";
 	
 	/* Data set length after filtering */
 	$fullResult = db_query($sql, $arguments);
 	$fullRecordsCount = $fullResult->fetchField(0);
-	
 	return intval($fullRecordsCount);
 	
+}
+
+/**
+ * Returns the SQL Suffix (WHERE Clause, Order, limit, according to the passed sql, and post arguments of the datatable)
+ * @param array $sql: similar to datatable_dbRequest
+ */
+function datatable_get_SQLSuffix($sql) {
+	
+	if (!isset($sql['acl_level'])) {
+		$sql['acl_level'] = 'ACL_READ';
+	}
+	
+	$idColumn = isset($sql['id']) ? $sql['id'] : "id";
+	
+	$searchColumns = $sql['dbSearchColumns'];
+	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns'] : $sql['dbColumns'];
+	
+	/* Joins to use */
+	$sJoins = '';
+	if (isset($sql['dbJoins'])) {
+		$sJoins = $sql['dbJoins'];
+	}
+	
+	/* Group */
+	$sGroupBy = '';
+	if (isset($sql['dbGroupBy'])) {
+		$sGroupBy = ' GROUP BY ' . $sql['dbGroupBy'];
+	}
+	
+	isset($sql['dbWhere']) ? $where = 'WHERE ' . $sql['dbWhere'] : $where = '';
+	
+	/*
+	 *  Check for permission if acl_id is in the columns array
+	*/
+	global $user;
+	if (!check_admin_permission($user->uid)) {
+		$dbColumnsString = implode($sql['dbColumns'], ", ");
+	
+		$matches = array();
+		if (preg_match('/(\w*\.?acl_id)/i', $dbColumnsString, $matches)) {
+			$acl_id = $matches[1];
+			$minLevel = variable_get($sql['acl_level']);
+				
+			$where .= empty($where) ? 'WHERE' : ' AND';
+			// level of ALL group
+			$sJoins .= ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = ' . $acl_id;
+			$where .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')
+			.' AND ag.level >= ' . $minLevel . ')';
+			// level of user group
+			$sJoins .= ' LEFT JOIN {sgroup} g ON g.id = ag.sgroup_id';
+			$where .= ' OR (au.acl_id = g.acl_id'
+					.' AND ag.level >= ' . $minLevel . ')';
+			// level of user, table also needed for user group
+			$sJoins	.= ' LEFT JOIN {acl_users} au ON (au.acl_id = '.$acl_id.' OR au.acl_id = g.acl_id) AND au.users_id = ' . $user->uid;
+			$where .= ' OR (au.acl_id = ' . $acl_id
+			.' AND au.level >= ' . $minLevel . ') )';
+				
+		}
+	}
+	
+	//  move values of JSON Object
+	if(!isset($_REQUEST['query']) || !isset($_REQUEST['qtype'])) {
+		$sWhere = $where;
+	} else {
+		$query = $_REQUEST['query'];
+		$qtype = $_REQUEST['qtype'];
+		//  Bestimmen wie viele Werte vom JSON übergeben wurden
+		$i1 = 0;
+		while (current($query)!==false) {
+			$v_query[$i1] = current($query);
+			$i1++;
+			next($query);
+		}
+	
+		$i2 = 0;
+		while (current($qtype)!==false) {
+			$v_qtype[$i2] = current($qtype);
+			$i2++;
+			next($qtype);
+		}
+		array_multisort($v_qtype, $v_query);
+	
+		//  Equality check, both table must have the same index
+		if (count($query) == count($qtype))
+		{
+				
+			($where == "") ? $sWhere = "" : $sWhere = $where . "";
+	
+			//    occurence field qtype
+			$OC_qtype_alle = 0;
+			//    Iteration trough the search array qtype
+			for ($i3 = 0; $i3 < $i2; $i3++)
+			{
+			//      Old Code for SQL
+			if (isset($v_query[$i3]) && $v_query[$i3] != "" && isset($v_qtype[$i3]) && $v_qtype[$i3] != "")
+			{
+					//          Iteration over all table if "*" if not goto else
+						if (($v_qtype[$i3] == "*")&&($v_query[$i3] ==""))
+						{
+						//           do nothing, there is no value
+							$goon = "go";
+						}
+						elseif ($v_qtype[$i3] == "*")
+						{
+						//              OC_qtype_alle is needed to set the brackets()
+							$OC_qtype_alle++;
+							//              Check if value "Alle" more than once in array is
+							$occurrences = array_count_values($v_qtype);
+							$OC_times = $occurrences["$v_qtype[$i3]"];
+							//              bild up of the WHERE clause,
+							if (($OC_times > 1)&&($OC_qtype_alle == 1))
+							{
+							($sWhere == "") ? $sWhere = "WHERE ((" : $sWhere .= " OR (";
+							}else{
+							($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " OR (";
+							}
+							 
+							for ($i = 0; $i < count($searchColumns); $i++)
+							{
+							/**
+							* yes, this is a terrible hack, but I do not know how another solution to make sure
+								* that all(?!) types can be used with LIKE
+								*/
+								$sWhere .= "CAST(" . $searchColumns[$i]
+								. " AS TEXT) ILIKE CAST('%$v_query[$i3]%' AS TEXT) OR ";
+							}
+							$sWhere = substr_replace($sWhere, "", -3);
+							//              Check if we are at then end ob the last "*" iteration
+							if (($OC_qtype_alle == $OC_times)&&($OC_qtype_alle > 1))
+							{
+							$sWhere .= '))';
+						}else{
+						$sWhere .= ')';
+						}
+						}else{
+						//	  		$sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
+							//	  		. "%' AS TEXT)";
+							if (preg_match("/WHERE/i", $sWhere)) {
+								//               Bestimmen wieviel mal ein Begriff vorkommt
+								$occurrences = array_count_values($v_qtype);
+								$OC_times = $occurrences["$v_qtype[$i3]"];
+									//               Kommt ein Wert mehr als einmal in der Array vor, muss mit OR verknüpft werden
+									$AND_or_OR;
+									if ($OC_times > 1) {
+									$AND_or_OR = "OR";
+								}else{
+								$AND_or_OR = "AND";
+								}
+								 
+									$sWhere = $sWhere . $AND_or_OR." CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
+									. "%' AS TEXT)";
+									} else {
+										$sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
+												. "%' AS TEXT)";
+								}
+	
+								}
+								}
+								}
+								}
+	}
+		
+	
+	/*
+	* Ordering
+	*/
+	$sortOrders = array(
+		'asc',
+		'desc'
+	);
+	if (isset($_REQUEST['sortname']) && !empty($_REQUEST['sortname'])) {
+		foreach ($sortColumns as $sortColumn) {
+			if (strpos($sortColumn, $_REQUEST['sortname']) !== false) {
+				$sortname = pg_escape_string($_REQUEST['sortname']);
+				break;
+			}
+		}
+		if (!isset($sortname))
+			return 'Error! Sortname not possible. "' . $sortname . '" is not in ' . implode(', ', $sortColumns);
+	}
+		if (isset($_REQUEST['sortorder'])) {
+			$sortorder = strtolower($_REQUEST['sortorder']);
+			if (!in_array($sortorder, $sortOrders))
+				return "Error! Sortorder not possible";
+			$sortorder = pg_escape_string($sortorder);
+		}
+		$sOrder = 'ORDER BY ';
+		if(isset($sql['dbOrder']) && !empty($sql['dbOrder'])) {
+			$sOrder .= $sql['dbOrder'] . ', ';
+		}
+		if (isset($sortname)) {
+			$sOrder .= $sortname. ' ' . $sortorder . ', ';
+		} else if (isset($sql['dbDefaultOrder']) && !empty($sql['dbDefaultOrder'])) {
+			$sOrder .= $sql['dbDefaultOrder'] . ', ';
+		}
+	$sOrder .= $idColumn . ' desc';
+			
+			
+	/*
+	 * Paging
+	*/
+	if (isset($_POST['page'])) {
+		$pageNumber = (int) $_POST['page'];
+		if ($pageNumber < 1)
+			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
+	}
+	else
+		$pageNumber = 1;
+	
+	if (isset($_REQUEST['rp'])) {
+		$pagesize = (int) $_REQUEST['rp'];
+		if ($pagesize < 1)
+			return "Error! Pagesize < 1";
+	}
+
+	if (isset($pageNumber) && isset($pagesize)) {
+		$offset = ($pageNumber - 1) * $pagesize;
+	}
+	else {
+		$offset = 0;
+		$pagesize = 100;
+	}
+		
+	return array(
+			'WHERE' => empty($sWhere) ? '' : $sWhere,
+			'ORDER' => empty($sOrder) ? '' : $sOrder ,
+			'JOINS' => empty($sJoins) ? '' : $sJoins,
+			'GROUP' => empty($sGroupBy) ? '' : $sGroupBy ,
+			'LIMIT' => $pagesize,
+			'OFFSET' => $offset,
+			'PAGENR' => $pageNumber 
+			); 
 }
 
 /**
@@ -90,6 +320,10 @@ function datatable_dbRecordCount($sql, $arguments = array()) {
  * 			'dbJoins' 			optional; the joins String (including all JOIN statements)
  * 			'dbGroupBy' 		optional; the GROUP BY string
  * 			'dbWhere' 			optional; the WHERE statement string
+ * 			'dbOrder'			optional: Pass an order of the results, which should be applied first to the query, helps to keep an order (example parent->children)
+ * 			'noLimit'			optional: True, if no limit/offset should be applied to the query
+ * 			'dbCustomQueryBody'	optional: If you want to execute a complex query (WITH, UNION, etc.), you can pass a custom query body here. !!!YOU are responsible for acl check, Where clause, limit, etc.!!!.
+ * 			'dbCustomCountQuery'optional: Pass this, if you want a custom count query to be executed. Datatable will add dbWhere and dbGroupBy to this query and run it through datatable_dbRecordCount.
  * 			'id' 				optional: id column, default 'id'
  * 			'acl_level'			optional: Required acl level. For valid values, have a look at the c_acl module (file c_acl.base.inc)
  *			'dbDefaultOrder'	optional: When no sorting given via AJAX, use this one
@@ -103,6 +337,10 @@ function datatable_dbRecordCount($sql, $arguments = array()) {
  * 			$sql['dbJoins'] = '';
  * 			$sql['dbGroupBy'] = '';
  * 			$sql['dbWhere'] = '';
+ * 			$sql['dbOrder'] = '';
+ * 			$sql['noLimit'] = '';
+ * 			$sql['dbCustomQueryBody'] = '';
+ * 			$sql['dbCustomCountQuery'] = '';
  * 			$sql['id] = 'id';
  * 			$sql['acl_level'] = 'ACL_READ';
  * 			$sql['dbDefaultOrder'] = NULL;
@@ -125,7 +363,7 @@ function datatable_dbRecordCount($sql, $arguments = array()) {
 function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()) {
 
 	/* Set the db fields to select */
-	if (!$sql['dbColumns'] || !$sql['dbTable'])
+	if (!isset($sql['dbCustomQueryBody']) && (!$sql['dbColumns'] || !$sql['dbTable']))
 		return "Error! No dbColumns or dbTable";
 	assert(isset($sql['dbSearchColumns']));
 	$aColumns = $sql['dbColumns'];
@@ -137,237 +375,70 @@ function datatable_dbRequest($sql, $arguments = array(), $preArguments = array()
 		}
 		db_query($sql['dbPreStatement'], $preArguments);
 	}
-	if (!isset($sql['acl_level'])) {
-		$sql['acl_level'] = 'ACL_READ';
-	}
-
-	$searchColumns = $sql['dbSearchColumns'];
-	$sortColumns = isset($sql['dbSortColumns']) ? $sql['dbSortColumns'] : $sql['dbColumns'];
 	
 	$idColumn = isset($sql['id']) ? $sql['id'] : "id";
 
 	/* DB table to use */
-	$Table = $sql['dbTable'];
+	$Table = $sql['dbTable'];	
 
-	/* Joins to use */
-	$sJoins = '';
-	if (isset($sql['dbJoins'])) {
-		$sJoins = $sql['dbJoins'];
-	}
-
-	/* Group */
-	$sGroupBy = '';
-	if (isset($sql['dbGroupBy'])) {
-		$sGroupBy = ' GROUP BY ' . $sql['dbGroupBy'];
-	}
-
-	isset($sql['dbWhere']) ? $where = 'WHERE ' . $sql['dbWhere'] : $where = '';
+	//build the sql suffix (joins, where, order, group)
+	$sqlSuffix = datatable_get_SQLSuffix($sql);
+	$sJoins = $sqlSuffix['JOINS'];
+	$sWhere = $sqlSuffix['WHERE'];
+	$sOrder = $sqlSuffix['ORDER'];
+	$sGroupBy = $sqlSuffix['GROUP'];
+	$sLimit = $sqlSuffix['LIMIT'];
+	$sOffset = $sqlSuffix['OFFSET'];
+	$pageNumber = $sqlSuffix['PAGENR'];
 	
-	/*
-	 *  Check for permission if acl_id is in the columns array
-	 */
-	global $user;
-	if (!check_admin_permission($user->uid)) {
-		$dbColumnsString = implode($aColumns, ", ");
-		
-		$matches = array();
-		if (preg_match('/(\w+\.acl_id)/i', $dbColumnsString, $matches)) {
-			$obs_acl_id = $matches[1];
-			$minLevel = variable_get($sql['acl_level']);
-			
-			$where .= empty($where) ? 'WHERE' : ' AND';
-			// level of ALL group
-			$sJoins .= ' LEFT JOIN {acl_sgroup} ag ON ag.acl_id = ' . $obs_acl_id;
-			$where .= ' ( (ag.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID')
-				.' AND ag.level >= ' . $minLevel . ')';
-			// level of user group
-			$sJoins .= ' LEFT JOIN {sgroup} g ON g.id = ag.sgroup_id';
-			$where .= ' OR (au.acl_id = g.acl_id'
-				.' AND ag.level >= ' . $minLevel . ')';
-			// level of user, table also needed for user group
-			$sJoins	.= ' LEFT JOIN {acl_users} au ON (au.acl_id = '.$obs_acl_id.' OR au.acl_id = g.acl_id) AND au.users_id = ' . $user->uid;
-			$where .= ' OR (au.acl_id = ' . $obs_acl_id
-				.' AND au.level >= ' . $minLevel . ') )';
-			
-		}
-	}
-
 	$sTable = $Table . " " . $sJoins . " ";
-//  move values of JSON Object
-	if(!isset($_REQUEST['query']) || !isset($_REQUEST['qtype'])) {
-		$sWhere = $where;
-	} else {
-		$query = $_REQUEST['query'];
-		$qtype = $_REQUEST['qtype'];
-	//  Bestimmen wie viele Werte vom JSON übergeben wurden	
-		$i1 = 0;	
-		while (current($query)!==false) {
-			$v_query[$i1] = current($query);
-	        $i1++;
-			next($query);
-		}
-		
-	    $i2 = 0;
-		while (current($qtype)!==false) {
-			$v_qtype[$i2] = current($qtype);
-			$i2++;
-			next($qtype);
-		}
-		array_multisort($v_qtype, $v_query);
-		
-	//  Equality check, both table must have the same index
-		if (count($query) == count($qtype))
-		{	
-		 
-		  ($where == "") ? $sWhere = "" : $sWhere = $where . "";
-	
-	//    occurence field qtype 
-	      $OC_qtype_alle = 0;	  
-	//    Iteration trough the search array qtype
-		  for ($i3 = 0; $i3 < $i2; $i3++) 
-		  {
-	//      Old Code for SQL	  	
-		  	if (isset($v_query[$i3]) && $v_query[$i3] != "" && isset($v_qtype[$i3]) && $v_qtype[$i3] != "")
-		  	{
-	//          Iteration over all table if "*" if not goto else
-	            if (($v_qtype[$i3] == "*")&&($v_query[$i3] ==""))
-	            {
-	//           do nothing, there is no value  
-	             $goon = "go";           	
-	            }	
-		  		elseif ($v_qtype[$i3] == "*") 
-		  		{
-	//              OC_qtype_alle is needed to set the brackets()	  			
-		  	 	    $OC_qtype_alle++;
-	//              Check if value "Alle" more than once in array is
-		  			$occurrences = array_count_values($v_qtype);
-		  			$OC_times = $occurrences["$v_qtype[$i3]"];
-	//              bild up of the WHERE clause, 
-		  			if (($OC_times > 1)&&($OC_qtype_alle == 1))
-		  			{
-		  			  ($sWhere == "") ? $sWhere = "WHERE ((" : $sWhere .= " OR (";
-		  			}else{
-		  			  ($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " OR (";
-		  			}	  			
-		  			
-		  			for ($i = 0; $i < count($searchColumns); $i++) 
-		  			{
-		  				/**
-		  				 * yes, this is a terrible hack, but I do not know how another solution to make sure
-		  				 * that all(?!) types can be used with LIKE
-		  				 */
-		  				$sWhere .= "CAST(" . $searchColumns[$i]
-		  				. " AS TEXT) ILIKE CAST('%$v_query[$i3]%' AS TEXT) OR ";
-		  			}
-		  			$sWhere = substr_replace($sWhere, "", -3);
-	//              Check if we are at then end ob the last "*" iteration 
-	                if (($OC_qtype_alle == $OC_times)&&($OC_qtype_alle > 1))
-	                {
-	                  $sWhere .= '))';
-	                }else{	  			
-		  			  $sWhere .= ')';
-		  		    }  
-		  		}else{
-	//	  		$sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
-	//	  		. "%' AS TEXT)";
-		  		  if (preg_match("/WHERE/i", $sWhere)) {
-	//               Bestimmen wieviel mal ein Begriff vorkommt 	  		  	
-		  		  	 $occurrences = array_count_values($v_qtype);
-		  	 	  	 $OC_times = $occurrences["$v_qtype[$i3]"];
-	//               Kommt ein Wert mehr als einmal in der Array vor, muss mit OR verknüpft werden
-	                 $AND_or_OR; 	  	 	  	 
-		  	 	  	 if ($OC_times > 1) {
-		  	 	  	 	$AND_or_OR = "OR";
-		  	 	  	 }else{
-		  	 	  	 	$AND_or_OR = "AND";
-		  	 	  	 }
-		  	 	  	 
-	                 $sWhere = $sWhere . $AND_or_OR." CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
-	                 . "%' AS TEXT)";
-	              } else {
-	                 $sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
-	                 . "%' AS TEXT)";      
-	              }	
-	
-		  		}		
-		  	}	
-		  }
-		}
-	}
-			
-
-	/*
-	 * Ordering
-	 */
-	$sortOrders = array(
-			'asc',
-			'desc'
-	);
-	if (isset($_REQUEST['sortname']) && !empty($_REQUEST['sortname'])) {
-		foreach ($sortColumns as $sortColumn) {
-			if (strpos($sortColumn, $_REQUEST['sortname']) !== false) {
-				$sortname = pg_escape_string($_REQUEST['sortname']);
-				break;
-			}
-		}
-		if (!isset($sortname))
-			return 'Error! Sortname not possible. "' . $sortname . '" is not in ' . implode(', ', $sortColumns);
-	}
-	if (isset($_REQUEST['sortorder'])) {
-		$sortorder = strtolower($_REQUEST['sortorder']);
-		if (!in_array($sortorder, $sortOrders))
-			return "Error! Sortorder not possible";
-		$sortorder = pg_escape_string($sortorder);
-	}
-	$sOrder = 'ORDER BY ';
-	if (isset($sortname)) {
-		$sOrder .= $sortname. ' ' . $sortorder . ', ';
-	} else if (isset($sql['dbDefaultOrder']) && !empty($sql['dbDefaultOrder'])) {
-		$sOrder .= $sql['dbDefaultOrder'] . ', ';
-	}
-	$sOrder .= $idColumn . ' desc';
 
 	/*
 	* SQL queries
 	* Get data to display 2
 	*/	
 	$columnsString = str_replace(" , ", " ", implode(", ", $aColumns));
-	$fullQuery = "SELECT DISTINCT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
-	$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
-	//debug("fullQuery: ".$fullQuery); 
-	/*
-	 * Paging
-	*/
-	if (isset($_POST['page'])) {
-		$pageNumber = (int) $_POST['page'];
-		if ($pageNumber < 1)
-			return "Error! Pagevalue '$pageNumber' is smaller than 1.";
+	if(isset($sql['dbCustomQueryBody'])) {
+		//use the custom query
+		$fullQuery = $sql['dbCustomQueryBody'];
+	} else {
+		//wrap in select
+		$fullQuery = "SELECT $columnsString FROM $sTable $sWhere $sGroupBy $sOrder";
 	}
-	else
-		$pageNumber = 1;
-	
-	if (isset($_REQUEST['rp'])) {
-		$pagesize = (int) $_REQUEST['rp'];
-		if ($pagesize < 1)
-			return "Error! Pagesize < 1";
-	}
-	
-	if (isset($pageNumber) && isset($pagesize)) {
-		$offset = ($pageNumber - 1) * $pagesize;
-	}
-	else {
-		$offset = 0;
-		$pagesize = 100;
+	try {
+		if(isset($sql['dbCustomCountQuery'])) {
+			if(isset($sql['dbCustomCountWhere'])) {
+				$countWhere = $sWhere;
+				$countWhere .= empty($countWhere) ? 'WHERE ' : 'AND ';
+				$countWhere .= $sql['dbCustomCountWhere'];
+			}
+			$numberOfAccessibleRows = datatable_dbRecordCount($sql['dbCustomCountQuery'].$sJoins.$countWhere.$sGroupBy, $arguments);
+		} else {
+			$numberOfAccessibleRows = datatable_dbRecordCount($fullQuery, $arguments);
+		}
+	} catch(Exception $e) {
+		watchdog_exception('datatable', $e);
+		watchdog('datatable', $fullQuery);
+		return "Error! Query could not be executed. Please see the log file for more information.";
 	}
 	
-	/*
-	 * Add limit and offset to improve performance of query runtime
-	 */
-	$fullQuery .= " LIMIT $pagesize OFFSET $offset";
+	if(!isset($sql['noLimit'])) {
+		/*
+		 * Add limit and offset to improve performance of query runtime
+		 */
+		$fullQuery .= " LIMIT $sLimit OFFSET $sOffset";
+	}
 		
 	/* Data set length after filtering */
-	$fullResult = db_query($fullQuery, $arguments);
-	$fullRecords = $fullResult->fetchAll();
+	try {
+		$fullResult = db_query($fullQuery, $arguments);
+		$fullRecords = $fullResult->fetchAll();
+		debug($fullQuery);
+	} catch(Exception $e) {
+		watchdog_exception('datatable', $e);
+		watchdog('datatable', $fullQuery);
+		return "Error! Query could not be executed. Please see the log file for more information.";
+	}
 
 	
 	$output = array(

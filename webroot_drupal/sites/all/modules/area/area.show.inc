@@ -33,6 +33,7 @@ function area_show_all_areas() {
 			'#search' => true,
 			'#ch1903' => true,
 			'#geometries_fetch_url' => base_path() . 'areas/json',
+			'#geometries_autoload'  => false,
 			'#infowindow_content_fetch_url_area' => base_path()
 					. 'area/{ID}/areaoverview/ajaxform',
 			'#theme' => 'area'
@@ -55,7 +56,7 @@ function area_show_all_areas() {
 	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
-		'#header'   =>  area_get_standard_datatable_headers(11,
+		'#header'   =>  area_get_standard_datatable_headers(12,
 		'DESC'),
 		'#title'    => t('Areas'),
 		'#id_table' => 'areas',
@@ -149,8 +150,8 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	$output['area_map']['zoom'] = array(
-		'#type' => 'markup',
-		'#markup' => '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" />'	
+			'#type' => 'markup',
+			'#markup' => '<img style="cursor:pointer;" src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" /> '.t('zoomin') 
 	);
 	
 	$output['area_map']['map'] = array(

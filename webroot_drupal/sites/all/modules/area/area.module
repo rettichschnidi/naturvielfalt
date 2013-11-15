@@ -58,6 +58,21 @@ function area_menu() {
 			'file' => 'area.show.inc',
 	);
 
+	$items['area/%area/getchildren'] = array(
+			'title' => 'Ajax call to receive all children ids',
+			'page callback' => 'area_get_children',
+			'page arguments' => array(
+					1
+			),
+			'access arguments' => array(
+					1,
+					'ACL_READ'
+			),
+			'access callback' => 'area_check_access',
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc'		
+	);
+	
 	/* Get all available areas as json*/
 	$items['areas/json'] = array(
 			'title' => 'All areas json',
