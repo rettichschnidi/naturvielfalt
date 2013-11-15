@@ -124,7 +124,7 @@
 					var cdpos = parseInt($('div', this).width());
 					if (cdleft == 0)
 						cdleft -= Math.floor(p.cgwidth / 2);
-					cdpos = cdpos + cdleft + cdpad;
+					cdpos = cdpos + cdleft -1 + cdpad; //wegen border -1 aus angrenzendem div
 					if (isNaN(cdpos)) {
 						cdpos = 0;
 					}
@@ -1335,7 +1335,7 @@
 													var ndw = parseInt($(g.nDiv)
 															.width());
 													$(g.nDiv).css({
-														top : g.bDiv.offsetTop
+														top : g.nBtn.offsetTop+ $(g.nBtn).height() //vorher falsche Höhe
 													});
 													if ((nl + ndw) > $(g.gDiv)
 															.width()) {
