@@ -230,6 +230,7 @@
 	border-bottom: 1px solid #eee;
 }
 
+
 /* end toolbar*/
 .flexigrid div.hDiv {
 	background: #fafafa url(images/fhbg.gif) repeat-x bottom;
@@ -237,6 +238,7 @@
 	border: 1px solid #ccc;
 	border-bottom: 0px;
 	overflow: hidden;
+	word-wrap:normal;
 }
 
 .flexigrid div.hDiv table {
