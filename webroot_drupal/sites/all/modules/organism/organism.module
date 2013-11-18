@@ -43,7 +43,7 @@ function organism_theme() {
  */
 function organism_menu() {
 	$items['organism'] = array(
-			'title' => t('Classifiers'),
+			'title' => 'Classifiers',
 			'page callback' => 'organism_show_classifiers',
 			'access arguments' => array(
 					ORGANISMS_ACCESS
@@ -459,7 +459,7 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 			),
 			'#attributes' => array(
 					'class' => array(
-							'collapsible'
+							'collapsible' . ($collapsed ? ' collapsed' : '')
 					),
 			),
 	);
@@ -467,8 +467,9 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 	$render_array['data'] = array(
 		'#theme' => 'datatable',
 		'#header' => $tableHeader,
-		'#rows' => $rows,
-		'#tableWidth' => 900,
+		'#rows' => isset($rows) ? $rows : array(),
+		'#tableWidth' => 917,
+		'#tableHeight' => 150,
 		'#id_table' => 'files',
 	);
 		

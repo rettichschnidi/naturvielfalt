@@ -49,6 +49,7 @@ function observation_form_validate($form, &$form_state) {
 			form_set_error('observation_form', t('Invalid inventory / permission denied'));
 		}
 	}
+	
 	/**
 	 * check the coordinate
 	 */
@@ -65,6 +66,10 @@ function observation_form_validate($form, &$form_state) {
 				}
 			}
 		}
+	}
+	
+	if($form_state['values']['div']['inventories']['area'] > 0 && $form_state['values']['div']['inventories']['inventory_id'] == 0) {
+		form_set_error('div][inventories][inventory_id', t('Please select an inventory of the area.'));
 	}
 	
 }

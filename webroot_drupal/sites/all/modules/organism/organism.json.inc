@@ -366,6 +366,10 @@ function organism_show_classification_organismjson($classificationid) {
 	// 		die("NO ATTRIBUTES FOUND - HANDLE THIS CASE PLEASE");
 	// 	}
 
+	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
+	$soundtypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_SOUND)->mimeTypes);
+	$videotypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_VIDEO)->mimeTypes);
+	
 	$sql['dbPreStatement'] = "
 		-- -------------------------------------------------
 		-- Get recursive all subclassification for a certain classification
@@ -457,20 +461,24 @@ function organism_show_classification_organismjson($classificationid) {
 				   organism_id integer, $levelnamesdatastring
 				)  
 				   JOIN {organism} as o on o.id = nn.organism_id
-				   LEFT JOIN (
-				   	SELECT
-				   		organism_id,
-				   		name AS ol_name
-				   	FROM
-				   		{organism_lang}
-				   	WHERE
-				   		languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id";
-
+		   LEFT JOIN (
+		   	SELECT
+		   		organism_id,
+		   		name AS ol_name
+		   	FROM
+		   		{organism_lang}
+		   	WHERE
+		   		languages_language = :language) AS mylang ON mylang.organism_id = nn.organism_id";
+				
 	/* Set the db fields to select */
 	$dbcolumns = array_merge(
 		array('organism_id',
 				'scientific_name',
-				'ol_name'
+				'ol_name',
+				'coalesce(imagescount, 0) AS imagescount',
+				'coalesce(videoscount, 0) AS videoscount',
+				'coalesce(soundscount, 0) AS soundscount',
+				'coalesce(documentscount, 0) AS documentscount'
 		),
 		$levelnamearray);
 	$sql['dbColumns'] = $dbcolumns;
@@ -480,16 +488,50 @@ function organism_show_classification_organismjson($classificationid) {
 				'scientific_name'
 		),
 		$levelnamearray);
-
+	
 	/* DB table to use */
 	$sql['dbTable'] = "final_classification_table";
+	$sql['dbJoins'] = '
+		LEFT JOIN
+		(
+		SELECT gi.item_id, COUNT(*) AS imagescount
+		FROM {gallery_image} gi
+		LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
+			WHERE gi.item_type = \'organismreference\'
+				AND fm.filemime IN (\''.$imagetypes.'\')
+			GROUP BY gi.item_id
+		) images ON images.item_id = organism_id
+		LEFT JOIN
+		(
+		SELECT gi.item_id, COUNT(*) AS videoscount
+		FROM {gallery_image} gi
+		LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
+			WHERE gi.item_type = \'organismreference\'
+				AND fm.filemime IN (\''.$videotypes.'\')
+			GROUP BY gi.item_id
+		) videos ON videos.item_id = organism_id
+		LEFT JOIN
+		(
+		SELECT gi.item_id, COUNT(*) AS soundscount
+		FROM {gallery_image} gi
+		LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid
+			WHERE gi.item_type = \'organismreference\'
+				AND fm.filemime IN (\''.$soundtypes.'\')
+			GROUP BY gi.item_id
+		) sounds ON sounds.item_id = organism_id
+		LEFT JOIN
+		(
+		SELECT ofm.organism_id AS ofm_oid, COUNT(*) AS documentscount
+		FROM {organism_file_managed} ofm
+		GROUP BY ofm_oid
+		) documents ON ofm_oid = organism_id';
+	
 	/* Group */
 	$sql['id'] = 'organism_id';
 
 	$prearguments = array(
 			':classificationid' => $classificationid,
-			':language' => isset($user->language) ? $user->language
-					: $language->language
+			':language' => $language->language
 	);
 
 	$arguments = array();
@@ -497,17 +539,16 @@ function organism_show_classification_organismjson($classificationid) {
 	$output = datatable_dbRequest($sql, $arguments, $prearguments);
 	
 	foreach ($output['rows'] as &$row) {
-		// number of images
-		$row['cell']['imagescount'] = gallery_images_count('organismreference', $row['id']);
 		
-		// number of videos
-		$row['cell']['videoscount'] = gallery_videos_count('organismreference', $row['id']);
+		// get images
+		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'organismreference', $row['id']);
 		
-		// number of sounds
-		$row['cell']['soundscount'] = gallery_sounds_count('organismreference', $row['id']);
-		
-		// number of documents
-		$row['cell']['documentscount'] = organism_documents_count($row['id']);
+		// thumbnail
+		$row['cell']['thumbnail'] = '';
+		if ($images['count'] > 0) {
+			// display the thumbnail (for the table view)
+			$row['cell']['thumbnail'] = '<img onclick="event.stopPropagation(); gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/organismreference/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
+		}
 		
 		// add the html-source for the table-gallery-view
 		$row['cell']['gallery_image'] = __organism_get_gallery_image($row['cell']);
@@ -662,8 +703,9 @@ function organism_search_organism_json($artgroup, $string) {
 	
 	module_load_include('inc', 'organism', 'organism.artgroup');
 	
-	$langcode = (isset($user->language) && $user->language != '')
-	? $user->language : 'de';
+	global $language;
+	
+	$langcode = $language->language;
 	
 	$term = $string;
 	$term = strtolower($term);
@@ -712,10 +754,13 @@ function organism_search_organism_json($artgroup, $string) {
 				LIMIT :limit;';
 	
 	$result = db_query($query, $params)->fetchAllAssoc('organism_id');
-	
+	$matches = array();
 		foreach ($result as $row) {
-			$matches[$row->ol_name] = strval($row->ol_name).'<br><em>'.strval($row->scientific_name).'</em>';
-			
+			if($row->ol_name != "") {
+				$matches[$row->ol_name] = $row->ol_name.'<br><em>'.$row->scientific_name.'</em>';
+			} else {
+				$matches[$row->scientific_name] = $row->scientific_name.'<br><em>'.t('No translation available').'</em>';
+			}
 		}
 	
 	drupal_json_output($matches);

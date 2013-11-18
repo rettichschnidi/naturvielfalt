@@ -163,9 +163,7 @@ function organism_artgroup_get_determation_methods($observation_id = 0, $artgrou
 
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	if($langcode == 'de') $field = 'name';
 	else $field = 'name_'.$langcode;
@@ -189,6 +187,26 @@ function organism_artgroup_get_attribute_by_name($attribute_name) {
 	return db_query(
 		'SELECT id id FROM {organism_artgroup_attr} ' . 'WHERE name=:attribute_name',
 		array(':attribute_name' => $attribute_name))->fetchCol();
+}
+
+/**
+ * This function is just a markup to provide the translations for dynamic attributes.
+ * Drupal will scan code at compiletime to find t() translations.
+ * Translate here all values inside the table 'organism_artgroup_attr'
+ */
+function observation_artgroup_attr_translations() {
+	$attributes_translations = array(
+			t('Accuracy'),
+			t('Comment'),
+			t('Commonness'),
+			t('Phenology'),
+			t('Determination'),
+			t('Origin'),
+			t('Occurence'),
+			t('Evidence available'),
+			t('Verified'),
+			t('Evaluationmethod')
+	);
 }
 
 /**
@@ -386,9 +404,7 @@ function organism_artgroup_get_attributes_value_name($value_id = false) {
 	
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	if($langcode == 'de') $field = 'value';
 	else $field = 'value_'.$langcode;
@@ -461,9 +477,7 @@ function organism_artgroup_get_detmethod($detmethod_id, $just_the_name = false) 
 	
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	if($langcode == 'de') $field = 'name';
 	else $field = 'name_'.$langcode;

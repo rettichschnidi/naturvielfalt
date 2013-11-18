@@ -51,6 +51,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 		$values['count'] = filter_xss($values['group']['count']);
 		$values['organism_artgroup_id'] = filter_xss($values['group']['artgroup_id']);
 		
+		if(isset($values['div']['inventories']['inventory_id'])) {
+			$observation['inventory_id'] = filter_xss($values['div']['inventories']['inventory_id']);
+		}
+		
 		if(isset($values['group']['details']))
 			$values['details'] = $values['group']['details'];
 
@@ -62,9 +66,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$values['organism'] = filter_xss($values['group']['organism']);
 			$result = organism_get_byname(filter_xss($values['organism']));
 			$observation['organism_id'] = $result['id'];
-		} 
+		}
 	} else {
 		$observation['organism_id'] = filter_xss($values['organism_id']);
+		$observation['area_geometry_id'] = $values['area_geometry_id'];
 	}
 	
 	/**
@@ -179,7 +184,21 @@ function observation_save($observation_data = false, $custom_data = false, $from
 				'location' => $geometry['township'] . ' ' . $geometry['canton'],
 		);
 		
-		gallery_implementation_save_manual('observation', $image, 'observation_id');
+		$imagecreated = gallery_implementation_save_manual('observation', $image, 'observation_id');
+		
+		if(!isset($output['update']) && $imagecreated) {
+			// create a verification entry in case the observer defined an organism
+			if (module_exists('vote')) {
+				if ($observation['organism_id'] != UNKNOWN_SPECIES) {
+					$vote["user_id"] = $observation['users_uid'];
+					$vote["observation_id"] = $observation['id'];
+					$vote["organism_id"] = $observation['organism_id'];
+					$vote["vote_timestamp"] = time();
+					db_insert('vote')->fields($vote)
+					->execute();
+				}
+			}
+		}
 
 		if (isset($values['file_description'])) {
 			gallery_implementation_file_updateComment(
@@ -212,8 +231,12 @@ function observation_save($observation_data = false, $custom_data = false, $from
 	
 	if($output['success']) {
 		drupal_set_message(t('successfull saved'));
+		/*
 		if($edit)
 			drupal_goto('observation/'.$observation['id'].'/edit');
+		else 
+			drupal_goto('observation/new');
+		 */
 	} else {
 		form_set_error('observation_form', $output['message']);
 		$observation_data['redirect'] = FALSE;
@@ -231,7 +254,6 @@ function observation_save($observation_data = false, $custom_data = false, $from
 function observation_export() {
 	// check if user is logged in
 	global $user;
-//	if (!isset($user)) {
 	if ($user->uid == 0) {
 		$output['success'] = false;
 		$output['type'] = 'error';
@@ -240,7 +262,7 @@ function observation_export() {
 	}
 	
 	// set header information
-	header('Content-type: text/plain');
+	header('Content-type: text/x-csv');
 	header('Content-Disposition: attachment; filename="observations.csv"');
 	
 	// source information in first row
@@ -305,15 +327,17 @@ function observation_export() {
 			$observation_ids = filter_xss($_REQUEST['oid']);
 		}
 	}
-	
-	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids);
+	$observationdata = observation_get_tabledata('ACL_READ', $observation_ids, NULL, NULL, true);
 	foreach ($observationdata['rows'] as $observationrow) {
 		$csv_output = '';
-		foreach ($dbFields as $dbField) {
+		foreach ($dbFields as $dbField) {;
 			$feld = mb_convert_encoding($observationrow['cell'][$dbField], 'pass', 'HTML-ENTITIES');
+			$feld = str_replace("\r\n", " ", $feld); // replace new line
+			$feld = str_replace(',', "", $feld); // replace commas
 			$feld = str_replace('"', "''", $feld); // replace double quotes with two single quotes to make it look the same and still be csv compatible
 			//$feld = str_replace(";", "", $feld); // if exported with IE then Excel doesn't like semikolons
 			$csv_output .= '"' . $feld . '",';
+			
 		}
 		$ausgabe .= substr($csv_output, 0, -1) . "\n";
 	}
@@ -376,35 +400,20 @@ function observation_delete() {
  * Fetches all observation information and formats the rows for display.
  * Gets all observations if no $observation_id is given
  * If $inventory_ids is passed, only observations from this inventories are returned.
+ * If $organism_ids is passed, only observations from this organisms are returned.
  * 
  * @param string $acl_level
  * @param array(int) $observation_ids
  * @param array $inventory_ids
+ * @param array(int) $organism_ids
  */
-function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL) {
+function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = NULL, $inventory_ids = NULL, $organism_ids = NULL, $export = false) {
 	global $user;
 	global $language;
 	
 	$arguments = array();
 	
-	// if the search is for a date, convert it to timestamp to find the results in the db
-	if (isset($_REQUEST['query'])) {
-		$date_split = explode('.', $_REQUEST['query']);
-		if (count($date_split) == 3 && checkdate($date_split[1], $date_split[0], $date_split[2])) {
-			// cast to string because datatable_dbRequest checks for query to be a string
-			$_REQUEST['query'] = (string) mktime(
-			null,
-			null,
-			null,
-			$date_split[1],
-			$date_split[0],
-			$date_split[2]);
-		}
-	}
-	
-	$langcode = (isset($user->language) && !empty($user->language))
-		? $user->language
-		: $language->language;
+	$langcode = $language->language;
 	
 	$sql['dbColumns'] = array(
 		'o.id AS id',
@@ -432,7 +441,10 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		'oa.name AS artgroup_n',
 		// FIXME get more attributes than just Bemerkung
 		'oattr.value AS comment',
-		'coalesce(imagescount, 0) AS imagescount'
+		'coalesce(imagescount, 0) AS imagescount',
+		'coalesce(videoscount, 0) AS videoscount',
+		'coalesce(soundscount, 0) AS soundscount',
+		'coalesce(documentscount, 0) AS documentscount'
 			
 	);
 	
@@ -459,6 +471,10 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	
 	$sql['dbTable'] = '{observation} o';
 	
+	$imagetypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes);
+	$soundtypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_SOUND)->mimeTypes);
+	$videotypes = join("','",_gallery_getMediaInfo(GALLERY_MEDIATYPE_VIDEO)->mimeTypes);
+	
 	$sql['dbJoins'] = 'INNER JOIN {area_geometry} a_s ON a_s.id = o.area_geometry_id'
 		//.' LEFT JOIN {organism_synonym} osy ON osy.organism_id = o.organism_id '
 		.' LEFT JOIN {organism_lang} ol ON ol.organism_id=o.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\''
@@ -469,7 +485,39 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 		.' LEFT JOIN {inventory} i ON i.id = o.inventory_id'
 		.' LEFT JOIN {area} a ON a.id = i.area_id'
 		.' LEFT JOIN {area_geometry} a_g ON a_g.id = a.area_geometry_id'
-		.' LEFT JOIN (SELECT gi.item_id, COUNT(gi.id) AS imagescount FROM {gallery_image} gi GROUP BY gi.item_id) images ON images.item_id = o.id'    
+		.' LEFT JOIN 
+				(
+				SELECT gi.item_id, COUNT(gi.id) AS imagescount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\' 
+				AND fm.filemime IN (\''.$imagetypes.'\')  
+				GROUP BY gi.item_id
+				) images ON images.item_id = o.id'    
+		.' LEFT JOIN 
+				(
+				SELECT gi.item_id, COUNT(gi.id) AS videoscount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\'
+				AND fm.filemime IN (\''.$videotypes.'\') 
+				GROUP BY gi.item_id
+				) videos ON videos.item_id = o.id'
+		.' LEFT JOIN 
+				(
+				SELECT gi.item_id, COUNT(gi.id) AS soundscount 
+				FROM {gallery_image} gi 
+				LEFT JOIN {file_managed} fm ON gi.file_managed_fid = fm.fid 
+				WHERE gi.item_type = \'observation\'
+				AND fm.filemime IN (\''.$soundtypes.'\') 
+				GROUP BY gi.item_id
+				) sounds ON sounds.item_id = o.id'
+		.' LEFT JOIN 
+				(
+				SELECT ofm.observation_id, COUNT(*) AS documentscount 
+				FROM {observation_file_managed} ofm 
+				GROUP BY ofm.observation_id
+				) documents ON documents.observation_id = o.id'
 	;
 	
 	if ($observation_ids !== NULL) {
@@ -502,6 +550,21 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 					? '('
 					: $sql['dbWhere'] . ' AND (';
 			$sql['dbWhere'] .= 'o.inventory_id = -1)';
+		}
+	}
+	
+	if ($organism_ids !== NULL) {
+		if (is_int($organism_ids) && $organism_ids > 0)
+			$organism_ids = array($organism_ids);
+		if (is_array($organism_ids) && !empty($organism_ids)) {
+			$sql['dbWhere'] = empty($sql['dbWhere'])
+			? '('
+					: $sql['dbWhere'] . ' AND (';
+			foreach ($organism_ids as $organism_id) {
+				$sql['dbWhere'] .= 'o.organism_id=:organism_id_' . $organism_id . ' OR ';
+				$arguments[':organism_id_'.$organism_id] = $organism_id;
+			}
+			$sql['dbWhere'] = substr($sql['dbWhere'], 0, -4) . ')';
 		}
 	}
 	
@@ -548,135 +611,142 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 	$imageBaseUrl = $base_url . '/' . drupal_get_path('module', 'observation') . '/img/';
 	$iconBaseUrl = '/' . path_to_theme() . '/images/icons/enabled/';
 	
-	foreach ($output['rows'] as &$row) {	 	
-		// select box
-		$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
-		// show details
-		$row['cell']['showColumn'] = l(
-			'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
-			$base_url . '/observation/' . $row['id'] . '/show',
-			array(
-				'html' => true
-			));
-		// edit details
-		$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
-			? l(
-				'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
-				$base_url . '/observation/' . $row['id'] . '/edit',
+	foreach ($output['rows'] as &$row) {
+		//visual changes (display as links etc.)
+		if(!$export) {
+			// select box
+			$row['cell']['selectColumn'] = '<input class="gridSelect" type="checkbox" value="' . $row['id'] . '" title="' . t('Select') . '" onclick="javascript:observationmap.selectMultipleObservation(event, ' . $row['id'] . ', !this.checked);" />';
+			// show details
+			$row['cell']['showColumn'] = l(
+				'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+				$base_url . '/observation/' . $row['id'] . '/show',
 				array(
 					'html' => true
-				))
-			: '';
+				));
+			// edit details
+			$row['cell']['editColumn'] = (observation_write_access_by_acl_id($row['cell']['acl_id']))
+				? l(
+					'<img src="' . $iconBaseUrl . 'Modify.png" alt="' . t('Edit') . '" title="' . t('Edit') . '" />',
+					$base_url . '/observation/' . $row['id'] . '/edit',
+					array(
+						'html' => true
+					))
+				: '';
 		
-		// zoom in
-		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
-				
+		
+			// zoom in
+			$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" style="cursor: pointer;" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' . $row['id'] . ');window.scrollTo(0,0);" />';
+		
+			if($row['cell']['organism_id'] != UNKNOWN_SPECIES) {
+				$row['cell']['organism_sc'] = l(
+						$row['cell']['organism_sc'],
+						$base_url . '/organism/' . $row['cell']['organism_id'],
+						array(
+								'html' => true
+						));
+			}
+			// Link observer soll Link sein
+			$row['cell']['observer'] = l(
+					$row['cell']['observer'],
+					$base_url . '/user/' . $row['cell']['users_uid'] . '/contact',
+					array(
+							'html' => true
+					));
+			
+			// link to inventory
+			if(user_access(ACCESS_INVENTORY)) {
+				$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+				l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
+				: '';
+			} else {
+				$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
+				$row['cell']['inventory']
+				: '';
+			}
+			
+			// link to area
+			if(user_access(AREA_ACCESS)) {
+				$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+				l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
+				: '';
+			} else {
+				$row['cell']['area'] = (!empty($row['cell']['area'])) ?
+				$row['cell']['area']
+				: '';
+			}
+			
+			// type of area (picture)
+			$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
+			'<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['areatype'] . '.png') . '" alt="'. t('type') . '" />'
+					: '';
+			
+			// get images
+			$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
+			
+			// thumbnail
+			$row['cell']['thumbnail'] = '';
+			if ($images['count'] > 0) {
+				// display the thumbnail (for the table view)
+				$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
+			}
+			
+			/**
+			 * create the html source for the gallery view
+			 */
+			$row['cell']['gallery_image'] = datatable_get_gallery_image(
+					$row['id'],
+					$row['cell']['organism_id'],
+					array(
+							'icons' => array(
+									'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');window.scrollTo(0,0);">',
+									$row['cell']['zoominColumn'],
+									$row['cell']['showColumn'],
+									$row['cell']['editColumn'],
+									$row['cell']['selectColumn']
+							),
+							'data' => array(
+									$row['cell']['artgroup_n'],
+									l(
+											$row['cell']['organism_sc'],
+											'organism/' . $row['cell']['organism_id'],
+											array(
+													'html' => true,
+													'attributes' => array(
+															'style' =>
+															'color: black;
+									text-decoration: underline;
+									font-style: italic;')
+											)),
+									$row['cell']['organism_l']
+							)
+					),
+					$row['cell']['acl_id'],
+					DATATABLE_IMGSRC_BELEG,
+					$images);
+			
+		}		
+		
+		//now make changes to fields, that need adjustments in export (csv) and normal view
+		
 		// translated organism name
 		if($row['cell']['organism_id'] == UNKNOWN_SPECIES)
 			$row['cell']['organism_l'] = t('Unknown species');
 		else if (empty($row['cell']['organism_l']))
 			$row['cell']['organism_l'] = t('No translation available');
-		 // Link Beispiel, Feld organism_sc soll neu ein Link sein xxX
-		$row['cell']['organism_sc'] = l(
-				$row['cell']['organism_sc'],
-				$base_url . '/organism/' . $row['cell']['organism_id'],
-				array(
-					'html' => true
-				));
-		// Link observer soll Link sein
-		$row['cell']['observer'] = l(
-				$row['cell']['observer'],
-				$base_url . '/user/' . $row['cell']['users_uid'] ,
-				array(
+		else if(!$export)
+			$row['cell']['organism_l'] = l(
+					$row['cell']['organism_l'],
+					$base_url . '/organism/' . $row['cell']['organism_id'],
+					array(
 						'html' => true
-				));
+					));
 		
 		
 		$row['cell']['date'] = date('d.m.Y H:i:s', $row['cell']['date']);
 		
-		// link to inventory
-		if(user_access(ACCESS_INVENTORY)) {
-			$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
-				l($row['cell']['inventory'], $base_url . '/inventory/'. $row['cell']['inventory_id'] . '/show')
-				: '';
-		} else {
-			$row['cell']['inventory'] = (!empty($row['cell']['inventory'])) ?
-			$row['cell']['inventory']
-			: '';
-		}
-		
-		// link to area
-		if(user_access(AREA_ACCESS)) {
-			$row['cell']['area'] = (!empty($row['cell']['area'])) ?
-			l($row['cell']['area'], $base_url . '/area/'. $row['cell']['area_id'] . '/show')
-			: '';
-		} else {
-			$row['cell']['area'] = (!empty($row['cell']['area'])) ?
-			$row['cell']['area']
-			: '';
-		}
-		
-		// type of area (picture)
-		$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
-		'<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['areatype'] . '.png') . '" alt="'. t('type') . '" />'
-		: '';
-		
 		// coordinates
 		$row['cell']['ch1903_center_x'] = number_format($row['cell']['ch1903_center_x'], 0, '.', '\'');
 		$row['cell']['ch1903_center_y'] = number_format($row['cell']['ch1903_center_y'], 0, '.', '\'');
-		
-		// get images
-		$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $row['id']);
-		
-		// thumbnail
-		$row['cell']['thumbnail'] = '';
-		if ($images['count'] > 0) {
-			// display the thumbnail (for the table view)
-			$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
-		}
-		
-		// number of videos
-		$row['cell']['videoscount'] = gallery_videos_count('observation', $row['id']);
-		
-		// number of sounds
-		$row['cell']['soundscount'] = gallery_sounds_count('observation', $row['id']);
-		
-		// number of documents
-		$row['cell']['documentscount'] = observation_documents_count($row['id']);
-		
-		/**
-		 * create the html source for the gallery view
-		 */
-		$row['cell']['gallery_image'] = datatable_get_gallery_image(
-			$row['id'],
-			$row['cell']['organism_id'],
-			array(
-				'icons' => array(
-					'<img src="' . $imageBaseUrl . '/pin.png" style="cursor: pointer;" title="' . t('Position') . '" onclick="javascript:observationmap.selectObservation(' . $row['id'] . ');window.scrollTo(0,0);">',
-					$row['cell']['zoominColumn'],
-					$row['cell']['showColumn'],
-					$row['cell']['editColumn'],
-					$row['cell']['selectColumn']
-				),
-				'data' => array(
-					$row['cell']['artgroup_n'],
-					l(
-						$row['cell']['organism_sc'],
-						'organism/' . $row['cell']['organism_id'],
-						array(
-							'html' => true,
-							'attributes' => array(
-								'style' =>
-									'color: black;
-									text-decoration: underline;
-									font-style: italic;')
-						)),
-					$row['cell']['organism_l']
-				)
-			),
-			$row['cell']['acl_id'],
-			DATATABLE_IMGSRC_BELEG,
-			$images);
 	}
 			
 	return $output;
@@ -688,6 +758,19 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
  */
 function observation_get_all_json($acl_level = 'ACL_READ') {
 	$output = observation_get_tabledata($acl_level);
+	return drupal_json_output($output);
+}
+
+/**
+ * This method handle the request from flexigrid with specific organism ids
+ * @return JSON
+ */
+function observation_get_organism_json($acl_level = 'ACL_READ', $organism_ids = NULL) {
+	if (is_string($organism_ids)) {
+		$organism_ids = intval($organism_ids);
+	}
+	
+	$output = observation_get_tabledata($acl_level, NULL, NULL, $organism_ids);
 	return drupal_json_output($output);
 }
 
@@ -712,8 +795,8 @@ function observation_get_observations_of_inventory_json($acl_level = 'ACL_READ',
  * @param array $inventory_ids
  */
 function observation_get_geometry_json($observation_data = false, $inventory_id = NULL) {
-	if (!$observation_data && isset($_REQUEST['observation_ids']))
-		$observation_data = $_REQUEST['observation_ids'];
+	if (!$observation_data && isset($_POST['observation_ids']))
+		$observation_data = $_POST['observation_ids'];
 	drupal_json_output(observation_get_geometries_acl_checked($observation_data, $inventory_id));
 }
 
@@ -725,4 +808,160 @@ function observation_overview_ajax_callback($observation_data = false) {
 	module_load_include('inc', 'observation', 'observation.show');
 	print drupal_render(drupal_get_form('observation_map_overview_form', $observation_data));
 }
+
+/**
+ * get newest observations with image (used for block 'new observations')
+ * @param int $offset
+ * @param int $limit
+ */
+function observation_get_new_observations($offset= 0, $limit = 4) {
+	global $user;
+	global $language;
+	
+	$langcode = $language->language;
+	
+	$imagetypes = _gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes;
+	
+	$query = db_select('{observation}', 'o');
+	$query->leftJoin('{area_geometry}', 'a_s', 'o.area_geometry_id = a_s.id');
+	$query->leftJoin('{organism}', 'org', 'o.organism_id = org.id');
+	$query->leftJoin('{organism_lang}', 'ol', 'o.organism_id = ol.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\'');
+	$query->leftJoin('{organism_artgroup}', 'oa', 'o.organism_artgroup_id = oa.id');
+	
+	$subselect = db_select('{gallery_image}', 'gi');
+	$subselect->leftJoin('{file_managed}', 'fm', 'gi.file_managed_fid = fm.fid');
+	$subselect->addExpression('COUNT(gi.id)', 'imagescount');
+	$subselect->fields('gi', array('item_id'));
+	$subselect->condition('gi.item_type', 'observation')
+		->condition('fm.filemime', $imagetypes, 'IN')
+		->groupBy('gi.item_id');
+	$query->addJoin('LEFT', $subselect, 'images', 'images.item_id = o.id');
+
+	$query->leftJoin('{acl_sgroup}', 'ag', 'ag.acl_id = o.acl_id');
+	$query->leftJoin('{sgroup}', 'g', 'g.id = ag.sgroup_id');
+	$query->leftJoin('{acl_users}', 'au', '(au.acl_id = o.acl_id OR g.acl_id = o.acl_id) AND au.users_id = 0');  
+			
+	$query->fields('o', array('id', 'date', 'organism_id', 'organism_artgroup_id', 'observer', 'users_uid'))
+		  ->fields('oa', array('name'))
+		  ->fields('org', array('scientific_name'))
+		  ->fields('ol', array('name'))
+		  ->fields('a_s', array( 'township', 'canton', 'country'));
+			   $and = db_and()
+				   ->condition('ag.sgroup_id', 1)
+				   ->condition('ag.level', 20, '>=');
+			   $and1 = db_and()
+				   ->where('au.acl_id = g.acl_id')
+				   ->condition('ag.level', 20, '>=');
+			   $and2 = db_and()
+				  ->where('au.acl_id = o.acl_id')
+				  ->condition('au.level', 20, '>=');
+			   $or = db_or();
+		   		$or->condition($and);
+		   		$or->condition($and1);
+		   		$or->condition($and2);
+	   $query->condition('imagescount', 0, '>')->condition($or)
+		   ->orderBy('date', 'DESC')
+		   ->orderBy('o.id', 'DESC')
+		   ->range($offset, $limit);
+	  $result = $query->execute();		
+	return $result->fetchAll();
+}
+
+/**
+ * get newest observations total count (used for block 'new observations')
+ */
+function observation_get_new_observations_count() {
+	global $user;
+	global $language;
+
+	$langcode = $language->language;
+
+	$imagetypes = _gallery_getMediaInfo(GALLERY_MEDIATYPE_IMAGE)->mimeTypes;
+
+	$query = db_select('{observation}', 'o');
+	$query->leftJoin('{area_geometry}', 'a_s', 'o.area_geometry_id = a_s.id');
+	$query->leftJoin('{organism}', 'org', 'o.organism_id = org.id');
+	$query->leftJoin('{organism_lang}', 'ol', 'o.organism_id = ol.organism_id AND ol.languages_language=\'' . db_escape_field($langcode) . '\'');
+	$query->leftJoin('{organism_artgroup}', 'oa', 'o.organism_artgroup_id = oa.id');
+
+	$subselect = db_select('{gallery_image}', 'gi');
+	$subselect->leftJoin('{file_managed}', 'fm', 'gi.file_managed_fid = fm.fid');
+	$subselect->addExpression('COUNT(gi.id)', 'imagescount');
+	$subselect->fields('gi', array('item_id'));
+	$subselect->condition('gi.item_type', 'observation')
+	->condition('fm.filemime', $imagetypes, 'IN')
+	->groupBy('gi.item_id');
+	$query->addJoin('LEFT', $subselect, 'images', 'images.item_id = o.id');
+
+	$query->leftJoin('{acl_sgroup}', 'ag', 'ag.acl_id = o.acl_id');
+	$query->leftJoin('{sgroup}', 'g', 'g.id = ag.sgroup_id');
+	$query->leftJoin('{acl_users}', 'au', '(au.acl_id = o.acl_id OR g.acl_id = o.acl_id) AND au.users_id = 0');  
+		
+	$query->fields('o', array('id', 'date', 'organism_id', 'organism_artgroup_id', 'observer'))
+	->fields('oa', array('name'))
+	->fields('org', array('scientific_name'))
+	->fields('ol', array('name'))
+	->fields('a_s', array( 'township', 'canton', 'country'));
+	$and = db_and()
+	->condition('ag.sgroup_id', 1)
+	->condition('ag.level', 20, '>=');
+	$and1 = db_and()
+	->where('au.acl_id = g.acl_id')
+	->condition('ag.level', 20, '>=');
+	$and2 = db_and()
+	->where('au.acl_id = o.acl_id')
+	->condition('au.level', 20, '>=');
+	$or = db_or();
+	$or->condition($and);
+	$or->condition($and1);
+	$or->condition($and2);
+	$query->condition('imagescount', 0, '>')->condition($or)
+	->orderBy('date', 'DESC')
+	->orderBy('o.id', 'DESC');
+	$result = $query->countQuery()->execute();
+
+	return $result->fetchField();
+}
+
+/**
+ * Returns the inventories and areas, which a user can add an observation to.
+ * 
+ */
+function observation_add_to_inventory_data() {
+	return inventory_get_writeable_invetories_with_areas(true);
+}
+
+/**
+ * Returns the inventories and areas, which a user can add an observation to.
+ *
+ */
+function observation_add_to_inventory($inventory = null) {
+	$output['success'] = false;
+	$output['successfull'] = 0;
+	
+	if($inventory && isset($_POST['observations']) && is_array($_POST['observations'])) {
+		$observations = $_POST['observations'];
+		$output['total'] = count($observations);
+	} else return drupal_json_output($output);
+	
+	if(!inventory_check_access($inventory, 'ACL_RED_WRITE'))
+		return drupal_json_output($output);
+	
+	try {
+		foreach($observations as $observation) {
+			if(observation_write_access_by_id($observation)) {
+				db_update('observation')->fields(array('inventory_id' => $inventory['id']))
+						->condition('id', $observation)
+						->execute();
+				$output['successfull']++;
+			}
+		}
+		$output['success'] = true;
+	} catch(Exception $e) {
+		$output['success'] = false;
+	}
+	
+	return drupal_json_output($output);
+}
+
 

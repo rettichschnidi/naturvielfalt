@@ -59,7 +59,7 @@ function inventory_get_area_inventories_json($area) {
 				: '';
 		
 		$row['cell']['showColumn'] = l(
-				'<img src="' . $iconBaseUrl . 'Zoom.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
+				'<img src="' . $iconBaseUrl . 'List.png" alt="' . t('Show') . '" title="' . t('Show') . '" />',
 				$base_url . '/inventory/' . $row['id'] . '/show',
 				array(
 						'html' => true
@@ -81,7 +81,7 @@ function inventory_get_area_inventories_json($area) {
 		// Link observer soll Link sein
 		$row['cell']['observer'] = l(
 				$row['cell']['observer'],
-				$base_url . '/user/' . $area['userid'] ,
+				$base_url . '/user/' . $area['userid'] . '/contact' ,
 				array(
 						'html' => true
 				));
@@ -135,7 +135,16 @@ function inventory_delete($inventory) {
 		$output['message'] = t('Please provide an inventory to delete');
 		return drupal_json_output($output);
 	}
-
+	
+	$observations = inventory_get_observations($inventory['id']);
+	if(count($observations)) {
+		$output['success'] = false;
+		$output['type'] = 'error';
+		$output['message'] = t('Can not delete inventory @inventoryname while it still contains observations. Please remove its observations first.',
+				array('@inventoryname' => $inventory['name']));
+		return drupal_json_output($output);
+	}
+	
 	$success = inventory_delete_by_id($inventory['id']);
 
 	$output['success'] = $success;

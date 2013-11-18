@@ -31,8 +31,8 @@ var galleryOpenLightboxSettings = {
 	
 	//lightbox for iteration over images of one entry
 	gallery_lightbox.openLightBoxEntry = function(entryId) {
-		$('div[name=lightbox_entry_' + entryId + '] a[class=]"').lightBox(galleryOpenLightboxSettings);
-		$('div[name=lightbox_entry_' + entryId + '] a[class=]"').first().trigger('click');
+		$('div[name=lightbox_entry_' + entryId + '] a:not([class="datatable_gallery_image_type"])').lightBox(galleryOpenLightboxSettings);
+		$('div[name=lightbox_entry_' + entryId + '] a:not([class="datatable_gallery_image_type"])').first().trigger('click');
 	};
 	
 })(jQuery);

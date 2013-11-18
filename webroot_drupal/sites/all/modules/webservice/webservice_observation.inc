@@ -18,7 +18,7 @@ define('WS_API_LOG_TYPE', 'webservice api');
  * It receives POST requests and stores it directly in the database. Normal drupal
  * authentication is used.
  * 
- * This method is for compatibility reasons with old versions of the iphone app (before June 2013).
+ * This method is for compatibility reasons with old versions of the iphone app (before June 2013). Do not change
  *  
  * @author Ramon Gamma, 2012
  */
@@ -101,7 +101,7 @@ function webservice_parse_import_observations_lightversion() {
  *  $_POST['inventoryguid'] => the global id of the invetory this observation belongs to.
  *  
  * @author Ramon Gamma, 2012
- * @author André Kälin, 2013
+ * @author Andrï¿½ Kï¿½lin, 2013
  */
 function webservice_parse_import_observations() {
 	global $user;
@@ -157,7 +157,10 @@ function webservice_parse_import_observations() {
 	else {
 		//if empty string has been passed, use login name
 		if(empty($data['observer'])) $data['observer'] = $user->name;
-		
+		if($data['observation_id'] > 0) { //update observation, provide existing area_geometry_id to update
+			$observation = observation_get($data['observation_id']);
+			$data['area_geometry_id'] = $observation['observation']['area_geometry_id'];
+		}
 		$observation_status = observation_save(false, $data, true);
 		// get the data
 		if ($observation_status['success'] == true) {

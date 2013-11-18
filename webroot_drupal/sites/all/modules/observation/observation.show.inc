@@ -11,6 +11,7 @@ function observation_show_all_observations() {
 	global $user;
 
 	$observation_path = drupal_get_path('module', 'observation');
+	drupal_add_library('system', 'ui.dialog');
 	drupal_add_css($observation_path . '/css/observation.css');
 	drupal_add_js($observation_path . '/js/observation.js');
 	
@@ -127,12 +128,28 @@ function observation_show_all_observations() {
  * @return array Drupal form
  */
 function observation_map_overview_form($form, &$form_state, $observationdata) {
+	// get images
+	$images = gallery_images(GALLERY_MEDIATYPE_IMAGE, 'observation', $observationdata['observation']['id']);
+	
+	// thumbnail
+	for($i = 0; ($i < $images['count'] && $i < 4); $i++) {
+		// display the thumbnail
+		$form['image_'.$i] = array(
+				'#type' => 'markup',
+				'#markup' =>
+						'<a href="#">
+							<img stlye="margin-right:10px;" onclick="gallery_lightbox.openLightBoxEntry('.$observationdata['observation']['id'].');" src="' . url('gallery/observation/' . $observationdata['observation']['id'] . '/thumb/' . $images['images'][$i]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][$i]['title'] . '" height="80" width="80" />
+						</a>',
+				);
+	}
+	
 	$form['table'] = observation_get_table(
 		$observationdata,
 		true);
 	$form['table']['#attributes'] = array(
 			'id' => 'infowindow_tabular_data'
 	);
+	
 	/**
 	 * Display the "edit" button only if user has write permission to this area
 	 */
@@ -156,6 +173,7 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 				'observation/' . $observationdata['observation']['id']
 						. '/show')
 	);
+	
 	return $form;
 }
 

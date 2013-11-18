@@ -18,15 +18,11 @@ function get_ch1903_coordinates_link($areadata) {
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 			? 'https://' : 'http://';
 	global $user;
-	
-	$language = 'de';
-	if( isset($user->language)){
-		$language=$user->language;
-	}
+	global $language;
 	
 	$linkCH1903 = l(
 		"CH1903",
-		$area_protocol . $language . '.wikipedia.org/wiki/CH1903');
+		$area_protocol . $language->language . '.wikipedia.org/wiki/CH1903');
 
 	$coordinates = number_format($areadata['ch1903_center_x'], 0, '.', '\'')
 		.'/'
@@ -45,18 +41,14 @@ function get_ch1903_coordinates_link($areadata) {
 function get_wgs84_coordinates_link($areadata) {
 	assert(is_array($areadata));
 	global $user;
-	
-	$language = 'de';
-	if(isset($user->language)){
- 		$language=$user->language;
-	}
+	global $language;
 	
 	$area_protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])
 			? 'https://' : 'http://';
 	;
 	$linkWGS84 = l(
 		"WGS84",
-		$area_protocol . $language . '.wikipedia.org/wiki/WGS84');
+		$area_protocol . $language->language . '.wikipedia.org/wiki/WGS84');
 
 	$coordinates = round($areadata['wgs84_center_lat'], 2) . '/'
 			. round($areadata['wgs84_center_lng'], 2);
@@ -115,6 +107,7 @@ function area_get_full_dataset_of_specific_area($area_id) {
 		'SELECT
 				-- area values
 				a.id,
+				a.parent_id,
 				a.area_geometry_id,
 				a.acl_id,
 				a.name,
@@ -220,6 +213,24 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 	$rows = array();
 	if (!empty($areadata['name'])
 			&& (!isset($options['pathlength']) || $options['pathlength'])) {
+		
+		if(!empty($areadata['parent_id'])) {
+			$parent_area = area_get_full_dataset_of_specific_area($areadata['parent_id']);
+			if(!empty($parent_area)) {
+				$rows[] = array(
+						array(
+								'data' => t('Parent Area'),
+								'header' => true
+						),
+						l(
+								check_plain($parent_area['name']),
+								base_path() . "area/" . $parent_area['id'].'/show',
+								array(
+										'external' => true
+								))
+				);
+			}
+		}
 		$rows[] = array(
 				array(
 						'data' => t('Area Name'),
@@ -242,7 +253,7 @@ function area_get_infotable_of_specific_area($areadata = NULL,
 				),
 				l(
 					check_plain($areadata['username']),
-					base_path() . "user/" . $areadata['userid'],
+					base_path() . "user/" . $areadata['userid'] . '/contact',
 					array(
 							'external' => true
 					))
@@ -533,7 +544,7 @@ function area_get_postgis_geometry_object($areaType = NULL,
 		$sql_args[':geom'] = 'POINT(' . reset($points) . ')';
 		break;
 	default:
-		watchdog_exception(
+		watchdog(
 			'area',
 			t(
 				'«@areatype» is not a valid area type.',
@@ -1006,4 +1017,122 @@ function getCorrectValues($jsondata, $myArr) {
 		}
 	}
 	return $output;
+}
+
+function area_get_standard_datatable_headers($init_sort = false,
+		$init_sort2 = false) {
+	
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Forward.png" />',
+			'dbfield' => 'hierarchyColumn',
+			'width' => 20,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Internal Id'),
+			'idField' => true,
+			'dbfield' => 'area_id',
+			'hide' => true,
+			'width' => 30
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<input class="gridSelect" type="checkbox" disabled />',
+			'dbfield' => 'selectColumn',
+			'width' => 20,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/List.png" />',
+			'dbfield' => 'showColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Modify.png" />',
+			'dbfield' => 'editColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
+			'dbfield' => 'zoominColumn',
+			'width' => 16,
+			'noSort' => true,
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 80,
+			'noSort' => true
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Name'),
+			'dbfield' => 'area_name',
+			'dbExactField' => 'area_name',
+			'width' => 310,
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Altitude [m]'),
+			'dbfield' => 'altitude',
+			'dbExactField' => 'altitude',
+			'width' => 60
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+			'dbExactField' => 'township',
+			'width' => 150
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Canton'),
+			'dbfield' => 'canton',
+			'dbExactField' => 'canton',
+			'width' => 40
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Country'),
+			'dbfield' => 'country',
+			'dbExactField' => 'country',
+			'width' => 180
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Date'),
+			'dbfield' => 'date',
+			'width' => 120
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('User'),
+			'dbfield' => 'username',
+			'dbExactField' => 'username',
+			'width' => 120
+	);
+	
+	$tableHeader[] = array(
+			'name' => t('Type'),
+			'dbfield' => 'geometry_type',
+			'dbExactField' => 'geometry_type',
+			'width' => 120
+	);
+	
+	if ($init_sort && $init_sort2) {
+		$tableHeader[$init_sort--]['initSort'] = true;
+		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
+	}
+	return $tableHeader;
 }

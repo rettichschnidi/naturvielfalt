@@ -1,8 +1,4 @@
 <?php
-/**
- * do not modify this file, it is generated! 
- */
-
 function area_schema() {
 	return array (
   'area' => 
@@ -14,6 +10,12 @@ function area_schema() {
         'description' => 'Primary Key',
         'type' => 'serial',
         'not null' => 'TRUE',
+      ),
+      'parent_id' => 
+      array(
+      		'description' => 'Id of the parent area',
+      		'type' => 'int',
+      		'unsigned' => TRUE
       ),
       'area_geometry_id' => 
       array (
@@ -81,6 +83,14 @@ function area_schema() {
           'area_geometry_id' => 'id',
         ),
       ),
+    'area_child_2_area_parent' =>
+    	array (
+    		'table' => 'area',
+    		'columns' =>
+    		array (
+    			'parent_id' => 'id',
+    		),
+    	),
     ),
   ),
   'area_file_managed' => 
@@ -260,5 +270,31 @@ function area_schema() {
     ),
   ),
 );
+}
+
+/**
+ * Add parent area field to allow parent - child pattern
+ */
+function area_update_7101() {
+
+	$key = array('foreign keys' =>
+				array (
+						'area_child_2_area_parent' =>
+						array (
+								'table' => 'area',
+								'columns' =>
+								array (
+										'parent_id' => 'id',
+								),
+						),
+			)
+	);
+	
+	db_add_field('area', 'parent_id', array(
+		'description' => 'Id of the parent area.',
+		'type' => 'int',
+		'unsigned' => TRUE,
+	), $key);
+	
 }
 ?>

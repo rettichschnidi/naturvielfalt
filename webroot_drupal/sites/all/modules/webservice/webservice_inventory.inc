@@ -45,8 +45,13 @@ function  webservice_parse_import_inventories() {
 	$data['time'] = $_POST['time'];
 	$data['observer'] = $_POST['observer'];
 	$data['set_user_uid'] = $user->uid;
+	
+	//if empty string has been passed, use login name
+	if(empty($data['observer'])) $data['observer'] = $user->name;
+	
 	debug($data);
 	debug('inventory webservice');
+	
 	$validationerrors =  webservice_validate($data);
 	if(!empty($validationerrors)) {
 		header('HTTP/1.0 400 Bad Request');

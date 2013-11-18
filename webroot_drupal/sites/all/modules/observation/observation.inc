@@ -20,6 +20,36 @@ function observation_edit($observationdata = NULL) {
 }
 
 /**
+ * Return all observations that match the given organism ID.
+ * 
+ * @param string $organism_id
+ * @return array
+ */
+function observation_get_by_organism($organism_id = NULL) {
+	$sql = 'SELECT * FROM {observation} o
+				WHERE o.organism_id=:organism_id';
+	$result = db_query(
+			$sql,
+			array('organism_id' => $organism_id))->fetchAll();
+	return $result;
+}
+
+/**
+ * Return all observations that match the given artgroup ID.
+ *
+ * @param string $artgoup_id
+ * @return array
+ */
+function observation_get_by_artgroup($artgoup_id = NULL) {
+	$sql = 'SELECT * FROM {observation} o
+				WHERE o.organism_artgroup_id=:artgoup_id';
+	$result = db_query(
+			$sql,
+			array('artgoup_id' => $artgoup_id))->fetchAll();
+	return $result;
+}
+
+/**
  * Return a array with all data for a observation
  * @param int $observation_id
  * @return array
@@ -415,7 +445,7 @@ function observation_get_table($observationdata = NULL, $simple = false) {
 				),
 				l(
 						check_plain($observationdata['observation']['observer']),
-						base_path() . "user/" . $observationdata['observation']['users_uid'],
+						base_path() . "user/" . $observationdata['observation']['users_uid'] . "/contact",
 						array(
 								'external' => true
 						))
@@ -673,9 +703,7 @@ function observation_get_attributes(
 	global $user;
 	global $language;
 	
-	$langcode = (isset($user->language) && !empty($user->language))
-	? $user->language
-	: $language->language;
+	$langcode = $language->language;
 	
 	$sql_select = 'SELECT oaa.id id, oaa.name, oaat.name type_name, oaat.format type_format';
 	$sql_from = ' FROM {organism_artgroup_attr} oaa';
@@ -824,7 +852,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	);
 	
 	$tableHeader[] = array(
-		'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom.png" />',
+		'name' => '<img src="' . $iconBaseUrl . 'disabled/List.png" />',
 		'dbfield' => 'showColumn',
 		'width' => 16,
 		'noSort' => true
@@ -966,7 +994,7 @@ function observation_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Number of pictures'),
 			'dbfield' => 'imagescount',
-			'width' => 20,			// alle "Number of (pictures|videos|sounds|documents)" sind momentan nicht sortierbar, weil keine Tabellen-Felder
+			'width' => 20,
 //			'hide' => true,
 	);
 
@@ -975,7 +1003,6 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'videoscount',
 			'width' => 20,
 //			'hide' => true,
-			'noSort' => true
 	);
 
 	$tableHeader[] = array(
@@ -983,7 +1010,6 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'soundscount',
 			'width' => 20,
 //			'hide' => true,
-			'noSort' => true
 			
 	);
 
@@ -992,7 +1018,208 @@ function observation_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'documentscount',
 			'width' => 20,
 //			'hide' => true,
+	);
+
+	if ($init_sort && $init_sort2) {
+		$tableHeader[$init_sort--]['initSort'] = true;
+		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
+	}
+	return $tableHeader;
+}
+
+/**
+ * Return the observations standard table headers without species related filter items
+ * @param int $init_sort
+ * 				which header in the array should be the initsort array[$init_sort]
+ * @param String $init_sort2
+ * 				Sort directions ex. 'asc' or 'desc'
+ * @return array
+ */
+function observation_get_organism_datatable_headers($init_sort = false,
+		$init_sort2 = false) {
+
+	$tableHeader[] = array(
+			'name' => t('Internal Id'),
+			'idField' => true,
+			'dbfield' => 'id',
+			'hide' => true,
+			'width' => 30
+	);
+
+	global $base_url;
+	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
+
+	$tableHeader[] = array(
+			'name' => '<input class="gridSelect" type="checkbox" disabled />',
+			'dbfield' => 'selectColumn',
+			'width' => 20,
 			'noSort' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom.png" />',
+			'dbfield' => 'showColumn',
+			'width' => 16,
+			'noSort' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Modify.png" />',
+			'dbfield' => 'editColumn',
+			'width' => 16,
+			'noSort' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Zoom in.png" />',
+			'dbfield' => 'zoominColumn',
+			'width' => 16,
+			'noSort' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Picture'),
+			'dbfield' => 'thumbnail',
+			'width' => 80,
+			'noSort' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Common name'),
+			'dbfield' => 'organism_l',
+			'width' => 250
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Scientific name'),
+			'dbfield' => 'organism_sc',
+			'width' => 250
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Artgroup'),
+			'dbfield' => 'artgroup_n',
+			'width' => 100
+			/*			'hide' => true					// Albert will nun alle Spalten standardmässig anzeigen lassen (19. April 2013) */
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Date'),
+			'dbfield' => 'date',
+			'width' => 120
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Inventory'),
+			'dbfield' => 'inventory',
+			'dbExactField' => 'i.name',
+			'width' => 90
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Area'),
+			'dbfield' => 'area',
+			'dbExactField' => 'a.name',
+			'width' => 90
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Area Type'),
+			'dbfield' => 'areatype',
+			'dbExactField' => 'a_g.geometry_type',
+			'width' => 90
+	);
+
+	$tableHeader[] = array(
+			'name' => t('X Coordinate'),
+			'dbfield' => 'ch1903_center_x',
+			'width' => 90,
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Y Coordinate'),
+			'dbfield' => 'ch1903_center_y',
+			'width' => 90,
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Altitude [m]'),
+			'dbfield' => 'altitude',
+			'width' => 60,
+			'dbExactField' => 'a_s.altitude',
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Township'),
+			'dbfield' => 'township',
+			'width' => 120,
+			'dbExactField' => 'a_s.township',
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Canton'),
+			'dbfield' => 'canton',
+			'width' => 40,
+			'dbExactField' => 'a_s.canton',
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Country'),
+			'dbfield' => 'country',
+			'width' => 120,
+			'dbExactField' => 'a_s.country',
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Observer'),
+			'dbfield' => 'observer',
+			'width' => 100,
+			'dbExactField' => 'o.observer',
+			'exportAlways' => true,
+			//			'hide' => true
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Comment'),
+			'dbfield' => 'comment',
+			'width' => 200,
+			'dbExactField' => 'oattr.value',
+			//			'hide' => true,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of pictures'),
+			'dbfield' => 'imagescount',
+			'width' => 20,
+			//			'hide' => true,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of videos'),
+			'dbfield' => 'videoscount',
+			'width' => 20,
+			//			'hide' => true,
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of sounds'),
+			'dbfield' => 'soundscount',
+			'width' => 20,
+			//			'hide' => true,
+				
+	);
+
+	$tableHeader[] = array(
+			'name' => t('Number of documents'),
+			'dbfield' => 'documentscount',
+			'width' => 20,
+			//			'hide' => true,
 	);
 
 	if ($init_sort && $init_sort2) {
@@ -1009,4 +1236,15 @@ function observation_new($inventory_id = NULL) {
 	return drupal_get_form('observation_form', false, $inventory_id);
 // 	return observation_form();
 }
+
+/**
+ * Return the number of observations for the given organism.
+ * 
+ * @param int $organism_id
+ */
+function get_number_of_observations_for_organism($organism_id) {
+	$result = db_query("SELECT * FROM {observation} WHERE organism_id=:organism_id", array(':organism_id' => $organism_id));
+	return $result->rowCount();
+}
+
 ?>

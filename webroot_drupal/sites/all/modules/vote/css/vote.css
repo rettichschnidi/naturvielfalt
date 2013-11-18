@@ -1,0 +1,45 @@
+#mainImage {
+	width: 440px;
+	max-height: 600px;
+}
+
+#mainImageFieldset {
+	width: 440px;
+}
+
+#googleMapsFieldset {
+	width: 440px;
+}
+
+span.mainImageType {
+	background-color: #659560;
+	color: #FFFFFF;
+	position: absolute;
+	bottom: 4px;
+	z-index: 1;
+	cursor: pointer;
+}
+
+a.mainImageType{
+	color: #FFFFFF !important;
+}
+
+#metaInfo {
+	width: 440px;
+}
+#commentTable {
+	width: 440px;
+}
+
+#leftDiv {
+	float: left;
+}
+
+#rightDiv {
+	float: right;
+}
+
+.errorMessage {
+	color: red;
+	font-weight: bold;
+}

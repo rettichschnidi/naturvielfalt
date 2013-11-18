@@ -1,0 +1,110 @@
+<?php
+/**
+ * @file vote.module
+ * @author Emin Khateeb, 2013
+ * @author Florian Gyger, 2013
+ * @copyright 2011-2013 Naturwerk, Brugg
+ */
+/**********************************
+ *  Hook implementations
+ *********************************/
+
+define('VOTE_ACCESS', 'access to voting page');
+define('VOTE_WRITE', 'vote for an organism');
+
+/**
+ * Implements hook_menu()
+ *
+ * @return array
+ */
+function vote_menu() {
+	$items['vote'] = array(
+			'title' => 'Who knows it?',
+			'page callback' => 'vote_show',
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'description' => 'Voting page for experts',
+			'type' => MENU_NORMAL_ITEM,
+			'file' => 'vote.show.inc',
+	);
+	
+	$items['vote/observation/%'] = array(
+			'title' => 'Who knows it?',
+			'description' => 'Voting page for experts',
+			'page callback' => 'vote_show_observation',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.show.inc',
+	);
+	
+	$items['vote/organism/%'] = array(
+			'title' => 'Who knows it?',
+			'description' => 'Voting page for experts',
+			'page callback' => 'vote_show_organism',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.show.inc',
+	);
+	
+	$items['vote/artgroup/%'] = array(
+			'title' => 'Who knows it?',
+			'description' => 'Voting page for experts',
+			'page callback' => 'vote_show_artgroup',
+			'page arguments' => array(
+					2
+			),
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.show.inc',
+	);
+	
+	$items['vote/getdata/json'] = array(
+			'title' => 'Images',
+			'description' => 'Get all image data to show',
+			'page callback' => 'fetch_observation_data',
+			'access arguments' => array(
+					VOTE_ACCESS
+			),
+			'file' => 'vote.ajax.inc',
+			'type' => MENU_LOCAL_TASK
+	);
+	
+	$items['vote/save'] = array(
+			'title' => 'Save verification',
+			'description' => 'Saves the given verification',
+			'page callback' => 'vote_save',
+			'access arguments' => array(
+					VOTE_WRITE
+			),
+			'file' => 'vote.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+
+	return $items;
+}
+
+/**
+ * Define permissions which can be given to different roles.
+ *
+ * @note Those permissions are not related to the acl
+ */
+function vote_permission() {
+	return array(
+			VOTE_WRITE => array(
+					'title' => t('Vote for an organism.'),
+			),
+			VOTE_ACCESS => array(
+					'title' => t('View vote page.'),
+			)
+	);
+}

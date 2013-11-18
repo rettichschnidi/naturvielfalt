@@ -33,7 +33,7 @@ function area_menu() {
 		
 	/* Show all available areas */
 	$items['area'] = array(
-			'title' => 'All areas',
+			'title' => 'Areas',
 			'description' => 'Show',
 			'page callback' => 'drupal_goto',
 			'page arguments' => array(
@@ -44,7 +44,7 @@ function area_menu() {
 
 	/* Show all available areas */
 	$items['areas/show'] = array(
-			'title' => 'All areas',
+			'title' => 'Areas',
 			'description' => 'Show',
 			'page callback' => 'area_show_all_areas',
 			'page arguments' => array(
@@ -54,31 +54,25 @@ function area_menu() {
 					AREA_ACCESS
 			),
 			'type' => MENU_NORMAL_ITEM,
+			'expanded' => true,
 			'file' => 'area.show.inc',
 	);
 
-	/* Show all available areas */
-	$items['areas/show/all'] = array(
-			'title' => 'All areas',
-			'type' => MENU_DEFAULT_LOCAL_TASK,
-	);
-
-	/* Show all available areas */
-	$items['areas/show/my'] = array(
-			'title' => 'My areas',
-			'description' => 'Show all my own areas.',
-			'page callback' => 'area_show_all_areas',
+	$items['area/%area/getchildren'] = array(
+			'title' => 'Ajax call to receive all children ids',
+			'page callback' => 'area_get_children',
 			'page arguments' => array(
-					true
+					1
 			),
 			'access arguments' => array(
-					AREA_ACCESS
+					1,
+					'ACL_READ'
 			),
-			'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.show.inc',
+			'access callback' => 'area_check_access',
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc'		
 	);
-
+	
 	/* Get all available areas as json*/
 	$items['areas/json'] = array(
 			'title' => 'All areas json',
@@ -87,22 +81,6 @@ function area_menu() {
 			'page arguments' => array(
 					false,
 					'ACL_READ'
-			),
-			'access arguments' => array(
-					AREA_ACCESS
-			),
-			'type' => MENU_CALLBACK,
-			'file' => 'area.json.inc',
-	);
-
-	/* Get all available areas as json*/
-	$items['areas/own/json'] = array(
-			'title' => 'All areas json',
-			'description' => 'Get all areas as json',
-			'page callback' => 'area_json',
-			'page arguments' => array(
-					false,
-					'ACL_ADMIN'
 			),
 			'access arguments' => array(
 					AREA_ACCESS
@@ -174,7 +152,7 @@ function area_menu() {
 	);
 
 	/* Get all available areas as datatable json*/
-	$items['areas/all/datatablejson'] = array(
+	$items['areas/get/all'] = array(
 			'title' => 'All areas datatable json',
 			'description' => 'Get all areas as datatable json',
 			'page callback' => 'area_datatable_json',
@@ -189,12 +167,27 @@ function area_menu() {
 	);
 
 	/* Get own areas as datatable json*/
-	$items['areas/own/datatablejson'] = array(
+	$items['areas/get/own'] = array(
 			'title' => 'Own areas datatable json',
 			'description' => 'Get own areas as datatable json',
 			'page callback' => 'area_datatable_json',
 			'page arguments' => array(
-					'ACL_ADMIN'
+					'own'
+			),
+			'access arguments' => array(
+					AREA_ACCESS
+			),
+			'type' => MENU_CALLBACK,
+			'file' => 'area.json.inc',
+	);
+	
+	/* Get own areas as datatable json*/
+	$items['areas/get/writeable'] = array(
+			'title' => 'Own areas datatable json',
+			'description' => 'Get own areas as datatable json',
+			'page callback' => 'area_datatable_json',
+			'page arguments' => array(
+					'ACL_WRITE'
 			),
 			'access arguments' => array(
 					AREA_ACCESS
@@ -205,7 +198,7 @@ function area_menu() {
 
 	/* Create a new area */
 	$items['area/new'] = array(
-			'title' => 'Create new area',
+			'title' => 'Create',
 			'description' => 'Create a new area',
 			'page callback' => 'area_new_area',
 			'access arguments' => array(
@@ -293,25 +286,6 @@ function area_menu() {
 			'type' => MENU_CALLBACK
 	);
 
-	/* Edit an area */
-	$items['area/%area/permissions'] = array(
-			'title' => 'Edit permission',
-			'description' => 'Edit the permission of this area.',
-			'page callback' => 'area_edit_permission',
-			'page arguments' => array(
-					1
-			),
-			'access arguments' => array(
-					1,
-					'ACL_ADMIN'
-			),
-			'access callback' => 'area_check_access',
-			'type' => MENU_LOCAL_TASK,
-			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-			'file' => 'area.admin.inc',
-			'weight' => 4
-	);
-
 	/* Show some important information about an area. For usage in a infoWindow, ajax. */
 	$items['area/%area/areaoverview/ajaxform'] = array(
 			'title' => 'Area overview form',
@@ -342,57 +316,41 @@ function area_menu() {
 			'file' => 'area.ajax.inc',
 	);
 
-	if (function_exists('gallery_list_renderer')) {
-		$items['area/%area/gallery'] = array(
-				'title' => 'Gallery',
-				'description' => 'View the area as a gallery of organisms',
-				'page callback' => 'area_gallery',
-				'page arguments' => array(
-						1
-				),
-				'access arguments' => array(
-						AREA_ACCESS
-				),
-				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-				'file' => 'area.inc',
-				'weight' => 6
-		);
+	//removed gallery in area/edit
+// 	if (function_exists('gallery_list_renderer')) {
+// 		$items['area/%area/gallery'] = array(
+// 				'title' => 'Gallery',
+// 				'description' => 'View the area as a gallery of organisms',
+// 				'page callback' => 'area_gallery',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'area.inc',
+// 				'weight' => 6
+// 		);
 
-		$items['area/%area/list'] = array(
-				'title' => 'List',
-				'description' => 'View the area as a list of organisms',
-				'page callback' => 'area_list',
-				'page arguments' => array(
-						1
-				),
-				'access arguments' => array(
-						AREA_ACCESS
-				),
-				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-				'file' => 'area.inc',
-				'weight' => 7
-		);
-	}
+// 		$items['area/%area/list'] = array(
+// 				'title' => 'List',
+// 				'description' => 'View the area as a list of organisms',
+// 				'page callback' => 'area_list',
+// 				'page arguments' => array(
+// 						1
+// 				),
+// 				'access arguments' => array(
+// 						AREA_ACCESS
+// 				),
+// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+// 				'file' => 'area.inc',
+// 				'weight' => 7
+// 		);
+// 	}
 
-	$items['area/%area/delete_file/%'] = array(
-			'title' => 'Delete file',
-			'description' => 'Delete an existing file',
-			'page callback' => 'drupal_get_form',
-			'page arguments' => array(
-					'area_delete_file',
-					1,
-					3
-			),
-			'access arguments' => array(
-					1,
-					'ACL_WRITE'
-			),
-			'access callback' => 'area_check_access',
-			'file' => 'area.edit.inc',
-			'weight' => 10,
-	);
 	return $items;
 }
 

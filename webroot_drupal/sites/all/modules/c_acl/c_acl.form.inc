@@ -205,7 +205,7 @@ function c_acl_form($form, &$form_state, $defaults, $groups, $users, $acl_id,
 			$row = array();
 			$owner = check_user_owns_acl($acl_id, $user->uid);
 			$name = $user->name;
-			$row[] = l($name, 'user/' . $user->uid);
+			$row[] = l($name, 'user/' . $user->uid . '/contact');
 
 			foreach ($defaults as $default) {
 				if ($user->level == $default['type']) {

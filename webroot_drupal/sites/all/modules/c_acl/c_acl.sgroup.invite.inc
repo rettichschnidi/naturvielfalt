@@ -69,7 +69,7 @@ function sgroup_member_form($form, &$form_state, $users, $acl_id, $group) {
 		if ($owner) {
 			$name .= " (" . t("Owner") . ")";
 		}
-		$row[] = l($name, 'user/' . $user->uid);
+		$row[] = l($name, 'user/' . $user->uid . '/contact');
 		if ($user->level > variable_get("ACL_PERMISSION_NOT_SET")) {
 			$row[] = t('active');
 			$options = array(

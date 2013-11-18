@@ -1,0 +1,54 @@
+/* Block new Observations */
+.new_observations_container {
+	height:100%;
+    float:left;
+    overflow:hidden;
+    width:220px;
+}
+
+#block_newest_observation_img {
+	max-height:165px;
+}
+
+.block_newest_observation_img_caption {
+	display:none;
+}
+
+.imageSliderNavigation {
+	opacity:0.6;
+	cursor: pointer;
+	display:block;
+	width:80px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.imageSliderNavigation:hover {
+	opacity:1;
+}
+
+.imageSliderNavigation.top {
+	margin-top:5px;
+	margin-bottom:8px;
+}
+
+.imageSliderNavigation.bottom {
+	margin-top:8px;
+	margin-bottom:5px;
+}
+
+.imageSliderImage {
+	width: 190px;
+	height: 150px;
+	position: relative;
+	cursor: pointer;
+}
+
+#showLoadingImage {
+	display:none;
+	width: 190px;
+	height: 150px;
+	position:absolute;
+	z-index: 1;
+	display:none;
+}

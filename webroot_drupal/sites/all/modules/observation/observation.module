@@ -4,6 +4,7 @@
  *********************************/
 
 module_load_include('inc', 'observation');
+module_load_include('inc', 'observation', 'observation.block');
 
 // Load gallery integration
 module_load_include('inc', 'observation', 'observation.gallery');
@@ -11,6 +12,14 @@ define('ACCESS_OBSERVATION', 'access observation');
 define('CREATE_OBSERVATION', 'create observation');
 define('UNKNOWN_ARTGROUP', 1000);
 define('UNKNOWN_SPECIES', -1);
+
+function observation_init() {
+	if (module_exists("vote")) {
+		drupal_add_js('var voteModuleExits = true;', 'inline');
+	} else {
+		drupal_add_js('var voteModuleExits = false;', 'inline');
+	}
+}
 
 /**
  * Implements hook_menu()
@@ -29,6 +38,7 @@ function observation_menu() {
 			'type' => MENU_NORMAL_ITEM | MENU_DEFAULT_LOCAL_TASK,
 			'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
 			'file' => 'observation.show.inc',
+			'expanded' => true,
 			'weight' => 1,
 	);
 
@@ -215,6 +225,54 @@ function observation_menu() {
 			'type' => MENU_CALLBACK,
 	);
 	
+	// Get all readable observations of given organism
+	$items['observation/get/organism/%/all'] = array(
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
+			'page callback' => 'observation_get_organism_json',
+			'page arguments' => array(
+					'ACL_READ',
+					3
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
+	// Get all own observations of given organism
+	$items['observation/get/organism/%/own'] = array(
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
+			'page callback' => 'observation_get_organism_json',
+			'page arguments' => array(
+					'ACL_ADMIN',
+					3
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
+	// Get all writeable observations of given organism
+	$items['observation/get/organism/%/writeable'] = array(
+			'title' => 'ObservationsJSON',
+			'description' => 'Get readable observations',
+			'page callback' => 'observation_get_organism_json',
+			'page arguments' => array(
+					'ACL_WRITE',
+					3
+			),
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.ajax.inc',
+			'type' => MENU_CALLBACK,
+	);
+	
 	// Get all own observations
 	$items['observation/get/own'] = array(
 			'title' => 'ObservationsJSON',
@@ -270,6 +328,35 @@ function observation_menu() {
 			'type' => MENU_CALLBACK
 	);
 	
+	$items['observation/block/newobservations'] = array(
+			'title' => 'New observations ajax callback (block)',
+			'description' => 'Callback to receive the contents of the new observations block (ajax)',
+			'page callback' => 'observation_block_new_observations_content_ajax',
+			'access arguments' => array(
+					ACCESS_OBSERVATION
+			),
+			'file' => 'observation.block.inc',
+			'type' => MENU_CALLBACK
+	);
+	
+	$items['observation/addtoinventorydata'] = array(
+			'title' => 'receive the possible inventories and areas to add an observation to',
+			'page callback' => 'observation_add_to_inventory_data',
+			'access callback' => TRUE,
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc'
+	);
+	
+	$items['observation/addtoinventory/%inventory'] = array(
+			'title' => 'add multiple observations to an inventory',
+			'page callback' => 'observation_add_to_inventory',
+			'page arguments' => array(
+						2
+					),
+			'access callback' => TRUE,
+			'type' => MENU_CALLBACK,
+			'file' => 'observation.ajax.inc'
+	);
 	return $items;
 }
 

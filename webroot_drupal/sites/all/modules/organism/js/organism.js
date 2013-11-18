@@ -16,10 +16,14 @@ jQuery(document).ready(function() {
 	 * Go to /organism/classifiction/id if not already there
 	 */
 	organism.loadClassification = function(id) {
-		var path = window.location.pathname.split('/');
-		var currentId = path[path.length-1];
-		if (parseInt(currentId) != parseInt(id))
-			window.location = '/organism/classification/' + id;
+		if(id == "navigateToMenu") {
+			window.location = '/organism/';
+		} else {
+			var path = window.location.pathname.split('/');
+			var currentId = path[path.length-1];
+			if (parseInt(currentId) != parseInt(id))
+				window.location = '/organism/classification/' + id;
+		}
 	};
 	
 	/**
