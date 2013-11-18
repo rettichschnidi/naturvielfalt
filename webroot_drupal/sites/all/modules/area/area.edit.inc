@@ -116,7 +116,7 @@ function area_edit_form($form, &$form_state, $areadata = NULL, $inventory_id = N
 		$form['area_map']['create_sub_area'] = array(
 			  '#type' => 'markup',
 			  '#prefix' => '</br>',
-			  '#markup' => '<img style="cursor:pointer;" onclick="window.location.href=\''.$base_url . '/area/new/'.$areadata['id'].'\'" src="'.$iconBaseUrl.'Site map.png" style="cursor:pointer;" alt="' .t('Create a sub area') . '" title="' . t('Create a sub area') . '"/> '.  t('Create a sub area')
+			  '#markup' => '<img style="cursor:pointer;" onclick="window.location.href=\''.$base_url . '/area/new/'.$areadata['id'].'\'" src="'.$iconBaseUrl.'Site map.png" style="cursor:pointer;" alt="' .t('Create a subarea') . '" title="' . t('Create a sub area') . '"/> '.  t('Create a sub area')
 		);
 	}
 	

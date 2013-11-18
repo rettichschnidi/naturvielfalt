@@ -17,6 +17,7 @@ module_load_include('inc', 'inventory', 'inventory.show');
 function area_show_all_areas() {
 	global $user;
 	
+	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'area');
 	drupal_add_css($observation_path . '/css/area.css');
 	

@@ -22,7 +22,7 @@ function area_new_area($parent = NULL) {
 		if(!area_check_access($parent_area, 'ACL_RED_WRITE'))
 			return MENU_ACCESS_DENIED;
 		
-		drupal_set_title(t('Create new sub area in area <i>@areaname </i>', array('@areaname' => $parent_area['name'])), PASS_THROUGH);
+		drupal_set_title(t('Create new subarea in area <i>@areaname </i>', array('@areaname' => $parent_area['name'])), PASS_THROUGH);
 	} else {
 		drupal_set_title(t('Create new area'));
 	}

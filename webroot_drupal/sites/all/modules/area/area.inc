@@ -1136,3 +1136,53 @@ function area_get_standard_datatable_headers($init_sort = false,
 	}
 	return $tableHeader;
 }
+
+/**
+ * Returns all areas on which the current user has 'ACL_RED_WRITE' permission.
+ * (must have red_write_access, and must not be a subarea)
+ * 
+ * @param $excluded_areas Areas which should not be returned in the result array
+ */
+function area_get_red_writeable_areas($exclude_areas, $json = true) {
+	global $user;
+	$minLevelArea = variable_get('ACL_RED_WRITE');
+	$sql =   'SELECT DISTINCT a.id as area_id, a.name as areaname, a.acl_id as area_acl_id
+			FROM {area} a
+			WHERE a.parent_id IS NULL';
+	
+	if(!empty($exclude_areas)) {
+		$exclude = ' AND (';
+		foreach ($exclude_areas as $excluded_area) {
+			$exclude .= 'a.id !='.$excluded_area . ' OR ';
+		}
+		$exclude = substr($exclude, 0, -4);
+		$exclude .= ')';
+		$sql .= $exclude;		
+	}
+	
+	if (!check_admin_permission($user->uid)) {
+		$sql .= ' LEFT JOIN {acl_sgroup} ag_a ON ag_a.acl_id = a.acl_id
+			LEFT JOIN {sgroup} g_a ON g_a.id = ag_a.sgroup_id
+			LEFT JOIN {acl_users} au_a ON (au_a.acl_id = a.acl_id OR au_a.acl_id = g_a.acl_id) AND au_a.users_id = ' . $user->uid.'
+			AND ( (ag_a.sgroup_id = ' . variable_get('ACL_GROUP_ALL_ID').'
+				AND ag_a.level >= ' . $minLevelArea . ') OR (au_a.acl_id = g_a.acl_id AND ag_a.level >= ' . $minLevelArea . ')
+				OR (au_a.acl_id = a.acl_id AND au_a.level >= ' . $minLevelArea . ') )';
+	}
+	
+	$sql .= ' ORDER BY a.name';
+	$entries = db_query($sql)->fetchAll();
+	
+	$areas = array();
+	$areasOptions = array();
+	for($i = 0; $i < count((array)$entries); $i++) {
+		$entry = (array)$entries[$i];
+		if(!key_exists($entry['area_id'], $areas)) {
+			//if area is not yet in areas array, move it there together with the inventory entry
+			$areas[$entry['area_id']] = array('name' => $entry['areaname']);
+			$areasOptions[$entry['area_id']] = $entry['areaname'];
+		}
+	}
+	$output = array('count' => count($areas), 'areas' => $areas, 'areas_as_options' => $areasOptions);
+	if($json) return drupal_json_output($output);
+	return $output;
+}
