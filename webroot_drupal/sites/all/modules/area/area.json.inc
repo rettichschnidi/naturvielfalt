@@ -276,9 +276,9 @@ function area_json($area_id = false, $acl_level = 'ACL_READ') {
 	if(!empty($area) && empty($area['parent_id'])) {
 		//area may have children
 		$children = area_get_children($area, false);
-		if(!empty($children)) {
+		if(!empty($children['children'])) {
 			$whereChildren = ' OR ';
-			foreach ($children as $child) {
+			foreach ($children['children'] as $child) {
 				$whereChildren .= 'a.id='.$child->id . ' OR ';
 			}
 			$whereChildren = substr($whereChildren, 0, -4);

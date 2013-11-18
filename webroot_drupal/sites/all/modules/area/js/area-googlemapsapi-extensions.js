@@ -175,6 +175,7 @@ google.maps.Polygon.prototype.select = function() {
 		color = colors.green;
 		if(!this.child)
 			strokeColor = colors.green;
+		else strokeColor = colors.black;
 	} else {
 		if(this.child) {
 			strokeColor = colors.black;

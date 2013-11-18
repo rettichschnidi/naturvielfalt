@@ -316,40 +316,24 @@ function area_menu() {
 			'file' => 'area.ajax.inc',
 	);
 
-	//removed gallery in area/edit
-// 	if (function_exists('gallery_list_renderer')) {
-// 		$items['area/%area/gallery'] = array(
-// 				'title' => 'Gallery',
-// 				'description' => 'View the area as a gallery of organisms',
-// 				'page callback' => 'area_gallery',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'area.inc',
-// 				'weight' => 6
-// 		);
-
-// 		$items['area/%area/list'] = array(
-// 				'title' => 'List',
-// 				'description' => 'View the area as a list of organisms',
-// 				'page callback' => 'area_list',
-// 				'page arguments' => array(
-// 						1
-// 				),
-// 				'access arguments' => array(
-// 						AREA_ACCESS
-// 				),
-// 				'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-// 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-// 				'file' => 'area.inc',
-// 				'weight' => 7
-// 		);
-// 	}
+	$items['area/addtoareadata'] = array(
+			'title' => 'receive the possible areas to add a area to (becomes subarea)',
+			'page callback' => 'area_add_to_area_data',
+			'access callback' => TRUE,
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc'
+	);
+	
+	$items['area/addtoarea/%area'] = array(
+			'title' => 'add multiple areas to an area',
+			'page callback' => 'area_add_to_area',
+			'page arguments' => array(
+					2
+			),
+			'access callback' => TRUE,
+			'type' => MENU_CALLBACK,
+			'file' => 'area.ajax.inc'
+	);
 
 	return $items;
 }
