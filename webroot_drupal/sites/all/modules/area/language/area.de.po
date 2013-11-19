@@ -4,24 +4,23 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  area.tpl.php: n/a
-#  area.admin.inc: n/a
-#  area.edit.inc: n/a
-#  area.show.inc: n/a
 #  area.ajax.inc: n/a
 #  area.create.inc: n/a
 #  area.module: n/a
 #  area.delete.inc: n/a
 #  js/area.js: n/a
+#  area.edit.inc: n/a
+#  area.show.inc: n/a
 #  area.json.inc: n/a
-#  area.gallery.inc: n/a
 #  area.inc: n/a
+#  area.gallery.inc: n/a
 #  area.info: n/a
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2013-08-22 16:40+0200\n"
-"PO-Revision-Date: 2013-08-22 17:02+0100\n"
+"POT-Creation-Date: 2013-11-18 10:35+0100\n"
+"PO-Revision-Date: 2013-11-18 10:45+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
@@ -34,247 +33,255 @@ msgstr ""
 msgid "You have to enable Javascript!"
 msgstr "Javascript muss aktiviert sein!"
 
-#: area.admin.inc:17 area.edit.inc:282
-msgid "Read"
-msgstr "Lesen"
-
-#: area.admin.inc:22 area.edit.inc:103;103;103 area.show.inc:264;264;264;503
-msgid "Add Inventory"
-msgstr "Inventar hinzufügen"
-
-#: area.admin.inc:27 area.edit.inc:287
-msgid "Write"
-msgstr "Schreiben"
-
-#: area.admin.inc:32 area.edit.inc:292
-msgid "Administration"
-msgstr "Verwaltung"
-
-#: area.ajax.inc:37
-msgid "Close"
-msgstr "Schliessen"
-
-#: area.ajax.inc:54;106
-msgid "Please log in first"
-msgstr "Bitte melden Sie sich an"
-
-#: area.ajax.inc:61
-msgid "Parameter 'areas' missing"
-msgstr "Parameter 'areas' fehlt"
-
-#: area.ajax.inc:82
-msgid "Area deleted"
-msgstr "Gebiet gelöscht"
-
-#: area.ajax.inc:83
-msgid "Areas deleted"
-msgstr "Gebiete gelöscht"
-
-#: area.ajax.inc:87
-msgid "Some areas could not be deleted (unauthorized access)"
-msgstr "Einige Gebiete konnten nicht entfernt werden (unerlaubter Zugriff)"
-
-#: area.create.inc:16 area.module:208
-msgid "Create new area"
-msgstr "Gebiet erstellen"
-
-#: area.create.inc:46
-msgid "Field name/area name"
-msgstr "Name des Feldes/Gebiets"
-
-#: area.create.inc:47
-msgid "Please insert a custom name for this area."
-msgstr "Bitte fügen Sie dem Gebiet einen Namen/Flurnamen hinzu."
-
-#: area.create.inc:51
-msgid "My area"
-msgstr "Mein Gebiet"
-
-#: area.create.inc:57
-msgid "Create"
-msgstr "Erstellen"
-
-#: area.create.inc:128;211
+#: area.ajax.inc:82;171
 msgid "New area could not be created."
 msgstr "Neues Gebiet konnte nicht erstellt werden"
 
-#: area.create.inc:208
+#: area.ajax.inc:168
 msgid "Could not save the area because of an unknown error."
 msgstr "Das Gebiet konnte aus einem unbekannten Grund nicht gespeichert werden"
 
-#: area.create.inc:220
+#: area.ajax.inc:180
 msgid "Area \"@areaname\" got created."
 msgstr "Das Gebiet\"@areaname\" wurde erstellt."
 
-#: area.delete.inc:28
+#: area.ajax.inc:215
+msgid "Close"
+msgstr "Schliessen"
+
+#: area.ajax.inc:232;288
+msgid "Please log in first"
+msgstr "Bitte melden Sie sich an"
+
+#: area.ajax.inc:239
+msgid "Parameter 'areas' missing"
+msgstr "Parameter 'areas' fehlt"
+
+#: area.ajax.inc:264
+msgid "Area deleted"
+msgstr "Gebiet gelöscht"
+
+#: area.ajax.inc:265
+msgid "Areas deleted"
+msgstr "Gebiete gelöscht"
+
+#: area.ajax.inc:269
+msgid ""
+"Some areas could not be deleted (no permission, or the area may still "
+"contain inventories or subareas.)"
+msgstr ""
+"Einige Gebiete konnten nicht gelöscht werden (Keine Berechtigung, oder ein "
+"Gebiet enthielt noch Inventare oder Teilgebiete)"
+
+#: area.create.inc:25
+msgid "Create new subarea in area <i>@areaname </i>"
+msgstr "Neues Teilgebiet im Gebiet <i> @areaname </i> erstellen"
+
+#: area.create.inc:27
+msgid "Create new area"
+msgstr "Neues Gebiet erstellen"
+
+#: area.create.inc:79
+msgid "Field name/area name"
+msgstr "Name des Feldes/Gebiets"
+
+#: area.create.inc:80
+msgid "Please insert a custom name for this area."
+msgstr "Bitte fügen Sie dem Gebiet einen Namen/Flurnamen hinzu."
+
+#: area.create.inc:84
+msgid "My area"
+msgstr "Mein Gebiet"
+
+#: area.create.inc:90 area.module:201
+msgid "Create"
+msgstr "Erstellen"
+
+#: area.delete.inc:29
 msgid "Delete @areaname?"
 msgstr "@areaname löschen?"
 
-#: area.delete.inc:30
+#: area.delete.inc:31
 msgid "Are you sure you want to delete the area @areaname?"
 msgstr "Sind Sie sicher, dass Sie das Gebiet @areaname löschen wollen?"
 
-#: area.delete.inc:33 area.edit.inc:562;650 area.module:258 js/area.js:0
+#: area.delete.inc:34 area.module:251 js/area.js:0
 msgid "Delete"
 msgstr "Löschen"
 
-#: area.delete.inc:34 area.edit.inc:651
+#: area.delete.inc:35
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: area.delete.inc:49
+#: area.delete.inc:53
+msgid ""
+"Can not delete area @areaname while it still contains inventories. Please "
+"remove its inventories first."
+msgstr ""
+"Das Gebiet @areaname kann nicht gelöscht werden, solange es noch noch "
+"Inventare enthält. Bitte entfernen Sie die Inventare des Gebietes zuerst."
+
+#: area.delete.inc:61
+msgid ""
+"Can not delete area @areaname while it still contains subareas. Please "
+"remove its subareas first."
+msgstr ""
+"Das Gebiet @areaname kann nicht gelöscht werden, solange es noch noch "
+"Teilgebiete enthält. Bitte entfernen Sie die Inventare des Gebietes zuerst."
+
+#: area.delete.inc:70
 msgid "area @areaname deleted"
 msgstr "Gebiet @areaname gelöscht"
 
-#: area.delete.inc:122
+#: area.delete.inc:139
 msgid "Could not delete @areaname."
 msgstr "Konnte Gebiet @areaname nicht löschen"
 
-#: area.edit.inc:73 area.show.inc:238
+#: area.edit.inc:75 area.show.inc:132
 msgid "Area details"
 msgstr "Gebietsangaben"
 
-#: area.edit.inc:86 area.show.inc:248
-msgid "inventories"
-msgstr "Inventare"
-
-#: area.edit.inc:86 area.show.inc:248
-msgid "observations"
-msgstr "Beobachtungen"
-
-#: area.edit.inc:119
+#: area.edit.inc:87
 msgid "Save Now"
 msgstr "Jetzt speichern"
 
-#: area.edit.inc:128;149;518 area.show.inc:308
-msgid "Description"
-msgstr "Beschreibung"
-
-#: area.edit.inc:140
-msgid "Area name"
-msgstr "Gebietsname"
-
-#: area.edit.inc:156;196
-msgid "Save"
-msgstr "Speichern"
-
-#: area.edit.inc:165 area.show.inc:332
-msgid "Area concept"
-msgstr "Gebietskonzept"
-
-#: area.edit.inc:174 area.show.inc:347
-msgid "Protection target"
-msgstr "Schutzziel"
-
-#: area.edit.inc:181 area.show.inc:358
-msgid "Tending strategies"
-msgstr "Pflegemassnahmen"
-
-#: area.edit.inc:188 area.show.inc:369
-msgid "Safety precautions"
-msgstr "Sicherheitsvorkehrungen"
-
-#: area.edit.inc:205 area.show.inc:379
-msgid "Linked habitats"
-msgstr "Gekoppelte Lebensräume"
-
-#: area.edit.inc:217 area.show.inc:279
+#: area.edit.inc:96 area.show.inc:145
 msgid "Map"
 msgstr "Karte"
 
-#: area.edit.inc:226
+#: area.edit.inc:104
 msgid "<p>Please note: Changes will be saved instantly.</p>"
 msgstr "<p>Bitte beachten Sie: Änderungen werden sofort gespeichert.</p>"
 
-#: area.edit.inc:264
+#: area.edit.inc:111;111;111 area.json.inc:196;196 area.show.inc:155;155;155
+msgid "zoomin"
+msgstr "Zoomen"
+
+#: area.edit.inc:119
+msgid "Create a subarea"
+msgstr "Teilgebiet erstellen"
+
+#: area.edit.inc:119;119
+msgid "Create a sub area"
+msgstr "Teilgebiet erstellen"
+
+#: area.edit.inc:144;164 area.show.inc:178
+msgid "Description"
+msgstr "Beschreibung"
+
+#: area.edit.inc:155
+msgid "Area name"
+msgstr "Gebietsname"
+
+#: area.edit.inc:170;238;344 js/area.js:0
+msgid "Save"
+msgstr "Speichern"
+
+#: area.edit.inc:179 area.show.inc:201
+msgid "inventories"
+msgstr "Inventare"
+
+#: area.edit.inc:179 area.show.inc:201
+msgid "observations"
+msgstr "Beobachtungen"
+
+#: area.edit.inc:194;194;194 area.show.inc:217;217;217;397
+msgid "Add Inventory"
+msgstr "Inventar hinzufügen"
+
+#: area.edit.inc:209 area.show.inc:232
+msgid "Area concept"
+msgstr "Gebietskonzept"
+
+#: area.edit.inc:217 area.show.inc:247
+msgid "Protection target"
+msgstr "Schutzziel"
+
+#: area.edit.inc:224 area.show.inc:258
+msgid "Tending strategies"
+msgstr "Pflegemassnahmen"
+
+#: area.edit.inc:231 area.show.inc:269
+msgid "Safety precautions"
+msgstr "Sicherheitsvorkehrungen"
+
+#: area.edit.inc:247 area.show.inc:279
+msgid "Linked habitats"
+msgstr "Gekoppelte Lebensräume"
+
+#: area.edit.inc:258
+msgid "Manage existing media for this area"
+msgstr "Existierende Medien von diesem Gebiet verwalten"
+
+#: area.edit.inc:275
+msgid "Add media for this area"
+msgstr "Medien zu diesem Gebiet hinzufügen"
+
+#: area.edit.inc:297
+msgid "Number of files to add?"
+msgstr "Wieviele Dateien möchten Sie hinzufügen?"
+
+#: area.edit.inc:298
+msgid "Allowed files endings are: "
+msgstr "Folgende Dateiendungen sind erlaubt:"
+
+#: area.edit.inc:333;334
+msgid "Click here to add details to this file"
+msgstr "Klicken Sie hier, um der Datei Angaben hinzuzufügen"
+
+#: area.edit.inc:336
+msgid "Choose a file"
+msgstr "Datei auswählen"
+
+#: area.edit.inc:371
 msgid "Permission"
 msgstr "Berechtigung"
 
-#: area.edit.inc:275
-msgid "Permissions"
-msgstr "Berechtigungen"
-
-#: area.edit.inc:316
+#: area.edit.inc:405
 msgid "You have to enter an area name."
 msgstr "Sie müssen einen Gebietsnamen eingeben"
 
-#: area.edit.inc:369 area.json.inc:58
+#: area.edit.inc:413
+msgid ".@extension is an unallowed fileextension!"
+msgstr ".@extension ist eine unerlaubte Dateiendung!"
+
+#: area.edit.inc:469 area.json.inc:176
 msgid "Select"
 msgstr "Auswählen"
 
-#: area.edit.inc:373 area.show.inc:424
+#: area.edit.inc:473 area.show.inc:322
 msgid "Label"
 msgstr "Beschriftung"
 
-#: area.edit.inc:377 area.show.inc:90;428
+#: area.edit.inc:477 area.inc:1079 area.show.inc:326
 msgid "Name"
 msgstr "Name"
 
-#: area.edit.inc:436
+#: area.edit.inc:566
 msgid "Area Saved"
 msgstr "Gebiet gespeichert"
 
-#: area.edit.inc:478
-msgid "File saved"
-msgstr "Datei gespeichert"
+#: area.edit.inc:580
+msgid "Read"
+msgstr "Lesen"
 
-#: area.edit.inc:480
-msgid "File could not be saved!"
-msgstr "Datei konnte nicht gespeichert werden!"
-
-#: area.edit.inc:500
-msgid "Files"
-msgstr "Dateien"
-
-#: area.edit.inc:519
-msgid "Filename"
-msgstr "Dateiname"
-
-#: area.edit.inc:520
-msgid "Typ"
-msgstr "Typ"
-
-#: area.edit.inc:521
-msgid "Size"
-msgstr "Grösse"
-
-#: area.edit.inc:522
-msgid "Date"
-msgstr "Datum"
+#: area.edit.inc:585
+msgid "Add Inventory/Subarea"
+msgstr "Inventar/Teilgebiet hinzufügen"
 
 #: area.edit.inc:590
-msgid "Upload File"
-msgstr "Datei Hochladen"
+msgid "Write"
+msgstr "Schreiben"
 
-#: area.edit.inc:596
-msgid "Description of file"
-msgstr "Beschreibung der Datei"
-
-#: area.edit.inc:603
-msgid "Upload"
-msgstr "Hochladen"
-
-#: area.edit.inc:645
-msgid "Delete %name?"
-msgstr "%name löschen?"
-
-#: area.edit.inc:647
-msgid "Are you sure you want to delete the file %name?"
-msgstr "Wollen Sie die Datei %name wirklich löschen?"
-
-#: area.edit.inc:674
-msgid "The file was successfully deleted"
-msgstr "Die Datei wurde erfolgreich gelöscht"
-
-#: area.edit.inc:676
-msgid "The file could not be deleted."
-msgstr "Die Datei konnte nicht gelöscht werden"
+#: area.edit.inc:595
+msgid "Administration"
+msgstr "Verwaltung"
 
 #: area.gallery.inc:41
 msgid "Not related to a habitat"
 msgstr "Keine Verbindung zu einem Habitat"
 
-#: area.gallery.inc:48;50 area.inc:816;817;819
+#: area.gallery.inc:48;50 area.inc:827;828;830
 msgid "Habitats"
 msgstr "Lebensräume"
 
@@ -304,314 +311,314 @@ msgid ""
 "area."
 msgstr "@mediatype zum Habitat im Gebiet hinzufügen und editieren."
 
-#: area.gallery.inc:287 area.show.inc:156
+#: area.gallery.inc:287 area.show.inc:62;85 area.module:36;47
 msgid "Areas"
 msgstr "Gebiete"
 
-#: area.inc:111;170
+#: area.inc:103;163
 msgid "No such area available."
 msgstr "Kein Gebiet gefunden."
 
-#: area.inc:225
+#: area.inc:222
+msgid "Parent Area"
+msgstr "Obergebiet"
+
+#: area.inc:236
 msgid "Area Name"
 msgstr "Gebietsname"
 
-#: area.inc:240 area.show.inc:537;601
+#: area.inc:251 area.show.inc:431;495
 msgid "Creator"
 msgstr "Ersteller"
 
-#: area.inc:255 area.show.inc:104;526;593
+#: area.inc:266;1093 area.show.inc:420;487
 msgid "Township"
 msgstr "Ortschaft"
 
-#: area.inc:265 area.show.inc:531;597
+#: area.inc:276 area.show.inc:425;491
 msgid "ZIP"
 msgstr "PLZ"
 
-#: area.inc:275 area.show.inc:111
+#: area.inc:286;1100
 msgid "Canton"
 msgstr "Kanton"
 
-#: area.inc:285 area.show.inc:118
+#: area.inc:296;1107
 msgid "Country"
 msgstr "Land"
 
-#: area.inc:295
+#: area.inc:306
 msgid "Altitude [m.a.s.l.]"
 msgstr "Höhenlage [m.a.s.l.] "
 
-#: area.inc:308
+#: area.inc:319
 msgid "Coordinates"
 msgstr "Koordinaten"
 
-#: area.inc:320
+#: area.inc:331
 msgid "Create date"
 msgstr "Datum erstellen"
 
-#: area.inc:331
+#: area.inc:342
 msgid "Last modification"
 msgstr "Letzte Änderung"
 
-#: area.inc:346
+#: area.inc:357
 msgid "Surface area [m²]"
 msgstr "Fläche [m²]"
 
-#: area.inc:355
+#: area.inc:366
 msgid "Path length [m]"
 msgstr "Längenmass [m]"
 
-#: area.inc:538;542
+#: area.inc:549;553
 msgid "«@areatype» is not a valid area type."
 msgstr "«@areatype» ist keine gültige Gebietsart"
 
-#: area.inc:558
+#: area.inc:569
 msgid "Temporary geometry object could not be created."
 msgstr "Temporäres geometry Objekt konnte nicht erstellt werden."
 
-#: area.inc:618
+#: area.inc:629
 msgid "New geometry could not be created."
 msgstr "Neue Geometrie konnte nicht erstellt werden."
 
-#: area.inc:679
+#: area.inc:690
 msgid "Geometry could not be updated."
 msgstr "Geometrie konnte nicht aktualisiert werden."
 
-#: area.inc:877
+#: area.inc:888
 msgid "There are no organisms and no habitats available in this area."
 msgstr "Es sind keine Arten und Habitats vorhanden in diesem Gebiet."
 
-#: area.inc:897
+#: area.inc:908
 msgid "Prefer images from inventories"
 msgstr "Bilder aus Beständen bevorzugen"
 
-#: area.inc:899
+#: area.inc:910
 msgid "Show only images from inventories"
 msgstr "Zeige nur Bilder aus den Beständen"
 
-#: area.inc:902
+#: area.inc:913
 msgid "Show only presentation images from inventories"
 msgstr "Zeige nur Präsentationsbilder aus den Beständen"
 
-#: area.inc:905
+#: area.inc:916
 msgid "Show the highest rated images of the site"
 msgstr "Zeige Bilder dieser Seite mit den besten Bewertungen"
 
-#: area.inc:909
+#: area.inc:920
 msgid "Sort by position in inventory"
 msgstr "Sortiere nach Position im Bestand"
 
-#: area.inc:911
+#: area.inc:922
 msgid "Sort by german name"
 msgstr "Sortiere nach dem deutschen Namen"
 
-#: area.inc:913
+#: area.inc:924
 msgid "Sort by latin name"
 msgstr "Sortiere nach der lateinischen Bezeichnung"
 
-#: area.inc:915
+#: area.inc:926
 msgid "Sort by family"
 msgstr "Sortiere nach der Familie"
 
-#: area.inc:918
+#: area.inc:929
 msgid "apply"
 msgstr "Übernehmen"
 
-#: area.json.inc:61;61 area.show.inc:492 area.module:37;48;220
+#: area.inc:1036
+msgid "Internal Id"
+msgstr "Interne Id"
+
+#: area.inc:1072
+msgid "Picture"
+msgstr "Bild"
+
+#: area.inc:1086
+msgid "Altitude [m]"
+msgstr "Höhenlage [m] "
+
+#: area.inc:1114
+msgid "Date"
+msgstr "Datum"
+
+#: area.inc:1120
+msgid "User"
+msgstr "Benutzer"
+
+#: area.inc:1127
+msgid "Type"
+msgstr "Typ"
+
+#: area.json.inc:166;166
+msgid "Hierarchy"
+msgstr "Hierarchie"
+
+#: area.json.inc:170;170
+msgid "Subarea"
+msgstr "Teilgebiet"
+
+#: area.json.inc:179;179 area.show.inc:386 area.module:37;48;213
 msgid "Show"
 msgstr "Detailansicht"
 
-#: area.json.inc:70;70 area.show.inc:482 area.module:239
+#: area.json.inc:188;188 area.show.inc:376 area.module:232
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: area.json.inc:78;78
-msgid "zoomin"
-msgstr "Zoomen"
-
-#: area.json.inc:81
+#: area.json.inc:199
 msgid "type"
 msgstr "Typ"
 
-#: area.json.inc:221
+#: area.json.inc:232
+msgid "Position"
+msgstr "Position"
+
+#: area.json.inc:414
 msgid "Changed geometry on area «@areaname» could not be saved."
 msgstr ""
 "Veränderte Geometrie von Gebiet «@areaname» konnte nicht gespeichert werden."
 
-#: area.show.inc:51
-msgid "Internal Id"
-msgstr "Interne Id"
-
-#: area.show.inc:97
-msgid "Altitude [m]"
-msgstr "Höhenlage [m] "
-
-#: area.show.inc:125
-msgid "User"
-msgstr "Benutzer"
-
-#: area.show.inc:132
-msgid "Type"
-msgstr "Typ"
-
-#: area.show.inc:149;149;149 area.module:209
+#: area.show.inc:54;54;54 area.module:202
 msgid "Create a new area"
 msgstr "Neues Gebiet erstellen"
 
-#: area.show.inc:325;350;361;372;440
+#: area.show.inc:87
+msgid "Public"
+msgstr "Alle"
+
+#: area.show.inc:88
+msgid "Own"
+msgstr "Meine"
+
+#: area.show.inc:89
+msgid "Editables"
+msgstr "Editierbare"
+
+#: area.show.inc:114 area.info:0
+msgid "area"
+msgstr "Gebiet"
+
+#: area.show.inc:194;250;261;272;337
 msgid "None available"
 msgstr "Nichts verfügbar"
 
-#: area.show.inc:514
+#: area.show.inc:408
 msgid "ID"
 msgstr "ID"
 
-#: area.show.inc:521;589
+#: area.show.inc:415;483 js/area.js:0
 msgid "Area"
 msgstr "Gebiet"
 
-#: area.module:318
+#: area.module:292
 msgid "A form to show the most important facts about an area."
 msgstr "Eine Tabelle für die wichtigesten Gebietsangaben"
 
-#: area.module:484
+#: area.module:426
 msgid "View area"
 msgstr "Gebiet ansehen"
 
-#: area.module:487
+#: area.module:429
 msgid "Create area"
 msgstr "Gebiet erstellen"
 
-#: area.module:36;47;62
-msgid "All areas"
-msgstr "Alle Gebiete"
+#: area.module:62
+msgid "Ajax call to receive all children ids"
+msgstr "Ajax call to receive all children ids"
 
-#: area.module:68
-msgid "My areas"
-msgstr "Meine Gebiete"
-
-#: area.module:69
-msgid "Show all my own areas."
-msgstr "Eigene Gebiete anzeigen"
-
-#: area.module:84;100
+#: area.module:78
 msgid "All areas json"
 msgstr "Alle Gebiete json"
 
-#: area.module:85;101
+#: area.module:79
 msgid "Get all areas as json"
 msgstr "Alle Gebiete als json beziehen"
 
-#: area.module:116
+#: area.module:94
 msgid "Update the geometry"
 msgstr "Geometrie updaten"
 
-#: area.module:117
+#: area.module:95
 msgid "Update the geometry of an area."
 msgstr "Geometrie von einem Gebiet aktualisieren"
 
-#: area.module:133
+#: area.module:111
 msgid "An area json"
 msgstr "Gebiets json"
 
-#: area.module:134
+#: area.module:112
 msgid "Get a single area as json"
 msgstr "Ein Gebiet als json"
 
-#: area.module:148;163
+#: area.module:126;141
 msgid "Habitats of area"
 msgstr "Habitats vom Gebiet"
 
-#: area.module:149;164
+#: area.module:127;142
 msgid "Get all habitats of a an area."
 msgstr "Beziehe alle Habitats von einem Gebiet"
 
-#: area.module:178
+#: area.module:156
 msgid "All areas datatable json"
 msgstr "Alle Gebiete datatable json"
 
-#: area.module:179
+#: area.module:157
 msgid "Get all areas as datatable json"
 msgstr "Alle Gebiete datatable json"
 
-#: area.module:193
+#: area.module:171;186
 msgid "Own areas datatable json"
 msgstr "Eigene Gebiete datatable json"
 
-#: area.module:194
+#: area.module:172;187
 msgid "Get own areas as datatable json"
 msgstr "Eigene Gebiete datatable json"
 
-#: area.module:221
+#: area.module:214
 msgid "Show a specific area"
 msgstr "Bestimmtes Gebiet anzeigen"
 
-#: area.module:240
+#: area.module:233
 msgid "Edit details of an existing area."
 msgstr "Bestehendes Gebiet bearbeiten"
 
-#: area.module:259
+#: area.module:252
 msgid "Delete an existing area."
 msgstr "Bestehendes Gebiet löschen"
 
-#: area.module:278;288
+#: area.module:271;281
 msgid "AreaJSON"
 msgstr "GebietJSON"
 
-#: area.module:279
+#: area.module:272
 msgid "Delete many areas"
 msgstr "Viele Gebiete löschen"
 
-#: area.module:289
+#: area.module:282
 msgid "Export one or many areas"
 msgstr "Ein oder viele Gebiete exportieren"
 
-#: area.module:298
-msgid "Edit permission"
-msgstr "Berechtigungen bearbeiten"
-
-#: area.module:299
-msgid "Edit the permission of this area."
-msgstr "Berechtigungen für dieses Gebiet ändern"
-
-#: area.module:317
+#: area.module:291
 msgid "Area overview form"
 msgstr "Gebietsübersicht Formular"
 
-#: area.module:335
+#: area.module:309
 msgid "New areaname form"
 msgstr "Neues Gebiets Formular"
 
-#: area.module:336
+#: area.module:310
 msgid "A form to submit a new areaname."
 msgstr "Ein Formular um einen Gebietsnamen zu senden"
 
-#: area.module:347
-msgid "Gallery"
-msgstr "Galerie"
+#: area.module:320
+msgid "receive the possible areas to add a area to (becomes subarea)"
+msgstr "receive the possible areas to add a area to (becomes subarea)"
 
-#: area.module:348
-msgid "View the area as a gallery of organisms"
-msgstr "Betrachte das Gebiet als eine Gallerie von Arten"
-
-#: area.module:363
-msgid "List"
-msgstr "Liste"
-
-#: area.module:364
-msgid "View the area as a list of organisms"
-msgstr "Betrachte das Gebiet als eine Liste von Arten"
-
-#: area.module:380
-msgid "Delete file"
-msgstr "Datei löschen"
-
-#: area.module:381
-msgid "Delete an existing file"
-msgstr "Eine vorhandene Datei löschen"
-
-#: area.info:0
-msgid "area"
-msgstr "Gebiet"
+#: area.module:328
+msgid "add multiple areas to an area"
+msgstr "add multiple areas to an area"
 
 #: area.info:0
 msgid "Manage areas with Google maps"
@@ -624,6 +631,35 @@ msgstr "Naturvielfalt"
 #: js/area.js:0;0
 msgid "No records selected"
 msgstr "Keine Datensätze ausgewählt"
+
+#: js/area.js:0;0
+msgid "Add to Area (Subarea)"
+msgstr "zu Gebiet hinzufügen (Teilgebiet)"
+
+#: js/area.js:0
+msgid ""
+"There are no areas available, </br> on which you are allowed to add a "
+"subarea."
+msgstr ""
+"Es sind keine Gebiete vorhanden, </br> zu denen Sie Teilgebiete hinzufügen "
+"können."
+
+#: js/area.js:0
+msgid "All selected areas will become a subarea of this area. Continue?"
+msgstr ""
+"Alle ausgewählten Gebiete werden als Teilgebiet hinzugefügt. Fortfahren?"
+
+#: js/area.js:0;0
+msgid "@successfull of @total areas were added as subareas."
+msgstr "@successfull von @total Gebieten wurden als Teilgebiet hinzugefügt."
+
+#: js/area.js:0
+msgid "Could not add areas as subareas."
+msgstr "Ausgewählte Gebiete konnten nicht als Teilgebiete hinzugefügt werden."
+
+#: js/area.js:0
+msgid "Could not fetch area data."
+msgstr "Gebiete konnten nicht geladen werden."
 
 #: js/area.js:0
 msgid "Do you really want to delete the selected records?"
