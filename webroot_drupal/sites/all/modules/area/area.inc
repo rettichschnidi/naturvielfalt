@@ -1025,19 +1025,20 @@ function area_get_standard_datatable_headers($init_sort = false,
 	global $base_url;
 	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
 	
-	$tableHeader[] = array(
-			'name' => '<img src="' . $iconBaseUrl . 'disabled/Forward.png" />',
-			'dbfield' => 'hierarchyColumn',
-			'width' => 20,
-			'noSort' => true,
-	);
-	
+
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
 			'dbfield' => 'area_id',
 			'hide' => true,
 			'width' => 30
+	);
+	
+	$tableHeader[] = array(
+			'name' => '<img src="' . $iconBaseUrl . 'disabled/Forward.png" />',
+			'dbfield' => 'hierarchyColumn',
+			'width' => 30,
+			'noSort' => true,
 	);
 	
 	$tableHeader[] = array(
@@ -1086,7 +1087,7 @@ function area_get_standard_datatable_headers($init_sort = false,
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
 			'dbExactField' => 'altitude',
-			'width' => 60
+			'width' => 80
 	);
 	
 	$tableHeader[] = array(

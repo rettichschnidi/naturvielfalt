@@ -71,6 +71,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	else
 		$sql['acl_level'] = $acl_level;
 	
+	//columns to be selected with the parent area
 	$columnsParent = "parent.id AS area_id,
 			parent.acl_id AS area_acl_id,
 			parent.name AS area_name,
@@ -87,6 +88,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			u.uid
 			";
 	
+	//columns to be selected with the children area
 	$columnsChildren = "children.id AS area_id,
 			children.acl_id AS area_acl_id,
 			children.name AS area_name,
@@ -109,6 +111,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$limit = $sqlSuffix['LIMIT'];
 	$offset = $sqlSuffix['OFFSET'];
 
+	//Get SQL Suffix for parent area (via datatable_get_SQLSuffix)
 	$onlyforParent = $sql;
 	$onlyforParent['dbOrder'] = '';
 	$onlyforParent['dbColumns'] = array(
@@ -133,6 +136,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$parentWhere = $parentSQLSuffix['WHERE'];
 	$parentOrder = $parentSQLSuffix['ORDER'];
 	
+	//Get SQL Suffix for children area (via datatable_get_SQLSuffix)
 	$onlyforChildren = $sql;
 	$onlyforChildren['dbColumns'] = array(
 			'area_id',
@@ -157,6 +161,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	
 	/*
 	 * First select only parents with the current page limit and offset. And union the results with all children of those areas
+	 * It was hard to accomplish these requirement via the datatable module, since i had to use a complex query...
+	 * However it works now
 	 */
 	$parentWhere = empty($parentWhere) ? ' WHERE parent_id IS NULL' : $parentWhere.' AND parent_id IS NULL';
 	$childrenWhere = empty($childrenWhere) ? ' WHERE children.parent_id IN (SELECT area_id FROM parents) )' : $childrenWhere . 'AND children.parent_id IN (SELECT area_id FROM parents) )';  
