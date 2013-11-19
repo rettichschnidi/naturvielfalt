@@ -84,7 +84,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			a_s.zip,
 			GeometryType(a_s.geom) AS geometry_type,
 			u.name AS username,
-			u.uid";
+			u.uid
+			";
 	
 	$columnsChildren = "children.id AS area_id,
 			children.acl_id AS area_acl_id,
@@ -107,19 +108,65 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$order = $sqlSuffix['ORDER'];
 	$limit = $sqlSuffix['LIMIT'];
 	$offset = $sqlSuffix['OFFSET'];
-					
+
+	$onlyforParent = $sql;
+	$onlyforParent['dbColumns'] = array(
+			'area_id',
+			'parent.acl_id',
+			'area_name',
+			'comment',
+			'date',
+			'parent_id',
+			'children',
+			'altitude',
+			'township',
+			'canton',
+			'country',
+			'zip',
+			'geometry_type',
+			'username',
+			'uid'
+	);
+	$parentSQLSuffix = datatable_get_SQLSuffix($onlyforParent);
+	$parentJoins = $parentSQLSuffix['JOINS'];
+	$parentWhere = $parentSQLSuffix['WHERE'];
+	
+	$onlyforChildren = $sql;
+	$onlyforChildren['dbColumns'] = array(
+			'area_id',
+			'children.acl_id',
+			'area_name',
+			'comment',
+			'date',
+			'parent_id',
+			'children',
+			'altitude',
+			'township',
+			'canton',
+			'country',
+			'zip',
+			'geometry_type',
+			'username',
+			'uid'
+	);
+	$childrenSQLSuffix = datatable_get_SQLSuffix($onlyforChildren);
+	$childrenJoins = $childrenSQLSuffix['JOINS'];
+	$childrenWhere = $childrenSQLSuffix['WHERE'];
+	
 	/*
 	 * First select only parents with the current page limit and offset. And union the results with all children of those areas
 	 */
-	
-	$childrenWhere = empty($where) ? ' WHERE parent_id IS NULL' : $where.' AND parent_id IS NULL';
+	$parentWhere = empty($parentWhere) ? ' WHERE parent_id IS NULL' : $parentWhere.' AND parent_id IS NULL';
+	$childrenWhere = empty($childrenWhere) ? ' WHERE children.parent_id IN (SELECT area_id FROM parents) )' : $childrenWhere . 'AND children.parent_id IN (SELECT area_id FROM parents) )';  
 	$sql['dbCustomQueryBody'] = 'WITH parents AS(
 			SELECT
 			'.$columnsParent.'
 			FROM {area} parent
 			JOIN {area}_geometry a_s ON parent.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = parent.acl_id
-			JOIN {users} u ON u.uid = cacl.users_id	
+			JOIN {users} u ON u.uid = cacl.users_id
+			'.$parentJoins.'
+			'.$parentWhere.'
 			) 
 		SELECT * FROM (
 			(SELECT
@@ -128,17 +175,16 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			JOIN {area_geometry} a_s ON children.area_geometry_id = a_s.id
 			JOIN {acl} cacl ON cacl.id = children.acl_id
 			JOIN {users} u ON u.uid = cacl.users_id 
-			WHERE children.parent_id IN (SELECT area_id FROM parents) )
+			'.$childrenJoins.'
+			'.$childrenWhere.'
 			UNION ALL
 			(SELECT * FROM parents
-			'.$joins.'
-			'.$childrenWhere.'
 			LIMIT '.$limit.' OFFSET '.$offset.' )
 		) AS a		
-		'.$where.$order;
+		'.$order;
 
 	//Custom Count Query passed to the datatable module
-	//Also used the with statement, to query with the same fields.. so the datatabele module doesnt struggle
+	//Also used the with statement, to query with the same fields.. so the datatable module doesnt struggle
 	$sql['dbCustomCountQuery'] = 'WITH parents AS(
 			SELECT
 			'.$columnsParent.'
