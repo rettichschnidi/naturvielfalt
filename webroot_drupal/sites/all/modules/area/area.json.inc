@@ -110,6 +110,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$offset = $sqlSuffix['OFFSET'];
 
 	$onlyforParent = $sql;
+	$onlyforParent['dbOrder'] = '';
 	$onlyforParent['dbColumns'] = array(
 			'area_id',
 			'parent.acl_id',
@@ -130,6 +131,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$parentSQLSuffix = datatable_get_SQLSuffix($onlyforParent);
 	$parentJoins = $parentSQLSuffix['JOINS'];
 	$parentWhere = $parentSQLSuffix['WHERE'];
+	$parentOrder = $parentSQLSuffix['ORDER'];
 	
 	$onlyforChildren = $sql;
 	$onlyforChildren['dbColumns'] = array(
@@ -167,6 +169,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			JOIN {users} u ON u.uid = cacl.users_id
 			'.$parentJoins.'
 			'.$parentWhere.'
+			'.$parentOrder.' 
+			LIMIT '.$limit.' OFFSET '.$offset.'
 			) 
 		SELECT * FROM (
 			(SELECT
@@ -178,10 +182,9 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'.$childrenJoins.'
 			'.$childrenWhere.'
 			UNION ALL
-			(SELECT * FROM parents
-			LIMIT '.$limit.' OFFSET '.$offset.' )
-		) AS a		
-		'.$order;
+				(SELECT * FROM parents) 
+			) AS a		
+			'.$order;
 
 	//Custom Count Query passed to the datatable module
 	//Also used the with statement, to query with the same fields.. so the datatable module doesnt struggle
