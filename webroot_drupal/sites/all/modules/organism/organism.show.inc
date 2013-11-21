@@ -21,12 +21,12 @@ function organism_show_classifiers() {
 	$kingdoms['NISM'] = 'Mosses';
 
 	// description text at the beginning
-	$render_array['helptext'] = array(
+	$output['helptext'] = array(
 			'#type' => 'markup',
 			'#markup' => t(
 				'Here you can browse all species of naturvielfalt.ch. Please select first the biological kingdom:')
 	);
-
+	
 	// query classifier and the amount of species
 	$classifiers = db_query(
 		'SELECT
@@ -54,24 +54,49 @@ function organism_show_classifiers() {
 	        organismcount.cnt;');
 
 	// create list of links
-	$list = array(
-			'#theme' => 'links',
-			'#links' => array(),
-	);
+	$links = array();
 	foreach ($classifiers as $classifier) {
 		$title = $classifier->oc_name;
 		if (isset($kingdoms[$title])) {
 			$title = t($kingdoms[$title]);
 		}
 		$species = format_plural($classifier->organismcount_cnt, '1 Species', '@count Species');
-		$list['#links'][] = array(
-				'title' => $title . ' (' . $species . ')',
+		$list[$title] = array(
+				'title' => '<div class="classifier-div"><span class="classifier-title">'.$title . '</span></br> <span class="classifier-amount"> (' . $species . ') </span></div>',
 				'href' => 'organism/classification/' . $classifier->oc_id
 		);
 	}
-	$render_array['classifiers'] = $list;
 
-	return $render_array;
+	$path = drupal_get_path('module', 'organism');
+	drupal_add_css($path . '/css/organism.css');
+	drupal_add_js($path . '/js/organism.js');
+	
+	global $base_url;
+	$output['diagram'] = array(
+			'#type' => 'markup',
+			'#prefix' => '<div id="diagram-wrapper">',
+			'#suffix' => '</div>',
+			'#markup' => '
+				<div id="diagram-container">
+						  <img src="'.$path.'/img/gesamt.png" id="diagram-background">
+						  <img src="'.$path.'/img/gesamt.png" usemap="#diagram_map" id="diagram-image">
+						  <map name="diagram_map" id="diagram_map">
+							<area shape="poly" coords="275,10, 276,256,461,92,420,55,375,28,318,12,276,7" href="'.$list[$kingdoms['CRSF']]['href'].'" id="area_pflanzen">
+							<area shape="poly" coords="276,257,461,94,489,132,503,165,519,199,524,242,521,288,522,288" href="'.$list[$kingdoms['Fungus']]['href'].'" id="area_pilze">
+							<area shape="poly" coords="276,258,477,405,501,360,518,313,520,289" href="'.$list[$kingdoms['Swisslichens']]['href'].'" id="area_flechten">
+							<area shape="poly" coords="275,258,383,483,443,442,477,405" href="'.$list[$kingdoms['NISM']]['href'].'" id="area_moose">
+							<area shape="poly" coords="276,10,276,256,384,484,303,506,226,502,149,475,84,417,46,358,31,301,26,261,29,201,61,119,135,44,225,14,262,9,276,9" href="'.$list[$kingdoms['CSCF']]['href'].'" id="area_tiere">
+						  </map>
+				<a id="pflanzen-link" href="'.$list[$kingdoms['CRSF']]['href'].'"> '.$list[$kingdoms['CRSF']]['title'].'</a>
+				<a id="pilze-link" href="'.$list[$kingdoms['CRSF']]['href'].'"> '.$list[$kingdoms['Fungus']]['title'].'</a>
+				<a id="flechten-link" href="'.$list[$kingdoms['CRSF']]['href'].'"> '.$list[$kingdoms['Swisslichens']]['title'].'</a>
+				<a id="moose-link" href="'.$list[$kingdoms['CRSF']]['href'].'"> '.$list[$kingdoms['NISM']]['title'].'</a>
+				<a id="tiere-link" href="'.$list[$kingdoms['CRSF']]['href'].'"> '.$list[$kingdoms['CSCF']]['title'].'</a>
+			 	</div>'
+	);
+	
+	return $output;
+
 }
 
 /**

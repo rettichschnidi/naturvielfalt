@@ -31,3 +31,63 @@ div.thumb {
 .flexigrid div.bDiv td {
 	height: 16px;
 }
+
+/* Organism Diagram */
+
+#diagram-wrapper{
+	height:600px;
+}
+#diagram-container {
+ 	position: absolute;
+ 	z-index: 30;
+ 	margin-top: 30px;
+ 	left: 20%;
+ 	height: 100%;
+}
+
+#diagram-background {
+	position:absolute;
+	z-index:-1;
+}
+
+#diagram-container .classifier-div{
+	color:black;
+}
+
+#diagram-container .classifier-div a:hover{
+	color:white;
+}
+.classifier-title {
+	font-size: small;
+}
+.classifier-amount {
+	font-size: small-x;
+}
+
+/* position of the description links */
+
+#pflanzen-link {
+	position:absolute; 
+	top: 155px; 
+	left: 285px; 
+}
+#pilze-link {
+	position:absolute; 
+	top: 210px; 
+	left: 330px; 
+}
+#flechten-link {
+	position:absolute; 
+	top: 280px; 
+	left: 350px;
+}
+#moose-link {
+	position:absolute; 
+	top: 330px; 
+	left: 320px;
+}
+#tiere-link {
+	position:absolute; 
+	top: 260px; 
+	left: 160px; 
+}
