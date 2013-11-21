@@ -752,7 +752,7 @@ Area.prototype.selectGeometry = function(geometryid) {
 			this.overlaysArray[this.selectedId].deselect();
 		this.selectedId = geometryid;
 
-		item = this.overlaysArray[geometryid];
+		var item = this.overlaysArray[geometryid];
 		item.select();
 		this.deselectOtherGeometries(item);
 		
