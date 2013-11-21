@@ -1574,46 +1574,54 @@
 					p.qtype[0] = sitems[0].name;
 				}
 
+//start of search function
+				var maxSearchRows = 4; //expendable for the searchrow . if there are more than 4 rows, pl expand the php file
+				var sDiv2html = "";
+				var rowVisibility = "";
+				var addIconVisibility = "";
+				for (var i = 0; i <= maxSearchRows; i++){
+					 if (i == 0) {rowVisibility = "block";} else {rowVisibility = "none";}
+					 if (i != (maxSearchRows-1)) {addIconVisibility = "inline";} else {addIconVisibility = "none";} 	 
+
+					sDiv2html += "<div id='q"+i+"' style='display:"+rowVisibility+";'>"
+									+ p.findtext
+									+ " <input type='text' value='"
+									+ p.query[i]
+									+ "' size='30' name='q"+i+"' class='qsbox' /> "
+									+ ' <select name="qtype'+i+'">'
+									+ sopt
+									+ "</select>"
+									+ "<img style='display:"+addIconVisibility+";' " +
+											"src='/sites/all/themes/zen_swissmon/images/icons/enabled/Add.png' id='sDiv2AddIcon"+i+"'  />"
+									+ "</div>";
+							       };
+
 				$(g.sDiv)
 						.append(
 								"<div class='sDiv2'>"
-										+ p.findtext
-										+ " <input type='text' value='"
-										+ p.query[0]
-										+ "' size='30' name='q0' class='qsbox' /> "
-										+ " <select name='qtype0'>"
-										+ sopt
-										+ "</select>"
-										+ " <br>"
-										+ p.findtext
-										+ " <input type='text' value='"
-										+ p.query[1]
-										+ "' size='30' name='q1' class='qsbox' /> "
-										+ " <select name='qtype1'>"
-										+ sopt
-										+ "</select>"
-										+ " <br>"
-										+ p.findtext
-										+ " <input type='text' value='"
-										+ p.query[2]
-										+ "' size='30' name='q2' class='qsbox' /> "
-										+ " <select name='qtype2'>"
-										+ sopt
-										+ "</select>"
-										+ " <br>"
-										+ p.findtext
-										+ " <input type='text' value='"
-										+ p.query[3]
-										+ "' size='30' name='q3' class='qsbox' /> "
-										+ " <select name='qtype3'>"
-										+ sopt
-										+ "</select>"
+								       +sDiv2html
 										+ " <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' id=\"flexi_search\" value='"
 										+ p.search
 										+ "' />&nbsp;"
 										+ " <input type='button' id=\"flexi_reset\" value='"
 										+ p.reset + "' /></div>");
-
+				// Click event handler on arrow icon				
+				for (var i = 0; i <= maxSearchRows; i++){
+					$("#q"+i, g.sDiv).css("padding","3px");
+					$("#sDiv2AddIcon"+i, g.sDiv).css({"position":"relative","left":"15px","top":"5px"});
+				  	 $("#sDiv2AddIcon"+i, g.sDiv).click(function(){
+				  		
+				  		for (var z = 0; z <= maxSearchRows; z++){
+				  			if (this.id=="sDiv2AddIcon"+z){  
+				  		$("#q"+(z+1), g.sDiv).css("display","block");
+				  		$("[name='q"+(z+1)+"']", g.sDiv).focus();
+				  		$("#q"+(z)+" img", g.sDiv).css("display","none");
+				  			};
+				  		}; 
+				  	});
+			    };
+			    //end of click event handler 			    
+//end of search function 
 				if (p.cookies) {
 					var prefs = g.prefs.load();
 					if (typeof prefs.q != 'undefined') {
@@ -1621,6 +1629,7 @@
 						g.doSearch();
 					}
 				}
+				
 				$('#flexi_search', g.sDiv).click(function(e) {
 					g.doSearch();
 				});
