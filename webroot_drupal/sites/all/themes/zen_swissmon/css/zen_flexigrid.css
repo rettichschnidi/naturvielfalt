@@ -32,7 +32,7 @@ div.filterDiv select {
 	font: inherit;
 	border-left: 1px solid #DAE5E3;
 	border-right: 1px solid #DAE5E3;
-	overflow: visible;
+	overflow: hidden;
 }
 
 .flexigrid div.nDiv table {

@@ -248,8 +248,8 @@ function area_delete() {
 		$area = area_get_full_dataset_of_specific_area($area_id);
 		if (check_admin_acl($area['acl_id'])) {
 			$inventories = inventory_get_area_inventories($area['id']);
-			$children = area_get_children($areadata, false);
-			if(!count($inventories) && !count($children)) {
+			$children = area_get_children($area, false, false);
+			if(!count($inventories) && !$children['count']) {
 				area_delete_by_id($area_id);
 				$deleteCount++;
 			}
@@ -410,7 +410,7 @@ function export_shape_ogr2ogr($geometrytype, $base_query, $export_Id){
  * 
  * @param string $area
  */
-function area_get_children($area = NULL, $json = true) {
+function area_get_children($area = NULL, $json = true, $permission_check = true) {
 	global $user;
 	
 	$children = array();
@@ -421,7 +421,7 @@ function area_get_children($area = NULL, $json = true) {
 	*/
 	$joins = '';
 	$whereClause = '';
-	if (!check_admin_permission($user->uid)) {
+	if ($permission_check && !check_admin_permission($user->uid)) {
 		$whereClause = ' AND ';
 		$minLevel = variable_get('ACL_READ');
 	
@@ -453,5 +453,58 @@ function area_get_children($area = NULL, $json = true) {
 	
 	return $json ? drupal_json_output($output) : $output;
 	
+}
+
+/**
+ * Returns the areas, which a user can add a subarea to. (must have red_write_access, and must not be a subarea)
+ *
+ */
+function area_add_to_area_data() {
+	$areas = array();
+	if(isset($_POST['areas']) && is_array($_POST['areas'])) {
+		$areas = $_POST['areas'];
+	}
+	return area_get_red_writeable_areas($areas);
+}
+
+/**
+ * Returns the inventories and areas, which a user can add an observation to.
+ *
+ */
+function area_add_to_area($area = null) {
+	$output['success'] = false;
+	$output['successfull'] = 0;
+	
+	//check if the area is already a child. Then it is not possible to append children to it.
+	if(isset($area['parent_id']) && $area['parent_id'] > 0) {
+		return drupal_json_output($output);
+	}
+ 
+	if($area && isset($_POST['areas']) && is_array($_POST['areas'])) {
+		$areas = $_POST['areas'];
+		$output['total'] = count($areas);
+	} else return drupal_json_output($output);
+
+	if(!area_check_access($area, 'ACL_RED_WRITE'))
+		return drupal_json_output($output);
+
+	try {
+		foreach($areas as $area_id) {
+			//user must have write access to the area, which he will add as subarea
+			//and this area must not contain children
+			$children = area_get_children(area_load($area_id), false, false);
+			if(area_write_access_by_id($area_id) && $children['count'] == 0) {
+				db_update('area')->fields(array('parent_id' => $area['id']))
+				->condition('id', $area_id)
+				->execute();
+				$output['successfull']++;
+			}
+		}
+		$output['success'] = true;
+	} catch(Exception $e) {
+		$output['success'] = false;
+	}
+
+	return drupal_json_output($output);
 }
 ?>

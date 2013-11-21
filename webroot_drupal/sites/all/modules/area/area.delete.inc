@@ -56,10 +56,10 @@ function area_delete_form_submit($form, &$form_state) {
 		'error');
 		return;
 	}
-	if(count($children)) {
+	if(count($children['children'])) {
 		drupal_set_message(
 		t(
-		'Can not delete area @areaname while it still contains sub areas. Please remove its sub areas first.',
+		'Can not delete area @areaname while it still contains subareas. Please remove its subareas first.',
 		array('@areaname' => $areadata['name'])),
 		'error');
 		return;

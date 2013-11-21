@@ -17,6 +17,32 @@ jQuery(document).ready(function() {
 //		   );
 
 	/**
+	 * Show a loading indicator
+	 */
+	area.showLoading = function() {
+		if (!area.loading) {
+			area.loading = $('<div><img src="' + Drupal.settings.basePath + 'sites/all/modules/commonstuff/images/loading.gif" /></div>').hide();
+			$('body').append(area.loading);
+		}
+		area.loading.dialog({
+			modal: true,
+			draggable: false,
+			resizable: false,
+			closeOnEscape: false,
+			closeText: '',
+			dialogClass: 'loading'
+		});
+	};
+		
+	/**
+	 * Hide the loading indicator
+	 */
+	area.hideLoading = function() {
+		if (!area.loading) return;
+		area.loading.dialog('close');
+	};
+	
+	/**
 	 * Filter the area list by access right
 	 */
 	area.aclFilter = function(tableId, filter) {
@@ -84,10 +110,130 @@ jQuery(document).ready(function() {
 	 */
 	area.toggleSelectedRows = function(event, status) {
 		$flexiDiv = $(event.target).closest('div.flexigrid');
-		$flexiDiv.find('input.gridSelect').each(function() {
+		$flexiDiv.find('input.gridSelect:visible').each(function() {
 			this.checked = status;
 			areamap.selectMultipleAreas(event, parseInt($(this).val()), !status);
 		});
+	};
+	
+	/**
+	 * Adds selected observations to an inventory. Overrides observations which already belong to an inventory.
+	 * If none are selected, all rows will be verified.
+	 * 
+	 * @param string tableId
+	 */
+	area.addSelectedRowsToArea = function(tableId) {
+		var table = $('#' + tableId);
+		if (table.length < 1)
+			return false;
+		var area_ids = [];
+		table.find('input.gridSelect').each(function() {
+			if (this.checked) {
+				area_ids.push($(this).val());
+			}
+		});
+		area.showLoading();
+		$.ajax({
+			type: "POST",
+			url: Drupal.settings.basePath + "area/addtoareadata",
+			success: function(result){
+				var areas = result.areas;
+				var count = result.count;
+				var areasAsOptions = result.areas_as_options;
+				
+				area.hideLoading();
+				dialog = $('<div id="add-to-area-wrapper" title="' + Drupal.t('Add to Area (Subarea)') + '" />');
+				
+				//if no areas exists to add an observation to, display a message.
+				if(!count) {
+					dialog.append(Drupal.t('There are no areas available, </br> on which you are allowed to add a subarea.'));
+					dialog.dialog({
+						modal: true,
+						resizable: false,
+						closeOnEscape: false,
+						closeText: '',
+						close: function (event, ui) {
+							$(this).remove();
+						},
+						width: 'auto'
+					});
+					return;
+				}
+				//area title and select
+				areaTitle = $('<label>' + Drupal.t('Area') + '</label>');
+				areaSelect = $('<select id="area-select" class="form-select" \>');
+				var i = 0;
+				$.each(areasAsOptions, function(key, value) {
+					if(i++ == 0) {
+						inventories = areas[key].inventories;
+					}
+					areaSelect.append($("<option></option>")
+				     .attr("value", key).text(value));
+				});
+				
+				//saveButton
+				saveButton = $('<input class="form-submit" type="button" value="' + Drupal.t('Save') + '" />');
+				
+				//saveButton onclick
+				saveButton.off().on('click', function() {
+					var really = confirm(Drupal.t('All selected areas will become a subarea of this area. Continue?'));
+					if(really) {
+						var areaId = areaSelect.val();
+						area.showLoading();
+						//make ajax call to save the areas as subarea
+						$.ajax({
+							type: "POST",
+							url: Drupal.settings.basePath + "area/addtoarea/" + areaId,
+							success: function(result){
+								area.hideLoading();
+								//remove dialog, show response, and reload table
+								dialog.remove();
+								var translations = {};
+								translations['@successfull'] = result.successfull;
+								translations['@total'] = result.total;
+								if(result.success) {
+									area.setMessage(Drupal.t('@successfull of @total areas were added as subareas.', translations), 'status', 5000);
+									table.flexReload();
+								}	
+								else {
+									area.setMessage(Drupal.t('@successfull of @total areas were added as subareas.', translations), 'warning', 5000);
+								} 
+								
+							},
+							error: function(result) {
+								area.hideLoading();
+								dialog.remove();
+								area.setMessage(Drupal.t('Could not add areas as subareas.'), 'error', 5000);
+							},
+							data: {
+								areas: area_ids
+							}
+						});
+					}
+				});
+				
+				//open dialog with selects
+				dialog.append(areaTitle, areaSelect, '</br></br>', saveButton);
+				dialog.dialog({
+					modal: true,
+					resizable: false,
+					closeOnEscape: false,
+					closeText: '',
+					close: function (event, ui) {
+						$(this).remove();
+					},
+					width: 'auto'
+				});
+			},
+			error: function(result) {
+				area.setMessage(Drupal.t('Could not fetch area data.'), 'error', 5000);
+				area.hideLoading();
+			},
+			data: {
+				areas: area_ids
+			}
+		});
+		
 	};
 	
 	/**
@@ -345,8 +491,9 @@ jQuery(document).ready(function() {
 			$checkbox = $('<input type="checkbox" />');
 			$btnDeleteSelected = $('<input type="button" class="btnDeleteSelected" disabled="true" value="' + Drupal.t('Delete') + '" />');
 			$btnExportSelected = $('<input type="button" class="btnExportSelected" value="' + Drupal.t('Export all') + '" />');
+			$btnAddToArea = $('<input type="button" class="btnAddToArea" disabled="true" value="' + Drupal.t('Add to Area (Subarea)') + '" />');
 			$batchDiv = $('<div class="batch-div" />')
-				.append($checkbox, $btnDeleteSelected, $btnExportSelected)
+				.append($checkbox, $btnDeleteSelected, $btnExportSelected, $btnAddToArea)
 				.insertBefore($flexiDiv.find('.sDiv'));
 			
 			$checkbox.click(function(event) {
@@ -358,10 +505,14 @@ jQuery(document).ready(function() {
 			$btnExportSelected.click(function() {
 				area.exportSelectedRows(tableId);
 			});
+			$btnAddToArea.click(function() {
+				area.addSelectedRowsToArea(tableId);
+			});
 		}
 		else {
 			$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
 			$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+			$flexiDiv.find('.btnAddToArea').attr('disabled', true);
 		}
 	};
 	
@@ -601,7 +752,7 @@ Area.prototype.selectGeometry = function(geometryid) {
 			this.overlaysArray[this.selectedId].deselect();
 		this.selectedId = geometryid;
 
-		item = this.overlaysArray[geometryid];
+		var item = this.overlaysArray[geometryid];
 		item.select();
 		this.deselectOtherGeometries(item);
 		
@@ -654,10 +805,12 @@ Area.prototype.selectMultipleAreas = function(event, id, deselect) {
 	if ($flexiDiv.find('input.gridSelect:checked').length == 0) {
 		$flexiDiv.find('.btnDeleteSelected').attr('disabled', true);
 		$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export all'));
+		$flexiDiv.find('.btnAddToArea').attr('disabled', true);
 	}
 	else {
 		$flexiDiv.find('.btnDeleteSelected').removeAttr('disabled');
 		$flexiDiv.find('.btnExportSelected').val(Drupal.t('Export selected'));
+		$flexiDiv.find('.btnAddToArea').removeAttr('disabled');
 	}
 	
 	// check if there exists an overlay with the given id

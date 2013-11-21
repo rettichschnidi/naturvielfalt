@@ -36,4 +36,42 @@ jQuery(document).ready(function() {
 		});
 		return true;
 	};
+	
+	/**
+	 * Initialize Diagram hoover on naturvielfalt/organism
+	 */
+	organism.initDiagram = function() {
+		var linkColor = '#000000'; //link color if not visited
+		
+		$('#diagram-container area').each(function () {
+			var artgroup = $(this).attr('id').replace('area_', '');
+			//on mouseenter over an area, change the image to the according artgroup, and change the link color to white of the description div
+		    $(this).mouseenter(function (e) {
+		        $('#diagram-image').attr('src', 'sites/all/modules/organism/img/' + artgroup + '_aktiv.png');
+		        $('#' + artgroup + '-link .classifier-div').css('color', '#ffffff');
+		    });
+		    
+		    $(this).mouseout(function (e) {
+		    	$('#' + artgroup + '-link .classifier-div').css('color', linkColor);
+		    	$('#diagram-image').attr('src', 'sites/all/modules/organism/img/gesamt.png');
+		        //change the link color back to standard
+		        $('#diagram-container area').each(function () {
+		        	var artgroup = $(this).attr('id').replace('area_', '');
+		        	 $('#' + artgroup + '-link .classifier-div').css('color', linkColor);
+		    	});
+		    });
+		    
+			//on mouseenter over a description div: change image to the according artgroup, and change link color to white
+			$('#' + artgroup + '-link .classifier-div').mouseenter(function(e) {
+				if($('#diagram-image').attr('src') != 'sites/all/modules/organism/img/' + artgroup + '_aktiv.png')
+				$('#diagram-image').attr('src', 'sites/all/modules/organism/img/' + artgroup + '_aktiv.png');
+				$('#' + artgroup + '-link .classifier-div').css('color', '#ffffff');
+			});
+		});
+	};
+	
+	//initial Diagram, if we found the diagram-container div
+	if(!$.isEmptyObject($('.diagram-container area'))) {
+		organism.initDiagram();
+	}
 });

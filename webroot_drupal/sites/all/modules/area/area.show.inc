@@ -17,6 +17,7 @@ module_load_include('inc', 'inventory', 'inventory.show');
 function area_show_all_areas() {
 	global $user;
 	
+	drupal_add_library('system', 'ui.dialog');
 	$observation_path = drupal_get_path('module', 'area');
 	drupal_add_css($observation_path . '/css/area.css');
 	
@@ -112,6 +113,8 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 	drupal_add_js('misc/collapse.js');
 	drupal_set_title(t('area').' '.$areadata['name']);
 	
+	global $base_url;
+	
 	//load js for observation table/map
 	$observation_path = drupal_get_path('module', 'observation');
 	drupal_add_js($observation_path . '/js/observation.js');
@@ -153,6 +156,15 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 			'#type' => 'markup',
 			'#markup' => '<img style="cursor:pointer;" src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:observationmap.zoomIn(event, ' .$areadata['id'] . ');" /> '.t('zoomin') 
 	);
+	
+	//if user has RED_WRITE Permission and area is not a child, user can add a subarea
+	if(area_check_access($areadata, 'ACL_RED_WRITE') && empty($areadata['parent_id'])) {
+		$output['area_map']['create_sub_area'] = array(
+				'#type' => 'markup',
+				'#prefix' => '</br>',
+				'#markup' => '<img style="cursor:pointer;" onclick="window.location.href=\''.$base_url . '/area/new/'.$areadata['id'].'\'" src="'.$iconBaseUrl.'Site map.png" style="cursor:pointer;" alt="' .t('Create a subarea') . '" title="' . t('Create a subarea') . '"/> '.  t('Create a subarea')
+		);
+	}
 	
 	$output['area_map']['map'] = array(
 			'#theme' => 'area',
