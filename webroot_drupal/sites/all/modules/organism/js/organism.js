@@ -42,10 +42,6 @@ jQuery(document).ready(function() {
 	 */
 	organism.initDiagram = function() {
 		var linkColor = '#000000'; //link color if not visited
-		$('#diagram-image').mouseout(function (e) {
-		       
-		       
-		    });
 		
 		$('#diagram-container area').each(function () {
 			var artgroup = $(this).attr('id').replace('area_', '');
