@@ -88,10 +88,10 @@ function organism_show_classifiers() {
 							<area shape="poly" coords="276,10,276,256,384,484,303,506,226,502,149,475,84,417,46,358,31,301,26,261,29,201,61,119,135,44,225,14,262,9,276,9" href="'.$list['CSCF']['href'].'" id="area_tiere">
 						  </map>
 				<a id="pflanzen-link" href="'.$list['CRSF']['href'].'"> '.$list['CRSF']['title'].'</a>
-				<a id="pilze-link" href="'.$list['CRSF']['href'].'"> '.$list['Fungus']['title'].'</a>
-				<a id="flechten-link" href="'.$list['CRSF']['href'].'"> '.$list['Swisslichens']['title'].'</a>
-				<a id="moose-link" href="'.$list['CRSF']['href'].'"> '.$list['NISM']['title'].'</a>
-				<a id="tiere-link" href="'.$list['CRSF']['href'].'"> '.$list['CSCF']['title'].'</a>
+				<a id="pilze-link" href="'.$list['Fungus']['href'].'"> '.$list['Fungus']['title'].'</a>
+				<a id="flechten-link" href="'.$list['Swisslichens']['href'].'"> '.$list['Swisslichens']['title'].'</a>
+				<a id="moose-link" href="'.$list['NISM']['href'].'"> '.$list['NISM']['title'].'</a>
+				<a id="tiere-link" href="'.$list['CSCF']['href'].'"> '.$list['CSCF']['title'].'</a>
 			 	</div>'
 	);
 	
