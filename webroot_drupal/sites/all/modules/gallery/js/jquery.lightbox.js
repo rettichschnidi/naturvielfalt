@@ -211,7 +211,7 @@
 			var arrPageScroll = ___getPageScroll();
 			// Calculate top and left offset for the jquery-lightbox div object and show it
 			$('#jquery-lightbox').css({
-				top : arrPageScroll[1] + 20,
+				top : arrPageScroll[1] + 50,
 				left : arrPageScroll[0]
 			}).show();
 			// Assigning click events in elements to close overlay
