@@ -17,7 +17,7 @@ jQuery(document).ready(function() {
 	 */
 	organism.loadClassification = function(id) {
 		if(id == "navigateToMenu") {
-			window.location = '/organism/';
+			window.location = '/organism';
 		} else {
 			var path = window.location.pathname.split('/');
 			var currentId = path[path.length-1];
