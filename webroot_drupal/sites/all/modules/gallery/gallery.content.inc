@@ -1113,7 +1113,7 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 		);
 		
 		$default_description = 
-				"URL: \n</br>\nUrheber: ";
+				"URL: \n</br>\nPermission: ";
 		
 		$form[$prefix]['metadata']['description'] = array(
 				'#type' => 'textarea',
