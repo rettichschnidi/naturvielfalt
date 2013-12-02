@@ -536,7 +536,10 @@ function organism_show_organism($organismdata) {
 											),
 											'#weight' => 8
 									)
-							)
+							),
+							'date' => array(
+									'dbDateField' => "o.date",
+									'dbDateFieldType' => DBDateFieldType::INTEGER)
 					)
 			);
 		} else {
