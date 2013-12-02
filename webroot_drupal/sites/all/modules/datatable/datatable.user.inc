@@ -65,6 +65,8 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 	foreach($tableHeader as &$head) {
 		if(isset($head['dbfield'])) {
 			$name = $head['dbfield'];
+			
+			//search the head in the user settings
 			$searchIndex = array_search($name, array_keys($user_settings));
 			//if we found this head in the user settings, apply the settings
 			if($searchIndex !== false) {
@@ -72,11 +74,12 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 				$head['hide'] = filter_var($user_settings[$name]->hide, FILTER_VALIDATE_BOOLEAN);
 				$head['width'] = $user_settings[$name]->width;
 				
-				if($searchIndex != $i) {
+				$order = $user_settings[$name]->column_order;
+				if($order != $i) {
 					//the element is not yet in the right order, swap it.
 					$tmp = $tableHeader[$i];
-					$tableHeader[$i] = $tableHeader[$searchIndex];
-					$tableHeader[$searchIndex] = $tmp;
+					$tableHeader[$i] = $tableHeader[$order];
+					$tableHeader[$order] = $tmp;
 				} 
 			}
 		}
