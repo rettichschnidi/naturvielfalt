@@ -1,6 +1,7 @@
 <?php
 module_load_include('inc', 'observation');
 module_load_include('inc', 'datatable');
+module_load_include('inc', 'datatable', 'datatable.user');
 
 /**
  * Show all existing observations.
@@ -45,10 +46,13 @@ function observation_show_all_observations() {
 		'#type'   => 'markup',
 		'#markup' => '<p/>'
 	);
-
+	
+	$headers = observation_get_standard_datatable_headers(9, 'desc');
+	datatable_apply_user_settings('observations', $headers);
+	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
-		'#header'   => observation_get_standard_datatable_headers(9, 'desc'),
+		'#header'   => $headers,
 		'#title'    => t('Observations'),
 		'#id_table' => 'observations',
 		'#options'  => array(

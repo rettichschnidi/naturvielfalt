@@ -17,7 +17,15 @@ define('DATATABLE_CLASSIFIERS_SPECIES', 'organisms');
 define('DATATABLE_FILES', 'files');
 define('DATATABLE_HABITATS', 'habitats');
 
-define('DATATABLE_TYPES', array(DATATABLE_OBSERVATION, DATATABLE_AREA, DATATABLE_INVENTORY, DATATABLE_CLASSIFIERS, DATATABLE_CLASSIFIERS_SPECIES, DATATABLE_FILES, DATATABLE_HABITATS));
+//serialize array to make array a scalar type (unserialize later)
+define('DATATABLE_TYPES', serialize(array(
+							DATATABLE_OBSERVATION, 
+							DATATABLE_AREA, DATATABLE_INVENTORY, 
+							DATATABLE_CLASSIFIERS, 
+							DATATABLE_CLASSIFIERS_SPECIES, 
+							DATATABLE_FILES, 
+							DATATABLE_HABITATS))
+		);
 
 /**
  * Query for the datatable user settings
@@ -25,8 +33,8 @@ define('DATATABLE_TYPES', array(DATATABLE_OBSERVATION, DATATABLE_AREA, DATATABLE
  * @param unknown $table_id
  * @return multitype:
  */
-function datatable_get_user_settings($table_name, $table_id) {
-	if(!in_array($table_name, DATATABLE_TYPES)) 
+function datatable_get_user_settings($table_name) {
+	if(!in_array($table_name, unserialize(DATATABLE_TYPES))) 
 		return array();
 	
 	global $user;
@@ -34,11 +42,11 @@ function datatable_get_user_settings($table_name, $table_id) {
 			FROM {datatable_columns} dc
 			LEFT JOIN {datatable_columns_user} dcu ON dcu.column_id = dc.id
 			WHERE dcu.user_uid = '.$user->uid.'
-			AND dc.datatable_name = '.$table_name
-			.' ORDER BY column_order';
+			AND dc.datatable_name LIKE \''.$table_name.'\'
+			ORDER BY column_order';
 	
 	$result = db_query($sql)->fetchAllAssoc('name');
-	
+	return $result;
 }
 
 /**
@@ -50,26 +58,26 @@ function datatable_get_user_settings($table_name, $table_id) {
 function datatable_apply_user_settings($table_name, array &$tableHeader) {
 	
 	$user_settings = datatable_get_user_settings($table_name);
-	 
 	//no settings to apply
 	if(empty($user_settings)) return;
 	
 	$i = 0;
 	foreach($tableHeader as &$head) {
-		if(isset($head['name'])) {
-			$name = $head['name'];
+		if(isset($head['dbfield'])) {
+			$name = $head['dbfield'];
 			$searchIndex = array_search($name, array_keys($user_settings));
 			//if we found this head in the user settings, apply the settings
-			if($searchIndex) {
+			if($searchIndex !== false) {
+				//apply user settings
+				$head['hide'] = filter_var($user_settings[$name]->hide, FILTER_VALIDATE_BOOLEAN);
+				$head['width'] = $user_settings[$name]->width;
+				
 				if($searchIndex != $i) {
 					//the element is not yet in the right order, swap it.
 					$tmp = $tableHeader[$i];
 					$tableHeader[$i] = $tableHeader[$searchIndex];
 					$tableHeader[$searchIndex] = $tmp;
 				} 
-				//apply user settings
-				$head['hide'] = $user_settings[$name]['hide'];
-				$head['width'] = $user_settings[$name]['width']; 
 			}
 		}
 		$i++;
