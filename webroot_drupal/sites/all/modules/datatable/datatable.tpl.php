@@ -262,6 +262,15 @@ $table[$id_table] = array(
 );
 
 print drupal_render($table);
+
+$date = (isset($options['date']) && !empty($options['date']['dbDateField']) && !empty($options['date']['dbDateFieldType'])) ? 
+'{
+		"fromdate" : "",
+		"todate" : "",
+		"dbDateField" : "'.$options['date']['dbDateField']. '" , 
+		"dbDateFieldType" : "'.$options['date']['dbDateFieldType'] .'" 
+ }'
+ : 0;
 ?>
 
 <script type="text/javascript" charset="utf-8">
@@ -278,6 +287,7 @@ jQuery(document).ready(function() {
 		sortname: "<?php echo $sortField; ?>",
 		sortorder: "<?php echo $sortOrder; ?>",
 		usepager: true,
+		withDate: <?php echo $date; ?>,
 		title: '<?php echo $title ?>',
 		useRp: true,
 		rp: 15,
@@ -290,7 +300,7 @@ jQuery(document).ready(function() {
 		pagestat: '<?php echo t('Displaying {from} to {to} of {total} items'); ?>',
 		pagetext: '<?php echo t('Page'); ?>',
 		outof: '<?php echo t('of'); ?>',
-		findtext: '<?php echo t('Find'); ?>',
+		findtext: '<?php echo t('Find:'); ?>',
 		procmsg: '<?php echo t('Processing, please wait ...'); ?>',
 		nomsg: '<?php  echo t('No items'); ?>',
 		search: '<?php echo t('Search'); ?>',

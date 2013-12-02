@@ -109,7 +109,10 @@ function observation_show_all_observations() {
 						</div>',
 					'#weight' => 9
 				)
-			)
+			),
+			'date' => array(
+				'dbDateField' => "o.date",
+				'dbDateFieldType' => DBDateFieldType::INTEGER)
 		)
 	);
 	

@@ -45,6 +45,7 @@
 			dataType : 'json', // type of data for AJAX, either xml or json
 			errormsg : 'Connection Error',
 			usepager : false,
+			withDate : false,
 			nowrap : true,
 			page : 1, // current page
 			total : 1, // total pages
@@ -57,6 +58,8 @@
 			pagetext : 'Page',
 			outof : 'of',
 			findtext : 'Find',
+			fromdate: 'Date from: ', 
+			todate: ' to: ',
 			params : [], // allow optional parameters to be passed around
 			procmsg : 'Processing, please wait ...',
 			query : [ '', '', '', '' ],
@@ -737,14 +740,25 @@
 				if (p.page > p.pages) {
 					p.page = p.pages;
 				}
+				
 				var param = {
-					'page' : p.newp,
-					'rp' : p.rp,
-					'sortname' : p.sortname,
-					'sortorder' : p.sortorder,
-					'query' : p.query,
-					'qtype' : p.qtype,
-				};
+						'page' : p.newp,
+						'rp' : p.rp,
+						'sortname' : p.sortname,
+						'sortorder' : p.sortorder,
+						'query' : p.query,
+						'qtype' : p.qtype,
+					};
+				if(p.withDate) {
+					$.extend(param, {
+						'fromdate' : p.withDate.fromdate,
+						'todate' : p.withDate.todate,
+						'dbDateField' : p.withDate.dbDateField,
+						'dbDateFieldType' : p.withDate.dbDateFieldType
+					});
+				}
+					
+				
 				
 				//add passed params (e.g. imagesource)
 				if (p.params.length) {
@@ -773,12 +787,19 @@
 				});
 			},
 			doSearch : function() {
-
+				//reset existing search query and qtype
+				p.query = [ '', '', '', '' ];
+				p.qtype = [ '', '', '', '' ];
+				
 			    var squery = $('input[name=q' + 0 + ']', g.sDiv).val();
 				var sqtype = $('select[name=qtype' + 0 + ']', g.sDiv).val();				
 				  
 				var i=0;
-				var vorcheck = $('input[name=q' + i + ']', g.sDiv).val();					
+				var vorcheck = $('input[name=q' + i + ']', g.sDiv).val();
+				if(p.withDate) {
+					p.withDate.fromdate = $('input[name=fromdate]', g.sDiv).val();
+					p.withDate.todate = $('input[name=todate]', g.sDiv).val();
+				}
 				while ((vorcheck != "")&&(typeof vorcheck != "undefined"))
 				{ 
 				   p.query[i] = $('input[name=q' + i + ']', g.sDiv).val();
@@ -1540,8 +1561,16 @@
 							$(g.sDiv).slideToggle(
 									'fast',
 									function() {
-										$('.sDiv:visible input:first', g.gDiv)
-												.trigger('focus');
+										if(p.withDate) {
+											//select the first textfield (after date fields)
+											$('.sDiv:visible input', g.gDiv).eq(2)
+											.trigger('focus');
+										} else {
+											$('.sDiv:visible input:first', g.gDiv)
+											.trigger('focus');
+											
+										}
+										
 									});
 						});
 				// add search box
@@ -1579,22 +1608,50 @@
 				var sDiv2html = "";
 				var rowVisibility = "";
 				var addIconVisibility = "";
-				for (var i = 0; i <= maxSearchRows; i++){
-					 if (i == 0) {rowVisibility = "block";} else {rowVisibility = "none";}
-					 if (i != (maxSearchRows-1)) {addIconVisibility = "inline";} else {addIconVisibility = "none";} 	 
 
-					sDiv2html += "<div id='q"+i+"' style='display:"+rowVisibility+";'>"
-									+ p.findtext
-									+ " <input type='text' value='"
-									+ p.query[i]
-									+ "' size='30' name='q"+i+"' class='qsbox' /> "
-									+ ' <select name="qtype'+i+'">'
+				 
+///				 if (p.withDate){
+///					 sDiv2html += "<table id=Suche>"
+///					 //sDiv2html += "<div id='qDate'>"; 
+///						+ "<tr><td>"+p.fromdate +"</td>" 							
+///						+ "<td><input type='text' value='' size='12' name='fromdate' /></td>"
+///						+ "<td>"+p.todate "</td>"
+///						+ "<td><input type='text' value='' size='12' name='todate' /></td>"  
+///						+ "<td></td></tr>"
+///						//sDiv2html += "</div>";
+///					    + "</table>";
+///				 }
+				
+				 if (p.withDate){
+					 sDiv2html += "<table id=Suche border='0' style='width:500px;'><tr id='qDate'>"; 									 
+						sDiv2html += "<td id='pFromdate' style='width:100px;'>"+p.fromdate							
+						+ "</td><td style='width:170px;'><input type='text' value='' size='12' name='fromdate' /></td> ";
+						sDiv2html += "<td id='pTodate' style='width:20px;'>"+p.todate +"</td><td style='width:120px;'>"
+						+ "<input type='text' value='' size='12' name='todate' />";  
+						sDiv2html += "</td><td style='width:30px;'></td></tr>";
+				 }else{
+					 sDiv2html += "<table id=Suche border='0' style='width:500px;'><tr id='qDate'>"; 
+				 }
+				 				
+				 
+///				sDiv2html += "<table>";
+			//	 $("#pFromdate").css({"display":"inline"});;
+			//	 $("#pTodate").css({"display":"inline","margin-left":"87px"});;
+				for (var i = 0; i <= maxSearchRows; i++){
+					 if (i == 0) {rowVisibility = "";} else {rowVisibility = "none";}
+					 if (i != (maxSearchRows-1)) {addIconVisibility = "inline";} else {addIconVisibility = "none";} 	 
+				//	 sDiv2html += "<div id='q"+i+"' style='display:"+rowVisibility+";'><tr><td width='65'>"
+					 sDiv2html += "<tr id='q"+i+"' style='display:"+rowVisibility+";'><td>"+p.findtext+"</td>"
+									+ "<td><input  type='text' value='"+ p.query[i]+"' size='30' name='q"+i+"' class='qsbox' /></td>"  
+									+ '<td></td>'
+									+ '<td><select name="qtype'+i+'">'
 									+ sopt
-									+ "</select>"
-									+ "<img style='display:"+addIconVisibility+";' " +
-											"src='/sites/all/themes/zen_swissmon/images/icons/enabled/Add.png' id='sDiv2AddIcon"+i+"'  />"
-									+ "</div>";
-							       };
+									+ "</select></td>"
+									+ "<td><img style='display:"+addIconVisibility+";' " +
+											"src='/sites/all/themes/zen_swissmon/images/icons/enabled/Add.png' id='sDiv2AddIcon"+i+"'  />";
+					                sDiv2html += "</td></tr>";
+				};
+				sDiv2html += "</table>";
 
 				$(g.sDiv)
 						.append(
@@ -1608,18 +1665,34 @@
 				// Click event handler on arrow icon				
 				for (var i = 0; i <= maxSearchRows; i++){
 					$("#q"+i, g.sDiv).css("padding","3px");
-					$("#sDiv2AddIcon"+i, g.sDiv).css({"position":"relative","left":"15px","top":"5px"});
+					$("#sDiv2AddIcon"+i, g.sDiv).css({"position":"relative","left":"5px","top":"0px"});
 				  	 $("#sDiv2AddIcon"+i, g.sDiv).click(function(){
 				  		
 				  		for (var z = 0; z <= maxSearchRows; z++){
 				  			if (this.id=="sDiv2AddIcon"+z){  
-				  		$("#q"+(z+1), g.sDiv).css("display","block");
+				  		$("#q"+(z+1), g.sDiv).css("display","");
 				  		$("[name='q"+(z+1)+"']", g.sDiv).focus();
 				  		$("#q"+(z)+" img", g.sDiv).css("display","none");
 				  			};
 				  		}; 
 				  	});
 			    };
+			   
+			    //initialize datepicker on date fields
+			    if(p.withDate) {
+			    	var today = new Date();
+			    	var dateAsString = today.getDate();
+			    	dateAsString += '.' + (today.getMonth() + 1);
+			    	dateAsString += '.' + today.getFullYear();
+			    	$('input[name=todate]', g.sDiv).val(dateAsString);
+			    	$('input[name=fromdate]', g.sDiv).datepicker({
+					      dateFormat: "dd.mm.yy"
+		    		});
+			    	$('input[name=todate]', g.sDiv).datepicker({
+					      dateFormat: "dd.mm.yy",
+					      defaultDate: new Date()
+		    		});
+			    }
 			    //end of click event handler 			    
 //end of search function 
 				if (p.cookies) {
@@ -1648,7 +1721,11 @@
 					$('select[name=qtype1]', g.sDiv).val('');
 					$('select[name=qtype2]', g.sDiv).val('');
 					$('select[name=qtype3]', g.sDiv).val('');
-					p.qtype = ['','','',''];					
+					p.qtype = ['','','',''];				
+//                  Suchen nach Datum from=leer und to=heute	
+			    	$('input[name=todate]', g.sDiv).val('');
+					$('input[name=fromdate]', g.sDiv).val('');
+					$('input[name=q0]', g.sDiv).focus();
 					g.doSearch();
 				});
 				// Split into separate selectors because of bug in jQuery 1.3.2
@@ -1700,6 +1777,19 @@
 					p.query[0] = '';
 					g.doSearch();
 				});
+				
+				$('input[name=fromdate]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});
+				
+				$('input[name=todate]', g.sDiv).keydown(function(e) {
+					if (e.keyCode == 13) {
+						g.doSearch();
+					}
+				});						
+				
 				$(g.bDiv).after(g.sDiv);
 			}
 		}
