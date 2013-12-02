@@ -564,6 +564,9 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 									window.location.href = Drupal.settings.basePath+'observation/'+id+'/edit';})}",
 					'rpShowAll' => true,
 					'onSuccessHandler' => 'observation.onTableSuccess',
+					'date' => array(
+							'dbDateField' => "o.date",
+							'dbDateFieldType' => DBDateFieldType::INTEGER)
 			),
 			'#weight' => 100,
 	);
