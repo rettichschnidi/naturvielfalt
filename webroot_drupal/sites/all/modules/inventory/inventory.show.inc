@@ -12,7 +12,7 @@ module_load_include('inc', 'datatable');
 function inventory_show_area_inventories($area, $edit = false) {
 	return array(
 			'#theme'    => 'datatable',
-			'#header'   => inventory_get_standard_datatable_headers(5, 'desc'),
+			'#header'   => inventory_get_standard_datatable_headers(9, 'desc'),
 			'#title'    => t('Inventories of @area', array('@area' => $area['name'])),
 			'#id_table' => 'inventories',
 			'#tableWidth' => 918,
@@ -29,7 +29,11 @@ function inventory_show_area_inventories($area, $edit = false) {
 					)
 				}',
 					'rpShowAll'             => true,
-			),
+					'date' => array(
+							'dbDateField' => "i.create_time",
+							'dbDateFieldType' => DBDateFieldType::TIMESTAMP
+					)
+			)
 	);
 }
 
@@ -68,7 +72,10 @@ function inventory_show_observations($area_id, $inventory_id = NULL, $showtoolba
 					}',
 				'rpShowAll'             => true,
 				'onSuccessHandler'      => ( ($user->uid == 0 ) ? '' : 'observation.onTableSuccess' ),	/* only show the delete and export buttons if user is logged in */
-				
+				'date' => array(
+						'dbDateField' => 'o.date',
+						'dbDateFieldType' => DBDateFieldType::INTEGER
+				)
 			)
 		);
 	
@@ -179,18 +186,21 @@ function inventory_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'name',
+			'dbExactField' => 'i.name',
 			'width' => 250,
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Description'),
 			'dbfield' => 'description',
+			'dbExactField' => 'i.description',
 			'width' => 352,
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Observer'),
 			'dbfield' => 'observer',
+			'dbExactField' => 'i.observer',
 			'width' => 100,
 	);
 	
@@ -199,6 +209,13 @@ function inventory_get_standard_datatable_headers($init_sort = false,
 			'dbfield' => 'count',
 			'width' => 100,
 	);
+	
+	$tableHeader[] = array(
+			'name' => t('date'),
+			'dbfield' => 'date',
+			'width' => 120,
+	);
+	
 
 	
 
