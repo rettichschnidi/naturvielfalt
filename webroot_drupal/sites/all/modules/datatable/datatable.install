@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file datatable.install
+ * @author André Kälin, 2013
+ * @copyright Naturwerk, Brugg
+ */
+require_once dirname(__FILE__) . '/datatable.schema.inc';
+
+function datatable_schema() {
+	return datatable_get_schema();
+}
+
+/**
+ * Add tables to store the state of a datatable (columns order, columns width, etc.)
+ */
+function datatable_update_7101() {
+	$schema = datatable_get_schema();
+	db_create_table('datatable_columns', $schema['datatable_columns']);
+	db_create_table('datatable_columns_user', $schema['datatable_columns_user']);
+}
+?>
