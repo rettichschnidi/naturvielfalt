@@ -16,11 +16,23 @@ define('DATATABLE_IMGSRC_BELEG_PORTRAIT',3);
 define('DATATABLE_IMGSRC_PORTRAIT_BELEG',4);
 
 /**
+ * Helper class for the datefieldtype. Use when declaring a date field in a datatable
+ * 'date' => array(
+				'dbDateField' => "o.date",
+				'dbDateFieldType' => DBDateFieldType::INTEGER)
+		)
+ *
+ */
+class DBDateFieldType {
+ const INTEGER = 'integer';
+ const TIMESTAMP = 'timestamp';
+}
+
+/**
  * Implements hook_theme()
  *
  * @return an array with theme template information
  */
-
 function datatable_theme() {
 	return array(
 			'datatable' => array(
@@ -130,6 +142,73 @@ function datatable_get_SQLSuffix($sql) {
 	} else {
 		$query = $_REQUEST['query'];
 		$qtype = $_REQUEST['qtype'];
+		
+		//variable if we search with date: default false
+		$date = false;
+		//filter by date
+		if(isset($_REQUEST['fromdate']) && isset($_REQUEST['todate'])) {
+			$fromdate = $_REQUEST['fromdate'];
+			$todate =  $_REQUEST['todate'];
+			//validate and split fromdate
+			$valid_fromdate = true;
+			$date_parts = explode('.', $fromdate);
+			if(count($date_parts) != 3) $valid_fromdate = false;
+			else {
+				$day = $date_parts[0];
+				$month = $date_parts[1];
+				$year = $date_parts[2];
+				$valid_fromdate = checkdate($month, $day, $year);
+			}
+			if($valid_fromdate)
+				$fromdate = mktime(null,null,null,$month, $day, $year);
+			
+			//validate and split todate
+			$valid_todate = true;
+			$date_parts = explode('.', $todate);
+			if(count($date_parts) != 3) $valid_todate = false;
+			else {
+				$day = $date_parts[0];
+				$month = $date_parts[1];
+				$year = $date_parts[2];
+				$valid_todate = checkdate($month, $day, $year);
+			}
+			if($valid_todate)
+				$todate = mktime(null,null,null,$month, $day+1, $year);
+			
+			//when fromdate is not valid (eg. was empty), use 1.1.1970 as fromdate
+			if(!$valid_fromdate && $valid_todate) {
+				$valid_fromdate = true;
+				$fromdate = mktime(null,null,null,1, 1, 1970);
+			}
+			//when todate is not valid (eg. was empty), use the current date as todate
+			if(!$valid_todate && $valid_fromdate) {
+				$valid_todate = true;
+				$todate = time();
+			}
+			
+			//only alter query, when both dates are valid and fromdate is before todate
+			if($valid_fromdate && $valid_todate && $fromdate <= $todate) {
+				$date = true;
+				$where .= empty($where) ? 'WHERE (' : ' AND (';
+				//some tables use as date field type INTEGER, some TIMESTAMP...
+				//workaround...
+				switch ($_REQUEST['dbDateFieldType']) {
+					case DBDateFieldType::INTEGER:
+						//query with type Integer
+						$where .= $_REQUEST['dbDateField'].' >= '.$fromdate.' AND '.$_REQUEST['dbDateField'].' <= '.$todate;
+						break;
+					case DBDateFieldType::TIMESTAMP:
+						//query with type Timestamp
+						$where .= 'extract(epoch from '.$_REQUEST['dbDateField'].') >= '.$fromdate.' AND extract(epoch from '.$_REQUEST['dbDateField'].') <= '.$todate;
+						break;
+					default : $where .= 'true'; //invalid DBDateFieldType, let expression be true
+				}
+				$where .= ')';
+			} 
+			
+		}
+		//end filter by date
+		
 		//  Bestimmen wie viele Werte vom JSON übergeben wurden
 		$i1 = 0;
 		while (current($query)!==false) {
@@ -176,9 +255,20 @@ function datatable_get_SQLSuffix($sql) {
 							//              bild up of the WHERE clause,
 							if (($OC_times > 1)&&($OC_qtype_alle == 1))
 							{
-							($sWhere == "") ? $sWhere = "WHERE ((" : $sWhere .= " OR (";
+								if($date) {
+									//if we search also by date, combine with AND the first time
+									$AND_or_OR = " AND ((";
+									$date = false;
+								} else {
+									//els with OR
+									$AND_or_OR = " OR ((";
+								}
+								
+								($sWhere == "") ? $sWhere = "WHERE ((" : $sWhere .= $AND_or_OR;
 							}else{
-							($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= " OR (";
+								$AND_or_OR = ($date) ?  " AND (" : " OR (";
+								$date = false;
+								($sWhere == "") ? $sWhere = "WHERE (" : $sWhere .= $AND_or_OR;
 							}
 							 
 							for ($i = 0; $i < count($searchColumns); $i++)
@@ -208,22 +298,28 @@ function datatable_get_SQLSuffix($sql) {
 									//               Kommt ein Wert mehr als einmal in der Array vor, muss mit OR verknüpft werden
 									$AND_or_OR;
 									if ($OC_times > 1) {
-									$AND_or_OR = "OR";
-								}else{
-								$AND_or_OR = "AND";
-								}
+										if($date) {
+											//if we search also by date, combine with AND the first time
+											$AND_or_OR = " AND ";
+											$date = false;
+										} else {
+											//els with OR
+											$AND_or_OR = " OR ";
+										}
+									}else{
+										$AND_or_OR = "AND";
+									}
 								 
 									$sWhere = $sWhere . $AND_or_OR." CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
 									. "%' AS TEXT)";
 									} else {
 										$sWhere = "WHERE CAST(" . $v_qtype[$i3] . " AS TEXT) ILIKE CAST('%" . $v_query[$i3]
 												. "%' AS TEXT)";
+								    }
 								}
-	
-								}
-								}
-								}
-								}
+			}
+			}
+		}
 	}
 		
 	

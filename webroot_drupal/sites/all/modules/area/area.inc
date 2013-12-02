@@ -1025,7 +1025,7 @@ function area_get_standard_datatable_headers($init_sort = false,
 	global $base_url;
 	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
 	
-
+	//All dbExactFields removed, because of incompatibility... (complex query in area.json.inc to achieve hierarchy)
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
@@ -1079,35 +1079,35 @@ function area_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('Name'),
 			'dbfield' => 'area_name',
-			'dbExactField' => 'area_name',
+// 			'dbExactField' => 'name',
 			'width' => 310,
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Altitude [m]'),
 			'dbfield' => 'altitude',
-			'dbExactField' => 'altitude',
+// 			'dbExactField' => 'altitude',
 			'width' => 80
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Township'),
 			'dbfield' => 'township',
-			'dbExactField' => 'township',
+// 			'dbExactField' => 'township',
 			'width' => 150
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Canton'),
 			'dbfield' => 'canton',
-			'dbExactField' => 'canton',
+// 			'dbExactField' => 'canton',
 			'width' => 40
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Country'),
 			'dbfield' => 'country',
-			'dbExactField' => 'country',
+// 			'dbExactField' => 'country',
 			'width' => 180
 	);
 	
@@ -1120,14 +1120,14 @@ function area_get_standard_datatable_headers($init_sort = false,
 	$tableHeader[] = array(
 			'name' => t('User'),
 			'dbfield' => 'username',
-			'dbExactField' => 'username',
+// 			'dbExactField' => 'username',
 			'width' => 120
 	);
 	
 	$tableHeader[] = array(
 			'name' => t('Type'),
 			'dbfield' => 'geometry_type',
-			'dbExactField' => 'geometry_type',
+// 			'dbExactField' => 'geometry_type',
 			'width' => 120
 	);
 	

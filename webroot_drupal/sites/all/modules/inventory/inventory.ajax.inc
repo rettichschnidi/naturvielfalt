@@ -16,13 +16,15 @@ function inventory_get_area_inventories_json($area) {
 			'i.name',
 			'i.description',
 			'i.observer',
+			'i.create_time AS date',
 			'i.area_id',
 			'o.count',
 	);
 
 	$sql['dbSearchColumns'] = array(
 			'i.name',
-			'i.observer'
+			'i.observer',
+			'i.description'
 	);
 
 	$sql['dbTable'] = '{inventory} i';
@@ -85,6 +87,8 @@ function inventory_get_area_inventories_json($area) {
 				array(
 						'html' => true
 				));
+		
+		$row['cell']['date'] = date("d.m.Y H:i:s", strtotime($row['cell']['date']));
 		
 	}
 

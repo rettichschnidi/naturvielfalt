@@ -110,10 +110,12 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$order = $sqlSuffix['ORDER'];
 	$limit = $sqlSuffix['LIMIT'];
 	$offset = $sqlSuffix['OFFSET'];
-
+	
 	//Get SQL Suffix for parent area (via datatable_get_SQLSuffix)
 	$onlyforParent = $sql;
 	$onlyforParent['dbOrder'] = '';
+	//ugly hack to override the datefield to use in the datatable module
+	$_REQUEST['dbDateField'] = 'parent.create_time';
 	$onlyforParent['dbColumns'] = array(
 			'area_id',
 			'parent.acl_id',
@@ -131,6 +133,17 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'username',
 			'uid'
 	);
+	$onlyforParent['dbSearchColumns'] = array(
+			'parent.name',
+			'comment',
+			'altitude',
+			'township',
+			'canton',
+			'country',
+			'GeometryType(a_s.geom)',
+			'zip',
+			'u.name'
+	);
 	$parentSQLSuffix = datatable_get_SQLSuffix($onlyforParent);
 	$parentJoins = $parentSQLSuffix['JOINS'];
 	$parentWhere = $parentSQLSuffix['WHERE'];
@@ -138,6 +151,8 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	
 	//Get SQL Suffix for children area (via datatable_get_SQLSuffix)
 	$onlyforChildren = $sql;
+	//ugly hack to override the datefield to use in the datatable module
+	$_REQUEST['dbDateField'] = 'children.create_time';
 	$onlyforChildren['dbColumns'] = array(
 			'area_id',
 			'children.acl_id',
@@ -154,6 +169,17 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 			'geometry_type',
 			'username',
 			'uid'
+	);
+	$onlyforChildren['dbSearchColumns'] = array(
+			'children.name',
+			'comment',
+			'altitude',
+			'township',
+			'canton',
+			'country',
+			'GeometryType(a_s.geom)',
+			'zip',
+			'u.name'
 	);
 	$childrenSQLSuffix = datatable_get_SQLSuffix($onlyforChildren);
 	$childrenJoins = $childrenSQLSuffix['JOINS'];
@@ -207,6 +233,9 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 	$sql['dbCustomCountWhere'] = 'parent_id IS NULL';
 	
 	$sql['noLimit'] = true; //do not append the LIMIT/OFFSET clause, since we limit the query in the $sql['dbCustomQueryBody'] to limit the parents
+	
+	//ugly hack to reset the datefield to use in the datatable module
+	$_REQUEST['dbDateField'] = 'date';
 	$output = datatable_dbRequest($sql, $arguments);
 
 	global $base_url;

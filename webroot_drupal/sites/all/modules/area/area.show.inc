@@ -91,11 +91,14 @@ function area_show_all_areas() {
 						'class' => array('acl_filter')),
 					'#weight' => 8
 				),
-			)
+			),
+		    'date' => array(
+		    	'dbDateField' => "date",
+		    	'dbDateFieldType' => DBDateFieldType::TIMESTAMP)					
 		)
-	);
-					
-					
+		
+	);	
+	
 	return $output;
 }
 
