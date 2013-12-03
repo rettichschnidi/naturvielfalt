@@ -1522,14 +1522,14 @@
 			});
 			$(".buttonMarjan").click(function(){
 				
-				
+				//alert($(".bDiv th:first").attr("name"));	
 				
 				var tableId	=	$(".bDiv table:first").attr("id")? $(".bDiv table:first").attr("id"):false;
 				if(!tableId) {return;}
 				
 				var columns = new Array();
 				$(".hDivBox th").each(function(){
-					var hide	=	$(this).is(':visible');
+					var hide	=	!$(this).is(':visible');
 					var width	=	$(this).width();
 					var index	=	$(this).index();
 					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
