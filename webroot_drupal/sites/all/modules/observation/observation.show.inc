@@ -47,12 +47,9 @@ function observation_show_all_observations() {
 		'#markup' => '<p/>'
 	);
 	
-	$headers = observation_get_standard_datatable_headers(9, 'desc');
-	datatable_apply_user_settings('observations', $headers);
-	
 	$output['area_table'] = array(
 		'#theme'    => 'datatable',
-		'#header'   => $headers,
+		'#header'   => observation_get_standard_datatable_headers(9, 'desc'),
 		'#title'    => t('Observations'),
 		'#id_table' => 'observations',
 		'#options'  => array(
