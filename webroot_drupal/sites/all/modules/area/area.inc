@@ -1135,6 +1135,10 @@ function area_get_standard_datatable_headers($init_sort = false,
 		$tableHeader[$init_sort--]['initSort'] = true;
 		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
 	}
+	
+	//apply user settings
+	datatable_apply_user_settings(DATATABLE_AREA, $tableHeader);
+	
 	return $tableHeader;
 }
 

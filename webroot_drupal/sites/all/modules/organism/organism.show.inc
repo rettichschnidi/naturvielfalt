@@ -168,6 +168,9 @@ function organism_show_classification($classificationid) {
 			'hide' => false
 	);
 	
+	//apply user settings
+	datatable_apply_user_settings(DATATABLE_CLASSIFIERS, $classificationTableHeader);
+	
 	$render_array = array();
 	
 	$render_array['classificators'] = array(
@@ -272,6 +275,9 @@ function organism_show_classification($classificationid) {
 			'dbfield' => 'documentscount',
 			'width' => 20
 	);
+	
+	//apply user settings
+	datatable_apply_user_settings(DATATABLE_CLASSIFIERS_SPECIES, $organismsTableHeader);
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',

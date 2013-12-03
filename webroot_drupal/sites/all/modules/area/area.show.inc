@@ -446,7 +446,11 @@ function area_habitat_table($habitatId) {
 			'dbfield' => 'username',
 			'width' => 220
 	);
-
+	
+		//apply user settings
+	datatable_apply_user_settings(DATATABLE_HABITATS, $tableHeader);
+	
+			
 	$render_array['habitats'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
