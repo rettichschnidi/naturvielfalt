@@ -1496,7 +1496,7 @@
 					+ p.pagetext
 					+ ' <input type="text" size="4" value="1" /> '
 					+ p.outof
-					+ ' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span></div>';
+					+ ' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span><button class="buttonMarjan">Marjan Button speicherTabelle</button></div>';
 			$('div', g.pDiv).html(html);
 			$('.pReload', g.pDiv).click(function() {
 				g.populate()
@@ -1517,6 +1517,34 @@
 				if (e.keyCode == 13)
 					g.changePage('input')
 			});
+			$(".buttonMarjan").click(function(){
+				var anz = $(".hDivBox,th").length;
+					//$(".hDivBox,th:empty").each(function(){alert(this.id)});
+					var x = {"table_name" : "observations",
+						    "columns" : [
+						     		{"name" : "name 1",
+						  	     		"data" : { 
+						           		"width" : 50,
+						            		"hide"  : true,
+						            		"order" : 8
+						         		}
+						      		},
+						      		{"name" : "name 2",
+						  	     		"data" : { 
+						           		"width" : 150,
+						            		"hide"  : false,
+						            		"order" : 2
+						         		}
+						      		}
+						  		]
+						  };
+			$.ajax({
+				type: "POST",
+				url: Drupal.settings.basePath+"datatable/savesettings",
+				data: JSON.stringify(x)							
+				});
+			});
+			
 			if ($.browser.msie && $.browser.version < 7)
 				$('.pButton', g.pDiv).hover(function() {
 					$(this).addClass('pBtnOver');
