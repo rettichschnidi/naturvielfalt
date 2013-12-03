@@ -46,6 +46,9 @@ function habitat_show_all() {
 			'align' => 'center',
 			'width' => 50
 	);
+	
+	//apply user settings
+	datatable_apply_user_settings(DATATABLE_HABITATS, $tableHeader);
 
 	$render_array['habitats'] = array(
 			'#theme' => 'datatable',
