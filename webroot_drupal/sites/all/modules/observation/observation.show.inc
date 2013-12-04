@@ -51,7 +51,7 @@ function observation_show_all_observations() {
 		'#theme'    => 'datatable',
 		'#header'   => observation_get_standard_datatable_headers(9, 'desc'),
 		'#title'    => t('Observations'),
-		'#id_table' => 'observations',
+		'#id_table' => DATATABLE_OBSERVATION,
 		'#options'  => array(
 			'jsonUrl'               => base_path() . "observation/get/all",
 			'rowClick'              => 'rowClick',

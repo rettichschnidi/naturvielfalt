@@ -60,7 +60,7 @@ function area_show_all_areas() {
 		'#header'   =>  area_get_standard_datatable_headers(12,
 		'DESC'),
 		'#title'    => t('Areas'),
-		'#id_table' => 'areas',
+		'#id_table' => DATATABLE_AREA,
 		'#options'  => array(
 					'jsonUrl' => base_path() . "areas/get/all",
 					'rowClick'              => 'rowClick',
@@ -343,7 +343,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 				),
 				'#tableWidth' => 900,
 				'#rows' => $habitats,
-				'#id_table' => 'habitats'
+				'#id_table' => DATATABLE_HABITATS
 		);
 	} else {
 		$output['area_habitats']['habitats'] = array(
@@ -454,7 +454,7 @@ function area_habitat_table($habitatId) {
 	$render_array['habitats'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
-			'#id_table' => 'habitats',
+			'#id_table' => DATATABLE_HABITATS,
 			'#tableWidth' => 900,
 			'#options' => array(
 					'jsonUrl' => base_path() . 'area/habitat/'
@@ -516,7 +516,7 @@ function area_habitat_table($habitatId) {
 			),
 			'#tableWidth' => 900,
 			'#rows' => $habitats,
-			'#id_table' => 'habitats'
+			'#id_table' => DATATABLE_HABITATS
 	);
 	return $output;
 }
