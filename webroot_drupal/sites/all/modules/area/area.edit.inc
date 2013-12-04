@@ -480,7 +480,7 @@ function area_edit_habitat($areadata = NULL) {
 			),
 			'#tableWidth' => 900,
 			'#rows' => $habitats,
-			'#id_table' => 'habitats'
+			'#id_table' =>  DATATABLE_HABITATS
 	);
 	return $form;
 }

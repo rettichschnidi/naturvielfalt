@@ -177,7 +177,7 @@ function organism_show_classification($classificationid) {
 			'#theme' => 'datatable',
 			'#title' => t('Subclassifications within') . ' ' . $classificationObj->oc_name . $hierarchyLevelUpButtons,
 			'#header' => $classificationTableHeader,
-			'#id_table' => 'classificators',
+			'#id_table' => DATATABLE_CLASSIFIERS,
 			'#options' => array(
 					'jsonUrl' => base_path()
 							. "organism/classification/$classificationid/classificationjson",
@@ -283,7 +283,7 @@ function organism_show_classification($classificationid) {
 			'#theme' => 'datatable',
 			'#title' => t('Species which are in classification ') . $classificationObj->oc_name,
 			'#header' => $organismsTableHeader,
-			'#id_table' => 'organisms',
+			'#id_table' => DATATABLE_CLASSIFIERS_SPECIES,
 			'#options' => array(
 					'jsonUrl' => base_path()
 							. "organism/classification/$classificationid/organismjson",
@@ -484,7 +484,7 @@ function organism_show_organism($organismdata) {
 						9,
 						'desc'),
 					'#title' => t('Observations'),
-					'#id_table' => 'observations',
+					'#id_table' => DATATABLE_OBSERVATION,
 					'#tableWidth' => 917,
 					'#options' => array(
 							'jsonUrl' => base_path() . "observation/get/organism/" . $organismdata['id'] . "/all",

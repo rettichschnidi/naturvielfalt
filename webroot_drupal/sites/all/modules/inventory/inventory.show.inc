@@ -14,7 +14,7 @@ function inventory_show_area_inventories($area, $edit = false) {
 			'#theme'    => 'datatable',
 			'#header'   => inventory_get_standard_datatable_headers(9, 'desc'),
 			'#title'    => t('Inventories of @area', array('@area' => $area['name'])),
-			'#id_table' => 'inventories',
+			'#id_table' => DATATABLE_INVENTORY,
 			'#tableWidth' => 918,
 			'#tableHeight' => 120,
 			'#options'  => array(
@@ -56,7 +56,7 @@ function inventory_show_observations($area_id, $inventory_id = NULL, $showtoolba
 			'#title'    => isset($inventory['name']) ? 
 							t('Observations of Inventory @inventory',  array('@inventory' => $inventory['name']))
 							: t('Observations of @area', array('@area' => $area['name'])),
-			'#id_table' => 'observations',
+			'#id_table' => DATATABLE_OBSERVATION,
 			'#tableWidth' => 918,
 			'#tableHeight' => 160,
 			'#options'  => array(

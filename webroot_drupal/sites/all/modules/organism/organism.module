@@ -470,7 +470,7 @@ function organism_files($organism_id, $weight = 10, $collapsed = false) {
 		'#rows' => isset($rows) ? $rows : array(),
 		'#tableWidth' => 917,
 		'#tableHeight' => 150,
-		'#id_table' => 'files',
+		'#id_table' => DATATABLE_FILES,
 	);
 		
 	return $render_array;

@@ -6,6 +6,8 @@
  * @copyright 2011-2012 Naturwerk, Brugg
  */
 
+module_load_include('inc', 'datatable', 'datatable.user');
+
 function habitat_show_all() {
 	// Set the table header
 	$tableHeader[] = array(
@@ -53,7 +55,7 @@ function habitat_show_all() {
 	$render_array['habitats'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
-			'#id_table' => 'habitats',
+			'#id_table' => DATATABLE_HABITATS,
 			'#tableWidth' => 900,
 			'#options' => array(
 					'jsonUrl' => "habitat/datatablejson",
