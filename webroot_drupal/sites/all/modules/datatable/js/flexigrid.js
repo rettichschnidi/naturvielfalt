@@ -1544,7 +1544,7 @@
 					+ p.pagetext
 					+ ' <input type="text" size="4" value="1" /> '
 					+ p.outof
-					+ ' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span><button class="buttonMarjan">Marjan Button speicherTabelle</button></div>';
+					+ ' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span></div>';
 			$('div', g.pDiv).html(html);
 			$('.pReload', g.pDiv).click(function() {
 				g.populate()
@@ -1883,8 +1883,7 @@
 		$(g.block).fadeTo(0, p.blockOpacity);
 		// add column control
 		if ($('th', g.hDiv).length) {
-			g.nDiv.className = 'nDiv'; //<div style='overflow-y:scroll;'>
-			//$(g.nDiv).css({'overflow-y' : 'scroll', height:'190px'});
+			g.nDiv.className = 'nDiv'; 
 			g.nDiv.innerHTML = "<table cellpadding='0' cellspacing='0' '><tbody></tbody></table>";
 			$(g.nDiv).css({
 				marginBottom : (gh * -1),
