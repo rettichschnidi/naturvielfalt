@@ -90,9 +90,15 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 /**
  * Stores the table settings the user wants to apply (AJAX Call, data passed as JSON)
  */
-function datatable_save_user_settings() {
-	global $user;
 
+
+
+function datatable_save_user_settings() {  
+	global $user; 
+	//debug($_REQUEST);
+	debug($_POST);
+	//debug("user".$user->name);	
+	
 	/**
 	 * Save information provided by an ajax call in the following format:
 	 * {"table_name" : observations (Must be in DATATABLE_TYPES),
@@ -112,4 +118,79 @@ function datatable_save_user_settings() {
 	 * 	a. select the column by name with the current user id
 	 * 	b. if we there exists a column: update it accordingly, else insert a new one.
 	 */
-}
+	
+	if(!isset($_POST['table_name']) || !isset($_POST['columns']) || !is_array($_POST['columns'])) return;
+	
+	$table = $_POST['table_name'];
+	$columns = $_POST['columns'];
+	
+	$settings = datatable_get_user_settings($table);
+	debug($settings);
+	foreach($columns as $column) {
+		if(isset($column['name']) && isset($column['data'])) {
+			$name = $column['name'];
+			
+			$setting_exists = array_key_exists($name, $settings);
+			if($setting_exists) {
+				$settings_column = $settings[$name];
+				$id = $settings_column->id;
+				
+				db_update('datatable_columns')
+				->fields(array(
+						'datatable_name' => $table,
+						'name' => $name,
+						'hide' => $column['data']['hide'],
+						'width' => $column['data']['width'],
+						'column_order' => $column['data']['order'],
+				))
+				->condition('id', $id)
+				->execute();
+				
+			} else {
+				//insert
+					$id = db_insert('datatable_columns')->fields(array(
+							'datatable_name' => $table,
+							'name' => $name,
+							'hide' => $column['data']['hide'],
+							'width' => $column['data']['width'],
+							'column_order' => $column['data']['order'],
+					))
+					->execute();
+
+					db_insert('datatable_columns_user')->fields(array(
+							'column_id' => $id,
+							'user_uid' => $user->uid,
+					))
+					->execute();
+										
+						
+					
+		     }
+	}
+  }
+} 	
+// 	$jason_array(json_decode($jason_row);
+// 	while (current($jason_array)!==false) {
+// 		{
+				
+// 			$jason_single(json_decode(current($jason_row));
+// 			$width = $jason_single[0];
+// 			$hide = $jason_single[1];
+// 			$order = $jason_single[2];
+// 			$entry = $width . $hide . $order;
+		
+				
+// 			// check if there is already an entrance in the DB
+	
+// 			//  if yes update
+				
+// 			//  if no insert
+
+// 			}
+			
+// 			/**
+// 			 * add a observation attribute
+// 			 * @param array $entry
+// 			 */
+
+// 			}

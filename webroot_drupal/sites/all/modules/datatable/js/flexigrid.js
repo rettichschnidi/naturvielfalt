@@ -1077,6 +1077,9 @@
 					if (cm.name && cm.sortable) {
 						$(th).attr('abbr', cm.name);
 					}
+					if(cm.name) {
+						$(th).attr('name', cm.name);
+					}
 					if (cm.align) {
 						th.align = cm.align;
 					}
@@ -1518,31 +1521,41 @@
 					g.changePage('input')
 			});
 			$(".buttonMarjan").click(function(){
-				var anz = $(".hDivBox,th").length;
-					//$(".hDivBox,th:empty").each(function(){alert(this.id)});
-					var x = {"table_name" : "observations",
-						    "columns" : [
-						     		{"name" : "name 1",
-						  	     		"data" : { 
-						           		"width" : 50,
-						            		"hide"  : true,
-						            		"order" : 8
-						         		}
-						      		},
-						      		{"name" : "name 2",
-						  	     		"data" : { 
-						           		"width" : 150,
-						            		"hide"  : false,
-						            		"order" : 2
-						         		}
-						      		}
-						  		]
-						  };
-			$.ajax({
-				type: "POST",
-				url: Drupal.settings.basePath+"datatable/savesettings",
-				data: JSON.stringify(x)							
+				
+				//alert($(".bDiv th:first").attr("name"));	
+				
+				var tableId	=	$(".bDiv table:first").attr("id")? $(".bDiv table:first").attr("id"):false;
+				if(!tableId) {return;}
+				
+				var columns = new Array();
+				$(".hDivBox th").each(function(){
+					var hide	=	!$(this).is(':visible');
+					var width	=	$(this).width();
+					var index	=	$(this).index();
+					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
+					
+					if(name) {
+						var column = {"name" : name,
+			  	     		"data" : { 
+			  	     			"width" : width,
+			            		"hide"  : hide,
+			            		"order" : index
+			         		}
+			      		};
+						columns.push(column);
+					}
 				});
+			 
+				if(columns.length>0) {
+					$.ajax({
+						type: "POST",
+						url: Drupal.settings.basePath+"datatable/savesettings",
+						data: {
+								table_name : tableId,
+								columns : columns
+						}						
+					});
+				}
 			});
 			
 			if ($.browser.msie && $.browser.version < 7)
