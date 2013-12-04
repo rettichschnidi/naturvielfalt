@@ -1879,7 +1879,7 @@
 			zIndex : 1,
 			top : gtop,
 			left : '0px'
-		}); 
+		});  
 		$(g.block).fadeTo(0, p.blockOpacity);
 		// add column control
 		if ($('th', g.hDiv).length) {
