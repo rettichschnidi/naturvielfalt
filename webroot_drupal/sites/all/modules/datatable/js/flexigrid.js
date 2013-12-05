@@ -302,7 +302,8 @@
 					this.colresize = false;
 					var name = p.colModel[n].name; // Store the widths in the
 													// cookies
-					$.cookie('flexiwidths/' + name, nw);
+					// database settings are saved in db not in cookie
+					//$.cookie('flexiwidths/' + name, nw);
 					//save datatablesettings
 					console.log("endDrag");
 					this.tableChanged();

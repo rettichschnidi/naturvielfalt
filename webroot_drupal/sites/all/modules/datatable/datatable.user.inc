@@ -38,7 +38,7 @@ function datatable_get_user_settings($table_name) {
 		return array();
 	
 	global $user;
-	$sql = 'SELECT * 
+	$sql = 'SELECT dc.*, dcu.column_id, dcu.user_uid 
 			FROM {datatable_columns} dc
 			LEFT JOIN {datatable_columns_user} dcu ON dcu.column_id = dc.id
 			WHERE dcu.user_uid = '.$user->uid.'
@@ -71,9 +71,11 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 			//if we found this head in the user settings, apply the settings
 			if($searchIndex !== false) {
 				//apply user settings
-				$head['hide'] = filter_var($user_settings[$name]->hide, FILTER_VALIDATE_BOOLEAN);
+				//$head['hide'] = filter_var($user_settings[$name]->hide, FILTER_VALIDATE_BOOLEAN);
+				$head['hide'] = $user_settings[$name]->hide;
 				$head['width'] = $user_settings[$name]->width;
-				
+				//debug($user_settings[$name]->width);
+				//debug($name);
 				$order = $user_settings[$name]->column_order;
 				if($order != $i) {
 					//the element is not yet in the right order, swap it.
@@ -85,20 +87,15 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 		}
 		$i++;
 	}
+	debug($tableHeader);
+	
 }
 
 /**
  * Stores the table settings the user wants to apply (AJAX Call, data passed as JSON)
  */
-
-
-
 function datatable_save_user_settings() {  
 	global $user; 
-	//debug($_REQUEST);
-	debug($_POST);
-	//debug("user".$user->name);	
-	
 	/**
 	 * Save information provided by an ajax call in the following format:
 	 * {"table_name" : observations (Must be in DATATABLE_TYPES),
@@ -125,16 +122,17 @@ function datatable_save_user_settings() {
 	$columns = $_POST['columns'];
 	
 	$settings = datatable_get_user_settings($table);
-	debug($settings);
 	foreach($columns as $column) {
 		if(isset($column['name']) && isset($column['data'])) {
 			$name = $column['name'];
 			
 			$setting_exists = array_key_exists($name, $settings);
+			//debug("NAME:".$name);
 			if($setting_exists) {
+				
 				$settings_column = $settings[$name];
 				$id = $settings_column->id;
-				
+				//debug("EXITST_ID:".$id);
 				db_update('datatable_columns')
 				->fields(array(
 						'datatable_name' => $table,
@@ -148,6 +146,7 @@ function datatable_save_user_settings() {
 				
 			} else {
 				//insert
+				    //debug("NOTEXIST:");
 					$id = db_insert('datatable_columns')->fields(array(
 							'datatable_name' => $table,
 							'name' => $name,
