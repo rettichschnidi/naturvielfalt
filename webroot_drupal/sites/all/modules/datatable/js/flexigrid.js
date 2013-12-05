@@ -1072,10 +1072,10 @@
 				var columns = new Array();
 				$(".hDivBox th").each(function(){
 					var hide	=	!$(this).is(':visible');
-					var width	=	$(this).width();
+					var width	=	$(this).find(":first-child").width();
 					var index	=	$(this).index();
 					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
-					
+					console.log($(this).attr("name"));
 					if(name) {
 						var column = {"name" : name,
 			  	     		"data" : { 
@@ -1892,6 +1892,8 @@
 				overflowY : 'scroll'
 			}).noSelect();
 			var cn = 0;
+			
+
 			$('th div', g.hDiv).each(
 					function() {
 						var kcol = $("th[axis='col" + cn + "']", g.hDiv)[0];
@@ -1906,6 +1908,8 @@
 										+ this.innerHTML + '</td></tr>');
 						cn++;
 					});
+			
+			
 			if ($.browser.msie && $.browser.version < 7.0)
 				$('tr', g.nDiv).hover(function() {
 					$(this).addClass('ndcolover');
@@ -1913,7 +1917,7 @@
 					$(this).removeClass('ndcolover');
 				});
 			$('td.ndcol2', g.nDiv).click(
-					function() {
+					function () {
 						if ($('input:checked', g.nDiv).length <= p.minColToggle
 								&& $(this).prev().find('input')[0].checked)
 							return false;
