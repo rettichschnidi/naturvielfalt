@@ -147,9 +147,9 @@
 				});
 				var nd = parseInt($(g.nDiv).height());
 				if (nd > newH)
-					$(g.nDiv).height('auto').width(200);
+					$(g.nDiv).height('190').width(200);
 				else
-					$(g.nDiv).height('auto').width('auto');
+					$(g.nDiv).height('190').width('auto');
 				$(g.block).css({
 					height : newH,
 					marginBottom : (newH * -1)
@@ -303,6 +303,10 @@
 					var name = p.colModel[n].name; // Store the widths in the
 													// cookies
 					$.cookie('flexiwidths/' + name, nw);
+					//save datatablesettings
+					console.log("endDrag");
+					this.tableChanged();
+					
 				} else if (this.vresize) {
 					this.vresize = false;
 				} else if (this.colCopy) {
@@ -364,6 +368,9 @@
 				if (p.onToggleCol) {
 					p.onToggleCol(cid, visible);
 				}
+				//save datatablesettings
+				console.log("toggleCol");
+				this.tableChanged();
 				return visible;
 			},
 			switchCol : function(cdrag, cdrop) { // switch columns
@@ -388,6 +395,10 @@
 					$('tr:eq(' + cdrop + ') input', this.nDiv)[0].checked = true;
 				}
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
+				
+				//save datatablesettings
+				console.log("switchCol");
+				this.tableChanged();
 			},
 			scroll : function() {
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
@@ -1053,7 +1064,41 @@
 				};
 				g.dragEnd();
 			},
-			pager : 0
+			pager : 0,
+			tableChanged : function() {
+				var tableId	=	$(".bDiv table:first").attr("id")? $(".bDiv table:first").attr("id"):false;
+				if(!tableId) {return;}
+				
+				var columns = new Array();
+				$(".hDivBox th").each(function(){
+					var hide	=	!$(this).is(':visible');
+					var width	=	$(this).width();
+					var index	=	$(this).index();
+					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
+					
+					if(name) {
+						var column = {"name" : name,
+			  	     		"data" : { 
+			  	     			"width" : width,
+			            		"hide"  : hide,
+			            		"order" : index
+			         		}
+			      		};
+						columns.push(column);
+					}
+				});
+			 
+				if(columns.length>0) {
+					$.ajax({
+						type: "POST",
+						url: Drupal.settings.basePath+"datatable/savesettings",
+						data: {
+								table_name : tableId,
+								columns : columns
+						}						
+					});
+				}
+			}
 		};
 		if (p.colModel) { // create model if any
 			thead = document.createElement('thead');
@@ -1499,7 +1544,7 @@
 					+ p.pagetext
 					+ ' <input type="text" size="4" value="1" /> '
 					+ p.outof
-					+ ' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span><button class="buttonMarjan">Marjan Button speicherTabelle</button></div>';
+					+ ' <span> 1 </span></span></div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pNext pButton"><span></span></div><div class="pLast pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"> <div class="pReload pButton"><span></span></div> </div> <div class="btnseparator"></div> <div class="pGroup"><span class="pPageStat"></span></div>';
 			$('div', g.pDiv).html(html);
 			$('.pReload', g.pDiv).click(function() {
 				g.populate()
@@ -1519,43 +1564,6 @@
 			$('.pcontrol input', g.pDiv).keydown(function(e) {
 				if (e.keyCode == 13)
 					g.changePage('input')
-			});
-			$(".buttonMarjan").click(function(){
-				
-				//alert($(".bDiv th:first").attr("name"));	
-				
-				var tableId	=	$(".bDiv table:first").attr("id")? $(".bDiv table:first").attr("id"):false;
-				if(!tableId) {return;}
-				
-				var columns = new Array();
-				$(".hDivBox th").each(function(){
-					var hide	=	!$(this).is(':visible');
-					var width	=	$(this).width();
-					var index	=	$(this).index();
-					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
-					
-					if(name) {
-						var column = {"name" : name,
-			  	     		"data" : { 
-			  	     			"width" : width,
-			            		"hide"  : hide,
-			            		"order" : index
-			         		}
-			      		};
-						columns.push(column);
-					}
-				});
-			 
-				if(columns.length>0) {
-					$.ajax({
-						type: "POST",
-						url: Drupal.settings.basePath+"datatable/savesettings",
-						data: {
-								table_name : tableId,
-								columns : columns
-						}						
-					});
-				}
 			});
 			
 			if ($.browser.msie && $.browser.version < 7)
@@ -1871,16 +1879,17 @@
 			zIndex : 1,
 			top : gtop,
 			left : '0px'
-		});
+		});  
 		$(g.block).fadeTo(0, p.blockOpacity);
 		// add column control
 		if ($('th', g.hDiv).length) {
-			g.nDiv.className = 'nDiv';
-			g.nDiv.innerHTML = "<table cellpadding='0' cellspacing='0'><tbody></tbody></table>";
+			g.nDiv.className = 'nDiv'; 
+			g.nDiv.innerHTML = "<table cellpadding='0' cellspacing='0' '><tbody></tbody></table>";
 			$(g.nDiv).css({
 				marginBottom : (gh * -1),
 				display : 'none',
-				top : gtop
+				top : gtop,
+				overflowY : 'scroll'
 			}).noSelect();
 			var cn = 0;
 			$('th div', g.hDiv).each(
