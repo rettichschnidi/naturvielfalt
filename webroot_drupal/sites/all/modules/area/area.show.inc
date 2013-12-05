@@ -417,6 +417,8 @@ function area_overview_form($form, &$form_state, $areadata) {
 }
 
 function area_habitat_table($habitatId) {
+	module_load_include('inc', 'datatable','datatable.user');
+	
 	// Set the table header
 	$tableHeader[] = array(
 			'name' => t('ID'),

@@ -1022,6 +1022,8 @@ function getCorrectValues($jsondata, $myArr) {
 function area_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
 	
+	module_load_include('inc', 'datatable','datatable.user');
+	
 	global $base_url;
 	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
 	

@@ -105,6 +105,9 @@ function organism_show_classifiers() {
  */
 function organism_show_classification($classificationid) {
 	assert($classificationid != false);
+	
+	module_load_include('inc', 'datatable', 'datatable.user');
+	
 	// fetch classification data
 	$resultClassification = db_query(
 		'SELECT

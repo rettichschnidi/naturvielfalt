@@ -6,9 +6,8 @@
  * @copyright 2011-2012 Naturwerk, Brugg
  */
 
-module_load_include('inc', 'datatable', 'datatable.user');
-
 function habitat_show_all() {
+	module_load_include('inc', 'datatable', 'datatable.user');
 	// Set the table header
 	$tableHeader[] = array(
 			'name' => t('ID'),
