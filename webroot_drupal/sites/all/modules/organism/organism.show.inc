@@ -113,6 +113,9 @@ function organism_show_classification($classificationid) {
 		'SELECT
 			oc.parent_id AS oc_parent_id,
 			oc.prime_father_id AS oc_prime_father_id,
+			(SELECT oc_prime.name 
+				FROM {organism_classification} oc_prime 
+				WHERE oc_prime.id = oc.prime_father_id) AS prime_father_name,
 			oc.name AS oc_name,
 			ocl.name AS ocl_name
 		FROM
@@ -173,9 +176,8 @@ function organism_show_classification($classificationid) {
 	
 	//apply user settings
 	datatable_apply_user_settings(DATATABLE_CLASSIFIERS, $classificationTableHeader);
-	
 	$render_array = array();
-	
+
 	$render_array['classificators'] = array(
 			'#theme' => 'datatable',
 			'#title' => t('Subclassifications within') . ' ' . $classificationObj->oc_name . $hierarchyLevelUpButtons,
@@ -280,13 +282,14 @@ function organism_show_classification($classificationid) {
 	);
 	
 	//apply user settings
-	datatable_apply_user_settings(DATATABLE_CLASSIFIERS_SPECIES, $organismsTableHeader);
+	$oc_prime_father = strtolower($classificationObj->prime_father_name);
+	datatable_apply_user_settings('organisms_'.$oc_prime_father, $organismsTableHeader);
 
 	$render_array['organisms'] = array(
 			'#theme' => 'datatable',
 			'#title' => t('Species which are in classification ') . $classificationObj->oc_name,
 			'#header' => $organismsTableHeader,
-			'#id_table' => DATATABLE_CLASSIFIERS_SPECIES,
+			'#id_table' => 'organisms_'.$oc_prime_father,
 			'#options' => array(
 					'jsonUrl' => base_path()
 							. "organism/classification/$classificationid/organismjson",
