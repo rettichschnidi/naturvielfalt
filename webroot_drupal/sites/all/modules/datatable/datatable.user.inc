@@ -226,9 +226,9 @@ function datatable_reset_settings($table_name) {
  	 	if((count($result1))>0){ 		 	
  		 	$array=implode(",",$result1);
 		 	
- 		 	$sql2 = "DELETE FROM datatable_columns_user
+ 		 	$sql2 = "DELETE FROM {datatable_columns_user}
  		 			WHERE id in($array);
- 		 			DELETE FROM datatable_columns
+ 		 			DELETE FROM {datatable_columns}
  		 			WHERE id in($array)";
 	 			
  		 	$result2 = db_query($sql2);
