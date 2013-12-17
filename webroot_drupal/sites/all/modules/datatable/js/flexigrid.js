@@ -300,12 +300,12 @@
 					this.rePosDrag();
 					this.fixHeight();
 					this.colresize = false;
-					var name = p.colModel[n].name; // Store the widths in the
-													// cookies
-					// database settings are saved in db not in cookie
-					//$.cookie('flexiwidths/' + name, nw);
+					var name = p.colModel[n].name; 
+					
+					if(p.cookies) {
+						$.cookie('flexiwidths/' + name, nw);
+					}
 					//save datatablesettings
-					console.log("endDrag");
 					this.tableChanged();
 					
 				} else if (this.vresize) {
@@ -370,7 +370,7 @@
 					p.onToggleCol(cid, visible);
 				}
 				//save datatablesettings
-				console.log("toggleCol");
+				//console.log("toggleCol");
 				this.tableChanged();
 				return visible;
 			},
@@ -1067,16 +1067,16 @@
 			},
 			pager : 0,
 			tableChanged : function() {
-				var tableId	=	$(".bDiv table:first").attr("id")? $(".bDiv table:first").attr("id"):false;
+				var tableId	=	$("table:first", g.bDiv).attr("id")? $("table:first", g.bDiv).attr("id"):false;
 				if(!tableId) {return;}
 				
 				var columns = new Array();
-				$(".hDivBox th").each(function(){
+				$(".hDivBox th", g.hDiv).each(function(){
 					var hide	=	!$(this).is(':visible');
 					var width	=	$(this).find(":first-child").width();
 					var index	=	$(this).index();
 					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
-					console.log($(this).attr("name"));
+					//console.log($(this).attr("name"));
 					if(name) {
 						var column = {"name" : name,
 			  	     		"data" : { 
@@ -1098,6 +1098,7 @@
 								columns : columns
 						}						
 					});
+					if($(".ndcolReset", g.nDiv).length==0){reset_table();}
 				}
 			}
 		};
@@ -1109,13 +1110,15 @@
 				var th = document.createElement('th');
 				$(th).attr('axis', 'col' + i);
 				if (cm) { // only use cm if its defined
-					var cookie_width = 'flexiwidths/' + cm.name; // Re-Store
-																	// the
-																	// widths in
-																	// the
-																	// cookies
-					if ($.cookie(cookie_width) != undefined) {
-						cm.width = $.cookie(cookie_width);
+					if(p.cookies) {
+						var cookie_width = 'flexiwidths/' + cm.name; // Re-Store
+																		// the
+																		// widths in
+																		// the
+																		// cookies
+						if ($.cookie(cookie_width) != undefined) {
+							cm.width = $.cookie(cookie_width);
+						}
 					}
 					if (cm.display != undefined) {
 						th.innerHTML = cm.display;
@@ -1909,8 +1912,66 @@
 										+ this.innerHTML + '</td></tr>');
 						cn++;
 					});
+					
 			
+
 			
+			$.ajax({
+				type: "POST",
+				url: Drupal.settings.basePath+"datatable/savesettings",
+				data: {
+						user 		:	"userlogged",
+						table_name	: 	$('table', g.bDiv).attr('id')
+				},						
+				success: function(msg){if(msg==="ok"){reset_table();}}	
+			});
+					
+
+//START: RESET THE TABLE SETTINGS FROM THE USERS
+//WHEN REQUST THE MEMORY TABLE-SETTING,SEE ALSO LINE 1001-1006
+			var resetEvents = { 
+					//RESET ON
+					attrCheckedTrue		:	function(){return $(".ndcolReset", g.nDiv).attr('checked', true);},
+					infoDisabled		:	function(){return $(".ndcolReset", g.nDiv).html('wird zurückgesetzt');},
+					cssDisabled			:	function(){return $(".ndcolReset", g.nDiv).css({color:"gray"});},
+					disabled			:	function(){return $(".ndcolReset:input", g.nDiv).attr("disabled",true);},
+					//deleteElement		:	function(){return $("tr:first", g.nDiv).remove();},
+					//RESET OFF
+					attrCheckedFalse	:	function(){return $(".ndcolReset", g.nDiv).attr('checked', false);},
+					infoEnabled			:	function(){return $(".ndcolReset", g.nDiv).html('</td><td class="ndcolReset">Einst. zurücksetzen</td></tr>');},
+					setElements			:	function(){return $('tbody', g.nDiv).prepend(
+																'<tr><td><input class="ndcolReset" type="checkbox"/>'
+																+'</td><td class="ndcolReset">Einst. zurücksetzen</td></tr>');},
+					cssEnabled			:	function(){return $(".ndcolReset", g.nDiv).css({color:"black"});},
+					enabled				:	function(){return $(".ndcolReset:input", g.nDiv).attr("disabled", false);}	
+			};
+
+			function reset_table(){
+				resetEvents.setElements();
+				$('.ndcolReset', g.nDiv).click(function(){							
+						var divNameTable = $('table', g.bDiv).attr('id');
+						$.ajax({
+							type: "POST",
+							url: Drupal.settings.basePath+"datatable/savesettings",
+							data: {
+									table_name	: divNameTable,
+									status		:	'reset'
+							}						
+						});
+						resetEvents.disabled();
+						resetEvents.attrCheckedTrue();
+						resetEvents.infoDisabled();
+						resetEvents.cssDisabled();
+						resetEvents.disabled();
+						
+						window.setTimeout(relod,500);					
+				});
+				function relod(){location.reload();}
+			}
+//END: RESET THE TABLE SETTINGS FROM THE USERS, 
+//WHEN REQUST THE MEMORY TABLE-SETTING,SEE ALSO LINE 1001-1006 
+
+				
 			if ($.browser.msie && $.browser.version < 7.0)
 				$('tr', g.nDiv).hover(function() {
 					$(this).addClass('ndcolover');
@@ -2082,4 +2143,6 @@
 			else row.show();
 		}
 	}; // end recalcLayout
+	
+
 })(jQuery);
