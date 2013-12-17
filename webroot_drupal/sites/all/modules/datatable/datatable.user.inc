@@ -66,7 +66,6 @@ function datatable_get_user_settings($table_name) {
  */
 function datatable_apply_user_settings($table_name, array &$tableHeader) {
 	if(!in_array($table_name, unserialize(DATATABLE_TYPES))) {
-		debug('not in array: ' .$table_name);
 		return;
 	}
 
@@ -102,7 +101,6 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 		$i++;
 	}
 	$tableHeader = $tableHeaderSettingsApplied;
-	debug('settings applied for: '.$table_name);
 }
 
 
