@@ -2,6 +2,6 @@ name = datatable
 description = Sortable Table with included paging
 package = Naturvielfalt
 core = 7.x
-version = "7.x-current"
+version = "7.x-1.01"
 dependencies[] = c_acl
 dependencies[] = gallery

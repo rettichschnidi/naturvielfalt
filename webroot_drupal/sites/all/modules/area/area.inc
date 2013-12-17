@@ -1022,6 +1022,8 @@ function getCorrectValues($jsondata, $myArr) {
 function area_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
 	
+	module_load_include('inc', 'datatable','datatable.user');
+	
 	global $base_url;
 	$iconBaseUrl = $base_url . '/' . path_to_theme() . '/images/icons/';
 	
@@ -1135,6 +1137,10 @@ function area_get_standard_datatable_headers($init_sort = false,
 		$tableHeader[$init_sort--]['initSort'] = true;
 		$tableHeader[$init_sort--]['sortOrder'] = $init_sort2;
 	}
+	
+	//apply user settings
+	datatable_apply_user_settings(DATATABLE_AREA, $tableHeader);
+	
 	return $tableHeader;
 }
 

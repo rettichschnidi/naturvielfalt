@@ -60,7 +60,7 @@ function area_show_all_areas() {
 		'#header'   =>  area_get_standard_datatable_headers(12,
 		'DESC'),
 		'#title'    => t('Areas'),
-		'#id_table' => 'areas',
+		'#id_table' => DATATABLE_AREA,
 		'#options'  => array(
 					'jsonUrl' => base_path() . "areas/get/all",
 					'rowClick'              => 'rowClick',
@@ -343,7 +343,7 @@ function area_show_specific_area($areadata = NULL, $inventory_id = NULL) {
 				),
 				'#tableWidth' => 900,
 				'#rows' => $habitats,
-				'#id_table' => 'habitats'
+				'#id_table' => DATATABLE_HABITATS
 		);
 	} else {
 		$output['area_habitats']['habitats'] = array(
@@ -417,6 +417,8 @@ function area_overview_form($form, &$form_state, $areadata) {
 }
 
 function area_habitat_table($habitatId) {
+	module_load_include('inc', 'datatable','datatable.user');
+	
 	// Set the table header
 	$tableHeader[] = array(
 			'name' => t('ID'),
@@ -446,11 +448,15 @@ function area_habitat_table($habitatId) {
 			'dbfield' => 'username',
 			'width' => 220
 	);
-
+	
+		//apply user settings
+	datatable_apply_user_settings(DATATABLE_HABITATS, $tableHeader);
+	
+			
 	$render_array['habitats'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
-			'#id_table' => 'habitats',
+			'#id_table' => DATATABLE_HABITATS,
 			'#tableWidth' => 900,
 			'#options' => array(
 					'jsonUrl' => base_path() . 'area/habitat/'
@@ -512,7 +518,7 @@ function area_habitat_table($habitatId) {
 			),
 			'#tableWidth' => 900,
 			'#rows' => $habitats,
-			'#id_table' => 'habitats'
+			'#id_table' => DATATABLE_HABITATS
 	);
 	return $output;
 }

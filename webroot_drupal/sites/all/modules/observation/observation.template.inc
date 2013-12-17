@@ -555,7 +555,7 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 			'#header' => observation_get_standard_datatable_headers(9, 'desc'),
 			'#title' => t(
 				'Recently recorded and saved observations (click on a row, to edit an entry)'),
-			'#id_table' => 'recent_observations',
+			'#id_table' => DATATABLE_OBSERVATION,
 			'#options' => array(
 					'jsonUrl' => base_path()
 							. "observation/get/writeable",

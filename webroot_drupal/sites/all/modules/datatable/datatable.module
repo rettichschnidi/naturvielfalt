@@ -29,6 +29,22 @@ class DBDateFieldType {
 }
 
 /**
+ * Implements hook_menu
+ */
+function datatable_menu() {
+	$items['datatable/savesettings'] = array(
+			'title' => 'save datatable settings',
+			'description' => 'saves the current user settings of the datatable',
+			'page callback' => 'datatable_save_user_settings',
+			'access callback' => 'user_is_logged_in',
+			'type' => MENU_CALLBACK,
+			'file' => 'datatable.user.inc',
+	);
+
+	return $items;
+}
+
+/**
  * Implements hook_theme()
  *
  * @return an array with theme template information
