@@ -1950,23 +1950,24 @@
 				resetEvents.setElements();
 				$('.ndcolReset', g.nDiv).click(function(){							
 						var divNameTable = $('table', g.bDiv).attr('id');
+						resetEvents.disabled();
+						resetEvents.attrCheckedTrue();
+						resetEvents.infoDisabled();
+						resetEvents.cssDisabled();
+						resetEvents.disabled();
 						$.ajax({
 							type: "POST",
 							url: Drupal.settings.basePath+"datatable/savesettings",
 							data: {
 									table_name	: divNameTable,
 									status		:	'reset'
-							}						
+							},
+							success : function() {
+								location.reload();
+							}
 						});
-						resetEvents.disabled();
-						resetEvents.attrCheckedTrue();
-						resetEvents.infoDisabled();
-						resetEvents.cssDisabled();
-						resetEvents.disabled();
-						
-						window.setTimeout(relod,500);					
+											
 				});
-				function relod(){location.reload();}
 			}
 //END: RESET THE TABLE SETTINGS FROM THE USERS, 
 //WHEN REQUST THE MEMORY TABLE-SETTING,SEE ALSO LINE 1001-1006 
