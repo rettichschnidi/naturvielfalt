@@ -833,6 +833,8 @@ $html_after_desc = false, $html_before_form = false, $html_after_form = false) {
 function observation_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
 	
+	module_load_include('inc', 'datatable', 'datatable.user');
+	
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
