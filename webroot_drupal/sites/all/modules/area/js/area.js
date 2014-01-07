@@ -376,9 +376,8 @@ jQuery(document).ready(function() {
 			area_ids[idx] = area.id;
 		});
 		area.syncMapWithTable(area_ids);
-		
-		// FIXME table id 'areas' should not be hard-coded
-		data = gallery_addon.preProcess('areas', 'gallery_image', data, flexigridOptions);
+
+		data = gallery_addon.preProcess(flexigridOptions.tableId, 'gallery_image', data, flexigridOptions);
 		
 		return data;
 	};

@@ -471,9 +471,8 @@ jQuery(document).ready(function() {
 			observation_ids[idx] = obs.id;
 		});
 		observation.syncMapWithTable(observation_ids);
-		
-		// FIXME table id 'observations' should not be hard-coded
-		data = gallery_addon.preProcess('observations', 'gallery_image', data, flexigridOptions);
+
+		data = gallery_addon.preProcess(flexigridOptions.tableId, 'gallery_image', data, flexigridOptions);
 		
 		return data;
 	};

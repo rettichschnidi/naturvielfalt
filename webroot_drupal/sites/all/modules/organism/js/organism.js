@@ -7,8 +7,7 @@ jQuery(document).ready(function() {
 	 * ! must return the data !
 	 */
 	organism.tablePreProcess = function(data, flexigridOptions) {
-		// FIXME table id 'organisms' should not be hard-coded
-		data = gallery_addon.preProcess('organisms', 'gallery_image', data, flexigridOptions);
+		data = gallery_addon.preProcess(flexigridOptions.tableId, 'gallery_image', data, flexigridOptions);
 		return data;
 	};
 	
