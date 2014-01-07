@@ -144,6 +144,8 @@ function inventory_show_observations($area_id, $inventory_id = NULL, $showtoolba
 function inventory_get_standard_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
 
+	module_load_include('inc', 'datatable', 'datatable.user');
+	
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
