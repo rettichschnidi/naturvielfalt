@@ -1044,6 +1044,8 @@ function observation_get_standard_datatable_headers($init_sort = false,
 function observation_get_organism_datatable_headers($init_sort = false,
 		$init_sort2 = false) {
 
+	module_load_include('inc', 'datatable', 'datatable.user');
+	
 	$tableHeader[] = array(
 			'name' => t('Internal Id'),
 			'idField' => true,
