@@ -147,9 +147,9 @@
 				});
 				var nd = parseInt($(g.nDiv).height());
 				if (nd > newH)
-					$(g.nDiv).height('auto').width(200);
+					$(g.nDiv).height('190').width(200);
 				else
-					$(g.nDiv).height('auto').width('auto');
+					$(g.nDiv).height('190').width('auto');
 				$(g.block).css({
 					height : newH,
 					marginBottom : (newH * -1)
@@ -300,9 +300,14 @@
 					this.rePosDrag();
 					this.fixHeight();
 					this.colresize = false;
-					var name = p.colModel[n].name; // Store the widths in the
-													// cookies
-					$.cookie('flexiwidths/' + name, nw);
+					var name = p.colModel[n].name; 
+					
+					if(p.cookies) {
+						$.cookie('flexiwidths/' + name, nw);
+					}
+					//save datatablesettings
+					this.tableChanged();
+					
 				} else if (this.vresize) {
 					this.vresize = false;
 				} else if (this.colCopy) {
@@ -364,6 +369,9 @@
 				if (p.onToggleCol) {
 					p.onToggleCol(cid, visible);
 				}
+				//save datatablesettings
+				//console.log("toggleCol");
+				this.tableChanged();
 				return visible;
 			},
 			switchCol : function(cdrag, cdrop) { // switch columns
@@ -388,6 +396,10 @@
 					$('tr:eq(' + cdrop + ') input', this.nDiv)[0].checked = true;
 				}
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
+				
+				//save datatablesettings
+				console.log("switchCol");
+				this.tableChanged();
 			},
 			scroll : function() {
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
@@ -1053,7 +1065,42 @@
 				};
 				g.dragEnd();
 			},
-			pager : 0
+			pager : 0,
+			tableChanged : function() {
+				var tableId	=	$("table:first", g.bDiv).attr("id")? $("table:first", g.bDiv).attr("id"):false;
+				if(!tableId) {return;}
+				
+				var columns = new Array();
+				$(".hDivBox th", g.hDiv).each(function(){
+					var hide	=	!$(this).is(':visible');
+					var width	=	$(this).find(":first-child").width();
+					var index	=	$(this).index();
+					var name	=	$(this).attr("name")?	$(this).attr("name") : false;
+					//console.log($(this).attr("name"));
+					if(name) {
+						var column = {"name" : name,
+			  	     		"data" : { 
+			  	     			"width" : width,
+			            		"hide"  : hide,
+			            		"order" : index
+			         		}
+			      		};
+						columns.push(column);
+					}
+				});
+			 
+				if(columns.length>0) {
+					$.ajax({
+						type: "POST",
+						url: Drupal.settings.basePath+"datatable/savesettings",
+						data: {
+								table_name : tableId,
+								columns : columns
+						}						
+					});
+					if($(".ndcolReset", g.nDiv).length==0){reset_table();}
+				}
+			}
 		};
 		if (p.colModel) { // create model if any
 			thead = document.createElement('thead');
@@ -1063,19 +1110,24 @@
 				var th = document.createElement('th');
 				$(th).attr('axis', 'col' + i);
 				if (cm) { // only use cm if its defined
-					var cookie_width = 'flexiwidths/' + cm.name; // Re-Store
-																	// the
-																	// widths in
-																	// the
-																	// cookies
-					if ($.cookie(cookie_width) != undefined) {
-						cm.width = $.cookie(cookie_width);
+					if(p.cookies) {
+						var cookie_width = 'flexiwidths/' + cm.name; // Re-Store
+																		// the
+																		// widths in
+																		// the
+																		// cookies
+						if ($.cookie(cookie_width) != undefined) {
+							cm.width = $.cookie(cookie_width);
+						}
 					}
 					if (cm.display != undefined) {
 						th.innerHTML = cm.display;
 					}
 					if (cm.name && cm.sortable) {
 						$(th).attr('abbr', cm.name);
+					}
+					if(cm.name) {
+						$(th).attr('name', cm.name);
 					}
 					if (cm.align) {
 						th.align = cm.align;
@@ -1517,6 +1569,7 @@
 				if (e.keyCode == 13)
 					g.changePage('input')
 			});
+			
 			if ($.browser.msie && $.browser.version < 7)
 				$('.pButton', g.pDiv).hover(function() {
 					$(this).addClass('pBtnOver');
@@ -1830,18 +1883,21 @@
 			zIndex : 1,
 			top : gtop,
 			left : '0px'
-		});
+		});  
 		$(g.block).fadeTo(0, p.blockOpacity);
 		// add column control
 		if ($('th', g.hDiv).length) {
-			g.nDiv.className = 'nDiv';
-			g.nDiv.innerHTML = "<table cellpadding='0' cellspacing='0'><tbody></tbody></table>";
+			g.nDiv.className = 'nDiv'; 
+			g.nDiv.innerHTML = "<table cellpadding='0' cellspacing='0' '><tbody></tbody></table>";
 			$(g.nDiv).css({
 				marginBottom : (gh * -1),
 				display : 'none',
-				top : gtop
+				top : gtop,
+				overflowY : 'scroll'
 			}).noSelect();
 			var cn = 0;
+			
+
 			$('th div', g.hDiv).each(
 					function() {
 						var kcol = $("th[axis='col" + cn + "']", g.hDiv)[0];
@@ -1856,6 +1912,67 @@
 										+ this.innerHTML + '</td></tr>');
 						cn++;
 					});
+					
+			
+
+			
+			$.ajax({
+				type: "POST",
+				url: Drupal.settings.basePath+"datatable/savesettings",
+				data: {
+						user 		:	"userlogged",
+						table_name	: 	$('table', g.bDiv).attr('id')
+				},						
+				success: function(msg){if(msg==="ok"){reset_table();}}	
+			});
+					
+
+//START: RESET THE TABLE SETTINGS FROM THE USERS
+//WHEN REQUST THE MEMORY TABLE-SETTING,SEE ALSO LINE 1001-1006
+			var resetEvents = { 
+					//RESET ON
+					attrCheckedTrue		:	function(){return $(".ndcolReset", g.nDiv).attr('checked', true);},
+					infoDisabled		:	function(){return $(".ndcolReset", g.nDiv).html('wird zurückgesetzt');},
+					cssDisabled			:	function(){return $(".ndcolReset", g.nDiv).css({color:"gray"});},
+					disabled			:	function(){return $(".ndcolReset:input", g.nDiv).attr("disabled",true);},
+					//deleteElement		:	function(){return $("tr:first", g.nDiv).remove();},
+					//RESET OFF
+					attrCheckedFalse	:	function(){return $(".ndcolReset", g.nDiv).attr('checked', false);},
+					infoEnabled			:	function(){return $(".ndcolReset", g.nDiv).html('</td><td class="ndcolReset">Einst. zurücksetzen</td></tr>');},
+					setElements			:	function(){return $('tbody', g.nDiv).prepend(
+																'<tr><td><input class="ndcolReset" type="checkbox"/>'
+																+'</td><td class="ndcolReset">Einst. zurücksetzen</td></tr>');},
+					cssEnabled			:	function(){return $(".ndcolReset", g.nDiv).css({color:"black"});},
+					enabled				:	function(){return $(".ndcolReset:input", g.nDiv).attr("disabled", false);}	
+			};
+
+			function reset_table(){
+				resetEvents.setElements();
+				$('.ndcolReset', g.nDiv).click(function(){							
+						var divNameTable = $('table', g.bDiv).attr('id');
+						resetEvents.disabled();
+						resetEvents.attrCheckedTrue();
+						resetEvents.infoDisabled();
+						resetEvents.cssDisabled();
+						resetEvents.disabled();
+						$.ajax({
+							type: "POST",
+							url: Drupal.settings.basePath+"datatable/savesettings",
+							data: {
+									table_name	: divNameTable,
+									status		:	'reset'
+							},
+							success : function() {
+								location.reload();
+							}
+						});
+											
+				});
+			}
+//END: RESET THE TABLE SETTINGS FROM THE USERS, 
+//WHEN REQUST THE MEMORY TABLE-SETTING,SEE ALSO LINE 1001-1006 
+
+				
 			if ($.browser.msie && $.browser.version < 7.0)
 				$('tr', g.nDiv).hover(function() {
 					$(this).addClass('ndcolover');
@@ -1863,7 +1980,7 @@
 					$(this).removeClass('ndcolover');
 				});
 			$('td.ndcol2', g.nDiv).click(
-					function() {
+					function () {
 						if ($('input:checked', g.nDiv).length <= p.minColToggle
 								&& $(this).prev().find('input')[0].checked)
 							return false;
@@ -2027,4 +2144,6 @@
 			else row.show();
 		}
 	}; // end recalcLayout
+	
+
 })(jQuery);

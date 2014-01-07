@@ -7,6 +7,7 @@
  */
 
 function habitat_show_all() {
+	module_load_include('inc', 'datatable', 'datatable.user');
 	// Set the table header
 	$tableHeader[] = array(
 			'name' => t('ID'),
@@ -46,11 +47,14 @@ function habitat_show_all() {
 			'align' => 'center',
 			'width' => 50
 	);
+	
+	//apply user settings
+	datatable_apply_user_settings(DATATABLE_HABITATS, $tableHeader);
 
 	$render_array['habitats'] = array(
 			'#theme' => 'datatable',
 			'#header' => $tableHeader,
-			'#id_table' => 'habitats',
+			'#id_table' => DATATABLE_HABITATS,
 			'#tableWidth' => 900,
 			'#options' => array(
 					'jsonUrl' => "habitat/datatablejson",
