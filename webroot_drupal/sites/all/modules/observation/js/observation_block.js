@@ -4,6 +4,7 @@ var page = 1;
 var pageSize = 12;
 var total = 9007199254740992; //max int
 var isFetchingResults = false;
+var slideInterval = 6000;
 
 var stepsToMove;
 
@@ -76,7 +77,7 @@ function initializeHover() {
 
 function initializeTimer() {
 	if(timerId) stopTimer(timerId);
-	timerId = setInterval(function() {moveImages(3); }, 4000);
+	timerId = setInterval(function() {moveImages(3); }, slideInterval);
 }
 
 function stopTimer() {
