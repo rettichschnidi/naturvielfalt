@@ -47,6 +47,14 @@
 /sites/default/files/languages/
 /sites/default/settings.php
 /sites/example.sites.php
+/sites/README.txt
+/sites/all/modules/i18n/
+/sites/all/modules/jquery_update/
+/sites/all/modules/languageicons/
+/sites/all/modules/mailsystem/
+/sites/all/modules/mimemail/
+/sites/all/modules/simplenews/
+/sites/all/modules/variable/
 /themes/
 /update.php
 /web.config
