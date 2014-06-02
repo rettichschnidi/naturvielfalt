@@ -46,13 +46,13 @@ jQuery(document).ready(function() {
 			var artgroup = $(this).attr('id').replace('area_', '');
 			//on mouseenter over an area, change the image to the according artgroup, and change the link color to white of the description div
 		    $(this).mouseenter(function (e) {
-		        $('#diagram-image').attr('src', 'sites/all/modules/organism/img/' + artgroup + '_aktiv.png');
+		        $('#diagram-image').attr('src', '/sites/all/modules/organism/img/' + artgroup + '_aktiv.png');
 		        $('#' + artgroup + '-link .classifier-div').css('color', '#ffffff');
 		    });
 		    
 		    $(this).mouseout(function (e) {
 		    	$('#' + artgroup + '-link .classifier-div').css('color', linkColor);
-		    	$('#diagram-image').attr('src', 'sites/all/modules/organism/img/gesamt.png');
+		    	$('#diagram-image').attr('src', '/sites/all/modules/organism/img/gesamt.png');
 		        //change the link color back to standard
 		        $('#diagram-container area').each(function () {
 		        	var artgroup = $(this).attr('id').replace('area_', '');
@@ -62,8 +62,8 @@ jQuery(document).ready(function() {
 		    
 			//on mouseenter over a description div: change image to the according artgroup, and change link color to white
 			$('#' + artgroup + '-link .classifier-div').mouseenter(function(e) {
-				if($('#diagram-image').attr('src') != 'sites/all/modules/organism/img/' + artgroup + '_aktiv.png')
-				$('#diagram-image').attr('src', 'sites/all/modules/organism/img/' + artgroup + '_aktiv.png');
+				if($('#diagram-image').attr('src') != '/sites/all/modules/organism/img/' + artgroup + '_aktiv.png')
+				$('#diagram-image').attr('src', '/sites/all/modules/organism/img/' + artgroup + '_aktiv.png');
 				$('#' + artgroup + '-link .classifier-div').css('color', '#ffffff');
 			});
 		});
