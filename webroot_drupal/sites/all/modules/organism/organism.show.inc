@@ -67,9 +67,10 @@ function organism_show_classifiers() {
 		);
 	}
 
-	$path = drupal_get_path('module', 'organism');
-	drupal_add_css($path . '/css/organism.css');
-	drupal_add_js($path . '/js/organism.js');
+	// using drupal_get_path() and images is not working when the page is localized
+	$path = base_path() . 'sites/all/modules/organism';
+	drupal_add_css(drupal_get_path('module', 'organism') . '/css/organism.css');
+	drupal_add_js(drupal_get_path('module', 'organism') . '/js/organism.js');
 	
 	global $base_url;
 	$output['diagram'] = array(
