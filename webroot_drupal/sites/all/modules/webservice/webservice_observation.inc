@@ -152,7 +152,7 @@ function webservice_parse_import_observations() {
 		foreach ($validationerrors as $message) {
 			print($message.'<br>');
 		}
-		
+		watchdog(WS_API_LOG_TYPE, 'validation errors', array(), WATCHDOG_DEBUG);
 	}
 	else {
 		//if empty string has been passed, use login name
@@ -178,6 +178,7 @@ function webservice_parse_import_observations() {
 			foreach ($observation_status['message'] as $key => $message) {
 				print($message.'<br>');
 			}
+			watchdog(WS_API_LOG_TYPE, 'something went wrong', array(), WATCHDOG_DEBUG);
 		}
 	}
 }
