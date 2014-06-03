@@ -24,7 +24,9 @@ define('WS_API_LOG_TYPE', 'webservice api');
  */
 function webservice_parse_import_observations_lightversion() {
 	global $user;
-	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
+	$time_start = microtime(true);
+	watchdog(WS_API_LOG_TYPE, 'invoked observation LIGHT at @starttime', 
+		array( '@starttime' =>  $time_start), WATCHDOG_DEBUG);
 
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		return webservice_auth();
@@ -80,6 +82,8 @@ function webservice_parse_import_observations_lightversion() {
 		}
 		print('ERROR: Some went wrong.. check the log file for details');
 	}
+	watchdog(WS_API_LOG_TYPE, 'observation LIGHT finished. exec time: @exectime',
+	array( '@exectime' =>  microtime(true) - $time_start), WATCHDOG_DEBUG);
 }
 /**
  * Serverside script for receiving the data from the iPhone/Android Application.
@@ -105,7 +109,9 @@ function webservice_parse_import_observations_lightversion() {
  */
 function webservice_parse_import_observations() {
 	global $user;
-	watchdog(WS_API_LOG_TYPE, 'invoked', array(), WATCHDOG_DEBUG);
+	$time_start = microtime(true);
+	watchdog(WS_API_LOG_TYPE, 'invoked observation at @starttime', 
+		array( '@starttime' =>  $time_start), WATCHDOG_DEBUG);
 
 	if (!isset($_SERVER['PHP_AUTH_USER'])) {
 		return webservice_auth();
@@ -181,6 +187,8 @@ function webservice_parse_import_observations() {
 			watchdog(WS_API_LOG_TYPE, 'something went wrong', array(), WATCHDOG_DEBUG);
 		}
 	}
+	watchdog(WS_API_LOG_TYPE, 'observation finished. exec time: @exectime',
+	array( '@exectime' =>  microtime(true) - $time_start), WATCHDOG_DEBUG);
 }
 
 function webservice_observation_validate($data) {
