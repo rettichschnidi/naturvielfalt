@@ -112,11 +112,20 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 }
 
 
-
-
-
-
-
+/**
+ * helper function four counting all columns with 'hide' = true
+ * TODO: upgrade to php 5.3 and use an anonymous function
+ * @param $carry
+ * @param $col
+ * @return mixed
+ */
+function datatable_hide_counter($carry, $col) {
+    $hidden = filter_var($col['data']['hide'], FILTER_VALIDATE_BOOLEAN);
+    if ($hidden)
+        return $carry + 1;
+    else
+        return $carry;
+}
 
 /**
  * Stores the table settings the user wants to apply (AJAX Call, data passed as JSON)
@@ -168,7 +177,10 @@ function datatable_save_user_settings() {
 	
 	$table = $_POST['table_name'];
 	$columns = $_POST['columns'];
-	
+
+    $num_hidden_cols = array_reduce($columns, 'datatable_hide_counter', 0);
+    if($num_hidden_cols == count($columns)) return; // ignore invalid "hide everything" settings
+
 	$settings = datatable_get_user_settings($table);
 	
 	foreach($columns as $column) {
