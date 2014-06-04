@@ -76,7 +76,8 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 	
 	$i = 0;
 	$tableHeaderSettingsApplied = $tableHeader;
-	foreach($tableHeader as &$head) {
+    $table_is_visible=false; // if at least one column is visible
+	foreach($tableHeader as $head) {
 		if(isset($head['dbfield'])) {
 			$name = $head['dbfield'];
 			//search the head in the user settings
@@ -99,8 +100,15 @@ function datatable_apply_user_settings($table_name, array &$tableHeader) {
 			}
 		}
 		$i++;
+        if(!$table_is_visible && !$head['hide']){
+            $table_is_visible = true;
+        }
 	}
-	$tableHeader = $tableHeaderSettingsApplied;
+    // make sure there is at least one element visible
+    // if not displaying the user settings would lead to a missing table
+    if($table_is_visible){
+        $tableHeader = $tableHeaderSettingsApplied;
+    } // else use the default column setting. as soon as the user changes his columns, the faulty setting is fixed
 }
 
 
