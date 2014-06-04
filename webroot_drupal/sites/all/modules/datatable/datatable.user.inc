@@ -129,6 +129,11 @@ function datatable_hide_counter($carry, $col) {
 
 /**
  * Stores the table settings the user wants to apply (AJAX Call, data passed as JSON)
+ * flexigrid sends the requests for authenticated and unauthenticated users.
+ *
+ * since unauthenticated users are not allowed to save the settings, we just ignore them.
+ * reason for not using access_callback:
+ *  'access callback' => 'user_is_logged_in' produces a 403 error at every flexigrid reload..
  */
 function datatable_save_user_settings() {  
 	global $user; 
@@ -151,7 +156,11 @@ function datatable_save_user_settings() {
 	 * 	a. select the column by name with the current user id
 	 * 	b. if we there exists a column: update it accordingly, else insert a new one.
 	 */
-	
+
+    // only allow authenticated users to save the settings
+    if(!user_is_logged_in())
+        return print 'req ignored (not authenticated)';
+
 	if(!in_array($_POST['table_name'], unserialize(DATATABLE_TYPES)))
 		return;
 	

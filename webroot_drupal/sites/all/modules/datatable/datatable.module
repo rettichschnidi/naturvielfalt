@@ -36,7 +36,7 @@ function datatable_menu() {
 			'title' => 'save datatable settings',
 			'description' => 'saves the current user settings of the datatable',
 			'page callback' => 'datatable_save_user_settings',
-			'access callback' => 'user_is_logged_in',
+            'access callback' => TRUE,
 			'type' => MENU_CALLBACK,
 			'file' => 'datatable.user.inc',
 	);
