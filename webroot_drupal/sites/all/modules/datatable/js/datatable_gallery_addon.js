@@ -74,7 +74,11 @@ jQuery(document).ready(function() {
 		
 		$flexiDiv.children('.bDiv').toggle();
 		$flexiDiv.children('.hDiv').toggle();
-		$flexiDiv.children('.cDrag').toggle();
+		if(enabled) {
+			$flexiDiv.children('.cDrag').hide();
+		} else {
+			$flexiDiv.children('.cDrag').show();
+		}
 		gallery_addon.__getGalleryDiv(gridid).toggle();
 		
 		$gBlock = $flexiDiv.children('.gBlock');
