@@ -101,8 +101,8 @@ function gallery_list($type, $id, $backlink = true, $title = true, $mediatype) {
  */
 function gallery_list_renderer($mediatype, $type, $id, $title = false,
 		$weight = 10, $collapsed = false) {
-	if (!gallery_access_callback($type))
-		return '';
+	//if (!gallery_access_allow($type))
+	//	return '';
 	$gallery = gallery_list($type, $id, false, false, $mediatype);
 	if (!isset($gallery['gallery_list']) || !$gallery['gallery_list'])
 		return '';
@@ -127,8 +127,8 @@ function gallery_list_renderer($mediatype, $type, $id, $title = false,
  */
 function gallery_multiple_list_renderer($type, $ids, $title = false,
 		$weight = 10, $collapsed = false, $mediatype) {
-	if (!gallery_access_callback($type))
-		return '';
+	//if (!gallery_access_allow($type))
+	//	return '';
 	$params = _gallery_list_parameters($type, $id);
 	$images = gallery_images(
 		$mediatype,
@@ -498,8 +498,8 @@ function gallery_presentation_renderer($mediatype, $items,
  */
 function gallery_view_link($type, $id, $url = false, $check = true,
 		$count_images = 0, $count_sounds = 0, $count_videos = 0) {
-	if (!gallery_access_callback($type))
-		return false;
+	//if (!gallery_access_allow($type))
+	//	return false;
 	$params = _gallery_list_parameters($type, $id);
 	if ($check) {
 		$count_images = gallery_images_count($type, $id);

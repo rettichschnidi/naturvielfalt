@@ -292,7 +292,7 @@ function gallery_menu() {
 						3
 				),
 				'type' => MENU_NORMAL_ITEM,
-				'access callback' => 'gallery_access_callback',
+				'access callback' => 'gallery_access_allow',
 				'access arguments' => array(
 						1
 				),
@@ -310,7 +310,7 @@ function gallery_menu() {
 				),
 				'type' => MENU_DEFAULT_LOCAL_TASK | MENU_NORMAL_ITEM,
 				'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-				'access callback' => 'gallery_access_callback',
+				'access callback' => 'gallery_access_allow',
 				'access arguments' => array(
 						1
 				),
@@ -323,7 +323,7 @@ function gallery_menu() {
 						2,
 						4
 				),
-				'access callback' => 'gallery_access_callback',
+				'access callback' => 'gallery_access_allow',
 				'access arguments' => array(
 						1
 				),
@@ -338,7 +338,7 @@ function gallery_menu() {
 						4,
 						5
 				),
-				'access callback' => 'gallery_access_callback',
+				'access callback' => 'gallery_access_allow',
 				'access arguments' => array(
 						1
 				),
@@ -407,7 +407,7 @@ function gallery_menu() {
 				'page arguments' => array(
 						4
 				),
-				'access callback' => 'gallery_access_callback',
+				'access callback' => 'gallery_access_allow',
 				'access arguments' => array(
 						1,
 						RATE_GALLERY_MEDIAS
@@ -1627,18 +1627,11 @@ function gallery_rating_type_delete($type) {
 }
 
 /**
- * Checks access for gallery specific pages
+ * access callback that ALLOWS every request
  *
- * @return boolean
- *   Whether access is granted or not
- * @param string $type
- *   The type of object to be accessed
  */
-function gallery_access_callback($type, $permission = VIEW_GALLERY_IMAGES) {
+function gallery_access_allow($type, $permission = VIEW_GALLERY_IMAGES) {
 	return true;
-	if (!_gallery_check_type_validity($type))
-		return false;
-	return user_access($permission);
 }
 
 /**
