@@ -280,7 +280,7 @@ function area_datatable_json($acl_level = 'ACL_READ') {
 		$row['cell']['zoominColumn'] = '<img src="' . $iconBaseUrl . 'Zoom in.png" alt="' . t('zoomin') . '" title="' . t('zoomin') . '" onclick="javascript:areamap.zoomIn(event, ' . $row['id'] . ');" />';
 		
 		// type of area (picture)
-		$row['cell']['geometry_type'] = '<img src="'. url(base_path() . 'sites/all/modules/commonstuff/images/' . $row['cell']['geometry_type'] . '.png') . '" alt="'. t('type') . '" />';
+		$row['cell']['geometry_type'] = '<img src="'. base_path() . 'sites/all/modules/commonstuff/images/' . $row['cell']['geometry_type'] . '.png' . '" alt="'. t('type') . '" />';
 		
 		$row['cell']['date'] = date("d.m.Y H:i:s", strtotime($row['cell']['date']));
 		

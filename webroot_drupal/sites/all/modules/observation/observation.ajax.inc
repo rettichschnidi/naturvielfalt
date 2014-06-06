@@ -677,7 +677,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			
 			// type of area (picture)
 			$row['cell']['areatype'] = (!empty($row['cell']['areatype'])) ?
-			'<img src="'. url(drupal_get_path('module', 'commonstuff'). '/images/' . $row['cell']['areatype'] . '.png') . '" alt="'. t('type') . '" />'
+			'<img src="'. base_path() . 'sites/all/modules/commonstuff/images/' . $row['cell']['areatype'] . '.png' . '" alt="'. t('type') . '" />'
 					: '';
 			
 			// get images
