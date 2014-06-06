@@ -181,12 +181,8 @@ function gallery_implementation_edit_existing_file_list($module = false,
 								|| $image['filemime'] == "image/jpeg"
 								|| $image['filemime'] == "image/gif"))) {
 
-			$url_href = url(
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/gallery_large');
-			$url_image = url(
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/gallery_mini');
+			$url_href = image_style_url('gallery_large', $image['uri']);
+			$url_image = image_style_url('gallery_mini', $image['uri']);
 			$extras = 'rel="lightbox"';
 		} elseif ($mediatype == "sounds"
 				|| ($mediatype == "medias"

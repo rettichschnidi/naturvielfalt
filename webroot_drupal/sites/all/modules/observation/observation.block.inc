@@ -108,8 +108,8 @@ function observation_block_new_observations_content_ajax() {
 		$img = '';
 		if ($images['count'] > 0) {
 			$tmp_img = $images['images'][0];
-			$url_large = url('gallery/observation/' . $observation['id'] . '/thumb/' . $tmp_img['id'] . '/gallery_large');;
-			$url_preview = url('gallery/observation/' .  $observation['id'] . '/thumb/' . $tmp_img['id'] . '/medium');
+			$url_large = image_style_url('gallery_large', $tmp_img['uri']);
+			$url_preview = image_style_url('medium', $tmp_img['uri']);
 	
 			//prepare caption
 			$captionclass = "block_newest_observation_img_caption";

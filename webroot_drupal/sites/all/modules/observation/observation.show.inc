@@ -142,7 +142,7 @@ function observation_map_overview_form($form, &$form_state, $observationdata) {
 				'#type' => 'markup',
 				'#markup' =>
 						'<a href="#">
-							<img stlye="margin-right:10px;" onclick="gallery_lightbox.openLightBoxEntry('.$observationdata['observation']['id'].');" src="' . url('gallery/observation/' . $observationdata['observation']['id'] . '/thumb/' . $images['images'][$i]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][$i]['title'] . '" height="80" width="80" />
+							<img stlye="margin-right:10px;" onclick="gallery_lightbox.openLightBoxEntry('.$observationdata['observation']['id'].');" src="' . image_style_url('gallery_thumbnail',  $images['images'][$i]['uri']) . '" alt="' . $images['images'][$i]['title'] . '" height="80" width="80" />
 						</a>',
 				);
 	}

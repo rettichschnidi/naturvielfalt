@@ -418,15 +418,9 @@ function gallery_presentation_renderer($mediatype, $items,
 		if ($image) {
 			$images['image' . $i]['image'] = array(
 					'#markup' => '<a class="image" href="'
-							. url(
-								'gallery/' . $image['item_type'] . '/'
-										. $image['item_id'] . '/thumb/'
-										. $image['id'] . '/gallery_large')
+							. image_style_url('gallery_large', $image['uri'])
 							. '">' . '<img src="'
-							. url(
-								'gallery/' . $image['item_type'] . '/'
-										. $image['item_id'] . '/thumb/'
-										. $image['id'] . '/' . $imgsize)
+							. image_style_url($imgsize, $image['uri'])
 							. '" alt="' . $image['title'] . '" />' . '</a>'
 			);
 		} else {
@@ -578,8 +572,11 @@ function gallery_image($type, $id, $image) {
 
 /**
  * Menu callback; Serving a gallery media thumb
+ * DEPRECATED: use image_style_url() instead of pointing to gallery/../thumb/..s
  */
 function gallery_thumb($type, $id, $image, $size) {
+	watchdog('gallery module', 'gallery_thumb() is still used at: @ref_url',
+		array( '@ref_url' =>  $_SERVER['HTTP_REFERER']), WATCHDOG_CRITICAL);
 	$uri = explode('://', $image['uri']);
 	return image_style_deliver(image_style_load($size), $uri[0], $uri[1]);
 }
@@ -774,12 +771,8 @@ function gallery_images_form($form, &$form_state, $mediatype, $type = false,
 								|| $image['filemime'] == "image/jpeg"
 								|| $image['filemime'] == "image/gif"))) {
 
-			$url_href = url(
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/gallery_large');
-			$url_image = url(
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/gallery_mini');
+			$url_href = image_style_url('gallery_large', $image['uri']);
+			$url_image = image_style_url('gallery_mini', $image['uri']);
 			$extras = 'rel="lightbox"';
 		} elseif ($mediatype == "sounds"
 				|| ($mediatype == "medias"
@@ -982,13 +975,9 @@ function gallery_image_form($form, &$form_state, $type, $id, $mediatype, $image,
 	if (isset($image['file_managed_fid'])) {
 		$form['thumb'] = array(
 				'#markup' => '<a class="user-picture" rel="lightbox" href="'
-						. url(
-							'gallery/' . $type . '/' . $id . '/thumb/'
-									. $image['id'] . '/gallery_large')
+						. image_style_url('gallery_large', $image['uri'])
 						. '"><img src="'
-						. url(
-							'gallery/' . $type . '/' . $id . '/thumb/'
-									. $image['id'] . '/gallery_mini')
+						. image_style_url('gallery_mini', $image['uri'])
 						. '" alt="' . $image['title'] . '" /></a>'
 		);
 
@@ -2092,12 +2081,8 @@ function theme_gallery_list($variables) {
 							$types[$image['item_type']]['image_caption'],
 							array($image['item_id'])) . '</em>';
 
-			$url_href = url(
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/gallery_large');
-			$url_image = url(
-				'gallery/' . $image['item_type'] . '/' . $image['item_id']
-						. '/thumb/' . $image['id'] . '/medium');
+			$url_href = image_style_url('gallery_large', $image['uri']);
+			$url_image = image_style_url('medium', $image['uri']);
 			$extras = '';
 			$captionclass = "caption";
 

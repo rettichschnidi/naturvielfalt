@@ -168,8 +168,8 @@ function observation_form($form = null, &$form_state = null, $observation = fals
 										. ($caption ? '<p class="captionText">' . $caption . '</p>'
 												: '').'</div>';
 															
-					$url_large = url('gallery/organism/' . $organism_id . '/thumb/' . $img['id'] . '/gallery_large');;
-					$url_preview = url('gallery/organism/' . $organism_id . '/thumb/' . $img['id'] . '/gallery_presentation');
+					$url_large = image_style_url('gallery_large', $img['uri']);
+					$url_preview = image_style_url('gallery_presentation', $img['uri']);
 						
 					//only display first image
 					$pictures = '<a href="'.$url_large.'"'.' rel="organism_lightbox"><img src="' .$url_preview . '" alt="' . $img['title'] . '" title="' . $img['title'] . '" />'.$imgfooter.'</a>';

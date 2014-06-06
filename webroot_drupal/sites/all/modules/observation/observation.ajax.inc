@@ -687,7 +687,7 @@ function observation_get_tabledata($acl_level = 'ACL_READ', $observation_ids = N
 			$row['cell']['thumbnail'] = '';
 			if ($images['count'] > 0) {
 				// display the thumbnail (for the table view)
-				$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . url('gallery/observation/' . $row['id'] . '/thumb/' . $images['images'][0]['id'] . '/gallery_thumbnail') . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
+				$row['cell']['thumbnail'] = '<img onclick="gallery_lightbox.openLightBoxEntry('.$row['id'].');" src="' . image_style_url('gallery_thumbnail', $images['images'][0]['uri']) . '" alt="' . $images['images'][0]['title'] . '" height="80" width="80" />';
 			}
 			
 			/**

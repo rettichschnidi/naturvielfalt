@@ -666,9 +666,7 @@ EOT;
 				|| $images_organism['count'] == 0) {
 			$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'observation',$observation_id);
 			$img = $gallery['edit']['gallery_list']['#images']['images'][0];
-			$img_type_link = url(
-					'gallery/' . $img['item_type'] . '/' . $img['item_id']
-					. '/thumb/' . $img['id'] . '/gallery_large');
+			$img_type_link = image_style_url('gallery_large', $img['uri']);
 			
 			$img_type = t('Proof image (@num_images)', array('@num_images' => $images_observation['count']));
 			$img_add = t('add proof image');
@@ -681,9 +679,7 @@ EOT;
 			$img = $gallery['edit']['gallery_list']['#images']['images'][0];
 			$img_type = t('Portrait image (@num_images)', array('@num_images' => $images_organism['count']));
 			
-			$img_type_link = url(
-					'gallery/' . $img['item_type'] . '/' . $img['item_id']
-					. '/thumb/' . $img['id'] . '/gallery_large');
+			$img_type_link = image_style_url('gallery_large', $img['uri']);
 			
 			if($manage_org_url)
 				$img_add_link = $manage_org_url;
@@ -696,9 +692,7 @@ EOT;
 		$otherimages = array();
 		for($i = 0 ; $i < count($gallery['edit']['gallery_list']['#images']['images']); $i++) {
 			$tmp_img = $gallery['edit']['gallery_list']['#images']['images'][$i];
-			$img_url = url(
-					'gallery/' . $tmp_img['item_type'] . '/' . $tmp_img['item_id']
-					. '/thumb/' . $tmp_img['id'] . '/gallery_large');
+			$img_url = image_style_url('gallery_large', $tmp_img['uri']);
 			
 			//prepare caption
 			$captionclass = "caption";
@@ -850,9 +844,7 @@ EOT;
 		$imgpe_link = '#';
 		$gallery = gallery_list_renderer(GALLERY_MEDIATYPE_IMAGE, 'area',$area_id);
 		$img = $gallery['edit']['gallery_list']['#images']['images'][0];
-		$img_type_link = url(
-				'gallery/' . $img['item_type'] . '/' . $img['item_id']
-				. '/thumb/' . $img['id'] . '/gallery_large');
+		$img_type_link = image_style_url('gallery_large', $img['uri']);
 			
 		$img_type = t('Area image (@num_images)', array('@num_images' => $area_images['count']));
 		$img_add = t('add area image');
@@ -865,9 +857,7 @@ EOT;
 		$otherimages = array();
 		for($i = 0 ; $i < count($gallery['edit']['gallery_list']['#images']['images']); $i++) {
 			$tmp_img = $gallery['edit']['gallery_list']['#images']['images'][$i];
-			$img_url = url(
-					'gallery/' . $tmp_img['item_type'] . '/' . $tmp_img['item_id']
-					. '/thumb/' . $tmp_img['id'] . '/gallery_large');
+			$img_url = image_style_url('gallery_large', $tmp_img['uri']);
 				
 			//prepare caption
 			$captionclass = "caption";
