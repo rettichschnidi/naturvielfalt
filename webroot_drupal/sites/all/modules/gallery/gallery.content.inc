@@ -575,8 +575,8 @@ function gallery_image($type, $id, $image) {
  * @deprecated: use image_style_url() instead of pointing to gallery/../thumb/..s
  */
 function gallery_thumb($type, $id, $image, $size) {
-	watchdog('gallery module', 'gallery_thumb() is still used at: @info',
-		array( '@info' =>  print_r($_SERVER, true)), WATCHDOG_CRITICAL);
+	watchdog('gallery module', 'gallery_thumb() is still used for: @info',
+		array( '@info' =>  $_SERVER['SCRIPT_URL']), WATCHDOG_WARNING);
 	$uri = explode('://', $image['uri']);
 	return image_style_deliver(image_style_load($size), $uri[0], $uri[1]);
 }
