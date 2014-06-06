@@ -572,7 +572,7 @@ function gallery_image($type, $id, $image) {
 
 /**
  * Menu callback; Serving a gallery media thumb
- * DEPRECATED: use image_style_url() instead of pointing to gallery/../thumb/..s
+ * @deprecated: use image_style_url() instead of pointing to gallery/../thumb/..s
  */
 function gallery_thumb($type, $id, $image, $size) {
 	watchdog('gallery module', 'gallery_thumb() is still used at: @ref_url',
