@@ -162,7 +162,7 @@ function getObservations($page) {
 		// display the thumbnail (for the table view)
 		$observationsArray[$i]["observation_id"] = $row->id;
 		$observationsArray[$i]["thumbnail_image_path"] = image_style_url('gallery_thumbnail', $images['images'][0]['uri']);
-		$observationsArray[$i]["fullsize_image_path"] = url('gallery/observation/' . $row->id . '/image/' . $images['images'][0]['id']);
+		$observationsArray[$i]["fullsize_image_path"] = image_style_url('gallery_large', $images['images'][0]['uri']);
 		$observationsArray[$i]["observation_images"] = $images;
 		$observationsArray[$i]["detail_information"] = observation_get_table(observation_get($row->id));
 		$observationsArray[$i]["comment_information"] = observation_get_details_table(observation_get($row->id));
