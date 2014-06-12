@@ -158,7 +158,8 @@ function webservice_parse_import_observations() {
 		foreach ($validationerrors as $message) {
 			print($message.'<br>');
 		}
-		watchdog(WS_API_LOG_TYPE, 'validation errors', array(), WATCHDOG_DEBUG);
+		watchdog(WS_API_LOG_TYPE, 'validation errors! errors: @errors\n initial request-data: @req_data',
+			array('@errors' => join("<br>", $validationerrors), '@req_data' => print_r($data, true)), WATCHDOG_DEBUG);
 	}
 	else {
 		//if empty string has been passed, use login name
@@ -181,10 +182,13 @@ function webservice_parse_import_observations() {
 		} else {
 			header('HTTP/1.0 400 Bad Request');
 			print('ERROR: Something went wrong.. Could not persist the observation. <br>');
+			$all_errors = '';
 			foreach ($observation_status['message'] as $key => $message) {
 				print($message.'<br>');
+				$all_errors .= $message.'<br>';
 			}
-			watchdog(WS_API_LOG_TYPE, 'something went wrong', array(), WATCHDOG_DEBUG);
+			watchdog(WS_API_LOG_TYPE, 'could not persist observation. request-data: @reg_data \n errors: @errors',
+				array('@req_data' => print_r($data, true), '@errors' => $all_errors), WATCHDOG_DEBUG);
 		}
 	}
 	watchdog(WS_API_LOG_TYPE, 'observation finished. exec time: @exectime',
