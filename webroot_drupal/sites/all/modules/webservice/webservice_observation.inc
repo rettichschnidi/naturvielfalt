@@ -159,7 +159,7 @@ function webservice_parse_import_observations() {
 			print($message.'<br>');
 		}
 		watchdog(WS_API_LOG_TYPE, 'validation errors! errors: @errors\n initial request-data: @req_data',
-			array('@errors' => join("<br>", $validationerrors), '@req_data' => print_r($data, true)), WATCHDOG_DEBUG);
+			array('@errors' => join("<br>", $validationerrors), '@req_data' => print_r($data, true)), WATCHDOG_WARNING);
 	}
 	else {
 		//if empty string has been passed, use login name
@@ -188,7 +188,7 @@ function webservice_parse_import_observations() {
 				$all_errors .= $message.'<br>';
 			}
 			watchdog(WS_API_LOG_TYPE, 'could not persist observation. request-data: @reg_data \n errors: @errors',
-				array('@req_data' => print_r($data, true), '@errors' => $all_errors), WATCHDOG_DEBUG);
+				array('@req_data' => print_r($data, true), '@errors' => $all_errors), WATCHDOG_WARNING);
 		}
 	}
 	watchdog(WS_API_LOG_TYPE, 'observation finished. exec time: @exectime',
