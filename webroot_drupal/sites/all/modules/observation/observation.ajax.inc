@@ -163,12 +163,10 @@ function observation_save($observation_data = false, $custom_data = false, $from
 			$observation['area_geometry_id'] = area_create_geometry($geometry);
 
 			//save the observation
-			$observation['id'] = db_query(
-				"SELECT nextval('{observation}_id_seq') as nextval")->fetchField();
+			unset($observation['id']);  // remove from fields to let pgsql create a new id
 			$observation['c_time'] = $observation['m_time'];
 			$observation['acl_id'] = new_acl('observation', $observation['users_uid']);
-			db_insert('observation')->fields($observation)
-				->execute();
+			$observation['id'] = db_insert('observation')->fields($observation)->execute();
 			observation_save_attribute_values($attributes_checked, $observation['id']);
 			
 			// Read access for ALL group
