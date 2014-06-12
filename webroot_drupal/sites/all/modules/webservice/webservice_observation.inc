@@ -187,7 +187,7 @@ function webservice_parse_import_observations() {
 				print($message.'<br>');
 				$all_errors .= $message.'<br>';
 			}
-			watchdog(WS_API_LOG_TYPE, 'could not persist observation. request-data: @reg_data \n errors: @errors',
+			watchdog(WS_API_LOG_TYPE, 'could not persist observation. request-data: @req_data \n errors: @errors',
 				array('@req_data' => print_r($data, true), '@errors' => $all_errors), WATCHDOG_WARNING);
 		}
 	}
